@@ -1,12 +1,7 @@
-import React from 'react';
-import Login from './login/Login';
-// import Routes from './route/Route'
+import React from "react";
+import Routes from "./routes";
 
 function App() {
-  return (
-        
-      <Login />
-   
-  );
+  return <Routes />;
 }
 export default App;
