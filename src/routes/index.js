@@ -10,9 +10,9 @@ import Sidenav from "../layouts/SideNav";
  * pages
  */
 import Order from "../pages/order";
-import DoingOrder from '../pages/order/DoingOrder'
-import ServedOrder from '../pages/order/ServedOrder'
-import CanceledOrder from '../pages/order/CanceledOrder'
+import DoingOrder from "../pages/order/DoingOrder";
+import ServedOrder from "../pages/order/ServedOrder";
+import CanceledOrder from "../pages/order/CanceledOrder";
 import Login from "../pages/login/Login";
 import Table from "../pages/table/Table";
 const Main = styled.main`
@@ -50,9 +50,7 @@ const Index = () => {
                 {/* Contents */}
                 <div
                   style={{
-                    marginTop: 60,
-                    backgroundColor: "#eee",
-                    minHeight: "100vh",
+                    marginTop: 70,
                   }}
                 >
                   {/* private routes */}
@@ -61,9 +59,21 @@ const Index = () => {
                     path="/orders/pagenumber/:number"
                     component={Order}
                   />
-                  <PrivateRoute exact path="/orders/doing/pagenumber/:number" component={DoingOrder} />
-                  <PrivateRoute exact path="/orders/served/pagenumber/:number" component={ServedOrder} />
-                  <PrivateRoute exact path="/orders/canceled/pagenumber/:number" component={CanceledOrder} />
+                  <PrivateRoute
+                    exact
+                    path="/orders/doing/pagenumber/:number"
+                    component={DoingOrder}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/orders/served/pagenumber/:number"
+                    component={ServedOrder}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/orders/canceled/pagenumber/:number"
+                    component={CanceledOrder}
+                  />
                   <PrivateRoute
                     exact
                     path="/tables/pagenumber/:number"

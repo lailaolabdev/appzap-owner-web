@@ -44,7 +44,7 @@ export default function NavBar() {
           backgroundColor: "#fff",
           boxShadow: "3px 0px 3px rgba(0, 0, 0, 0.16)",
           color: "#000",
-          width: "95%",
+          width: "100%",
           height: 60,
           position: "fixed",
           marginLeft: 50,
@@ -53,13 +53,31 @@ export default function NavBar() {
           zIndex: 10012,
         }}
       >
-        <div style={{ float: "right" }}>
-          <h3>Self Ordering</h3>
-        </div>
-        {/* <Navbar.Brand style={{ color: "#909090" }} href="/orders/pagenumber/1">
-          <Image src={"/images/profile.png"} height={40} width={40} />
-        </Navbar.Brand> */}
-        {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
+        <Navbar.Brand style={{ color: "#909090" }} href="/orders/pagenumber/1">
+          <h2>SELF ORDERING</h2>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            <Image
+              src={"/images/profile.png"}
+              style={{ cursor: "pointer" }}
+              height={40}
+              width={40}
+              roundedCircle
+              onClick={_onDetailProfile}
+            />
+            <NavDropdown
+              title="Soulin"
+              id="basic-nav-dropdown basic-navbar-nav"
+              alignRight
+            >
+              <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#action/3.4">Logout</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
       </Navbar>
     </div>
   );
