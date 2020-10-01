@@ -1,21 +1,17 @@
 import React from "react"
 import useReactRouter from "use-react-router"
-import Nav from "react-bootstrap/Nav"
-import CustomNav from './component/CustomNav'
+// import Nav from "react-bootstrap/Nav"
 import Container from 'react-bootstrap/Container'
+import CustomNav from './component/CustomNav'
 import Table from 'react-bootstrap/Table'
-// import {BODY} from '../../constants/index'
 
-const Order = () => {
-  const { history, location, match } = useReactRouter();
-  console.log("location: ", location)
-  console.log("match: ", match)
-  return (
-    <div style={TITLE_HEADER}>
-      <CustomNav default="/orders/pagenumber/1" />
-    
-    
-    <div style={BODY}>
+const OrderList = () => {
+    const { history, location, match } = useReactRouter();
+    console.log("location: ", location)
+    console.log("match: ", match)
+    return <div style={TITLE_HEADER}>
+	<CustomNav default="/orders/doing/pagenumber/1" />
+	<div style={BODY}>
       <Container fluid>
             <Table
 							responsive
@@ -36,11 +32,9 @@ const Order = () => {
        </Container>
      </div>
   </div>
-  );
 };
 
-export default Order;
-
+export default OrderList;
 export const TITLE_HEADER = {
 	paddingLeft: 55,
 	paddingTop: 55,
@@ -54,7 +48,7 @@ export const BODY = {
 	minHeight: '70vh',
 	backgroundColor: 'white',
 	marginRight: 32,
-	marginLeft: 0,
+	marginLeft: 1,
 	paddingLeft: 32,
 	paddingTop: 32,
 	paddingRight: 32,

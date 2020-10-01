@@ -54,7 +54,7 @@ export default function NavBar() {
         }}
       >
         <div style={{ float: "right" }}>
-          <h3>Hello world</h3>
+          <h3>Self Ordering</h3>
         </div>
         {/* <Navbar.Brand style={{ color: "#909090" }} href="/orders/pagenumber/1">
           <Image src={"/images/profile.png"} height={40} width={40} />
