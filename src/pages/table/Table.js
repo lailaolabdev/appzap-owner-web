@@ -44,7 +44,12 @@ import {
   BUTTON_INDEX,
   BUTTON_DELETE,
   BUTTON_OUTLINE_DARK,
-  padding_white
+  padding_white,
+  table_container_blue,
+  font_text_black
+
+
+
 } from "../../constants/index"
 
 /**
@@ -115,17 +120,18 @@ const Tables = () => {
                     })}
                   </Col>
                 </div>
+                {/* BLUE */}
                 <div style={half_backgroundColor}>
                   <Col sm={8}>
-                    {_numberTable.map((index, key) => {
+                    {_numberTable_WHITE.map((index, key) => {
                       return (
                         <div
                           key={index}
-                          style={table_container}
+                          style={table_container_blue}
                           onClick={() => { _onHandlerTable() }}
                         >
                           <div style={table_style_center}>
-                            <span style={font_text}>{index.name}</span>
+                            <span style={font_text_black}>{index.name}</span>
                           </div>
                           <div style={table_style_center}>
                             <span style={font_description_text}>(ວ່າງ)</span>
@@ -241,6 +247,13 @@ const _numberTable = [
   { name: "ໂຕະ 2" },
   { name: "ໂຕະ 3" },
   { name: "ໂຕະ 4" },
+]
+
+const _numberTable_WHITE = [
+  { name: "ໂຕະ 1 ຂາວ" },
+  { name: "ໂຕະ 2 ຂາວ" },
+  { name: "ໂຕະ 3 ຂາວ" },
+  { name: "ໂຕະ 4 ຂາວ" },
 ]
 
 const food = [

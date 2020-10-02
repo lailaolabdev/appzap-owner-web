@@ -37,17 +37,31 @@ export const DIV_NAV = {
     // paddingLeft: 32,
 }
 
+export const table_container_blue = {
+    width: 200,
+    height: 70,
+    marginTop: 20,
+    marginLeft: 15,
+    backgroundColor: "#FFF",
+    // webkitBoxShadow: "1px 3px 1px #9E9E9E",
+    // mozBoxShadow: "1px 3px 1px #9E9E9E",
+    // boxShadow: "1px 3px 1px #9E9E9E",
+    borderWidth: "bold",
+    borderColor: "black",
+    cursor: "pointer",
+}
 export const table_container = {
     width: 200,
     height: 70,
     marginTop: 20,
     marginLeft: 15,
     backgroundColor: "#2372A3",
-    webkitBoxShadow: "1px 3px 1px #9E9E9E",
-    mozBoxShadow: "1px 3px 1px #9E9E9E",
-    boxShadow: "1px 3px 1px #9E9E9E",
+    // webkitBoxShadow: "1px 3px 1px #9E9E9E",
+    // mozBoxShadow: "1px 3px 1px #9E9E9E",
+    // boxShadow: "1px 3px 1px #9E9E9E",
     cursor: "pointer",
 }
+
 
 export const table_style_center = {
     justifyContent: "center",
@@ -59,6 +73,7 @@ export const BUTTON_OUTLINE_DANGER = 'outline-danger'
 export const padding = { padding: 10, backgroundColor: "#F1F1F1" }
 export const padding_white = { padding: 10, backgroundColor: "#FFF" }
 export const font_text = { color: "#FFF", fontSize: 20, paddingTop: 10 }
+export const font_text_black = { color: "#0D0D0D", fontSize: 20, paddingTop: 10 }
 export const half_backgroundColor = { width: "50%", backgroundColor: "#fff" }
 export const font_description_text = { color: "#FFF", fontSize: 15 }
 export const BUTTON_EDIT = {
