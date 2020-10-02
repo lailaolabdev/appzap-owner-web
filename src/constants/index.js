@@ -74,7 +74,7 @@ export const padding = { padding: 10, backgroundColor: "#F1F1F1" }
 export const padding_white = { padding: 10, backgroundColor: "#FFF" }
 export const font_text = { color: "#FFF", fontSize: 20, paddingTop: 10 }
 export const font_text_black = { color: "#0D0D0D", fontSize: 20, paddingTop: 10 }
-export const half_backgroundColor = { width: "50%", backgroundColor: "#fff" }
+export const half_backgroundColor = { width: "50%", backgroundColor: "#fff", border: 1 }
 export const font_description_text = { color: "#FFF", fontSize: 15 }
 export const BUTTON_EDIT = {
     zPosition: 100,
