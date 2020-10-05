@@ -7,6 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import useReactRouter from "use-react-router";
 
+import { logout } from '../services/auth';
 import { USER_KEY } from "../constants";
 export default function NavBar() {
   const { history } = useReactRouter();
@@ -26,9 +27,8 @@ export default function NavBar() {
   //     }
   //   }, []);
 
-  const _onLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
+  const _onLogout = async () => {
+    await logout();
     history.push(`/`);
   };
 
@@ -74,7 +74,7 @@ export default function NavBar() {
             >
               <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={_onLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
