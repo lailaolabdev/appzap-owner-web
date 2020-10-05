@@ -68,6 +68,7 @@ export const table_style_center = {
     alignItems: "center",
     display: "flex"
 }
+export const BUTTON_OUTLINE_PRIMARY = 'outline-primary'
 export const BUTTON_OUTLINE_DARK = 'outline-dark'
 export const BUTTON_OUTLINE_DANGER = 'outline-danger'
 export const padding = { padding: 10, backgroundColor: "#F1F1F1" }

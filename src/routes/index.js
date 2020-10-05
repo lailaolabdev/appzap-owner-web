@@ -13,6 +13,7 @@ import Order from "../pages/order";
 import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
+import Histories from "../pages/histories/Histories"
 import Login from "../pages/login/Login";
 import Table from "../pages/table/Table";
 const Main = styled.main`
@@ -78,6 +79,11 @@ const Index = () => {
                     exact
                     path="/tables/pagenumber/:number"
                     component={Table}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/histories/pagenumber/:number"
+                    component={Histories}
                   />
                 </div>
               </Main>
