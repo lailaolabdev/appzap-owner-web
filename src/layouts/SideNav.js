@@ -8,8 +8,8 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faProjectDiagram,
   faBookMedical,
+  faHistory, faStoreAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./sidenav.css";
@@ -63,6 +63,9 @@ export default class Sidenav extends Component {
           if (selected === "tables") {
             selected = selected + "/pagenumber/" + 1;
           }
+          if (selected === "histories") {
+            selected = selected + "/pagenumber/" + 1;
+          }
           const to = "/" + selected;
 
           if (location.pathname !== to) {
@@ -91,13 +94,13 @@ export default class Sidenav extends Component {
                 color: selected === "orders" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
               }}
             >
-              ອໍເດີ້
+              ອໍເດີ
             </NavText>
           </NavItem>
           <NavItem eventKey="tables">
             <NavIcon>
               <FontAwesomeIcon
-                icon={faProjectDiagram}
+                icon={faStoreAlt}
                 style={{
                   color:
                     selected === "tables"
@@ -111,7 +114,27 @@ export default class Sidenav extends Component {
                 color: selected === "tables" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
               }}
             >
-              ອໍເດີ້
+              ສະຖານະຂອງໂຕະ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faHistory}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#2372A3"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color: selected === "histories" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ປະຫວັດການຂາຍ
             </NavText>
           </NavItem>
         </SideNav.Nav>
