@@ -5,7 +5,7 @@ export const getHeaders = async () => {
         const user = await localStorage.getItem(USER_KEY);
         const token = JSON.parse(user)['token']
         if (token) {
-            return "Ordering " + token;
+            return { "Authorization": "Ordering " + token };
         } else {
             return null;
         }
