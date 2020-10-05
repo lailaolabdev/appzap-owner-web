@@ -1,11 +1,12 @@
 import { USER_KEY } from "../constants"
 
-export const getHeaders = async () => {
+export const getHeaders = async() => {
     try {
         const user = await localStorage.getItem(USER_KEY);
         const token = JSON.parse(user)['token']
+        console.log("tokon", token)
         if (token) {
-            return "Ordering " + token;
+            return { "Authorization": `Ordering ${token}` };
         } else {
             return null;
         }
@@ -16,7 +17,7 @@ export const getHeaders = async () => {
 }
 
 
-export const logout = async () => {
+export const logout = async() => {
     try {
         await localStorage.removeItem();
         await localStorage.clear();

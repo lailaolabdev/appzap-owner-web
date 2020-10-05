@@ -1,14 +1,25 @@
-import React from "react";
+import React,{ useState } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import Checkbox from "@material-ui/core/Checkbox";
+import { getOrders } from '../../services/order'
 
 const Order = () => {
   const { history, location, match } = useReactRouter();
-  console.log("location: ", location);
-  console.log("match: ", match);
+
+ const [orders,setOrders] = useState([]);
+  React.useEffect(() => {
+    const fetchOrder = async () => {
+      const res = await getOrders();
+      setOrders(res);
+    }
+    fetchOrder();
+  }, [])
+  if(orders){
+    console.log("12345: ", orders);
+  }
   return (
     <div>
       <CustomNav default="/orders/pagenumber/1" />
