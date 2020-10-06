@@ -18,18 +18,24 @@ import {
   faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons'
 import { Router } from "react-router-dom"
+import Modal from 'react-bootstrap/Modal'
+
+
 
 /**
  * component
  * */
 import Loading from '../../constants/loading'
 import MenusDetail from "./components/MenusDetail"
+import TableInputation from './components/TableInputation'
 
 import { getHeaders, } from '../../services/auth'
 import { tables } from '../../services/table'
+
+
 /**
- * const 
- **/
+* const 
+**/
 import {
   TITLE_HEADER,
   HEADER,
@@ -76,6 +82,14 @@ const Tables = () => {
   const [table, setTable] = useState([])
   const [tableName, setTableName] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [dataModal, setDataModal] = useState({})
+
+  const handleClose = () => setShowModal(false);
+  const handleShow = () => setShowModal(true);
+
+
+
+
 
 
   React.useEffect(() => {
@@ -90,19 +104,19 @@ const Tables = () => {
    * function
    * */
   const _onHandlerTable = (table_id) => {
-    setShowTable(true);
-    setTableName(table_id)
+    // setShowTable(true);
+    setShowModal(true);
+    setDataModal(table_id);
+    // setTableName(table_id)
     console.log("click Table number ", table_id)
   }
+
+
   const _onClickMenuDetail = () => {
     console.log("click menuDetail: ")
-    setShowModal(!showModal);
+    setShowModal(true);
   }
 
-  if (tableName) {
-    console.log("tableName : ", tableName)
-  }
-  console.log("tables:", tables())
   return (
 
     <div style={TITLE_HEADER}>
@@ -128,21 +142,39 @@ const Tables = () => {
             <Container fluid>
               <Row>
                 <div style={half_backgroundColor}>
+                  {table && table.map((data, index) => {
+                    return (
+                      <div key={index} style={{ paddingTop: 10, paddingLeft: 10 }}>
+                        <Button
+                          style={{ width: 200 }}
+                          variant="primary"
+                          onClick={() => { _onHandlerTable(data.table_id) }}>
+                          <div className="d-flex flex-row-reverse">
+                            <span>ເປີດເເລ້ວ</span>
+                          </div>
+                          ໂຕະ {data.table_id}
+                          <div>
+                            <span>( ວ່າງ )</span>
+                          </div>
+                        </Button>
+                      </div>
+                    )
+                  })}
+
                   <Col sm={8}>
-                    {table && table.map((data, index) => {
+                    {/* {table && table.map((data, index) => {
                       return (
                         <div
                           key={index}
                           style={table_container}
-                          onClick={() => { _onHandlerTable(data.table_id) }}
+                        // onClick={() =>  }}
                         >
+
                           <div className="d-flex flex-row-reverse"  >
-                            <img src="https://www.flaticon.com/svg/static/icons/svg/891/891451.svg"
-                              style={{ width: 40, height: 40 }} />
+                             <img src="https://www.flaticon.com/svg/static/icons/svg/891/891451.svg"
+                              style={{ width: 40, height: 40 }} /> 
 
-                            {/* <img src="https://www.flaticon.com/svg/static/icons/svg/84/84139.svg"
-                              style={{ width: 40, height: 40 }} /> */}
-
+                            <span style={{ color: "#FFF" }}>ເປີດໂຕະເເລ້ວ</span>
                           </div>
                           <div style={table_style_center}>
                             <span style={font_text}> ໂຕະ {data.table_id}</span>
@@ -152,7 +184,7 @@ const Tables = () => {
                           </div>
                         </div>
                       )
-                    })}
+                    })} */}
                   </Col>
                 </div>
               </Row>
@@ -162,118 +194,117 @@ const Tables = () => {
 
 
           {/* Detail Table */}
-
-          {
-            showTable ?
-              <div style={{
-                width: "60%",
-                backgroundColor: "#FFF",
-                minHeight: "75vh",
-                borderColor: "black",
-                borderWidth: 1,
-                paddingLeft: 20,
-                paddingTop: 20
-              }}>
-                <Container fluid>
-                  <Row>
-                    <Col sm={3}>
-                      <span style={PRIMARY_FONT_BLACK}>{tableName.name}</span>
-                    </Col>
-                    <Col sm={3}>
-                      <Button
-                        style={BUTTON_EDIT}
-                        variant={BUTTON_OUTLINE_BLUE}
-                        onClick={() => { _onClickMenuDetail() }}
-                      >
-                        ເບິ່ງບິນ
+          {showTable ?
+            <div style={{
+              width: "60%",
+              backgroundColor: "#FFF",
+              minHeight: "75vh",
+              borderColor: "black",
+              borderWidth: 1,
+              paddingLeft: 20,
+              paddingTop: 20
+            }}>
+              <Container fluid>
+                <Row>
+                  <Col sm={3}>
+                    <span style={PRIMARY_FONT_BLACK}>{tableName.name}</span>
+                  </Col>
+                  <Col sm={3}>
+                    <Button
+                      style={BUTTON_EDIT}
+                      variant={BUTTON_OUTLINE_BLUE}
+                      onClick={_onClickMenuDetail()}
+                    >
+                      ເບິ່ງບິນ
 									    </Button>
-                      {'\t'}
-                    </Col>
-                    <Col sm={3}>
-                      <Button
-                        style={BUTTON_EDIT}
-                        variant={BUTTON_OUTLINE_DANGER}
-                      >
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          style={{ float: 'left', }}
-                        />
+                    {'\t'}
+                  </Col>
+                  <Col sm={3}>
+                    <Button
+                      style={BUTTON_EDIT}
+                      variant={BUTTON_OUTLINE_DANGER}
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrashAlt}
+                        style={{ float: 'left', }}
+                      />
 										ຍົກເລີກ
 									</Button>
-                      {'\t'}
-                    </Col>
-                    <Col sm={3}>
-                      <Button
-                        style={BUTTON_DELETE}
-                        variant={BUTTON_OUTLINE_DARK}
-                      >
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          style={{ float: 'left', marginTop: 4 }}
-                        />
+                    {'\t'}
+                  </Col>
+                  <Col sm={3}>
+                    <Button
+                      style={BUTTON_DELETE}
+                      variant={BUTTON_OUTLINE_DARK}
+                    >
+                      <FontAwesomeIcon
+                        icon={faPen}
+                        style={{ float: 'left', marginTop: 4 }}
+                      />
 										ອັບເດດ
 									</Button>
-                    </Col>
-                  </Row>
-                  <div style={padding_white} />
+                  </Col>
+                </Row>
+                <div style={padding_white} />
 
-                  <Table
-                    responsive
-                    className="staff-table-list borderless table-hover"
-                  >
-                    <thead style={{ backgroundColor: '#F1F1F1', }}>
-                      <tr>
-                        <th style={{ width: 50 }}></th>
-                        <th style={{ width: 50 }}>ລຳດັບ</th>
-                        <th style={{ width: 100 }}>ຊື່ເມນູ</th>
-                        <th style={{ width: 100 }}>ຈຳນວນ</th>
-                        <th style={{ width: 100 }}>ສະຖານະ</th>
-                        <th>ວັນ,ທີ,ເດືອນ</th>
+                <Table
+                  responsive
+                  className="staff-table-list borderless table-hover"
+                >
+                  <thead style={{ backgroundColor: '#F1F1F1', }}>
+                    <tr>
+                      <th style={{ width: 50 }}></th>
+                      <th style={{ width: 50 }}>ລຳດັບ</th>
+                      <th style={{ width: 100 }}>ຊື່ເມນູ</th>
+                      <th style={{ width: 100 }}>ຈຳນວນ</th>
+                      <th style={{ width: 100 }}>ສະຖານະ</th>
+                      <th>ວັນ,ທີ,ເດືອນ</th>
+                    </tr>
+                  </thead>
+                  {food.map((value, index) => {
+                    return (
+                      <tr index={value}>
+                        <td >
+                          <Checkbox
+                            // hidden={isAdmin}
+                            color="primary"
+                            name="selectAll"
+                          // onChange={(e) => _checkAll(e)}
+                          />
+                        </td>
+                        <td>{index + 1}</td>
+                        <td>{value.menu}</td>
+                        <td>{currency(value.price)}</td>
+                        <td>{value.status}</td>
+                        <td>{value.datetime}</td>
                       </tr>
-                    </thead>
-                    {food.map((value, index) => {
-                      return (
-                        <tr index={value}>
-                          <td >
-                            <Checkbox
-                              // hidden={isAdmin}
-                              color="primary"
-                              name="selectAll"
-                            // onChange={(e) => _checkAll(e)}
-                            />
-                          </td>
-                          <td>{index + 1}</td>
-                          <td>{value.menu}</td>
-                          <td>{currency(value.price)}</td>
-                          <td>{value.status}</td>
-                          <td>{value.datetime}</td>
-                        </tr>
-                      )
-                    })}
-                  </Table>
-                  <div style={{ marginBottom: 100 }} />
-                  <div className="d-flex justify-content-end">
-                    <div className="p-2 col-example text-left">ລາຄາລວມ:</div>
-                    <div className="p-2 col-example text-left" style={{ backgroundColor: "#F1F1F1", width: 140, height: 50 }}>
-                      <span>{currency(12345)}</span>
-                      <span style={{ justifyContent: "flex-end", display: "row" }}>ກີບ</span>
-                    </div>
-                    <div className="p-2 col-example text-left" style={{ width: 180, height: 50, display: "flex", justifyContent: "flex-start" }}>
-                      <Button
-                        style={BUTTON_SUCCESS}
-                        variant={BUTTON_OUTLINE_BLUE}
-                      >
-                        ເຊັກບິນ
-						    			</Button>
-                    </div>
+                    )
+                  })}
+                </Table>
+                <div style={{ marginBottom: 100 }} />
+                <div className="d-flex justify-content-end">
+                  <div className="p-2 col-example text-left">ລາຄາລວມ:</div>
+                  <div className="p-2 col-example text-left" style={{ backgroundColor: "#F1F1F1", width: 140, height: 50 }}>
+                    <span>{currency(12345)}</span>
+                    <span style={{ justifyContent: "flex-end", display: "row" }}>ກີບ</span>
                   </div>
-                </Container>
-              </div>
-              : null
+                  <div className="p-2 col-example text-left" style={{ width: 180, height: 50, display: "flex", justifyContent: "flex-start" }}>
+                    <Button
+                      style={BUTTON_SUCCESS}
+                      variant={BUTTON_OUTLINE_BLUE}
+                    >
+                      ເຊັກບິນ
+						    			</Button>
+                  </div>
+                </div>
+              </Container>
+            </div>
+            : null
           }
 
         </div>
       </div>
+      <TableInputation show={showModal} onHide={handleClose} data={dataModal} />
     </div >
 
   );
