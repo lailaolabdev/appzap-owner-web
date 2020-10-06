@@ -18,7 +18,7 @@ const Order = () => {
     fetchOrder();
   }, []);
   if (orders) {
-    console.log("12345: ", orders);
+    console.log("12345: ", orders  );
   }
   getHeaders();
   return (
@@ -38,7 +38,52 @@ const Order = () => {
               <th />
             </tr>
           </thead>
-          {food.map((value, index) => {
+          <tbody>
+            {orders?.map(
+              (value, index)=>{
+                console.log("value: ",value)
+                return(
+              <tr key={index}> 
+              <td>
+                  <Checkbox
+                    // hidden={isAdmin}
+                    color="primary"
+                    name="selectAll"
+                    // onChange={(e) => _checkAll(e)}
+                  />
+              </td>
+              <td>{index + 1 || '-'}</td> 
+              <td>{value?.order_item?.map(
+              (data, key)=>{
+                return(
+                <p>{data?.menu?.name}</p>
+                )
+              }) || "-"}</td> 
+              <td>{value?.order_item?.map(
+              (data, key)=>{
+                return(
+                <p>{data?.quantity}</p>
+                )
+              }) || "-"}</td>
+              <td>{value?.order_item?.map(
+              (data, key)=>{
+                return(
+                <p>{value?.table_id}</p>
+                )
+              }) || "-"}</td>
+              <td>{value?.order_item?.map(
+              (data, key)=>{
+                return(
+                <p>{data?.status}</p>
+                )
+              }) || "-"}</td>
+              <td>{value?.createdAt || "-"}</td>
+              </tr>
+            )
+          }
+            )}
+          </tbody>
+          {/* {food.map((value, index) => {
             return (
               <tr key={index}>
                 <td>
@@ -57,7 +102,7 @@ const Order = () => {
                 <td>{value.datetime}</td>
               </tr>
             );
-          })}
+          })} */}
         </Table>
       </Container>
     </div>
