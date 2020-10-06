@@ -30,7 +30,10 @@ import MenusDetail from "./components/MenusDetail"
 import TableInputation from './components/TableInputation'
 
 import { getHeaders, } from '../../services/auth'
-import { tables } from '../../services/table'
+import { tables, generatedCode, getOrderData } from '../../services/table'
+
+import { Formik } from "formik"
+import * as Yup from "yup"
 
 
 /**
@@ -82,12 +85,9 @@ const Tables = () => {
   const [table, setTable] = useState([])
   const [tableName, setTableName] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [dataModal, setDataModal] = useState({})
-
+  const [tableId, setTableId] = useState({})
+  // const [orderData, setOrderData] = useState([]);
   const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-
-
 
 
 
@@ -100,17 +100,31 @@ const Tables = () => {
     fetchTable();
   }, [])
 
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     const res = await getOrderData();
+  //     setOrderData(res);
+  //   }
+  //   fetchData();
+  // }, []);
+
+  // if (orderData) {
+  //   console.log("orderData: ", orderData)
+  // }
+
   /**
    * function
    * */
-  const _onHandlerTable = (table_id) => {
-    // setShowTable(true);
-    setShowModal(true);
-    setDataModal(table_id);
-    // setTableName(table_id)
-    console.log("click Table number ", table_id)
+  const _onHandlerTable = async (table_id) => {
+    const id = await generatedCode(table_id);
+    await setTableId(id);
+    await setShowModal(true);
   }
 
+  const _onHandlerTableDetail = async (table_id) => {
+    console.log("table_id: ", table_id);
+
+  }
 
   const _onClickMenuDetail = () => {
     console.log("click menuDetail: ")
@@ -141,6 +155,7 @@ const Tables = () => {
           <div style={half_backgroundColor}>
             <Container fluid>
               <Row>
+
                 <div style={half_backgroundColor}>
                   {table && table.map((data, index) => {
                     return (
@@ -148,7 +163,8 @@ const Tables = () => {
                         <Button
                           style={{ width: 200 }}
                           variant="primary"
-                          onClick={() => { _onHandlerTable(data.table_id) }}>
+                          // onClick={() => { _onHandlerTable(data.table_id) }}>
+                          onClick={() => { _onHandlerTableDetail(data.table_id) }}>
                           <div className="d-flex flex-row-reverse">
                             <span>ເປີດເເລ້ວ</span>
                           </div>
@@ -161,8 +177,8 @@ const Tables = () => {
                     )
                   })}
 
-                  <Col sm={8}>
-                    {/* {table && table.map((data, index) => {
+                  {/* <Col sm={8}>
+                    {table && table.map((data, index) => {
                       return (
                         <div
                           key={index}
@@ -171,8 +187,8 @@ const Tables = () => {
                         >
 
                           <div className="d-flex flex-row-reverse"  >
-                             <img src="https://www.flaticon.com/svg/static/icons/svg/891/891451.svg"
-                              style={{ width: 40, height: 40 }} /> 
+                            <img src="https://www.flaticon.com/svg/static/icons/svg/891/891451.svg"
+                              style={{ width: 40, height: 40 }} />
 
                             <span style={{ color: "#FFF" }}>ເປີດໂຕະເເລ້ວ</span>
                           </div>
@@ -184,8 +200,9 @@ const Tables = () => {
                           </div>
                         </div>
                       )
-                    })} */}
-                  </Col>
+                    })}
+                  </Col> */}
+
                 </div>
               </Row>
             </Container>
@@ -304,7 +321,9 @@ const Tables = () => {
 
         </div>
       </div>
-      <TableInputation show={showModal} onHide={handleClose} data={dataModal} />
+      <TableInputation show={showModal} onHide={handleClose}
+        data={tableId}
+      />
     </div >
 
   );
@@ -318,20 +337,9 @@ const NAV = {
   paddingTop: 10,
 }
 
-const _numberTable = [
-  { name: "ໂຕະ 1" },
-  { name: "ໂຕະ 2" },
-  { name: "ໂຕະ 3" },
-  { name: "ໂຕະ 4" },
-]
-
 
 
 const food = [
-  { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
-  { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
-  { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
-  { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
   { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
 
 ]
