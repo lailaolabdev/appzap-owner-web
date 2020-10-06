@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 import { Nav } from "react-bootstrap";
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
@@ -37,8 +37,23 @@ import {
 
 
 } from "../../../constants/index"
+// import UpdateOrderStatusModal from "./UpdateOrderStatusModal";
 const CustomNav = (props) => {
-  return (
+  // const [show, setShow] = React.useState(false);
+  // const closeModal = ()=> setShow(false);
+
+
+
+
+
+  /**
+   * Function
+   * */ 
+  // const _onClickUpdateStatus=()=>{
+  //   setShow(true);
+  // }
+  
+  return ( 
     <Nav variant="tabs" defaultActiveKey={props.default}>
       <Nav.Item>
         <Nav.Link href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
@@ -63,7 +78,7 @@ const CustomNav = (props) => {
                   >
                     <FontAwesomeIcon
                       icon={faTrashAlt}
-                      style={{ float: 'left', }}
+                      style={{ float: 'left', marginTop: 4 }}
                     />
 										ຍົກເລີກ
 									</Button>
@@ -74,6 +89,7 @@ const CustomNav = (props) => {
                   <Button
                     style={BUTTON_DELETE}
                     variant={BUTTON_OUTLINE_PRIMARY}
+                  //  onClick={_onClickUpdateStatus()}
                   >
                     <FontAwesomeIcon
                       icon={faPen}
@@ -82,8 +98,11 @@ const CustomNav = (props) => {
 										ອັບເດດ
 									</Button>
                 </Col>
-              </Row>
-    </Nav>
+              </Row> 
+              </Nav>
+    
+      // <UpdateOrderStatusModal handleShow={show} handleClose={closeModal}/> 
+  
   );
 };
 
