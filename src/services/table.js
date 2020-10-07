@@ -37,10 +37,10 @@ export const generatedCode = async (data) => {
 
 // TO DO: get Order
 
-export const getOrderData = async () => {
+export const getOrderData = async (tableId) => {
   try {
-    const orderData = await axios.get(`${END_POINT}/orders?status=CART`, {
-      headers: getHeaders(),
+    const orderData = await axios.get(`${END_POINT}/orders?status=CART&tableId=${tableId}`, {
+      headers: await getHeaders(),
     });
     if (orderData) {
       let data = orderData?.data;
@@ -52,20 +52,3 @@ export const getOrderData = async () => {
     console.log(error);
   }
 };
-
-// openTable
-
-// export const openTable = async (data) => {
-//     try {
-//         const dataOpenTable = await axios.post(`${END_POINT}/opens`, { code: data, customer_nickname: data });
-//         if (dataOpenTable) {
-//             let data = dataOpenTable.data;
-//             console.log("data: ", data);
-//             return data
-//         } else {
-//             return null;
-//         }
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
