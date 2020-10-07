@@ -28,12 +28,13 @@ import Modal from 'react-bootstrap/Modal'
 import Loading from '../../constants/loading'
 import MenusDetail from "./components/MenusDetail"
 import TableInputation from './components/TableInputation'
+import { Formik } from "formik"
+import * as Yup from "yup"
+
 
 import { getHeaders, } from '../../services/auth'
 import { tables, generatedCode, getOrderData } from '../../services/table'
-
-import { Formik } from "formik"
-import * as Yup from "yup"
+import MenusItemDetail from "./components/MenusItemDetail"
 
 
 /**
@@ -68,6 +69,7 @@ import {
 } from "../../constants/index"
 
 
+
 /**
  * css
  * **/
@@ -81,12 +83,18 @@ const Tables = () => {
    * useState
    * */
 
-  const [showTable, setShowTable] = useState(false);
+
   const [table, setTable] = useState([])
   const [tableName, setTableName] = useState("");
+  const [tableId, setTableId] = useState({});
+  const [orderData, setOrderData] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [tableId, setTableId] = useState({})
-  // const [orderData, setOrderData] = useState([]);
+  const [showTable, setShowTable] = useState(false);
+  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
+
+  // Modal useState
+
+  const [orderFromTable, setOrderFromTable] = useState();
   const handleClose = () => setShowModal(false);
 
 
@@ -100,35 +108,37 @@ const Tables = () => {
     fetchTable();
   }, [])
 
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     const res = await getOrderData();
-  //     setOrderData(res);
-  //   }
-  //   fetchData();
-  // }, []);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await getOrderData(tableName);
+      setOrderData(res);
+    }
+    fetchData();
+  }, []);
 
-  // if (orderData) {
-  //   console.log("orderData: ", orderData)
-  // }
 
   /**
    * function
    * */
-  const _onHandlerTable = async (table_id) => {
-    const id = await generatedCode(table_id);
-    await setTableId(id);
-    await setShowModal(true);
-  }
-
   const _onHandlerTableDetail = async (table_id) => {
-    console.log("table_id: ", table_id);
-
+    let _orderDataFromTable = await getOrderData(table_id);
+    await setOrderFromTable(_orderDataFromTable);
+    // if (orderFromTable) {
+    await setTableName(table_id);
+    await setShowTable(true);
+    // } else {
+    //   let id = await generatedCode(table_id);
+    //   await setTableId(id);
+    //   await setShowModal(true);
+    // }
   }
 
-  const _onClickMenuDetail = () => {
-    console.log("click menuDetail: ")
-    setShowModal(true);
+
+  // const _checkOrderItem = () => {
+  //   console.log("select orderItem ")
+  // }
+  const _onClickMenuDetail = async () => {
+    await setMenuItemDetailModal(true);
   }
 
   return (
@@ -163,8 +173,9 @@ const Tables = () => {
                         <Button
                           style={{ width: 200 }}
                           variant="primary"
-                          // onClick={() => { _onHandlerTable(data.table_id) }}>
-                          onClick={() => { _onHandlerTableDetail(data.table_id) }}>
+                          // onClick={() => { _onHandlerTable(data.table_id) }}
+                          onClick={() => { _onHandlerTableDetail(data.table_id) }}
+                        >
                           <div className="d-flex flex-row-reverse">
                             <span>ເປີດເເລ້ວ</span>
                           </div>
@@ -176,33 +187,6 @@ const Tables = () => {
                       </div>
                     )
                   })}
-
-                  {/* <Col sm={8}>
-                    {table && table.map((data, index) => {
-                      return (
-                        <div
-                          key={index}
-                          style={table_container}
-                        // onClick={() =>  }}
-                        >
-
-                          <div className="d-flex flex-row-reverse"  >
-                            <img src="https://www.flaticon.com/svg/static/icons/svg/891/891451.svg"
-                              style={{ width: 40, height: 40 }} />
-
-                            <span style={{ color: "#FFF" }}>ເປີດໂຕະເເລ້ວ</span>
-                          </div>
-                          <div style={table_style_center}>
-                            <span style={font_text}> ໂຕະ {data.table_id}</span>
-                          </div>
-                          <div style={table_style_center}>
-                            <span style={font_description_text}>(ວ່າງ)</span>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </Col> */}
-
                 </div>
               </Row>
             </Container>
@@ -224,13 +208,13 @@ const Tables = () => {
               <Container fluid>
                 <Row>
                   <Col sm={3}>
-                    <span style={PRIMARY_FONT_BLACK}>{tableName.name}</span>
+                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableName}</span>
                   </Col>
                   <Col sm={3}>
                     <Button
                       style={BUTTON_EDIT}
                       variant={BUTTON_OUTLINE_BLUE}
-                      onClick={_onClickMenuDetail()}
+                      onClick={_onClickMenuDetail}
                     >
                       ເບິ່ງບິນ
 									    </Button>
@@ -278,42 +262,27 @@ const Tables = () => {
                       <th>ວັນ,ທີ,ເດືອນ</th>
                     </tr>
                   </thead>
-                  {food.map((value, index) => {
+                  {orderFromTable.map((value, index) => {
                     return (
-                      <tr index={value}>
-                        <td >
+                      <tr key={index}>
+                        <td>
                           <Checkbox
-                            // hidden={isAdmin}
                             color="primary"
-                            name="selectAll"
-                          // onChange={(e) => _checkAll(e)}
+                            name="selectOrderItem"
+                          // onChange={_checkOrderItem()}
                           />
                         </td>
                         <td>{index + 1}</td>
-                        <td>{value.menu}</td>
-                        <td>{currency(value.price)}</td>
-                        <td>{value.status}</td>
-                        <td>{value.datetime}</td>
+                        <td>{value.order_item[0].menu.name}</td>
+                        <td>{currency(value.order_item[0].quantity)}</td>
+                        <td>{value.order_item[0].status}</td>
+                        <td>{value.order_item[0].updatedAt}</td>
                       </tr>
                     )
                   })}
                 </Table>
                 <div style={{ marginBottom: 100 }} />
-                <div className="d-flex justify-content-end">
-                  <div className="p-2 col-example text-left">ລາຄາລວມ:</div>
-                  <div className="p-2 col-example text-left" style={{ backgroundColor: "#F1F1F1", width: 140, height: 50 }}>
-                    <span>{currency(12345)}</span>
-                    <span style={{ justifyContent: "flex-end", display: "row" }}>ກີບ</span>
-                  </div>
-                  <div className="p-2 col-example text-left" style={{ width: 180, height: 50, display: "flex", justifyContent: "flex-start" }}>
-                    <Button
-                      style={BUTTON_SUCCESS}
-                      variant={BUTTON_OUTLINE_BLUE}
-                    >
-                      ເຊັກບິນ
-						    			</Button>
-                  </div>
-                </div>
+
               </Container>
             </div>
             : null
@@ -321,11 +290,11 @@ const Tables = () => {
 
         </div>
       </div>
-      <TableInputation show={showModal} onHide={handleClose}
-        data={tableId}
+      <TableInputation show={showModal} onHide={handleClose} data={tableId} />
+      <MenusItemDetail show={menuItemDetailModal} hide={() => setMenuItemDetailModal(false)}
+        value={tableName}
       />
     </div >
-
   );
 };
 
@@ -336,10 +305,3 @@ const NAV = {
   marginTop: -10,
   paddingTop: 10,
 }
-
-
-
-const food = [
-  { menu: "ຕົ້ມຊໍາກຸ້ງ", price: "3", status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
-
-]

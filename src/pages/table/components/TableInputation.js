@@ -2,7 +2,7 @@ import React from 'react'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 
-const MenusDetail = ({ show, onHide, data }) => {
+const TableInputation = ({ show, onHide, data }) => {
     return (
         <Modal
             show={show}
@@ -27,5 +27,5 @@ const MenusDetail = ({ show, onHide, data }) => {
     )
 }
 
-export default MenusDetail;
+export default TableInputation;
 
