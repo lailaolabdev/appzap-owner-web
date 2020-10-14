@@ -6,6 +6,7 @@ import Table from "react-bootstrap/Table";
 import Checkbox from "@material-ui/core/Checkbox";
 import { getOrders } from "../../services/order";
 import { getHeaders } from "../../services/auth";
+// import { formatDateTime } from "../../super";
 const Order = () => {
   const { history, location, match } = useReactRouter();
 
@@ -78,6 +79,7 @@ const Order = () => {
                 )
               }) || "-"}</td>
               <td>{value?.createdAt || "-"}</td>
+              {/* <td>{formatDateTime(value?.createdAt || "-")}</td> */}
               </tr>
             )
           }
@@ -111,40 +113,3 @@ const Order = () => {
 
 export default Order;
 
-const food = [
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 1,
-    status: "ລໍຖ້າ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 2,
-    status: "ລໍຖ້າ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 3,
-    status: "ລໍຖ້າ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 4,
-    status: "ລໍຖ້າ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 5,
-    status: "ລໍຖ້າ",
-    datetime: "11-09-2020",
-  },
-];
