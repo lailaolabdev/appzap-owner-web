@@ -3,6 +3,8 @@ import { Nav } from "react-bootstrap";
 import Button from 'react-bootstrap/Button'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import ModalCancel from './ModalCancel'
+import ModalUpdate from './ModalUpdate'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faTrashAlt,
@@ -39,7 +41,8 @@ import {
 } from "../../../constants/index"
 // import UpdateOrderStatusModal from "./UpdateOrderStatusModal";
 const CustomNav = (props) => {
-  // const [show, setShow] = React.useState(false);
+  const [show, setShow] = React.useState(false);
+  const [shows, setShows] = React.useState(false);
   // const closeModal = ()=> setShow(false);
 
 
@@ -53,7 +56,7 @@ const CustomNav = (props) => {
   //   setShow(true);
   // }
   
-  return ( 
+  return ( <div>
     <Nav variant="tabs" defaultActiveKey={props.default}>
       <Nav.Item>
         <Nav.Link href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
@@ -72,7 +75,7 @@ const CustomNav = (props) => {
                   {/* <span style={PRIMARY_FONT_BLACK}>ໂຕະ1</span> */}
                 </Col>
                 <Col sm={3}>
-                  <Button
+                  <Button onClick={()=>setShow(!show)}
                     style={BUTTON_EDIT}
                     variant={BUTTON_OUTLINE_DANGER}
                   >
@@ -86,10 +89,10 @@ const CustomNav = (props) => {
                 </Col>
 
                 <Col sm={3}>
-                  <Button
+                  <Button onClick={()=>setShows(!shows)}
                     style={BUTTON_DELETE}
                     variant={BUTTON_OUTLINE_PRIMARY}
-                  //  onClick={_onClickUpdateStatus()}
+                   
                   >
                     <FontAwesomeIcon
                       icon={faPen}
@@ -101,8 +104,9 @@ const CustomNav = (props) => {
               </Row> 
               </Nav>
     
-      // <UpdateOrderStatusModal handleShow={show} handleClose={closeModal}/> 
-  
+<ModalCancel show={show} hide={()=>setShow(!show)}/>
+<ModalUpdate shows={shows} hide={()=>setShows(!shows)} />   
+    </div>
   );
 };
 
