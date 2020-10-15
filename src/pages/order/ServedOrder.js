@@ -11,11 +11,11 @@ const ServedOrder = () => {
   return (
     <div>
       <CustomNav default="/orders/served/pagenumber/1" />
-      <Container fluid>
+      <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
-          <thead style={{ backgroundColor: "#F1F1F1" }}>
+          <thead>
             <tr>
-			        <th style={{ width: 50 }}></th>
+              <th style={{ width: 50 }}></th>
               <th style={{ width: 100 }}>ລຳດັບ</th>
               <th style={{ width: 200 }}>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
@@ -26,25 +26,25 @@ const ServedOrder = () => {
             </tr>
           </thead>
           {food.map((value, index) => {
-                  return (
-                    <tr index={value}>
-                      <td >
-                        <Checkbox
-                          // hidden={isAdmin}
-                          color="primary"
-                          name="selectAll"
-                        // onChange={(e) => _checkAll(e)}
-                        />
-                      </td>
-                      <td>{index + 1}</td>
-                      <td>{value.menu}</td>
-                      <td>{value.quantity}</td>
-				  	          <td>{value.table}</td>
-                      <td>{value.status}</td>
-                      <td>{value.datetime}</td>
-                    </tr>
-                  )
-                })}
+            return (
+              <tr index={value}>
+                <td>
+                  <Checkbox
+                    // hidden={isAdmin}
+                    color="primary"
+                    name="selectAll"
+                    // onChange={(e) => _checkAll(e)}
+                  />
+                </td>
+                <td>{index + 1}</td>
+                <td>{value.menu}</td>
+                <td>{value.quantity}</td>
+                <td>{value.table}</td>
+                <td>{value.status}</td>
+                <td>{value.datetime}</td>
+              </tr>
+            );
+          })}
         </Table>
       </Container>
     </div>
@@ -54,10 +54,39 @@ const ServedOrder = () => {
 export default ServedOrder;
 
 const food = [
-	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 1 , status: "ເສີບແລ້ວ", datetime: "11-09-2020" },
-	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 2 , status: "ເສີບແລ້ວ", datetime: "11-09-2020" },
-	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 3 , status: "ເສີບແລ້ວ", datetime: "11-09-2020" },
-	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 4 , status: "ເສີບແລ້ວ", datetime: "11-09-2020" },
-	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 5 , status: "ເສີບແລ້ວ", datetime: "11-09-2020" },
-  
-  ]
+  {
+    menu: "ຕົ້ມຊໍາກຸ້ງ",
+    quantity: "3",
+    table: 1,
+    status: "ເສີບແລ້ວ",
+    datetime: "11-09-2020",
+  },
+  {
+    menu: "ຕົ້ມຊໍາກຸ້ງ",
+    quantity: "3",
+    table: 2,
+    status: "ເສີບແລ້ວ",
+    datetime: "11-09-2020",
+  },
+  {
+    menu: "ຕົ້ມຊໍາກຸ້ງ",
+    quantity: "3",
+    table: 3,
+    status: "ເສີບແລ້ວ",
+    datetime: "11-09-2020",
+  },
+  {
+    menu: "ຕົ້ມຊໍາກຸ້ງ",
+    quantity: "3",
+    table: 4,
+    status: "ເສີບແລ້ວ",
+    datetime: "11-09-2020",
+  },
+  {
+    menu: "ຕົ້ມຊໍາກຸ້ງ",
+    quantity: "3",
+    table: 5,
+    status: "ເສີບແລ້ວ",
+    datetime: "11-09-2020",
+  },
+];

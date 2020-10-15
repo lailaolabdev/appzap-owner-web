@@ -6,7 +6,7 @@ import Table from "react-bootstrap/Table";
 import Checkbox from "@material-ui/core/Checkbox";
 import { getOrders } from "../../services/order";
 import { getHeaders } from "../../services/auth";
- 
+
 const Order = () => {
   const { history, location, match } = useReactRouter();
 
@@ -19,17 +19,17 @@ const Order = () => {
     fetchOrder();
   }, []);
   if (orders) {
-    console.log("12345: ", orders  );
+    console.log("12345: ", orders);
   }
   getHeaders();
   return (
     <div>
       <CustomNav default="/orders/doing/pagenumber/1" />
-      <Container fluid>
+      <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-			<th style={{ width: 50 }}></th>
+              <th style={{ width: 50 }}></th>
               <th style={{ width: 100 }}>ລຳດັບ</th>
               <th style={{ width: 200 }}>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
@@ -40,52 +40,46 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orders?.map(
-              (value, index)=>{
-                console.log("value: ",value)
-                return(
-              <tr key={index}> 
-              <td>
-                  <Checkbox
-                    // hidden={isAdmin}
-                    color="primary"
-                    name="selectAll"
-                    // onChange={(e) => _checkAll(e)}
-                  />
-              </td>
-              <td>{index + 1 || '-'}</td> 
-              <td>{value?.order_item?.map(
-              (data, key)=>{
-                return(
-                <p>{data?.menu?.name}</p>
-                )
-              }) || "-"}</td> 
-              <td>{value?.order_item?.map(
-              (data, key)=>{
-                return(
-                <p>{data?.quantity}</p>
-                )
-              }) || "-"}</td>
-              <td>{value?.order_item?.map(
-              (data, key)=>{
-                return(
-                <p>{value?.table_id}</p>
-                )
-              }) || "-"}</td>
-              <td>{value?.order_item?.map(
-              (data, key)=>{
-                return(
-                <p>{data?.status}</p>
-                )
-              }) || "-"}</td>
-              <td>{value?.createdAt || "-"}</td>
-              {/* <td>{formatDateTime(value?.createdAt || "-")}</td> */}
-              </tr>
-            )
-          }
-            )}
+            {orders?.map((value, index) => {
+              console.log("value: ", value);
+              return (
+                <tr key={index}>
+                  <td>
+                    <Checkbox
+                      // hidden={isAdmin}
+                      color="primary"
+                      name="selectAll"
+                      // onChange={(e) => _checkAll(e)}
+                    />
+                  </td>
+                  <td>{index + 1 || "-"}</td>
+                  <td>
+                    {value?.order_item?.map((data, key) => {
+                      return <p>{data?.menu?.name}</p>;
+                    }) || "-"}
+                  </td>
+                  <td>
+                    {value?.order_item?.map((data, key) => {
+                      return <p>{data?.quantity}</p>;
+                    }) || "-"}
+                  </td>
+                  <td>
+                    {value?.order_item?.map((data, key) => {
+                      return <p>{value?.table_id}</p>;
+                    }) || "-"}
+                  </td>
+                  <td>
+                    {value?.order_item?.map((data, key) => {
+                      return <p>{data?.status}</p>;
+                    }) || "-"}
+                  </td>
+                  <td>{value?.createdAt || "-"}</td>
+                  {/* <td>{formatDateTime(value?.createdAt || "-")}</td> */}
+                </tr>
+              );
+            })}
           </tbody>
-		  {/* {food.map((value, index) => {
+          {/* {food.map((value, index) => {
                   return (
                     <tr index={value}>
                       <td >
@@ -119,5 +113,5 @@ export default Order;
 // 	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 3 , status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
 // 	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 4 , status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
 // 	{ menu: "ຕົ້ມຊໍາກຸ້ງ", quantity: "3", table: 5 , status: "ກໍາລັງຄົວ", datetime: "11-09-2020" },
-  
+
 //   ]

@@ -7,25 +7,10 @@ import Dropdown from "react-bootstrap/Dropdown";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import useReactRouter from "use-react-router";
 
-import { logout } from '../services/auth';
+import { logout } from "../services/auth";
 import { USER_KEY } from "../constants";
 export default function NavBar() {
   const { history } = useReactRouter();
-  //   const [userData, setUserData] = useState({});
-
-  //   useEffect(() => {
-  //     const staff = localStorage.getItem(USER_KEY);
-  //     if (staff) {
-  //       const user = JSON.parse(staff)["user"];
-  //       if (user) {
-  //         setUserData(user);
-  //       } else {
-  //         history.push(`/`);
-  //       }
-  //     } else {
-  //       history.push(`/`);
-  //     }
-  //   }, []);
 
   const _onLogout = async () => {
     await logout();
@@ -33,7 +18,6 @@ export default function NavBar() {
   };
 
   const _onDetailProfile = () => {
-    //   history.push(`/pagenumber/${1}/profile/${userData.id}`);
     alert("Hello world");
   };
 
@@ -50,7 +34,7 @@ export default function NavBar() {
           marginLeft: 50,
           paddingRight: 80,
           marginRight: 80,
-          zIndex: 10012,
+          zIndex: 100,
         }}
       >
         <Navbar.Brand style={{ color: "#909090" }} href="/orders/pagenumber/1">
@@ -68,13 +52,15 @@ export default function NavBar() {
               onClick={_onDetailProfile}
             />
             <NavDropdown
-              title="Soulin"
+              title="ສຸລີນ"
               id="basic-nav-dropdown basic-navbar-nav"
               alignRight
             >
-              <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+              <NavDropdown.Item href="#">Profile</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={_onLogout}>Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={_onLogout}>
+                ອອກຈາກລະບົບ
+              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
