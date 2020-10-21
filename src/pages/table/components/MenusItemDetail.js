@@ -30,9 +30,6 @@ const MenusItemDetail = (props) => {
         }
     }, [props]);
 
-    if (orderData) {
-        console.log("QQQQWWW: ", orderData ?? "0");
-    }
 
 
     return (

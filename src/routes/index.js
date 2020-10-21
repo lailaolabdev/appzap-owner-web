@@ -15,7 +15,7 @@ import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
 import Histories from "../pages/histories/Histories"
 import Login from "../pages/login/Login";
-import Table from "../pages/table/Table";
+import Table from "../pages/table/TableList";
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
