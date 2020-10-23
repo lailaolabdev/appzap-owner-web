@@ -13,9 +13,14 @@ import Order from "../pages/order";
 import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
-import Histories from "../pages/histories/Histories"
+import Histories from "../pages/histories/Histories";
 import Login from "../pages/login/Login";
+<<<<<<< HEAD
 import Table from "../pages/table/TableList";
+=======
+import Table from "../pages/table/Table";
+import Qrcode from "../pages/qrcode/Qrcode";
+>>>>>>> intern
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -84,6 +89,11 @@ const Index = () => {
                     exact
                     path="/histories/pagenumber/:number"
                     component={Histories}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/qrcode/pagenumber/:number"
+                    component={Qrcode}
                   />
                 </div>
               </Main>
