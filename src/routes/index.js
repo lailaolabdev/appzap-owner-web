@@ -15,8 +15,12 @@ import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
 import Histories from "../pages/histories/Histories";
 import Login from "../pages/login/Login";
+<<<<<<< HEAD
+import Table from "../pages/table/TableList";
+=======
 import Table from "../pages/table/Table";
 import Qrcode from "../pages/qrcode/Qrcode";
+>>>>>>> intern
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;

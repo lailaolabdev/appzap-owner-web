@@ -37,6 +37,7 @@ import { tables, generatedCode, getOrderData } from '../../services/table'
 import MenusItemDetail from "./components/MenusItemDetail"
 
 
+
 /**
 * const 
 **/
@@ -67,6 +68,8 @@ import {
 
 
 } from "../../constants/index"
+import UpdateOrderModal from "./components/UpdateOrderModal";
+import TableOrder from "./components/Table";
 
 
 
@@ -74,7 +77,7 @@ import {
  * css
  * **/
 
-const Tables = () => {
+const TableList = () => {
   const { history, location, match } = useReactRouter();
   var numberPage = match.params.pagenumber
 
@@ -86,20 +89,20 @@ const Tables = () => {
 
   const [table, setTable] = useState([])
   const [tableName, setTableName] = useState("");
+  const [valueArray, setValueArray] = useState("");
   const [tableId, setTableId] = useState({});
   const [orderData, setOrderData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
-
-  // Modal useState
-
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [dummy, setDummy] = useState(false);
   const [orderFromTable, setOrderFromTable] = useState();
   const handleClose = () => setShowModal(false);
 
-
-
-
+  /**
+   * useEffect
+   * **/
   React.useEffect(() => {
     const fetchTable = async () => {
       const res = await tables();
@@ -116,30 +119,53 @@ const Tables = () => {
     fetchData();
   }, []);
 
+  // React.useEffect(()=>{
+  //   const res = await getOrders();
+  // })
+
 
   /**
    * function
    * */
   const _onHandlerTableDetail = async (table_id) => {
+
     let _orderDataFromTable = await getOrderData(table_id);
     await setOrderFromTable(_orderDataFromTable);
+
+
     // if (orderFromTable) {
+
+
     await setTableName(table_id);
     await setShowTable(true);
+
+
     // } else {
     //   let id = await generatedCode(table_id);
     //   await setTableId(id);
     //   await setShowModal(true);
     // }
+
   }
-
-
-  // const _checkOrderItem = () => {
-  //   console.log("select orderItem ")
-  // }
+  const _checkOrderItem = async (tableId, e) => {
+    let isCheck = e.target.checked;
+    if (isCheck == true) {
+      setValueArray(tableId);
+      setDummy(!dummy);
+    }
+    setShowOrderModal(false);
+  }
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   }
+  const _onClickUpdateOrder = async () => {
+    await setShowOrderModal(true);
+    console.log("value: ", valueArray);
+  }
+
+  const data = [{ no: 1, status: "ຫວ່າງ" },
+  { no: 2, status: "ເປີດ" }, { no: 3, status: "ຫວ່າງ" }, { no: 4, status: "ເປີດ" },
+  ]
 
   return (
 
@@ -165,29 +191,24 @@ const Tables = () => {
           <div style={half_backgroundColor}>
             <Container fluid>
               <Row>
-
-                <div style={half_backgroundColor}>
-                  {table && table.map((data, index) => {
-                    return (
-                      <div key={index} style={{ paddingTop: 10, paddingLeft: 10 }}>
-                        <Button
-                          style={{ width: 200 }}
-                          variant="primary"
-                          // onClick={() => { _onHandlerTable(data.table_id) }}
-                          onClick={() => { _onHandlerTableDetail(data.table_id) }}
-                        >
-                          <div className="d-flex flex-row-reverse">
-                            <span>ເປີດເເລ້ວ</span>
-                          </div>
-                          ໂຕະ {data.table_id}
-                          <div>
-                            <span>( ວ່າງ )</span>
-                          </div>
-                        </Button>
+                {table && table.map((table, index) => (
+                  <div className="card" key={index}>
+                    <Button
+                      key={index}
+                      className="card-body"
+                      style={{ width: 180, height: 100 }}
+                      variant={`${table.status}` == "ເປີດ" ? "success" : "default"}
+                      onClick={() => { _onHandlerTableDetail(table.table_id) }}
+                    >
+                      <div>
+                        <span style={{ fontSize: 20 }}>ໂຕະ {` ${table.table_id}`}</span>
                       </div>
-                    )
-                  })}
-                </div>
+                      <div>
+                        <span>{`${table.status}`}</span>
+                      </div>
+                    </Button>
+                  </div>
+                ))}
               </Row>
             </Container>
           </div>
@@ -237,6 +258,7 @@ const Tables = () => {
                     <Button
                       style={BUTTON_DELETE}
                       variant={BUTTON_OUTLINE_DARK}
+                      onClick={_onClickUpdateOrder}
                     >
                       <FontAwesomeIcon
                         icon={faPen}
@@ -247,40 +269,43 @@ const Tables = () => {
                   </Col>
                 </Row>
                 <div style={padding_white} />
-
-                <Table
-                  responsive
-                  className="staff-table-list borderless table-hover"
-                >
-                  <thead style={{ backgroundColor: '#F1F1F1', }}>
-                    <tr>
-                      <th style={{ width: 50 }}></th>
-                      <th style={{ width: 50 }}>ລຳດັບ</th>
-                      <th style={{ width: 100 }}>ຊື່ເມນູ</th>
-                      <th style={{ width: 100 }}>ຈຳນວນ</th>
-                      <th style={{ width: 100 }}>ສະຖານະ</th>
-                      <th>ວັນ,ທີ,ເດືອນ</th>
-                    </tr>
-                  </thead>
-                  {orderFromTable.map((value, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>
-                          <Checkbox
-                            color="primary"
-                            name="selectOrderItem"
-                          // onChange={_checkOrderItem()}
-                          />
-                        </td>
-                        <td>{index + 1}</td>
-                        <td>{value.order_item[0].menu.name}</td>
-                        <td>{currency(value.order_item[0].quantity)}</td>
-                        <td>{value.order_item[0].status}</td>
-                        <td>{value.order_item[0].updatedAt}</td>
+                <div >
+                  <Table
+                    responsive
+                    className="staff-table-list borderless table-hover"
+                  >
+                    <thead style={{ backgroundColor: '#F1F1F1', }}>
+                      <tr>
+                        <th style={{ width: 50 }}></th>
+                        <th style={{ width: 50 }}>ລຳດັບ</th>
+                        <th style={{ width: 100 }}>ຊື່ເມນູ</th>
+                        <th style={{ width: 100 }}>ຈຳນວນ</th>
+                        <th style={{ width: 100 }}>ສະຖານະ</th>
+                        <th>ວັນ,ທີ,ເດືອນ</th>
                       </tr>
-                    )
-                  })}
-                </Table>
+                    </thead>
+                    <tbody>
+                      {console.log("orderFrom Table", orderFromTable)}
+
+                      {orderFromTable && orderFromTable[0]?.order_item.map((orderItem, index) => (
+                        <tr key={index}>
+                          <td>
+                            <Checkbox
+                              color="primary"
+                              name="selectOrderItem"
+                              onChange={(e) => { _checkOrderItem(orderItem._id, e) }}
+                            />
+                          </td>
+                          <td>{index + 1}</td>
+                          <td>{orderItem.menu.name}</td>
+                          <td>{currency(orderItem.quantity)}</td>
+                          <td>{orderItem.status}</td>
+                          <td>{orderItem.updatedAt}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
                 <div style={{ marginBottom: 100 }} />
 
               </Container>
@@ -294,11 +319,13 @@ const Tables = () => {
       <MenusItemDetail show={menuItemDetailModal} hide={() => setMenuItemDetailModal(false)}
         value={tableName}
       />
+      <UpdateOrderModal show={showOrderModal} hide={() => setShowOrderModal(false)} data={valueArray} />
+
     </div >
   );
 };
 
-export default Tables;
+export default TableList;
 
 const NAV = {
   backgroundColor: '#F9F9F9',

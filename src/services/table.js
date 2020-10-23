@@ -16,6 +16,8 @@ export const tables = async () => {
   }
 };
 
+// TO DO: get table ma
+
 // TO DO: get generatedCode
 
 export const generatedCode = async (data) => {
@@ -52,3 +54,29 @@ export const getOrderData = async (tableId) => {
     console.log(error);
   }
 };
+
+export const updateOrderData = async (tableId, data) => {
+  try {
+    const res = await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
+    console.log("res", res)
+
+  } catch (error) {
+    console.log("error: ", error)
+  }
+}
+
+export const getOrders = async (data) => {
+  try {
+    const orders = await axios.get(`${END_POINT}/orders?status=ACTIVE`, {
+      headers: await getHeaders(),
+    });
+    if (orders) {
+      let data = orders?.data;
+      return data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
