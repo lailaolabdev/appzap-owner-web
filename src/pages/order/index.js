@@ -5,13 +5,35 @@ import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
-import { getOrders } from "../../services/order";
-import { getHeaders } from "../../services/auth";
 
+/**
+ * import components
+ */
+import UpdateModal from "./component/UpdateModal";
+import CancelModal from "./component/CancelModal";
+/**
+ * import function
+ */
+import { getOrders, updateOrder } from "../../services/order";
+import { orderStatus } from "../../helpers";
+import { CANCEL_STATUS, DOING_STATUS } from "../../constants";
 const Order = () => {
-  const { history, location, match } = useReactRouter();
+  /**
+   * routes
+   */
+  const { match } = useReactRouter();
+  const { number } = match?.params;
 
+  /**
+   * states
+   */
   const [orders, setOrders] = useState([]);
+  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
+  const [cancelModal, setCancelModal] = useState(false);
+  const [updateModal, setUpdateModal] = useState(false);
+  /**
+   * use effect
+   */
   React.useEffect(() => {
     const fetchOrder = async () => {
       const res = await getOrders();
@@ -19,19 +41,50 @@ const Order = () => {
     };
     fetchOrder();
   }, []);
-  if (orders) {
-    console.log("12345: ", orders);
-  }
-  getHeaders();
+  const _handleUpdate = async () => {
+    await updateOrder(checkedToUpdate, DOING_STATUS);
+    window.location.reload();
+  };
+  const _handleCancel = async () => {
+    await updateOrder(checkedToUpdate, CANCEL_STATUS);
+    window.location.reload();
+  };
+  const _handleCheckbox = async (event, id) => {
+    if (event.target.checked == true) {
+      let _addData = [];
+      _addData.push({ id: id, checked: event.target.checked });
+      setCheckedToUpdate((checkedToUpdate) => [
+        ...checkedToUpdate,
+        ..._addData,
+      ]);
+    } else {
+      let _checkValue = checkedToUpdate;
+      const _removeId = await _checkValue?.filter((check) => check.id !== id);
+      setCheckedToUpdate(_removeId);
+    }
+  };
   return (
     <div>
-      <CustomNav default="/orders/pagenumber/1" />
+      <CustomNav
+        default={`/orders/pagenumber/${number}`}
+        handleCancel={() => {
+          if (checkedToUpdate.length !== 0) {
+            setCancelModal(true);
+          }
+        }}
+        handleUpdate={() => {
+          if (checkedToUpdate.length !== 0) {
+            setUpdateModal(true);
+          }
+        }}
+        status
+      />
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-              <th></th>
-              <th>ລຳດັບ</th>
+              <th width="20px"></th>
+              <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ເບີໂຕະ</th>
@@ -40,49 +93,44 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orders?.map((value, index) => {
-              return (
+            {orders &&
+              orders?.map((order, index) => (
                 <tr key={index}>
                   <td>
                     <Checkbox
-                      // hidden={isAdmin}
+                      checked={
+                        checkedToUpdate && checkedToUpdate[index]?.checked
+                      }
+                      onChange={(e) => _handleCheckbox(e, order?._id)}
                       color="primary"
-                      name="selectAll"
-                      // onChange={(e) => _checkAll(e)}
+                      inputProps={{ "aria-label": "secondary checkbox" }}
                     />
                   </td>
-                  <td>{index + 1 || "-"}</td>
+                  <td>{index + 1}</td>
+                  <td>{order?.menu?.name ?? "-"}</td>
+                  <td>{order?.quantity ?? "-"}</td>
+                  <td>{order?.table_id ?? "-"}</td>
+                  <td>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
-                    {value?.order_item?.map((data, key) => {
-                      return <p>{data?.menu?.name}</p>;
-                    }) || "-"}
-                  </td>
-                  <td>
-                    {value?.order_item?.map((data, key) => {
-                      return <p>{data?.quantity}</p>;
-                    }) || "-"}
-                  </td>
-                  <td>
-                    {value?.order_item?.map((data, key) => {
-                      return <p>{value?.table_id}</p>;
-                    }) || "-"}
-                  </td>
-                  <td>
-                    {value?.order_item?.map((data, key) => {
-                      return <p>{data?.status}</p>;
-                    }) || "-"}
-                  </td>
-                  <td>
-                    {value?.createdAt
-                      ? moment(value.createdAt).format("h:mm a")
+                    {order?.createdAt
+                      ? moment(order?.createdAt).format("HH:mm a")
                       : "-"}
                   </td>
                 </tr>
-              );
-            })}
+              ))}
           </tbody>
         </Table>
       </Container>
+      <CancelModal
+        show={cancelModal}
+        hide={() => setCancelModal(false)}
+        handleCancel={_handleCancel}
+      />
+      <UpdateModal
+        show={updateModal}
+        hide={() => setUpdateModal(false)}
+        handleUpdate={_handleUpdate}
+      />
     </div>
   );
 };

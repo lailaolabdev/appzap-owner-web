@@ -1,93 +1,87 @@
-import React from "react";
+import React, { useState } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
-import Checkbox from "@material-ui/core/Checkbox";
+import moment from "moment";
+/**
+ * import function
+ */
+import { getOrders } from "../../services/order";
+import { orderStatus } from "../../helpers";
+import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
+const Order = () => {
+  /**
+   * routes
+   */
+  const { match } = useReactRouter();
+  const { number } = match?.params;
 
-const CanceledOrder = () => {
-  const { history, location, match } = useReactRouter();
-  console.log("location: ", location);
-  console.log("match: ", match);
+  /**
+   * states
+   */
+  const [orders, setOrders] = useState([]);
+  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
+  /**
+   * use effect
+   */
+  React.useEffect(() => {
+    const fetchOrder = async () => {
+      const res = await getOrders(ACTIVE_STATUS, CANCEL_STATUS);
+      setOrders(res);
+    };
+    fetchOrder();
+  }, []);
+  const _handleCheckbox = async (event, id) => {
+    if (event.target.checked == true) {
+      let _addData = [];
+      _addData.push({ id: id, checked: event.target.checked });
+      setCheckedToUpdate((checkedToUpdate) => [
+        ...checkedToUpdate,
+        ..._addData,
+      ]);
+    } else {
+      let _checkValue = checkedToUpdate;
+      const _removeId = await _checkValue?.filter((check) => check.id !== id);
+      setCheckedToUpdate(_removeId);
+    }
+  };
   return (
     <div>
-      <CustomNav default="/orders/canceled/pagenumber/1" />
+      <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate />
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-              <th style={{ width: 50 }}></th>
-              <th style={{ width: 100 }}>ລຳດັບ</th>
-              <th style={{ width: 200 }}>ຊື່ເມນູ</th>
+              <th>ລ/ດ</th>
+              <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
-              <th style={{ width: 100 }}>ເບີໂຕະ</th>
-              <th style={{ width: 100 }}>ສະຖານະ</th>
-              <th style={{ width: 100 }}></th>
-              <th />
+              <th>ເບີໂຕະ</th>
+              <th>ສະຖານະ</th>
+              <th>ເວລາ</th>
             </tr>
           </thead>
-          {food.map((value, index) => {
-            return (
-              <tr index={value}>
-                <td>
-                  <Checkbox
-                    // hidden={isAdmin}
-                    color="primary"
-                    name="selectAll"
-                    // onChange={(e) => _checkAll(e)}
-                  />
-                </td>
-                <td>{index + 1}</td>
-                <td>{value.menu}</td>
-                <td>{value.quantity}</td>
-                <td>{value.table}</td>
-                <td>{value.status}</td>
-                <td>{value.datetime}</td>
-              </tr>
-            );
-          })}
+          <tbody>
+            {orders &&
+              orders?.map((order, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{order?.menu?.name ?? "-"}</td>
+                  <td>{order?.quantity ?? "-"}</td>
+                  <td>{order?.table_id ?? "-"}</td>
+                  <td>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td>
+                    {order?.createdAt
+                      ? moment(order?.createdAt).format("HH:mm a")
+                      : "-"}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
         </Table>
       </Container>
     </div>
   );
 };
 
-export default CanceledOrder;
-
-const food = [
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 1,
-    status: "ຍົກເລີກແລ້ວ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 2,
-    status: "ຍົກເລີກແລ້ວ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 3,
-    status: "ຍົກເລີກແລ້ວ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 4,
-    status: "ຍົກເລີກແລ້ວ",
-    datetime: "11-09-2020",
-  },
-  {
-    menu: "ຕົ້ມຊໍາກຸ້ງ",
-    quantity: "3",
-    table: 5,
-    status: "ຍົກເລີກແລ້ວ",
-    datetime: "11-09-2020",
-  },
-];
+export default Order;

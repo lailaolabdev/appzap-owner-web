@@ -1,113 +1,85 @@
-import React,{useEffect,useState} from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { Nav } from "react-bootstrap";
-import Button from 'react-bootstrap/Button'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import ModalCancel from './ModalCancel'
-import ModalUpdate from './ModalUpdate'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faTrashAlt,
-  faPen,
-  faCheckCircle,
-} from '@fortawesome/free-solid-svg-icons'
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt, faPen } from "@fortawesome/free-solid-svg-icons";
 
 /**
- * const 
+ * const
  **/
 import {
-  TITLE_HEADER,
-  HEADER,
-  BODY,
-  DIV_NAV,
-  table_container,
-  table_style_center,
-  font_text,
-  font_description_text,
-  half_backgroundColor,
-  padding,
-  PRIMARY_FONT_BLACK,
   BUTTON_EDIT,
   BUTTON_OUTLINE_DANGER,
-  BUTTON_INDEX,
   BUTTON_DELETE,
-  BUTTON_OUTLINE_DARK,
-  padding_white,
-  table_container_blue,
-  font_text_black, BUTTON_OUTLINE_PRIMARY
-
-
-
-} from "../../../constants/index"
-// import UpdateOrderStatusModal from "./UpdateOrderStatusModal";
+  BUTTON_OUTLINE_PRIMARY,
+} from "../../../constants/index";
 const CustomNav = (props) => {
-  const [show, setShow] = React.useState(false);
-  const [shows, setShows] = React.useState(false);
-  // const closeModal = ()=> setShow(false);
-
-
-
-
-
-  /**
-   * Function
-   * */ 
-  // const _onClickUpdateStatus=()=>{
-  //   setShow(true);
-  // }
-  
-  return ( <div>
-    <Nav variant="tabs" defaultActiveKey={props.default}>
-      <Nav.Item>
-        <Nav.Link href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Nav.Link href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link>
-      </Nav.Item>
-      <Row style={{ marginLeft: 500 }}>
-                <Col sm={6}>
-                  {/* <span style={PRIMARY_FONT_BLACK}>ໂຕະ1</span> */}
-                </Col>
-                <Col sm={3}>
-                  <Button onClick={()=>setShow(!show)}
-                    style={BUTTON_EDIT}
-                    variant={BUTTON_OUTLINE_DANGER}
-                  >
-                    <FontAwesomeIcon
-                      icon={faTrashAlt}
-                      style={{ float: 'left', marginTop: 4 }}
-                    />
-										ຍົກເລີກ
-									</Button>
-                  {'\t'}
-                </Col>
-
-                <Col sm={3}>
-                  <Button onClick={()=>setShows(!shows)}
-                    style={BUTTON_DELETE}
-                    variant={BUTTON_OUTLINE_PRIMARY}
-                   
-                  >
-                    <FontAwesomeIcon
-                      icon={faPen}
-                      style={{ float: 'left', marginTop: 4 }}
-                    />
-										ອັບເດດ
-									</Button>
-                </Col>
-              </Row> 
-              </Nav>
-    
-<ModalCancel show={show} hide={()=>setShow(!show)}/>
-<ModalUpdate shows={shows} hide={()=>setShows(!shows)} />   
+  return (
+    <div>
+      <Nav variant="tabs" defaultActiveKey={props.default}>
+        <Nav.Item>
+          <Nav.Link href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link>
+        </Nav.Item>
+        <Row style={{ marginLeft: 500 }}>
+          <Col sm={6}>{/* <span style={PRIMARY_FONT_BLACK}>ໂຕະ1</span> */}</Col>
+          <Col sm={3}>
+            {props.status ? (
+              <Button
+                onClick={props.handleCancel}
+                style={BUTTON_EDIT}
+                variant={BUTTON_OUTLINE_DANGER}
+              >
+                <FontAwesomeIcon
+                  icon={faTrashAlt}
+                  style={{ float: "left", marginTop: 4 }}
+                />
+                ຍົກເລີກ
+              </Button>
+            ) : (
+              <p></p>
+            )}
+            {"\t"}
+          </Col>
+          {!props.cantUpdate ? (
+            <Col sm={3}>
+              <Button
+                onClick={props.handleUpdate}
+                style={BUTTON_DELETE}
+                variant={BUTTON_OUTLINE_PRIMARY}
+              >
+                <FontAwesomeIcon
+                  icon={faPen}
+                  style={{ float: "left", marginTop: 4 }}
+                />
+                ອັບເດດ
+              </Button>
+            </Col>
+          ) : (
+            ""
+          )}
+        </Row>
+      </Nav>
     </div>
   );
 };
 
+CustomNav.propTypes = {
+  handleUpdate: PropTypes.func,
+  status: PropTypes.bool,
+  handleCancel: PropTypes.func,
+  default: PropTypes.string.isRequired,
+  cantUpdate: PropTypes.bool,
+};
 export default CustomNav;

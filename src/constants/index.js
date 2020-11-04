@@ -2,8 +2,17 @@ export const USER_KEY = "@userKey";
 export const END_POINT = "http://localhost:7070";
 export const FONT_HEADER_SIZE = 16;
 export const BUTTON_INDEX = 100;
-export const PRIMARY_COLOR = "";
 export const PRIMARY_FONT_BLACK = { fontColor: "black", fontWeight: "bold" };
+export const CANCEL_STATUS = "CANCELED";
+export const DOING_STATUS = "DOING";
+export const WAITING_STATUS = "WAITING";
+export const SERVE_STATUS = "SERVED";
+export const CART_STATUS = "CART";
+export const ACTIVE_STATUS = "ACTIVE";
+export const CALLTOCHECKOUT_STATUS = "CALLTOCHECKOUT";
+export const NOT_STATUS = "NOT";
+export const CHECKOUT_STATUS = "CHECKOUT";
+
 export const TITLE_HEADER = {
   paddingLeft: 55,
   paddingTop: 20,

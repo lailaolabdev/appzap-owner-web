@@ -1,19 +1,57 @@
 import axios from "axios";
-import { END_POINT } from "../constants";
+import {
+  ACTIVE_STATUS,
+  CANCEL_STATUS,
+  END_POINT,
+  WAITING_STATUS,
+} from "../constants";
 import { getHeaders } from "./auth";
 
-export const getOrders = async () => {
-    try {
-        const orders = await axios.get(`${END_POINT}/orders?status=CART`, {
-            headers: await getHeaders(),
-        });
-        if (orders) {
-            let data = orders?.data;
-            return data;
-        } else {
-            return null;
+export const getOrders = async (
+  status = ACTIVE_STATUS,
+  orderItemStatus = WAITING_STATUS
+) => {
+  console.log("status:", status);
+  try {
+    const url = `${END_POINT}/orders?status=${status}`;
+    const orders = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    if (orders) {
+      let data = orders?.data;
+      let newOrders = [];
+      for (let order of data) {
+        console.log("res[i]", order?.table_id);
+        for (let orderItem of order.order_item) {
+          if (orderItem.status == orderItemStatus) {
+            newOrders.push({ ...orderItem, table_id: order?.table_id });
+          }
         }
-    } catch (error) {
-        console.log("get orders error:", error);
+      }
+      return newOrders;
+    } else {
+      return null;
     }
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
+};
+
+export const updateOrder = async (data, status = CANCEL_STATUS) => {
+  try {
+    for (let orderElement of data) {
+      console.log("orderElement", orderElement);
+      const url = `${END_POINT}/orderItems/${orderElement.id}`;
+      const orders = await axios.put(
+        url,
+        { status },
+        {
+          headers: await getHeaders(),
+        }
+      );
+      console.log("work work", orders);
+    }
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
 };
