@@ -2,7 +2,7 @@ import axios from "axios";
 import { END_POINT } from "../constants";
 import { getHeaders } from "./auth";
 
-export const tables = async () => {
+export const getTables = async () => {
   try {
     const tables = await axios.get(`${END_POINT}/tables`);
     if (tables) {
@@ -15,10 +15,6 @@ export const tables = async () => {
     console.log("get tables error:", error);
   }
 };
-
-// TO DO: get table ma
-
-// TO DO: get generatedCode
 
 export const generatedCode = async (data) => {
   try {
@@ -41,9 +37,12 @@ export const generatedCode = async (data) => {
 
 export const getOrderData = async (tableId) => {
   try {
-    const orderData = await axios.get(`${END_POINT}/orders?status=CART&tableId=${tableId}`, {
-      headers: await getHeaders(),
-    });
+    const orderData = await axios.get(
+      `${END_POINT}/orders?status=CART&tableId=${tableId}`,
+      {
+        headers: await getHeaders(),
+      }
+    );
     if (orderData) {
       let data = orderData?.data;
       return data;
@@ -58,12 +57,11 @@ export const getOrderData = async (tableId) => {
 export const updateOrderData = async (tableId, data) => {
   try {
     const res = await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
-    console.log("res", res)
-
+    console.log("res", res);
   } catch (error) {
-    console.log("error: ", error)
+    console.log("error: ", error);
   }
-}
+};
 
 export const getOrders = async (data) => {
   try {
@@ -79,4 +77,4 @@ export const getOrders = async (data) => {
   } catch (error) {
     console.log(error);
   }
-}
+};

@@ -4,7 +4,7 @@ export const orderStatus = (status) => {
       return "ອໍເດີເຂົ້າ";
       break;
     case "DOING":
-      return "ກຳລັງເຮັດ";
+      return "ກໍາລັງຄົວ";
       break;
     case "SERVED":
       return "ເສີບແລ້ວ";
@@ -12,5 +12,14 @@ export const orderStatus = (status) => {
     default:
       return "ຍົກເລີກແລ້ວ";
       break;
+  }
+};
+
+export const moneyCurrency = (value) => {
+  if (value) {
+    let currencys = new Intl.NumberFormat("en-CA").format(value);
+    return currencys;
+  } else {
+    return 0;
   }
 };

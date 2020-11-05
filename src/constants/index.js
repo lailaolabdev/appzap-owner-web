@@ -12,7 +12,12 @@ export const ACTIVE_STATUS = "ACTIVE";
 export const CALLTOCHECKOUT_STATUS = "CALLTOCHECKOUT";
 export const NOT_STATUS = "NOT";
 export const CHECKOUT_STATUS = "CHECKOUT";
-
+export const ALL_STATUS = [
+  { value: "WAITING", label: "ອໍເດີເຂົ້າ" },
+  { value: "DOING", label: "ກໍາລັງຄົວ" },
+  { value: "SERVED", label: "	ເສີບແລ້ວ" },
+  { value: "CANCELED", label: "ຍົກເລີກ" },
+];
 export const TITLE_HEADER = {
   paddingLeft: 55,
   paddingTop: 20,
@@ -102,9 +107,4 @@ export const BUTTON_DELETE = {
 export const BUTTON_SUCCESS = {
   zPosition: 100,
   width: BUTTON_INDEX,
-};
-
-export const currency = (value) => {
-  let currencys = new Intl.NumberFormat("en-CA").format(value);
-  return currencys;
 };

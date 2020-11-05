@@ -11,7 +11,6 @@ export const getOrders = async (
   status = ACTIVE_STATUS,
   orderItemStatus = WAITING_STATUS
 ) => {
-  console.log("status:", status);
   try {
     const url = `${END_POINT}/orders?status=${status}`;
     const orders = await axios.get(url, {
@@ -24,6 +23,38 @@ export const getOrders = async (
         console.log("res[i]", order?.table_id);
         for (let orderItem of order.order_item) {
           if (orderItem.status == orderItemStatus) {
+            newOrders.push({ ...orderItem, table_id: order?.table_id });
+          }
+        }
+      }
+      return newOrders;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
+};
+
+export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
+  try {
+    let url;
+    if (tableId) {
+      url = `${END_POINT}/orders?status=${status}&tableId=${tableId}`;
+    } else {
+      url = `${END_POINT}/orders?status=${status}`;
+    }
+
+    const orders = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    if (orders) {
+      let data = orders?.data;
+      let newOrders = [];
+      for (let order of data) {
+        console.log("res[i]", order?.table_id);
+        for (let orderItem of order.order_item) {
+          if (orderItem.status !== CANCEL_STATUS) {
             newOrders.push({ ...orderItem, table_id: order?.table_id });
           }
         }
