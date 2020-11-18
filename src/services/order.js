@@ -20,7 +20,6 @@ export const getOrders = async (
       let data = orders?.data;
       let newOrders = [];
       for (let order of data) {
-        console.log("res[i]", order?.table_id);
         for (let orderItem of order.order_item) {
           if (orderItem.status == orderItemStatus) {
             newOrders.push({ ...orderItem, table_id: order?.table_id });
