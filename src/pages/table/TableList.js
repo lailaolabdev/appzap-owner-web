@@ -145,10 +145,14 @@ const TableList = () => {
           <Nav
             variant="tabs"
             style={NAV}
-            defaultActiveKey={`/tables/pagenumber/1`}
+            defaultActiveKey={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
           >
             <Nav.Item>
-              <Nav.Link href={`/tables/pagenumber/1`}>ໂຕະທັງໜົດ</Nav.Link>
+              <Nav.Link
+                href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
+              >
+                ໂຕະທັງໜົດ
+              </Nav.Link>
             </Nav.Item>
           </Nav>
         </div>
