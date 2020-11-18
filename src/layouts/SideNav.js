@@ -9,7 +9,8 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookMedical,
-  faHistory, faStoreAlt
+  faHistory,
+  faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./sidenav.css";
@@ -61,7 +62,7 @@ export default class Sidenav extends Component {
             selected = selected + "/pagenumber/" + 1;
           }
           if (selected === "tables") {
-            selected = selected + "/pagenumber/" + 1;
+            selected = selected + "/pagenumber/" + 1 + "/tableid/01";
           }
           if (selected === "histories") {
             selected = selected + "/pagenumber/" + 1;
@@ -131,7 +132,8 @@ export default class Sidenav extends Component {
             </NavIcon>
             <NavText
               style={{
-                color: selected === "histories" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
+                color:
+                  selected === "histories" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ປະຫວັດການຂາຍ

@@ -78,7 +78,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/tables/pagenumber/:number"
+                    path="/tables/pagenumber/:number/tableid/:tableId"
                     component={Table}
                   />
                   <PrivateRoute

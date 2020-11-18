@@ -50,13 +50,14 @@ import {
 
 const TableList = () => {
   const { history, location, match } = useReactRouter();
-  var number = match.params.number;
+  const number = match.params.number;
+  const activeTableId = match.params.tableId;
 
   /**
    * useState
    */
   const [table, setTable] = useState([]);
-  const [tableId, setTableId] = useState("");
+  const [tableId, setTableId] = useState(activeTableId);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [genTableCode, setGenTableCode] = useState(false);
   const [showTable, setShowTable] = useState(false);
@@ -103,6 +104,7 @@ const TableList = () => {
         console.log("data2222222222222:", _orderDataFromTable);
       }
     }
+    history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
