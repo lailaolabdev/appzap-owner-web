@@ -16,6 +16,7 @@ import moment from "moment";
 /**
  * component
  * */
+import Loading from "../../components/Loading";
 import UpdateOrderModal from "./components/UpdateOrderModal";
 import CancelModal from "./components/CancelModal";
 import GenTableCode from "./components/GenTableCode";
@@ -56,6 +57,7 @@ const TableList = () => {
   /**
    * useState
    */
+  const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
@@ -72,8 +74,11 @@ const TableList = () => {
    * **/
   React.useEffect(() => {
     const fetchTable = async () => {
+      await setIsLoading(true);
       const res = await getTables();
-      setTable(res);
+      await setTable(res);
+      await setIsLoading(false);
+      await _onHandlerTableDetail(activeTableId);
     };
     fetchTable();
   }, []);
@@ -92,7 +97,6 @@ const TableList = () => {
       table_id
     );
     if (_orderDataFromTable.length != 0) {
-      console.log("data2222222222222:", _orderDataFromTable);
       await setOrderFromTable(_orderDataFromTable);
       await setShowTable(true);
     } else {
@@ -100,8 +104,6 @@ const TableList = () => {
       if (_getCode) {
         setGenerateCode(_getCode);
         setGenTableCode(true);
-        console.log("work right");
-        console.log("data2222222222222:", _orderDataFromTable);
       }
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
@@ -140,6 +142,13 @@ const TableList = () => {
   }
   return (
     <div style={TITLE_HEADER}>
+      {isLoading ? <Loading /> : ""}
+      <button
+        className="btn btn-outline-info"
+        style={{ position: "fixed", bottom: 50, right: 50 }}
+      >
+        ເຄຍໂຕະ
+      </button>
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
           <Nav
@@ -204,8 +213,9 @@ const TableList = () => {
               style={{
                 width: "60%",
                 backgroundColor: "#FFF",
-                minHeight: "75vh",
+                maxHeight: "90vh",
                 borderColor: "black",
+                overflowY: "scroll",
                 borderWidth: 1,
                 paddingLeft: 20,
                 paddingTop: 20,

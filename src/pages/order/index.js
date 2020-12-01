@@ -9,6 +9,7 @@ import moment from "moment";
 /**
  * import components
  */
+import Loading from "../../components/Loading";
 import UpdateModal from "./component/UpdateModal";
 import CancelModal from "./component/CancelModal";
 /**
@@ -27,6 +28,7 @@ const Order = () => {
   /**
    * states
    */
+  const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
@@ -36,8 +38,10 @@ const Order = () => {
    */
   React.useEffect(() => {
     const fetchOrder = async () => {
+      await setIsLoading(true);
       const res = await getOrders();
-      setOrders(res);
+      await setOrders(res);
+      await setIsLoading(false);
     };
     fetchOrder();
   }, []);
@@ -65,6 +69,7 @@ const Order = () => {
   };
   return (
     <div>
+      {isLoading ? <Loading /> : ""}
       <CustomNav
         default={`/orders/pagenumber/${number}`}
         handleCancel={() => {

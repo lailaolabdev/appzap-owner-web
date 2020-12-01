@@ -24,8 +24,7 @@ export const TITLE_HEADER = {
   paddingTop: 20,
   backgroundColor: "#F9F9F9",
   width: "100%",
-  height: "100vh",
-  overflowY: "scroll",
+  maxHeight: "100vh",
 };
 
 export const HEADER = {
@@ -93,6 +92,8 @@ export const half_backgroundColor = {
   width: "40%",
   backgroundColor: "#fff",
   border: 1,
+  height: "90vh",
+  overflowY: "scroll",
 };
 export const font_description_text = { color: "#FFF", fontSize: 15 };
 export const BUTTON_EDIT = {
