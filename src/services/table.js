@@ -16,6 +16,52 @@ export const getTables = async () => {
   }
 };
 
+export const getTableWithOrder = async () => {
+  try {
+    const url = `${END_POINT}/orders?status=ACTIVE`;
+    const orders = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    const newOrders = orders?.data;
+
+    // console.log("work right:1111111111", newOrders);
+    const tables = await axios.get(`${END_POINT}/tables`);
+    if (tables && newOrders) {
+      let data = tables?.data;
+      let tableLen = data.length;
+      let arr = [];
+      for (let table of data) {
+        arr[table.table_id] = [table.table_id, null];
+      }
+      newOrders.map((order, index) => {
+        let table_id = order.table_id;
+        for (let i = 0; i < tableLen; i++) {
+          if (table_id == data[i].table_id) {
+            // console.log("arr:", arr);
+            arr[table_id] = [table_id, order];
+          }
+        }
+      });
+
+      let newArr = [];
+      let index = 1;
+      for (let i = 1; i < arr.length; i++) {
+        // console.log("i", i);
+        if (i < 10) {
+          index = "0" + index;
+        }
+        newArr.push({ table_id: arr[index][0], order: arr[index][1] });
+        index++;
+      }
+      console.log("arrrrrrrrrrr:", newArr);
+      return newArr;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("get tables error:", error);
+  }
+};
 export const generatedCode = async (data) => {
   try {
     const geneartedCode = await axios.post(`${END_POINT}/generates`, {

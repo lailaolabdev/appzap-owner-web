@@ -11,7 +11,12 @@ import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Checkbox from "@material-ui/core/Checkbox";
 import Table from "react-bootstrap/Table";
-import { faTrashAlt, faPen } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrashAlt,
+  faPen,
+  faRecycle,
+  faCommentDots,
+} from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 /**
  * component
@@ -22,7 +27,11 @@ import CancelModal from "./components/CancelModal";
 import GenTableCode from "./components/GenTableCode";
 import MenusItemDetail from "./components/MenusItemDetail";
 import { orderStatus } from "../../helpers";
-import { getTables, generatedCode } from "../../services/table";
+import {
+  getTables,
+  getTableWithOrder,
+  generatedCode,
+} from "../../services/table";
 import { getOrdersWithTableId, updateOrder } from "../../services/order";
 
 /**
@@ -75,10 +84,11 @@ const TableList = () => {
   React.useEffect(() => {
     const fetchTable = async () => {
       await setIsLoading(true);
-      const res = await getTables();
+      const res = await getTableWithOrder();
       await setTable(res);
       await setIsLoading(false);
       await _onHandlerTableDetail(activeTableId);
+      // await getTableWithOrder();
     };
     fetchTable();
   }, []);
@@ -107,6 +117,10 @@ const TableList = () => {
       }
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
+  };
+
+  const _handleCheckout = async () => {
+    console.log("Hello world");
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
@@ -187,17 +201,43 @@ const TableList = () => {
                           tableId == table?.table_id ? "primary" : "default"
                         }
                         onClick={async () => {
-                          await setCheckedToUpdate([]);
-                          _onHandlerTableDetail(table.table_id);
+                          if (
+                            table &&
+                            table?.order &&
+                            table?.order?.checkout == true
+                          ) {
+                            _handleCheckout();
+                          } else {
+                            await setCheckedToUpdate([]);
+                            _onHandlerTableDetail(table.table_id);
+                          }
                         }}
                       >
+                        <div
+                          style={{
+                            position: "absolute",
+                            float: "right",
+                            right: 10,
+                            top: 10,
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={
+                              table?.order && table?.order?.checkout
+                                ? faRecycle
+                                : faCommentDots
+                            }
+                          />
+                        </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            ໂຕະ {` ${table.table_id}`}
+                            ໂຕະ {` ${table?.table_id}`}
                           </span>
                         </div>
                         <div>
-                          <span>{`${table?.status ?? "-"}`}</span>
+                          <span>{`${
+                            table?.order ? "(ເປີດແລ້ວ)" : "(ວ່າງ)"
+                          }`}</span>
                         </div>
                       </Button>
                     </div>
