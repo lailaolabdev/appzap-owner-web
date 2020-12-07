@@ -15,7 +15,7 @@ import CancelModal from "./component/CancelModal";
 /**
  * import function
  */
-import { getOrders, updateOrder } from "../../services/order";
+import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, DOING_STATUS, SERVE_STATUS } from "../../constants";
 const Order = () => {
@@ -46,7 +46,7 @@ const Order = () => {
     fetchOrder();
   }, []);
   const _handleUpdate = async () => {
-    await updateOrder(checkedToUpdate, SERVE_STATUS);
+    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
     window.location.reload();
   };
   // const _handleCancel = async () => {

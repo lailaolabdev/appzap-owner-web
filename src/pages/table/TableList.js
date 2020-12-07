@@ -23,6 +23,7 @@ import moment from "moment";
  * */
 import Loading from "../../components/Loading";
 import UpdateOrderModal from "./components/UpdateOrderModal";
+import UserCheckoutModal from "./components/UserCheckoutModal";
 import CancelModal from "./components/CancelModal";
 import GenTableCode from "./components/GenTableCode";
 import MenusItemDetail from "./components/MenusItemDetail";
@@ -32,7 +33,11 @@ import {
   getTableWithOrder,
   generatedCode,
 } from "../../services/table";
-import { getOrdersWithTableId, updateOrder } from "../../services/order";
+import {
+  getOrdersWithTableId,
+  updateOrderItem,
+  updateOrder,
+} from "../../services/order";
 
 /**
  * const
@@ -52,6 +57,7 @@ import {
   BUTTON_OUTLINE_BLUE,
   ACTIVE_STATUS,
   CANCEL_STATUS,
+  CHECKOUT_STATUS,
 } from "../../constants/index";
 
 /**
@@ -69,9 +75,11 @@ const TableList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
+  const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [genTableCode, setGenTableCode] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [cancelOrderModal, setCancelOrderModal] = useState(false);
   const [generateCode, setGenerateCode] = useState();
@@ -88,7 +96,6 @@ const TableList = () => {
       await setTable(res);
       await setIsLoading(false);
       await _onHandlerTableDetail(activeTableId);
-      // await getTableWithOrder();
     };
     fetchTable();
   }, []);
@@ -100,13 +107,41 @@ const TableList = () => {
   /**
    * function
    */
-  const _onHandlerTableDetail = async (table_id) => {
+  const _onHandlerTableDetail = async (table_id, checkout) => {
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
       ACTIVE_STATUS,
       table_id
     );
-    if (_orderDataFromTable.length != 0) {
+    if (_orderDataFromTable.length !== 0 && checkout === true) {
+      let newArr = [];
+      _orderDataFromTable.map((order, index) => {
+        if (index == 0) {
+          let newData = {
+            id: order?.orderId,
+            code: order?.code,
+          };
+          newArr.push(newData);
+        } else {
+          let newData = {
+            id: order?.orderId,
+            code: order?.code,
+          };
+          for (let i = 0; i < newArr.length; i++) {
+            if (newData.id == newArr[i].id) {
+              break;
+            }
+            if (i === newArr.length - 1) {
+              newArr.push(newData);
+            }
+          }
+        }
+      });
+      await setOrderIds(newArr);
+      await setOrderFromTable(_orderDataFromTable);
+      await setShowTable(true);
+      await setCheckoutModal(true);
+    } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
       await setShowTable(true);
     } else {
@@ -118,9 +153,11 @@ const TableList = () => {
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
   };
-
-  const _handleCheckout = async () => {
-    console.log("Hello world");
+  const _handlecheckout = async () => {
+    console.log("OrderFromTable::::::::::::::", orderIds);
+    await updateOrder(orderIds, CHECKOUT_STATUS);
+    setCheckoutModal(false);
+    history.push(`/tables/pagenumber/${number}/tableid/{activeTableId}`);
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
@@ -143,11 +180,11 @@ const TableList = () => {
     await setShowOrderModal(true);
   };
   const _handleCancel = async () => {
-    await updateOrder(checkedToUpdate, CANCEL_STATUS);
+    await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
     window.location.reload();
   };
   const _handleUpdate = async (status) => {
-    await updateOrder(checkedToUpdate, status);
+    await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
 
@@ -201,16 +238,15 @@ const TableList = () => {
                           tableId == table?.table_id ? "primary" : "default"
                         }
                         onClick={async () => {
-                          if (
+                          let checkout =
                             table &&
                             table?.order &&
                             table?.order?.checkout == true
-                          ) {
-                            _handleCheckout();
-                          } else {
-                            await setCheckedToUpdate([]);
-                            _onHandlerTableDetail(table.table_id);
-                          }
+                              ? true
+                              : false;
+                          console.log("work::::::::::::::::::", checkout);
+                          await setCheckedToUpdate([]);
+                          await _onHandlerTableDetail(table.table_id, checkout);
                         }}
                       >
                         <div
@@ -221,13 +257,11 @@ const TableList = () => {
                             top: 10,
                           }}
                         >
-                          <FontAwesomeIcon
-                            icon={
-                              table?.order && table?.order?.checkout
-                                ? faRecycle
-                                : faCommentDots
-                            }
-                          />
+                          {table?.order && table?.order?.checkout ? (
+                            <FontAwesomeIcon icon={faRecycle} />
+                          ) : (
+                            <FontAwesomeIcon color="red" icon={faCommentDots} />
+                          )}
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
@@ -389,6 +423,12 @@ const TableList = () => {
         show={cancelOrderModal}
         hide={() => setCancelOrderModal(false)}
         handleCancel={_handleCancel}
+      />
+      <UserCheckoutModal
+        show={checkoutModel}
+        hide={() => setCheckoutModal(false)}
+        tableId={tableId}
+        func={_handlecheckout}
       />
     </div>
   );

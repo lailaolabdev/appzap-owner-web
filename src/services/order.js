@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   ACTIVE_STATUS,
   CANCEL_STATUS,
+  CHECKOUT_STATUS,
   END_POINT,
   WAITING_STATUS,
 } from "../constants";
@@ -22,7 +23,11 @@ export const getOrders = async (
       for (let order of data) {
         for (let orderItem of order.order_item) {
           if (orderItem.status == orderItemStatus) {
-            newOrders.push({ ...orderItem, table_id: order?.table_id });
+            newOrders.push({
+              ...orderItem,
+              table_id: order?.table_id,
+              code: order?.code,
+            });
           }
         }
       }
@@ -51,13 +56,18 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
       let data = orders?.data;
       let newOrders = [];
       for (let order of data) {
-        console.log("res[i]", order?.table_id);
         for (let orderItem of order.order_item) {
           if (orderItem.status !== CANCEL_STATUS) {
-            newOrders.push({ ...orderItem, table_id: order?.table_id });
+            newOrders.push({
+              ...orderItem,
+              code: order?.code,
+              orderId: order?._id,
+              table_id: order?.table_id,
+            });
           }
         }
       }
+
       return newOrders;
     } else {
       return null;
@@ -67,8 +77,9 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrder = async (data, status = CANCEL_STATUS) => {
+export const updateOrderItem = async (data, status = CANCEL_STATUS) => {
   try {
+    console.log("status::::::::::::::", status);
     for (let orderElement of data) {
       console.log("orderElement", orderElement);
       const url = `${END_POINT}/orderItems/${orderElement.id}`;
@@ -80,6 +91,30 @@ export const updateOrder = async (data, status = CANCEL_STATUS) => {
         }
       );
       console.log("work work", orders);
+    }
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
+};
+
+export const updateOrder = async (data, status = CANCEL_STATUS) => {
+  try {
+    console.log("status::::::::::::::", status);
+    for (let orderElement of data) {
+      console.log("orderElement", orderElement);
+      const url = `${END_POINT}/orders/${orderElement.id}`;
+      const orders = await axios.put(
+        url,
+        { status },
+        {
+          headers: await getHeaders(),
+        }
+      );
+      console.log("work work", orders);
+    }
+    if (status === CHECKOUT_STATUS) {
+      const url = `${END_POINT}/generates/${data[0].code}`;
+      await axios.put(url);
     }
   } catch (error) {
     console.log("get orders error:", error);

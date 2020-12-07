@@ -9,12 +9,14 @@ const UserCheckoutModal = (props) => {
       centered
       arialabelledby="contained-modal-title-vcenter"
     >
-      <Modal.Header>
-        <Modal.Title>Hello World</Modal.Title>
+      <Modal.Header closeButton>
+        <Modal.Title>ການເຊັກບິນ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{props?.tableId}</p>
-        <Button onClick={props.func}>ຕົກລົງ</Button>
+        <p>ໂຕະ {props?.tableId} ຕ້ອງການເຊັກບີນ</p>
+        <div style={{ float: "right" }}>
+          <Button onClick={props.func}>ຕົກລົງ</Button>
+        </div>
       </Modal.Body>
     </Modal>
   );

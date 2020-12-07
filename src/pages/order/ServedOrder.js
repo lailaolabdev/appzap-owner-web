@@ -15,7 +15,7 @@ import Loading from "../../components/Loading";
 /**
  * import function
  */
-import { getOrders, updateOrder } from "../../services/order";
+import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, DOING_STATUS, SERVE_STATUS } from "../../constants";
 const Order = () => {
