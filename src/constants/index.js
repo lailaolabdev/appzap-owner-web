@@ -1,6 +1,6 @@
 export const USER_KEY = "@userKey";
-// export const END_POINT = "http://localhost:7070";
-export const END_POINT = "http://13.229.218.215:7070";
+export const END_POINT = "http://localhost:7070";
+// export const END_POINT = "http://13.229.218.215:7070";
 export const FONT_HEADER_SIZE = 16;
 export const BUTTON_INDEX = 100;
 export const PRIMARY_FONT_BLACK = { fontColor: "black", fontWeight: "bold" };
@@ -79,6 +79,7 @@ export const table_style_center = {
 export const BUTTON_OUTLINE_PRIMARY = "outline-primary";
 export const BUTTON_OUTLINE_DARK = "outline-dark";
 export const BUTTON_OUTLINE_DANGER = "outline-danger";
+export const BUTTON_DANGER = "danger";
 export const BUTTON_OUTLINE_BLUE = "outline-primary";
 export const padding = { padding: 10, backgroundColor: "#F1F1F1" };
 export const padding_white = { padding: 10, backgroundColor: "#FFF" };
@@ -99,11 +100,20 @@ export const font_description_text = { color: "#FFF", fontSize: 15 };
 export const BUTTON_EDIT = {
   zPosition: 100,
   width: BUTTON_INDEX,
-  float: "right",
+
 };
+export const BUTTON_EDIT_HOVER = {
+  backgroundColor:'#FB6E3B',
+  zPosition: 100,
+  border: "0px solid #FB6E3B",
+  width: BUTTON_INDEX,
+
+};
+
 export const BUTTON_DELETE = {
   zPosition: 100,
   width: BUTTON_INDEX,
+  border: "none"
 };
 
 export const BUTTON_SUCCESS = {

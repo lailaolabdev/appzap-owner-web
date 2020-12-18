@@ -16,6 +16,8 @@ import {
   faPen,
   faRecycle,
   faCommentDots,
+  faChartArea,
+  faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 /**
@@ -58,7 +60,10 @@ import {
   ACTIVE_STATUS,
   CANCEL_STATUS,
   CHECKOUT_STATUS,
+  BUTTON_OUTLINE_PRIMARY,
+  BUTTON_EDIT_HOVER,
 } from "../../constants/index";
+
 
 /**
  * css
@@ -68,6 +73,8 @@ const TableList = () => {
   const { history, location, match } = useReactRouter();
   const number = match.params.number;
   const activeTableId = match.params.tableId;
+
+
 
   /**
    * useState
@@ -86,6 +93,9 @@ const TableList = () => {
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orderFromTable, setOrderFromTable] = useState();
 
+
+  const [idTable, setTableCode] = useState("")
+  const [data, setData] = useState()
   /**
    * useEffect
    * **/
@@ -96,14 +106,23 @@ const TableList = () => {
       await setTable(res);
       await setIsLoading(false);
       await _onHandlerTableDetail(activeTableId);
+  
     };
     fetchTable();
+    // fetch('http://localhost:7070/tables')
+    // .then(response => response.json())
+    // .then(data => setData(data));
   }, []);
   React.useEffect(() => {
     if (tableId) {
       setCheckedToUpdate([]);
     }
   }, [tableId]);
+
+console.log("data :",data)
+
+
+
   /**
    * function
    */
@@ -153,6 +172,8 @@ const TableList = () => {
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
   };
+
+
   const _handlecheckout = async () => {
     console.log("OrderFromTable::::::::::::::", orderIds);
     await updateOrder(orderIds, CHECKOUT_STATUS);
@@ -183,6 +204,8 @@ const TableList = () => {
     await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
     window.location.reload();
   };
+
+
   const _handleUpdate = async (status) => {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
@@ -194,12 +217,12 @@ const TableList = () => {
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
-      <button
-        className="btn btn-outline-info"
+      <Button
+        variant={BUTTON_OUTLINE_PRIMARY}
         style={{ position: "fixed", bottom: 50, right: 50 }}
       >
-        ເຄຍໂຕະ
-      </button>
+        ເຄຼຍໂຕະ
+      </Button>
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
           <Nav
@@ -209,10 +232,16 @@ const TableList = () => {
           >
             <Nav.Item>
               <Nav.Link
+                style={{ color: "#FB6E3B" }}
                 href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
               >
                 ໂຕະທັງໜົດ
               </Nav.Link>
+            </Nav.Item>
+            <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
+              <Row>
+                <div style={{ fontWeight: "bold" }}>ລະຫັດຂອງໂຕະນີ້ຄື:</div> <div className="ml-2 mr-5" style={{ fontWeight: "bold", color: "#FB6E3B" }}>{idTable}</div>
+              </Row>
             </Nav.Item>
           </Nav>
         </div>
@@ -225,7 +254,7 @@ const TableList = () => {
           }}
         >
           <div style={half_backgroundColor}>
-            <Container fluid>
+            <Container>
               <Row>
                 {table &&
                   table.map((table, index) => (
@@ -233,15 +262,14 @@ const TableList = () => {
                       <Button
                         key={index}
                         className="card-body"
-                        style={{ width: 180, height: 100 }}
-                        variant={
-                          tableId == table?.table_id ? "primary" : "default"
-                        }
+                        style={{ width: 180, height: 100, border: "none", outlineColor: "#FB6E3B", backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white", color: tableId == table?.table_id ? "white" : "black" }}
+
                         onClick={async () => {
+                          setTableCode(table?.order?.code)
                           let checkout =
                             table &&
-                            table?.order &&
-                            table?.order?.checkout == true
+                              table?.order &&
+                              table?.order?.checkout == true
                               ? true
                               : false;
                           console.log("work::::::::::::::::::", checkout);
@@ -258,10 +286,13 @@ const TableList = () => {
                           }}
                         >
                           {table?.order && table?.order?.checkout ? (
-                            <FontAwesomeIcon icon={faRecycle} />
-                          ) : (
-                            <FontAwesomeIcon color="red" icon={faCommentDots} />
-                          )}
+                            <FontAwesomeIcon style={{ color: tableId == table?.table_id ? "white" : "#FB6E3B" }} icon={faCommentDots} />
+                          ) : ("")
+                            // (
+
+                            //     <FontAwesomeIcon color="#FB6E3B" icon={faCommentDots} />
+                            //   )
+                          }
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
@@ -269,9 +300,8 @@ const TableList = () => {
                           </span>
                         </div>
                         <div>
-                          <span>{`${
-                            table?.order ? "(ເປີດແລ້ວ)" : "(ວ່າງ)"
-                          }`}</span>
+                          <span>{`${table?.order ? "(ບໍ່ວ່າງ)" : "(ວ່າງ)"
+                            }`}</span>
                         </div>
                       </Button>
                     </div>
@@ -279,7 +309,6 @@ const TableList = () => {
               </Row>
             </Container>
           </div>
-          <div style={padding} />
 
           {/* Detail Table */}
           {showTable ? (
@@ -300,51 +329,55 @@ const TableList = () => {
                   <Col sm={3}>
                     <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}</span>
                   </Col>
-                  <Col sm={3}>
-                    <Button
-                      style={BUTTON_EDIT}
-                      variant={BUTTON_OUTLINE_BLUE}
-                      onClick={_onClickMenuDetail}
-                    >
-                      ເບິ່ງບິນ
+                  <Nav.Item className="ml-auto row mr-5">
+
+                    <Col sm={3} className="mr-5">
+                      <Button
+                        style={BUTTON_EDIT}
+                        variant={BUTTON_OUTLINE_BLUE}
+                        onClick={_onClickMenuDetail}
+                      >
+                        ເບິ່ງບິນ
                     </Button>
-                    {"\t"}
-                  </Col>
-                  <Col sm={3}>
-                    <Button
-                      style={BUTTON_EDIT}
-                      variant={BUTTON_OUTLINE_DANGER}
-                      onClick={() => {
-                        if (checkedToUpdate.length != 0) {
-                          setCancelOrderModal(true);
-                        }
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        style={{ float: "left" }}
-                      />
+                      {"\t"}
+                    </Col>
+                    <Col sm={3}>
+                      <Button
+                        variant={BUTTON_OUTLINE_DANGER}
+                        style={BUTTON_EDIT}
+                        onClick={() => {
+                          if (checkedToUpdate.length != 0) {
+                            setCancelOrderModal(true);
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          style={{ float: "left" }}
+                        />
                       ຍົກເລີກ
                     </Button>
-                    {"\t"}
-                  </Col>
-                  <Col sm={3}>
-                    <Button
-                      style={BUTTON_DELETE}
-                      variant={BUTTON_OUTLINE_DARK}
-                      onClick={() => {
-                        if (checkedToUpdate.length != 0) {
-                          _onClickUpdateOrder();
-                        }
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        style={{ float: "left", marginTop: 4 }}
-                      />
+                      {"\t"}
+                    </Col>
+                    <Col sm={3}>
+                      <Button
+                        // style={BUTTON_DELETE}
+                        style={BUTTON_EDIT_HOVER}
+                        onClick={() => {
+                          if (checkedToUpdate.length != 0) {
+                            _onClickUpdateOrder();
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faPen}
+                          style={{ float: "left", marginTop: 4 }}
+                        />
                       ອັບເດດ
                     </Button>
-                  </Col>
+                    </Col>
+                  </Nav.Item>
+
                 </Row>
                 <div style={padding_white} />
                 <div>
@@ -384,9 +417,11 @@ const TableList = () => {
                             <td>{orderItem?.menu?.name}</td>
                             <td>{orderItem?.quantity}</td>
                             <td>
-                              {orderItem?.status
-                                ? orderStatus(orderItem?.status)
-                                : "-"}
+                              <div style={{ border: "1px", borderRadius: "10px" }}>
+                                {orderItem?.status
+                                  ? orderStatus(orderItem?.status)
+                                  : "-"}
+                              </div>
                             </td>
                             <td>
                               {orderItem?.updatedAt
@@ -424,6 +459,7 @@ const TableList = () => {
         hide={() => setCancelOrderModal(false)}
         handleCancel={_handleCancel}
       />
+
       <UserCheckoutModal
         show={checkoutModel}
         hide={() => setCheckoutModal(false)}

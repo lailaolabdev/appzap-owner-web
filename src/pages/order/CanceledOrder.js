@@ -23,7 +23,6 @@ const Order = () => {
    */
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
-  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   /**
    * use effect
    */
@@ -36,20 +35,8 @@ const Order = () => {
     };
     fetchOrder();
   }, []);
-  const _handleCheckbox = async (event, id) => {
-    if (event.target.checked == true) {
-      let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked });
-      setCheckedToUpdate((checkedToUpdate) => [
-        ...checkedToUpdate,
-        ..._addData,
-      ]);
-    } else {
-      let _checkValue = checkedToUpdate;
-      const _removeId = await _checkValue?.filter((check) => check.id !== id);
-      setCheckedToUpdate(_removeId);
-    }
-  };
+
+
   return (
     <div>
       {isLoading ? <Loading /> : ""}

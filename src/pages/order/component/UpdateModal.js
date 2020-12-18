@@ -10,13 +10,13 @@ const UpdateModal = (props) => {
         <Modal.Header closeButton>
           <Modal.Title>ອັບເດັດສະຖານະ</Modal.Title>
         </Modal.Header>
-        <Modal.Body>ທ່ານຕອ້ງການຍົກເລີກ ເມນູນີ້?</Modal.Body>
+        <Modal.Body>ທ່ານຕ້ອງການອັບເດດ ເມນູນີ້?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.hide}>
+          <Button variant="outline-secondary" onClick={props.hide}>
             ກັບຄືນ
           </Button>
-          <Button variant="danger" onClick={props.handleUpdate}>
-            ຍົກເລີກ
+          <Button style={{backgroundColor: "#FB6E3B", border: "none"}} onClick={props.handleUpdate}>
+            ຕົກລົງ
           </Button>
         </Modal.Footer>
       </Modal>

@@ -12,11 +12,11 @@ const CancelModal = (props) => {
         </Modal.Header>
         <Modal.Body>ທ່ານຕອ້ງການຍົກເລີກ ເມນູນີ້?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={props.hide}>
-            ກັບຄືນ
-          </Button>
-          <Button variant="danger" onClick={props.handleCancel}>
+          <Button variant="outline-secondary" onClick={props.hide}>
             ຍົກເລີກ
+          </Button>
+          <Button style={{backgroundColor: "#FB6E3B", border: "none"}} onClick={props.handleCancel}>
+            ຕົກລົງ
           </Button>
         </Modal.Footer>
       </Modal>

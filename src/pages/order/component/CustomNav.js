@@ -1,4 +1,4 @@
-import React from "react";
+import React ,{useState}from "react";
 import PropTypes from "prop-types";
 import { Nav } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -15,31 +15,35 @@ import {
   BUTTON_OUTLINE_DANGER,
   BUTTON_DELETE,
   BUTTON_OUTLINE_PRIMARY,
+  BUTTON_DEFUALT,
+  BUTTON_EDIT_HOVER,
+  BUTTON_DANGER
 } from "../../../constants/index";
 const CustomNav = (props) => {
+
+  const [editButtonHover, setEditButtonHover] = useState(false)
   return (
     <div>
       <Nav variant="tabs" defaultActiveKey={props.default}>
         <Nav.Item>
-          <Nav.Link href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
+          <Nav.Link style={{color: "#FB6E3B"}} href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
+          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
+          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link>
+          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link>
         </Nav.Item>
-        <Row style={{ marginLeft: 500 }}>
-          <Col sm={6}>{/* <span style={PRIMARY_FONT_BLACK}>ໂຕະ1</span> */}</Col>
-          <Col sm={3}>
-            {props.status ? (
+        <Nav.Item className="ml-auto row mr-5" style={{paddingBottom: "3px"}}>
+        {props.status ? (
               <Button
                 onClick={props.handleCancel}
-                style={BUTTON_EDIT}
                 variant={BUTTON_OUTLINE_DANGER}
+                style={BUTTON_EDIT}
+                
               >
                 <FontAwesomeIcon
                   icon={faTrashAlt}
@@ -48,16 +52,15 @@ const CustomNav = (props) => {
                 ຍົກເລີກ
               </Button>
             ) : (
-              <p></p>
+              <div></div>
             )}
-            {"\t"}
-          </Col>
-          {!props.cantUpdate ? (
-            <Col sm={3}>
+              <div style={{width:20}}/>
               <Button
+              // onMouseEnter={()=>setEditButtonHover(true)} onMouseLeave={()=>setEditButtonHover(false)}
                 onClick={props.handleUpdate}
-                style={BUTTON_DELETE}
-                variant={BUTTON_OUTLINE_PRIMARY}
+                // style={editButtonHover ? BUTTON_EDIT_HOVER : BUTTON_DELETE}
+                style={BUTTON_EDIT_HOVER}
+                // variant={BUTTON_OUTLINE_PRIMARY}
               >
                 <FontAwesomeIcon
                   icon={faPen}
@@ -65,11 +68,7 @@ const CustomNav = (props) => {
                 />
                 ອັບເດດ
               </Button>
-            </Col>
-          ) : (
-            ""
-          )}
-        </Row>
+    </Nav.Item>
       </Nav>
     </div>
   );

@@ -38,8 +38,8 @@ const UpdateOrderModal = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={props.hide}>ຍົກເລີກ</Button>
-          <Button onClick={_handleUpdate}>ຕົກລົງ</Button>
+          <Button variant="outline-secondary" onClick={props.hide}>ຍົກເລີກ</Button>
+          <Button style={{backgroundColor: "#FB6E3B", border: "none"}} onClick={_handleUpdate}>ຕົກລົງ</Button>
         </Modal.Footer>
       </Form>
     </Modal>

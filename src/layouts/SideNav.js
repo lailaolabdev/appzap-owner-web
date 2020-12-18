@@ -85,14 +85,14 @@ export default class Sidenav extends Component {
                 style={{
                   color:
                     selected === "orders"
-                      ? "#2372A3"
+                      ? "#FB6E3B"
                       : selectedTabBackgroundColor,
                 }}
               />
             </NavIcon>
             <NavText
               style={{
-                color: selected === "orders" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
+                color: selected === "orders" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ອໍເດີ
@@ -105,14 +105,14 @@ export default class Sidenav extends Component {
                 style={{
                   color:
                     selected === "tables"
-                      ? "#2372A3"
+                      ? "#FB6E3B"
                       : selectedTabBackgroundColor,
                 }}
               />
             </NavIcon>
             <NavText
               style={{
-                color: selected === "tables" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
+                color: selected === "tables" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ສະຖານະຂອງໂຕະ
@@ -125,7 +125,7 @@ export default class Sidenav extends Component {
                 style={{
                   color:
                     selected === "histories"
-                      ? "#2372A3"
+                      ? "#FB6E3B"
                       : selectedTabBackgroundColor,
                 }}
               />
@@ -133,7 +133,7 @@ export default class Sidenav extends Component {
             <NavText
               style={{
                 color:
-                  selected === "histories" ? "#2372A3" : UN_SELECTED_TAB_TEXT,
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ປະຫວັດການຂາຍ

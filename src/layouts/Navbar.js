@@ -38,21 +38,13 @@ export default function NavBar() {
         }}
       >
         <Navbar.Brand style={{ color: "#909090" }} href="/orders/pagenumber/1">
-          <h2>SELF ORDERING</h2>
+          {/* <h2>SELF ORDERING</h2> */}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <Image
-              src={"/images/profile.png"}
-              style={{ cursor: "pointer" }}
-              height={40}
-              width={40}
-              roundedCircle
-              onClick={_onDetailProfile}
-            />
-            <NavDropdown
-              title="ສຸລີນ"
+          <NavDropdown
+              title="admin"
               id="basic-nav-dropdown basic-navbar-nav"
               alignRight
             >
@@ -61,7 +53,16 @@ export default function NavBar() {
               <NavDropdown.Item onClick={_onLogout}>
                 ອອກຈາກລະບົບ
               </NavDropdown.Item>
+        
             </NavDropdown>
+            <Image
+              src={"/images/profile.png"}
+              style={{ cursor: "pointer" }}
+              height={40}
+              width={40}
+              roundedCircle
+              onClick={_onDetailProfile}
+            />
           </Nav>
         </Navbar.Collapse>
       </Navbar>

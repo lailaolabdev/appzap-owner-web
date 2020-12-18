@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 
 import { moneyCurrency } from "../../../helpers/index";
 const MenusItemDetail = (props) => {
@@ -56,21 +57,23 @@ const MenusItemDetail = (props) => {
       </Modal.Body>
       <Modal.Footer>
         <div className="d-flex justify-content-end">
-          <div className="p-2 col-example text-left">ລາຄາລວມ:</div>
+          <div className="p-2 col-example text-center">ລາຄາລວມ:</div>
           <div
-            className="p-2 col-example text-left"
+            className="p-2 col-example text-center"
             style={{
               backgroundColor: "#F1F1F1",
               width: 140,
               height: 40,
             }}
           >
-            <span>{moneyCurrency(total)}</span>
+            <span><b>{moneyCurrency(total)}</b></span>
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
-              ກີບ
+              <b>ກີບ</b>
+            
             </span>
           </div>
+          <Button className="ml-2 pl-4 pr-4" onClick={props.hide}>ອອກ</Button>
         </div>
       </Modal.Footer>
     </Modal>
