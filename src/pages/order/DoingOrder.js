@@ -106,7 +106,7 @@ const Order = () => {
                         checkedToUpdate && checkedToUpdate[index]?.checked
                       }
                       onChange={(e) => _handleCheckbox(e, order?._id)}
-                      color="primary"
+                      style={{color: "#FB6E3B"}}
                       inputProps={{ "aria-label": "secondary checkbox" }}
                     />
                   </td>

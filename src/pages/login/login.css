@@ -4,14 +4,17 @@ html {
 
  #inlineFormInputGroup1 {
      max-width: 300px;
+     border: 1px solid #DDDDDD;
  }
 
  #inlineFormInputGroup2 {
      max-width: 300px;
+     border: 1px solid #DDDDDD;
  }
 
- .form-control {
-     max-width: 340px;
+.form-btn{
+     max-width: 320px;
+     margin-left: 5%;
  }
 
 

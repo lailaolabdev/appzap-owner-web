@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import {
   Form,
   Row,
@@ -43,7 +43,7 @@ function Login() {
 
         <Row>
           <Col xs={6} md={2}></Col>
-          <Col md={8} className="bg-light" style={{borderRadius: "10px"}}>
+          <Col md={8} className="bg-light" style={{ borderRadius: "10px" }}>
 
 
             <Col className="pb-5" >
@@ -98,7 +98,7 @@ function Login() {
                     <Form.Label htmlFor="inlineFormInputGroup2" srOnly>
                       Password
         </Form.Label>
-                    <InputGroup className="mt-3 form">
+                    <InputGroup className="mt-3 mb-3 form">
                       <InputGroup.Prepend>
                         <InputGroup.Text style={{ background: "#FB6E3B" }}>
                           <FontAwesomeIcon icon={faLock} color="white" style={{ background: "none" }} />
