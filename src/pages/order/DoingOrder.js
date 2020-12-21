@@ -114,7 +114,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.table_id ?? "-"}</td>
-                  <td>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td style={{color: "green", fontWeight: "bold"}}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
