@@ -96,6 +96,8 @@ const TableList = () => {
 
   const [idTable, setTableCode] = useState("")
   const [data, setData] = useState()
+
+
   /**
    * useEffect
    * **/
@@ -106,12 +108,9 @@ const TableList = () => {
       await setTable(res);
       await setIsLoading(false);
       await _onHandlerTableDetail(activeTableId);
-  
+
     };
     fetchTable();
-    // fetch('http://localhost:7070/tables')
-    // .then(response => response.json())
-    // .then(data => setData(data));
   }, []);
   React.useEffect(() => {
     if (tableId) {
@@ -119,13 +118,15 @@ const TableList = () => {
     }
   }, [tableId]);
 
-console.log("data :",data)
+  console.log("data :", data)
 
 
 
   /**
    * function
    */
+
+
   const _onHandlerTableDetail = async (table_id, checkout) => {
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
@@ -285,7 +286,7 @@ console.log("data :",data)
                             top: 10,
                           }}
                         >
-                          {table?.order && table?.order?.checkout ? (
+                          {table?.order && table?.order?.checkout? (
                             <FontAwesomeIcon style={{ color: tableId == table?.table_id ? "white" : "#FB6E3B" }} icon={faCommentDots} />
                           ) : ("")
                             // (

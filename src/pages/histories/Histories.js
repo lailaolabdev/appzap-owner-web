@@ -26,9 +26,14 @@ const date = new moment().format("LL");
 //   return todays;
 // };
 
-
 export default function History() {
   const [selectedDate, setSelectedDate] = useState()
+  const [data, setData] = useState()
+
+  fetch('http://localhost:7070/orders?status=CHECKOUT&createdAt=2020-12-25')
+  .then(response => response.json())
+  .then(response => setData(response));
+  console.log("=====>", data)
 
   return (
     <div>
@@ -50,7 +55,6 @@ export default function History() {
                 showYearDropdown
                 scrollableMonthYearDropdown
                 placeholderText={date}
-                // value={date}
               />
               <InputGroup.Prepend>
                 <InputGroup.Text style={{ background: "#FB6E3B" }} >
@@ -63,24 +67,27 @@ export default function History() {
         </div>
         <Col xs={7}>
           <Table responsive className="staff-table-list table-borderless table-hover">
-            {/* <thead style={{ backgroundColor: "#F1F1F1" }}>
-            <tr>
-              <th>ລຳດັບ</th>
-              <th>ວັນເດືອນປີ</th>
-              <th>ຈຳນວນ</th>
-              <th>ຍອດຂາຍ/ມື້</th>
-            </tr>
-          </thead> */}
-            {food.map((value, index) => {
-              return (
-                <tr index={value}>
-                  <td>{index + 1}</td>
-                  <td>{value.name}</td>
-                  <td>{value.amount}</td>
-                  <td><b>{value.price}</b></td>
-                </tr>
-              )
-            })}
+            <thead style={{ backgroundColor: "#F1F1F1" }}>
+              <tr>
+                <th>ລຳດັບ</th>
+                <th>ຊື່ເມນູ</th>
+                <th>ຈຳນວນ</th>
+                <th>ເລກໂຕະ</th>
+                <th>ຍອດຂາຍ/ມື້</th>
+              </tr>
+            </thead>
+
+
+            {data?.map((item, index) =>
+              <tr index={item}>
+                <td>{index +1}</td>
+                <td>{item?.price}</td>
+                <td>{item?.status}</td>
+                <td>{item?.table_id}</td>
+                <td></td>
+              </tr>
+            )}
+
           </Table>
         </Col>
       </Container>
