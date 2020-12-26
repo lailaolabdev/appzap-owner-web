@@ -81,7 +81,7 @@ export default function History() {
             {data?.map((item, index) =>
               <tr index={item}>
                 <td>{index +1}</td>
-                <td>{item?.price}</td>
+                <td>{item?._id}</td>
                 <td>{item?.status}</td>
                 <td>{item?.table_id}</td>
                 <td></td>
