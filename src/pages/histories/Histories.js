@@ -44,7 +44,7 @@ export default function History() {
             <h5><strong>ຍອດຂາຍ/ມື້</strong></h5>
           </Nav.Item>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-            <InputGroup className="mb-2">
+            {/* <InputGroup className="mb-2">
 
               <DatePicker
                 className="form-control"
@@ -62,7 +62,7 @@ export default function History() {
                   <FontAwesomeIcon icon={faCalendar} color="white" />
                 </InputGroup.Text>
               </InputGroup.Prepend>
-            </InputGroup>
+            </InputGroup> */}
           </Nav.Item>
 
         </div>
@@ -75,6 +75,7 @@ export default function History() {
                 <th>ຈຳນວນ</th>
                 <th>ເລກໂຕະ</th>
                 <th>ຍອດຂາຍ/ມື້</th>
+                <th>ວັນທີ</th>
               </tr>
             </thead>
 
@@ -88,6 +89,7 @@ export default function History() {
                   <td>{item?.order_item.length}</td>
                   <td>{item?.table_id}</td>
                   <td>{item?.order_item?.menu?.price}</td>
+                  <td>{item?.createdAt}</td>
                 </tr>
               )
             }
