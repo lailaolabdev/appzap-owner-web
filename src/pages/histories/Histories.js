@@ -28,12 +28,13 @@ const date = new moment().format("LL");
 
 export default function History() {
   const [selectedDate, setSelectedDate] = useState()
-  const [data, setData] = useState()
+  const [data, setData] = useState([])
 
-  fetch('http://localhost:7070/orders?status=CHECKOUT&createdAt=2020-12-25')
-  .then(response => response.json())
-  .then(response => setData(response));
-  console.log("=====>", data)
+  useEffect(() => {
+    fetch('http://localhost:7070/orders?status=CHECKOUT')
+      .then(response => response.json())
+      .then(response => setData(response));
+  }, [])
 
   return (
     <div>
@@ -78,14 +79,18 @@ export default function History() {
             </thead>
 
 
-            {data?.map((item, index) =>
-              <tr index={item}>
-                <td>{index +1}</td>
-                <td>{item?._id}</td>
-                <td>{item?.status}</td>
-                <td>{item?.table_id}</td>
-                <td></td>
-              </tr>
+            {data?.map((item, index) => {
+              console.log("========>", data)
+              return (
+                <tr index={item}>
+                  <td>{index + 1}</td>
+                  <td>{item?.order_item[0].menu?.name}</td>
+                  <td>{item?.order_item.length}</td>
+                  <td>{item?.table_id}</td>
+                  <td>{item?.order_item?.menu?.price}</td>
+                </tr>
+              )
+            }
             )}
 
           </Table>
