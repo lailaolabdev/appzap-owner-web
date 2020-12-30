@@ -29,23 +29,60 @@ const date = new moment().format("LL");
 export default function History() {
   const [selectedDate, setSelectedDate] = useState()
   const [data, setData] = useState([])
+  const [searchDate, setSearchDate] = useState()
 
   useEffect(() => {
-    fetch('http://localhost:7070/orders?status=CHECKOUT')
-      .then(response => response.json())
-      .then(response => setData(response));
+    _searchDate()
+    _showAllDataHistories()
   }, [])
 
+  useEffect(() => {
+    if (selectedDate) {
+      let _date = new Date(selectedDate).getFullYear() + "-" + (new Date(selectedDate).getMonth() + 1) + "-" + new Date(selectedDate).getDate()
+      setSearchDate(_date)
+    }
+    if (searchDate) {
+      _searchDate()
+    }
+  }, [searchDate, selectedDate])
+
+
+  // function show all data of histories
+  const _showAllDataHistories = () => {
+    if(!searchDate == null){
+      fetch('http://localhost:7070/orders?status=CHECKOUT')
+        .then(response => response.json())
+        .then(response => setData(response));
+    }
+  }
+
+  console.log("All Data Histories", _showAllDataHistories())
+
+  // Function of select date
+  const _searchDate = () => {
+    if (!searchDate) {
+      fetch('http://localhost:7070/orders?status=CHECKOUT')
+        .then(response => response.json())
+        .then(response => setData(response));
+    } else {
+      fetch('http://localhost:7070/orders?status=CHECKOUT&createdAt=' + searchDate)
+        .then(response => response.json())
+        .then(response => setData(response));
+    }
+
+  }
+
   return (
-    <div>
+    <div style={{ minHeight: 400 }}>
       <Container fluid>
         <div className="row mt-5">
           <Nav.Item>
-            <h5><strong>ຍອດຂາຍ/ມື້</strong></h5>
+            <h5><strong>ຍອດຂາຍ</strong></h5>
           </Nav.Item>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-            {/* <InputGroup className="mb-2">
-
+          
+            <InputGroup className="mb-2">
+            <Button className="mr-3" onClick={_showAllDataHistories}>ທັງໝົດ</Button>
               <DatePicker
                 className="form-control"
                 selected={selectedDate}
@@ -62,7 +99,7 @@ export default function History() {
                   <FontAwesomeIcon icon={faCalendar} color="white" />
                 </InputGroup.Text>
               </InputGroup.Prepend>
-            </InputGroup> */}
+            </InputGroup>
           </Nav.Item>
 
         </div>
@@ -88,8 +125,8 @@ export default function History() {
                   <td>{item?.order_item[0].menu?.name}</td>
                   <td>{item?.order_item.length}</td>
                   <td>{item?.table_id}</td>
-                  <td>{item?.order_item?.menu?.price}</td>
-                  <td>{item?.createdAt}</td>
+                  <td>{item?.order_item[0]?.menu?.price * item?.order_item.length}</td>
+                  <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                 </tr>
               )
             }
@@ -101,16 +138,3 @@ export default function History() {
     </div>
   )
 }
-
-
-const food = [
-  { name: "ອາຫານທະເລ", amount: "1", price: "100,000 kips" },
-  { name: "ຕົ້ມຍຳ", amount: "2", price: "150,000 kips" },
-  { name: "ຕົ້ມຍຳກຸ້ງມັງກອນໂຕແມ່ແສນອະລ່ອຍ", amount: "4", price: "400,000 kips" },
-  { name: "ກຸ້ງມັງກອນ", amount: "5", price: "500,000 kips" },
-  { name: "ກຸ້ງມັງກອນ", amount: "9", price: "1,500,000 kips" },
-  { name: "ກຸ້ງມັງກອນ", amount: "9", price: "1,500,000 kips" },
-  { name: "ກຸ້ງມັງກອນ", amount: "9", price: "1,500,000 kips" },
-  { name: "ກຸ້ງມັງກອນ", amount: "9", price: "1,500,000 kips" },
-
-]
