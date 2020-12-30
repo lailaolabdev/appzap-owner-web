@@ -98,6 +98,11 @@ const TableList = () => {
   const [data, setData] = useState()
 
 
+  fetch('http://localhost:7070/messages')
+        .then(response => response.json())
+        .then(response => setData(response));
+        console.log("===========>", data)
+
   /**
    * useEffect
    * **/
@@ -125,6 +130,8 @@ const TableList = () => {
   /**
    * function
    */
+
+
 
 
   const _onHandlerTableDetail = async (table_id, checkout) => {
@@ -431,6 +438,11 @@ const TableList = () => {
                             </td>
                           </tr>
                         ))}
+                        <tr>
+                          <td>
+                            {data?.text}
+                          </td>
+                        </tr>
                     </tbody>
                   </Table>
                 </div>
