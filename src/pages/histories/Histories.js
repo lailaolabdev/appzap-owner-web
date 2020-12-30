@@ -33,7 +33,6 @@ export default function History() {
 
   useEffect(() => {
     _searchDate()
-    _showAllDataHistories()
   }, [])
 
   useEffect(() => {
@@ -44,19 +43,20 @@ export default function History() {
     if (searchDate) {
       _searchDate()
     }
+    if(searchDate == null){
+      _showAllDataHistories()
+    }
   }, [searchDate, selectedDate])
+
 
 
   // function show all data of histories
   const _showAllDataHistories = () => {
-    if(!searchDate == null){
-      fetch('http://localhost:7070/orders?status=CHECKOUT')
+    fetch('http://localhost:7070/orders?status=CHECKOUT')
         .then(response => response.json())
         .then(response => setData(response));
-    }
   }
 
-  console.log("All Data Histories", _showAllDataHistories())
 
   // Function of select date
   const _searchDate = () => {
