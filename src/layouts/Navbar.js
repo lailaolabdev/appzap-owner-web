@@ -14,6 +14,7 @@ export default function NavBar() {
 
   const _onLogout = async () => {
     await logout();
+    await localStorage.clear()
     history.push(`/`);
   };
 
@@ -43,7 +44,7 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-          <NavDropdown
+            <NavDropdown
               title="admin"
               id="basic-nav-dropdown basic-navbar-nav"
               alignRight
@@ -53,7 +54,7 @@ export default function NavBar() {
               <NavDropdown.Item onClick={_onLogout}>
                 ອອກຈາກລະບົບ
               </NavDropdown.Item>
-        
+
             </NavDropdown>
             <Image
               src={"/images/profile.png"}

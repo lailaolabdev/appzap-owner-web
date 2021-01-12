@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Row,
@@ -26,12 +26,12 @@ function Login() {
 
 
   const { history } = useReactRouter();
+  const [checkUser, setCheckUser] = useState();
   const _login = async ({ values }) => {
     const user = await axios.post(`${END_POINT}/login`, values);
     await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
     await history.push("/orders/pagenumber/1");
-  };
-
+  }
   return (
     <div style={{ backgroundColor: "#f1f1f1" }}>
       <Col className="col">
@@ -54,10 +54,7 @@ function Login() {
                   password: Yup.string().required("ກາລຸນາປ້ອນລະຫັດຜ່ານ"),
                 })}
                 onSubmit={async (values) => {
-                  // TODO: send user data to server
                   await _login({ values });
-                  console.log("23456789");
-                  console.log(values);
                 }}
               >
                 {({
@@ -118,7 +115,7 @@ function Login() {
                         {touched.password && errors.password}
                       </Form.Control.Feedback>
                     </InputGroup>
-
+                    <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "" : "none" }}>kdcijsdbcfa</div>
                     <Button
                       style={{ background: "#FB6E3B", border: "1px #FB6E3B" }}
                       className="form-control mt-5 form-btn"

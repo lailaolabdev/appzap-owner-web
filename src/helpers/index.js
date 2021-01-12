@@ -1,3 +1,5 @@
+import * as _ from "lodash"
+import { USER_KEY } from "../constants"
 export const orderStatus = (status) => {
   switch (status) {
     case "WAITING":
@@ -23,3 +25,12 @@ export const moneyCurrency = (value) => {
     return 0;
   }
 };
+export const getUserDataFromLCStorage = () => {
+  const user = JSON.parse(localStorage.getItem(USER_KEY))
+  return user
+}
+export const useAuth = () => {
+  const userData = getUserDataFromLCStorage()
+  const isAuthenticated = !_.isEmpty(userData)
+  return isAuthenticated
+}
