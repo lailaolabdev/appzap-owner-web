@@ -122,7 +122,7 @@ export default function History() {
               return (
                 <tr index={item}>
                   <td>{index + 1}</td>
-                  <td><b>{item?.order_item[0].menu?.name}</b></td>
+                  <td><b>{item?.order_item[0]?.menu?.name}</b></td>
                   <td>{item?.order_item.length}</td>
                   <td>{item?.table_id}</td>
                   <td style={{color: "green"}}><b>{item?.order_item[0]?.menu?.price * item?.order_item.length} ກີບ</b></td>
