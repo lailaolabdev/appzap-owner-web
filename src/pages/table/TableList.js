@@ -64,6 +64,7 @@ import {
   CHECKOUT_STATUS,
   BUTTON_OUTLINE_PRIMARY,
   BUTTON_EDIT_HOVER,
+  END_POINT
 } from "../../constants/index";
 
 
@@ -76,7 +77,7 @@ const TableList = () => {
   const number = match.params.number;
   const activeTableId = match.params.tableId;
 
-  
+
   // useEffect(()=>{
   //   const socket = socketIOClient('http://localhost:7070');
   //   socket.on("chekout", _ => {
@@ -85,7 +86,7 @@ const TableList = () => {
   // },[])
 
   useEffect(() => {
-    const socket = socketIOClient('http://localhost:7070');
+    const socket = socketIOClient(END_POINT);
     // socket.on("order", data => {
     //   window.location.reload()
     // });
@@ -97,7 +98,7 @@ const TableList = () => {
     socket.on("checkout", _ => {
       window.location.reload()
     });
-    
+
   }, []);
 
   // socket.on('connection',()=>{
@@ -129,11 +130,11 @@ const TableList = () => {
   const [data, setData] = useState()
 
   useEffect(() => {
-    fetch('http://localhost:7070/messages')
-          .then(response => response.json())
-          .then(response => setData(response));
-          console.log("===========>", data)
-  },[])
+    fetch(`${ END_POINT }/messages`)
+      .then(response => response.json())
+      .then(response => setData(response));
+    console.log("===========>", data)
+  }, [])
 
   /**
    * useEffect
@@ -157,9 +158,9 @@ const TableList = () => {
 
   // console.log("data :", data)
 
-useEffect(()=>{
-  console.log("TABLE : ",table);
-},[table])
+  useEffect(() => {
+    console.log("TABLE : ", table);
+  }, [table])
 
   /**
    * function
@@ -174,12 +175,12 @@ useEffect(()=>{
       ACTIVE_STATUS,
       table_id
     );
-    if(_orderDataFromTable.length !== 0 && checkout === false){
+    if (_orderDataFromTable.length !== 0 && checkout === false) {
       const _getCode = await generatedCode(table_id);
-          setGenerateCode(_getCode);
-          setGenTableCode(true);
+      setGenerateCode(_getCode);
+      setGenTableCode(true);
     }
-      console.log("bok hai var man ylllllllll",_orderDataFromTable)
+    console.log("bok hai var man ylllllllll", _orderDataFromTable)
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -218,8 +219,8 @@ useEffect(()=>{
         setGenTableCode(true);
       }
     }
-    history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
-    
+    history.push(`/tables/pagenumber/${ number }/tableid/${ table_id }`);
+
   };
 
 
@@ -227,7 +228,7 @@ useEffect(()=>{
     // console.log("OrderFromTable::::::::::::::", orderIds);
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
-    history.push(`/tables/pagenumber/${number}/tableid/{activeTableId}`);
+    history.push(`/tables/pagenumber/${ number }/tableid/{activeTableId}`);
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
@@ -277,12 +278,12 @@ useEffect(()=>{
           <Nav
             variant="tabs"
             style={NAV}
-            defaultActiveKey={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
+            defaultActiveKey={`/tables/pagenumber/${ number }/tableid/${ activeTableId }`}
           >
             <Nav.Item>
               <Nav.Link
                 style={{ color: "#FB6E3B" }}
-                href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
+                href={`/tables/pagenumber/${ number }/tableid/${ activeTableId }`}
               >
                 ໂຕະທັງໜົດ
               </Nav.Link>
@@ -315,13 +316,13 @@ useEffect(()=>{
 
                         onClick={async () => {
                           setTableCode(table?.order?.code)
-                          let checkout=
+                          let checkout =
                             table &&
                               table?.order &&
                               table?.order?.checkout == false
                               ? true
                               : false;
-                          console.log("work::::::::::::::::::",table?.order?.status);
+                          console.log("work::::::::::::::::::", table?.order?.status);
                           await setCheckedToUpdate([]);
                           await _onHandlerTableDetail(table.table_id, checkout);
                         }}
@@ -334,7 +335,7 @@ useEffect(()=>{
                             top: 10,
                           }}
                         >
-                          {table?.order && table?.order?.checkout? (
+                          {table?.order && table?.order?.checkout ? (
                             <FontAwesomeIcon style={{ color: tableId == table?.table_id ? "white" : "#FB6E3B" }} icon={faCommentDots} />
                           ) : ("")
                             // (
@@ -353,11 +354,11 @@ useEffect(()=>{
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            ໂຕະ {` ${table?.table_id}`}
+                            ໂຕະ {` ${ table?.table_id }`}
                           </span>
                         </div>
                         <div>
-                          <span>{`${table?.order ? "(ບໍ່ວ່າງ)" : "(ວ່າງ)"
+                          <span>{`${ table?.order ? "(ບໍ່ວ່າງ)" : "(ວ່າງ)"
                             }`}</span>
                         </div>
                       </Button>
@@ -454,43 +455,43 @@ useEffect(()=>{
                     </thead>
                     <tbody>
                       {orderFromTable.map((orderItem, index) => (
-                          <tr key={index}>
-                            <td>
-                              <Checkbox
-                                // checked={
-                                //   checkedToUpdate &&
-                                //   checkedToUpdate.length !== 0 &&
-                                //   checkedToUpdate[index]?.checked
-                                // }
-                                color="primary"
-                                name="selectOrderItem"
-                                onChange={(e) => {
-                                  _handleCheckbox(e, orderItem?._id);
-                                }}
-                              />
-                            </td>
-                            <td>{index + 1}</td>
-                            <td>{orderItem?.menu?.name}</td>
-                            <td>{orderItem?.quantity}</td>
-                            <td>
-                              <div style={{ border: "1px", borderRadius: "10px" }}>
-                                {orderItem?.status
-                                  ? orderStatus(orderItem?.status)
-                                  : "-"}
-                              </div>
-                            </td>
-                            <td>
-                              {orderItem?.updatedAt
-                                ? moment(orderItem?.updatedAt).format("HH:mm A")
-                                : "-"}
-                            </td>
-                          </tr>
-                        ))}
-                        <tr>
+                        <tr key={index}>
                           <td>
-                            {data?.text}
+                            <Checkbox
+                              // checked={
+                              //   checkedToUpdate &&
+                              //   checkedToUpdate.length !== 0 &&
+                              //   checkedToUpdate[index]?.checked
+                              // }
+                              color="primary"
+                              name="selectOrderItem"
+                              onChange={(e) => {
+                                _handleCheckbox(e, orderItem?._id);
+                              }}
+                            />
+                          </td>
+                          <td>{index + 1}</td>
+                          <td>{orderItem?.menu?.name}</td>
+                          <td>{orderItem?.quantity}</td>
+                          <td>
+                            <div style={{ border: "1px", borderRadius: "10px" }}>
+                              {orderItem?.status
+                                ? orderStatus(orderItem?.status)
+                                : "-"}
+                            </div>
+                          </td>
+                          <td>
+                            {orderItem?.updatedAt
+                              ? moment(orderItem?.updatedAt).format("HH:mm A")
+                              : "-"}
                           </td>
                         </tr>
+                      ))}
+                      <tr>
+                        <td>
+                          {data?.text}
+                        </td>
+                      </tr>
                     </tbody>
                   </Table>
                 </div>

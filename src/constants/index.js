@@ -1,5 +1,6 @@
 export const USER_KEY = "@userKey";
-export const END_POINT = "http://localhost:7070";
+// export const END_POINT = "http://localhost:7070";
+export const END_POINT = "http://13.212.244.109:7070";
 export const FONT_HEADER_SIZE = 16;
 export const BUTTON_INDEX = 100;
 export const PRIMARY_FONT_BLACK = { fontColor: "black", fontWeight: "bold" };
