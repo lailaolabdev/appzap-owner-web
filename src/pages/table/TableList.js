@@ -119,6 +119,7 @@ const TableList = () => {
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [cancelOrderModal, setCancelOrderModal] = useState(false);
+  //ເມື່ອ generateCode: ture 
   const [generateCode, setGenerateCode] = useState();
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [orderFromTable, setOrderFromTable] = useState();
@@ -127,11 +128,12 @@ const TableList = () => {
   const [idTable, setTableCode] = useState("")
   const [data, setData] = useState()
 
-
-  fetch('http://localhost:7070/messages')
-        .then(response => response.json())
-        .then(response => setData(response));
-        console.log("===========>", data)
+  useEffect(() => {
+    fetch('http://localhost:7070/messages')
+          .then(response => response.json())
+          .then(response => setData(response));
+          console.log("===========>", data)
+  },[])
 
   /**
    * useEffect
@@ -172,6 +174,12 @@ useEffect(()=>{
       ACTIVE_STATUS,
       table_id
     );
+    if(_orderDataFromTable.length !== 0 && checkout === false){
+      const _getCode = await generatedCode(table_id);
+          setGenerateCode(_getCode);
+          setGenTableCode(true);
+    }
+      console.log("bok hai var man ylllllllll",_orderDataFromTable)
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -211,11 +219,12 @@ useEffect(()=>{
       }
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
+    
   };
 
 
   const _handlecheckout = async () => {
-    console.log("OrderFromTable::::::::::::::", orderIds);
+    // console.log("OrderFromTable::::::::::::::", orderIds);
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/{activeTableId}`);
@@ -306,13 +315,13 @@ useEffect(()=>{
 
                         onClick={async () => {
                           setTableCode(table?.order?.code)
-                          let checkout =
+                          let checkout=
                             table &&
                               table?.order &&
-                              table?.order?.checkout == true
+                              table?.order?.checkout == false
                               ? true
                               : false;
-                          console.log("work::::::::::::::::::", checkout);
+                          console.log("work::::::::::::::::::",table?.order?.status);
                           await setCheckedToUpdate([]);
                           await _onHandlerTableDetail(table.table_id, checkout);
                         }}
@@ -333,6 +342,14 @@ useEffect(()=>{
                             //     <FontAwesomeIcon color="#FB6E3B" icon={faCommentDots} />
                             //   )
                           }
+                          {/* {table?.order?.status === "CALLTOCHECKOUT" ? (
+                            <FontAwesomeIcon style={{ color:"#FB6E3B" }} icon={faCommentDots} /> 
+                          ) : ("")
+                            // (
+
+                            //     <FontAwesomeIcon color="#FB6E3B" icon={faCommentDots} />
+                            //   )
+                          } */}
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
@@ -436,8 +453,7 @@ useEffect(()=>{
                       </tr>
                     </thead>
                     <tbody>
-                      {orderFromTable &&
-                        orderFromTable.map((orderItem, index) => (
+                      {orderFromTable.map((orderItem, index) => (
                           <tr key={index}>
                             <td>
                               <Checkbox
