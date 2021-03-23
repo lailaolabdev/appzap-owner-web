@@ -41,6 +41,8 @@ export const getOrders = async (
 };
 
 export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
+  console.log("status:", status);
+  console.log("tableId:", tableId);
   try {
     let url;
     if (tableId) {
@@ -67,7 +69,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
           }
         }
       }
-
+      console.log("Hello orldddd:", newOrders);
       return newOrders;
     } else {
       return null;

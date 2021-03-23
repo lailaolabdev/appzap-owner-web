@@ -136,7 +136,8 @@ const TableList = () => {
   React.useEffect(() => {
     const fetchTable = async () => {
       await setIsLoading(true);
-      const res = await getTableWithOrder();
+      // const res = await getTableWithOrder();
+      const res = await getTables();
       await setTable(res);
       await setIsLoading(false);
       await _onHandlerTableDetail(activeTableId);
@@ -376,9 +377,9 @@ const TableList = () => {
                           </span>
                         </div>
                         <div>
-                          <span>{`${
+                          {/* <span>{`${
                             table?.order ? "(ບໍ່ວ່າງ)" : "(ວ່າງ)"
-                          }`}</span>
+                          }`}</span> */}
                         </div>
                       </Button>
                     </div>
