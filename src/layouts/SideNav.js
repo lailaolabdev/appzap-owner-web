@@ -44,7 +44,6 @@ export default class Sidenav extends Component {
 
   render() {
     const { location, history } = this.props;
-    console.log("location", location);
     const { selected } = this.state;
     return (
       <SideNav

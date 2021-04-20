@@ -151,17 +151,11 @@ const TableList = () => {
     }
   }, [tableId]);
 
-  // console.log("data :", data)
-
-  useEffect(() => {
-    console.log("TABLE : ", table);
-  }, [table]);
-
   /**
    * function
    */
-
   const _onHandlerTableDetail = async (table_id, checkout) => {
+    console.log("🚀 ~ file: TableList.js ~ line 158 ~ const_onHandlerTableDetail= ~ table_id", table_id)
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
       ACTIVE_STATUS,
@@ -323,8 +317,8 @@ const TableList = () => {
                           setTableCode(table?.order?.code);
                           let checkout =
                             table &&
-                            table?.order &&
-                            table?.order?.checkout == false
+                              table?.order &&
+                              table?.order?.checkout == false
                               ? true
                               : false;
                           console.log(

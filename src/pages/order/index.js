@@ -30,6 +30,7 @@ const Order = () => {
    */
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
+  console.log("🚀 ~ file: index.js ~ line 33 ~ Order ~ orders", orders)
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
@@ -115,7 +116,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.table_id ?? "-"}</td>
-                  <td style={{color: "green", fontWeight: "bold"}}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td style={{ color: "green", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
