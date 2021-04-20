@@ -30,7 +30,6 @@ const Order = () => {
    */
   const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
-  console.log("🚀 ~ file: index.js ~ line 33 ~ Order ~ orders", orders)
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
