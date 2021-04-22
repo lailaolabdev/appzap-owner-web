@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
+import { Table, Button } from "react-bootstrap";
 import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
+
+import useSound from 'use-sound';
+import soundA from '../../sound/message.mp3'
 
 /**
  * import components
@@ -45,6 +48,7 @@ const Order = () => {
       await setIsLoading(false);
     };
     fetchOrder();
+
   }, []);
   const _handleUpdate = async () => {
     await updateOrderItem(checkedToUpdate, DOING_STATUS);
@@ -68,6 +72,9 @@ const Order = () => {
       setCheckedToUpdate(_removeId);
     }
   };
+  const [play] = useSound(soundA, {
+    volume: 0.5,
+  });
   return (
     <div>
       {isLoading ? <Loading /> : ""}
@@ -101,7 +108,7 @@ const Order = () => {
           <tbody>
             {orders &&
               orders?.map((order, index) => (
-                <tr key={index}>
+                <tr key={index} onMouseEnter={() => play()}>
                   <td>
                     <Checkbox
                       checked={

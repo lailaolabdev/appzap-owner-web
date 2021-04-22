@@ -9,8 +9,13 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookMedical,
+  faEdit,
+  faEgg,
   faHistory,
+  faSms,
   faStoreAlt,
+  faUserAlt,
+  faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./sidenav.css";
@@ -120,6 +125,27 @@ export default class Sidenav extends Component {
           <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon
+                icon={faSms}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ຂໍຄວາມຈາກລູກຄ້າ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
                 icon={faHistory}
                 style={{
                   color:
@@ -136,6 +162,90 @@ export default class Sidenav extends Component {
               }}
             >
               ປະຫວັດການຂາຍ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faStoreAlt}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ຈັດການຮ້ານຄ້າ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faEgg}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ຈັດການປະເພດອາຫານ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faWallet}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ຈັດການອາຫານ
+            </NavText>
+          </NavItem>
+          <NavItem eventKey="histories">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faUserAlt}
+                style={{
+                  color:
+                    selected === "histories"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ຈັດການພະນັກງານ
             </NavText>
           </NavItem>
         </SideNav.Nav>

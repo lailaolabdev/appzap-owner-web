@@ -31,6 +31,7 @@
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.2.0",
     "use-react-router": "^1.0.7",
+    "use-sound": "2.0.2",
     "yup": "^0.29.3"
   },
   "scripts": {
