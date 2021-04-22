@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
@@ -18,6 +18,7 @@ import CancelModal from "./component/CancelModal";
 import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { CANCEL_STATUS, DOING_STATUS } from "../../constants";
+
 const Order = () => {
   /**
    * routes
@@ -67,7 +68,6 @@ const Order = () => {
       setCheckedToUpdate(_removeId);
     }
   };
-
   return (
     <div>
       {isLoading ? <Loading /> : ""}

@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import styled from "styled-components";
+import socketIOClient from "socket.io-client";
 
 import Navbar from "../layouts/Navbar";
 import Sidenav from "../layouts/SideNav";
+import { END_POINT } from "../constants";
+
 /**
  * pages
  */
@@ -30,6 +33,16 @@ const Index = () => {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
+  // ======>>>
+  useEffect(() => {
+    const socket = socketIOClient(END_POINT);
+    socket.on("createorder", (_) => {
+      window.location.reload();
+    });
+    socket.on("checkout", (_) => {
+      window.location.reload();
+    });
+  }, []);
   return (
     <Router>
       <Switch>

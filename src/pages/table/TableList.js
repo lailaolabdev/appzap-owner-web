@@ -210,7 +210,7 @@ const TableList = () => {
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
-    history.push(`/tables/pagenumber/${number}/tableid/{activeTableId}`);
+    history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}`);
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
@@ -241,13 +241,6 @@ const TableList = () => {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
-  const filterStausTable = async (itame) => {
-    // console.log('FilterTable', FilterTable)
-    // const res = FilterTable?.filter((item) => {
-
-    // })
-
-  }
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}

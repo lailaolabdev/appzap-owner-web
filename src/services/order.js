@@ -13,10 +13,11 @@ export const getOrders = async (
   orderItemStatus = WAITING_STATUS
 ) => {
   try {
-    const url = `${END_POINT}/orders?status=${status}`;
+    const url = `${END_POINT}/orders?checkout=false`;
     const orders = await axios.get(url, {
       headers: await getHeaders(),
     });
+    console.log("🚀 ~ file: order.js ~ line 20 ~ orders", orders)
     if (orders) {
       let data = orders?.data;
       let newOrders = [];
@@ -50,7 +51,6 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
     const orders = await axios.get(url, {
       headers: await getHeaders(),
     });
-    console.log("🚀 ~ file: order.js ~ line 53 ~ getOrdersWithTableId ~ orders", orders)
     if (orders) {
       let data = orders?.data;
       let newOrders = [];
