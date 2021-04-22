@@ -1,4 +1,4 @@
-import React ,{useState}from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Nav } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
@@ -26,49 +26,49 @@ const CustomNav = (props) => {
     <div>
       <Nav variant="tabs" defaultActiveKey={props.default}>
         <Nav.Item>
-          <Nav.Link style={{color: "#FB6E3B"}} href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
+          <Nav.Link style={{ color: "#FB6E3B" }} href="/orders/pagenumber/1">ອໍເດີເຂົ້າ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
+          <Nav.Link style={{ color: "#FB6E3B" }} href="/orders/doing/pagenumber/1">ກຳລັງເຮັດ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
+          <Nav.Link style={{ color: "#FB6E3B" }} href="/orders/served/pagenumber/1">ເສີບແລ້ວ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link>
+          {/* <Nav.Link style={{color: "#FB6E3B"}}  href="/orders/canceled/pagenumber/1">ຍົກເລີກແລ້ວ</Nav.Link> */}
         </Nav.Item>
-        <Nav.Item className="ml-auto row mr-5" style={{paddingBottom: "3px"}}>
-        {props.status ? (
-              <Button
-                onClick={props.handleCancel}
-                variant={BUTTON_OUTLINE_DANGER}
-                style={BUTTON_EDIT}
-                
-              >
-                <FontAwesomeIcon
-                  icon={faTrashAlt}
-                  style={{ float: "left", marginTop: 4 }}
-                />
+        <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
+          {props.status ? (
+            <Button
+              onClick={props.handleCancel}
+              variant={BUTTON_OUTLINE_DANGER}
+              style={BUTTON_EDIT}
+
+            >
+              <FontAwesomeIcon
+                icon={faTrashAlt}
+                style={{ float: "left", marginTop: 4 }}
+              />
                 ຍົກເລີກ
-              </Button>
-            ) : (
-              <div></div>
-            )}
-              <div style={{width:20}}/>
-              <Button
-              // onMouseEnter={()=>setEditButtonHover(true)} onMouseLeave={()=>setEditButtonHover(false)}
-                onClick={props.handleUpdate}
-                // style={editButtonHover ? BUTTON_EDIT_HOVER : BUTTON_DELETE}
-                style={BUTTON_EDIT_HOVER}
-                // variant={BUTTON_OUTLINE_PRIMARY}
-              >
-                <FontAwesomeIcon
-                  icon={faPen}
-                  style={{ float: "left", marginTop: 4 }}
-                />
+            </Button>
+          ) : (
+            <div></div>
+          )}
+          <div style={{ width: 20 }} />
+          <Button
+            // onMouseEnter={()=>setEditButtonHover(true)} onMouseLeave={()=>setEditButtonHover(false)}
+            onClick={props.handleUpdate}
+            // style={editButtonHover ? BUTTON_EDIT_HOVER : BUTTON_DELETE}
+            style={BUTTON_EDIT_HOVER}
+          // variant={BUTTON_OUTLINE_PRIMARY}
+          >
+            <FontAwesomeIcon
+              icon={faPen}
+              style={{ float: "left", marginTop: 4 }}
+            />
                 ອັບເດດ
               </Button>
-    </Nav.Item>
+        </Nav.Item>
       </Nav>
     </div>
   );

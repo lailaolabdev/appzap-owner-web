@@ -61,7 +61,7 @@ export default class Sidenav extends Component {
             selected = selected + "/pagenumber/" + 1;
           }
           if (selected === "tables") {
-            selected = selected + "/pagenumber/" + 1 + "/tableid/01";
+            selected = selected + "/pagenumber/" + 1 + "/tableid/00";
           }
           if (selected === "histories") {
             selected = selected + "/pagenumber/" + 1;

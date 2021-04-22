@@ -67,6 +67,7 @@ const Order = () => {
       setCheckedToUpdate(_removeId);
     }
   };
+
   return (
     <div>
       {isLoading ? <Loading /> : ""}
@@ -115,7 +116,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.table_id ?? "-"}</td>
-                  <td style={{ color: "green", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td style={{ color: "red", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")

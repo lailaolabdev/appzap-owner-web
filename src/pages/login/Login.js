@@ -28,7 +28,7 @@ function Login() {
   const { history } = useReactRouter();
   const [checkUser, setCheckUser] = useState();
   const _login = async ({ values }) => {
-    const user = await axios.post(`${END_POINT}login`, values);
+    const user = await axios.post(`${END_POINT}/login`, values);
     await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
     await history.push("/orders/pagenumber/1");
   }

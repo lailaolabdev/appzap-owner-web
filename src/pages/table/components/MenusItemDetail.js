@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-
+import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
+import { END_POINT } from '../../../constants'
+import { getHeaders } from "../../../services/auth";
 const MenusItemDetail = (props) => {
   const { data } = props;
   let total = 0;
@@ -12,8 +14,23 @@ const MenusItemDetail = (props) => {
     for (let orderItem of data) {
       total += orderItem?.quantity * orderItem?.menu?.price;
     }
-    //   setTotalMoney(total);
   }
+  let newData = []
+  const _checkBill = async () => {
+    for (let i = 0; i < data.length; i++) {
+      newData.push(data[i]?.orderId)
+      // await axios({
+      //   method: 'PUT',
+      //   url: END_POINT + `/orders/${data[i]?.orderId}`,
+      //   headers: await getHeaders(),
+      //   data: {
+      //     status: "CHECKOUT",
+      //     checkout: "true"
+      //   },
+      // })
+    }
+  }
+  console.log("🚀 ~ file: MenusItemDetail.js ~ line 19 ~ MenusItemDetail ~ newData", newData)
   return (
     <Modal
       show={props.show}
@@ -32,6 +49,7 @@ const MenusItemDetail = (props) => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ລາຄາ</th>
+              <th>ເບີໂຕະ</th>
             </tr>
           </thead>
           <tbody>
@@ -45,10 +63,12 @@ const MenusItemDetail = (props) => {
                     <td>
                       {orderItem?.menu?.price
                         ? moneyCurrency(
-                            orderItem?.menu?.price * orderItem?.quantity
-                          )
+                          orderItem?.menu?.price * orderItem?.quantity
+                        )
                         : "-"}
                     </td>
+                    <td>{orderItem?.table_id}</td>
+
                   </tr>
                 );
               })}
@@ -70,10 +90,9 @@ const MenusItemDetail = (props) => {
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
               <b>ກີບ</b>
-            
             </span>
           </div>
-          <Button className="ml-2 pl-4 pr-4" onClick={props.hide}>ອອກ</Button>
+          <Button className="ml-2 pl-4 pr-4" onClick={props.hide} style={{ backgroundColor: '#FB6E3B', color: "#ffff", border: "solid 1px #FB6E3B" }} onClick={() => _checkBill()}>ອອກ</Button>
         </div>
       </Modal.Footer>
     </Modal>

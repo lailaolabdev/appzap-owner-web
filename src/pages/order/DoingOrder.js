@@ -106,7 +106,7 @@ const Order = () => {
                         checkedToUpdate && checkedToUpdate[index]?.checked
                       }
                       onChange={(e) => _handleCheckbox(e, order?._id)}
-                      style={{color: "#FB6E3B"}}
+                      style={{ color: "#FB6E3B" }}
                       inputProps={{ "aria-label": "secondary checkbox" }}
                     />
                   </td>
@@ -114,7 +114,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.table_id ?? "-"}</td>
-                  <td style={{color: "green", fontWeight: "bold"}}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td style={{ color: "blue", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")

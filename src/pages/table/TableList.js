@@ -1,6 +1,3 @@
-/**
- * Library
- * */
 import React, { useEffect, useState } from "react";
 import useReactRouter from "use-react-router";
 import Nav from "react-bootstrap/Nav";
@@ -127,7 +124,6 @@ const TableList = () => {
     fetch(`${END_POINT}/messages`)
       .then((response) => response.json())
       .then((response) => setData(response));
-    console.log("===========>", data);
   }, []);
 
   /**
@@ -135,7 +131,7 @@ const TableList = () => {
    * **/
   React.useEffect(() => {
     const fetchTable = async () => {
-      await setIsLoading(true);
+      await setIsLoading(true)
       // const res = await getTableWithOrder();
       const res = await getTables();
       await setTable(res);
@@ -154,19 +150,22 @@ const TableList = () => {
   /**
    * function
    */
+  // const [FilterTable, setFilterTable] = useState()
   const _onHandlerTableDetail = async (table_id, checkout) => {
-    console.log("🚀 ~ file: TableList.js ~ line 158 ~ const_onHandlerTableDetail= ~ table_id", table_id)
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
       ACTIVE_STATUS,
       table_id
     );
-    if (_orderDataFromTable.length !== 0 && checkout === false) {
+    if (_orderDataFromTable.length > 0 && checkout === false) {
+      const _getCode = await generatedCode(table_id);
+      setGenerateCode(_getCode);
+      setGenTableCode(false);
+    } else {
       const _getCode = await generatedCode(table_id);
       setGenerateCode(_getCode);
       setGenTableCode(true);
     }
-    console.log("bok hai var man ylllllllll", _orderDataFromTable);
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -209,7 +208,6 @@ const TableList = () => {
   };
 
   const _handlecheckout = async () => {
-    // console.log("OrderFromTable::::::::::::::", orderIds);
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/{activeTableId}`);
@@ -243,16 +241,20 @@ const TableList = () => {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
+  const filterStausTable = async (itame) => {
+    // console.log('FilterTable', FilterTable)
+    // const res = FilterTable?.filter((item) => {
 
-  if (checkedToUpdate) {
-    console.log("checkedToUpdate", checkedToUpdate);
+    // })
+
   }
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
       <Button
         variant={BUTTON_OUTLINE_PRIMARY}
-        style={{ position: "fixed", bottom: 50, right: 50 }}
+        style={{ position: "fixed", bottom: 50, right: 50, backgroundColor: '#FB6E3B', color: "#ffff", border: "solid 1px #FB6E3B" }}
+        onClick={_onClickMenuDetail}
       >
         ເຄຼຍໂຕະ
       </Button>
@@ -309,8 +311,7 @@ const TableList = () => {
                           height: 100,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor:
-                            tableId == table?.table_id ? "#FB6E3B" : "white",
+                          backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                           color: tableId == table?.table_id ? "white" : "black",
                         }}
                         onClick={async () => {
@@ -321,10 +322,6 @@ const TableList = () => {
                               table?.order?.checkout == false
                               ? true
                               : false;
-                          console.log(
-                            "work::::::::::::::::::",
-                            table?.order?.status
-                          );
                           await setCheckedToUpdate([]);
                           await _onHandlerTableDetail(table.table_id, checkout);
                         }}
@@ -351,29 +348,13 @@ const TableList = () => {
                             ) : (
                               ""
                             )
-                            // (
-
-                            //     <FontAwesomeIcon color="#FB6E3B" icon={faCommentDots} />
-                            //   )
                           }
-                          {/* {table?.order?.status === "CALLTOCHECKOUT" ? (
-                            <FontAwesomeIcon style={{ color:"#FB6E3B" }} icon={faCommentDots} /> 
-                          ) : ("")
-                            // (
-
-                            //     <FontAwesomeIcon color="#FB6E3B" icon={faCommentDots} />
-                            //   )
-                          } */}
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
                             ໂຕະ {` ${table?.table_id}`}
                           </span>
-                        </div>
-                        <div>
-                          {/* <span>{`${
-                            table?.order ? "(ບໍ່ວ່າງ)" : "(ວ່າງ)"
-                          }`}</span> */}
+                          {/* {filterStausTable(table?.table_id)} */}
                         </div>
                       </Button>
                     </div>
@@ -399,20 +380,13 @@ const TableList = () => {
               <Container fluid>
                 <Row>
                   <Col sm={3}>
-                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}</span>
+                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
                   </Col>
                   <Nav.Item className="ml-auto row mr-5">
                     <Col sm={3} className="mr-5">
-                      <Button
-                        style={BUTTON_EDIT}
-                        variant={BUTTON_OUTLINE_BLUE}
-                        onClick={_onClickMenuDetail}
-                      >
-                        ເບິ່ງບິນ
-                      </Button>
                       {"\t"}
                     </Col>
-                    <Col sm={3}>
+                    <Col sm={4}>
                       <Button
                         variant={BUTTON_OUTLINE_DANGER}
                         style={BUTTON_EDIT}
@@ -467,8 +441,7 @@ const TableList = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {console.log("orderFromTable:", orderFromTable)}
-                      {orderFromTable.map((orderItem, index) => (
+                      {orderFromTable ? orderFromTable.map((orderItem, index) => (
                         <tr key={index}>
                           <td>
                             <Checkbox
@@ -490,7 +463,7 @@ const TableList = () => {
                           <td>{orderItem?.table_id}</td>
                           <td>
                             <div
-                              style={{ border: "1px", borderRadius: "10px" }}
+                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
                             >
                               {orderItem?.status
                                 ? orderStatus(orderItem?.status)
@@ -503,7 +476,7 @@ const TableList = () => {
                               : "-"}
                           </td>
                         </tr>
-                      ))}
+                      )) : ""}
                       <tr>
                         <td>{data?.text}</td>
                       </tr>
@@ -543,7 +516,7 @@ const TableList = () => {
         tableId={tableId}
         func={_handlecheckout}
       />
-    </div>
+    </div >
   );
 };
 

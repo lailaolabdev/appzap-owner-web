@@ -77,7 +77,6 @@ export const generatedCode = async (data) => {
     });
     if (geneartedCode) {
       let data = geneartedCode.data;
-      console.log("dataa:", data.code);
       return data.code;
     } else {
       return null;
@@ -111,7 +110,6 @@ export const getOrderData = async (tableId) => {
 export const updateOrderData = async (tableId, data) => {
   try {
     const res = await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
-    console.log("res", res);
   } catch (error) {
     console.log("error: ", error);
   }

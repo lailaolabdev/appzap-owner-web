@@ -9,7 +9,7 @@ export const orderStatus = (status) => {
       return "ກໍາລັງຄົວ";
       break;
     case "SERVED":
-      return "ເສີບແລ້ວ";
+      return `ເສີບແລ້ວ`;
       break;
     default:
       return "ຍົກເລີກແລ້ວ";

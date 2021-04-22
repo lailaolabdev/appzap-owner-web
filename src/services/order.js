@@ -44,14 +44,13 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   try {
     let url;
     if (tableId) {
-      url = `${END_POINT}/orders?status=${status}&tableId=${tableId}`;
-    } else {
-      url = `${END_POINT}/orders?status=${status}`;
+      url = `${END_POINT}/orders?table_id=${tableId}&checkout=false`;
     }
 
     const orders = await axios.get(url, {
       headers: await getHeaders(),
     });
+    console.log("🚀 ~ file: order.js ~ line 53 ~ getOrdersWithTableId ~ orders", orders)
     if (orders) {
       let data = orders?.data;
       let newOrders = [];
@@ -67,7 +66,6 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
           }
         }
       }
-      console.log("Hello orldddd:", newOrders);
       return newOrders;
     } else {
       return null;
@@ -79,7 +77,6 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
 
 export const updateOrderItem = async (data, status = CANCEL_STATUS) => {
   try {
-    console.log("status::::::::::::::", status);
     for (let orderElement of data) {
       console.log("orderElement", orderElement);
       const url = `${END_POINT}/orderItems/${orderElement.id}`;
@@ -99,7 +96,6 @@ export const updateOrderItem = async (data, status = CANCEL_STATUS) => {
 
 export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {
-    console.log("status::::::::::::::", status);
     for (let orderElement of data) {
       console.log("orderElement", orderElement);
       const url = `${END_POINT}/orders/${orderElement.id}`;

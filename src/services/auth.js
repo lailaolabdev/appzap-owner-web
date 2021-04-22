@@ -5,7 +5,7 @@ export const getHeaders = async () => {
     const user = await localStorage.getItem(USER_KEY);
     const token = await JSON.parse(user)["token"];
     if (token) {
-      return { Authorization: `Ordering ${token}` };
+      return { Authorization: `AppZap_lailaolab ${token}` };
     } else {
       return null;
     }
