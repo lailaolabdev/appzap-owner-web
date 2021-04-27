@@ -72,14 +72,6 @@ const TableList = () => {
   const { history, location, match } = useReactRouter();
   const number = match.params.number;
   const activeTableId = match.params.tableId;
-
-  // useEffect(()=>{
-  //   const socket = socketIOClient('http://localhost:7070');
-  //   socket.on("chekout", _ => {
-  //     window.location.reload()
-  //   });
-  // },[])
-
   useEffect(() => {
     const socket = socketIOClient(END_POINT);
     // socket.on("order", data => {
@@ -132,10 +124,10 @@ const TableList = () => {
   React.useEffect(() => {
     const fetchTable = async () => {
       await setIsLoading(true)
-      // const res = await getTableWithOrder();
       const res = await getTables();
       await setTable(res);
       await setIsLoading(false);
+
       await _onHandlerTableDetail(activeTableId);
       // console.log("table: ",res);
     };
@@ -166,6 +158,7 @@ const TableList = () => {
       setGenerateCode(_getCode);
       setGenTableCode(true);
     }
+    console.log("_orderDataFromTable", _orderDataFromTable)
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -347,7 +340,6 @@ const TableList = () => {
                           <span style={{ fontSize: 20 }}>
                             ໂຕະ {` ${table?.table_id}`}
                           </span>
-                          {/* {filterStausTable(table?.table_id)} */}
                         </div>
                       </Button>
                     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
@@ -6,18 +6,10 @@ import Table from "react-bootstrap/Table";
 import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
 
-/**
- * import components
- */
 import Loading from "../../components/Loading";
-// import UpdateModal from "./component/UpdateModal";
-// import CancelModal from "./component/CancelModal";
-/**
- * import function
- */
 import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { ACTIVE_STATUS, DOING_STATUS, SERVE_STATUS } from "../../constants";
+import { END_POINT } from "../../constants";
 const Order = () => {
   /**
    * routes
@@ -29,28 +21,19 @@ const Order = () => {
    * states
    */
   const [isLoading, setIsLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
+  const [ordersSev, setOrdersSev] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
-  /**
-   * use effect
-   */
-  React.useEffect(() => {
-    const fetchOrder = async () => {
-      await setIsLoading(true);
-      const res = await getOrders(ACTIVE_STATUS, SERVE_STATUS);
-      await setOrders(res);
-      await setIsLoading(false);
-    };
-    fetchOrder();
-  }, []);
-  // const _handleUpdate = async () => {
-  //   await updateOrder(checkedToUpdate, SERVE_STATUS);
-  //   window.location.reload();
-  // };
-  // const _handleCancel = async () => {
-  //   await updateOrder(checkedToUpdate, CANCEL_STATUS);
-  //   window.location.reload();
-  // };
+  useEffect(() => {
+    getData()
+  }, [])
+  const getData = async (tokken) => {
+    await setIsLoading(true);
+    await fetch(END_POINT + "/orderItems?status=SERVED", {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setOrdersSev(json));
+    await setIsLoading(false);
+  }
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
       let _addData = [];
@@ -83,23 +66,23 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orders &&
-              orders?.map((order, index) => (
+            {ordersSev &&
+              ordersSev?.map((order, index) => (
                 <tr key={index}>
                   <td>
-                    <Checkbox
+                    {/* <Checkbox
                       checked={
                         checkedToUpdate && checkedToUpdate[index]?.checked
                       }
                       onChange={(e) => _handleCheckbox(e, order?._id)}
                       color="primary"
                       inputProps={{ "aria-label": "secondary checkbox" }}
-                    />
+                    /> */}
                   </td>
                   <td>{index + 1}</td>
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.table_id ?? "-"}</td>
                   <td style={{ color: "green", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt

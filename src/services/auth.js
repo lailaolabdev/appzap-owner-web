@@ -3,9 +3,9 @@ import { USER_KEY } from "../constants";
 export const getHeaders = async () => {
   try {
     const user = await localStorage.getItem(USER_KEY);
-    const token = await JSON.parse(user)["token"];
+    const token = await JSON.parse(user)["accessToken"];
     if (token) {
-      return { Authorization: `AppZap_lailaolab ${token}` };
+      return { authorization: `Ordering ${token}` };
     } else {
       return null;
     }

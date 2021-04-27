@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
@@ -17,42 +17,34 @@ import CancelModal from "./component/CancelModal";
  */
 import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { ACTIVE_STATUS, DOING_STATUS, SERVE_STATUS } from "../../constants";
+import { SERVE_STATUS, END_POINT } from "../../constants";
 const Order = () => {
   /**
    * routes
    */
   const { match } = useReactRouter();
   const { number } = match?.params;
-
-  /**
-   * states
-   */
-  const [isLoading, setIsLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-  /**
-   * use effect
-   */
-  React.useEffect(() => {
-    const fetchOrder = async () => {
-      await setIsLoading(true);
-      const res = await getOrders(ACTIVE_STATUS, DOING_STATUS);
-      await setOrders(res);
-      await setIsLoading(false);
-    };
-    fetchOrder();
-  }, []);
+  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
+  const [ordersDoing, setOrdersDoing] = useState();
+  console.log("🚀 ~ file: DoingOrder.js ~ line 31 ~ Order ~ ordersDoing", ordersDoing)
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    getData()
+  }, [])
+  const getData = async (tokken) => {
+    await setIsLoading(true);
+    await fetch(END_POINT + "/orderItems?status=DOING", {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setOrdersDoing(json));
+    await setIsLoading(false);
+  }
   const _handleUpdate = async () => {
     await updateOrderItem(checkedToUpdate, SERVE_STATUS);
     window.location.reload();
   };
-  // const _handleCancel = async () => {
-  //   await updateOrder(checkedToUpdate, CANCEL_STATUS);
-  //   window.location.reload();
-  // };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
       let _addData = [];
@@ -97,8 +89,8 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orders &&
-              orders?.map((order, index) => (
+            {ordersDoing &&
+              ordersDoing?.map((order, index) => (
                 <tr key={index}>
                   <td>
                     <Checkbox
@@ -113,7 +105,7 @@ const Order = () => {
                   <td>{index + 1}</td>
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.table_id ?? "-"}</td>
                   <td style={{ color: "blue", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt

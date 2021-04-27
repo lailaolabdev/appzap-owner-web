@@ -122,7 +122,7 @@ export default class Sidenav extends Component {
               ສະຖານະຂອງໂຕະ
             </NavText>
           </NavItem>
-          <NavItem eventKey="histories">
+          {/* <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon
                 icon={faSms}
@@ -142,7 +142,7 @@ export default class Sidenav extends Component {
             >
               ຂໍຄວາມຈາກລູກຄ້າ
             </NavText>
-          </NavItem>
+          </NavItem> */}
           <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon
@@ -164,7 +164,7 @@ export default class Sidenav extends Component {
               ປະຫວັດການຂາຍ
             </NavText>
           </NavItem>
-          <NavItem eventKey="histories">
+          {/* <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon
                 icon={faStoreAlt}
@@ -184,8 +184,8 @@ export default class Sidenav extends Component {
             >
               ຈັດການຮ້ານຄ້າ
             </NavText>
-          </NavItem>
-          <NavItem eventKey="histories">
+          </NavItem> */}
+          {/* <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon
                 icon={faEgg}
@@ -247,7 +247,7 @@ export default class Sidenav extends Component {
             >
               ຈັດການພະນັກງານ
             </NavText>
-          </NavItem>
+          </NavItem> */}
         </SideNav.Nav>
       </SideNav>
     );
