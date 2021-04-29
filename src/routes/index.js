@@ -19,6 +19,7 @@ import CanceledOrder from "../pages/order/CanceledOrder";
 import Histories from "../pages/histories/Histories";
 import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
+import Notification from "../pages/Notification/NotificationCheckBill";
 import Qrcode from "../pages/qrcode/Qrcode";
 const Main = styled.main`
   /* position: relative; */
@@ -33,11 +34,6 @@ const Index = () => {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
-
-
-
-  // =======sound
-
   // ======>>>
   useEffect(() => {
     const socket = socketIOClient(END_POINT);
@@ -103,6 +99,11 @@ const Index = () => {
                     exact
                     path="/histories/pagenumber/:number"
                     component={Histories}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/checkBill"
+                    component={Notification}
                   />
                   <PrivateRoute
                     exact

@@ -1,0 +1,87 @@
+import React, { useEffect, useState } from 'react'
+import {
+  Form,
+  Row,
+  Col,
+  Button,
+  Container,
+  FormControl,
+  InputGroup,
+  Nav
+} from "react-bootstrap";
+import useReactRouter from "use-react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import Table from "react-bootstrap/Table";
+import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { END_POINT } from '../../constants'
+import { _statusCheckBill } from "../../helpers/index"
+import Sidenav from '../../layouts/SideNav'
+export default function NotificationCheckBill() {
+  const { match, history } = useReactRouter();
+  const [orderCallCheckOut, setorderCallCheckOut] = useState()
+  useEffect(() => {
+    getData()
+  }, [])
+  const getData = async (tokken) => {
+    await fetch(`${END_POINT}/orders?status=CALLTOCHECKOUT&checkout=false`, {
+      method: "GET",
+      headers: tokken
+    }).then(response => response.json())
+      .then(json => setorderCallCheckOut(json));
+  }
+  const _checkbillTable = (item) => {
+    history.push(`/tables/pagenumber/1/tableid/${item}`)
+  }
+  return (
+    <div style={{ minHeight: 400 }}>
+      <Container fluid>
+        <div className="row mt-5">
+          <h5 style={{ marginLeft: 30 }}><strong>ແຈ້ງເຕືອນ checkBill</strong></h5>
+          <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
+            <InputGroup>
+              {/* <div className="col-5">
+                <label>ແຕ່ວັນທີ</label>
+                <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
+              </div> */}
+              {/* <div className="col-5">
+                <label>ຫາວັນທີ</label>
+                <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
+              </div> */}
+            </InputGroup>
+          </Nav.Item>
+        </div>
+        <div style={{ height: 20 }}></div>
+        <Col xs={12}>
+          <Table responsive class="table">
+            <thead style={{ backgroundColor: "#F1F1F1" }}>
+              <tr>
+                <th>ລຳດັບ</th>
+                <th>ຊື່ລູກຄ້າ</th>
+                <th>ລະຫັດເຂົ້າລະບົບ</th>
+                <th>ເລກໂຕະ</th>
+                <th>ສະຖານະ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderCallCheckOut?.map((item, index) => {
+                return (
+                  <tr index={item} onClick={() => _checkbillTable(item?.table_id)}>
+                    <td>{index + 1}</td>
+                    <td>{item?.customer_nickname}</td>
+                    <td>{item?.code}</td>
+                    <td>{item?.table_id}</td>
+                    <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>
+                  </tr>
+                )
+              }
+              )}
+            </tbody>
+          </Table>
+        </Col>
+      </Container>
+    </div>
+  )
+}

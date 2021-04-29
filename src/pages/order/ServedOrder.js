@@ -23,17 +23,20 @@ const Order = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [ordersSev, setOrdersSev] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
+  const newDate = new Date();
   useEffect(() => {
     getData()
   }, [])
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + "/orderItems?status=SERVED", {
+    await fetch(END_POINT + `/orderItems?status=SERVED&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setOrdersSev(json));
     await setIsLoading(false);
   }
+  console.log("🚀 ~ file: ServedOrder.js ~ line 25 ~ Order ~ ordersSev", ordersSev?.length)
+
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
       let _addData = [];
@@ -61,6 +64,7 @@ const Order = () => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ເບີໂຕະ</th>
+              <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
             </tr>
@@ -83,6 +87,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.orderId?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.code ?? "-"}</td>
                   <td style={{ color: "green", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt

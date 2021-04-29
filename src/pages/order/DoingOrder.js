@@ -84,6 +84,7 @@ const Order = () => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ເບີໂຕະ</th>
+              <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
             </tr>
@@ -106,6 +107,7 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.orderId?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.code ?? "-"}</td>
                   <td style={{ color: "blue", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt

@@ -74,10 +74,9 @@ const TableList = () => {
   const activeTableId = match.params.tableId;
   useEffect(() => {
     const socket = socketIOClient(END_POINT);
-    // socket.on("order", data => {
-    //   window.location.reload()
-    // });
-
+    socket.on("order", data => {
+      window.location.reload()
+    });
     socket.on("createorder", (_) => {
       window.location.reload();
     });
@@ -86,10 +85,6 @@ const TableList = () => {
       window.location.reload();
     });
   }, []);
-
-  // socket.on('connection',()=>{
-  //   console.log("Hello IO");
-  // })
 
   /**
    * useState
@@ -107,11 +102,32 @@ const TableList = () => {
   //ເມື່ອ generateCode: ture
   const [generateCode, setGenerateCode] = useState();
   const [showOrderModal, setShowOrderModal] = useState(false);
+  // ຂໍ້ມູນສະແດ່ໃນ table
   const [orderFromTable, setOrderFromTable] = useState();
 
   const [idTable, setTableCode] = useState("");
   const [data, setData] = useState();
 
+  // =====
+  const [dataOrder, setDataOrder] = useState([])
+  useEffect(() => {
+    _searchDate()
+  }, [generateCode])
+  const _searchDate = async () => {
+    const url = END_POINT + `/orders?code=${generateCode}`;
+    const _data = await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+      })
+  }
+  let newData = []
+  for (let i = 0; i < dataOrder.length; i++) {
+    for (let k = 0; k < dataOrder[i]?.order_item.length; k++) {
+      newData.push(dataOrder[i]?.order_item[k])
+    }
+  }
+  // =====>>>>> fix by joy
   useEffect(() => {
     fetch(`${END_POINT}/messages`)
       .then((response) => response.json())
@@ -121,7 +137,7 @@ const TableList = () => {
   /**
    * useEffect
    * **/
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchTable = async () => {
       await setIsLoading(true)
       const res = await getTables();
@@ -133,7 +149,7 @@ const TableList = () => {
     };
     fetchTable();
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (tableId) {
       setCheckedToUpdate([]);
     }
@@ -158,7 +174,6 @@ const TableList = () => {
       setGenerateCode(_getCode);
       setGenTableCode(true);
     }
-    console.log("_orderDataFromTable", _orderDataFromTable)
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -184,8 +199,8 @@ const TableList = () => {
         }
       });
       await setOrderIds(newArr);
-      await setOrderFromTable(_orderDataFromTable);
-      await setShowTable(true);
+      // await setOrderFromTable(_orderDataFromTable);
+      // await setShowTable(false);
       await setCheckoutModal(true);
     } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
@@ -199,7 +214,6 @@ const TableList = () => {
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
   };
-
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
@@ -426,15 +440,10 @@ const TableList = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {orderFromTable ? orderFromTable.map((orderItem, index) => (
+                      {newData ? newData.map((orderItem, index) => (
                         <tr key={index}>
                           <td>
                             <Checkbox
-                              // checked={
-                              //   checkedToUpdate &&
-                              //   checkedToUpdate.length !== 0 &&
-                              //   checkedToUpdate[index]?.checked
-                              // }
                               color="primary"
                               name="selectOrderItem"
                               onChange={(e) => {
@@ -480,7 +489,7 @@ const TableList = () => {
         data={generateCode}
       />
       <MenusItemDetail
-        data={orderFromTable}
+        data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
       />

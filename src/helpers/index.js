@@ -34,3 +34,15 @@ export const useAuth = () => {
   const isAuthenticated = !_.isEmpty(userData)
   return isAuthenticated
 }
+export const _statusCheckBill = (item) => {
+  if (item === 'CALLTOCHECKOUT') {
+    return "ຕ້ອງການຈ່າຍເງີນ"
+  } else if (item === 'ACTIVE') {
+    return "ມີອໍເດີ"
+  } else if (item === 'CHECKOUT') {
+    return "ຊຳລະເງີນສຳເລັດ"
+  } else if (item === 'CART') {
+    return "ກຳລັງສັ່ງອາຫານ"
+  }
+
+}

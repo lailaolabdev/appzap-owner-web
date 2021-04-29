@@ -25,22 +25,24 @@ export default function History() {
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  useEffect(() => {
-    _searchDate()
-  }, [])
+  const [findeByCode, setfindeByCode] = useState()
   useEffect(() => {
     _searchDate()
   }, [startDate && endDate])
+  useEffect(() => {
+    _searchDate()
+  }, [findeByCode])
+  useEffect(() => {
+    _searchDate()
+  }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orderItems?status=SERVED&&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}`;
+    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
-        console.log("response: ", response)
         setData(response)
       })
-    console.log("\n\n _data: ", _data)
     setIsLoading(false)
   }
   const _setSelectedDateStart = (item) => {
@@ -49,26 +51,37 @@ export default function History() {
   const _setSelectedDateEnd = (item) => {
     setSelectedDateEnd(item.target.value)
   }
+  const _setSelectedCode = (item) => {
+    setfindeByCode(item.target.value)
+  }
   let amount = 0
-  for (let i = 0; i < data?.length; i++) {
-    amount += data[i]?.menu?.price
+  let newData = []
+  for (let i = 0; i < data.length; i++) {
+    for (let k = 0; k < data[i]?.order_item.length; k++) {
+      newData.push(data[i]?.order_item[k])
+      amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+    }
   }
   return (
     <div style={{ minHeight: 400 }}>
       <Container fluid>
         <div className="row mt-5">
           <Nav.Item>
-            <h5><strong>ຍອດຂາຍ</strong></h5>
+            <h5 style={{ marginLeft: 30 }}><strong>ຍອດຂາຍ</strong></h5>
           </Nav.Item>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
             <InputGroup>
-              <div className="col-5">
+              <div className="col-4">
                 <label>ແຕ່ວັນທີ</label>
                 <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
               </div>
-              <div className="col-5">
+              <div className="col-4">
                 <label>ຫາວັນທີ</label>
                 <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
+              </div>
+              <div className="col-4">
+                <label>ລະຫັດລູກຄ້າ</label>
+                <input type="number" class="form-control" placeholder="ລະຫັດລູກຄ້າ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
               </div>
             </InputGroup>
           </Nav.Item>
@@ -80,8 +93,10 @@ export default function History() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
+                  <th>ຊື່ຜູ້ສັ່ງ</th>
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>
+                  <th>ລາຄາ</th>
                   <th>ເລກໂຕະ</th>
                   <th>ລະຫັດທີ່ສັງ</th>
                   <th>ຍອດຂາຍ/ມື້</th>
@@ -89,12 +104,14 @@ export default function History() {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item, index) => {
+                {newData?.map((item, index) => {
                   return (
                     <tr index={item}>
                       <td>{index + 1}</td>
+                      <td><b>{item?.orderId?.customer_nickname}</b></td>
                       <td><b>{item?.menu?.name}</b></td>
                       <td>{item?.quantity}</td>
+                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)}</td>
                       <td>{item?.orderId?.table_id}</td>
                       <td>{item?.orderId?.code}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>

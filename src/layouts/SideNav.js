@@ -12,6 +12,7 @@ import {
   faEdit,
   faEgg,
   faHistory,
+  faMoneyBillAlt,
   faSms,
   faStoreAlt,
   faUserAlt,
@@ -143,6 +144,27 @@ export default class Sidenav extends Component {
               ຂໍຄວາມຈາກລູກຄ້າ
             </NavText>
           </NavItem> */}
+          <NavItem eventKey="checkBill">
+            <NavIcon>
+              <FontAwesomeIcon
+                icon={faMoneyBillAlt}
+                style={{
+                  color:
+                    selected === "checkBill"
+                      ? "#FB6E3B"
+                      : selectedTabBackgroundColor,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color:
+                  selected === "checkBill" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ແຈ້ງເຕືອນ Checkbill
+            </NavText>
+          </NavItem>
           <NavItem eventKey="histories">
             <NavIcon>
               <FontAwesomeIcon

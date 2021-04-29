@@ -7,6 +7,7 @@ import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
 import { END_POINT, USER_KEY } from '../../../constants'
 import { getHeaders } from "../../../services/auth";
+import { errorAdd } from "../../../helpers/sweetalert";
 const MenusItemDetail = (props) => {
   const { data } = props;
   let total = 0;
@@ -16,14 +17,24 @@ const MenusItemDetail = (props) => {
     }
   }
   const _checkBill = async () => {
-    await axios.put(END_POINT + `/orders/${props.data[0]?.orderId}`, {
-      status: "CHECKOUT",
-      checkout: "true",
-      code: props.data[0]?.code
-    },
-      {
-        headers: await getHeaders(),
-      })
+    if (data) {
+      await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
+        status: "CHECKOUT",
+        checkout: "true",
+        code: props.data[0]?.orderId?.code
+      },
+        {
+          headers: await getHeaders(),
+        }).then(function (response) {
+          if (response?.data) {
+            window.location.reload();
+          }
+        }).catch(function (error) {
+          console.log("🚀", error)
+        });
+    } else {
+      errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
+    }
   }
   return (
     <Modal

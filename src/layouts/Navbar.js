@@ -19,7 +19,7 @@ export default function NavBar() {
   };
 
   const _onDetailProfile = () => {
-    alert("Hello world");
+    // alert("Hello world");
   };
 
   return (
