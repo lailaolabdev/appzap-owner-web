@@ -24,7 +24,6 @@ export const getTableWithOrder = async () => {
     });
     const newOrders = orders?.data;
 
-    // console.log("work right:1111111111", newOrders);
     const tables = await axios.get(`${END_POINT}/tables`);
     if (tables && newOrders) {
       let data = tables?.data;

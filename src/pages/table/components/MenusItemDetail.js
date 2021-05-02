@@ -5,8 +5,9 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
-import { END_POINT } from '../../../constants'
+import { END_POINT, USER_KEY } from '../../../constants'
 import { getHeaders } from "../../../services/auth";
+import { errorAdd } from "../../../helpers/sweetalert";
 const MenusItemDetail = (props) => {
   const { data } = props;
   let total = 0;
@@ -15,22 +16,26 @@ const MenusItemDetail = (props) => {
       total += orderItem?.quantity * orderItem?.menu?.price;
     }
   }
-  let newData = []
   const _checkBill = async () => {
-    for (let i = 0; i < data.length; i++) {
-      newData.push(data[i]?.orderId)
-      // await axios({
-      //   method: 'PUT',
-      //   url: END_POINT + `/orders/${data[i]?.orderId}`,
-      //   headers: await getHeaders(),
-      //   data: {
-      //     status: "CHECKOUT",
-      //     checkout: "true"
-      //   },
-      // })
+    if (data) {
+      await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
+        status: "CHECKOUT",
+        checkout: "true",
+        code: props.data[0]?.orderId?.code
+      },
+        {
+          headers: await getHeaders(),
+        }).then(function (response) {
+          if (response?.data) {
+            window.location.reload();
+          }
+        }).catch(function (error) {
+          console.log("🚀", error)
+        });
+    } else {
+      errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
     }
   }
-  console.log("🚀 ~ file: MenusItemDetail.js ~ line 19 ~ MenusItemDetail ~ newData", newData)
   return (
     <Modal
       show={props.show}

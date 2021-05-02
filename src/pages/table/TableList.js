@@ -72,20 +72,11 @@ const TableList = () => {
   const { history, location, match } = useReactRouter();
   const number = match.params.number;
   const activeTableId = match.params.tableId;
-
-  // useEffect(()=>{
-  //   const socket = socketIOClient('http://localhost:7070');
-  //   socket.on("chekout", _ => {
-  //     window.location.reload()
-  //   });
-  // },[])
-
   useEffect(() => {
     const socket = socketIOClient(END_POINT);
-    // socket.on("order", data => {
-    //   window.location.reload()
-    // });
-
+    socket.on("order", data => {
+      window.location.reload()
+    });
     socket.on("createorder", (_) => {
       window.location.reload();
     });
@@ -94,10 +85,6 @@ const TableList = () => {
       window.location.reload();
     });
   }, []);
-
-  // socket.on('connection',()=>{
-  //   console.log("Hello IO");
-  // })
 
   /**
    * useState
@@ -115,11 +102,32 @@ const TableList = () => {
   //ເມື່ອ generateCode: ture
   const [generateCode, setGenerateCode] = useState();
   const [showOrderModal, setShowOrderModal] = useState(false);
+  // ຂໍ້ມູນສະແດ່ໃນ table
   const [orderFromTable, setOrderFromTable] = useState();
 
   const [idTable, setTableCode] = useState("");
   const [data, setData] = useState();
 
+  // =====
+  const [dataOrder, setDataOrder] = useState([])
+  useEffect(() => {
+    _searchDate()
+  }, [generateCode])
+  const _searchDate = async () => {
+    const url = END_POINT + `/orders?code=${generateCode}`;
+    const _data = await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+      })
+  }
+  let newData = []
+  for (let i = 0; i < dataOrder.length; i++) {
+    for (let k = 0; k < dataOrder[i]?.order_item.length; k++) {
+      newData.push(dataOrder[i]?.order_item[k])
+    }
+  }
+  // =====>>>>> fix by joy
   useEffect(() => {
     fetch(`${END_POINT}/messages`)
       .then((response) => response.json())
@@ -129,19 +137,19 @@ const TableList = () => {
   /**
    * useEffect
    * **/
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchTable = async () => {
       await setIsLoading(true)
-      // const res = await getTableWithOrder();
       const res = await getTables();
       await setTable(res);
       await setIsLoading(false);
+
       await _onHandlerTableDetail(activeTableId);
       // console.log("table: ",res);
     };
     fetchTable();
   }, []);
-  React.useEffect(() => {
+  useEffect(() => {
     if (tableId) {
       setCheckedToUpdate([]);
     }
@@ -191,8 +199,8 @@ const TableList = () => {
         }
       });
       await setOrderIds(newArr);
-      await setOrderFromTable(_orderDataFromTable);
-      await setShowTable(true);
+      // await setOrderFromTable(_orderDataFromTable);
+      // await setShowTable(false);
       await setCheckoutModal(true);
     } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
@@ -206,7 +214,6 @@ const TableList = () => {
     }
     history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
   };
-
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
@@ -347,7 +354,6 @@ const TableList = () => {
                           <span style={{ fontSize: 20 }}>
                             ໂຕະ {` ${table?.table_id}`}
                           </span>
-                          {/* {filterStausTable(table?.table_id)} */}
                         </div>
                       </Button>
                     </div>
@@ -434,15 +440,10 @@ const TableList = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {orderFromTable ? orderFromTable.map((orderItem, index) => (
+                      {newData ? newData.map((orderItem, index) => (
                         <tr key={index}>
                           <td>
                             <Checkbox
-                              // checked={
-                              //   checkedToUpdate &&
-                              //   checkedToUpdate.length !== 0 &&
-                              //   checkedToUpdate[index]?.checked
-                              // }
                               color="primary"
                               name="selectOrderItem"
                               onChange={(e) => {
@@ -488,7 +489,7 @@ const TableList = () => {
         data={generateCode}
       />
       <MenusItemDetail
-        data={orderFromTable}
+        data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
       />

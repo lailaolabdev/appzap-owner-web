@@ -44,13 +44,11 @@ function Login() {
         <Row>
           <Col xs={6} md={2}></Col>
           <Col md={8} className="bg-light" style={{ borderRadius: "10px" }}>
-
-
             <Col className="pb-5" >
               <Formik
-                initialValues={{ username: "", password: "" }}
+                initialValues={{ userId: "", password: "" }}
                 validationSchema={Yup.object({
-                  username: Yup.string().required("ກາລຸນາປ້ອນຊື່ຜູ້ໃຊ້"),
+                  userId: Yup.string().required("ກາລຸນາປ້ອນຊື່ຜູ້ໃຊ້"),
                   password: Yup.string().required("ກາລຸນາປ້ອນລະຫັດຜ່ານ"),
                 })}
                 onSubmit={async (values) => {
@@ -80,14 +78,14 @@ function Login() {
                         id="inlineFormInputGroup1"
                         type="text"
                         placeholder="ຊື່ຜູ້ໃຊ້"
-                        onChange={handleChange("username")}
+                        onChange={handleChange("userId")}
                         onBlur={handleBlur}
-                        isInvalid={!!errors.username}
-                        value={values.username}
+                        isInvalid={!!errors.userId}
+                        value={values.userId}
                       />
 
                       <Form.Control.Feedback type="invalid">
-                        {touched.username && errors.username}
+                        {touched.userId && errors.userId}
                       </Form.Control.Feedback>
                     </InputGroup>
 

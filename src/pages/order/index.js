@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
+import { Table, Button } from "react-bootstrap";
 import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
+
+import useSound from 'use-sound';
+import soundA from '../../sound/message.mp3'
 
 /**
  * import components
@@ -17,35 +20,20 @@ import CancelModal from "./component/CancelModal";
  */
 import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS } from "../../constants";
+import { CANCEL_STATUS, DOING_STATUS, END_POINT } from "../../constants";
 
 const Order = () => {
-  /**
-   * routes
-   */
   const { match } = useReactRouter();
   const { number } = match?.params;
-
-  /**
-   * states
-   */
-  const [isLoading, setIsLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
+  // /**
+  //  * states
+  //  */
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [orders, setOrders] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-  /**
-   * use effect
-   */
-  React.useEffect(() => {
-    const fetchOrder = async () => {
-      await setIsLoading(true);
-      const res = await getOrders();
-      await setOrders(res);
-      await setIsLoading(false);
-    };
-    fetchOrder();
-  }, []);
+
   const _handleUpdate = async () => {
     await updateOrderItem(checkedToUpdate, DOING_STATUS);
     window.location.reload();
@@ -68,6 +56,19 @@ const Order = () => {
       setCheckedToUpdate(_removeId);
     }
   };
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderItems, setorderItems] = useState()
+  useEffect(() => {
+    getData()
+  }, [])
+  const getData = async (tokken) => {
+    await setIsLoading(true);
+    await fetch(END_POINT + "/orderItems?status=WAITING", {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setorderItems(json));
+    await setIsLoading(false);
+  }
   return (
     <div>
       {isLoading ? <Loading /> : ""}
@@ -94,13 +95,14 @@ const Order = () => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ເບີໂຕະ</th>
+              <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
             </tr>
           </thead>
           <tbody>
-            {orders &&
-              orders?.map((order, index) => (
+            {orderItems &&
+              orderItems?.map((order, index) => (
                 <tr key={index}>
                   <td>
                     <Checkbox
@@ -115,7 +117,8 @@ const Order = () => {
                   <td>{index + 1}</td>
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.table_id ?? "-"}</td>
+                  <td>{order?.orderId?.code ?? "-"}</td>
                   <td style={{ color: "red", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
                   <td>
                     {order?.createdAt
