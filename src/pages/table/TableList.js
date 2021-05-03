@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import useReactRouter from "use-react-router";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
@@ -8,13 +8,15 @@ import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Checkbox from "@material-ui/core/Checkbox";
 import Table from "react-bootstrap/Table";
+import { useReactToPrint } from 'react-to-print';
+
 import {
   faTrashAlt,
   faPen,
   faRecycle,
   faCommentDots,
   faChartArea,
-  faChartBar,
+  faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
@@ -68,7 +70,7 @@ import {
  * css
  * **/
 
-const TableList = () => {
+export default function TableList() {
   const { history, location, match } = useReactRouter();
   const number = match.params.number;
   const activeTableId = match.params.tableId;
@@ -248,6 +250,14 @@ const TableList = () => {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
+  // const _printBill = async () => {
+  //   let printUrl = await window.open(billForCheckout);
+  //   printUrl.print()
+  // }
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -383,7 +393,8 @@ const TableList = () => {
                   </Col>
                   <Nav.Item className="ml-auto row mr-5">
                     <Col sm={3} className="mr-5">
-                      {"\t"}
+                      {/* <ComponentToPrint ref={componentRef} />
+                      <button onClick={handlePrint}>Print this out!</button> */}
                     </Col>
                     <Col sm={4}>
                       <Button
@@ -513,8 +524,26 @@ const TableList = () => {
     </div >
   );
 };
-
-export default TableList;
+export class ComponentToPrint extends React.PureComponent {
+  render() {
+    return (
+      <table>
+        <thead>
+          <th>column 1</th>
+          <th>column 2</th>
+          <th>column 3</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>data 1</td>
+            <td>data 2</td>
+            <td>data 3</td>
+          </tr>
+        </tbody>
+      </table>
+    );
+  }
+}
 
 const NAV = {
   backgroundColor: "#F9F9F9",
