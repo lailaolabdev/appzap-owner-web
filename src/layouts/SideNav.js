@@ -8,6 +8,7 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBell,
   faBookMedical,
   faEdit,
   faEgg,
@@ -127,7 +128,7 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="checkBill">
           <NavIcon>
             <FontAwesomeIcon
-              icon={faMoneyBillAlt}
+              icon={faBell}
               style={{
                 color:
                   selected === "checkBill"

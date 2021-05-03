@@ -13,7 +13,6 @@ import { Badge } from 'react-bootstrap'
 export default function NavBar() {
   const { history, location, match } = useReactRouter()
   const [userData, setUserData] = useState({})
-  console.log("🚀 ~ file: Navbar.js ~ line 15 ~ NavBar ~ userData", userData?.data)
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
