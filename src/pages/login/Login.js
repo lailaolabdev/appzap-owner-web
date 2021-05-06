@@ -4,9 +4,9 @@ import {
   Row,
   Col,
   Button,
-  Container,
   FormControl,
   InputGroup,
+  Image
 } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -33,106 +33,90 @@ function Login() {
     await history.push("/orders/pagenumber/1");
   }
   return (
-    <div style={{ backgroundColor: "#f1f1f1" }}>
-      <Col className="col">
-        <h1>
-          Self Ordering
-          </h1>
-      </Col>
-      <Container className="mt-5">
+    <div style={{ backgroundColor: "#FB6E3B", paddingTop: 160, paddingBottom: 200, paddingLeft: 280, paddingRight: 280 }}>
+      {/* <Container> */}
+      <Row>
+        <Col xs={6} md={2}></Col>
+        <Col md={8} className="bg-light" style={{ borderRadius: "10px" }}>
+          <Col className="pb-5" >
+            <Formik
+              initialValues={{ userId: "", password: "" }}
+              validationSchema={Yup.object({
+                userId: Yup.string().required("ກາລຸນາປ້ອນຊື່ຜູ້ໃຊ້"),
+                password: Yup.string().required("ກາລຸນາປ້ອນລະຫັດຜ່ານ"),
+              })}
+              onSubmit={async (values) => {
+                await _login({ values });
+              }}
+            >
+              {({
+                touched,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+                errors,
+                values,
+              }) => (
+                <Form className="contain" style={{ paddingLeft: 130 }}>
+                  <div style={{ textAlign: "center", paddingTop: 40 }}>
+                    <Image src="https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/175875900_915432132566987_7559427731032625098_n.png" rounded style={{ height: 110, width: 110 }} />
+                  </div>
+                  <h5 className="text-center text mt-3 mb-3" style={{ fontWeight: "bold" }}>
+                    ຍິນດີຕ້ອນຮັບ
+                    </h5>
+                  <label>ຊື່ຜູ້ໃຊ້ລະບົບ</label>
+                  <InputGroup className="form" >
+                    <FormControl
+                      id="inlineFormInputGroup1"
+                      type="text"
+                      placeholder="ຊື່ຜູ້ໃຊ້"
+                      onChange={handleChange("userId")}
+                      onBlur={handleBlur}
+                      isInvalid={!!errors.userId}
+                      value={values.userId}
+                    />
 
-        <Row>
-          <Col xs={6} md={2}></Col>
-          <Col md={8} className="bg-light" style={{ borderRadius: "10px" }}>
-            <Col className="pb-5" >
-              <Formik
-                initialValues={{ userId: "", password: "" }}
-                validationSchema={Yup.object({
-                  userId: Yup.string().required("ກາລຸນາປ້ອນຊື່ຜູ້ໃຊ້"),
-                  password: Yup.string().required("ກາລຸນາປ້ອນລະຫັດຜ່ານ"),
-                })}
-                onSubmit={async (values) => {
-                  await _login({ values });
-                }}
-              >
-                {({
-                  touched,
-                  handleBlur,
-                  handleChange,
-                  handleSubmit,
-                  errors,
-                  values,
-                }) => (
-                  <Form className="contain">
-                    <h4 className="text-center text mt-3 mb-5">
-                      ຍິນດີຕ້ອນຮັບ ກະລຸນາລ໊ອກອິນ
-                    </h4>
-
-                    <InputGroup className="form">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text style={{ background: "#FB6E3B" }}>
-                          <FontAwesomeIcon icon={faUser} color="white" />
-                        </InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <FormControl
-                        id="inlineFormInputGroup1"
-                        type="text"
-                        placeholder="ຊື່ຜູ້ໃຊ້"
-                        onChange={handleChange("userId")}
-                        onBlur={handleBlur}
-                        isInvalid={!!errors.userId}
-                        value={values.userId}
-                      />
-
-                      <Form.Control.Feedback type="invalid">
-                        {touched.userId && errors.userId}
-                      </Form.Control.Feedback>
-                    </InputGroup>
+                    <Form.Control.Feedback type="invalid">
+                      {touched.userId && errors.userId}
+                    </Form.Control.Feedback>
+                  </InputGroup>
 
 
-                    <Form.Label htmlFor="inlineFormInputGroup2" srOnly>
-                      Password
+                  <Form.Label htmlFor="inlineFormInputGroup2" srOnly>
+                    Password
         </Form.Label>
-                    <InputGroup className="mt-3 mb-3 form">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text style={{ background: "#FB6E3B" }}>
-                          <FontAwesomeIcon icon={faLock} color="white" style={{ background: "none" }} />
-                        </InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <FormControl
-                        // className="mt-3"
-                        id="inlineFormInputGroup2"
-                        placeholder="ລະຫັດຜ່ານ"
-                        type="password"
-                        onChange={handleChange("password")}
-                        onBlur={handleBlur}
-                        isInvalid={!!errors.password}
-                        value={values.password}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {touched.password && errors.password}
-                      </Form.Control.Feedback>
-                    </InputGroup>
-                    <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "" : "none" }}>kdcijsdbcfa</div>
-                    <Button
-                      style={{ background: "#FB6E3B", border: "1px #FB6E3B" }}
-                      className="form-control mt-5 form-btn"
-                      onClick={handleSubmit}
-                    >
-                      ເຂົ້າສູ່ລະບົບ
+                  <div style={{ height: 10 }}></div>
+                  <label>ລະຫັດຜ່ານ</label>
+                  <InputGroup className=" mb-3 form">
+                    <FormControl
+                      id="inlineFormInputGroup2"
+                      placeholder="ລະຫັດຜ່ານ"
+                      type="password"
+                      onChange={handleChange("password")}
+                      onBlur={handleBlur}
+                      isInvalid={!!errors.password}
+                      value={values.password}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {touched.password && errors.password}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                  <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "" : "none" }}>kdcijsdbcfa</div>
+                  <Button
+                    style={{ backgroundColor: "#FB6E3B", border: "1px #FB6E3B", marginLeft: 0 }}
+                    className="form-control mt-3 mr-5 form-btn"
+                    onClick={handleSubmit}
+                  >
+                    ເຂົ້າສູ່ລະບົບ
         </Button>
-
-                  </Form>
-                )}
-              </Formik>
-            </Col>
-
-
+                </Form>
+              )}
+            </Formik>
           </Col>
-          <Col xs={6} md={2}></Col>
-        </Row>
+        </Col>
+      </Row>
 
-      </Container>
+      {/* </Container> */}
     </div>
 
   );

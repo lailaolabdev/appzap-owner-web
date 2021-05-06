@@ -46,3 +46,10 @@ export const _statusCheckBill = (item) => {
   }
 
 }
+export const STATUS_USERS = (item) => {
+  if (item === 'ADMIN') {
+    return "ຜູ້ບໍລິຫານ"
+  } else if (item === 'USER') {
+    return "ພະນັກງານ"
+  }
+}

@@ -112,6 +112,7 @@ export default function TableList() {
 
   // =====
   const [dataOrder, setDataOrder] = useState([])
+  const [statusTable, setstatusTable] = useState([])
   useEffect(() => {
     _searchDate()
   }, [generateCode])
@@ -120,6 +121,7 @@ export default function TableList() {
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
+        setstatusTable(response)
         setDataOrder(response)
       })
   }
@@ -145,9 +147,7 @@ export default function TableList() {
       const res = await getTables();
       await setTable(res);
       await setIsLoading(false);
-
       await _onHandlerTableDetail(activeTableId);
-      // console.log("table: ",res);
     };
     fetchTable();
   }, []);
@@ -250,14 +250,6 @@ export default function TableList() {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
-  // const _printBill = async () => {
-  //   let printUrl = await window.open(billForCheckout);
-  //   printUrl.print()
-  // }
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -393,8 +385,6 @@ export default function TableList() {
                   </Col>
                   <Nav.Item className="ml-auto row mr-5">
                     <Col sm={3} className="mr-5">
-                      {/* <ComponentToPrint ref={componentRef} />
-                      <button onClick={handlePrint}>Print this out!</button> */}
                     </Col>
                     <Col sm={4}>
                       <Button

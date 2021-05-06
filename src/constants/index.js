@@ -1,6 +1,8 @@
+import { END_POINT_SEVER } from './api'
 export const USER_KEY = "@userKey";
-export const END_POINT = "http://localhost:7070";
-// export const END_POINT = "http://13.229.122.188:7070";
+export const URL_PHOTO_AW3 = "https://aeon-lailaolab-bucket.s3-ap-southeast-1.amazonaws.com/"
+// export const END_POINT = END_POINT_SEVER;
+export const END_POINT = END_POINT_SEVER;
 export const FONT_HEADER_SIZE = 16;
 export const BUTTON_INDEX = 100;
 export const PRIMARY_FONT_BLACK = { fontColor: "black", fontWeight: "bold" };
@@ -19,6 +21,8 @@ export const ALL_STATUS = [
     { value: "SERVED", label: "	ເສີບແລ້ວ" },
     { value: "CANCELED", label: "ຍົກເລີກ" },
 ];
+export const COLOR_APP = "#FB6E3B"
+export const COLOR_APP_CANCEL = "red"
 export const TITLE_HEADER = {
     paddingLeft: 55,
     paddingTop: 20,

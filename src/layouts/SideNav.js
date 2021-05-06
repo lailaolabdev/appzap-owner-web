@@ -12,11 +12,15 @@ import {
   faBookMedical,
   faEdit,
   faEgg,
+  faFolderOpen,
   faHistory,
   faMoneyBillAlt,
   faSms,
   faStoreAlt,
+  faTablet,
+  faTabletAlt,
   faUserAlt,
+  faUtensils,
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 import { END_POINT } from '../constants'
@@ -35,11 +39,10 @@ export default function Sidenav({ location, history }) {
   return (
     <SideNav
       style={{
-        backgroundColor: "#fff",
+        backgroundColor: "#FB6E3B",
         height: "100vh",
         display: "block",
         position: "fixed",
-        zIndex: 1000,
       }}
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
@@ -51,6 +54,15 @@ export default function Sidenav({ location, history }) {
         }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1;
+        }
+        if (selected === "users") {
+          selected = selected + "/limit/" + 40 + "/page/" + 1;
+        }
+        if (selected === "category") {
+          selected = selected + "/limit/" + 40 + "/page/" + 1;
+        }
+        if (selected === "menu") {
+          selected = selected + "/limit/" + 40 + "/page/" + 1;
         }
         const to = "/" + selected;
 
@@ -64,6 +76,26 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
+        <NavItem eventKey="category">
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faUtensils}
+              style={{
+                color:
+                  selected === "category"
+                    ? "#ffff"
+                    : selectedTabBackgroundColor,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: selected === "category" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ເພີ່ມອາຫານ
+            </NavText>
+        </NavItem>
         <NavItem eventKey="orders">
           <NavIcon>
             <FontAwesomeIcon
@@ -71,14 +103,14 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "orders"
-                    ? "#FB6E3B"
+                    ? "#ffff"
                     : selectedTabBackgroundColor,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "orders" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              color: selected === "orders" ? "#ffff" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ອໍເດີ
@@ -87,18 +119,18 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="tables">
           <NavIcon>
             <FontAwesomeIcon
-              icon={faStoreAlt}
+              icon={faTabletAlt}
               style={{
                 color:
                   selected === "tables"
-                    ? "#FB6E3B"
+                    ? "#ffff"
                     : selectedTabBackgroundColor,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "tables" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+              color: selected === "tables" ? "#ffff" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ສະຖານະຂອງໂຕະ
@@ -111,7 +143,7 @@ export default function Sidenav({ location, history }) {
                 style={{
                   color:
                     selected === "histories"
-                      ? "#FB6E3B"
+                      ? "#ffff"
                       : selectedTabBackgroundColor,
                 }}
               />
@@ -119,7 +151,7 @@ export default function Sidenav({ location, history }) {
             <NavText
               style={{
                 color:
-                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                  selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ຂໍຄວາມຈາກລູກຄ້າ
@@ -132,7 +164,7 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "checkBill"
-                    ? "#FB6E3B"
+                    ? "#ffff"
                     : selectedTabBackgroundColor,
               }}
             />
@@ -140,7 +172,7 @@ export default function Sidenav({ location, history }) {
           <NavText
             style={{
               color:
-                selected === "checkBill" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                selected === "checkBill" ? "#ffff" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ແຈ້ງເຕືອນ Checkbill
@@ -153,7 +185,7 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "histories"
-                    ? "#FB6E3B"
+                    ? "#ffff"
                     : selectedTabBackgroundColor,
               }}
             />
@@ -161,7 +193,7 @@ export default function Sidenav({ location, history }) {
           <NavText
             style={{
               color:
-                selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ປະຫວັດການຂາຍ
@@ -174,7 +206,7 @@ export default function Sidenav({ location, history }) {
                 style={{
                   color:
                     selected === "histories"
-                      ? "#FB6E3B"
+                      ? "#ffff"
                       : selectedTabBackgroundColor,
                 }}
               />
@@ -182,7 +214,7 @@ export default function Sidenav({ location, history }) {
             <NavText
               style={{
                 color:
-                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                  selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ຈັດການຮ້ານຄ້າ
@@ -195,7 +227,7 @@ export default function Sidenav({ location, history }) {
                 style={{
                   color:
                     selected === "histories"
-                      ? "#FB6E3B"
+                      ? "#ffff"
                       : selectedTabBackgroundColor,
                 }}
               />
@@ -203,7 +235,7 @@ export default function Sidenav({ location, history }) {
             <NavText
               style={{
                 color:
-                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                  selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ຈັດການປະເພດອາຫານ
@@ -216,7 +248,7 @@ export default function Sidenav({ location, history }) {
                 style={{
                   color:
                     selected === "histories"
-                      ? "#FB6E3B"
+                      ? "#ffff"
                       : selectedTabBackgroundColor,
                 }}
               />
@@ -224,33 +256,33 @@ export default function Sidenav({ location, history }) {
             <NavText
               style={{
                 color:
-                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                  selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
               }}
             >
               ຈັດການອາຫານ
             </NavText>
-          </NavItem>
-          <NavItem eventKey="histories">
-            <NavIcon>
-              <FontAwesomeIcon
-                icon={faUserAlt}
-                style={{
-                  color:
-                    selected === "histories"
-                      ? "#FB6E3B"
-                      : selectedTabBackgroundColor,
-                }}
-              />
-            </NavIcon>
-            <NavText
+          </NavItem>*/}
+        <NavItem eventKey="users">
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faUserAlt}
               style={{
                 color:
-                  selected === "histories" ? "#FB6E3B" : UN_SELECTED_TAB_TEXT,
+                  selected === "users"
+                    ? "#ffff"
+                    : selectedTabBackgroundColor,
               }}
-            >
-              ຈັດການພະນັກງານ
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color:
+                selected === "users" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຈັດການພະນັກງານ
             </NavText>
-          </NavItem> */}
+        </NavItem>
       </SideNav.Nav>
     </SideNav >
   );

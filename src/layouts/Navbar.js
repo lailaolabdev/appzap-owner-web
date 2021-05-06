@@ -58,12 +58,10 @@ export default function NavBar() {
           zIndex: 1,
           marginLeft: 60,
           paddingRight: 80,
-          zIndex: 1001,
         }}
         variant="dark"
       >
         <Navbar.Brand style={{ color: "#909090" }} href="#">
-          {/*	<Image src={ImageLogo} height={40} width={150} />*/}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

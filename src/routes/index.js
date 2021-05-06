@@ -21,6 +21,10 @@ import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
 import Qrcode from "../pages/qrcode/Qrcode";
+import Users from "../pages/users/UserList";
+import UsersAdd from "../pages/users/UserAdd";
+import Category from "../pages/menu/Categorylist";
+import MenuList from "../pages/menu/MenuList";
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -54,7 +58,6 @@ const Index = () => {
         <Route
           render={({ location, history }) => (
             <React.Fragment>
-              {/* navbar */}
               <Navbar />
               <Sidenav
                 location={location}
@@ -109,6 +112,26 @@ const Index = () => {
                     exact
                     path="/qrcode/pagenumber/:number"
                     component={Qrcode}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/users/limit/:limit/page/:page"
+                    component={Users}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/users/userAdd"
+                    component={UsersAdd}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/category/limit/:limit/page/:page"
+                    component={Category}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/menu/limit/:limit/page/:page"
+                    component={MenuList}
                   />
                 </div>
               </Main>
