@@ -23,8 +23,6 @@ import { USER_KEY, END_POINT } from "../../constants";
 function Login() {
   const [width, setWidth] = React.useState(window.innerWidth);
   const breakpoint = 620;
-
-
   const { history } = useReactRouter();
   const [checkUser, setCheckUser] = useState();
   const _login = async ({ values }) => {
