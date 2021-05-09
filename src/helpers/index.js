@@ -48,9 +48,11 @@ export const _statusCheckBill = (item) => {
 }
 export const STATUS_USERS = (item) => {
   if (item === 'ADMIN') {
-    return "ຜູ້ບໍລິຫານ"
+    return "ຜູ້ໃຫ້ບໍລິຫານ"
   } else if (item === 'USER') {
     return "ພະນັກງານ"
+  } else if (item === 'STORE') {
+    return "ຜູ້ບໍລິຫານ"
   }
 }
 export const STATUS_MENU = (item) => {
