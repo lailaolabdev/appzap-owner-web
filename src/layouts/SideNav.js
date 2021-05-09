@@ -76,61 +76,61 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <NavItem eventKey="category">
+        <NavItem eventKey="category" style={{ backgroundColor: selected === "category" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faUtensils}
               style={{
                 color:
                   selected === "category"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "category" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+              color: selected === "category" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ເພີ່ມອາຫານ
             </NavText>
         </NavItem>
-        <NavItem eventKey="orders">
+        <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBookMedical}
               style={{
                 color:
                   selected === "orders"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "orders" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+              color: selected === "orders" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ອໍເດີ
             </NavText>
         </NavItem>
-        <NavItem eventKey="tables">
+        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faTabletAlt}
               style={{
                 color:
                   selected === "tables"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "tables" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+              color: selected === "tables" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ສະຖານະຂອງໂຕະ
@@ -157,14 +157,14 @@ export default function Sidenav({ location, history }) {
               ຂໍຄວາມຈາກລູກຄ້າ
             </NavText>
           </NavItem> */}
-        <NavItem eventKey="checkBill">
+        <NavItem eventKey="checkBill" style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBell}
               style={{
                 color:
                   selected === "checkBill"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
@@ -172,20 +172,20 @@ export default function Sidenav({ location, history }) {
           <NavText
             style={{
               color:
-                selected === "checkBill" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+                selected === "checkBill" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ແຈ້ງເຕືອນ Checkbill
           </NavText>
         </NavItem>
-        <NavItem eventKey="histories">
+        <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faHistory}
               style={{
                 color:
                   selected === "histories"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
@@ -193,7 +193,7 @@ export default function Sidenav({ location, history }) {
           <NavText
             style={{
               color:
-                selected === "histories" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+                selected === "histories" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ປະຫວັດການຂາຍ
@@ -262,14 +262,14 @@ export default function Sidenav({ location, history }) {
               ຈັດການອາຫານ
             </NavText>
           </NavItem>*/}
-        <NavItem eventKey="users">
+        <NavItem eventKey="users" style={{ backgroundColor: selected === "users" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faUserAlt}
               style={{
                 color:
                   selected === "users"
-                    ? "#ffff"
+                    ? "red"
                     : selectedTabBackgroundColor,
               }}
             />
@@ -277,7 +277,7 @@ export default function Sidenav({ location, history }) {
           <NavText
             style={{
               color:
-                selected === "users" ? "#ffff" : UN_SELECTED_TAB_TEXT,
+                selected === "users" ? "red" : UN_SELECTED_TAB_TEXT,
             }}
           >
             ຈັດການພະນັກງານ

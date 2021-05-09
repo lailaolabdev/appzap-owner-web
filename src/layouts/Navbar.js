@@ -89,13 +89,13 @@ export default function NavBar() {
                   : ""}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item
+                {/* <Dropdown.Item
                   style={{ color: "#909090" }}
                   onClick={() => _onDetailProfile()}
                 >
                   Profile
-								</Dropdown.Item>
-                <NavDropdown.Divider />
+								</Dropdown.Item> */}
+                {/* <NavDropdown.Divider /> */}
                 <Dropdown.Item
                   style={{ color: "#909090" }}
                   onClick={() => _onLogout()}

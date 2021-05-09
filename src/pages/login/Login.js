@@ -21,14 +21,16 @@ import './login.css';
 import { USER_KEY, END_POINT } from "../../constants";
 
 function Login() {
-  const [width, setWidth] = React.useState(window.innerWidth);
-  const breakpoint = 620;
   const { history } = useReactRouter();
-  const [checkUser, setCheckUser] = useState();
+  const [checkUser, setCheckUser] = useState(false);
   const _login = async ({ values }) => {
-    const user = await axios.post(`${END_POINT}/login`, values);
-    await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
-    await history.push("/orders/pagenumber/1");
+    try {
+      const user = await axios.post(`${END_POINT}/login`, values)
+      await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
+      await history.push("/orders/pagenumber/1");
+    } catch (error) {
+      setCheckUser(true)
+    }
   }
   return (
     <div style={{ backgroundColor: "#FB6E3B", paddingTop: 160, paddingBottom: 200, paddingLeft: 280, paddingRight: 280 }}>
@@ -56,7 +58,7 @@ function Login() {
                 values,
               }) => (
                 <Form className="contain" style={{ paddingLeft: 130 }}>
-                  <div style={{ textAlign: "center", paddingTop: 40 }}>
+                  <div style={{ textAlign: "center", paddingTop: 30 }}>
                     <Image src="https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/175875900_915432132566987_7559427731032625098_n.png" rounded style={{ height: 110, width: 110 }} />
                   </div>
                   <h5 className="text-center text mt-3 mb-3" style={{ fontWeight: "bold" }}>
@@ -99,7 +101,7 @@ function Login() {
                       {touched.password && errors.password}
                     </Form.Control.Feedback>
                   </InputGroup>
-                  <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "" : "none" }}>kdcijsdbcfa</div>
+                  <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "none" : "" }}>ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ຊື່ຜູ້ໃຊ້ລະບົບ ບໍ່ຖືກຕ້ອງ</div>
                   <Button
                     style={{ backgroundColor: "#FB6E3B", border: "1px #FB6E3B", marginLeft: 0 }}
                     className="form-control mt-3 mr-5 form-btn"
