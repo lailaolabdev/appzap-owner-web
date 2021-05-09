@@ -1,6 +1,6 @@
 import { END_POINT_SEVER } from './api'
 export const USER_KEY = "@userKey";
-export const URL_PHOTO_AW3 = "https://aeon-lailaolab-bucket.s3-ap-southeast-1.amazonaws.com/"
+export const URL_PHOTO_AW3 = "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/"
 // export const END_POINT = END_POINT_SEVER;
 export const END_POINT = END_POINT_SEVER;
 export const FONT_HEADER_SIZE = 16;

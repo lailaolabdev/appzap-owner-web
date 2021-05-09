@@ -53,3 +53,10 @@ export const STATUS_USERS = (item) => {
     return "ພະນັກງານ"
   }
 }
+export const STATUS_MENU = (item) => {
+  if (item === 'HAS') {
+    return "ເປີດ"
+  } else if (item === 'DONOT') {
+    return "ປິດ"
+  }
+}
