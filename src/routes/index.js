@@ -20,6 +20,7 @@ import Histories from "../pages/histories/Histories";
 import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
+import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
@@ -109,6 +110,11 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
+                    path="/checkBill/historiesCheckBill"
+                    component={HistoriesCheckBill}
+                  />
+                  <PrivateRoute
+                    exact
                     path="/qrcode/pagenumber/:number"
                     component={Qrcode}
                   />
@@ -127,6 +133,7 @@ const Index = () => {
                     path="/menu/limit/:limit/page/:page"
                     component={MenuList}
                   />
+
                 </div>
               </Main>
             </React.Fragment>

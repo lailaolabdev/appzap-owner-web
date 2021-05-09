@@ -33,7 +33,7 @@ export default function NotificationCheckBill() {
       .then(json => setorderCallCheckOut(json));
   }
   const _checkbillTable = (item) => {
-    history.push(`/tables/pagenumber/1/tableid/${item}`)
+    history.push(`/checkBill/historiesCheckBill/?code=${item}`)
   }
   return (
     <div style={{ minHeight: 400 }}>
@@ -42,14 +42,6 @@ export default function NotificationCheckBill() {
           <h5 style={{ marginLeft: 30 }}><strong>ແຈ້ງເຕືອນ checkBill</strong></h5>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
             <InputGroup>
-              {/* <div className="col-5">
-                <label>ແຕ່ວັນທີ</label>
-                <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
-              </div> */}
-              {/* <div className="col-5">
-                <label>ຫາວັນທີ</label>
-                <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
-              </div> */}
             </InputGroup>
           </Nav.Item>
         </div>
@@ -68,7 +60,7 @@ export default function NotificationCheckBill() {
             <tbody>
               {orderCallCheckOut?.map((item, index) => {
                 return (
-                  <tr index={item} onClick={() => _checkbillTable(item?.table_id)}>
+                  <tr index={item} onClick={() => _checkbillTable(item?.code)}>
                     <td>{index + 1}</td>
                     <td>{item?.customer_nickname}</td>
                     <td>{item?.code}</td>

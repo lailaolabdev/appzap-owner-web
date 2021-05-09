@@ -16,25 +16,26 @@ const MenusItemDetail = (props) => {
       total += orderItem?.quantity * orderItem?.menu?.price;
     }
   }
+
   const _checkBill = async () => {
-    if (data) {
-      await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
-        status: "CHECKOUT",
-        checkout: "true",
-        code: props.data[0]?.orderId?.code
-      },
-        {
-          headers: await getHeaders(),
-        }).then(function (response) {
-          if (response?.data) {
-            window.location.reload();
-          }
-        }).catch(function (error) {
-          console.log("🚀", error)
-        });
-    } else {
-      errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
-    }
+    // if (data) {
+    //   await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
+    //     status: "CHECKOUT",
+    //     checkout: "true",
+    //     code: props.data[0]?.orderId?.code
+    //   },
+    //     {
+    //       headers: await getHeaders(),
+    //     }).then(function (response) {
+    //       if (response?.data) {
+    //         window.location.reload();
+    //       }
+    //     }).catch(function (error) {
+    //       console.log("🚀", error)
+    //     });
+    // } else {
+    //   errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
+    // }
   }
   return (
     <Modal

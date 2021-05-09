@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form"
 import Image from "react-bootstrap/Image"
 import Dropdown from "react-bootstrap/Dropdown"
 import NavDropdown from "react-bootstrap/NavDropdown"
-import { USER_KEY, END_POINT } from "../constants"
+import { USER_KEY, END_POINT, URL_PHOTO_AW3 } from "../constants"
 import useReactRouter from "use-react-router"
 import ImageProfile from "../image/profile.png"
 import { Badge } from 'react-bootstrap'
@@ -100,14 +100,14 @@ export default function NavBar() {
                   style={{ color: "#909090" }}
                   onClick={() => _onLogout()}
                 >
-                  Logout
+                  ອອກຈາກລະບົບ
 								</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Image
-              src={userData.image ? userData.image.url : ImageProfile}
-              width={50}
-              height={50}
+              src={userData?.data?.image ? URL_PHOTO_AW3 + userData?.data?.image : ImageProfile}
+              width={45}
+              height={45}
               roundedCircle
             />
           </Form>

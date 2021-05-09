@@ -11,6 +11,9 @@ export const orderStatus = (status) => {
     case "SERVED":
       return `ເສີບແລ້ວ`;
       break;
+    case "CART":
+      return `ກຳລັງຈະສັງ`;
+      break;
     default:
       return "ຍົກເລີກແລ້ວ";
       break;

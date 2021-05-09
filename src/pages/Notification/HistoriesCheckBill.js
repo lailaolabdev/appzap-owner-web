@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import useReactRouter from "use-react-router";
+import MenusItemDetail from '../table/components/MenusItemDetail'
 import {
-  Form,
-  Row,
   Col,
-  Button,
   Container,
-  FormControl,
-  InputGroup,
-  Nav
+  Nav,
+  Button
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -15,11 +13,12 @@ import Table from "react-bootstrap/Table";
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { END_POINT } from '../../constants'
+import { END_POINT, COLOR_APP } from '../../constants'
 import AnimationLoading from "../../constants/loading"
 
 const date = new moment().format("LL");
-export default function History() {
+export default function HistoriesCheckBill() {
+  const { history, location, match } = useReactRouter()
   const newDate = new Date();
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
@@ -37,7 +36,7 @@ export default function History() {
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
+    const url = END_POINT + `/orders/${location?.search}&&status=CALLTOCHECKOUT&checkout=false`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -64,26 +63,14 @@ export default function History() {
   }
   return (
     <div style={{ minHeight: 400 }}>
+      <div style={{ height: 10 }}></div>
       <Container fluid>
-        <div className="row mt-5">
-          <Nav.Item>
-            <h5 style={{ marginLeft: 30 }}><strong>ຍອດຂາຍ</strong></h5>
-          </Nav.Item>
-          <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-            <InputGroup>
-              <div className="col-4">
-                <label>ແຕ່ວັນທີ</label>
-                <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
-              </div>
-              <div className="col-4">
-                <label>ຫາວັນທີ</label>
-                <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
-              </div>
-              <div className="col-4">
-                <label>ລະຫັດລູກຄ້າ</label>
-                <input type="number" class="form-control" placeholder="ລະຫັດລູກຄ້າ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
-              </div>
-            </InputGroup>
+        <div className="row col-12">
+          <Nav.Item className="row col-12">
+            <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດຂອງບີນ ( {newData[0]?.code} )</strong></h5>
+            <div className="col-sm-7"></div>
+            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} >Print Bill</Button>{' '}
+            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }}>Check out</Button>{' '}
           </Nav.Item>
         </div>
         <div style={{ height: 20 }}></div>
