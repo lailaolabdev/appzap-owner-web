@@ -22,7 +22,6 @@ import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
-import UsersAdd from "../pages/users/UserAdd";
 import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 const Main = styled.main`
@@ -117,11 +116,6 @@ const Index = () => {
                     exact
                     path="/users/limit/:limit/page/:page"
                     component={Users}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/users/userAdd"
-                    component={UsersAdd}
                   />
                   <PrivateRoute
                     exact

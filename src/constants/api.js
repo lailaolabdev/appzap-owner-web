@@ -1,7 +1,19 @@
+import { USER_KEY } from './index'
 export const END_POINT_SEVER = "http://localhost:7070";
 // export const END_POINT_SEVER = "http://13.229.122.188:7070";
-
+export const getLocalData = async () => {
+    const _local = await localStorage.getItem(USER_KEY);
+    const _localJson2 = await JSON.parse(_local)
+    const ACCESS_TOKEN2 = { authorization: "Ordering " + _localJson2?.accessToken }
+    return ACCESS_TOKEN2;
+}
+// =====>>>>
 export const USERS = END_POINT_SEVER + '/users'
+export const USER = END_POINT_SEVER + '/user'
+export const USERS_CREATE = END_POINT_SEVER + '/user_create'
+export const USERS_DELETE = END_POINT_SEVER + '/user_delete'
+export const USERS_UPDATE = END_POINT_SEVER + '/user_update'
+// ========
 export const CATEGORY = END_POINT_SEVER + '/categories'
 export const MENUS = END_POINT_SEVER + '/menus'
 export const PRESIGNED_URL = END_POINT_SEVER + '/uploadfile'
