@@ -7,8 +7,11 @@ import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
 import { END_POINT, USER_KEY } from '../../../constants'
 import { getHeaders } from "../../../services/auth";
-import { errorAdd } from "../../../helpers/sweetalert";
+import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+
+import useReactRouter from "use-react-router";
 const MenusItemDetail = (props) => {
+  const { history, location, match } = useReactRouter()
   const { data } = props;
   let total = 0;
   if (data && data.length > 0) {
@@ -16,26 +19,29 @@ const MenusItemDetail = (props) => {
       total += orderItem?.quantity * orderItem?.menu?.price;
     }
   }
-
   const _checkBill = async () => {
-    // if (data) {
-    //   await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
-    //     status: "CHECKOUT",
-    //     checkout: "true",
-    //     code: props.data[0]?.orderId?.code
-    //   },
-    //     {
-    //       headers: await getHeaders(),
-    //     }).then(function (response) {
-    //       if (response?.data) {
-    //         window.location.reload();
-    //       }
-    //     }).catch(function (error) {
-    //       console.log("🚀", error)
-    //     });
-    // } else {
-    //   errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
-    // }
+    if (data) {
+      await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
+        status: "CHECKOUT",
+        checkout: "true",
+        code: props.data[0]?.orderId?.code
+      },
+        {
+          headers: await getHeaders(),
+        }).then(async function (response) {
+          await axios.post(END_POINT + `/generates`, {
+            table_id: props.data[0]?.orderId?.table_id
+          })
+          if (response?.data) {
+            await successAdd('Check Bill ສຳເລັດ')
+          }
+        }).catch(function (error) {
+          errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
+          console.log("🚀", error)
+        });
+    } else {
+      errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
+    }
   }
   return (
     <Modal

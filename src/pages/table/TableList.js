@@ -72,8 +72,8 @@ import {
 
 export default function TableList() {
   const { history, location, match } = useReactRouter();
-  const number = match.params.number;
-  const activeTableId = match.params.tableId;
+  const number = match?.params?.number;
+  let activeTableId = match?.params?.tableId;
   useEffect(() => {
     const socket = socketIOClient(END_POINT);
     socket.on("order", data => {
@@ -96,7 +96,6 @@ export default function TableList() {
   const [tableId, setTableId] = useState(activeTableId);
   const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
-  const [genTableCode, setGenTableCode] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
@@ -109,73 +108,81 @@ export default function TableList() {
 
   const [idTable, setTableCode] = useState("");
   const [data, setData] = useState();
-
-  // =====
+  // =====>>>> query data order in table
   const [dataOrder, setDataOrder] = useState([])
-  const [statusTable, setstatusTable] = useState([])
+  const [newData, setnewData] = useState([])
+  const [DataTable, setDataTable] = useState()
+  const [tableData, setTableData] = useState({})
   useEffect(() => {
-    _searchDate()
-  }, [generateCode])
-  const _searchDate = async () => {
-    const url = END_POINT + `/orders?code=${generateCode}`;
-    const _data = await fetch(url)
+    _getTable()
+  }, []);
+  useEffect(() => {
+    console.log("activeTableId: ", activeTableId)
+    const url = END_POINT + `/orders?code=${activeTableId}`;
+    fetch(url)
       .then(response => response.json())
       .then(response => {
-        setstatusTable(response)
+        setDataOrder(response)
+      })
+  }, [activeTableId])
+  const _searchDate = async (table) => {
+    setTableData(table)
+    setTableCode(table?.order?.code);
+    let checkout =
+      table &&
+        table?.order &&
+        table?.order?.checkout == false
+        ? true
+        : false;
+    await setCheckedToUpdate([]);
+    await _onHandlerTableDetail(table.table_id, checkout, table?.code);
+    await setGenerateCode(table?.code);
+
+    const url = END_POINT + `/orders?code=${table?.code}`;
+    await fetch(url)
+      .then(response => response.json())
+      .then(response => {
         setDataOrder(response)
       })
   }
-  let newData = []
-  for (let i = 0; i < dataOrder.length; i++) {
-    for (let k = 0; k < dataOrder[i]?.order_item.length; k++) {
-      newData.push(dataOrder[i]?.order_item[k])
+  useEffect(() => {
+    let newData = []
+    for (let i = 0; i < dataOrder.length; i++) {
+      for (let k = 0; k < dataOrder[i]?.order_item.length; k++) {
+        newData.push(dataOrder[i]?.order_item[k])
+      }
     }
+    console.log("newData: ", newData)
+    setnewData(newData)
+  }, [dataOrder])
+  // ===== query table ===>
+  const _getTable = async () => {
+    const url = END_POINT + `/generates/?status=true&checkout=false`;
+    const _data = await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataTable(response)
+      })
   }
   // =====>>>>> fix by joy
-  useEffect(() => {
-    fetch(`${END_POINT}/messages`)
-      .then((response) => response.json())
-      .then((response) => setData(response));
-  }, []);
+
 
   /**
    * useEffect
    * **/
   useEffect(() => {
     const fetchTable = async () => {
-      await setIsLoading(true)
       const res = await getTables();
       await setTable(res);
-      await setIsLoading(false);
-      await _onHandlerTableDetail(activeTableId);
     };
     fetchTable();
   }, []);
-  useEffect(() => {
-    if (tableId) {
-      setCheckedToUpdate([]);
-    }
-  }, [tableId]);
-
-  /**
-   * function
-   */
-  // const [FilterTable, setFilterTable] = useState()
-  const _onHandlerTableDetail = async (table_id, checkout) => {
+  const _onHandlerTableDetail = async (table_id, checkout, code) => {
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
       ACTIVE_STATUS,
       table_id
     );
-    if (_orderDataFromTable.length > 0 && checkout === false) {
-      const _getCode = await generatedCode(table_id);
-      setGenerateCode(_getCode);
-      setGenTableCode(false);
-    } else {
-      const _getCode = await generatedCode(table_id);
-      setGenerateCode(_getCode);
-      setGenTableCode(true);
-    }
     if (_orderDataFromTable.length !== 0 && checkout === true) {
       let newArr = [];
       _orderDataFromTable.map((order, index) => {
@@ -201,20 +208,12 @@ export default function TableList() {
         }
       });
       await setOrderIds(newArr);
-      // await setOrderFromTable(_orderDataFromTable);
-      // await setShowTable(false);
       await setCheckoutModal(true);
     } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
       await setShowTable(true);
-    } else {
-      const _getCode = await generatedCode(table_id);
-      if (_getCode) {
-        setGenerateCode(_getCode);
-        setGenTableCode(true);
-      }
     }
-    history.push(`/tables/pagenumber/${number}/tableid/${table_id}`);
+    history.push(`/tables/pagenumber/${number}/tableid/${code}`);
   };
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
@@ -235,6 +234,7 @@ export default function TableList() {
       setCheckedToUpdate(_removeId);
     }
   };
+  // =======>>>>>>>>> update
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
@@ -280,7 +280,7 @@ export default function TableList() {
               style={{ paddingBottom: "3px" }}
             >
               <Row>
-                <div style={{ fontWeight: "bold" }}>ລະຫັດຂອງໂຕະນີ້ຄື:</div>{" "}
+                {" "}
                 <div
                   className="ml-2 mr-5"
                   style={{ fontWeight: "bold", color: "#FB6E3B" }}
@@ -302,8 +302,8 @@ export default function TableList() {
           <div style={half_backgroundColor}>
             <Container>
               <Row>
-                {table &&
-                  table.map((table, index) => (
+                {DataTable &&
+                  DataTable.map((table, index) => (
                     <div className="card" key={index}>
                       <Button
                         key={index}
@@ -313,19 +313,11 @@ export default function TableList() {
                           height: 100,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
-                          color: tableId == table?.table_id ? "white" : "black",
+                          backgroundColor: table?.code === activeTableId ? "#FB6E3B" : tableId == table?.table_id ? "#FB6E3B" : "white",
+                          color: table?.code === activeTableId ? "#white" : tableId == table?.table_id ? "white" : "black",
                         }}
                         onClick={async () => {
-                          setTableCode(table?.order?.code);
-                          let checkout =
-                            table &&
-                              table?.order &&
-                              table?.order?.checkout == false
-                              ? true
-                              : false;
-                          await setCheckedToUpdate([]);
-                          await _onHandlerTableDetail(table.table_id, checkout);
+                          _searchDate(table)
                         }}
                       >
                         <div
@@ -354,7 +346,8 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            ໂຕະ {` ${table?.table_id}`}
+                            ໂຕະ {table?.table_id}
+                            <p style={{ color: "red" }}>{table?.code}</p>
                           </span>
                         </div>
                       </Button>
@@ -365,130 +358,128 @@ export default function TableList() {
           </div>
 
           {/* Detail Table */}
-          {showTable ? (
-            <div
-              style={{
-                width: "60%",
-                backgroundColor: "#FFF",
-                maxHeight: "90vh",
-                borderColor: "black",
-                overflowY: "scroll",
-                borderWidth: 1,
-                paddingLeft: 20,
-                paddingTop: 20,
-              }}
-            >
-              <Container fluid>
-                <Row>
-                  <Col sm={3}>
-                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
+          <div
+            style={{
+              width: "60%",
+              backgroundColor: "#FFF",
+              maxHeight: "90vh",
+              borderColor: "black",
+              overflowY: "scroll",
+              borderWidth: 1,
+              paddingLeft: 20,
+              paddingTop: 20,
+            }}
+          >
+            <Container fluid>
+              <Row>
+                <Col sm={3}>
+                  <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
+                </Col>
+                <Nav.Item className="ml-auto row mr-5">
+                  <Col sm={3} className="mr-5">
                   </Col>
-                  <Nav.Item className="ml-auto row mr-5">
-                    <Col sm={3} className="mr-5">
-                    </Col>
-                    <Col sm={4}>
-                      <Button
-                        variant={BUTTON_OUTLINE_DANGER}
-                        style={BUTTON_EDIT}
-                        onClick={() => {
-                          if (checkedToUpdate.length != 0) {
-                            setCancelOrderModal(true);
-                          }
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          style={{ float: "left" }}
-                        />
+                  <Col sm={4}>
+                    <Button
+                      variant={BUTTON_OUTLINE_DANGER}
+                      style={BUTTON_EDIT}
+                      onClick={() => {
+                        if (checkedToUpdate.length != 0) {
+                          setCancelOrderModal(true);
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrashAlt}
+                        style={{ float: "left" }}
+                      />
                         ຍົກເລີກ
                       </Button>
-                      {"\t"}
-                    </Col>
-                    <Col sm={3}>
-                      <Button
-                        // style={BUTTON_DELETE}
-                        style={BUTTON_EDIT_HOVER}
-                        onClick={() => {
-                          if (checkedToUpdate.length != 0) {
-                            _onClickUpdateOrder();
-                          }
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faPen}
-                          style={{ float: "left", marginTop: 4 }}
-                        />
+                    {"\t"}
+                  </Col>
+                  <Col sm={3}>
+                    <Button
+                      // style={BUTTON_DELETE}
+                      style={BUTTON_EDIT_HOVER}
+                      onClick={() => {
+                        if (checkedToUpdate.length != 0) {
+                          _onClickUpdateOrder();
+                        }
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faPen}
+                        style={{ float: "left", marginTop: 4 }}
+                      />
                         ອັບເດດ
                       </Button>
-                    </Col>
-                  </Nav.Item>
-                </Row>
-                <div style={padding_white} />
-                <div>
-                  <Table
-                    responsive
-                    className="staff-table-list borderless table-hover"
-                  >
-                    <thead style={{ backgroundColor: "#F1F1F1" }}>
-                      <tr>
-                        <th style={{ width: 20 }}></th>
-                        <th style={{ width: 50 }}>ລຳດັບ</th>
-                        <th>ຊື່ເມນູ</th>
-                        <th>ຈຳນວນ</th>
-                        <th>ເບີໂຕະ</th>
-                        <th>ສະຖານະ</th>
-                        <th>ເວລາ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {newData ? newData.map((orderItem, index) => (
-                        <tr key={index}>
-                          <td>
-                            <Checkbox
-                              color="primary"
-                              name="selectOrderItem"
-                              onChange={(e) => {
-                                _handleCheckbox(e, orderItem?._id);
-                              }}
-                            />
-                          </td>
-                          <td>{index + 1}</td>
-                          <td>{orderItem?.menu?.name}</td>
-                          <td>{orderItem?.quantity}</td>
-                          <td>{orderItem?.table_id}</td>
-                          <td>
-                            <div
-                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
-                            >
-                              {orderItem?.status
-                                ? orderStatus(orderItem?.status)
-                                : "-"}
-                            </div>
-                          </td>
-                          <td>
-                            {orderItem?.updatedAt
-                              ? moment(orderItem?.updatedAt).format("HH:mm A")
+                  </Col>
+                </Nav.Item>
+              </Row>
+              <div style={padding_white} />
+              <div>
+                <Table
+                  responsive
+                  className="staff-table-list borderless table-hover"
+                >
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr>
+                      <th style={{ width: 20 }}></th>
+                      <th style={{ width: 50 }}>ລຳດັບ</th>
+                      <th>ຊື່ເມນູ</th>
+                      <th>ຈຳນວນ</th>
+                      <th>ເບີໂຕະ</th>
+                      <th>ສະຖານະ</th>
+                      <th>ເວລາ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newData ? newData.map((orderItem, index) => (
+                      <tr key={index}>
+                        <td>
+                          <Checkbox
+                            color="primary"
+                            name="selectOrderItem"
+                            onChange={(e) => {
+                              _handleCheckbox(e, orderItem?._id);
+                            }}
+                          />
+                        </td>
+                        <td>{index + 1}</td>
+                        <td>{orderItem?.menu?.name}</td>
+                        <td>{orderItem?.quantity}</td>
+                        <td>{orderItem?.table_id}</td>
+                        <td>
+                          <div
+                            style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
+                          >
+                            {orderItem?.status
+                              ? orderStatus(orderItem?.status)
                               : "-"}
-                          </td>
-                        </tr>
-                      )) : ""}
-                      <tr>
-                        <td>{data?.text}</td>
+                          </div>
+                        </td>
+                        <td>
+                          {orderItem?.updatedAt
+                            ? moment(orderItem?.updatedAt).format("HH:mm A")
+                            : "-"}
+                        </td>
                       </tr>
-                    </tbody>
-                  </Table>
-                </div>
-                <div style={{ marginBottom: 100 }} />
-              </Container>
-            </div>
-          ) : null}
+                    )) : ""}
+                    <tr>
+                      <td>{data?.text}</td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+              <div style={{ marginBottom: 100 }} />
+            </Container>
+          </div>
         </div>
       </div>
-      <GenTableCode
+      {/* <GenTableCode
         show={genTableCode}
         onHide={() => setGenTableCode(false)}
         data={generateCode}
-      />
+      /> */}
       <MenusItemDetail
         data={newData}
         show={menuItemDetailModal}

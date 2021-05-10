@@ -531,7 +531,7 @@ export default function MenuList() {
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleClose}>
+                <Button variant="danger" onClick={handleClose2}>
                   ຍົກເລີກ
           </Button>
                 <Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }} onClick={() => handleSubmit()}>ບັນທືກ</Button>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
+import CheckBill from './CheckBill'
 import MenusItemDetail from '../table/components/MenusItemDetail'
+
 import {
   Col,
   Container,
@@ -20,6 +22,7 @@ const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
   const { history, location, match } = useReactRouter()
   const newDate = new Date();
+  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [data, setData] = useState([])
@@ -36,7 +39,8 @@ export default function HistoriesCheckBill() {
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders/${location?.search}&&status=CALLTOCHECKOUT&checkout=false`;
+    const url = END_POINT + `/orders/${location?.search}`;
+    // const url = END_POINT + `/orders/${location?.search}&&status=CALLTOCHECKOUT&checkout=false`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -44,6 +48,7 @@ export default function HistoriesCheckBill() {
       })
     setIsLoading(false)
   }
+
   const _setSelectedDateStart = (item) => {
     setSelectedDateStart(item.target.value)
   }
@@ -61,6 +66,29 @@ export default function HistoriesCheckBill() {
       amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
     }
   }
+  const _checkOut = async (divName) => {
+    var mywindow = window.open('', 'PRINT', 'height=200,width=200,textAlign:center');
+    mywindow.document.write('<body >');
+    await mywindow.document.write(`AppZap Lailaolab`);
+    mywindow.document.write('</body></html>');
+    mywindow.document.close();
+    mywindow.focus();
+    mywindow.print();
+    mywindow.close();
+    return true;
+
+  }
+  const _onClickMenuDetail = async () => {
+    await setMenuItemDetailModal(true);
+  };
+  const [StatusMoney, setStatusMoney] = useState('')
+  useEffect(() => {
+    if (data[0]?.checkout === false && data[0]?.status === "CALLTOCHECKOUT") {
+      setStatusMoney("ຍັງບໍ່ຊຳລະ")
+    } else if (data[0]?.checkout === true && data[0]?.status === "CHECKOUT") {
+      setStatusMoney("ຊຳລະສຳເລັດ")
+    }
+  }, [data])
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 10 }}></div>
@@ -69,14 +97,14 @@ export default function HistoriesCheckBill() {
           <Nav.Item className="row col-12">
             <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດຂອງບີນ ( {newData[0]?.code} )</strong></h5>
             <div className="col-sm-7"></div>
-            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} >Print Bill</Button>{' '}
-            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }}>Check out</Button>{' '}
+            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} onClick={() => _checkOut('printMe')}>Print Bill</Button>{' '}
+            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }} onClick={() => _onClickMenuDetail()}>Check out</Button>{' '}
           </Nav.Item>
         </div>
         <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive class="table">
+            <Table responsive class="table" id='printMe'>
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
@@ -109,7 +137,7 @@ export default function HistoriesCheckBill() {
                 )}
                 <tr>
                   <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
-                  <td colSpan={2}></td>
+                  <td colSpan={2} style={{ color: StatusMoney === 'ຍັງບໍ່ຊຳລະ' ? "red" : "green" }}>{StatusMoney}</td>
                   <td colSpan={4} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກິບ</td>
                 </tr>
               </tbody>
@@ -118,6 +146,11 @@ export default function HistoriesCheckBill() {
         </div>
         }
       </Container>
+      <MenusItemDetail
+        data={newData}
+        show={menuItemDetailModal}
+        hide={() => setMenuItemDetailModal(false)}
+      />
     </div>
   )
 }

@@ -21,6 +21,7 @@ import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
+import CheckBill from "../pages/Notification/CheckBill";
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
@@ -53,6 +54,7 @@ const Index = () => {
       <Switch>
         {/* Before login routes */}
         <PublicRoute exact path="/" component={Login} />
+        <PublicRoute exact path="/checkOut" component={CheckBill} />
 
         {/* After login routes (has SideNav and NavBar) */}
         <Route
