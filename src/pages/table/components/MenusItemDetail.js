@@ -7,8 +7,11 @@ import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
 import { END_POINT, USER_KEY } from '../../../constants'
 import { getHeaders } from "../../../services/auth";
-import { errorAdd } from "../../../helpers/sweetalert";
+import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+
+import useReactRouter from "use-react-router";
 const MenusItemDetail = (props) => {
+  const { history, location, match } = useReactRouter()
   const { data } = props;
   let total = 0;
   if (data && data.length > 0) {
@@ -25,11 +28,15 @@ const MenusItemDetail = (props) => {
       },
         {
           headers: await getHeaders(),
-        }).then(function (response) {
+        }).then(async function (response) {
+          await axios.post(END_POINT + `/generates`, {
+            table_id: props.data[0]?.orderId?.table_id
+          })
           if (response?.data) {
-            window.location.reload();
+            await successAdd('Check Bill ສຳເລັດ')
           }
         }).catch(function (error) {
+          errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
           console.log("🚀", error)
         });
     } else {

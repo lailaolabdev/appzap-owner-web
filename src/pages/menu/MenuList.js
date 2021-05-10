@@ -234,7 +234,7 @@ export default function MenuList() {
                       <td>{data?.category?.name}</td>
                       <td>{data?.name}</td>
                       <td>{moneyCurrency(data?.price)}</td>
-                      <td>{STATUS_MENU(data?.status)}</td>
+                      <td style={{ color: STATUS_MENU(data?.status) === "ປິດ" ? "red" : "green" }}>{STATUS_MENU(data?.status)}</td>
                       <td>{data?.detail ? data?.detail : " - "}</td>
                       <td><FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP }} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.name)} /></td>
                     </tr>
@@ -531,7 +531,7 @@ export default function MenuList() {
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleClose}>
+                <Button variant="danger" onClick={handleClose2}>
                   ຍົກເລີກ
           </Button>
                 <Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }} onClick={() => handleSubmit()}>ບັນທືກ</Button>
