@@ -8,6 +8,7 @@ import { moneyCurrency } from "../../../helpers/index";
 import { END_POINT, USER_KEY } from '../../../constants'
 import { getHeaders } from "../../../services/auth";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import socketIOClient from "socket.io-client";
 
 import useReactRouter from "use-react-router";
 const MenusItemDetail = (props) => {
@@ -19,6 +20,15 @@ const MenusItemDetail = (props) => {
       total += orderItem?.quantity * orderItem?.menu?.price;
     }
   }
+  const socket = socketIOClient(END_POINT);
+  socket.on("checkoutSuccess", data => {
+    if (data) {
+      successAdd('ສຳເລັດການຮັບເງີນ')
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
+  });
   const _checkBill = async () => {
     if (data) {
       await axios.put(END_POINT + `/orders/${props.data[0]?.orderId?._id}`, {
@@ -29,12 +39,6 @@ const MenusItemDetail = (props) => {
         {
           headers: await getHeaders(),
         }).then(async function (response) {
-          await axios.post(END_POINT + `/generates`, {
-            table_id: props.data[0]?.orderId?.table_id
-          })
-          if (response?.data) {
-            await successAdd('Check Bill ສຳເລັດ')
-          }
         }).catch(function (error) {
           errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
           console.log("🚀", error)
@@ -79,7 +83,7 @@ const MenusItemDetail = (props) => {
                         )
                         : "-"}
                     </td>
-                    <td>{orderItem?.table_id}</td>
+                    <td>{orderItem?.orderId?.table_id}</td>
 
                   </tr>
                 );

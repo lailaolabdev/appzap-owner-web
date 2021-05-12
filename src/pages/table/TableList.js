@@ -8,8 +8,6 @@ import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Checkbox from "@material-ui/core/Checkbox";
 import Table from "react-bootstrap/Table";
-import { useReactToPrint } from 'react-to-print';
-
 import {
   faTrashAlt,
   faPen,
@@ -28,9 +26,8 @@ import Loading from "../../components/Loading";
 import UpdateOrderModal from "./components/UpdateOrderModal";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import CancelModal from "./components/CancelModal";
-import GenTableCode from "./components/GenTableCode";
 import MenusItemDetail from "./components/MenusItemDetail";
-import { orderStatus } from "../../helpers";
+import { orderStatus, STATUS_OPENTABLE } from "../../helpers";
 import {
   getTables,
   getTableWithOrder,
@@ -65,28 +62,15 @@ import {
   BUTTON_EDIT_HOVER,
   END_POINT,
 } from "../../constants/index";
-
-/**
- * css
- * **/
-
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const number = match?.params?.number;
   let activeTableId = match?.params?.tableId;
-  useEffect(() => {
-    const socket = socketIOClient(END_POINT);
-    socket.on("order", data => {
-      window.location.reload()
-    });
-    socket.on("createorder", (_) => {
-      window.location.reload();
-    });
-
-    socket.on("checkout", (_) => {
-      window.location.reload();
-    });
-  }, []);
+  const [reLoadData, setreLoadData] = useState()
+  const socket = socketIOClient(END_POINT);
+  socket.on("createorder", data => {
+    setreLoadData(data)
+  });
 
   /**
    * useState
@@ -112,21 +96,21 @@ export default function TableList() {
   const [dataOrder, setDataOrder] = useState([])
   const [newData, setnewData] = useState([])
   const [DataTable, setDataTable] = useState()
-  const [tableData, setTableData] = useState({})
   useEffect(() => {
     _getTable()
   }, []);
   useEffect(() => {
-    console.log("activeTableId: ", activeTableId)
+    _getTable()
+  }, [reLoadData]);
+  useEffect(() => {
     const url = END_POINT + `/orders?code=${activeTableId}`;
     fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataOrder(response)
       })
-  }, [activeTableId])
+  }, [activeTableId, reLoadData])
   const _searchDate = async (table) => {
-    setTableData(table)
     setTableCode(table?.order?.code);
     let checkout =
       table &&
@@ -137,7 +121,6 @@ export default function TableList() {
     await setCheckedToUpdate([]);
     await _onHandlerTableDetail(table.table_id, checkout, table?.code);
     await setGenerateCode(table?.code);
-
     const url = END_POINT + `/orders?code=${table?.code}`;
     await fetch(url)
       .then(response => response.json())
@@ -152,7 +135,6 @@ export default function TableList() {
         newData.push(dataOrder[i]?.order_item[k])
       }
     }
-    console.log("newData: ", newData)
     setnewData(newData)
   }, [dataOrder])
   // ===== query table ===>
@@ -166,10 +148,6 @@ export default function TableList() {
   }
   // =====>>>>> fix by joy
 
-
-  /**
-   * useEffect
-   * **/
   useEffect(() => {
     const fetchTable = async () => {
       const res = await getTables();
@@ -211,7 +189,6 @@ export default function TableList() {
       await setCheckoutModal(true);
     } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
-      await setShowTable(true);
     }
     history.push(`/tables/pagenumber/${number}/tableid/${code}`);
   };
@@ -310,7 +287,7 @@ export default function TableList() {
                         className="card-body"
                         style={{
                           width: 180,
-                          height: 100,
+                          height: 140,
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.code === activeTableId ? "#FB6E3B" : tableId == table?.table_id ? "#FB6E3B" : "white",
@@ -328,26 +305,12 @@ export default function TableList() {
                             top: 10,
                           }}
                         >
-                          {
-                            table?.order && table?.order?.checkout ? (
-                              <FontAwesomeIcon
-                                style={{
-                                  color:
-                                    tableId == table?.table_id
-                                      ? "white"
-                                      : "#FB6E3B",
-                                }}
-                                icon={faCommentDots}
-                              />
-                            ) : (
-                              ""
-                            )
-                          }
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
                             ໂຕະ {table?.table_id}
-                            <p style={{ color: "red" }}>{table?.code}</p>
+                            <div style={{ color: "red" }}>{table?.code}</div>
+                            <div style={{ color: STATUS_OPENTABLE(table?.empty) === 'ຍັງບໍ່ເປີດໃຊ້ງານ' ? "red" : "green" }}>{STATUS_OPENTABLE(table?.empty)}</div>
                           </span>
                         </div>
                       </Button>
@@ -370,108 +333,110 @@ export default function TableList() {
               paddingTop: 20,
             }}
           >
-            <Container fluid>
-              <Row>
-                <Col sm={3}>
-                  <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
-                </Col>
-                <Nav.Item className="ml-auto row mr-5">
-                  <Col sm={3} className="mr-5">
+            {activeTableId == "00" ? null :
+              <Container fluid>
+                <Row>
+                  <Col sm={3}>
+                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
                   </Col>
-                  <Col sm={4}>
-                    <Button
-                      variant={BUTTON_OUTLINE_DANGER}
-                      style={BUTTON_EDIT}
-                      onClick={() => {
-                        if (checkedToUpdate.length != 0) {
-                          setCancelOrderModal(true);
-                        }
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        style={{ float: "left" }}
-                      />
+                  <Nav.Item className="ml-auto row mr-5">
+                    <Col sm={3} className="mr-5">
+                    </Col>
+                    <Col sm={4}>
+                      <Button
+                        variant={BUTTON_OUTLINE_DANGER}
+                        style={BUTTON_EDIT}
+                        onClick={() => {
+                          if (checkedToUpdate.length != 0) {
+                            setCancelOrderModal(true);
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          style={{ float: "left" }}
+                        />
                         ຍົກເລີກ
                       </Button>
-                    {"\t"}
-                  </Col>
-                  <Col sm={3}>
-                    <Button
-                      // style={BUTTON_DELETE}
-                      style={BUTTON_EDIT_HOVER}
-                      onClick={() => {
-                        if (checkedToUpdate.length != 0) {
-                          _onClickUpdateOrder();
-                        }
-                      }}
-                    >
-                      <FontAwesomeIcon
-                        icon={faPen}
-                        style={{ float: "left", marginTop: 4 }}
-                      />
+                      {"\t"}
+                    </Col>
+                    <Col sm={3}>
+                      <Button
+                        // style={BUTTON_DELETE}
+                        style={BUTTON_EDIT_HOVER}
+                        onClick={() => {
+                          if (checkedToUpdate.length != 0) {
+                            _onClickUpdateOrder();
+                          }
+                        }}
+                      >
+                        <FontAwesomeIcon
+                          icon={faPen}
+                          style={{ float: "left", marginTop: 4 }}
+                        />
                         ອັບເດດ
                       </Button>
-                  </Col>
-                </Nav.Item>
-              </Row>
-              <div style={padding_white} />
-              <div>
-                <Table
-                  responsive
-                  className="staff-table-list borderless table-hover"
-                >
-                  <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr>
-                      <th style={{ width: 20 }}></th>
-                      <th style={{ width: 50 }}>ລຳດັບ</th>
-                      <th>ຊື່ເມນູ</th>
-                      <th>ຈຳນວນ</th>
-                      <th>ເບີໂຕະ</th>
-                      <th>ສະຖານະ</th>
-                      <th>ເວລາ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {newData ? newData.map((orderItem, index) => (
-                      <tr key={index}>
-                        <td>
-                          <Checkbox
-                            color="primary"
-                            name="selectOrderItem"
-                            onChange={(e) => {
-                              _handleCheckbox(e, orderItem?._id);
-                            }}
-                          />
-                        </td>
-                        <td>{index + 1}</td>
-                        <td>{orderItem?.menu?.name}</td>
-                        <td>{orderItem?.quantity}</td>
-                        <td>{orderItem?.table_id}</td>
-                        <td>
-                          <div
-                            style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
-                          >
-                            {orderItem?.status
-                              ? orderStatus(orderItem?.status)
-                              : "-"}
-                          </div>
-                        </td>
-                        <td>
-                          {orderItem?.updatedAt
-                            ? moment(orderItem?.updatedAt).format("HH:mm A")
-                            : "-"}
-                        </td>
+                    </Col>
+                  </Nav.Item>
+                </Row>
+                <div style={padding_white} />
+                <div>
+                  <Table
+                    responsive
+                    className="staff-table-list borderless table-hover"
+                  >
+                    <thead style={{ backgroundColor: "#F1F1F1" }}>
+                      <tr>
+                        <th style={{ width: 20 }}></th>
+                        <th style={{ width: 50 }}>ລຳດັບ</th>
+                        <th>ຊື່ເມນູ</th>
+                        <th>ຈຳນວນ</th>
+                        <th>ເບີໂຕະ</th>
+                        <th>ສະຖານະ</th>
+                        <th>ເວລາ</th>
                       </tr>
-                    )) : ""}
-                    <tr>
-                      <td>{data?.text}</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
-              <div style={{ marginBottom: 100 }} />
-            </Container>
+                    </thead>
+                    <tbody>
+                      {newData ? newData.map((orderItem, index) => (
+                        <tr key={index}>
+                          <td>
+                            <Checkbox
+                              color="primary"
+                              name="selectOrderItem"
+                              onChange={(e) => {
+                                _handleCheckbox(e, orderItem?._id);
+                              }}
+                            />
+                          </td>
+                          <td>{index + 1}</td>
+                          <td>{orderItem?.menu?.name}</td>
+                          <td>{orderItem?.quantity}</td>
+                          <td>{orderItem?.orderId?.table_id}</td>
+                          <td>
+                            <div
+                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
+                            >
+                              {orderItem?.status
+                                ? orderStatus(orderItem?.status)
+                                : "-"}
+                            </div>
+                          </td>
+                          <td>
+                            {orderItem?.updatedAt
+                              ? moment(orderItem?.updatedAt).format("HH:mm A")
+                              : "-"}
+                          </td>
+                        </tr>
+                      )) : ""}
+                      <tr>
+                        <td>{data?.text}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
+                <div style={{ marginBottom: 100 }} />
+              </Container>
+            }
           </div>
         </div>
       </div>

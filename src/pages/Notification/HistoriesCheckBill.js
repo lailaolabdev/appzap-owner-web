@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
-import CheckBill from './CheckBill'
 import MenusItemDetail from '../table/components/MenusItemDetail'
 
 import {
@@ -17,6 +16,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT, COLOR_APP } from '../../constants'
 import AnimationLoading from "../../constants/loading"
+import CheckBill from "./CheckBill"
 
 const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
@@ -40,7 +40,6 @@ export default function HistoriesCheckBill() {
   const _searchDate = async () => {
     setIsLoading(true)
     const url = END_POINT + `/orders/${location?.search}`;
-    // const url = END_POINT + `/orders/${location?.search}&&status=CALLTOCHECKOUT&checkout=false`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -58,44 +57,39 @@ export default function HistoriesCheckBill() {
   const _setSelectedCode = (item) => {
     setfindeByCode(item.target.value)
   }
-  let amount = 0
-  let newData = []
-  for (let i = 0; i < data.length; i++) {
-    for (let k = 0; k < data[i]?.order_item.length; k++) {
-      newData.push(data[i]?.order_item[k])
-      amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
-    }
-  }
-  const _checkOut = async (divName) => {
-    var mywindow = window.open('', 'PRINT', 'height=200,width=200,textAlign:center');
-    mywindow.document.write('<body >');
-    await mywindow.document.write(`AppZap Lailaolab`);
-    mywindow.document.write('</body></html>');
-    mywindow.document.close();
-    mywindow.focus();
-    mywindow.print();
-    mywindow.close();
-    return true;
-
-  }
-  const _onClickMenuDetail = async () => {
-    await setMenuItemDetailModal(true);
-  };
+  const [newData, setgetNewData] = useState()
+  const [amount, setgetAmount] = useState()
   const [StatusMoney, setStatusMoney] = useState('')
   useEffect(() => {
+    let amountAll = 0
+    let allData = []
+    for (let i = 0; i < data.length; i++) {
+      for (let k = 0; k < data[i]?.order_item.length; k++) {
+        allData.push(data[i]?.order_item[k])
+        amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+      }
+    }
+    setgetAmount(amountAll)
+    setgetNewData(allData)
     if (data[0]?.checkout === false && data[0]?.status === "CALLTOCHECKOUT") {
       setStatusMoney("ຍັງບໍ່ຊຳລະ")
     } else if (data[0]?.checkout === true && data[0]?.status === "CHECKOUT") {
       setStatusMoney("ຊຳລະສຳເລັດ")
     }
   }, [data])
+  const _checkOut = async () => {
+    await window.open(`/CheckBillOut/${location?.search}`);
+  }
+  const _onClickMenuDetail = async () => {
+    await setMenuItemDetailModal(true);
+  };
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 10 }}></div>
       <Container fluid>
         <div className="row col-12">
           <Nav.Item className="row col-12">
-            <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດຂອງບີນ ( {newData[0]?.code} )</strong></h5>
+            <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດຂອງບີນ ( {newData ? newData[0]?.code : '-'} )</strong></h5>
             <div className="col-sm-7"></div>
             <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} onClick={() => _checkOut('printMe')}>Print Bill</Button>{' '}
             <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }} onClick={() => _onClickMenuDetail()}>Check out</Button>{' '}

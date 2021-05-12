@@ -43,7 +43,7 @@ export default function MenuList() {
       .then(json => setMenus(json));
   }
   const _menuList = () => {
-    history.push('/menu/limit/40/page/1')
+    history.push('/category/menu/limit/40/page/1')
   }
   const _category = () => {
     history.push('/category/limit/40/page/1')

@@ -5,7 +5,8 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faPen, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { END_POINT } from '../../../constants'
 
 /**
  * const
@@ -20,7 +21,9 @@ import {
   BUTTON_DANGER
 } from "../../../constants/index";
 const CustomNav = (props) => {
-
+  const _prinbill = async () => {
+    await window.open(`/BillForChef/?id=${props?.data}`);
+  }
   const [editButtonHover, setEditButtonHover] = useState(false)
   return (
     <div>
@@ -40,16 +43,16 @@ const CustomNav = (props) => {
         <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
           {props.status ? (
             <Button
-              onClick={props.handleCancel}
+              onClick={() => _prinbill()}
               variant={BUTTON_OUTLINE_DANGER}
               style={BUTTON_EDIT}
 
             >
               <FontAwesomeIcon
-                icon={faTrashAlt}
+                icon={faPrint}
                 style={{ float: "left", marginTop: 4 }}
               />
-                ຍົກເລີກ
+                Print
             </Button>
           ) : (
             <div></div>
@@ -70,7 +73,7 @@ const CustomNav = (props) => {
               </Button>
         </Nav.Item>
       </Nav>
-    </div>
+    </div >
   );
 };
 

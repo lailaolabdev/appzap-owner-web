@@ -9,10 +9,16 @@ import { USER_KEY, END_POINT, URL_PHOTO_AW3 } from "../constants"
 import useReactRouter from "use-react-router"
 import ImageProfile from "../image/profile.png"
 import { Badge } from 'react-bootstrap'
+import socketIOClient from "socket.io-client";
 
 export default function NavBar() {
   const { history, location, match } = useReactRouter()
   const [userData, setUserData] = useState({})
+  const socket = socketIOClient(END_POINT);
+  const [NewChackBill, setNewChackBill] = useState()
+  socket.on("notificationCheckout", data => {
+    setNewChackBill(data)
+  });
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
@@ -26,14 +32,10 @@ export default function NavBar() {
     sessionStorage.clear()
     history.push(`/`)
   }
-
-  const _onDetailProfile = () => {
-    history.push(`/pagenumber/${1}/profile/${userData.id}`)
-  }
   const [checkBill, setcheckBill] = useState()
   useEffect(() => {
     _searchDate()
-  }, [])
+  }, [NewChackBill])
   const _searchDate = async () => {
     const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false`;
     const _data = await fetch(url)
