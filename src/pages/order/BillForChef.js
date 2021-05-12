@@ -1,43 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Col, Image } from 'react-bootstrap';
 import { END_POINT } from '../../constants'
 import profileImage from "../../image/profile.png"
-export default function CheckBill() {
+export const BillForChef = () => {
     const { history, location, match } = useReactRouter()
-    const [newData, setgetNewData] = useState()
-    const [amount, setgetAmount] = useState()
-    const [data, setData] = useState([])
+    const [datanew, setData] = useState()
     useEffect(() => {
-        _searchDate()
+        queryData()
     }, [])
-    const _searchDate = async () => {
-        const url = END_POINT + `/orders/${location?.search}`;
-        const _data = await fetch(url)
-            .then(response => response.json())
-            .then(response => {
-                setData(response)
-            })
+    const queryData = async () => {
+        const resData = await axios({
+            method: 'GET',
+            url: END_POINT + `/orderItemArray/${location?.search}`,
+        }).then(async function (response) {
+            setData(response?.data)
+        }).catch(function (error) {
+        })
     }
     useEffect(() => {
-        let amountAll = 0
-        let allData = []
-        for (let i = 0; i < data.length; i++) {
-            for (let k = 0; k < data[i]?.order_item.length; k++) {
-                allData.push(data[i]?.order_item[k])
-                amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
-            }
-        }
-        setgetAmount(amountAll)
-        setgetNewData(allData)
-    }, [data])
-    useEffect(() => {
-        if (newData && amount && data) {
+        if (datanew) {
             window.print()
             window.close()
         }
-    }, [newData, amount, data])
+    }, [datanew])
     return (
         <div className="col-12 center">
             <div style={{ textAlign: "center", paddingTop: 30 }}>
@@ -49,12 +37,12 @@ export default function CheckBill() {
                 </Col>
                 <div style={{ padding: 10 }}>
                     <div className="row col-sm-12 text-center">
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ :  {newData ? newData[0]?.orderId?.table_id : "-"}</div>
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {newData ? newData[0]?.code : "-"}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ :  {datanew ? datanew[0]?.orderId?.table_id : "-"}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {datanew ? datanew[0]?.code : "-"}</div>
                     </div>
                     <div className="row col-sm-12 text-center">
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຊື່ຜູ້ສັ່ງ : {newData ? newData[0]?.orderId?.customer_nickname : "-"}</div>
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ວັນທີ : {new Date(newData ? newData[0]?.createdAt : '').toLocaleDateString()}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຊື່ຜູ້ສັ່ງ : {datanew ? datanew[0]?.orderId?.customer_nickname : "-"}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ວັນທີ : {new Date(datanew ? datanew[0]?.createdAt : '').toLocaleDateString()}</div>
                     </div>
                 </div>
             </div>
@@ -66,27 +54,26 @@ export default function CheckBill() {
                                 <th>ລຳດັບ</th>
                                 <th>ຊື່ເມນູ</th>
                                 <th>ຈຳນວນ</th>
-                                <th>ລາຄາ</th>
                                 <th>ວັນທີ</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {newData?.map((item, index) => {
+                            {datanew?.map((item, index) => {
                                 return (
                                     <tr index={item}>
                                         <td>{index + 1}</td>
                                         <td><b>{item?.menu?.name}</b></td>
                                         <td>{item?.quantity}</td>
-                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
+                                        {/* <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td> */}
                                         <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                                     </tr>
                                 )
                             }
                             )}
-                            <tr>
+                            {/* <tr>
                                 <td colSpan={3} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
                                 <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກິບ</td>
-                            </tr>
+                            </tr> */}
                         </tbody>
                     </Table>
                     <div style={{ textAlign: "center" }}>

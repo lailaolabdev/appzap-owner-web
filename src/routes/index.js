@@ -22,6 +22,8 @@ import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
 import CheckBill from "../pages/Notification/CheckBill";
+import { BillForChef } from "../pages/order/BillForChef";
+
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
@@ -39,22 +41,13 @@ const Index = () => {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
-  // ======>>>
-  useEffect(() => {
-    const socket = socketIOClient(END_POINT);
-    socket.on("createorder", (_) => {
-      window.location.reload();
-    });
-    socket.on("checkout", (_) => {
-      window.location.reload();
-    });
-  }, []);
   return (
     <Router>
       <Switch>
         {/* Before login routes */}
         <PublicRoute exact path="/" component={Login} />
-        <PublicRoute exact path="/checkOut" component={CheckBill} />
+        <PublicRoute exact path="/CheckBillOut" component={CheckBill} />
+        <PublicRoute exact path="/BillForChef" component={BillForChef} />
 
         {/* After login routes (has SideNav and NavBar) */}
         <Route
@@ -132,7 +125,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/menu/limit/:limit/page/:page"
+                    path="/category/menu/limit/:limit/page/:page"
                     component={MenuList}
                   />
 

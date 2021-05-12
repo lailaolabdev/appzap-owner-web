@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 import { Table, Button } from "react-bootstrap";
 import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
-
+import socketIOClient from "socket.io-client";
 import useSound from 'use-sound';
 import soundA from '../../sound/message.mp3'
 
@@ -25,11 +25,7 @@ import { CANCEL_STATUS, DOING_STATUS, END_POINT } from "../../constants";
 const Order = () => {
   const { match } = useReactRouter();
   const { number } = match?.params;
-  // /**
-  //  * states
-  //  */
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [orders, setOrders] = useState([]);
+
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
@@ -56,11 +52,27 @@ const Order = () => {
       setCheckedToUpdate(_removeId);
     }
   };
+  const [DataForPrint, setDataForPrint] = useState()
+  useEffect(() => {
+    let data = []
+    for (let i = 0; i < checkedToUpdate.length; i++) {
+      data.push(checkedToUpdate[i]?.id)
+    }
+    setDataForPrint(data)
+  }, [checkedToUpdate])
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setorderItems] = useState()
+  const [reLoadData, setreLoadData] = useState()
+  const socket = socketIOClient(END_POINT);
+  socket.on("createorder", data => {
+    setreLoadData(data)
+  });
   useEffect(() => {
     getData()
   }, [])
+  useEffect(() => {
+    getData()
+  }, [reLoadData])
   const getData = async (tokken) => {
     await setIsLoading(true);
     await fetch(END_POINT + "/orderItems?status=WAITING", {
@@ -69,11 +81,13 @@ const Order = () => {
       .then(json => setorderItems(json));
     await setIsLoading(false);
   }
+
   return (
     <div>
       {isLoading ? <Loading /> : ""}
       <CustomNav
         default={`/orders/pagenumber/${number}`}
+        data={DataForPrint}
         handleCancel={() => {
           if (checkedToUpdate.length !== 0) {
             setCancelModal(true);

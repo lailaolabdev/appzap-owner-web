@@ -65,3 +65,10 @@ export const STATUS_MENU = (item) => {
     return "ປິດ"
   }
 }
+export const STATUS_OPENTABLE = (item) => {
+  if (item === false) {
+    return "ຍັງບໍ່ເປີດໃຊ້ງານ"
+  } else if (item === true) {
+    return "ເປີດໃຊ້ງານ"
+  }
+}

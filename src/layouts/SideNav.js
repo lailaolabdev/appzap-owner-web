@@ -84,14 +84,14 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "category"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "category" ? "red" : UN_SELECTED_TAB_TEXT,
+              color: selected === "category" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ເພີ່ມອາຫານ
@@ -104,14 +104,15 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "orders"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "orders" ? "red" : UN_SELECTED_TAB_TEXT,
+              color: selected === "orders" ? UN_SELECTED_TAB_TEXT
+                : "#fff",
             }}
           >
             ອໍເດີ
@@ -124,14 +125,14 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "tables"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "tables" ? "red" : UN_SELECTED_TAB_TEXT,
+              color: selected === "tables" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ສະຖານະຂອງໂຕະ
@@ -144,15 +145,15 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "checkBill"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "checkBill" ? "red" : UN_SELECTED_TAB_TEXT,
+                selected === "checkBill" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ແຈ້ງເຕືອນ Checkbill
@@ -165,15 +166,15 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "histories"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "histories" ? "red" : UN_SELECTED_TAB_TEXT,
+                selected === "histories" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ປະຫວັດການຂາຍ
@@ -186,15 +187,15 @@ export default function Sidenav({ location, history }) {
               style={{
                 color:
                   selected === "users"
-                    ? "red"
-                    : selectedTabBackgroundColor,
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "users" ? "red" : UN_SELECTED_TAB_TEXT,
+                selected === "users" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ຈັດການພະນັກງານ

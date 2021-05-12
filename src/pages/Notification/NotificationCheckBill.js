@@ -26,7 +26,7 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders?status=CALLTOCHECKOUT&checkout=false`, {
+    await fetch(`${END_POINT}/orders`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())
@@ -55,6 +55,7 @@ export default function NotificationCheckBill() {
                 <th>ລະຫັດເຂົ້າລະບົບ</th>
                 <th>ເລກໂຕະ</th>
                 <th>ສະຖານະ</th>
+                <th>ວັນເວລາ</th>
               </tr>
             </thead>
             <tbody>
@@ -66,6 +67,7 @@ export default function NotificationCheckBill() {
                     <td>{item?.code}</td>
                     <td>{item?.table_id}</td>
                     <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>
+                    <td>{moment(item?.createdAt).format("DD-MM-YYYY HH:mm a")} </td>
                   </tr>
                 )
               }
