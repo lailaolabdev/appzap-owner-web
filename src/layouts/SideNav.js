@@ -8,25 +8,13 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faAddressCard,
   faBell,
-  faBook,
-  faBookMedical,
   faBookOpen,
   faCartArrowDown,
-  faEdit,
-  faEgg,
-  faFolderOpen,
   faHistory,
   faHome,
-  faMoneyBillAlt,
-  faSms,
-  faStoreAlt,
-  faTablet,
-  faTabletAlt,
-  faUserAlt,
   faUsers,
-  faUtensils,
-  faWallet,
 } from "@fortawesome/free-solid-svg-icons";
 import { END_POINT } from '../constants'
 import "./sidenav.css";
@@ -203,6 +191,27 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ຈັດການພະນັກງານ
+            </NavText>
+        </NavItem>
+        <NavItem eventKey="storeDetail" style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faAddressCard}
+              style={{
+                color:
+                  selected === "storeDetail"
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color:
+                selected === "storeDetail" ? UN_SELECTED_TAB_TEXT : "#fff",
+            }}
+          >
+            ຮ້ານຄ້າ
             </NavText>
         </NavItem>
       </SideNav.Nav>

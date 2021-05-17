@@ -29,6 +29,9 @@ import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
+
+import StoreDetail from '../pages/store/StoreDetail'
+import StoreEdit from '../pages/store/StoreEdit'
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -69,6 +72,16 @@ const Index = () => {
                   }}
                 >
                   {/* private routes */}
+                  <PrivateRoute
+                    exact
+                    path="/storeDetail"
+                    component={StoreDetail}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/storeDetail/storeEdit"
+                    component={StoreEdit}
+                  />
                   <PrivateRoute
                     exact
                     path="/orders/pagenumber/:number"

@@ -80,7 +80,6 @@ const Order = () => {
       .then(json => setorderItems(json));
     await setIsLoading(false);
   }
-
   return (
     <div>
       {isLoading ? <Loading /> : ""}

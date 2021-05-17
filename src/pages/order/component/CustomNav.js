@@ -46,7 +46,6 @@ const CustomNav = (props) => {
               onClick={() => _prinbill()}
               variant={BUTTON_OUTLINE_DANGER}
               style={BUTTON_EDIT}
-
             >
               <FontAwesomeIcon
                 icon={faPrint}
@@ -59,11 +58,8 @@ const CustomNav = (props) => {
           )}
           <div style={{ width: 20 }} />
           <Button
-            // onMouseEnter={()=>setEditButtonHover(true)} onMouseLeave={()=>setEditButtonHover(false)}
             onClick={props.handleUpdate}
-            // style={editButtonHover ? BUTTON_EDIT_HOVER : BUTTON_DELETE}
             style={BUTTON_EDIT_HOVER}
-          // variant={BUTTON_OUTLINE_PRIMARY}
           >
             <FontAwesomeIcon
               icon={faPen}
