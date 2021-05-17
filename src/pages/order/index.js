@@ -25,7 +25,6 @@ import { CANCEL_STATUS, DOING_STATUS, END_POINT } from "../../constants";
 const Order = () => {
   const { match } = useReactRouter();
   const { number } = match?.params;
-
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);

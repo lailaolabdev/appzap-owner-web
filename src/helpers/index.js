@@ -67,8 +67,8 @@ export const STATUS_MENU = (item) => {
 }
 export const STATUS_OPENTABLE = (item) => {
   if (item === false) {
-    return "ຍັງບໍ່ເປີດໃຊ້ງານ"
+    return "ວ່າງ"
   } else if (item === true) {
-    return "ເປີດໃຊ້ງານ"
+    return "ເປີດແລ້ວ"
   }
 }
