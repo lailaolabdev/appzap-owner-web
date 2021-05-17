@@ -9,7 +9,10 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
+  faBook,
   faBookMedical,
+  faBookOpen,
+  faCartArrowDown,
   faEdit,
   faEgg,
   faFolderOpen,
@@ -21,6 +24,7 @@ import {
   faTablet,
   faTabletAlt,
   faUserAlt,
+  faUsers,
   faUtensils,
   faWallet,
 } from "@fortawesome/free-solid-svg-icons";
@@ -77,30 +81,10 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <NavItem eventKey="category" style={{ backgroundColor: selected === "category" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faUtensils}
-              style={{
-                color:
-                  selected === "category"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "category" ? UN_SELECTED_TAB_TEXT : "#fff",
-            }}
-          >
-            ເພີ່ມອາຫານ
-            </NavText>
-        </NavItem>
         <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
-              icon={faBookMedical}
+              icon={faCartArrowDown}
               style={{
                 color:
                   selected === "orders"
@@ -180,10 +164,30 @@ export default function Sidenav({ location, history }) {
             ປະຫວັດການຂາຍ
             </NavText>
         </NavItem>
+        <NavItem eventKey="category" style={{ backgroundColor: selected === "category" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faBookOpen}
+              style={{
+                color:
+                  selected === "category"
+                    ? UN_SELECTED_TAB_TEXT
+                    : "#fff",
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: selected === "category" ? UN_SELECTED_TAB_TEXT : "#fff",
+            }}
+          >
+            ເພີ່ມອາຫານ
+            </NavText>
+        </NavItem>
         <NavItem eventKey="users" style={{ backgroundColor: selected === "users" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
-              icon={faUserAlt}
+              icon={faUsers}
               style={{
                 color:
                   selected === "users"

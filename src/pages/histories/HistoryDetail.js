@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import useReactRouter from "use-react-router"
+import useReactRouter from "use-react-router";
+
 import {
   Form,
   Row,
@@ -18,9 +19,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import AnimationLoading from "../../constants/loading"
+
 const date = new moment().format("LL");
-export default function History() {
-  const { history, location, match } = useReactRouter()
+export default function HistoryDetail() {
+  const { history, location, match } = useReactRouter();
   const newDate = new Date();
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
@@ -38,7 +40,7 @@ export default function History() {
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
+    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true${match?.params?.id ? `&code=${match?.params?.id}` : ``}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -55,53 +57,37 @@ export default function History() {
   const _setSelectedCode = (item) => {
     setfindeByCode(item.target.value)
   }
+  const [orderItemData, setOrderItemData] = useState()
   const [amount, setamount] = useState()
   useEffect(() => {
     let amount = 0
+    let order_item = []
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
+        order_item.push(data[i]?.order_item[k])
         amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
       }
     }
+    setOrderItemData(order_item)
     setamount(amount)
   }, [data])
-  const _allmonny = (item) => {
-    let amount = 0
-    for (let j = 0; j < item?.length; j++) {
-      amount += item[j]?.menu?.price * item[j]?.quantity
-    }
-    return amount;
-
-  }
-  const _historyDetail = (code) => {
-
-    history.push(`/histories/HistoryDetail/${code}`)
-  }
+  console.log("orderItemData", orderItemData)
   return (
     <div style={{ minHeight: 400 }}>
+      <div style={{ height: 20 }}></div>
       <Container fluid>
-        <div className="row mt-5">
-          <Nav.Item>
-            <h5 style={{ marginLeft: 30 }}><strong>ຍອດຂາຍ</strong></h5>
-          </Nav.Item>
-          <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-            <InputGroup>
-              <div className="col-4">
-                <label>ແຕ່ວັນທີ</label>
-                <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
-              </div>
-              <div className="col-4">
-                <label>ຫາວັນທີ</label>
-                <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
-              </div>
-              <div className="col-4">
-                <label>ລະຫັດລູກຄ້າ</label>
-                <input type="number" class="form-control" placeholder="ລະຫັດລູກຄ້າ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
-              </div>
-            </InputGroup>
-          </Nav.Item>
+        <div className="row ">
+          <div className="col-sm-9">
+            <Nav.Item>
+              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດ</strong></h5>
+            </Nav.Item>
+          </div>
+          <div className="col-sm-3">
+            <Nav.Item>
+              <h5 style={{ marginLeft: 30 }}><strong>ໃບເລກບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
+            </Nav.Item>
+          </div>
         </div>
-        <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
             <Table responsive class="table">
@@ -110,20 +96,24 @@ export default function History() {
                   <th>ລຳດັບ</th>
                   <th>ຊື່ຜູ້ສັ່ງ</th>
                   <th>ລະຫັດເຂົ້າລະບົບ</th>
-                  <th>ເລກຕູບ</th>
-                  <th>ລາຄາ/ບີນ</th>
+                  <th>ຊື່ເມນູອາຫານ</th>
+                  <th>ຈຳນວນ</th>
+                  <th>ລາຄາ/ອັນ</th>
+                  <th>ລາຄາລວມ</th>
                   <th>ວັນທີ</th>
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item, index) => {
+                {orderItemData?.map((item, index) => {
                   return (
-                    <tr index={item} onClick={() => _historyDetail(item?.code)}>
+                    <tr index={item}>
                       <td>{index + 1}</td>
-                      <td><b>{item?.customer_nickname}</b></td>
+                      <td><b>{item?.orderId?.customer_nickname}</b></td>
                       <td>{item?.code}</td>
-                      <td>{item?.table_id}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.order_item))} ກີບ</b></td>
+                      <td>{item?.menu?.name}</td>
+                      <td>{item?.quantity}</td>
+                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)}</td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                     </tr>
                   )
@@ -131,7 +121,7 @@ export default function History() {
                 )}
                 <tr>
                   <td colSpan={4} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
-                  <td colSpan={3} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກິບ</td>
+                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກິບ</td>
                 </tr>
               </tbody>
             </Table>

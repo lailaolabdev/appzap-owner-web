@@ -17,6 +17,7 @@ import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
 import Histories from "../pages/histories/Histories";
+import HistoryDetail from "../pages/histories/HistoryDetail";
 import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
 import Notification from "../pages/Notification/NotificationCheckBill";
@@ -100,6 +101,11 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
+                    path="/histories/HistoryDetail/:id"
+                    component={HistoryDetail}
+                  />
+                  <PrivateRoute
+                    exact
                     path="/checkBill"
                     component={Notification}
                   />
@@ -128,7 +134,6 @@ const Index = () => {
                     path="/category/menu/limit/:limit/page/:page"
                     component={MenuList}
                   />
-
                 </div>
               </Main>
             </React.Fragment>

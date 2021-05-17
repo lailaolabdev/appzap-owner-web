@@ -52,6 +52,21 @@ export default function NavBar() {
         setcheckBill(response)
       })
   }
+  const [reLoadData, setreLoadData] = useState()
+  socket.on("createorder", data => {
+    setreLoadData(data)
+  });
+  useEffect(() => {
+    getData()
+  }, [reLoadData])
+  const [orderItems, setorderItems] = useState()
+  const getData = async (tokken) => {
+    await fetch(END_POINT + "/orderItems?status=WAITING", {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setorderItems(json));
+  }
+
   const [messageData, setmessageData] = useState()
   useEffect(() => {
     _message()
@@ -86,6 +101,9 @@ export default function NavBar() {
     }).catch(function (error) {
     })
   }
+  const _orderindex = () => {
+    history.push('/orders/pagenumber/1')
+  }
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -110,6 +128,15 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
+          <Image
+            src="https://static.vecteezy.com/system/resources/thumbnails/001/976/814/small/shopping-chart-icon-doodle-hand-drawn-or-outline-icon-style-vector.jpg"
+            width={35}
+            height={35}
+            roundedCircle
+            onClick={() => _orderindex()}
+          />
+          <Badge variant="danger">{orderItems?.length ? orderItems?.length : ""}</Badge>
+          <div style={{ marginLeft: 20 }}></div>
           <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRM_EuMtQtLai1XobOTisIwqDSJLsyAsAzD4fu4RsNabketghLEL8iA2WIzqT0mrnHcVdU&usqp=CAU"
             width={35}

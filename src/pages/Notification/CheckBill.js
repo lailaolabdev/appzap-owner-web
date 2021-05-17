@@ -66,8 +66,8 @@ export default function CheckBill() {
                                 <th>ລຳດັບ</th>
                                 <th>ຊື່ເມນູ</th>
                                 <th>ຈຳນວນ</th>
-                                <th>ລາຄາ</th>
-                                <th>ວັນທີ</th>
+                                <th>ລາຄາຕໍ່ອັນ</th>
+                                <th>ລາຄາລ້ວມ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,8 +77,8 @@ export default function CheckBill() {
                                         <td>{index + 1}</td>
                                         <td><b>{item?.menu?.name}</b></td>
                                         <td>{item?.quantity}</td>
+                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)} ກີບ</b></td>
                                         <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
-                                        <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                                     </tr>
                                 )
                             }

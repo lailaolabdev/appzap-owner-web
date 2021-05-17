@@ -227,6 +227,9 @@ export default function TableList() {
     await updateOrderItem(checkedToUpdate, status);
     window.location.reload();
   };
+  const _printBill = () => {
+    window.open(`/CheckBillOut/?code=` + activeTableId)
+  }
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -235,7 +238,7 @@ export default function TableList() {
         style={{ position: "fixed", bottom: 50, right: 50, backgroundColor: '#FB6E3B', color: "#ffff", border: "solid 1px #FB6E3B" }}
         onClick={_onClickMenuDetail}
       >
-        ເຄຼຍໂຕະ
+        Check out
       </Button>
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
@@ -291,7 +294,6 @@ export default function TableList() {
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.code === activeTableId ? "#FB6E3B" : tableId == table?.table_id ? "#FB6E3B" : "white",
-                          color: table?.code === activeTableId ? "#white" : tableId == table?.table_id ? "white" : "black",
                         }}
                         onClick={async () => {
                           _searchDate(table)
@@ -308,9 +310,9 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            ໂຕະ {table?.table_id}
-                            <div style={{ color: "red" }}>{table?.code}</div>
-                            <div style={{ color: STATUS_OPENTABLE(table?.empty) === 'ຍັງບໍ່ເປີດໃຊ້ງານ' ? "red" : "green" }}>{STATUS_OPENTABLE(table?.empty)}</div>
+                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ໂຕະ {table?.table_id}</div>
+                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
+                            <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
                           </span>
                         </div>
                       </Button>
@@ -319,7 +321,6 @@ export default function TableList() {
               </Row>
             </Container>
           </div>
-
           {/* Detail Table */}
           <div
             style={{
@@ -347,16 +348,14 @@ export default function TableList() {
                         variant={BUTTON_OUTLINE_DANGER}
                         style={BUTTON_EDIT}
                         onClick={() => {
-                          if (checkedToUpdate.length != 0) {
-                            setCancelOrderModal(true);
-                          }
+                          _printBill(table?.code)
                         }}
                       >
                         <FontAwesomeIcon
-                          icon={faTrashAlt}
+                          icon={faPrint}
                           style={{ float: "left" }}
                         />
-                        ຍົກເລີກ
+                        Print
                       </Button>
                       {"\t"}
                     </Col>
@@ -440,11 +439,7 @@ export default function TableList() {
           </div>
         </div>
       </div>
-      {/* <GenTableCode
-        show={genTableCode}
-        onHide={() => setGenTableCode(false)}
-        data={generateCode}
-      /> */}
+
       <MenusItemDetail
         data={newData}
         show={menuItemDetailModal}
@@ -470,26 +465,6 @@ export default function TableList() {
     </div >
   );
 };
-export class ComponentToPrint extends React.PureComponent {
-  render() {
-    return (
-      <table>
-        <thead>
-          <th>column 1</th>
-          <th>column 2</th>
-          <th>column 3</th>
-        </thead>
-        <tbody>
-          <tr>
-            <td>data 1</td>
-            <td>data 2</td>
-            <td>data 3</td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  }
-}
 
 const NAV = {
   backgroundColor: "#F9F9F9",

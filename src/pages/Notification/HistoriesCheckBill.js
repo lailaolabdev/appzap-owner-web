@@ -78,7 +78,7 @@ export default function HistoriesCheckBill() {
     }
   }, [data])
   const _checkOut = async () => {
-    await window.open(`/CheckBillOut/${location?.search}`);
+    window.open(`/CheckBillOut/${location?.search}`);
   }
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
