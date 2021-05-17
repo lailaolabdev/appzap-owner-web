@@ -2,23 +2,29 @@ import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Col, Image } from 'react-bootstrap';
-import { END_POINT } from '../../constants'
+import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
+import { STORE } from '../../constants/api'
 import profileImage from "../../image/profile.png"
 export default function CheckBill() {
     const { history, location, match } = useReactRouter()
     const [newData, setgetNewData] = useState()
     const [amount, setgetAmount] = useState()
     const [data, setData] = useState([])
+    const [dataStore, setStore] = useState()
     useEffect(() => {
         _searchDate()
     }, [])
     const _searchDate = async () => {
         const url = END_POINT + `/orders/${location?.search}`;
-        const _data = await fetch(url)
+        await fetch(url)
             .then(response => response.json())
             .then(response => {
                 setData(response)
             })
+        await fetch(STORE + `/?id=6092b8c247b38de5af7275b2`, {
+            method: "GET",
+        }).then(response => response.json())
+            .then(json => setStore(json));
     }
     useEffect(() => {
         let amountAll = 0
@@ -33,16 +39,32 @@ export default function CheckBill() {
         setgetNewData(allData)
     }, [data])
     useEffect(() => {
-        if (newData && amount && data) {
-            window.print()
-            window.close()
+        if (dataStore && newData && amount && data) {
+            setTimeout(() => {
+                window.print()
+                window.close()
+            }, 500);
         }
-    }, [newData, amount, data])
+    }, [dataStore, newData, amount, data])
     return (
         <div className="col-12 center">
             <div style={{ textAlign: "center", paddingTop: 30 }}>
                 <Col>
-                    <Image src={profileImage} roundedCircle style={{ height: 180, width: 180 }} />
+                    {dataStore?.image ? (
+                        <center>
+                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="AeonIcon" width="150" height="150" style={{
+                                height: 200,
+                                width: 200,
+                                borderRadius: '50%',
+                            }} />
+                        </center>
+                    ) : (<center>
+                        <Image src={profileImage} alt="AeonIcon" width="150" height="150" style={{
+                            height: 200,
+                            width: 200,
+                            borderRadius: '50%',
+                        }} />
+                    </center>)}
                     <div style={{ height: 30 }}></div>
                     <h3 style={{ fontWeight: "bold" }}>ຮ້ານທົ່ງສາງທອງ</h3>
                     <p style={{ fontWeight: "bold" }}>  ຍີນດີຕ້ອນຮັບ  </p>

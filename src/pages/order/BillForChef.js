@@ -3,11 +3,14 @@ import useReactRouter from "use-react-router";
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Col, Image } from 'react-bootstrap';
-import { END_POINT } from '../../constants'
+import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
+import { STORE } from '../../constants/api'
 import profileImage from "../../image/profile.png"
 export const BillForChef = () => {
     const { history, location, match } = useReactRouter()
     const [datanew, setData] = useState()
+    const [dataStore, setStore] = useState()
+
     useEffect(() => {
         queryData()
     }, [])
@@ -19,18 +22,38 @@ export const BillForChef = () => {
             setData(response?.data)
         }).catch(function (error) {
         })
+        await fetch(STORE + `/?id=6092b8c247b38de5af7275b2`, {
+            method: "GET",
+        }).then(response => response.json())
+            .then(json => setStore(json));
     }
     useEffect(() => {
-        if (datanew) {
-            window.print()
-            window.close()
+        if (datanew && dataStore) {
+            setTimeout(() => {
+                window.print()
+                window.close()
+            }, 500);
         }
-    }, [datanew])
+    }, [datanew, dataStore])
     return (
         <div className="col-12 center">
             <div style={{ textAlign: "center", paddingTop: 30 }}>
                 <Col>
-                    <Image src={profileImage} roundedCircle style={{ height: 180, width: 180 }} />
+                    {dataStore?.image ? (
+                        <center>
+                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="AeonIcon" width="150" height="150" style={{
+                                height: 200,
+                                width: 200,
+                                borderRadius: '50%',
+                            }} />
+                        </center>
+                    ) : (<center>
+                        <Image src={profileImage} alt="AeonIcon" width="150" height="150" style={{
+                            height: 200,
+                            width: 200,
+                            borderRadius: '50%',
+                        }} />
+                    </center>)}
                     <div style={{ height: 30 }}></div>
                     <h3 style={{ fontWeight: "bold" }}>ຮ້ານທົ່ງສາງທອງ</h3>
                     <p style={{ fontWeight: "bold" }}>  ຍີນດີຕ້ອນຮັບ  </p>

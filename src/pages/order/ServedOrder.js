@@ -35,8 +35,6 @@ const Order = () => {
       .then(json => setOrdersSev(json));
     await setIsLoading(false);
   }
-  console.log("🚀 ~ file: ServedOrder.js ~ line 25 ~ Order ~ ordersSev", ordersSev?.length)
-
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
       let _addData = [];
