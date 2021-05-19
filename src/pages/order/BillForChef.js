@@ -41,14 +41,14 @@ export const BillForChef = () => {
                 <Col>
                     {dataStore?.image ? (
                         <center>
-                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="AeonIcon" width="150" height="150" style={{
+                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="" width="150" height="150" style={{
                                 height: 200,
                                 width: 200,
                                 borderRadius: '50%',
                             }} />
                         </center>
                     ) : (<center>
-                        <Image src={profileImage} alt="AeonIcon" width="150" height="150" style={{
+                        <Image src={profileImage} alt="" width="150" height="150" style={{
                             height: 200,
                             width: 200,
                             borderRadius: '50%',

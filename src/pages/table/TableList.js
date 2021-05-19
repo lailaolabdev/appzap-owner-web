@@ -230,6 +230,7 @@ export default function TableList() {
   const _printBill = () => {
     window.open(`/CheckBillOut/?code=` + activeTableId)
   }
+  console.log("newData", newData);
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -410,7 +411,7 @@ export default function TableList() {
                           <td>{index + 1}</td>
                           <td>{orderItem?.menu?.name}</td>
                           <td>{orderItem?.quantity}</td>
-                          <td>{orderItem?.orderId?.table_id}</td>
+                          <td>{orderItem?.table_id}</td>
                           <td>
                             <div
                               style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
@@ -421,8 +422,8 @@ export default function TableList() {
                             </div>
                           </td>
                           <td>
-                            {orderItem?.updatedAt
-                              ? moment(orderItem?.updatedAt).format("HH:mm A")
+                            {orderItem?.createdAt
+                              ? moment(orderItem?.createdAt).format("HH:mm A")
                               : "-"}
                           </td>
                         </tr>

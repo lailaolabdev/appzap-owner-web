@@ -248,14 +248,14 @@ export default function UserList() {
                         <td>
                           {data?.image ? (
                             <center>
-                              <Image src={URL_PHOTO_AW3 + data?.image} alt="AeonIcon" width="150" height="150" style={{
+                              <Image src={URL_PHOTO_AW3 + data?.image} alt="" width="150" height="150" style={{
                                 height: 50,
                                 width: 50,
                                 borderRadius: '50%',
                               }} />
                             </center>
                           ) : (<center>
-                            <Image src={profileImage} alt="AeonIcon" width="150" height="150" style={{
+                            <Image src={profileImage} alt="" width="150" height="150" style={{
                               height: 50,
                               width: 50,
                               borderRadius: '50%',
@@ -515,7 +515,7 @@ export default function UserList() {
                     }}>
                       {file ? <ImageThumb image={file} /> :
                         <center>
-                          <Image src={URL_PHOTO_AW3 + dataUpdate?.image} alt="AeonIcon" width="150" height="150" style={{
+                          <Image src={URL_PHOTO_AW3 + dataUpdate?.image} alt="" width="150" height="150" style={{
                             height: 200,
                             width: 200,
                             borderRadius: '10%',

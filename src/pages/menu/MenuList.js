@@ -455,7 +455,7 @@ export default function MenuList() {
                     }}>
                       {file ? <ImageThumb image={file} /> :
                         <center>
-                          <Image src={URL_PHOTO_AW3 + dataUpdate?.image} alt="AeonIcon" width="150" height="150" style={{
+                          <Image src={URL_PHOTO_AW3 + dataUpdate?.image} alt="" width="150" height="150" style={{
                             height: 200,
                             width: 200,
                             borderRadius: '10%',
