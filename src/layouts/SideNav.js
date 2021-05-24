@@ -51,10 +51,10 @@ export default function Sidenav({ location, history }) {
         if (selected === "users") {
           selected = selected + "/limit/" + 40 + "/page/" + 1;
         }
-        if (selected === "category") {
+        if (selected === "menu") {
           selected = selected + "/limit/" + 40 + "/page/" + 1;
         }
-        if (selected === "menu") {
+        if (selected === "category") {
           selected = selected + "/limit/" + 40 + "/page/" + 1;
         }
         const to = "/" + selected;
@@ -152,13 +152,13 @@ export default function Sidenav({ location, history }) {
             ປະຫວັດການຂາຍ
             </NavText>
         </NavItem>
-        <NavItem eventKey="category" style={{ backgroundColor: selected === "category" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBookOpen}
               style={{
                 color:
-                  selected === "category"
+                  selected === "menu"
                     ? UN_SELECTED_TAB_TEXT
                     : "#fff",
               }}
@@ -166,7 +166,7 @@ export default function Sidenav({ location, history }) {
           </NavIcon>
           <NavText
             style={{
-              color: selected === "category" ? UN_SELECTED_TAB_TEXT : "#fff",
+              color: selected === "menu" ? UN_SELECTED_TAB_TEXT : "#fff",
             }}
           >
             ເພີ່ມອາຫານ

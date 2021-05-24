@@ -139,12 +139,12 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/category/limit/:limit/page/:page"
+                    path="/menu/category/limit/:limit/page/:page"
                     component={Category}
                   />
                   <PrivateRoute
                     exact
-                    path="/category/menu/limit/:limit/page/:page"
+                    path="/menu/limit/:limit/page/:page"
                     component={MenuList}
                   />
                 </div>

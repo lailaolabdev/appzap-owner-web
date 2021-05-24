@@ -43,10 +43,10 @@ export default function MenuList() {
       .then(json => setMenus(json));
   }
   const _menuList = () => {
-    history.push('/category/menu/limit/40/page/1')
+    history.push('/menu/limit/40/page/1')
   }
   const _category = () => {
-    history.push('/category/limit/40/page/1')
+    history.push('/menu/category/limit/40/page/1')
   }
   // upload photo
   const [namePhoto, setNamePhoto] = useState('')
@@ -182,10 +182,10 @@ export default function MenuList() {
       <div>
         <Nav variant="tabs" defaultActiveKey="menu">
           <Nav.Item>
-            <Nav.Link eventKey="category" onClick={() => _category()}>ປະເພດອາຫານ</Nav.Link>
+            <Nav.Link eventKey="menu" onClick={() => _menuList()}>ເມນູອາຫານ</Nav.Link>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey="menu" onClick={() => _menuList()}>ເມນູອາຫານ</Nav.Link>
+            <Nav.Link eventKey="category" onClick={() => _category()}>ປະເພດອາຫານ</Nav.Link>
           </Nav.Item>
         </Nav>
       </div>
