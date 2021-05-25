@@ -74,7 +74,7 @@ const Order = () => {
   }, [reLoadData])
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + "/orderItems?status=WAITING", {
+    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${match?.params?.id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setorderItems(json));

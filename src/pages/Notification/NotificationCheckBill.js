@@ -26,7 +26,7 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders`, {
+    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())

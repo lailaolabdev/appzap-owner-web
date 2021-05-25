@@ -4,8 +4,9 @@ export const END_POINT_SEVER = "http://13.229.122.188:7070";
 export const getLocalData = async () => {
     const _local = await localStorage.getItem(USER_KEY);
     const _localJson2 = await JSON.parse(_local)
-    const ACCESS_TOKEN2 = { authorization: "Ordering " + _localJson2?.accessToken }
-    return ACCESS_TOKEN2;
+    const DATA = _localJson2?.data
+    const TOKEN = { authorization: "Ordering " + _localJson2?.accessToken }
+    return { TOKEN, DATA };
 }
 // =====>>>>
 export const USERS = END_POINT_SEVER + '/users'

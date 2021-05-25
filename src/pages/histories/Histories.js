@@ -38,7 +38,7 @@ export default function History() {
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
+    const url = END_POINT + `/orders/?storeId=${match?.params?.id}&&status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -74,7 +74,6 @@ export default function History() {
 
   }
   const _historyDetail = (code) => {
-
     history.push(`/histories/HistoryDetail/${code}`)
   }
   return (

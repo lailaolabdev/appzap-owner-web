@@ -11,10 +11,12 @@ import {
     Nav
 } from "react-bootstrap";
 import { END_POINT, BODY, COLOR_APP, URL_PHOTO_AW3 } from '../../constants'
-import { CATEGORY } from '../../constants/api'
+import { CATEGORY, getLocalData } from '../../constants/api'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
 export default function Categorylist() {
     const { history, location, match } = useReactRouter()
+    const [getTokken, setgetTokken] = useState()
+
     // create
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -58,6 +60,7 @@ export default function Categorylist() {
             method: 'POST',
             url: CATEGORY,
             data: {
+                storeId: getTokken?.DATA?.storeId,
                 name: values?.categoryName,
                 note: values?.note,
             },
@@ -77,6 +80,7 @@ export default function Categorylist() {
             method: 'PUT',
             url: CATEGORY + `/${dataUpdate?._id}`,
             data: {
+                storeId: getTokken?.DATA?.storeId,
                 name: values?.categoryName,
                 note: values?.note,
             },
@@ -95,21 +99,28 @@ export default function Categorylist() {
     const [Categorys, setCategorys] = useState()
 
     useEffect(() => {
-        getData()
+        const fetchData = async () => {
+            const _localData = await getLocalData()
+            if (_localData) {
+                setgetTokken(_localData)
+                getData(_localData?.DATA?.storeId)
+            }
+        }
+        fetchData();
     }, [])
-    const getData = async () => {
+    const getData = async (id) => {
         setIsLoading(true)
-        await fetch(CATEGORY, {
+        await fetch(CATEGORY + `/?storeId=${id}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setCategorys(json));
         setIsLoading(false)
     }
     const _menuList = () => {
-        history.push('/menu/limit/40/page/1')
+        history.push(`/menu/limit/40/page/1/${match?.params?.id}`)
     }
     const _category = () => {
-        history.push('/menu/category/limit/40/page/1')
+        history.push(`/menu/category/limit/40/page/1/${match?.params?.id}`)
     }
     return (
         <div style={BODY}>

@@ -37,11 +37,10 @@ export default function UserList() {
     fetchData();
     getData()
   }, [])
-  const getData = async (tokken) => {
+  const getData = async () => {
     setIsLoading(true)
-    await fetch(USERS + `/skip/0/limit/10/`, {
+    await fetch(USERS + `/skip/0/limit/10/?storeId=${match?.params?.id}`, {
       method: "GET",
-      headers: tokken
     }).then(response => response.json())
       .then(json => setuserData(json));
     setIsLoading(false)
@@ -122,12 +121,14 @@ export default function UserList() {
     }} />;
   };
   // create user
+  console.log("getTokken", getTokken)
   const _createUser = async (values) => {
     const resData = await axios({
       method: 'POST',
       url: USERS_CREATE,
-      headers: getTokken,
+      headers: getTokken?.TOKEN,
       data: {
+        storeId: getTokken?.DATA?.storeId,
         userId: values?.userId,
         password: values?.password,
         firstname: values?.firstname,
@@ -192,8 +193,9 @@ export default function UserList() {
     const resData = await axios({
       method: 'PUT',
       url: USERS_UPDATE + `?id=${dataUpdate?._id}`,
-      headers: getTokken,
+      headers: getTokken?.TOKEN,
       data: {
+        storeId: getTokken?.DATA?.storeId,
         userId: values?.userId,
         password: values?.password,
         firstname: values?.firstname,

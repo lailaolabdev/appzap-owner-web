@@ -31,7 +31,7 @@ import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 
 import StoreDetail from '../pages/store/StoreDetail'
-import StoreEdit from '../pages/store/StoreEdit'
+// import StoreEdit from '../pages/store/StoreEdit'
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -74,27 +74,27 @@ const Index = () => {
                   {/* private routes */}
                   <PrivateRoute
                     exact
-                    path="/storeDetail"
+                    path="/storeDetail/:id"
                     component={StoreDetail}
                   />
-                  <PrivateRoute
+                  {/* <PrivateRoute
                     exact
                     path="/storeDetail/storeEdit"
                     component={StoreEdit}
-                  />
+                  /> */}
                   <PrivateRoute
                     exact
-                    path="/orders/pagenumber/:number"
+                    path="/orders/pagenumber/:number/:id"
                     component={Order}
                   />
                   <PrivateRoute
                     exact
-                    path="/orders/doing/pagenumber/:number"
+                    path="/orders/doing/pagenumber/:number/:id"
                     component={DoingOrder}
                   />
                   <PrivateRoute
                     exact
-                    path="/orders/served/pagenumber/:number"
+                    path="/orders/served/pagenumber/:number/:id"
                     component={ServedOrder}
                   />
                   <PrivateRoute
@@ -104,12 +104,12 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/tables/pagenumber/:number/tableid/:tableId"
+                    path="/tables/pagenumber/:number/tableid/:tableId/:storeId"
                     component={Table}
                   />
                   <PrivateRoute
                     exact
-                    path="/histories/pagenumber/:number"
+                    path="/histories/pagenumber/:number/:id"
                     component={Histories}
                   />
                   <PrivateRoute
@@ -119,7 +119,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/checkBill"
+                    path="/checkBill/:id"
                     component={Notification}
                   />
                   <PrivateRoute
@@ -134,17 +134,17 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/users/limit/:limit/page/:page"
+                    path="/users/limit/:limit/page/:page/:id"
                     component={Users}
                   />
                   <PrivateRoute
                     exact
-                    path="/menu/category/limit/:limit/page/:page"
+                    path="/menu/category/limit/:limit/page/:page/:id"
                     component={Category}
                   />
                   <PrivateRoute
                     exact
-                    path="/menu/limit/:limit/page/:page"
+                    path="/menu/limit/:limit/page/:page/:id"
                     component={MenuList}
                   />
                 </div>

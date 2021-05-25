@@ -28,14 +28,13 @@ const Order = () => {
   const [updateModal, setUpdateModal] = useState(false);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [ordersDoing, setOrdersDoing] = useState();
-  console.log("🚀 ~ file: DoingOrder.js ~ line 31 ~ Order ~ ordersDoing", ordersDoing)
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     getData()
   }, [])
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + "/orderItems?status=DOING", {
+    await fetch(END_POINT + `/orderItems?status=DOING&&storeId=${match?.params?.id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setOrdersDoing(json));

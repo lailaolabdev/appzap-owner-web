@@ -89,7 +89,6 @@ export default function TableList() {
   const [showOrderModal, setShowOrderModal] = useState(false);
   // ຂໍ້ມູນສະແດ່ໃນ table
   const [orderFromTable, setOrderFromTable] = useState();
-
   const [idTable, setTableCode] = useState("");
   const [data, setData] = useState();
   // =====>>>> query data order in table
@@ -139,7 +138,7 @@ export default function TableList() {
   }, [dataOrder])
   // ===== query table ===>
   const _getTable = async () => {
-    const url = END_POINT + `/generates/?status=true&checkout=false`;
+    const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -190,12 +189,12 @@ export default function TableList() {
     } else if (_orderDataFromTable.length !== 0) {
       await setOrderFromTable(_orderDataFromTable);
     }
-    history.push(`/tables/pagenumber/${number}/tableid/${code}`);
+    history.push(`/tables/pagenumber/${number}/tableid/${code}/${match?.params?.storeId}`);
   };
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
-    history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}`);
+    history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
@@ -230,17 +229,19 @@ export default function TableList() {
   const _printBill = () => {
     window.open(`/CheckBillOut/?code=` + activeTableId)
   }
-  console.log("newData", newData);
+  console.log("newData", newData)
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
-      <Button
-        variant={BUTTON_OUTLINE_PRIMARY}
-        style={{ position: "fixed", bottom: 50, right: 50, backgroundColor: '#FB6E3B', color: "#ffff", border: "solid 1px #FB6E3B" }}
-        onClick={_onClickMenuDetail}
-      >
-        Check out
-      </Button>
+      {newData?.length === 0 ?
+        ""
+        : <Button
+          variant={BUTTON_OUTLINE_PRIMARY}
+          style={{ position: "fixed", bottom: 50, right: 50, backgroundColor: '#FB6E3B', color: "#ffff", border: "solid 1px #FB6E3B" }}
+          onClick={_onClickMenuDetail}
+        >
+          Check out
+      </Button>}
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
           <Nav
@@ -345,24 +346,25 @@ export default function TableList() {
                     <Col sm={3} className="mr-5">
                     </Col>
                     <Col sm={4}>
-                      <Button
-                        variant={BUTTON_OUTLINE_DANGER}
-                        style={BUTTON_EDIT}
-                        onClick={() => {
-                          _printBill(table?.code)
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={faPrint}
-                          style={{ float: "left" }}
-                        />
+                      {newData?.length === 0 ? <div style={{ width: 50 }}></div> :
+                        <Button
+                          variant={BUTTON_OUTLINE_DANGER}
+                          style={BUTTON_EDIT}
+                          onClick={() => {
+                            _printBill(table?.code)
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faPrint}
+                            style={{ float: "left" }}
+                          />
                         Print
                       </Button>
+                      }
                       {"\t"}
                     </Col>
                     <Col sm={3}>
                       <Button
-                        // style={BUTTON_DELETE}
                         style={BUTTON_EDIT_HOVER}
                         onClick={() => {
                           if (checkedToUpdate.length != 0) {

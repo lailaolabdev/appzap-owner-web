@@ -16,8 +16,11 @@ import axios from 'axios';
 import { STORE, TABLES, MENUS, PRESIGNED_URL, STORE_UPDATE, getLocalData } from '../../constants/api'
 import { COLOR_APP, URL_PHOTO_AW3, COLOR_APP_CANCEL } from '../../constants'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
+import useReactRouter from "use-react-router"
 
 export default function StoreDetail() {
+    const { history, location, match } = useReactRouter()
+
     const [isLoading, setIsLoading] = useState(false)
     const [dataStore, setStore] = useState()
     const [numBerTable, setnumBerTable] = useState(0)
@@ -28,22 +31,22 @@ export default function StoreDetail() {
             const _localData = await getLocalData()
             if (_localData) {
                 setgetTokken(_localData)
+                getData(_localData?.DATA?.storeId)
             }
         }
         fetchData();
-        getData()
     }, [])
-    const getData = async (tokken) => {
+    const getData = async (storeId) => {
         setIsLoading(true)
-        await fetch(STORE + `/?id=6092b8c247b38de5af7275b2`, {
+        await fetch(STORE + `/?id=${match?.params?.id}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setStore(json));
-        await fetch(TABLES, {
+        await fetch(TABLES + `/?storeId=${storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerTable(json?.length));
-        await fetch(MENUS, {
+        await fetch(MENUS + `/?storeId=${storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerMenus(json?.length));
@@ -104,7 +107,7 @@ export default function StoreDetail() {
         const resData = await axios({
             method: 'PUT',
             url: STORE_UPDATE + `/?id=${dataStore?._id}`,
-            headers: getTokken,
+            headers: getTokken?.TOKEN,
             data: {
                 storeName: values?.storeName,
                 adminStore: values?.adminStore,
@@ -206,13 +209,13 @@ export default function StoreDetail() {
                 </Modal.Header>
                 <Formik
                     initialValues={{
-                        storeName: '',
-                        adminStore: '',
-                        whatsapp: '',
-                        phone: '',
-                        detail: '',
-                        dateClose: '',
-                        timeClose: '',
+                        storeName: dataStore?.name,
+                        adminStore: dataStore?.adminStore,
+                        whatsapp: dataStore?.whatsapp,
+                        phone: dataStore?.phone,
+                        detail: dataStore?.detail,
+                        dateClose: dataStore?.dateClose,
+                        timeClose: dataStore?.timeClose,
                     }}
                     validate={values => {
                         const errors = {};
@@ -267,11 +270,15 @@ export default function StoreDetail() {
                                             cursor: "pointer",
                                             display: "flex",
                                         }}>
-                                            {file ? <ImageThumb image={file} /> : <div style={{
-                                                display: "flex", height: 200,
-                                                width: 200, justifyContent: "center", alignItems: "center"
-                                            }}>
-                                                <p style={{ color: "#fff", fontSize: 80, fontWeight: "bold" }}>+</p></div>}
+                                            {file ? <ImageThumb image={file} /> :
+                                                <center>
+                                                    <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="" width="150" height="150" style={{
+                                                        height: 200,
+                                                        width: 200,
+                                                        borderRadius: '10%',
+                                                    }} />
+                                                </center>
+                                            }
                                         </div>
                                     </label>
                                     {/* progass */}

@@ -18,7 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { END_POINT } from '../constants'
 import "./sidenav.css";
-
+import { getLocalData } from '../constants/api'
 const selectedTabBackgroundColor = "#606060";
 const UN_SELECTED_TAB_TEXT = "#606060";
 
@@ -28,7 +28,17 @@ export default function Sidenav({ location, history }) {
     location.pathname.split("/")[1].split("-")[0]
   );
   const [expandedStatus, setExpandedStatus] = useState(false);
+  const [getTokken, setgetTokken] = useState()
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        setgetTokken(_localData)
+      }
+    }
+    fetchData();
+  }, [])
   return (
     <SideNav
       style={{
@@ -40,22 +50,22 @@ export default function Sidenav({ location, history }) {
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
         if (selected === "orders") {
-          selected = selected + "/pagenumber/" + 1;
+          selected = selected + "/pagenumber/" + 1 + "/" + getTokken?.DATA?.storeId;
         }
         if (selected === "tables") {
-          selected = selected + "/pagenumber/" + 1 + "/tableid/00";
+          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + getTokken?.DATA?.storeId;;
         }
         if (selected === "histories") {
-          selected = selected + "/pagenumber/" + 1;
+          selected = selected + "/pagenumber/" + 1 + "/" + getTokken?.DATA?.storeId;
         }
         if (selected === "users") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
         }
         if (selected === "menu") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
         }
         if (selected === "category") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
         }
         const to = "/" + selected;
 
@@ -110,7 +120,7 @@ export default function Sidenav({ location, history }) {
             ສະຖານະຂອງໂຕະ
             </NavText>
         </NavItem>
-        <NavItem eventKey="checkBill" style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`checkBill/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBell}
@@ -172,7 +182,7 @@ export default function Sidenav({ location, history }) {
             ເພີ່ມອາຫານ
             </NavText>
         </NavItem>
-        <NavItem eventKey="users" style={{ backgroundColor: selected === "users" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faUsers}
@@ -193,7 +203,7 @@ export default function Sidenav({ location, history }) {
             ຈັດການພະນັກງານ
             </NavText>
         </NavItem>
-        <NavItem eventKey="storeDetail" style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`storeDetail/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faAddressCard}

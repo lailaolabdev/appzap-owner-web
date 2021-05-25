@@ -29,7 +29,7 @@ const Order = () => {
   }, [])
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + `/orderItems?status=SERVED&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
+    await fetch(END_POINT + `/orderItems?status=SERVED&&storeId=${match?.params?.id}&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setOrdersSev(json));

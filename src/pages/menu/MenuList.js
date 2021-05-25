@@ -12,41 +12,50 @@ import {
   Image
 } from "react-bootstrap";
 import { END_POINT, BODY, COLOR_APP, URL_PHOTO_AW3 } from '../../constants'
-import { CATEGORY, MENUS, PRESIGNED_URL } from '../../constants/api'
+import { CATEGORY, MENUS, PRESIGNED_URL, getLocalData } from '../../constants/api'
 import { moneyCurrency, STATUS_MENU } from '../../helpers'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
 import profileImage from "../../image/profile.png"
 
 export default function MenuList() {
-  const { history } = useReactRouter()
+  const { history, match } = useReactRouter()
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [getTokken, setgetTokken] = useState()
+
   // =====> getCategory
   const [Categorys, setCategorys] = useState()
   const [Menus, setMenus] = useState()
 
   useEffect(() => {
-    getcategory()
-    getMenu()
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        setgetTokken(_localData)
+        getcategory(_localData?.DATA?.storeId)
+        getMenu(_localData?.DATA?.storeId)
+      }
+    }
+    fetchData();
   }, [])
-  const getcategory = async () => {
-    await fetch(CATEGORY, {
+  const getcategory = async (id) => {
+    await fetch(CATEGORY + `/?storeId=${id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setCategorys(json));
   }
-  const getMenu = async () => {
-    await fetch(MENUS, {
+  const getMenu = async (id) => {
+    await fetch(MENUS + `/?storeId=${id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setMenus(json));
   }
   const _menuList = () => {
-    history.push('/menu/limit/40/page/1')
+    history.push(`/menu/limit/40/page/1/${match?.params?.id}`)
   }
   const _category = () => {
-    history.push('/menu/category/limit/40/page/1')
+    history.push(`/menu/category/limit/40/page/1/${match?.params?.id}`)
   }
   // upload photo
   const [namePhoto, setNamePhoto] = useState('')
@@ -101,6 +110,7 @@ export default function MenuList() {
       method: 'POST',
       url: MENUS,
       data: {
+        storeId: getTokken?.DATA?.storeId,
         name: values?.menuName,
         price: values?.price,
         detail: values?.detail,
@@ -159,6 +169,7 @@ export default function MenuList() {
       method: 'PUT',
       url: MENUS + `/${dataUpdate?._id}`,
       data: {
+        storeId: getTokken?.DATA?.storeId,
         name: values?.menuName,
         price: values?.price,
         detail: values?.detail,
