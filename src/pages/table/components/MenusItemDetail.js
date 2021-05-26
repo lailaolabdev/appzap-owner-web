@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import axios from 'axios';
 import { moneyCurrency } from "../../../helpers/index";
 import { END_POINT, USER_KEY } from '../../../constants'
+import { getLocalData } from '../../../constants/api'
 import { getHeaders } from "../../../services/auth";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
 import socketIOClient from "socket.io-client";
@@ -13,6 +14,16 @@ import socketIOClient from "socket.io-client";
 import useReactRouter from "use-react-router";
 const MenusItemDetail = (props) => {
   const { history, location, match } = useReactRouter()
+  const [getTokken, setgetTokken] = useState()
+  useEffect(() => {
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        setgetTokken(_localData)
+      }
+    }
+    fetchData();
+  }, [])
   const { data } = props;
   let total = 0;
   if (data && data.length > 0) {
@@ -21,7 +32,7 @@ const MenusItemDetail = (props) => {
     }
   }
   const socket = socketIOClient(END_POINT);
-  socket.on("checkoutSuccess", data => {
+  socket.on(`checkoutSuccess${getTokken?.DATA?.storeId}`, data => {
     if (data) {
       successAdd('ສຳເລັດການຮັບເງີນ')
       setTimeout(() => {

@@ -54,7 +54,7 @@ import {
   BUTTON_DELETE,
   BUTTON_OUTLINE_DARK,
   padding_white,
-  BUTTON_OUTLINE_BLUE,
+  USER_KEY,
   ACTIVE_STATUS,
   CANCEL_STATUS,
   CHECKOUT_STATUS,
@@ -67,9 +67,19 @@ export default function TableList() {
   const number = match?.params?.number;
   let activeTableId = match?.params?.tableId;
   const [reLoadData, setreLoadData] = useState()
+  const [Opentable, setOpentable] = useState()
   const socket = socketIOClient(END_POINT);
-  socket.on("createorder", data => {
+  const [userData, setUserData] = useState({})
+  useEffect(() => {
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
+  }, [])
+  socket.on(`createorder${userData?.data?.storeId}`, data => {
     setreLoadData(data)
+  });
+  socket.on(`loginApp${userData?.data?.storeId}`, data => {
+    setOpentable(data)
   });
 
   /**
@@ -101,6 +111,9 @@ export default function TableList() {
   useEffect(() => {
     _getTable()
   }, [reLoadData]);
+  useEffect(() => {
+    _getTable()
+  }, [Opentable]);
   useEffect(() => {
     const url = END_POINT + `/orders?code=${activeTableId}`;
     fetch(url)
@@ -229,7 +242,6 @@ export default function TableList() {
   const _printBill = () => {
     window.open(`/CheckBillOut/?code=` + activeTableId)
   }
-  console.log("newData", newData)
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}

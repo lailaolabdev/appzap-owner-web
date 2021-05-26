@@ -16,20 +16,18 @@ import {
   faHome,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { END_POINT } from '../constants'
+import { Badge } from 'react-bootstrap'
+import socketIOClient from "socket.io-client";
+import { END_POINT, COLOR_APP } from '../constants'
 import "./sidenav.css";
 import { getLocalData } from '../constants/api'
-const selectedTabBackgroundColor = "#606060";
 const UN_SELECTED_TAB_TEXT = "#606060";
-
 export default function Sidenav({ location, history }) {
-
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
   const [expandedStatus, setExpandedStatus] = useState(false);
   const [getTokken, setgetTokken] = useState()
-
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData()
@@ -39,10 +37,47 @@ export default function Sidenav({ location, history }) {
     }
     fetchData();
   }, [])
+  // ========> check logOut
+  const socket = socketIOClient(END_POINT);
+  const [NewChackBill, setNewChackBill] = useState()
+  socket.on(`notificationCheckout${getTokken?.DATA?.storeId}`, data => {
+    setNewChackBill(data)
+  });
+  const [checkBill, setcheckBill] = useState()
+  useEffect(() => {
+    _searchDate()
+  }, [NewChackBill])
+  const _searchDate = async () => {
+    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${getTokken?.DATA?.storeId}`;
+    const _data = await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setcheckBill(response)
+      })
+  }
+  console.log("🚀 ~ file: SideNav.js ~ line 47 ~ Sidenav ~ checkBill", checkBill)
+
+  // ========> in orders
+  const [reLoadData, setreLoadData] = useState()
+  socket.on(`createorder${getTokken?.DATA?.storeId}`, data => {
+    setreLoadData(data)
+  });
+  useEffect(() => {
+    getData()
+  }, [reLoadData])
+  const [orderItems, setorderItems] = useState()
+  const getData = async (tokken) => {
+    await fetch(END_POINT + "/orderItems?status=WAITING", {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setorderItems(json));
+  }
+
   return (
     <SideNav
       style={{
-        backgroundColor: "#FB6E3B",
+        backgroundColor: "#FFFFFF",
+        border: "solid 1px #E4E4E4",
         height: "100vh",
         display: "block",
         position: "fixed",
@@ -79,146 +114,154 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#FFFFFF" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faCartArrowDown}
               style={{
                 color:
                   selected === "orders"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
+            {orderItems?.length != 0 ?
+              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{orderItems?.length}</Badge>
+              : ""
+            }
           </NavIcon>
           <NavText
             style={{
-              color: selected === "orders" ? UN_SELECTED_TAB_TEXT
-                : "#fff",
+              color: selected === "orders" ? COLOR_APP
+                : UN_SELECTED_TAB_TEXT,
             }}
           >
             ອໍເດີ
             </NavText>
         </NavItem>
-        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faHome}
               style={{
                 color:
                   selected === "tables"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "tables" ? UN_SELECTED_TAB_TEXT : "#fff",
+              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ສະຖານະຂອງໂຕະ
             </NavText>
         </NavItem>
-        <NavItem eventKey={`checkBill/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`checkBill/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBell}
               style={{
                 color:
                   selected === "checkBill"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
+            {checkBill?.length != 0 ?
+              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
+              : ""
+            }
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "checkBill" ? UN_SELECTED_TAB_TEXT : "#fff",
+                selected === "checkBill" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ແຈ້ງເຕືອນ Checkbill
           </NavText>
         </NavItem>
-        <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faHistory}
               style={{
                 color:
                   selected === "histories"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "histories" ? UN_SELECTED_TAB_TEXT : "#fff",
+                selected === "histories" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ປະຫວັດການຂາຍ
             </NavText>
         </NavItem>
-        <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBookOpen}
               style={{
                 color:
                   selected === "menu"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
           <NavText
             style={{
-              color: selected === "menu" ? UN_SELECTED_TAB_TEXT : "#fff",
+              color: selected === "menu" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ເພີ່ມອາຫານ
             </NavText>
         </NavItem>
-        <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faUsers}
               style={{
                 color:
                   selected === "users"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "users" ? UN_SELECTED_TAB_TEXT : "#fff",
+                selected === "users" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ຈັດການພະນັກງານ
             </NavText>
         </NavItem>
-        <NavItem eventKey={`storeDetail/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "", border: `solid 1px #FB6E3B` }}>
+        <NavItem eventKey={`storeDetail/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faAddressCard}
               style={{
                 color:
                   selected === "storeDetail"
-                    ? UN_SELECTED_TAB_TEXT
-                    : "#fff",
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
           <NavText
             style={{
               color:
-                selected === "storeDetail" ? UN_SELECTED_TAB_TEXT : "#fff",
+                selected === "storeDetail" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ຮ້ານຄ້າ

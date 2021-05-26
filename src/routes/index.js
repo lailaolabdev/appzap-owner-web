@@ -50,7 +50,7 @@ const Index = () => {
       <Switch>
         {/* Before login routes */}
         <PublicRoute exact path="/" component={Login} />
-        <PublicRoute exact path="/CheckBillOut" component={CheckBill} />
+        <PublicRoute exact path="/CheckBillOut/:id" component={CheckBill} />
         <PublicRoute exact path="/BillForChef" component={BillForChef} />
 
         {/* After login routes (has SideNav and NavBar) */}
@@ -77,11 +77,6 @@ const Index = () => {
                     path="/storeDetail/:id"
                     component={StoreDetail}
                   />
-                  {/* <PrivateRoute
-                    exact
-                    path="/storeDetail/storeEdit"
-                    component={StoreEdit}
-                  /> */}
                   <PrivateRoute
                     exact
                     path="/orders/pagenumber/:number/:id"
@@ -124,7 +119,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/checkBill/historiesCheckBill"
+                    path="/checkBill/:id/historiesCheckBill"
                     component={HistoriesCheckBill}
                   />
                   <PrivateRoute
