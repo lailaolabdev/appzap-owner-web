@@ -21,7 +21,7 @@ export default function CheckBill() {
             .then(response => {
                 setData(response)
             })
-        await fetch(STORE + `/?id=6092b8c247b38de5af7275b2`, {
+        await fetch(STORE + `/?id=${match?.params?.id}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setStore(json));

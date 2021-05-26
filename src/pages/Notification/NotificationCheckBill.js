@@ -33,7 +33,7 @@ export default function NotificationCheckBill() {
       .then(json => setorderCallCheckOut(json));
   }
   const _checkbillTable = (item) => {
-    history.push(`/checkBill/historiesCheckBill/?code=${item}`)
+    history.push(`/checkBill/${match?.params?.id}/historiesCheckBill/?code=${item}`)
   }
   return (
     <div style={{ minHeight: 400 }}>

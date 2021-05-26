@@ -20,7 +20,7 @@ import CancelModal from "./component/CancelModal";
  */
 import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS, END_POINT } from "../../constants";
+import { CANCEL_STATUS, DOING_STATUS, END_POINT, USER_KEY } from "../../constants";
 
 const Order = () => {
   const { match } = useReactRouter();
@@ -28,7 +28,12 @@ const Order = () => {
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-
+  const [userData, setUserData] = useState({})
+  useEffect(() => {
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
+  }, [])
   const _handleUpdate = async () => {
     await updateOrderItem(checkedToUpdate, DOING_STATUS);
     window.location.reload();
@@ -63,7 +68,7 @@ const Order = () => {
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
   const socket = socketIOClient(END_POINT);
-  socket.on("createorder", data => {
+  socket.on(`createorder${userData?.data?.storeId}`, data => {
     setreLoadData(data)
   });
   useEffect(() => {
@@ -82,7 +87,6 @@ const Order = () => {
   }
   return (
     <div>
-      {isLoading ? <Loading /> : ""}
       <CustomNav
         default={`/orders/pagenumber/${number}`}
         data={DataForPrint}
