@@ -37,21 +37,17 @@ export default function NavBar() {
     sessionStorage.clear()
     history.push(`/`)
   }
-
   const [messageData, setmessageData] = useState()
   useEffect(() => {
     _message()
   }, [getmassege])
   const _message = async () => {
-    const url = END_POINT + `/messages/?status=NOT`;
+    const url = END_POINT + `/messages/?status=NOT&&storeId=${userData?.data?.storeId}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
         setmessageData(response)
       })
-  }
-  const _gotohistoryCheckbill = () => {
-    history.push('/checkBill')
   }
   const _updateMessage = async () => {
     let getId = []
