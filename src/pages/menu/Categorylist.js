@@ -48,10 +48,10 @@ export default function Categorylist() {
     const handleClose2 = () => setShow2(false);
     const [dataUpdate, setdataUpdate] = useState('')
     const handleShow2 = async (item) => {
-        await fetch(CATEGORY + `/${item}`, {
+        await fetch(CATEGORY + `/?_id=${item}`, {
             method: "GET",
         }).then(response => response.json())
-            .then(json => setdataUpdate(json));
+            .then(json => setdataUpdate(json[0]));
         setShow2(true)
     };
     // =======> 
@@ -157,7 +157,7 @@ export default function Categorylist() {
                                             <td>{index + 1}</td>
                                             <td>{data?.name}</td>
                                             <td>{data?.note}</td>
-                                            <td><FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP }} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.name)} /></td>
+                                            <td><FontAwesomeIcon icon={faEdit} style={{ color: COLOR_APP }} onClick={() => handleShow2(data?._id)} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.name)} /></td>
                                         </tr>
                                     )
                                 })}

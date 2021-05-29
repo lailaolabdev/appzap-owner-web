@@ -35,7 +35,7 @@ const Order = () => {
     setUserData(_localJson)
   }, [])
   const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, DOING_STATUS);
+    await updateOrderItem(checkedToUpdate, DOING_STATUS, userData?.data?.storeId);
     window.location.reload();
   };
   const _handleCancel = async () => {

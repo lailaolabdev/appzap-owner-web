@@ -19,6 +19,7 @@ export default function NavBar() {
   const socket = socketIOClient(END_POINT);
   const [getmassege, setgetmassege] = useState()
   const [userData, setUserData] = useState({})
+  const [messageData, setmessageData] = useState()
 
 
   socket.on(`messageAdmin${userData?.data?.storeId}`, data => {
@@ -37,22 +38,19 @@ export default function NavBar() {
     sessionStorage.clear()
     history.push(`/`)
   }
-
-  const [messageData, setmessageData] = useState()
-  useEffect(() => {
-    _message()
-  }, [getmassege])
-  const _message = async () => {
-    const url = END_POINT + `/messages/?status=NOT`;
+  const _message = async (item) => {
+    const url = await END_POINT + `/messages/?storeId=${item?.data?.storeId}&&status=NOT`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
         setmessageData(response)
       })
   }
-  const _gotohistoryCheckbill = () => {
-    history.push('/checkBill')
-  }
+  useEffect(() => {
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    _message(_localJson)
+  }, [getmassege])
   const _updateMessage = async () => {
     let getId = []
     for (let p = 0; p < messageData?.length; p++) {
@@ -161,7 +159,7 @@ export default function NavBar() {
               </tr>
             </thead>
             <tbody>
-              {messageData?.map((item, index) => {
+              {messageData && messageData?.map((item, index) => {
                 return (
                   <tr>
                     <td>{index + 1}</td>
