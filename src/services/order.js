@@ -73,7 +73,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (data, status = CANCEL_STATUS) => {
+export const updateOrderItem = async (data, status = CANCEL_STATUS, storeId) => {
   try {
     for (let orderElement of data) {
       const url = `${END_POINT}/orderItems/${orderElement.id}`;
