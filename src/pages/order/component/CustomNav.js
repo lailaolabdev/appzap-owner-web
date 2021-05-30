@@ -38,6 +38,7 @@ const CustomNav = (props) => {
   const _served = () => {
     history.push(`/orders/served/pagenumber/1/${getTokken?.DATA?.storeId}`)
   }
+  console.log("props.data", props?.data?.length)
   return (
     <div>
       <Nav variant="tabs" defaultActiveKey={props.default}>
@@ -51,7 +52,7 @@ const CustomNav = (props) => {
           <Nav.Link style={{ color: "#FB6E3B" }} onClick={() => _served()}>ເສີບແລ້ວ</Nav.Link>
         </Nav.Item>
         <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-          {/* {props.data ? (
+          {props?.data?.length !== 0 ? (
             <Button
               onClick={() => _prinbill()}
               variant={BUTTON_OUTLINE_DANGER}
@@ -65,12 +66,11 @@ const CustomNav = (props) => {
             </Button>
           ) : (
             <div></div>
-          )} */}
+          )}
           <div style={{ width: 20 }} />
           <Button
             onClick={props.handleUpdate}
             style={BUTTON_EDIT_HOVER}
-          // onClick={() => _prinbill()}
           >
             <FontAwesomeIcon
               icon={faPen}

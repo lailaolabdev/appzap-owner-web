@@ -7,9 +7,8 @@ import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
 import { STORE } from '../../constants/api'
 import profileImage from "../../image/profile.png"
 export const BillForChef = () => {
-    const { history, location, match } = useReactRouter()
+    const { location } = useReactRouter()
     const [datanew, setData] = useState()
-    const [dataStore, setStore] = useState()
 
     useEffect(() => {
         queryData()
@@ -22,42 +21,18 @@ export const BillForChef = () => {
             setData(response?.data)
         }).catch(function (error) {
         })
-        await fetch(STORE + `/?id=6092b8c247b38de5af7275b2`, {
-            method: "GET",
-        }).then(response => response.json())
-            .then(json => setStore(json));
     }
     useEffect(() => {
-        if (datanew && dataStore) {
+        if (datanew) {
             setTimeout(() => {
                 window.print()
                 window.close()
             }, 500);
         }
-    }, [datanew, dataStore])
+    }, [datanew])
     return (
         <div className="col-12 center">
             <div style={{ textAlign: "center", paddingTop: 30 }}>
-                <Col>
-                    {dataStore?.image ? (
-                        <center>
-                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="" width="150" height="150" style={{
-                                height: 200,
-                                width: 200,
-                                borderRadius: '50%',
-                            }} />
-                        </center>
-                    ) : (<center>
-                        <Image src={profileImage} alt="" width="150" height="150" style={{
-                            height: 200,
-                            width: 200,
-                            borderRadius: '50%',
-                        }} />
-                    </center>)}
-                    <div style={{ height: 30 }}></div>
-                    <h3 style={{ fontWeight: "bold" }}>ຮ້ານທົ່ງສາງທອງ</h3>
-                    <p style={{ fontWeight: "bold" }}>  ຍີນດີຕ້ອນຮັບ  </p>
-                </Col>
                 <div style={{ padding: 10 }}>
                     <div className="row col-sm-12 text-center">
                         <div className="col-sm-6" style={{ fontWeight: "bold" }}>ວັນທີ : {new Date(datanew ? datanew[0]?.createdAt : '').toLocaleDateString()}</div>
@@ -75,6 +50,7 @@ export const BillForChef = () => {
                                 <th>ຊື່ເມນູ</th>
                                 <th>ຈຳນວນ</th>
                                 <th>ລະຫັດຕູບ</th>
+                                <th>Comment</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,6 +63,7 @@ export const BillForChef = () => {
                                         <td>{item?.menu?.name}</td>
                                         <td>{item?.quantity}</td>
                                         <td>{item?.code}</td>
+                                        <td>{item?.note}</td>
                                     </tr>
                                 )
                             }

@@ -33,6 +33,7 @@ export default function Sidenav({ location, history }) {
       const _localData = await getLocalData()
       if (_localData) {
         setgetTokken(_localData)
+        _searchDate(_localData)
       }
     }
     fetchData();
@@ -45,17 +46,22 @@ export default function Sidenav({ location, history }) {
   });
   const [checkBill, setcheckBill] = useState()
   useEffect(() => {
-    _searchDate()
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        _searchDate(_localData)
+      }
+    }
+    fetchData();
   }, [NewChackBill])
-  const _searchDate = async () => {
-    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${getTokken?.DATA?.storeId}`;
+  const _searchDate = async (tokkeStoeId) => {
+    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${tokkeStoeId?.DATA?.storeId}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
         setcheckBill(response)
       })
   }
-  console.log("🚀 ~ file: SideNav.js ~ line 47 ~ Sidenav ~ checkBill", checkBill)
 
   // ========> in orders
   const [reLoadData, setreLoadData] = useState()
@@ -72,7 +78,6 @@ export default function Sidenav({ location, history }) {
     }).then(response => response.json())
       .then(json => setorderItems(json));
   }
-
   return (
     <SideNav
       style={{

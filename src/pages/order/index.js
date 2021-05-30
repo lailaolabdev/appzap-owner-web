@@ -85,7 +85,6 @@ const Order = () => {
       .then(json => setorderItems(json));
     await setIsLoading(false);
   }
-  console.log("orderItems", orderItems)
   return (
     <div>
       <CustomNav
