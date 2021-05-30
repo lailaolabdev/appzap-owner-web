@@ -65,6 +65,8 @@ const Order = () => {
               <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
+              <th>Comment</th>
+
             </tr>
           </thead>
           <tbody>
@@ -72,14 +74,6 @@ const Order = () => {
               ordersSev?.map((order, index) => (
                 <tr key={index}>
                   <td>
-                    {/* <Checkbox
-                      checked={
-                        checkedToUpdate && checkedToUpdate[index]?.checked
-                      }
-                      onChange={(e) => _handleCheckbox(e, order?._id)}
-                      color="primary"
-                      inputProps={{ "aria-label": "secondary checkbox" }}
-                    /> */}
                   </td>
                   <td>{index + 1}</td>
                   <td>{order?.menu?.name ?? "-"}</td>
@@ -92,21 +86,12 @@ const Order = () => {
                       ? moment(order?.createdAt).format("HH:mm a")
                       : "-"}
                   </td>
+                  <td>{order?.note ?? "-"}</td>
                 </tr>
               ))}
           </tbody>
         </Table>
       </Container>
-      {/* <CancelModal
-        show={cancelModal}
-        hide={() => setCancelModal(false)}
-        handleCancel={_handleCancel}
-      /> */}
-      {/* <UpdateModal
-        show={updateModal}
-        hide={() => setUpdateModal(false)}
-        handleUpdate={_handleUpdate}
-      /> */}
     </div>
   );
 };

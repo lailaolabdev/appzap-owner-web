@@ -85,6 +85,7 @@ const Order = () => {
       .then(json => setorderItems(json));
     await setIsLoading(false);
   }
+  console.log("orderItems", orderItems)
   return (
     <div>
       <CustomNav
@@ -114,6 +115,7 @@ const Order = () => {
               <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
+              <th>Comment</th>
             </tr>
           </thead>
           <tbody>
@@ -141,6 +143,7 @@ const Order = () => {
                       ? moment(order?.createdAt).format("HH:mm a")
                       : "-"}
                   </td>
+                  <td>{order?.note ?? "-"}</td>
                 </tr>
               ))}
           </tbody>
