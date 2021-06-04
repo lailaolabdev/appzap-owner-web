@@ -124,7 +124,7 @@ export default function HistoriesCheckBill() {
                       <td>{item?.orderId?.table_id}</td>
                       <td>{item?.orderId?.code}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
-                      <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
+                      <td>{moment(item?.createdAt).format("DD/MM/YYY ~ HH:mm a")}</td>
                     </tr>
                   )
                 }

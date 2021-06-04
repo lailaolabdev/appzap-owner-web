@@ -209,6 +209,7 @@ export default function TableList() {
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
+  const [IdMenuOrder, setIdMenuOrder] = useState([])
   const _handleCheckbox = async (event, id) => {
     if (event.target.checked == true) {
       let _addData = [];
@@ -240,7 +241,7 @@ export default function TableList() {
     window.location.reload();
   };
   const _printBill = () => {
-    window.open(`/CheckBillOut/?code=` + activeTableId)
+    window.open(`/BillForChef/?id=` + checkedToUpdate)
   }
   return (
     <div style={TITLE_HEADER}>

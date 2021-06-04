@@ -144,26 +144,6 @@ export default function Sidenav({ location, history }) {
             ອໍເດີ
             </NavText>
         </NavItem>
-        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faHome}
-              style={{
-                color:
-                  selected === "tables"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ສະຖານະຂອງໂຕະ
-            </NavText>
-        </NavItem>
         <NavItem eventKey={`checkBill/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
@@ -188,6 +168,26 @@ export default function Sidenav({ location, history }) {
           >
             ແຈ້ງເຕືອນ Checkbill
           </NavText>
+        </NavItem>
+        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faHome}
+              style={{
+                color:
+                  selected === "tables"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ສະຖານະຂອງໂຕະ
+            </NavText>
         </NavItem>
         <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
           <NavIcon>

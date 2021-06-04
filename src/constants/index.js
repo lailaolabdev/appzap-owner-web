@@ -16,10 +16,8 @@ export const CALLTOCHECKOUT_STATUS = "CALLTOCHECKOUT";
 export const NOT_STATUS = "NOT";
 export const CHECKOUT_STATUS = "CHECKOUT";
 export const ALL_STATUS = [
-    { value: "WAITING", label: "ອໍເດີເຂົ້າ" },
     { value: "DOING", label: "ກໍາລັງຄົວ" },
     { value: "SERVED", label: "	ເສີບແລ້ວ" },
-    { value: "CANCELED", label: "ຍົກເລີກ" },
 ];
 export const COLOR_APP = "#FB6E3B"
 export const COLOR_APP_CANCEL = "red"
