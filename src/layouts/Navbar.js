@@ -23,8 +23,11 @@ export default function NavBar() {
 
 
   socket.on(`messageAdmin${userData?.data?.storeId}`, data => {
-    setgetmassege(data)
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    _message(_localJson)
   });
+
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
@@ -46,11 +49,6 @@ export default function NavBar() {
         setmessageData(response)
       })
   }
-  useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    _message(_localJson)
-  }, [getmassege])
   const _updateMessage = async () => {
     let getId = []
     for (let p = 0; p < messageData?.length; p++) {
@@ -69,9 +67,7 @@ export default function NavBar() {
       }
     }).catch(function (error) {
     })
-  }
-  const _orderindex = () => {
-    history.push('/orders/pagenumber/1')
+
   }
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
