@@ -42,7 +42,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build&&export AWS_ACCESS_KEY_ID=AKIA43K44YXAJWRK4IUS&&export AWS_SECRET_ACCESS_KEY=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&&aws s3 sync ./build s3://restaurant.appzap.la/",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
