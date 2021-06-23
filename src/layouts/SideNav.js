@@ -69,11 +69,17 @@ export default function Sidenav({ location, history }) {
     setreLoadData(data)
   });
   useEffect(() => {
-    getData()
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        getData(_localData)
+      }
+    }
+    fetchData()
   }, [reLoadData])
   const [orderItems, setorderItems] = useState()
-  const getData = async (tokken) => {
-    await fetch(END_POINT + "/orderItems?status=WAITING", {
+  const getData = async (tokkeStoeId) => {
+    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${tokkeStoeId?.DATA?.storeId}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setorderItems(json));
