@@ -31,39 +31,39 @@ export const BillForChef = () => {
         }
     }, [datanew])
     return (
-        <div className="col-12 center">
-            <div style={{ textAlign: "center", paddingTop: 30 }}>
+        <div className="col-12 center" style={{fontFamily:"phetsarath ot"}}>
+            <div style={{ textAlign: "center" }}>
                 <div style={{ padding: 10 }}>
                     <div className="row col-sm-12 text-center">
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ວັນທີ : {new Date(datanew ? datanew[0]?.createdAt : '').toLocaleDateString()}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold", fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ວັນທີ : {new Date(datanew ? datanew[0]?.createdAt : '').toLocaleDateString()}</div>
                     </div>
                 </div>
             </div>
-            <div style={{ paddingLeft: 200, paddingRight: 200 }}>
+            <div style={{  }}>
                 <Col xs={12}>
                     <Table responsive class="table" id='printMe'>
                         <thead style={{ backgroundColor: "#F1F1F1" }}>
                             <tr>
-                                <th>ລຳດັບ</th>
-                                <th>ຕູບ</th>
-                                <th>ຊື່ຜູ້ສັ່ງ</th>
-                                <th>ຊື່ເມນູ</th>
-                                <th>ຈຳນວນ</th>
-                                <th>ລະຫັດຕູບ</th>
-                                <th>Comment</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ລຳດັບ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ຕູບ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ຊື່ຜູ້ສັ່ງ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ຊື່ເມນູ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ຈຳນວນ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ລະຫັດຕູບ</th>
+                                <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ຄອມເມັ້ນ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {datanew?.map((item, index) => {
                                 return (
-                                    <tr index={item}>
+                                    <tr index={item} >
                                         <td>{index + 1}</td>
                                         <td>{item?.orderId?.table_id}</td>
                                         <td>{item?.orderId?.customer_nickname}</td>
-                                        <td>{item?.menu?.name}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.menu?.name}</td>
                                         <td>{item?.quantity}</td>
                                         <td>{item?.code}</td>
-                                        <td>{item?.note}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.note}</td>
                                     </tr>
                                 )
                             }

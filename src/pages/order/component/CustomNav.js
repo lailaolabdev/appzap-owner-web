@@ -38,7 +38,6 @@ const CustomNav = (props) => {
   const _served = () => {
     history.push(`/orders/served/pagenumber/1/${getTokken?.DATA?.storeId}`)
   }
-  console.log("props.data", props?.data?.length)
   return (
     <div>
       <Nav variant="tabs" defaultActiveKey={props.default}>
@@ -51,7 +50,7 @@ const CustomNav = (props) => {
         <Nav.Item>
           <Nav.Link style={{ color: "#FB6E3B" }} onClick={() => _served()}>ເສີບແລ້ວ</Nav.Link>
         </Nav.Item>
-        <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
+        {/* <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
           {props?.data?.length !== 0 ? (
             <Button
               onClick={() => _prinbill()}
@@ -78,7 +77,7 @@ const CustomNav = (props) => {
             />
                 ອັບເດດ
               </Button>
-        </Nav.Item>
+        </Nav.Item> */}
       </Nav>
     </div >
   );

@@ -3,8 +3,8 @@ import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
-import Checkbox from "@material-ui/core/Checkbox";
 import moment from "moment";
+import OrderNavbar from "./component/OrderNavbar";
 
 import Loading from "../../components/Loading";
 import { getOrders, updateOrderItem } from "../../services/order";
@@ -52,7 +52,7 @@ const Order = () => {
   return (
     <div>
       {isLoading ? <Loading /> : ""}
-      <CustomNav default={`/orders/served/pagenumber/${number}`} cantUpdate />
+      <OrderNavbar />
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>

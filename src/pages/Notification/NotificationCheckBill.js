@@ -22,11 +22,13 @@ import Sidenav from '../../layouts/SideNav'
 export default function NotificationCheckBill() {
   const { match, history } = useReactRouter();
   const [orderCallCheckOut, setorderCallCheckOut] = useState()
+  const newDate = new Date();
+
   useEffect(() => {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}`, {
+    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())
