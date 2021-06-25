@@ -8,6 +8,7 @@
 *,
 body,
 .Dialogbox,
+label,
 div {
   margin: 0;
   font-family: "NotoSansLao";
@@ -23,5 +24,5 @@ div {
   margin: 0.3rem;
   margin-left: 15px;
   box-shadow: 0.25rem 0rem 0.25rem darkgray;
-  display: row;
+  /* display: row; */
 }

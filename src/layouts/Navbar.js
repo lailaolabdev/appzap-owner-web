@@ -101,7 +101,7 @@ export default function NavBar() {
             roundedCircle
             onClick={handleShow}
           />
-          <Badge variant="danger">{messageData?.length ? messageData?.length : ""}</Badge>
+          <Badge variant="danger" >{messageData?.length ? messageData?.length : ""}</Badge>
           <div style={{ marginLeft: 30 }}></div>
           <Form inline>
             <Dropdown>

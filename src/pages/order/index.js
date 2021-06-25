@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
-import CustomNav from "./component/CustomNav";
+import OrderNavbar from "./component/OrderNavbar";
 import Container from "react-bootstrap/Container";
-import { Table, Button } from "react-bootstrap";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Table, Button, Nav, ButtonGroup, Form, Col } from "react-bootstrap";
+import { Checkbox, FormControlLabel} from "@material-ui/core";
 import moment from "moment";
 import socketIOClient from "socket.io-client";
-import useSound from 'use-sound';
-import soundA from '../../sound/message.mp3'
 
 /**
  * import components
  */
-import Loading from "../../components/Loading";
 import UpdateModal from "./component/UpdateModal";
 import CancelModal from "./component/CancelModal";
 /**
  * import function
  */
-import { getOrders, updateOrderItem } from "../../services/order";
+import { updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS, END_POINT, USER_KEY } from "../../constants";
+import { CANCEL_STATUS, DOING_STATUS,SERVE_STATUS, END_POINT, USER_KEY } from "../../constants";
 
 const Order = () => {
   const { match } = useReactRouter();
@@ -28,42 +25,38 @@ const Order = () => {
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
+  const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [userData, setUserData] = useState({})
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
     setUserData(_localJson)
   }, [])
-  const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, DOING_STATUS, userData?.data?.storeId);
-    window.location.reload();
-  };
   const _handleCancel = async () => {
     await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
     window.location.reload();
   };
-  const _handleCheckbox = async (event, id) => {
-    if (event.target.checked == true) {
+  const _handleUpdate = async () => {
+    await updateOrderItem(checkedToUpdate, DOING_STATUS, userData?.data?.storeId);
+    window.location.reload();
+  };
+    const _handleUpdateServe = async () => {
+    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
+    window.location.reload();
+  };
+  const _handleCheckbox = async (event, id, index) => {
+    if (event?.target?.checked === true) {
       let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked });
-      setCheckedToUpdate((checkedToUpdate) => [
+      _addData.push({ id: id, checked: event.target.checked, number: index });
+      setCheckedToUpdate([
         ...checkedToUpdate,
         ..._addData,
       ]);
     } else {
-      let _checkValue = checkedToUpdate;
-      const _removeId = await _checkValue?.filter((check) => check.id !== id);
+      const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
       setCheckedToUpdate(_removeId);
     }
   };
-  const [DataForPrint, setDataForPrint] = useState()
-  useEffect(() => {
-    let data = []
-    for (let i = 0; i < checkedToUpdate.length; i++) {
-      data.push(checkedToUpdate[i]?.id)
-    }
-    setDataForPrint(data)
-  }, [checkedToUpdate])
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
@@ -85,23 +78,48 @@ const Order = () => {
       .then(json => setorderItems(json));
     await setIsLoading(false);
   }
+  const _prinbill = async () => {
+    let billId = []
+    for (let i = 0; i < checkedToUpdate?.length; i++) {
+      billId.push(checkedToUpdate[i]?.id)
+    }
+    await window.open(`/BillForChef/?id=${billId}`);
+    _handleUpdate()
+  }
+  const _checkAll = (item) => {
+    if (item?.target?.checked === true) {
+      setcheckBoxAll(true)
+      let allData =[]
+      for (let e = 0; e < orderItems?.length; e++){
+        allData.push({id:orderItems[e]?._id})
+      }
+      setCheckedToUpdate(allData)
+    } else {
+      setcheckBoxAll(false)
+      setCheckedToUpdate()
+      setCheckedToUpdate([])
+    }
+  }
+  const _onSelectBox = (index) => {
+      for (let i = 0; i < checkedToUpdate?.length; i++){
+        if (checkedToUpdate[i]?.number === index) {
+          return "true"
+       }
+      }
+  }
   return (
     <div>
-      <CustomNav
-        default={`/orders/pagenumber/${number}`}
-        data={DataForPrint}
-        handleCancel={() => {
-          if (checkedToUpdate.length !== 0) {
-            setCancelModal(true);
-          }
-        }}
-        handleUpdate={() => {
-          if (checkedToUpdate.length !== 0) {
-            setUpdateModal(true);
-          }
-        }}
-        status
-      />
+      <OrderNavbar/>
+      <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15,paddingLeft:15,paddingRight:15 }}>
+        <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center"}}>
+          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e)=>_checkAll(e)}/>} label={<div style={{ fontFamily:"NotoSansLao",fontWeight:"bold"}}>ເລືອກທັງໝົດ</div>}/>
+        </div>
+        <div>
+          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
+          <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
+        </div>
+      </div>
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
@@ -110,41 +128,43 @@ const Order = () => {
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
-              <th>ເບີໂຕະ</th>
-              <th>ລະຫັດໂຕະ</th>
+              <th>ເບີຕູບ</th>
+              <th>ລະຫັດຕູບ</th>
+              <th>ຄອມເມັ້ນ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
-              <th>Comment</th>
             </tr>
           </thead>
           <tbody>
             {orderItems &&
-              orderItems?.map((order, index) => (
-                <tr key={index}>
-                  <td>
-                    <Checkbox
-                      checked={
-                        checkedToUpdate && checkedToUpdate[index]?.checked
-                      }
-                      onChange={(e) => _handleCheckbox(e, order?._id)}
-                      color="primary"
-                      inputProps={{ "aria-label": "secondary checkbox" }}
-                    />
-                  </td>
-                  <td>{index + 1}</td>
-                  <td>{order?.menu?.name ?? "-"}</td>
-                  <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.orderId?.table_id ?? "-"}</td>
-                  <td>{order?.orderId?.code ?? "-"}</td>
-                  <td style={{ color: "red", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
-                  <td>
-                    {order?.createdAt
-                      ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}
-                  </td>
-                  <td>{order?.note ?? "-"}</td>
-                </tr>
-              ))}
+              orderItems?.map((order, index) => {
+                return (
+                  <tr key={index}>
+                    <td>
+                      <Checkbox
+                        checked={_onSelectBox(index) ? _onSelectBox(index):checkBoxAll}
+                        onChange={(e) => _handleCheckbox(e, order?._id, index)}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </td>
+                    <td>{index + 1}</td>
+                    <td>{order?.menu?.name ?? "-"}</td>
+                    <td>{order?.quantity ?? "-"}</td>
+                    <td>{order?.orderId?.table_id ?? "-"}</td>
+                    <td>{order?.orderId?.code ?? "-"}</td>
+                    <td>{order?.note ?? "-"}</td>
+                    <td style={{ color: "red", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                    <td>
+                      {order?.createdAt
+                        ? moment(order?.createdAt).format("HH:mm ")
+                        : "-"} ໂມງ
+                    </td>
+                  </tr>
+                )
+              })
+               
+            }
           </tbody>
         </Table>
       </Container>

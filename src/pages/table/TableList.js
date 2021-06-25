@@ -356,7 +356,7 @@ export default function TableList() {
                     <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
                   </Col>
                   <Nav.Item className="ml-auto row mr-5">
-                    <Col sm={3} className="mr-5">
+                    <Col sm={3} className="mr-5">          
                     </Col>
                     <Col sm={4}>
                       {newData?.length === 0 ? <div style={{ width: 50 }}></div> :
