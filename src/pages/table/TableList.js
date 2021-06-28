@@ -389,12 +389,12 @@ export default function TableList() {
                     <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                     </div>
-                    <div style={{ display: CheckStatus?.length === newData?.length ? "none":""}}>
+                  <div style={{ display: CheckStatus?.length === newData?.length ? "none" : CheckStatus?.length === 0 ? "none" :""}}>
                       <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
                       <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
                       <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
                     </div>
-                  <div style={{ display: CheckStatus?.length !== newData?.length ? "none" : "" }}>
+                  <div style={{ display: CheckStatus?.length !== newData?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>Checkout</Button>
                       <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ໄລ່ເງີນ</Button>
                     </div>
