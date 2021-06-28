@@ -57,12 +57,12 @@ export const BillForChef = () => {
                             {datanew?.map((item, index) => {
                                 return (
                                     <tr index={item} >
-                                        <td>{index + 1}</td>
-                                        <td>{item?.orderId?.table_id}</td>
-                                        <td>{item?.orderId?.customer_nickname}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{index + 1}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.orderId?.table_id}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.orderId?.customer_nickname}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.menu?.name}</td>
-                                        <td>{item?.quantity}</td>
-                                        <td>{item?.code}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.quantity}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.code}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.note}</td>
                                     </tr>
                                 )
