@@ -28,7 +28,7 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
+    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())
