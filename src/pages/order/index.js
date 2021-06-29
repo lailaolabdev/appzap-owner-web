@@ -149,7 +149,7 @@ const Order = () => {
                       />
                     </td>
                     <td>{index + 1}</td>
-                    <td>{order?.menu?.name ?? "-"}</td>
+                    <td>{order?.name ?? "-"}</td>
                     <td>{order?.quantity ?? "-"}</td>
                     <td>{order?.orderId?.table_id ?? "-"}</td>
                     <td>{order?.orderId?.code ?? "-"}</td>

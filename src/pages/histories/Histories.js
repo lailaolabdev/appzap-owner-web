@@ -60,7 +60,7 @@ export default function History() {
     let amount = 0
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
-        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
       }
     }
     setamount(amount)
@@ -68,7 +68,7 @@ export default function History() {
   const _allmonny = (item) => {
     let amount = 0
     for (let j = 0; j < item?.length; j++) {
-      amount += item[j]?.menu?.price * item[j]?.quantity
+      amount += item[j]?.price * item[j]?.quantity
     }
     return amount;
 

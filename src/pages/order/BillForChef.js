@@ -60,7 +60,7 @@ export const BillForChef = () => {
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{index + 1}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.orderId?.table_id}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.orderId?.customer_nickname}</td>
-                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.menu?.name}</td>
+                                        <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.name}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.quantity}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.code}</td>
                                         <td style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>{item?.note}</td>

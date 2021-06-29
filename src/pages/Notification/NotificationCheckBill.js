@@ -28,7 +28,7 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}`, {
+    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}&&status=CALLTOCHECKOUT`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())
@@ -37,6 +37,7 @@ export default function NotificationCheckBill() {
   const _checkbillTable = (item) => {
     history.push(`/checkBill/${match?.params?.id}/historiesCheckBill/?code=${item}`)
   }
+  console.log("orderCallCheckOut", orderCallCheckOut)
   return (
     <div style={{ minHeight: 400 }}>
       <Container fluid>

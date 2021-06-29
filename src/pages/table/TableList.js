@@ -146,8 +146,8 @@ export default function TableList() {
   useEffect(() => {
     let newData = []
     let checkDataStatus = []
-    for (let i = 0; i < dataOrder.length; i++) {
-      for (let k = 0; k < dataOrder[i]?.order_item.length; k++) {
+    for (let i = 0; i < dataOrder?.length; i++) {
+      for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
         if (dataOrder[i]?.order_item[k]?.status === "SERVED") {
           checkDataStatus.push(dataOrder[i]?.order_item[k]?.status)
@@ -156,6 +156,8 @@ export default function TableList() {
     }
     setCheckStatus(checkDataStatus)
     setnewData(newData)
+    console.log("🚀 ~ file: TableList.js ~ line 167 ~ useEffect ~ newData", newData)
+
   }, [dataOrder])
 
   // ===== query table ===>
@@ -246,9 +248,6 @@ export default function TableList() {
     await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
     window.location.reload();
   };
-  const _printBill = () => {
-    window.open(`/BillForChef/?id=` + checkedToUpdate)
-  }
   const _checkAll = (item) => {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
@@ -281,6 +280,9 @@ export default function TableList() {
   const _checkOut = async () => {
     window.open(`/CheckBillOut/${match?.params?.storeId}/?code=${match?.params?.tableId}`);
   }
+  const _onClickMenuDetail = async () => {
+    await setMenuItemDetailModal(true);
+  };
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -389,14 +391,14 @@ export default function TableList() {
                     <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                     </div>
-                  <div style={{ display: CheckStatus?.length === newData?.length ? "none" : CheckStatus?.length === 0 ? "none" :""}}>
+                  <div style={{ display: CheckStatus?.length === newData?.length ? "none":''}}>
                       <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
                       <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
                       <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
                     </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>Checkout</Button>
-                      <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ໄລ່ເງີນ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>ໄລ່ເງີນ</Button>
                     </div>
                   </div>
                 <div style={padding_white} />
@@ -411,7 +413,6 @@ export default function TableList() {
                         <th style={{ width: 50 }}>ລຳດັບ</th>
                         <th>ຊື່ເມນູ</th>
                         <th>ຈຳນວນ</th>
-                        <th>ເບີໂຕະ</th>
                         <th>ສະຖານະ</th>
                         <th>ເວລາ</th>
                       </tr>
@@ -429,9 +430,8 @@ export default function TableList() {
                             />
                           </td>
                           <td>{index + 1}</td>
-                          <td>{orderItem?.menu?.name}</td>
+                          <td>{orderItem?.name}</td>
                           <td>{orderItem?.quantity}</td>
-                          <td>{orderItem?.table_id}</td>
                           <td>
                             <div
                               style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}

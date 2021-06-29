@@ -28,7 +28,7 @@ const MenusItemDetail = (props) => {
   let total = 0;
   if (data && data.length > 0) {
     for (let orderItem of data) {
-      total += orderItem?.quantity * orderItem?.menu?.price;
+      total += orderItem?.quantity * orderItem?.price;
     }
   }
   const socket = socketIOClient(END_POINT);
@@ -85,12 +85,12 @@ const MenusItemDetail = (props) => {
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{orderItem?.menu?.name ?? "-"}</td>
+                    <td>{orderItem?.name ?? "-"}</td>
                     <td>{orderItem?.quantity}</td>
                     <td>
-                      {orderItem?.menu?.price
+                      {orderItem?.price
                         ? moneyCurrency(
-                          orderItem?.menu?.price * orderItem?.quantity
+                          orderItem?.price * orderItem?.quantity
                         )
                         : "-"}
                     </td>

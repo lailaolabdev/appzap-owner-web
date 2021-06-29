@@ -65,7 +65,7 @@ export default function HistoryDetail() {
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
         order_item.push(data[i]?.order_item[k])
-        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
       }
     }
     setOrderItemData(order_item)
@@ -110,10 +110,10 @@ export default function HistoryDetail() {
                       <td>{index + 1}</td>
                       <td><b>{item?.orderId?.customer_nickname}</b></td>
                       <td>{item?.code}</td>
-                      <td>{item?.menu?.name}</td>
+                      <td>{item?.name}</td>
                       <td>{item?.quantity}</td>
-                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
+                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                     </tr>
                   )

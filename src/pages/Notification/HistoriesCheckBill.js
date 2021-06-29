@@ -66,7 +66,7 @@ export default function HistoriesCheckBill() {
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
         allData.push(data[i]?.order_item[k])
-        amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+        amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
       }
     }
     setgetAmount(amountAll)
@@ -118,12 +118,12 @@ export default function HistoriesCheckBill() {
                     <tr index={item}>
                       <td>{index + 1}</td>
                       <td><b>{item?.orderId?.customer_nickname}</b></td>
-                      <td><b>{item?.menu?.name}</b></td>
+                      <td><b>{item?.name}</b></td>
                       <td>{item?.quantity}</td>
-                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)}</td>
+                      <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
                       <td>{item?.orderId?.table_id}</td>
                       <td>{item?.orderId?.code}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                       <td>{moment(item?.createdAt).format("DD/MM/YYY ~ HH:mm a")}</td>
                     </tr>
                   )

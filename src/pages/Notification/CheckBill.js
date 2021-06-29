@@ -32,7 +32,7 @@ export default function CheckBill() {
         for (let i = 0; i < data.length; i++) {
             for (let k = 0; k < data[i]?.order_item.length; k++) {
                 allData.push(data[i]?.order_item[k])
-                amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.menu?.price
+                amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
             }
         }
         setgetAmount(amountAll)
@@ -97,10 +97,10 @@ export default function CheckBill() {
                                 return (
                                     <tr index={item}>
                                         <td>{index + 1}</td>
-                                        <td><b>{item?.menu?.name}</b></td>
+                                        <td><b>{item?.name}</b></td>
                                         <td>{item?.quantity}</td>
-                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price)} ກີບ</b></td>
-                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.menu?.price * item?.quantity)} ກີບ</b></td>
+                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)} ກີບ</b></td>
+                                        <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                                     </tr>
                                 )
                             }
