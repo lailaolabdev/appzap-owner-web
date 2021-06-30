@@ -15,6 +15,8 @@ import useReactRouter from "use-react-router";
 const MenusItemDetail = (props) => {
   const { history, location, match } = useReactRouter()
   const [getTokken, setgetTokken] = useState()
+  const [NewData, setNewData] = useState()
+  const { data } = props;
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData()
@@ -23,11 +25,22 @@ const MenusItemDetail = (props) => {
       }
     }
     fetchData();
-  }, [])
-  const { data } = props;
+    Getdata()
+  }, [data])
+  const Getdata = async () => {
+    let getId = []
+    for (let i = 0; i < data?.length; i++) {
+      getId.push(data[i]?._id)
+    }
+    const resData =await axios({
+      method: 'GET',
+      url: END_POINT + `/orderItemArray/?id=${getId}`,
+    })
+    setNewData(resData?.data)
+  }
   let total = 0;
-  if (data && data.length > 0) {
-    for (let orderItem of data) {
+  if (NewData && NewData.length > 0) {
+    for (let orderItem of NewData) {
       total += orderItem?.quantity * orderItem?.price;
     }
   }
@@ -52,7 +65,6 @@ const MenusItemDetail = (props) => {
         }).then(async function (response) {
         }).catch(function (error) {
           errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
-          console.log("🚀", error)
         });
     } else {
       errorAdd('ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ')
@@ -80,8 +92,8 @@ const MenusItemDetail = (props) => {
             </tr>
           </thead>
           <tbody>
-            {props &&
-              props?.data?.map((orderItem, index) => {
+            {NewData &&
+              NewData?.map((orderItem, index) => {
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>

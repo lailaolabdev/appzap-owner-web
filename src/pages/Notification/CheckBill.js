@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 import { Table, Col, Image } from 'react-bootstrap';
 import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
 import { STORE } from '../../constants/api'
@@ -8,9 +9,10 @@ import profileImage from "../../image/profile.png"
 export default function CheckBill() {
     const { history, location, match } = useReactRouter()
     const [newData, setgetNewData] = useState()
-    const [amount, setgetAmount] = useState()
     const [data, setData] = useState([])
     const [dataStore, setStore] = useState()
+    const [amount, setamount] = useState()
+
     useEffect(() => {
         _searchDate()
     }, [])
@@ -27,17 +29,30 @@ export default function CheckBill() {
             .then(json => setStore(json));
     }
     useEffect(() => {
-        let amountAll = 0
         let allData = []
         for (let i = 0; i < data.length; i++) {
             for (let k = 0; k < data[i]?.order_item.length; k++) {
-                allData.push(data[i]?.order_item[k])
-                amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
+                allData.push(data[i]?.order_item[k]?._id)
             }
         }
-        setgetAmount(amountAll)
         setgetNewData(allData)
     }, [data])
+    useEffect(() => {
+        const GetAmount = async () => {
+            let amountAll = 0
+            const resData = await axios({
+                method: 'GET',
+                url: END_POINT + `/orderItemArray/?id=${newData}`,
+            })
+            setgetNewData(resData?.data)
+            for (let i = 0; i < resData?.data?.length; i++) {
+                amountAll += await resData?.data[i]?.price * resData?.data[i]?.quantity
+            }
+            setamount(amountAll)
+        }
+
+        GetAmount()
+    }, [newData])
     useEffect(() => {
         if (dataStore && newData && amount && data) {
             setTimeout(() => {

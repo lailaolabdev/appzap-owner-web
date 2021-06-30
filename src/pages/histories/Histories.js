@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
+import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import AnimationLoading from "../../constants/loading"
@@ -56,23 +56,31 @@ export default function History() {
     setfindeByCode(item.target.value)
   }
   const [amount, setamount] = useState()
+  const [amountArray, setAmountArray] = useState()
   useEffect(() => {
-    let amount = 0
+    let getId = []
+    let Allamount = 0
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
-        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
+        getId.push(data[i]?.order_item[k]?._id)
+        if (data[i]?.order_item[k]?.status === "SERVED") {
+          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
+        }
       }
     }
-    setamount(amount)
+    setamount(Allamount)
+    setAmountArray(getId)
   }, [data])
-  const _allmonny = (item) => {
-    let amount = 0
-    for (let j = 0; j < item?.length; j++) {
-      amount += item[j]?.price * item[j]?.quantity
+  let _allmonny = (item) => {
+    let total = 0
+    for (let i = 0; i < item?.length; i++){
+      if (item[i]?.status === "SERVED") {
+        total += item[i]?.price * item[i]?.quantity
+      }
     }
-    return amount;
-
+    return total
   }
+
   const _historyDetail = (code) => {
     history.push(`/histories/HistoryDetail/${code}`)
   }
@@ -94,8 +102,8 @@ export default function History() {
                 <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
               </div>
               <div className="col-4">
-                <label>ລະຫັດລູກຄ້າ</label>
-                <input type="number" class="form-control" placeholder="ລະຫັດລູກຄ້າ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
+                <label>ລະຫັດເຂົ້າລະບົບ</label>
+                <input type="number" class="form-control" placeholder="ລະຫັດເຂົ້າລະບົບ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
               </div>
             </InputGroup>
           </Nav.Item>
@@ -115,7 +123,7 @@ export default function History() {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item, index) => {
+                {data?.length > 0 && data?.map((item, index) => {
                   return (
                     <tr index={item} onClick={() => _historyDetail(item?.code)}>
                       <td>{index + 1}</td>

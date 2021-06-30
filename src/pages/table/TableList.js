@@ -143,23 +143,27 @@ export default function TableList() {
       })
   }
   const [CheckStatus, setCheckStatus] = useState()
+  const [CheckStatusCancel, setCheckStatusCancel] = useState()
   useEffect(() => {
     let newData = []
     let checkDataStatus = []
+    let checkDataStatusCancel = []
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
         if (dataOrder[i]?.order_item[k]?.status === "SERVED") {
           checkDataStatus.push(dataOrder[i]?.order_item[k]?.status)
         }
+        if (dataOrder[i]?.order_item[k]?.status === "CANCELED") {
+          checkDataStatusCancel.push(dataOrder[i]?.order_item[k]?.status)
+        }
       }
     }
+    setCheckStatusCancel(checkDataStatusCancel)
     setCheckStatus(checkDataStatus)
     setnewData(newData)
-    console.log("🚀 ~ file: TableList.js ~ line 167 ~ useEffect ~ newData", newData)
 
   }, [dataOrder])
-
   // ===== query table ===>
   const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
@@ -391,12 +395,12 @@ export default function TableList() {
                     <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                     </div>
-                  <div style={{ display: CheckStatus?.length === newData?.length ? "none":''}}>
+                  <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none":''}}>
                       <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
                       <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
                       <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
                     </div>
-                  <div style={{ display: CheckStatus?.length !== newData?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
+                  <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>Checkout</Button>
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>ໄລ່ເງີນ</Button>
                     </div>

@@ -16,7 +16,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT, COLOR_APP } from '../../constants'
 import AnimationLoading from "../../constants/loading"
-import CheckBill from "./CheckBill"
+import axios from 'axios';
+
 
 const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
@@ -47,36 +48,41 @@ export default function HistoriesCheckBill() {
       })
     setIsLoading(false)
   }
-
-  const _setSelectedDateStart = (item) => {
-    setSelectedDateStart(item.target.value)
-  }
-  const _setSelectedDateEnd = (item) => {
-    setSelectedDateEnd(item.target.value)
-  }
-  const _setSelectedCode = (item) => {
-    setfindeByCode(item.target.value)
-  }
   const [newData, setgetNewData] = useState()
-  const [amount, setgetAmount] = useState()
   const [StatusMoney, setStatusMoney] = useState('')
+  const [amountArray, setAmountArray] = useState()
+  const [amount, setamount] = useState()
+
   useEffect(() => {
-    let amountAll = 0
-    let allData = []
+    let getId = []
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
-        allData.push(data[i]?.order_item[k])
-        amountAll += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
+        getId.push(data[i]?.order_item[k]?._id)
       }
     }
-    setgetAmount(amountAll)
-    setgetNewData(allData)
+    setAmountArray(getId)
     if (data[0]?.checkout === false && data[0]?.status === "CALLTOCHECKOUT") {
       setStatusMoney("ຍັງບໍ່ຊຳລະ")
     } else if (data[0]?.checkout === true && data[0]?.status === "CHECKOUT") {
       setStatusMoney("ຊຳລະສຳເລັດ")
     }
   }, [data])
+  useEffect(() => {
+    const GetAmount = async () => {
+      let amountAll = 0
+      const resData = await axios({
+        method: 'GET',
+        url: END_POINT + `/orderItemArray/?id=${amountArray}`,
+      })
+      setgetNewData(resData?.data)
+      for (let i = 0; i < resData?.data?.length; i++) {
+        amountAll += await resData?.data[i]?.price * resData?.data[i]?.quantity
+      }
+      setamount(amountAll)
+    }
+
+    GetAmount()
+  }, [amountArray])
   const _checkOut = async () => {
     window.open(`/CheckBillOut/${match?.params?.id}/${location?.search}`);
   }

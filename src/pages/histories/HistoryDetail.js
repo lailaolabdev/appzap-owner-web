@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
-import DatePicker from 'react-datepicker';
+import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import AnimationLoading from "../../constants/loading"
@@ -59,19 +59,22 @@ export default function HistoryDetail() {
   }
   const [orderItemData, setOrderItemData] = useState()
   const [amount, setamount] = useState()
+  const [amountArray, setAmountArray] = useState()
   useEffect(() => {
-    let amount = 0
     let order_item = []
+    let Allamount = 0
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
-        order_item.push(data[i]?.order_item[k])
-        amount += data[i]?.order_item[k]?.quantity * data[i]?.order_item[k]?.price
+        if (data[i]?.order_item[k]?.status === "SERVED") {
+          order_item.push(data[i]?.order_item[k])
+          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
+        }
       }
     }
+    setamount(Allamount)
     setOrderItemData(order_item)
-    setamount(amount)
+
   }, [data])
-  console.log("orderItemData", orderItemData)
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
