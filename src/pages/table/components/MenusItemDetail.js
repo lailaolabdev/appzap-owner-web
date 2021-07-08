@@ -88,7 +88,7 @@ const MenusItemDetail = (props) => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ລາຄາ</th>
-              <th>ເບີໂຕະ</th>
+              <th>ເບີຕູບ</th>
             </tr>
           </thead>
           <tbody>

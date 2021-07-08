@@ -72,6 +72,7 @@ export default function NavBar() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  console.log("messageData", messageData)
   return (
     <div>
       <Navbar
@@ -148,8 +149,8 @@ export default function NavBar() {
             <thead>
               <tr>
                 <th>#</th>
+                <th>ຕູບ</th>
                 <th>ຊື່</th>
-                <th>ລະຫັດຕູບ</th>
                 <th>ຂໍ້ຄວາມ</th>
                 <th>ເວລາ</th>
               </tr>
@@ -159,8 +160,8 @@ export default function NavBar() {
                 return (
                   <tr>
                     <td>{index + 1}</td>
+                    <td>{item?.table_id ? item?.table_id:"-"}</td>
                     <td>{item?.customer_nickname}</td>
-                    <td>{item?.code}</td>
                     <td>{item?.text}</td>
                     <td>{moment(item?.createdAt).format("HH:mm a")}</td>
                   </tr>

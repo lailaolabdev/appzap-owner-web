@@ -12,12 +12,12 @@ const GenTableCode = ({ show, onHide, data }) => {
       data={data}
     >
       <Modal.Header closeButton>
-        <Modal.Title>ຂໍ້ມູນເບີໂຕະ </Modal.Title>
+        <Modal.Title>ຂໍ້ມູນເບີຕູບ </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group controlId="tableId">
           <Form.Label>
-            ເບີໂຕະທີ່ເຂົ້າລະຫັດ:
+            ເບີຕູບທີ່ເຂົ້າລະຫັດ:
             <span style={{ color: "blue", fontSize: 18, fontWeight: "bold" }}>
               {"  "}
               {data}

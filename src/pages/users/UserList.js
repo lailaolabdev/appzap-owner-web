@@ -121,7 +121,6 @@ export default function UserList() {
     }} />;
   };
   // create user
-  console.log("getTokken", getTokken)
   const _createUser = async (values) => {
     const resData = await axios({
       method: 'POST',
@@ -146,8 +145,8 @@ export default function UserList() {
         }, 2000);
       }
     }).catch(function (error) {
-      console.log("error", error)
-      errorAdd('ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !')
+      console.log("error", error?.message)
+      errorAdd('ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ UserId ນີ້ມີແລ້ວ!')
     })
 
   }

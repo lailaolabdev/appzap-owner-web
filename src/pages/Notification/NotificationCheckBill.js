@@ -56,7 +56,7 @@ export default function NotificationCheckBill() {
                 <th>ລຳດັບ</th>
                 <th>ຊື່ລູກຄ້າ</th>
                 <th>ລະຫັດເຂົ້າລະບົບ</th>
-                <th>ເລກໂຕະ</th>
+                <th>ເລກຕູບ</th>
                 <th>ສະຖານະ</th>
                 <th>ວັນເວລາ</th>
               </tr>

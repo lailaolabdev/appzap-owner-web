@@ -162,7 +162,7 @@ export default function Sidenav({ location, history }) {
               }}
             />
             {checkBill?.length != 0 ?
-              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
+              <Badge variant="danger"  style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
               : ""
             }
           </NavIcon>
@@ -192,7 +192,7 @@ export default function Sidenav({ location, history }) {
               color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
-            ສະຖານະຂອງໂຕະ
+            ສະຖານະຂອງຕູບ
             </NavText>
         </NavItem>
         <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>

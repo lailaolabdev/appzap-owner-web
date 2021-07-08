@@ -89,7 +89,7 @@ export default function History() {
       <Container fluid>
         <div className="row mt-5">
           <Nav.Item>
-            <h5 style={{ marginLeft: 30 }}><strong>ຍອດຂາຍ</strong></h5>
+            <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດການຂາຍ</strong></h5>
           </Nav.Item>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
             <InputGroup>

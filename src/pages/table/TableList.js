@@ -302,7 +302,7 @@ export default function TableList() {
                 style={{ color: "#FB6E3B" }}
                 href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
               >
-                ໂຕະທັງໜົດ
+                ຕູບທັງໜົດ
               </Nav.Link>
             </Nav.Item>
             <Nav.Item
@@ -360,7 +360,7 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ໂຕະ {table?.table_id}</div>
+                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
                             <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
                             <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
                           </span>
@@ -388,7 +388,7 @@ export default function TableList() {
               <Container fluid>
                 <Row>
                   <Col sm={3}>
-                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
+                    <span style={PRIMARY_FONT_BLACK}>ຕູບ {tableId}  ({generateCode})</span>
                   </Col>
                 </Row>
                   <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>

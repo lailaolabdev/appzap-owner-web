@@ -75,6 +75,7 @@ export default function HistoryDetail() {
     setOrderItemData(order_item)
 
   }, [data])
+
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
@@ -82,7 +83,7 @@ export default function HistoryDetail() {
         <div className="row ">
           <div className="col-sm-9">
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດ</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດຕູບ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
             </Nav.Item>
           </div>
           <div className="col-sm-3">

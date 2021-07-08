@@ -61,8 +61,8 @@ const Order = () => {
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
-              <th>ເບີໂຕະ</th>
-              <th>ລະຫັດໂຕະ</th>
+              <th>ເບີຕູບ</th>
+              <th>ລະຫັດຕູບ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
               <th>Comment</th>
