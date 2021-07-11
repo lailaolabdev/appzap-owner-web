@@ -117,7 +117,7 @@ export default function TableList() {
     _getTable()
   }, [Opentable]);
   useEffect(() => {
-    const url = END_POINT + `/orders?code=${activeTableId}`;
+    const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
     fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -135,7 +135,7 @@ export default function TableList() {
     await setCheckedToUpdate([]);
     await _onHandlerTableDetail(table.table_id, checkout, table?.code);
     await setGenerateCode(table?.code);
-    const url = END_POINT + `/orders?code=${table?.code}`;
+    const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
     await fetch(url)
       .then(response => response.json())
       .then(response => {
