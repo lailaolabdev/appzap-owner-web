@@ -92,15 +92,13 @@ function AddOrder() {
         setSelectedMenu([...selectedMenu, data]);
       } else {
         let copySelectedMenu = [...selectedMenu];
-
+        let currentData = copySelectedMenu[itemIndexInSelectedMenu];
+        currentData.quantity += 1;
+        copySelectedMenu[itemIndexInSelectedMenu] = currentData;
+        setSelectedMenu(copySelectedMenu);
       }
     }
   }
-  useEffect(() => {
-
-  }, []);
-
-  console.log(selectedMenu);
 
   return <div style={TITLE_HEADER}>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
@@ -215,6 +213,19 @@ function AddOrder() {
                     <td>Quantity</td>
                     <td>Status</td>
                   </tr>
+                  {
+                    selectedMenu && selectedMenu.map((data, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{data.name}</td>
+                          <td>Table</td>
+                          <td>{data.quantity}</td>
+                          <td><button>DELETE</button></td>
+                        </tr>
+                      )
+                    })
+                  }
                 </table>
               </div>
             </div>
