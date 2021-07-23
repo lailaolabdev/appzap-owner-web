@@ -20,6 +20,7 @@ import Histories from "../pages/histories/Histories";
 import HistoryDetail from "../pages/histories/HistoryDetail";
 import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
+import AddOrder from '../pages/table/AddOrder';
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
 import CheckBill from "../pages/Notification/CheckBill";
@@ -32,6 +33,7 @@ import MenuList from "../pages/menu/MenuList";
 
 import StoreDetail from '../pages/store/StoreDetail'
 // import StoreEdit from '../pages/store/StoreEdit'
+
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -101,6 +103,11 @@ const Index = () => {
                     exact
                     path="/tables/pagenumber/:number/tableid/:tableId/:storeId"
                     component={Table}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/addOrder"
+                    component={AddOrder}
                   />
                   <PrivateRoute
                     exact

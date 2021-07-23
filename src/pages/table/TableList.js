@@ -226,7 +226,7 @@ export default function TableList() {
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
   const [IdMenuOrder, setIdMenuOrder] = useState([])
-  const _handleCheckbox = async (event, id,index) => {
+  const _handleCheckbox = async (event, id, index) => {
     if (event?.target?.checked === true) {
       let _addData = [];
       _addData.push({ id: id, checked: event.target.checked, number: index });
@@ -256,9 +256,9 @@ export default function TableList() {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
       let allData = []
-        for (let p = 0; p < dataOrder[0]?.order_item?.length; p++){
-          allData.push({ id: dataOrder[0]?.order_item[p]?._id })
-        }
+      for (let p = 0; p < dataOrder[0]?.order_item?.length; p++) {
+        allData.push({ id: dataOrder[0]?.order_item[p]?._id })
+      }
       setCheckedToUpdate(allData)
     } else {
       setcheckBoxAll(false)
@@ -266,19 +266,19 @@ export default function TableList() {
       setCheckedToUpdate([])
     }
   }
-    const _onSelectBox = (index) => {
-      for (let i = 0; i < checkedToUpdate?.length; i++){
-        if (checkedToUpdate[i]?.number === index) {
-          return "true"
-       }
+  const _onSelectBox = (index) => {
+    for (let i = 0; i < checkedToUpdate?.length; i++) {
+      if (checkedToUpdate[i]?.number === index) {
+        return "true"
       }
     }
+  }
   const _prinbill = async () => {
     let billId = []
     for (let i = 0; i < checkedToUpdate?.length; i++) {
       billId.push(checkedToUpdate[i]?.id)
     }
-    await window.open(`/BillForChef/?id=${billId}`); 
+    await window.open(`/BillForChef/?id=${billId}`);
     _handleUpdate()
   }
   const _checkOut = async () => {
@@ -287,6 +287,9 @@ export default function TableList() {
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
+  const _goToAddOrder = () => {
+    history.push('/AddOrder');
+  }
   return (
     <div style={TITLE_HEADER}>
       {isLoading ? <Loading /> : ""}
@@ -387,24 +390,30 @@ export default function TableList() {
             {activeTableId == "00" ? null :
               <Container fluid>
                 <Row>
-                  <Col sm={3}>
+                  <Col sm={6}>
                     <span style={PRIMARY_FONT_BLACK}>ຕູບ {tableId}  ({generateCode})</span>
                   </Col>
+                  <Col sm={6} style={{
+                    textAlign: 'right',
+                  }}>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={_goToAddOrder}>ເພີ່ມອໍເດີ</Button>
+                  </Col>
                 </Row>
-                  <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
-                    <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
+                <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
+                  <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
-                    </div>
-                  <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none":''}}>
-                      <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-                      <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-                      <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
-                    </div>
+                  </div>
+
+                  <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none" : '' }}>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
+                  </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>Checkout</Button>
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ໄລ່ເງີນ</Button>
-                    </div>
                   </div>
+                </div>
                 <div style={padding_white} />
                 <div>
                   <Table
@@ -426,7 +435,7 @@ export default function TableList() {
                         <tr key={index}>
                           <td>
                             <Checkbox
-                              disabled={orderItem?.status === "SERVED" ? "true":""}
+                              disabled={orderItem?.status === "SERVED" ? "true" : ""}
                               checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
                               onChange={(e) => _handleCheckbox(e, orderItem?._id, index)}
                               color="primary"
@@ -440,7 +449,7 @@ export default function TableList() {
                             <div
                               style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
                             >
-                              {orderItem?.status ? orderStatus(orderItem?.status): "-"}
+                              {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
                             </div>
                           </td>
                           <td>
