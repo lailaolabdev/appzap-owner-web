@@ -106,7 +106,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/addOrder"
+                    path="/addOrder/tableid/:tableId/code/:code"
                     component={AddOrder}
                   />
                   <PrivateRoute

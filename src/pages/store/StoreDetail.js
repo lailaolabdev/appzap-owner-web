@@ -42,14 +42,17 @@ export default function StoreDetail() {
             method: "GET",
         }).then(response => response.json())
             .then(json => setStore(json));
+
         await fetch(TABLES + `/?storeId=${storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerTable(json?.length));
+
         await fetch(MENUS + `/?storeId=${storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerMenus(json?.length));
+            
         setIsLoading(false)
     }
     const [show, setShow] = useState(false);

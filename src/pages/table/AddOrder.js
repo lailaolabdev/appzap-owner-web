@@ -5,6 +5,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
+import useReactRouter from "use-react-router";
+import axios from 'axios';
 /**
  * const
  **/
@@ -32,15 +34,38 @@ import {
   URL_PHOTO_AW3,
 } from "../../constants/index";
 
-import { CATEGORY, getLocalData, MENUS } from '../../constants/api'
+import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/api'
+import { getHeaders } from '../../services/auth';
 
 function AddOrder() {
+  const { history, location, match } = useReactRouter();
+  const tableId = match?.params?.code;
+  const code = match?.params?.tableId;
   const [isLoading, setIsLoading] = useState(false)
   const [Categorys, setCategorys] = useState()
   const [Menus, setMenus] = useState()
-  const [getTokken, setgetTokken] = useState()
+  const [getTokken, setgetTokken] = useState();
+  const [note, setNote] = useState('');
+  const [userData, setUserData] = useState({})
 
   const [selectedMenu, setSelectedMenu] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const [allSelectedMenu, setAllSelectedMenu] = useState([]);
+
+  useEffect(() => {
+    setAllSelectedMenu(Menus);
+  }, [Menus])
+  useEffect(() => {
+    if (selectedCategory === "All") {
+      setAllSelectedMenu(Menus);
+    } else {
+      let array = Menus && Menus.filter(function (el) {
+        return el.category._id == selectedCategory;
+      });
+      setAllSelectedMenu(array);
+    }
+  }, [selectedCategory]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,8 +77,10 @@ function AddOrder() {
       }
     }
     fetchData();
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
   }, [])
-
   const getData = async (id) => {
     setIsLoading(true)
     await fetch(CATEGORY + `/?storeId=${id}`, {
@@ -100,6 +127,45 @@ function AddOrder() {
     }
   }
 
+  const createOrder = async (data, header) => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': header.authorization
+      }
+
+      axios.post(END_POINT_SEVER + "/orders", data, {
+        headers: headers
+      })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const onSubmit = async () => {
+    let header = await getHeaders();
+    if (selectedMenu.length != 0) {
+      for (let index in selectedMenu) {
+        let data = {
+          menu: selectedMenu[index].id,
+          storeId: userData?.data?.storeId,
+          quantity: selectedMenu[index].quantity,
+          note: note,
+          table_id: code,
+          code: tableId,
+          customer_nickname: userData?.data?.firstname,
+          is_from_website: true
+        }
+        createOrder(data, header);
+      }
+      history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+    }
+  }
   return <div style={TITLE_HEADER}>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
       <div style={DIV_NAV}>
@@ -150,12 +216,12 @@ function AddOrder() {
               <div class="col-6">
                 <div class="form-group">
                   <label>Choose type</label>
-                  <select class="form-control">
-                    <option>ALL</option>
+                  <select class="form-control" onChange={(e) => setSelectedCategory(e.target.value)} >
+                    <option value="All">ALL</option>
                     {
                       Categorys && Categorys.map((data, index) => {
                         return (
-                          <option key={index}>{data.name}</option>
+                          <option key={index} value={data._id}>{data.name}</option>
                         )
                       })
                     }
@@ -165,7 +231,7 @@ function AddOrder() {
             </div>
             <div class="row">
               {
-                Menus && Menus.map((data, index) => {
+                allSelectedMenu && allSelectedMenu.map((data, index) => {
                   return (
                     <div class="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name)}>
                       <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
@@ -205,28 +271,46 @@ function AddOrder() {
           <div class="container">
             <div class="row">
               <div class="col-12">
-                <table class="table">
-                  <tr>
-                    <td>NO</td>
-                    <td>Order Name</td>
-                    <td>Table</td>
-                    <td>Quantity</td>
-                    <td>Status</td>
-                  </tr>
+                <Table responsive class="table">
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr style={{ fontSize: 'bold' }}>
+                      <th>ລຳດັບ</th>
+                      <th>ຊື່ອໍເດີ້</th>
+                      <th>ຕູບ</th>
+                      <th>ຈຳນວນ</th>
+                      <th>ເລືອກ</th>
+                    </tr>
+                  </thead>
                   {
                     selectedMenu && selectedMenu.map((data, index) => {
                       return (
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>{data.name}</td>
-                          <td>Table</td>
-                          <td>{data.quantity}</td>
-                          <td><button>DELETE</button></td>
+                          <td>{tableId}</td>
+                          <td>
+                            {/* <i class="fa fa-plus" aria-hidden="true"></i> */}
+                            {data.quantity}
+                            {/* <i class="fa fa-minus" aria-hidden="true"></i> */}
+                          </td>
+                          <td><i class="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
                         </tr>
                       )
                     })
                   }
-                </table>
+                </Table>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label>ຄອມເມັ້ນລົດຊາດ</label>
+                  <textarea class="form-control" placeholder="ປ້ອນລົດຊາດທີ່ມັກ..." value={note} onChange={(e) => setNote(e.target.value)} />
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group d-flex justify-content-center">
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => null}>ຍົກເລີກ</Button>
+                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit()}>ສັ່ງອາຫານ</Button>
+                </div>
               </div>
             </div>
           </div>

@@ -135,11 +135,14 @@ export default function TableList() {
     await setCheckedToUpdate([]);
     await _onHandlerTableDetail(table.table_id, checkout, table?.code);
     await setGenerateCode(table?.code);
-    const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+    const url = END_POINT + `/orders?code=${table?.code}`;
     await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataOrder(response)
+        console.log(url)
+        console.log('response', response[0]?.order_item);
       })
   }
   const [CheckStatus, setCheckStatus] = useState()
@@ -151,7 +154,7 @@ export default function TableList() {
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
-        if (dataOrder[i]?.order_item[k]?.status === "SERVED") {
+        if ((dataOrder[i]?.order_item[k]?.status === "SERVED")) {
           checkDataStatus.push(dataOrder[i]?.order_item[k]?.status)
         }
         if (dataOrder[i]?.order_item[k]?.status === "CANCELED") {
@@ -287,8 +290,9 @@ export default function TableList() {
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
-  const _goToAddOrder = () => {
-    history.push('/AddOrder');
+  const _goToAddOrder = (tableId, code) => {
+    // console.log(tableId, code);
+    history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
   return (
     <div style={TITLE_HEADER}>
@@ -396,7 +400,7 @@ export default function TableList() {
                   <Col sm={6} style={{
                     textAlign: 'right',
                   }}>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={_goToAddOrder}>ເພີ່ມອໍເດີ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
