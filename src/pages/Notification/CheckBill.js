@@ -84,7 +84,7 @@ export default function CheckBill() {
                     <h3 style={{ fontWeight: "bold" }}>ຮ້ານທົ່ງສາງທອງ</h3>
                     <p style={{ fontWeight: "bold" }}>  ຍີນດີຕ້ອນຮັບ  </p>
                 </Col>
-                <div style={{ padding: 10 }}>
+                <div>
                     <div className="row col-sm-12 text-center">
                         <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ :  {newData ? newData[0]?.orderId?.table_id : "-"}</div>
                         <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {newData ? newData[0]?.code : "-"}</div>
@@ -95,10 +95,7 @@ export default function CheckBill() {
                     </div>
                 </div>
             </div>
-            <div style={{ paddingLeft: 200, paddingRight: 200 }}>
-                {
-                    console.log(newData)
-                }
+            <div>
                 <Col xs={12}>
                     <Table responsive class="table" id='printMe'>
                         <thead style={{ backgroundColor: "#F1F1F1" }}>

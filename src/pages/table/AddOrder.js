@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -7,6 +7,10 @@ import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import useReactRouter from "use-react-router";
 import axios from 'axios';
+import ReactToPrint from 'react-to-print';
+import { ComponentToPrint } from './components/ToPrint';
+
+
 /**
  * const
  **/
@@ -37,8 +41,14 @@ import {
 import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/api'
 import { getHeaders } from '../../services/auth';
 
+// bills
+import { Image } from 'react-bootstrap';
+import { STORE } from '../../constants/api'
+import profileImage from "../../image/profile.png"
+
 function AddOrder() {
   const { history, location, match } = useReactRouter();
+  const componentRef = useRef();
   const tableId = match?.params?.code;
   const code = match?.params?.tableId;
   const [isLoading, setIsLoading] = useState(false)
@@ -96,13 +106,14 @@ function AddOrder() {
       .then(json => setMenus(json));
   }
 
-  const addToCart = (id, name) => {
+  const addToCart = (id, name, price) => {
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
     let data = {
       id,
       name,
-      quantity: 1
+      quantity: 1,
+      price
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -125,6 +136,18 @@ function AddOrder() {
         setSelectedMenu(copySelectedMenu);
       }
     }
+  }
+
+  const onRemoveFromCart = (id) => {
+    // console.log(selectedMenu)
+    let selectedMenuCopied = [...selectedMenu];
+    for (let i = 0; i < selectedMenuCopied.length; i++){
+      var obj = selectedMenuCopied[i];
+      if(obj.id === id){
+        selectedMenuCopied.splice(i, 1);
+      }
+    }
+    setSelectedMenu([...selectedMenuCopied]);
   }
 
   const createOrder = async (data, header) => {
@@ -181,19 +204,32 @@ function AddOrder() {
           customer_nickname: userData?.data?.firstname,
           is_from_website: true
         }
-        createOrder(data, header);
+        // createOrder(data, header);
       }
       let dataInfo = {
         code: tableId,
         customer_nickname: userData?.data?.firstname
       };
-      openTheTable(dataInfo, header);
-      history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
-      window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
+      // openTheTable(dataInfo, header);
+      document.getElementById('btnPrint').click();
+      // history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+      // window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
+
+  let totalPrice = 0;
   return <div style={TITLE_HEADER}>
+    <div style={{ display: 'none' }}>
+      <ReactToPrint
+        trigger={() => <button id="btnPrint">Print this out!</button>}
+        content={() => componentRef.current}
+      />
+      <div style={{ display: 'none' }}>
+        <ComponentToPrint ref={componentRef} userData={userData} selectedMenu={selectedMenu} tableId={tableId} code={code} />
+      </div>
+    </div>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
+      {/* <CheckBill /> */}
       <div style={DIV_NAV}>
         <Nav
           variant="tabs"
@@ -241,9 +277,9 @@ function AddOrder() {
             <div class="row">
               <div class="col-6">
                 <div class="form-group">
-                  <label>Choose type</label>
+                  <label>ເລືອກປະເພດ</label>
                   <select class="form-control" onChange={(e) => setSelectedCategory(e.target.value)} >
-                    <option value="All">ALL</option>
+                    <option value="All">ທັງໝົດ</option>
                     {
                       Categorys && Categorys.map((data, index) => {
                         return (
@@ -259,7 +295,7 @@ function AddOrder() {
               {
                 allSelectedMenu && allSelectedMenu.map((data, index) => {
                   return (
-                    <div class="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name)}>
+                    <div class="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
                       <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
                       <div style={{
                         backgroundColor: '#000',
@@ -319,7 +355,7 @@ function AddOrder() {
                             {data.quantity}
                             {/* <i class="fa fa-minus" aria-hidden="true"></i> */}
                           </td>
-                          <td><i class="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
+                          <td><i onClick={() => onRemoveFromCart(data.id)} class="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
                         </tr>
                       )
                     })
