@@ -56,8 +56,8 @@ export default function CheckBill() {
     useEffect(() => {
         if (dataStore && newData && amount && data) {
             setTimeout(() => {
-                window.print()
-                window.close()
+                // window.print()
+                // window.close()
             }, 500);
         }
     }, [dataStore, newData, amount, data])

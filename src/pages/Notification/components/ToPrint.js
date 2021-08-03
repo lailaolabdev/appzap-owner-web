@@ -5,6 +5,7 @@ import Table from "react-bootstrap/Table";
 import { Image } from 'react-bootstrap';
 import { STORE } from '../../../constants/api'
 import profileImage from "../../../image/profile.png"
+import moment from 'moment';
 
 /**
  * const
@@ -20,8 +21,11 @@ export class ComponentToPrint extends React.PureComponent {
         let selectedMenu = this.props.selectedMenu;
         let tableId = this.props.tableId;
         let code = this.props.code;
+        let StatusMoney = this.props.StatusMoney;
+        let amount = this.props.amount;
+        let billId = this.props.billId;
         return (
-            <div className="center" style={{ width: '100%', fontSize: 74 }}>
+            <div className="center" style={{ width: '100%', fontSize: 42 }}>
                 <div style={{ textAlign: "center", paddingTop: 30 }}>
                     <Col>
                         {userData?.image ? (
@@ -49,7 +53,7 @@ export class ComponentToPrint extends React.PureComponent {
                     }}>
                         <div className="row col-sm-12 text-center">
                             <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ : {code} </div>
-                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {tableId} </div>
+                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {billId} </div>
                         </div>
                         <div className="row col-sm-12 text-center">
                             <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຊື່ຜູ້ສັ່ງ : {userData?.data?.firstname}</div>
@@ -59,27 +63,34 @@ export class ComponentToPrint extends React.PureComponent {
                 </div>
                 <div>
                     <Col xs={12}>
-                        <Table responsive class="table" id='printMe' style={{fontSize: 74}}>
+                        <Table responsive class="table" id='printMe' style={{ fontSize: 42 }}>
                             <thead style={{ backgroundColor: "#F1F1F1" }}>
                                 <tr>
-                                    <th>ລຳດັບ</th>
+                                    <th>ຊື່ຜູ້ສັ່ງ</th>
                                     <th>ຊື່ເມນູ</th>
                                     <th>ຈຳນວນ</th>
+                                    <th>ລາຄາ</th>
+                                    <th>ເລກຕູບ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {
-                                    selectedMenu && selectedMenu.map((data, index) => {
-                                        totalPrice = totalPrice + (data.quantity * data.price);
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{data.name}</td>
-                                                <td>{data.quantity}</td>
-                                            </tr>
-                                        )
-                                    })
+                                {selectedMenu?.map((item, index) => {
+                                    return (
+                                        <tr index={item}>
+                                            <td><b>{item?.orderId?.customer_nickname}</b></td>
+                                            <td><b>{item?.name}</b></td>
+                                            <td>{item?.quantity}</td>
+                                            <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
+                                            <td>{item?.orderId?.table_id}</td>
+                                        </tr>
+                                    )
                                 }
+                                )}
+                                <tr>
+                                    <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
+                                    <td colSpan={1} style={{ color: StatusMoney === 'ຍັງບໍ່ຊຳລະ' ? "red" : "green" }}>{StatusMoney}</td>
+                                    <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກິບ</td>
+                                </tr>
                             </tbody>
                         </Table>
                     </Col>
