@@ -147,6 +147,26 @@ function AddOrder() {
       console.log(error)
     }
   }
+  const openTheTable = async (data, header) => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': header.authorization
+      }
+
+      axios.post(END_POINT_SEVER + "/opens", data, {
+        headers: headers
+      })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const onSubmit = async () => {
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
@@ -163,7 +183,13 @@ function AddOrder() {
         }
         createOrder(data, header);
       }
+      let dataInfo = {
+        code: tableId,
+        customer_nickname: userData?.data?.firstname
+      };
+      openTheTable(dataInfo, header);
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+      window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
   return <div style={TITLE_HEADER}>

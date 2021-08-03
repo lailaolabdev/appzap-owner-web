@@ -96,6 +96,9 @@ export default function CheckBill() {
                 </div>
             </div>
             <div style={{ paddingLeft: 200, paddingRight: 200 }}>
+                {
+                    console.log(newData)
+                }
                 <Col xs={12}>
                     <Table responsive class="table" id='printMe'>
                         <thead style={{ backgroundColor: "#F1F1F1" }}>
