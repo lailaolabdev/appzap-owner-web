@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import useReactRouter from "use-react-router";
 import MenusItemDetail from '../table/components/MenusItemDetail'
 
@@ -19,9 +19,14 @@ import AnimationLoading from "../../constants/loading"
 import axios from 'axios';
 
 
+import ReactToPrint from 'react-to-print';
+import { ComponentToPrint } from './components/ToPrint';
+
+
 const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
   const { history, location, match } = useReactRouter()
+  const componentRef = useRef();
   const newDate = new Date();
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
@@ -84,13 +89,34 @@ export default function HistoriesCheckBill() {
     GetAmount()
   }, [amountArray])
   const _checkOut = async () => {
-    window.open(`/CheckBillOut/${match?.params?.id}/${location?.search}`);
+    // window.open(`/CheckBillOut/${match?.params?.id}/${location?.search}`);
+    document.getElementById('btnPrint').click();
   }
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
+
   return (
     <div style={{ minHeight: 400 }}>
+      <div style={{display: 'none'}}>
+        <ReactToPrint
+          trigger={() => <button id="btnPrint">Print this out!</button>}
+          content={() => componentRef.current}
+        />
+        <div>
+          <ComponentToPrint
+            ref={componentRef}
+            userData={null}
+            selectedMenu={newData}
+            tableId={'03'}
+            code={10000}
+            StatusMoney={StatusMoney}
+            amount={amount}
+            billId={newData ? newData[0]?.code : '-'}
+          />
+          {/* <ComponentToPrint ref={componentRef} userData={userData} selectedMenu={newData} tableId={tableId} code={code} /> */}
+        </div>
+      </div>
       <div style={{ height: 10 }}></div>
       <Container fluid>
         <div className="row col-12">
