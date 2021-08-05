@@ -204,15 +204,15 @@ function AddOrder() {
           customer_nickname: userData?.data?.firstname,
           is_from_website: true
         }
-        // createOrder(data, header);
+        createOrder(data, header);
       }
       let dataInfo = {
         code: tableId,
         customer_nickname: userData?.data?.firstname
       };
-      // openTheTable(dataInfo, header);
+      openTheTable(dataInfo, header);
       document.getElementById('btnPrint').click();
-      // history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+      history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
       // window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
