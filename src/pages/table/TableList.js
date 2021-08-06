@@ -7,6 +7,10 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
+import ReactToPrint from 'react-to-print';
+import { ComponentToPrint } from './components/ToPrint';
+import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
+
 
 import {
   faPen,
@@ -64,6 +68,7 @@ import {
 } from "../../constants/index";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
+  const componentRef = useRef();
   const number = match?.params?.number;
   let activeTableId = match?.params?.tableId;
   const [reLoadData, setreLoadData] = useState()
@@ -285,7 +290,7 @@ export default function TableList() {
     _handleUpdate()
   }
   const _checkOut = async () => {
-    window.open(`/CheckBillOut/${match?.params?.storeId}/?code=${match?.params?.tableId}`);
+    document.getElementById('btnPrint').click();
   }
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
@@ -296,6 +301,16 @@ export default function TableList() {
   }
   return (
     <div style={TITLE_HEADER}>
+      <div style={{ display: 'inline' }}>
+        <ReactToPrint
+          trigger={() => <button id="btnPrint">Print this out!</button>}
+          content={() => componentRef.current}
+        />
+        {tableId}  ({generateCode})
+        <div style={{ display: 'none' }}>
+          <ComponentToPrintBillInTable ref={componentRef} newData={newData} tableId={tableId} generateCode={generateCode} firstname={userData?.data?.firstname} userData={userData} />
+        </div>
+      </div>
       {isLoading ? <Loading /> : ""}
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
@@ -400,22 +415,23 @@ export default function TableList() {
                   <Col sm={6} style={{
                     textAlign: 'right',
                   }}>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
+                    {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
                   <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                   </div>
-
                   <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none" : '' }}>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
                   </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>Checkout</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ໄລ່ເງີນ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ໄລ່ເງີນ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
                   </div>
                 </div>
                 <div style={padding_white} />
