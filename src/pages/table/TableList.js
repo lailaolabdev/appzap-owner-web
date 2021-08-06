@@ -301,7 +301,7 @@ export default function TableList() {
   }
   return (
     <div style={TITLE_HEADER}>
-      <div style={{ display: 'inline' }}>
+      <div style={{ display: 'none' }}>
         <ReactToPrint
           trigger={() => <button id="btnPrint">Print this out!</button>}
           content={() => componentRef.current}
