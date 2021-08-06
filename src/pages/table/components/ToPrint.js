@@ -20,29 +20,10 @@ export class ComponentToPrint extends React.PureComponent {
         let selectedMenu = this.props.selectedMenu;
         let tableId = this.props.tableId;
         let code = this.props.code;
+        let note = this.props.note;
         return (
             <div className="center" style={{ width: '100%', fontSize: 74 }}>
                 <div style={{ textAlign: "center", paddingTop: 30 }}>
-                    <Col>
-                        {userData?.image ? (
-                            <center>
-                                <Image src={URL_PHOTO_AW3 + userData?.image} alt="" width="150" height="150" style={{
-                                    height: 200,
-                                    width: 200,
-                                    borderRadius: '50%',
-                                }} />
-                            </center>
-                        ) : (<center>
-                            <Image src={profileImage} alt="" width="150" height="150" style={{
-                                height: 200,
-                                width: 200,
-                                borderRadius: '50%',
-                            }} />
-                        </center>)}
-                        <div style={{ height: 30 }}></div>
-                        <p style={{ fontWeight: "bold" }}>ຮ້ານທົ່ງສາງທອງ</p>
-                        <p style={{ fontWeight: "bold" }}>  ຍີນດີຕ້ອນຮັບ  </p>
-                    </Col>
                     <div style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -59,7 +40,7 @@ export class ComponentToPrint extends React.PureComponent {
                 </div>
                 <div>
                     <Col xs={12}>
-                        <Table responsive class="table" id='printMe' style={{fontSize: 74}}>
+                        <Table responsive class="table" id='printMe' style={{ fontSize: 74 }}>
                             <thead style={{ backgroundColor: "#F1F1F1" }}>
                                 <tr>
                                     <th>ລຳດັບ</th>
@@ -82,6 +63,9 @@ export class ComponentToPrint extends React.PureComponent {
                                 }
                             </tbody>
                         </Table>
+                        <div>
+                            {note && `ຄອມເມັ້ນລົດຊາດ ${note}`}
+                        </div>
                     </Col>
                 </div>
             </div>

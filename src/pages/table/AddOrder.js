@@ -225,7 +225,7 @@ function AddOrder() {
         content={() => componentRef.current}
       />
       <div style={{ display: 'none' }}>
-        <ComponentToPrint ref={componentRef} userData={userData} selectedMenu={selectedMenu} tableId={tableId} code={code} />
+        <ComponentToPrint ref={componentRef} note={note} userData={userData} selectedMenu={selectedMenu} tableId={tableId} code={code} />
       </div>
     </div>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
