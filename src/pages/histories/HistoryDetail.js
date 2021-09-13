@@ -88,7 +88,7 @@ export default function HistoryDetail() {
           </div>
           <div className="col-sm-3">
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ໃບເລກບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
             </Nav.Item>
           </div>
         </div>

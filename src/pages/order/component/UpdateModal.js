@@ -8,7 +8,7 @@ const UpdateModal = (props) => {
     <div>
       <Modal show={props.show} onHide={props.hide} centered>
         <Modal.Header closeButton>
-          <Modal.Title>ອັບເດັດສະຖານະ</Modal.Title>
+          <Modal.Title>ອັບເດດສະຖານະ</Modal.Title>
         </Modal.Header>
         <Modal.Body>ທ່ານຕ້ອງການອັບເດດ ເມນູນີ້?</Modal.Body>
         <Modal.Footer>

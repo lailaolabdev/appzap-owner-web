@@ -10,7 +10,7 @@ const CancelModal = (props) => {
         <Modal.Header closeButton>
           <Modal.Title>ຍົກເລີກເມນູ</Modal.Title>
         </Modal.Header>
-        <Modal.Body>ທ່ານຕອ້ງການຍົກເລີກ ເມນູນີ້?</Modal.Body>
+        <Modal.Body>ທ່ານຕ້ອງການຍົກເລີກ ເມນູນີ້?</Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={props.hide}>
             ກັບຄືນ

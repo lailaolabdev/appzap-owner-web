@@ -121,7 +121,7 @@ export default function HistoriesCheckBill() {
       <Container fluid>
         <div className="row col-12">
           <Nav.Item className="row col-12">
-            <h5 style={{ marginLeft: 30 }}><strong>ປະຫັວດຂອງບີນ ( {newData ? newData[0]?.code : '-'} )</strong></h5>
+            <h5 style={{ marginLeft: 30 }}><strong>ປະຫວັດຂອງບີນ ( {newData ? newData[0]?.code : '-'} )</strong></h5>
             <div className="col-sm-7"></div>
             <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} onClick={() => _checkOut('printMe')}>Print Bill</Button>{' '}
             <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }} onClick={() => _onClickMenuDetail()}>Check out</Button>{' '}
@@ -139,7 +139,7 @@ export default function HistoriesCheckBill() {
                   <th>ຈຳນວນ</th>
                   <th>ລາຄາ</th>
                   <th>ເລກຕູບ</th>
-                  <th>ລະຫັດທີ່ສັງ</th>
+                  <th>ລະຫັດທີ່ສັ່ງ</th>
                   <th>ຍອດຂາຍ/ມື້</th>
                   <th>ວັນທີ</th>
                 </tr>

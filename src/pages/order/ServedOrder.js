@@ -65,7 +65,7 @@ const Order = () => {
               <th>ລະຫັດຕູບ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
-              <th>Comment</th>
+              <th>ຄອມເມັ້ນ</th>
 
             </tr>
           </thead>
