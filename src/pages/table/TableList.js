@@ -324,7 +324,7 @@ export default function TableList() {
                 style={{ color: "#FB6E3B" }}
                 href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
               >
-                ຕູບທັງໜົດ
+                ຕູບທັງໝົດ
               </Nav.Link>
             </Nav.Item>
             <Nav.Item

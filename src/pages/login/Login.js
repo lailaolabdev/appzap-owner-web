@@ -101,7 +101,7 @@ function Login() {
                       {touched.password && errors.password}
                     </Form.Control.Feedback>
                   </InputGroup>
-                  <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "none" : "" }}>ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ຊື່ຜູ້ໃຊ້ລະບົບ ບໍ່ຖືກຕ້ອງ</div>
+                  <div style={{ textAlign: "center", fontWeight: "bold", color: "red", display: checkUser === false ? "none" : "" }}>ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ</div>
                   <Button
                     style={{ backgroundColor: "#FB6E3B", border: "1px #FB6E3B", marginLeft: 0 }}
                     className="form-control mt-3 mr-5 form-btn"

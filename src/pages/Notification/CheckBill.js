@@ -127,7 +127,7 @@ export default function CheckBill() {
                         </tbody>
                     </Table>
                     <div style={{ textAlign: "center" }}>
-                        <p style={{ fontWeight: "bold" }}>ຂອຍໃຈທີ່ໃຊ້ບໍບລິການ</p>
+                        <p style={{ fontWeight: "bold" }}>ຂອບໃຈທີ່ໃຊ້ບໍລິການ</p>
                         <p style={{ fontWeight: "bold" }}>Thank you !</p>
                     </div>
                 </Col>

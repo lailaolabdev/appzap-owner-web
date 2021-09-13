@@ -396,7 +396,7 @@ export default function MenuList() {
         </Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ </div>
+            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
             <div style={{ color: "red" }}>{dateDelete?.name}</div>
           </div>
         </Modal.Body>
