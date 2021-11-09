@@ -352,6 +352,15 @@ export default function TableList() {
      * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
      */
   const _updateToServe = async () => {
+    if (checkedToUpdate.length == 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນອັບເດດ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      return
+    }
     await updateOrderItem(checkedToUpdate, SERVE_STATUS);
     let newMenuOrder = newData.map((order) => {
       let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)

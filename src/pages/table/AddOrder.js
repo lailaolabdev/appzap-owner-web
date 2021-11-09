@@ -355,6 +355,7 @@ function AddOrder() {
                       <th>ເລືອກ</th>
                     </tr>
                   </thead>
+                  <tbody>
                   {
                     selectedMenu && selectedMenu.map((data, index) => {
                       return (
@@ -372,6 +373,7 @@ function AddOrder() {
                       )
                     })
                   }
+                  </tbody>
                 </Table>
               </div>
               <div className="col-12">
