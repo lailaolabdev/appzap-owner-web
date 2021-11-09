@@ -142,7 +142,6 @@ export default function TableList() {
 
   const _searchDate = async (table) => {
     console.log(table)
-    // setTableId(table.table_id);
     setTableCode(table?.order?.code);
     let checkout =
       table &&
@@ -150,18 +149,18 @@ export default function TableList() {
         table?.order?.checkout == false
         ? true
         : false;
-    await setCheckedToUpdate([]);
-    await _onHandlerTableDetail(table.table_id, checkout, table?.code);
-    await setGenerateCode(table?.code);
-    // // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
-    // const url = END_POINT + `/orders?code=${table?.code}`;
-    // await fetch(url)
-    //   .then(response => response.json())
-    //   .then(response => {
-    //     setDataOrder(response)
-    //     console.log(url)
-    //     console.log('response', response[0]?.order_item);
-    //   })
+     setCheckedToUpdate([]);
+     _onHandlerTableDetail(table.table_id, checkout, table?.code);
+     setGenerateCode(table?.code);
+    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+    const url = END_POINT + `/orders?code=${table?.code}`;
+    await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+        console.log(url)
+        console.log('response', response);
+      })
   }
 
   const [CheckStatus, setCheckStatus] = useState()
@@ -387,7 +386,7 @@ export default function TableList() {
                         }}
                         onClick={async () => {
                           setTableId(table.table_id);
-                          // _searchDate(table)
+                          _searchDate(table)
                         }}
                       >
                         <div
@@ -425,7 +424,7 @@ export default function TableList() {
               paddingTop: 20,
             }}
           >
-            {activeTableId == "00" ? null :
+            {
               <Container fluid>
                 <Row>
                   <Col sm={6}>
@@ -481,7 +480,7 @@ export default function TableList() {
                         <tr key={"order"+index}>
                           <td>
                             <Checkbox
-                              disabled={orderItem?.status === "SERVED" ? "true" : ""}
+                              disabled={orderItem?.status === "SERVED"}
                               checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
                               onChange={(e) => _handleCheckbox(e, orderItem?._id, index)}
                               color="primary"
