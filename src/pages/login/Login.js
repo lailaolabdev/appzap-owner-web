@@ -222,7 +222,7 @@ function Login() {
                   backgroundColor: '#fff',
                   cursor: "pointer"
                 }}>
-                  <FontAwesomeIcon icon={faHeadset} style={{ color: "#FB6E3B", fontSize: 60 }} />
+                  <FontAwesomeIcon icon={faHeadset} style={{ color: "#422f90", fontSize: 60 }} />
                 </div>
               </div>
             </Form>
@@ -243,19 +243,20 @@ function Login() {
           <Carousel.Item>
             <img
               className="d-block"
-              src={"/images/CF.jpg"}
-              alt="Second slide"
+              src="https://lailaolink-files.s3-ap-southeast-1.amazonaws.com/lailaolink/186160612_134969411917600_9077972786270370315_n.jpg"
+              alt="First slide"
               style={{ width: "100%" }}
             />
           </Carousel.Item>
           <Carousel.Item>
             <img
               className="d-block"
-              src={"/images/Live-CF1.jpg"}
-              alt="Third slide"
+              src="https://lailaolink-files.s3-ap-southeast-1.amazonaws.com/lailaolink/186160612_134969411917600_9077972786270370315_n.jpg"
+              alt="First slide"
               style={{ width: "100%" }}
             />
           </Carousel.Item>
+          
         </Carousel>
       </div>
 
