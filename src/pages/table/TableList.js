@@ -39,6 +39,7 @@ import {
   updateOrderItem,
   updateOrder,
 } from "../../services/order";
+import Swal from 'sweetalert2'
 
 /**
  * const
@@ -109,9 +110,9 @@ export default function TableList() {
   }, [])
 
 
-/**
- * Modify Order
- */
+  /**
+   * Modify Order
+   */
   useEffect(() => {
     let newData = []
     let checkDataStatus = []
@@ -133,10 +134,10 @@ export default function TableList() {
   }, [dataOrder])
 
 
-   /**
-    * Get Table
-    */
-   const _getTable = async () => {
+  /**
+   * Get Table
+   */
+  const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
     await fetch(url)
       .then(response => response.json())
@@ -157,9 +158,9 @@ export default function TableList() {
     setGenerateCode(table?.code);
     setCheckedToUpdate([]);
 
-    console.log({table})
+    console.log({ table })
 
-    let checkout =table?.order?.checkout
+    let checkout = table?.order?.checkout
     // _onHandlerTableDetail(table.table_id, checkout, table?.code);
     // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
 
@@ -199,15 +200,15 @@ export default function TableList() {
   //     })
   // }, [activeTableId, reLoadData])
 
-  
+
 
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
 
-  
 
 
- 
+
+
   // =====>>>>> fix by joy
 
   // useEffect(() => {
@@ -264,8 +265,8 @@ export default function TableList() {
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
   const [IdMenuOrder, setIdMenuOrder] = useState([])
-  
-  
+
+
   const _onChangeMenuCheckbox = async (event, id, index) => {
     if (event?.target?.checked === true) {
       setCheckedToUpdate([
@@ -275,23 +276,100 @@ export default function TableList() {
     } else {
       const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
       setCheckedToUpdate(_removeId);
+
     }
   };
 
 
-  // =======>>>>>>>>> update
-  const _handleUpdateServe = async () => {
-    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
-    window.location.reload();
-  };
-  const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, DOING_STATUS);
-    window.location.reload();
-  };
+  
+
+  // const _handleUpdate = async () => {
+  //   await updateOrderItem(checkedToUpdate, DOING_STATUS);
+  //   // window.location.reload();
+  // };
+
+
+  /**
+   * ຍົກເລີກອໍເດີ
+   */
   const _handleCancel = async () => {
+    if (checkedToUpdate.length == 0) Swal.fire({
+      icon: 'warning',
+      title: "ເລືອກເມນູອໍເດີກ່ອນຍົກເລີກ",
+      showConfirmButton: false,
+      timer: 1800
+    })
     await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
-    window.location.reload();
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: 'CANCELED'
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
   };
+
+
+  /**
+     * ສົ່ງໄປຫາເຮືອນຄົວ
+     */
+  const _updateToKitchen = async () => {
+    if (checkedToUpdate.length == 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນສົ່ງໄປເຮືອນຄົວ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      return
+    }
+    let billId = []
+    for (let i = 0; i < checkedToUpdate?.length; i++) {
+      billId.push(checkedToUpdate[i]?.id)
+    }
+    // _handleUpdate()
+
+    await updateOrderItem(checkedToUpdate, DOING_STATUS);
+
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: 'DOING'
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
+    await window.open(`/BillForChef/?id=${billId}`);
+  }
+
+
+    /**
+     * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
+     */
+  const _updateToServe = async () => {
+    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: SERVE_STATUS
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
+  };
+
+
+
   const _checkAll = (item) => {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
@@ -319,21 +397,14 @@ export default function TableList() {
 
 
 
-  const _prinbill = async () => {
-    let billId = []
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      billId.push(checkedToUpdate[i]?.id)
-    }
-    await window.open(`/BillForChef/?id=${billId}`);
-    _handleUpdate()
-  }
+
   const _checkOut = async () => {
     document.getElementById('btnPrint').click();
   }
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
-  
+
   const _goToAddOrder = (tableId, code) => {
     // console.log(tableId, code);
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -407,7 +478,7 @@ export default function TableList() {
                           backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                         }}
                         onClick={async () => {
-                          
+
                           _onSelectTable(table)
                         }}
                       >
@@ -471,8 +542,8 @@ export default function TableList() {
                   </div>
                   <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none" : '' }}>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToKitchen()}>ສົ່ງໄປຄົວ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToServe()}>ເສີບແລ້ວ</Button>
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
                   </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
@@ -544,11 +615,11 @@ export default function TableList() {
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
       />
-       <UpdateOrderModal
+      {/* <UpdateOrderModal
         show={showOrderModal}
         hide={() => setShowOrderModal(false)}
         handleUpdate={_handleUpdate}
-      />
+      /> */}
       <CancelModal
         show={cancelOrderModal}
         hide={() => setCancelOrderModal(false)}
