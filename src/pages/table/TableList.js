@@ -66,6 +66,7 @@ import {
   BUTTON_EDIT_HOVER,
   END_POINT,
 } from "../../constants/index";
+import { END_POINT_SEVER } from "../../constants/api";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
@@ -73,19 +74,8 @@ export default function TableList() {
   let activeTableId = match?.params?.tableId;
   const [reLoadData, setreLoadData] = useState()
   const [Opentable, setOpentable] = useState()
-  const socket = socketIOClient(END_POINT);
+  const socket = socketIOClient(END_POINT_SEVER);
   const [userData, setUserData] = useState({})
-  useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    setUserData(_localJson)
-  }, [])
-  socket.on(`createorder${userData?.data?.storeId}`, data => {
-    setreLoadData(data)
-  });
-  socket.on(`loginApp${userData?.data?.storeId}`, data => {
-    setOpentable(data)
-  });
 
   /**
    * useState
@@ -113,14 +103,34 @@ export default function TableList() {
   const [checkBoxAll, setcheckBoxAll] = useState(false);
 
   useEffect(() => {
-    _getTable()
-  }, []);
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
+    // _getTable()
+    // const fetchTable = async () => {
+    //   const res = await getTables();
+    //   await setTable(res);
+    // };
+    // fetchTable();
+  }, [])
+
+  
+  // socket.on(`createorder${userData?.data?.storeId}`, data => {
+  //   setreLoadData(data)
+  // });
+  // socket.on(`loginApp${userData?.data?.storeId}`, data => {
+  //   setOpentable(data)
+  // });
+
+
   useEffect(() => {
     _getTable()
   }, [reLoadData]);
+
   useEffect(() => {
     _getTable()
   }, [Opentable]);
+
   useEffect(() => {
     const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
     fetch(url)
@@ -129,6 +139,7 @@ export default function TableList() {
         setDataOrder(response)
       })
   }, [activeTableId, reLoadData])
+
   const _searchDate = async (table) => {
     setTableCode(table?.order?.code);
     let checkout =
@@ -183,13 +194,14 @@ export default function TableList() {
   }
   // =====>>>>> fix by joy
 
-  useEffect(() => {
-    const fetchTable = async () => {
-      const res = await getTables();
-      await setTable(res);
-    };
-    fetchTable();
-  }, []);
+  // useEffect(() => {
+  //   const fetchTable = async () => {
+  //     const res = await getTables();
+  //     await setTable(res);
+  //   };
+  //   fetchTable();
+  // }, []);
+
   const _onHandlerTableDetail = async (table_id, checkout, code) => {
     await setTableId(table_id);
     let _orderDataFromTable = await getOrdersWithTableId(
@@ -356,7 +368,7 @@ export default function TableList() {
               <Row>
                 {DataTable &&
                   DataTable.map((table, index) => (
-                    <div className="card" key={index}>
+                    <div className="card" key={"table"+index}>
                       <Button
                         key={index}
                         className="card-body"
@@ -459,7 +471,7 @@ export default function TableList() {
                     </thead>
                     <tbody>
                       {newData ? newData.map((orderItem, index) => (
-                        <tr key={index}>
+                        <tr key={"order"+index}>
                           <td>
                             <Checkbox
                               disabled={orderItem?.status === "SERVED" ? "true" : ""}
@@ -499,7 +511,7 @@ export default function TableList() {
         </div>
       </div>
 
-      <MenusItemDetail
+      {/* <MenusItemDetail
         data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
@@ -520,7 +532,7 @@ export default function TableList() {
         hide={() => setCheckoutModal(false)}
         tableId={tableId}
         func={_handlecheckout}
-      />
+      /> */}
     </div >
   );
 };

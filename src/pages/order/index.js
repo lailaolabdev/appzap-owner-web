@@ -62,12 +62,9 @@ const Order = () => {
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
   const socket = socketIOClient(END_POINT_SEVER);
-   socket.on(`createorder${userData?.data?.storeId}`, data => {
-     console.log(data)
+  socket.on(`createorder${userData?.data?.storeId}`, data => {
+    setreLoadData(data)
   });
-  // socket.on(`createorder${userData?.data?.storeId}`, data => {
-  //   setreLoadData(data)
-  // });
   useEffect(() => {
     getData()
   }, [])

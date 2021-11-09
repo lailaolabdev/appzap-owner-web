@@ -74,7 +74,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                 {newData?.map((item, index) => {
                                     amount = amount + (item?.price * item?.quantity);
                                     return (
-                                        <tr index={item}>
+                                        <tr index={"order"+index}>
                                             <td><b>{item?.orderId?.customer_nickname}</b></td>
                                             <td><b>{item?.name}</b></td>
                                             <td>{item?.quantity}</td>
