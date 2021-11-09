@@ -141,6 +141,8 @@ export default function TableList() {
   }, [activeTableId, reLoadData])
 
   const _searchDate = async (table) => {
+    console.log(table)
+    // setTableId(table.table_id);
     setTableCode(table?.order?.code);
     let checkout =
       table &&
@@ -151,18 +153,20 @@ export default function TableList() {
     await setCheckedToUpdate([]);
     await _onHandlerTableDetail(table.table_id, checkout, table?.code);
     await setGenerateCode(table?.code);
-    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
-    const url = END_POINT + `/orders?code=${table?.code}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-        console.log(url)
-        console.log('response', response[0]?.order_item);
-      })
+    // // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+    // const url = END_POINT + `/orders?code=${table?.code}`;
+    // await fetch(url)
+    //   .then(response => response.json())
+    //   .then(response => {
+    //     setDataOrder(response)
+    //     console.log(url)
+    //     console.log('response', response[0]?.order_item);
+    //   })
   }
+
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
+
   useEffect(() => {
     let newData = []
     let checkDataStatus = []
@@ -203,43 +207,45 @@ export default function TableList() {
   // }, []);
 
   const _onHandlerTableDetail = async (table_id, checkout, code) => {
-    await setTableId(table_id);
-    let _orderDataFromTable = await getOrdersWithTableId(
-      ACTIVE_STATUS,
-      table_id
-    );
-    if (_orderDataFromTable.length !== 0 && checkout === true) {
-      let newArr = [];
-      _orderDataFromTable.map((order, index) => {
-        if (index == 0) {
-          let newData = {
-            id: order?.orderId,
-            code: order?.code,
-          };
-          newArr.push(newData);
-        } else {
-          let newData = {
-            id: order?.orderId,
-            code: order?.code,
-          };
-          for (let i = 0; i < newArr.length; i++) {
-            if (newData.id == newArr[i].id) {
-              break;
-            }
-            if (i === newArr.length - 1) {
-              newArr.push(newData);
-            }
-          }
-        }
-      });
+    // await setTableId(table_id);
+    // let _orderDataFromTable = await getOrdersWithTableId(
+    //   ACTIVE_STATUS,
+    //   table_id
+    // );
+    // if (_orderDataFromTable.length !== 0 && checkout === true) {
+    //   let newArr = [];
+    //   _orderDataFromTable.map((order, index) => {
+    //     if (index == 0) {
+    //       let newData = {
+    //         id: order?.orderId,
+    //         code: order?.code,
+    //       };
+    //       newArr.push(newData);
+    //     } else {
+    //       let newData = {
+    //         id: order?.orderId,
+    //         code: order?.code,
+    //       };
+    //       for (let i = 0; i < newArr.length; i++) {
+    //         if (newData.id == newArr[i].id) {
+    //           break;
+    //         }
+    //         if (i === newArr.length - 1) {
+    //           newArr.push(newData);
+    //         }
+    //       }
+    //     }
+    //   });
 
-      await setOrderIds(newArr);
-      await setCheckoutModal(true);
-    } else if (_orderDataFromTable.length !== 0) {
-      await setOrderFromTable(_orderDataFromTable);
-    }
-    history.push(`/tables/pagenumber/${number}/tableid/${code}/${match?.params?.storeId}`);
+    //   await setOrderIds(newArr);
+    //   await setCheckoutModal(true);
+    // } else if (_orderDataFromTable.length !== 0) {
+    //   await setOrderFromTable(_orderDataFromTable);
+    // }
+    // history.push(`/tables/pagenumber/${number}/tableid/${code}/${match?.params?.storeId}`);
   };
+
+
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
@@ -371,16 +377,17 @@ export default function TableList() {
                     <div className="card" key={"table"+index}>
                       <Button
                         key={index}
-                        className="card-body"
+                        // className="card-body"
                         style={{
                           width: 180,
                           height: 140,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor: table?.code === activeTableId ? "#FB6E3B" : tableId == table?.table_id ? "#FB6E3B" : "white",
+                          backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                         }}
                         onClick={async () => {
-                          _searchDate(table)
+                          setTableId(table.table_id);
+                          // _searchDate(table)
                         }}
                       >
                         <div
@@ -394,8 +401,8 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
-                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
+                            <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
+                            <div style={{ color:  tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
                             <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
                           </span>
                         </div>
