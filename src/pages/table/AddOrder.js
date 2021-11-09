@@ -45,6 +45,7 @@ import { getHeaders } from '../../services/auth';
 import { Image } from 'react-bootstrap';
 import { STORE } from '../../constants/api'
 import profileImage from "../../image/profile.png"
+import Loading from '../../components/Loading';
 
 function AddOrder() {
   const { history, location, match } = useReactRouter();
@@ -63,9 +64,28 @@ function AddOrder() {
 
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
 
+
+
+  useEffect(() => {
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
+
+    const fetchData = async () => {
+      const _localData = await getLocalData()
+      if (_localData) {
+        setgetTokken(_localData)
+        getData(_localData?.DATA?.storeId)
+        getMenu(_localData?.DATA?.storeId)
+      }
+    }
+    fetchData();
+  }, [])
+
   useEffect(() => {
     setAllSelectedMenu(Menus);
   }, [Menus])
+
   useEffect(() => {
     if (selectedCategory === "All") {
       setAllSelectedMenu(Menus);
@@ -77,33 +97,24 @@ function AddOrder() {
     }
   }, [selectedCategory]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData()
-      if (_localData) {
-        setgetTokken(_localData)
-        getData(_localData?.DATA?.storeId)
-        getMenu(_localData?.DATA?.storeId)
-      }
-    }
-    fetchData();
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    setUserData(_localJson)
-  }, [])
+
+
   const getData = async (id) => {
-    setIsLoading(true)
     await fetch(CATEGORY + `/?storeId=${id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setCategorys(json));
-    setIsLoading(false)
   }
+
   const getMenu = async (id) => {
+    setIsLoading(true)
     await fetch(MENUS + `/?storeId=${id}`, {
       method: "GET",
     }).then(response => response.json())
-      .then(json => setMenus(json));
+      .then(json => {
+      setIsLoading(false)
+        setMenus(json)
+      });
   }
 
   const addToCart = (id, name, price) => {
@@ -283,7 +294,7 @@ function AddOrder() {
                     {
                       Categorys && Categorys.map((data, index) => {
                         return (
-                          <option key={index} value={data._id}>{data.name}</option>
+                          <option key={"category"+index} value={data._id}>{data.name}</option>
                         )
                       })
                     }
@@ -292,10 +303,11 @@ function AddOrder() {
               </div>
             </div>
             <div className="row">
+            {isLoading ? <Loading /> : ""}
               {
                 allSelectedMenu && allSelectedMenu.map((data, index) => {
                   return (
-                    <div className="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
+                    <div key={"menu"+index} className="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
                       <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
                       <div style={{
                         backgroundColor: '#000',
@@ -346,7 +358,7 @@ function AddOrder() {
                   {
                     selectedMenu && selectedMenu.map((data, index) => {
                       return (
-                        <tr key={index}>
+                        <tr key={"selectMenu"+index}>
                           <td>{index + 1}</td>
                           <td>{data.name}</td>
                           <td>{tableId}</td>
