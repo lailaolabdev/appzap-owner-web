@@ -10,8 +10,6 @@ import { Checkbox, FormControlLabel } from "@material-ui/core";
 import ReactToPrint from 'react-to-print';
 import { ComponentToPrint } from './components/ToPrint';
 import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
-
-
 import {
   faPen,
   faRecycle,
@@ -71,15 +69,16 @@ export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
   const number = match?.params?.number;
-  let activeTableId = match?.params?.tableId;
-  const [reLoadData, setreLoadData] = useState()
-  const [Opentable, setOpentable] = useState()
   const socket = socketIOClient(END_POINT_SEVER);
-  const [userData, setUserData] = useState({})
+  let activeTableId = match?.params?.tableId;
+
+
 
   /**
    * useState
    */
+  const [reLoadData, setreLoadData] = useState()
+  const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
@@ -106,66 +105,13 @@ export default function TableList() {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
     setUserData(_localJson)
-    // _getTable()
-    // const fetchTable = async () => {
-    //   const res = await getTables();
-    //   await setTable(res);
-    // };
-    // fetchTable();
+    _getTable()
   }, [])
 
-  
-  // socket.on(`createorder${userData?.data?.storeId}`, data => {
-  //   setreLoadData(data)
-  // });
-  // socket.on(`loginApp${userData?.data?.storeId}`, data => {
-  //   setOpentable(data)
-  // });
 
-
-  useEffect(() => {
-    _getTable()
-  }, [reLoadData]);
-
-  useEffect(() => {
-    _getTable()
-  }, [Opentable]);
-
-  useEffect(() => {
-    const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
-    fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-      })
-  }, [activeTableId, reLoadData])
-
-  const _searchDate = async (table) => {
-    console.log(table)
-    setTableCode(table?.order?.code);
-    let checkout =
-      table &&
-        table?.order &&
-        table?.order?.checkout == false
-        ? true
-        : false;
-     setCheckedToUpdate([]);
-     _onHandlerTableDetail(table.table_id, checkout, table?.code);
-     setGenerateCode(table?.code);
-    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
-    const url = END_POINT + `/orders?code=${table?.code}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-        console.log(url)
-        console.log('response', response);
-      })
-  }
-
-  const [CheckStatus, setCheckStatus] = useState()
-  const [CheckStatusCancel, setCheckStatusCancel] = useState()
-
+/**
+ * Modify Order
+ */
   useEffect(() => {
     let newData = []
     let checkDataStatus = []
@@ -184,17 +130,84 @@ export default function TableList() {
     setCheckStatusCancel(checkDataStatusCancel)
     setCheckStatus(checkDataStatus)
     setnewData(newData)
-
   }, [dataOrder])
-  // ===== query table ===>
-  const _getTable = async () => {
+
+
+   /**
+    * Get Table
+    */
+   const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
-    const _data = await fetch(url)
+    await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataTable(response)
       })
   }
+
+
+  /**
+   * Select Table
+   * @param {*} table 
+   */
+  const _onSelectTable = async (table) => {
+    setIsLoading(true)
+    setTableId(table.table_id);
+    setTableCode(table?.order?.code);
+    setGenerateCode(table?.code);
+    setCheckedToUpdate([]);
+
+    console.log({table})
+
+    let checkout =table?.order?.checkout
+    // _onHandlerTableDetail(table.table_id, checkout, table?.code);
+    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+
+    const url = END_POINT + `/orders?code=${table?.code}`;
+    await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+      })
+
+    setIsLoading(false)
+  }
+
+
+  // socket.on(`createorder${userData?.data?.storeId}`, data => {
+  //   setreLoadData(data)
+  // });
+  // socket.on(`loginApp${userData?.data?.storeId}`, data => {
+  //   setOpentable(data)
+  // });
+
+
+  // useEffect(() => {
+  //   _getTable()
+  // }, [reLoadData]);
+
+  // useEffect(() => {
+  //   _getTable()
+  // }, []);
+
+  // useEffect(() => {
+  //   const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
+  //   fetch(url)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       setDataOrder(response)
+  //     })
+  // }, [activeTableId, reLoadData])
+
+  
+
+  const [CheckStatus, setCheckStatus] = useState()
+  const [CheckStatusCancel, setCheckStatusCancel] = useState()
+
+  
+
+
+ 
   // =====>>>>> fix by joy
 
   // useEffect(() => {
@@ -251,19 +264,21 @@ export default function TableList() {
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
   const [IdMenuOrder, setIdMenuOrder] = useState([])
-  const _handleCheckbox = async (event, id, index) => {
+  
+  
+  const _onChangeMenuCheckbox = async (event, id, index) => {
     if (event?.target?.checked === true) {
-      let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked, number: index });
       setCheckedToUpdate([
         ...checkedToUpdate,
-        ..._addData,
+        { id: id, checked: event.target.checked, number: index },
       ]);
     } else {
       const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
       setCheckedToUpdate(_removeId);
     }
   };
+
+
   // =======>>>>>>>>> update
   const _handleUpdateServe = async () => {
     await updateOrderItem(checkedToUpdate, SERVE_STATUS);
@@ -287,17 +302,23 @@ export default function TableList() {
       setCheckedToUpdate(allData)
     } else {
       setcheckBoxAll(false)
-      setCheckedToUpdate()
+      // setCheckedToUpdate()
       setCheckedToUpdate([])
     }
   }
-  const _onSelectBox = (index) => {
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      if (checkedToUpdate[i]?.number === index) {
-        return "true"
-      }
-    }
+
+  /**
+   * Checkbox validated
+   * @param {*} index 
+   * @returns 
+   */
+  const _onSelectOrderMenu = (index) => {
+    let isChecked = checkedToUpdate.filter((item) => item?.number == index)
+    return isChecked.length > 0;
   }
+
+
+
   const _prinbill = async () => {
     let billId = []
     for (let i = 0; i < checkedToUpdate?.length; i++) {
@@ -312,6 +333,7 @@ export default function TableList() {
   const _onClickMenuDetail = async () => {
     await setMenuItemDetailModal(true);
   };
+  
   const _goToAddOrder = (tableId, code) => {
     // console.log(tableId, code);
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -373,7 +395,7 @@ export default function TableList() {
               <Row>
                 {DataTable &&
                   DataTable.map((table, index) => (
-                    <div className="card" key={"table"+index}>
+                    <div className="card" key={"table" + index}>
                       <Button
                         key={index}
                         // className="card-body"
@@ -385,8 +407,8 @@ export default function TableList() {
                           backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                         }}
                         onClick={async () => {
-                          setTableId(table.table_id);
-                          _searchDate(table)
+                          
+                          _onSelectTable(table)
                         }}
                       >
                         <div
@@ -401,7 +423,7 @@ export default function TableList() {
                         <div>
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
-                            <div style={{ color:  tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
+                            <div style={{ color: tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
                             <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
                           </span>
                         </div>
@@ -477,12 +499,12 @@ export default function TableList() {
                     </thead>
                     <tbody>
                       {newData ? newData.map((orderItem, index) => (
-                        <tr key={"order"+index}>
+                        <tr key={"order" + index}>
                           <td>
                             <Checkbox
                               disabled={orderItem?.status === "SERVED"}
-                              checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
-                              onChange={(e) => _handleCheckbox(e, orderItem?._id, index)}
+                              checked={_onSelectOrderMenu(index)}
+                              onChange={(e) => _onChangeMenuCheckbox(e, orderItem?._id, index)}
                               color="primary"
                               inputProps={{ "aria-label": "secondary checkbox" }}
                             />
@@ -517,12 +539,12 @@ export default function TableList() {
         </div>
       </div>
 
-      {/* <MenusItemDetail
+      <MenusItemDetail
         data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
       />
-      <UpdateOrderModal
+       <UpdateOrderModal
         show={showOrderModal}
         hide={() => setShowOrderModal(false)}
         handleUpdate={_handleUpdate}
@@ -538,7 +560,7 @@ export default function TableList() {
         hide={() => setCheckoutModal(false)}
         tableId={tableId}
         func={_handlecheckout}
-      /> */}
+      />
     </div >
   );
 };

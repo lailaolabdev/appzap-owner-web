@@ -27,17 +27,20 @@ const MenusItemDetail = (props) => {
     fetchData();
     Getdata()
   }, [data])
+
   const Getdata = async () => {
     let getId = []
     for (let i = 0; i < data?.length; i++) {
       getId.push(data[i]?._id)
     }
+    if(getId.length == 0)return;
     const resData =await axios({
       method: 'GET',
       url: END_POINT + `/orderItemArray/?id=${getId}`,
     })
     setNewData(resData?.data)
   }
+
   let total = 0;
   if (NewData && NewData.length > 0) {
     for (let orderItem of NewData) {
