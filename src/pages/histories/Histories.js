@@ -95,15 +95,15 @@ export default function History() {
             <InputGroup>
               <div className="col-4">
                 <label>ແຕ່ວັນທີ</label>
-                <input type="date" class="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
+                <input type="date" className="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
               </div>
               <div className="col-4">
                 <label>ຫາວັນທີ</label>
-                <input type="date" class="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
+                <input type="date" className="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
               </div>
               <div className="col-4">
                 <label>ລະຫັດເຂົ້າລະບົບ</label>
-                <input type="number" class="form-control" placeholder="ລະຫັດເຂົ້າລະບົບ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
+                <input type="number" className="form-control" placeholder="ລະຫັດເຂົ້າລະບົບ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
               </div>
             </InputGroup>
           </Nav.Item>
@@ -111,7 +111,7 @@ export default function History() {
         <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive class="table">
+            <Table responsive className="table">
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>

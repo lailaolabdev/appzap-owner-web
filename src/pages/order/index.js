@@ -18,6 +18,7 @@ import CancelModal from "./component/CancelModal";
 import { updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { CANCEL_STATUS, DOING_STATUS,SERVE_STATUS, END_POINT, USER_KEY } from "../../constants";
+import { END_POINT_SEVER } from "../../constants/api";
 
 const Order = () => {
   const { match } = useReactRouter();
@@ -60,10 +61,13 @@ const Order = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
-  const socket = socketIOClient(END_POINT);
-  socket.on(`createorder${userData?.data?.storeId}`, data => {
-    setreLoadData(data)
+  const socket = socketIOClient(END_POINT_SEVER);
+   socket.on(`createorder${userData?.data?.storeId}`, data => {
+     console.log(data)
   });
+  // socket.on(`createorder${userData?.data?.storeId}`, data => {
+  //   setreLoadData(data)
+  // });
   useEffect(() => {
     getData()
   }, [])

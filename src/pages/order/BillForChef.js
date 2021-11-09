@@ -41,7 +41,7 @@ export const BillForChef = () => {
             </div>
             <div style={{  }}>
                 <Col xs={12}>
-                    <Table responsive class="table" id='printMe'>
+                    <Table responsive className="table" id='printMe'>
                         <thead style={{ backgroundColor: "#F1F1F1" }}>
                             <tr>
                                 <th style={{ fontFamily: "phetsarath OT",fontWeight:"bold",fontSize:50 }}>ລຳດັບ</th>

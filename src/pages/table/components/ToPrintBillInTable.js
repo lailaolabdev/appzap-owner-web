@@ -60,7 +60,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                 </div>
                 <div>
                     <Col xs={12}>
-                        <Table responsive class="table" id='printMe' style={{ fontSize: 42 }}>
+                        <Table responsive className="table" id='printMe' style={{ fontSize: 42 }}>
                             <thead style={{ backgroundColor: "#F1F1F1" }}>
                                 <tr>
                                     <th>ຊື່ຜູ້ສັ່ງ</th>

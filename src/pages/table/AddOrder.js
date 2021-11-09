@@ -273,12 +273,12 @@ function AddOrder() {
           height: "90vh",
           overflowY: "scroll",
         }}>
-          <div class="container">
-            <div class="row">
-              <div class="col-6">
-                <div class="form-group">
+          <div className="container">
+            <div className="row">
+              <div className="col-6">
+                <div className="form-group">
                   <label>ເລືອກປະເພດ</label>
-                  <select class="form-control" onChange={(e) => setSelectedCategory(e.target.value)} >
+                  <select className="form-control" onChange={(e) => setSelectedCategory(e.target.value)} >
                     <option value="All">ທັງໝົດ</option>
                     {
                       Categorys && Categorys.map((data, index) => {
@@ -291,11 +291,11 @@ function AddOrder() {
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div className="row">
               {
                 allSelectedMenu && allSelectedMenu.map((data, index) => {
                   return (
-                    <div class="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
+                    <div className="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
                       <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
                       <div style={{
                         backgroundColor: '#000',
@@ -330,10 +330,10 @@ function AddOrder() {
             paddingTop: 20,
           }}
         >
-          <div class="container">
-            <div class="row">
-              <div class="col-12">
-                <Table responsive class="table">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
                     <tr style={{ fontSize: 'bold' }}>
                       <th>ລຳດັບ</th>
@@ -351,25 +351,25 @@ function AddOrder() {
                           <td>{data.name}</td>
                           <td>{tableId}</td>
                           <td>
-                            {/* <i class="fa fa-plus" aria-hidden="true"></i> */}
+                            {/* <i className="fa fa-plus" aria-hidden="true"></i> */}
                             {data.quantity}
-                            {/* <i class="fa fa-minus" aria-hidden="true"></i> */}
+                            {/* <i className="fa fa-minus" aria-hidden="true"></i> */}
                           </td>
-                          <td><i onClick={() => onRemoveFromCart(data.id)} class="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
+                          <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
                         </tr>
                       )
                     })
                   }
                 </Table>
               </div>
-              <div class="col-12">
-                <div class="form-group">
+              <div className="col-12">
+                <div className="form-group">
                   <label>ຄອມເມັ້ນລົດຊາດ</label>
-                  <textarea class="form-control" placeholder="ປ້ອນລົດຊາດທີ່ມັກ..." value={note} onChange={(e) => setNote(e.target.value)} />
+                  <textarea className="form-control" placeholder="ປ້ອນລົດຊາດທີ່ມັກ..." value={note} onChange={(e) => setNote(e.target.value)} />
                 </div>
               </div>
-              <div class="col-12">
-                <div class="form-group d-flex justify-content-center">
+              <div className="col-12">
+                <div className="form-group d-flex justify-content-center">
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => null}>ຍົກເລີກ</Button>
                   <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit()}>ສັ່ງອາຫານ</Button>
                 </div>
