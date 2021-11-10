@@ -120,7 +120,6 @@ export default function TableList() {
    */
   useEffect(() => {
     let newData = []
-    console.log({dataOrder})
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
@@ -201,7 +200,7 @@ export default function TableList() {
     getTableOrders(table)
     _getTable()
     setDataOrder([])
-    tableData()
+    setTimeout(()=>{setTableData()},100)
   }
 
   const _handlecheckout = async () => {
@@ -322,7 +321,6 @@ export default function TableList() {
       setCheckedToUpdate(allData)
     } else {
       setcheckBoxAll(false)
-      // setCheckedToUpdate()
       setCheckedToUpdate([])
     }
   }
@@ -343,14 +341,15 @@ export default function TableList() {
   const _checkOut = async () => {
     document.getElementById('btnPrint').click();
   }
+
   const _onCheckOut = async () => {
-    await setMenuItemDetailModal(true);
+    setMenuItemDetailModal(true);
   };
 
   const _goToAddOrder = (tableId, code) => {
-    // console.log(tableId, code);
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
+
   return (
     <div style={TITLE_HEADER}>
       <div style={{ display: 'none' }}>
@@ -447,7 +446,7 @@ export default function TableList() {
             </Container>
           </div>
           {/* Detail Table */}
-          <div
+          {tableData != null && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -548,7 +547,24 @@ export default function TableList() {
                 <div style={{ marginBottom: 100 }} />
               </Container>
             }
-          </div>
+          </div>}
+
+          {tableData == null && <div style={{
+              width: "60%",
+              backgroundColor: "#FFF",
+              maxHeight: "90vh",
+              borderColor: "black",
+              overflowY: "scroll",
+              borderWidth: 1,
+              paddingLeft: 20,
+              paddingTop: 20,
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"center"
+            }}>
+              <p style={{margin:0,fontSize:30}}>
+              ເລືອກໂຕະເພື່ອເບິ່ງອໍເດີ</p>
+            </div>}
         </div>
       </div>
 
@@ -556,8 +572,6 @@ export default function TableList() {
         data={newData}
         tableData={tableData}
         show={menuItemDetailModal}
-        getTableOrders={getTableOrders}
-        getTable={_getTable}
         resetTableOrder={_resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
