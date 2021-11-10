@@ -17,9 +17,11 @@ import {
   faChartArea,
   faPrint,
   faCashRegister,
+  faArchway,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-
+import axios from "axios";
 import socketIOClient from "socket.io-client";
 /**
  * component
@@ -68,6 +70,9 @@ import {
 } from "../../constants/index";
 import { END_POINT_SEVER } from "../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { QRCode } from "react-qrcode-logo";
+import { getHeaders } from "../../services/auth";
+import { errorAdd } from "../../helpers/sweetalert";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
@@ -102,7 +107,7 @@ export default function TableList() {
   // =====>>>> query data order in table
   const [dataOrder, setDataOrder] = useState([])
   const [newData, setnewData] = useState([])
-  const [DataTable, setDataTable] = useState()
+  const [tableList, setTableList] = useState([])
   const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
@@ -134,32 +139,33 @@ export default function TableList() {
    * Modify Order Status
    */
   useEffect(() => {
-    if(!newData)return;
+    if (!newData) return;
     let _newData = [...newData]
     let _checkDataStatus = []
     let _checkDataStatusCancel = []
-    _newData.map((nData)=>{
-      if(nData.status=== "SERVED")_checkDataStatus.push(nData?.status)
-      if(nData.status=== "CANCELED")_checkDataStatusCancel.push(nData?.status)
+    _newData.map((nData) => {
+      if (nData.status === "SERVED") _checkDataStatus.push(nData?.status)
+      if (nData.status === "CANCELED") _checkDataStatusCancel.push(nData?.status)
     })
 
     setCheckStatusCancel(_checkDataStatusCancel)
     setCheckStatus(_checkDataStatus)
   }, [newData])
 
-  
+
 
 
 
   /**
    * Get Table
    */
-   const _getTable = async () => {
+  const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
     await fetch(url)
       .then(response => response.json())
       .then(response => {
-        setDataTable(response)
+        setTableList(response)
+        console.log({ response })
       })
   }
 
@@ -169,12 +175,12 @@ export default function TableList() {
    */
   const getTableOrders = async (_table) => {
     const url = END_POINT + `/orders?code=${_table?.code}`;
-    let res= await fetch(url)
+    let res = await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataOrder(response)
       })
-      return res
+    return res
   }
 
 
@@ -194,13 +200,13 @@ export default function TableList() {
     setIsLoading(false)
   }
 
-  
 
-  const _resetTableOrder = ()=>{
+
+  const _resetTableOrder = () => {
     getTableOrders(table)
     _getTable()
     setDataOrder([])
-    setTimeout(()=>{setTableData()},100)
+    setTimeout(() => { setTableData() }, 100)
   }
 
   const _handlecheckout = async () => {
@@ -336,6 +342,43 @@ export default function TableList() {
   }
 
 
+  /**
+   * ເປີດໂຕະ
+   */
+  const _openTable = async()=>{
+    await axios
+    .put(
+      END_POINT + `/updateGenerates/${tableData?.code}`,
+      {
+        isOpened:true,
+        staffConfirm:true
+      },
+      {
+        headers: await getHeaders(),
+      }
+    ).then(async function (response) {
+      //update Table
+      let _tableList = [...tableList]
+      let _newTable = _tableList.map((table)=>{
+        if(table?.code == tableData?.code)return{
+          ...table,
+            isOpened:true,
+            staffConfirm:true
+        }
+        else return table
+      })
+      setTableList(_newTable)
+      Swal.fire({
+        icon: 'success',
+        title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+    })
+    .catch(function (error) {
+      errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+    });
+  }
 
 
   const _checkOut = async () => {
@@ -405,8 +448,8 @@ export default function TableList() {
           <div style={half_backgroundColor}>
             <Container>
               <Row>
-                {DataTable &&
-                  DataTable.map((table, index) => (
+                {tableList &&
+                  tableList.map((table, index) => (
                     <div className="card" key={"table" + index}>
                       <Button
                         key={index}
@@ -418,6 +461,7 @@ export default function TableList() {
                           outlineColor: "#FB6E3B",
                           backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                         }}
+                        className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
                         onClick={async () => {
 
                           _onSelectTable(table)
@@ -434,9 +478,9 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
+                            <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold", fontSize: 40 }}>ຕູບ {table?.table_id}</div>
                             <div style={{ color: tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
-                            <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
+                            <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.isOpened)} )</div>
                           </span>
                         </div>
                       </Button>
@@ -446,7 +490,7 @@ export default function TableList() {
             </Container>
           </div>
           {/* Detail Table */}
-          {tableData != null && <div
+          {(tableData != null && (tableData?.staffConfirm && tableData?.isOpened)) && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -549,22 +593,48 @@ export default function TableList() {
             }
           </div>}
 
-          {tableData == null && <div style={{
+          {(tableData != null && (!tableData?.staffConfirm)) && <div
+            style={{
               width: "60%",
               backgroundColor: "#FFF",
               maxHeight: "90vh",
               borderColor: "black",
               overflowY: "scroll",
               borderWidth: 1,
-              paddingLeft: 20,
-              paddingTop: 20,
-              display:"flex",
-              justifyContent:"center",
-              alignItems:"center"
-            }}>
-              <p style={{margin:0,fontSize:30}}>
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{tableData?.table_id}</p>
+            <QRCode
+              logoImage={
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1004px-Google_%22G%22_Logo.svg.png"
+              }
+              value="https://github.com/gcoro/react-qrcode-logo"
+              style={{ width: 100 }}
+            />
+            <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
+            <div style={{ height: 30 }} />
+            <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => _openTable()}>
+              <FontAwesomeIcon icon={!tableData?.isOpened ? faArchway:faCheckCircle} style={{ color: "#fff" }} /> {!tableData?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
+          </div>}
+
+          {tableData == null && <div style={{
+            width: "60%",
+            backgroundColor: "#FFF",
+            maxHeight: "90vh",
+            borderColor: "black",
+            overflowY: "scroll",
+            borderWidth: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}>
+            <p style={{ margin: 0, fontSize: 30 }}>
               ເລືອກໂຕະເພື່ອເບິ່ງອໍເດີ</p>
-            </div>}
+          </div>}
         </div>
       </div>
 
