@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import useReactRouter from "use-react-router";
-import MenusItemDetail from '../table/components/MenusItemDetail'
+import OrderCheckOut from '../table/components/OrderCheckOut'
 
 import {
   Col,
@@ -130,7 +130,7 @@ export default function HistoriesCheckBill() {
         <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive class="table" id='printMe'>
+            <Table responsive className="table" id='printMe'>
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
@@ -172,7 +172,7 @@ export default function HistoriesCheckBill() {
         </div>
         }
       </Container>
-      <MenusItemDetail
+      <OrderCheckOut
         data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}

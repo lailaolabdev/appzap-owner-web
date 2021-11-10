@@ -141,8 +141,8 @@ export default function Categorylist() {
                 <div style={{ height: 20 }}></div>
                 <div>
                     <div className="col-sm-12">
-                        <table class="table table-hover">
-                            <thead class="thead-light">
+                        <table className="table table-hover">
+                            <thead className="thead-light">
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">ຊື່ປະເພດອາຫານ</th>

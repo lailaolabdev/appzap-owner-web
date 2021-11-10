@@ -285,8 +285,8 @@ export default function StoreDetail() {
                                         </div>
                                     </label>
                                     {/* progass */}
-                                    {imageLoading ? <div class="progress" style={{ height: 20 }}>
-                                        <div class="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
+                                    {imageLoading ? <div className="progress" style={{ height: 20 }}>
+                                        <div className="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
                                     </div> : <div style={{ height: 20 }} />}
                                 </div>
                                 <Form.Group controlId="exampleForm.ControlInput1">

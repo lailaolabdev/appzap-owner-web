@@ -16,17 +16,17 @@ import axios from 'axios';
 
 export default function NavBar() {
   const { history, location, match } = useReactRouter()
-  const socket = socketIOClient(END_POINT);
+  // const socket = socketIOClient(END_POINT);
   const [getmassege, setgetmassege] = useState()
   const [userData, setUserData] = useState({})
   const [messageData, setmessageData] = useState()
 
 
-  socket.on(`messageAdmin${userData?.data?.storeId}`, data => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    _message(_localJson)
-  });
+  // socket.on(`messageAdmin${userData?.data?.storeId}`, data => {
+  //   const ADMIN = localStorage.getItem(USER_KEY)
+  //   const _localJson = JSON.parse(ADMIN)
+  //   _message(_localJson)
+  // });
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)

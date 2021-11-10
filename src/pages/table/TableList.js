@@ -10,14 +10,13 @@ import { Checkbox, FormControlLabel } from "@material-ui/core";
 import ReactToPrint from 'react-to-print';
 import { ComponentToPrint } from './components/ToPrint';
 import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
-
-
 import {
   faPen,
   faRecycle,
   faCommentDots,
   faChartArea,
   faPrint,
+  faCashRegister,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
@@ -29,7 +28,7 @@ import Loading from "../../components/Loading";
 import UpdateOrderModal from "./components/UpdateOrderModal";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import CancelModal from "./components/CancelModal";
-import MenusItemDetail from "./components/MenusItemDetail";
+import OrderCheckOut from "./components/OrderCheckOut";
 import { orderStatus, STATUS_OPENTABLE } from "../../helpers";
 import {
   getTables,
@@ -41,6 +40,7 @@ import {
   updateOrderItem,
   updateOrder,
 } from "../../services/order";
+import Swal from 'sweetalert2'
 
 /**
  * const
@@ -66,33 +66,26 @@ import {
   BUTTON_EDIT_HOVER,
   END_POINT,
 } from "../../constants/index";
+import { END_POINT_SEVER } from "../../constants/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
   const number = match?.params?.number;
+  const socket = socketIOClient(END_POINT_SEVER);
   let activeTableId = match?.params?.tableId;
-  const [reLoadData, setreLoadData] = useState()
-  const [Opentable, setOpentable] = useState()
-  const socket = socketIOClient(END_POINT);
-  const [userData, setUserData] = useState({})
-  useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    setUserData(_localJson)
-  }, [])
-  socket.on(`createorder${userData?.data?.storeId}`, data => {
-    setreLoadData(data)
-  });
-  socket.on(`loginApp${userData?.data?.storeId}`, data => {
-    setOpentable(data)
-  });
+
+
 
   /**
    * useState
    */
+  const [reLoadData, setreLoadData] = useState()
+  const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
+  const [tableData, setTableData] = useState();
   const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -111,155 +104,214 @@ export default function TableList() {
   const [newData, setnewData] = useState([])
   const [DataTable, setDataTable] = useState()
   const [checkBoxAll, setcheckBoxAll] = useState(false);
-
-  useEffect(() => {
-    _getTable()
-  }, []);
-  useEffect(() => {
-    _getTable()
-  }, [reLoadData]);
-  useEffect(() => {
-    _getTable()
-  }, [Opentable]);
-  useEffect(() => {
-    const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
-    fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-      })
-  }, [activeTableId, reLoadData])
-  const _searchDate = async (table) => {
-    setTableCode(table?.order?.code);
-    let checkout =
-      table &&
-        table?.order &&
-        table?.order?.checkout == false
-        ? true
-        : false;
-    await setCheckedToUpdate([]);
-    await _onHandlerTableDetail(table.table_id, checkout, table?.code);
-    await setGenerateCode(table?.code);
-    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
-    const url = END_POINT + `/orders?code=${table?.code}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-        console.log(url)
-        console.log('response', response[0]?.order_item);
-      })
-  }
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
+
+  useEffect(() => {
+    const ADMIN = localStorage.getItem(USER_KEY)
+    const _localJson = JSON.parse(ADMIN)
+    setUserData(_localJson)
+    _getTable()
+  }, [])
+
+
+  /**
+   * Modify Order
+   */
   useEffect(() => {
     let newData = []
-    let checkDataStatus = []
-    let checkDataStatusCancel = []
+    console.log({dataOrder})
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
-        if ((dataOrder[i]?.order_item[k]?.status === "SERVED")) {
-          checkDataStatus.push(dataOrder[i]?.order_item[k]?.status)
-        }
-        if (dataOrder[i]?.order_item[k]?.status === "CANCELED") {
-          checkDataStatusCancel.push(dataOrder[i]?.order_item[k]?.status)
-        }
       }
     }
-    setCheckStatusCancel(checkDataStatusCancel)
-    setCheckStatus(checkDataStatus)
     setnewData(newData)
-
   }, [dataOrder])
-  // ===== query table ===>
-  const _getTable = async () => {
+
+
+
+  /**
+   * Modify Order Status
+   */
+  useEffect(() => {
+    if(!newData)return;
+    let _newData = [...newData]
+    let _checkDataStatus = []
+    let _checkDataStatusCancel = []
+    _newData.map((nData)=>{
+      if(nData.status=== "SERVED")_checkDataStatus.push(nData?.status)
+      if(nData.status=== "CANCELED")_checkDataStatusCancel.push(nData?.status)
+    })
+
+    setCheckStatusCancel(_checkDataStatusCancel)
+    setCheckStatus(_checkDataStatus)
+  }, [newData])
+
+  
+
+
+
+  /**
+   * Get Table
+   */
+   const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
-    const _data = await fetch(url)
+    await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataTable(response)
       })
   }
-  // =====>>>>> fix by joy
 
-  useEffect(() => {
-    const fetchTable = async () => {
-      const res = await getTables();
-      await setTable(res);
-    };
-    fetchTable();
-  }, []);
-  const _onHandlerTableDetail = async (table_id, checkout, code) => {
-    await setTableId(table_id);
-    let _orderDataFromTable = await getOrdersWithTableId(
-      ACTIVE_STATUS,
-      table_id
-    );
-    if (_orderDataFromTable.length !== 0 && checkout === true) {
-      let newArr = [];
-      _orderDataFromTable.map((order, index) => {
-        if (index == 0) {
-          let newData = {
-            id: order?.orderId,
-            code: order?.code,
-          };
-          newArr.push(newData);
-        } else {
-          let newData = {
-            id: order?.orderId,
-            code: order?.code,
-          };
-          for (let i = 0; i < newArr.length; i++) {
-            if (newData.id == newArr[i].id) {
-              break;
-            }
-            if (i === newArr.length - 1) {
-              newArr.push(newData);
-            }
-          }
-        }
-      });
 
-      await setOrderIds(newArr);
-      await setCheckoutModal(true);
-    } else if (_orderDataFromTable.length !== 0) {
-      await setOrderFromTable(_orderDataFromTable);
-    }
-    history.push(`/tables/pagenumber/${number}/tableid/${code}/${match?.params?.storeId}`);
-  };
+  /**
+   * Get Table Orders
+   */
+  const getTableOrders = async (_table) => {
+    const url = END_POINT + `/orders?code=${_table?.code}`;
+    let res= await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+      })
+      return res
+  }
+
+
+
+  /**
+   * Select Table
+   * @param {*} table 
+   */
+  const _onSelectTable = async (table) => {
+    setIsLoading(true)
+    setTableId(table.table_id);
+    setTableCode(table?.order?.code);
+    setGenerateCode(table?.code);
+    setTableData(table)
+    setCheckedToUpdate([]);
+    await getTableOrders(table)
+    setIsLoading(false)
+  }
+
+  
+
+  const _resetTableOrder = ()=>{
+    getTableOrders(table)
+    _getTable()
+    setDataOrder([])
+    tableData()
+  }
+
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
-  const [IdMenuOrder, setIdMenuOrder] = useState([])
-  const _handleCheckbox = async (event, id, index) => {
+
+  const _onChangeMenuCheckbox = async (event, id, index) => {
     if (event?.target?.checked === true) {
-      let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked, number: index });
       setCheckedToUpdate([
         ...checkedToUpdate,
-        ..._addData,
+        { id: id, checked: event.target.checked, number: index },
       ]);
     } else {
       const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
       setCheckedToUpdate(_removeId);
+
     }
   };
-  // =======>>>>>>>>> update
-  const _handleUpdateServe = async () => {
-    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
-    window.location.reload();
-  };
-  const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, DOING_STATUS);
-    window.location.reload();
-  };
+
+  /**
+   * ຍົກເລີກອໍເດີ
+   */
   const _handleCancel = async () => {
+    if (checkedToUpdate.length == 0) Swal.fire({
+      icon: 'warning',
+      title: "ເລືອກເມນູອໍເດີກ່ອນຍົກເລີກ",
+      showConfirmButton: false,
+      timer: 1800
+    })
     await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
-    window.location.reload();
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: 'CANCELED'
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
   };
+
+
+  /**
+     * ສົ່ງໄປຫາເຮືອນຄົວ
+     */
+  const _updateToKitchen = async () => {
+    if (checkedToUpdate.length == 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນສົ່ງໄປເຮືອນຄົວ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      return
+    }
+    let billId = []
+    for (let i = 0; i < checkedToUpdate?.length; i++) {
+      billId.push(checkedToUpdate[i]?.id)
+    }
+
+    await updateOrderItem(checkedToUpdate, DOING_STATUS);
+
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: 'DOING'
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
+    await window.open(`/BillForChef/?id=${billId}`);
+  }
+
+
+  /**
+   * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
+   */
+  const _updateToServe = async () => {
+    if (checkedToUpdate.length == 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນອັບເດດ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      return
+    }
+    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
+    let newMenuOrder = newData.map((order) => {
+      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
+      if (isMatched.length > 0) {
+        return {
+          ...order,
+          status: SERVE_STATUS
+        }
+      } else return order
+    })
+    setnewData(newMenuOrder)
+    setCheckedToUpdate([])
+  };
+
+
+
   const _checkAll = (item) => {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
@@ -270,31 +322,31 @@ export default function TableList() {
       setCheckedToUpdate(allData)
     } else {
       setcheckBoxAll(false)
-      setCheckedToUpdate()
+      // setCheckedToUpdate()
       setCheckedToUpdate([])
     }
   }
-  const _onSelectBox = (index) => {
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      if (checkedToUpdate[i]?.number === index) {
-        return "true"
-      }
-    }
+
+  /**
+   * Checkbox validated
+   * @param {*} index 
+   * @returns 
+   */
+  const _onSelectOrderMenu = (index) => {
+    let isChecked = checkedToUpdate.filter((item) => item?.number == index)
+    return isChecked.length > 0;
   }
-  const _prinbill = async () => {
-    let billId = []
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      billId.push(checkedToUpdate[i]?.id)
-    }
-    await window.open(`/BillForChef/?id=${billId}`);
-    _handleUpdate()
-  }
+
+
+
+
   const _checkOut = async () => {
     document.getElementById('btnPrint').click();
   }
-  const _onClickMenuDetail = async () => {
+  const _onCheckOut = async () => {
     await setMenuItemDetailModal(true);
   };
+
   const _goToAddOrder = (tableId, code) => {
     // console.log(tableId, code);
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -356,19 +408,20 @@ export default function TableList() {
               <Row>
                 {DataTable &&
                   DataTable.map((table, index) => (
-                    <div className="card" key={index}>
+                    <div className="card" key={"table" + index}>
                       <Button
                         key={index}
-                        className="card-body"
+                        // className="card-body"
                         style={{
                           width: 180,
                           height: 140,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor: table?.code === activeTableId ? "#FB6E3B" : tableId == table?.table_id ? "#FB6E3B" : "white",
+                          backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
                         }}
                         onClick={async () => {
-                          _searchDate(table)
+
+                          _onSelectTable(table)
                         }}
                       >
                         <div
@@ -382,8 +435,8 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
-                            <div style={{ color: table?.code === activeTableId ? "#FFF" : tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
+                            <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold" }}>ຕູບ {table?.table_id}</div>
+                            <div style={{ color: tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
                             <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.empty) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.empty)} )</div>
                           </span>
                         </div>
@@ -406,7 +459,7 @@ export default function TableList() {
               paddingTop: 20,
             }}
           >
-            {activeTableId == "00" ? null :
+            {
               <Container fluid>
                 <Row>
                   <Col sm={6}>
@@ -431,14 +484,14 @@ export default function TableList() {
                   </div>
                   <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none" : '' }}>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToKitchen()}>ສົ່ງໄປຄົວ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToServe()}>ເສີບແລ້ວ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>Checkout</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ໄລ່ເງີນ</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ກວດສອບຍອດການສັ່ງ</Button>
+                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
                 </div>
                 <div style={padding_white} />
@@ -459,12 +512,12 @@ export default function TableList() {
                     </thead>
                     <tbody>
                       {newData ? newData.map((orderItem, index) => (
-                        <tr key={index}>
+                        <tr key={"order" + index}>
                           <td>
                             <Checkbox
-                              disabled={orderItem?.status === "SERVED" ? "true" : ""}
-                              checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
-                              onChange={(e) => _handleCheckbox(e, orderItem?._id, index)}
+                              disabled={orderItem?.status === "SERVED"}
+                              checked={_onSelectOrderMenu(index)}
+                              onChange={(e) => _onChangeMenuCheckbox(e, orderItem?._id, index)}
                               color="primary"
                               inputProps={{ "aria-label": "secondary checkbox" }}
                             />
@@ -499,16 +552,20 @@ export default function TableList() {
         </div>
       </div>
 
-      <MenusItemDetail
+      <OrderCheckOut
         data={newData}
+        tableData={tableData}
         show={menuItemDetailModal}
+        getTableOrders={getTableOrders}
+        getTable={_getTable}
+        resetTableOrder={_resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
-      <UpdateOrderModal
+      {/* <UpdateOrderModal
         show={showOrderModal}
         hide={() => setShowOrderModal(false)}
         handleUpdate={_handleUpdate}
-      />
+      /> */}
       <CancelModal
         show={cancelOrderModal}
         hide={() => setCancelOrderModal(false)}

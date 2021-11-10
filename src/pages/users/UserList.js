@@ -222,14 +222,14 @@ export default function UserList() {
           </div>
           <div style={{ paddingBottom: 20 }}>
             <div className="col-md-12" >
-              <button type="button" class="btn btn-app col-2 " style={{ float: "right", backgroundColor: COLOR_APP, color: "#ffff" }} onClick={handleShow}> ເພີ່ມພະນັກງານ </button>
+              <button type="button" className="btn btn-app col-2 " style={{ float: "right", backgroundColor: COLOR_APP, color: "#ffff" }} onClick={handleShow}> ເພີ່ມພະນັກງານ </button>
             </div>
           </div>
           <div style={{ height: 40 }}></div>
           <div>
             <div className="col-sm-12">
-              <table class="table table-hover">
-                <thead class="thead-light">
+              <table className="table table-hover">
+                <thead className="thead-light">
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">ຮູບພາບ</th>
@@ -368,8 +368,8 @@ export default function UserList() {
                     </div>
                   </label>
                   {/* progass */}
-                  {imageLoading ? <div class="progress" style={{ height: 20 }}>
-                    <div class="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
+                  {imageLoading ? <div className="progress" style={{ height: 20 }}>
+                    <div className="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
                   </div> : <div style={{ height: 20 }} />}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
@@ -526,8 +526,8 @@ export default function UserList() {
                     </div>
                   </label>
                   {/* progass */}
-                  {imageLoading ? <div class="progress" style={{ height: 20 }}>
-                    <div class="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
+                  {imageLoading ? <div className="progress" style={{ height: 20 }}>
+                    <div className="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
                   </div> : <div style={{ height: 20 }} />}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">

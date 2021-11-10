@@ -94,7 +94,7 @@ export default function HistoryDetail() {
         </div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive class="table">
+            <Table responsive className="table">
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>

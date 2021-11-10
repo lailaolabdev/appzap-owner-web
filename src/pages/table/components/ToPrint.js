@@ -40,7 +40,7 @@ export class ComponentToPrint extends React.PureComponent {
                 </div>
                 <div>
                     <Col xs={12}>
-                        <Table responsive class="table" id='printMe' style={{ fontSize: 74 }}>
+                        <Table responsive className="table" id='printMe' style={{ fontSize: 74 }}>
                             <thead style={{ backgroundColor: "#F1F1F1" }}>
                                 <tr>
                                     <th>ລຳດັບ</th>

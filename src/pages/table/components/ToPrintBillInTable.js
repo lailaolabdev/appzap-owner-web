@@ -60,7 +60,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                 </div>
                 <div>
                     <Col xs={12}>
-                        <Table responsive class="table" id='printMe' style={{ fontSize: 42 }}>
+                        <Table responsive className="table" id='printMe' style={{ fontSize: 42 }}>
                             <thead style={{ backgroundColor: "#F1F1F1" }}>
                                 <tr>
                                     <th>ຊື່ຜູ້ສັ່ງ</th>
@@ -71,10 +71,10 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                 </tr>
                             </thead>
                             <tbody>
-                                {newData?.map((item, index) => {
+                                {newData?.map((item, lindex) => {
                                     amount = amount + (item?.price * item?.quantity);
                                     return (
-                                        <tr index={item}>
+                                        <tr key={"order"+lindex}>
                                             <td><b>{item?.orderId?.customer_nickname}</b></td>
                                             <td><b>{item?.name}</b></td>
                                             <td>{item?.quantity}</td>
@@ -85,7 +85,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                 }
                                 )}
                                 <tr>
-                                    <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
+                                    <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
 
                                     <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                                 </tr>
