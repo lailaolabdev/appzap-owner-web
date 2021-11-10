@@ -104,6 +104,8 @@ export default function TableList() {
   const [newData, setnewData] = useState([])
   const [DataTable, setDataTable] = useState()
   const [checkBoxAll, setcheckBoxAll] = useState(false);
+  const [CheckStatus, setCheckStatus] = useState()
+  const [CheckStatusCancel, setCheckStatusCancel] = useState()
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
@@ -161,115 +163,25 @@ export default function TableList() {
     setGenerateCode(table?.code);
     setTableData(table)
     setCheckedToUpdate([]);
-
-    let checkout = table?.order?.checkout
-    // _onHandlerTableDetail(table.table_id, checkout, table?.code);
-    // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
-    getTableOrders(table)
+    await getTableOrders(table)
     setIsLoading(false)
   }
 
   const getTableOrders = async (_table) => {
     const url = END_POINT + `/orders?code=${_table?.code}`;
-    await fetch(url)
+    let res= await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataOrder(response)
       })
+      return res
   }
-
-
-  // socket.on(`createorder${userData?.data?.storeId}`, data => {
-  //   setreLoadData(data)
-  // });
-  // socket.on(`loginApp${userData?.data?.storeId}`, data => {
-  //   setOpentable(data)
-  // });
-
-
-  // useEffect(() => {
-  //   _getTable()
-  // }, [reLoadData]);
-
-  // useEffect(() => {
-  //   _getTable()
-  // }, []);
-
-  // useEffect(() => {
-  //   const url = END_POINT + `/orders?code=${activeTableId}&status=NOTCART`;
-  //   fetch(url)
-  //     .then(response => response.json())
-  //     .then(response => {
-  //       setDataOrder(response)
-  //     })
-  // }, [activeTableId, reLoadData])
-
-
-
-  const [CheckStatus, setCheckStatus] = useState()
-  const [CheckStatusCancel, setCheckStatusCancel] = useState()
-
-
-
-
-
-  // =====>>>>> fix by joy
-
-  // useEffect(() => {
-  //   const fetchTable = async () => {
-  //     const res = await getTables();
-  //     await setTable(res);
-  //   };
-  //   fetchTable();
-  // }, []);
-
-  const _onHandlerTableDetail = async (table_id, checkout, code) => {
-    // await setTableId(table_id);
-    // let _orderDataFromTable = await getOrdersWithTableId(
-    //   ACTIVE_STATUS,
-    //   table_id
-    // );
-    // if (_orderDataFromTable.length !== 0 && checkout === true) {
-    //   let newArr = [];
-    //   _orderDataFromTable.map((order, index) => {
-    //     if (index == 0) {
-    //       let newData = {
-    //         id: order?.orderId,
-    //         code: order?.code,
-    //       };
-    //       newArr.push(newData);
-    //     } else {
-    //       let newData = {
-    //         id: order?.orderId,
-    //         code: order?.code,
-    //       };
-    //       for (let i = 0; i < newArr.length; i++) {
-    //         if (newData.id == newArr[i].id) {
-    //           break;
-    //         }
-    //         if (i === newArr.length - 1) {
-    //           newArr.push(newData);
-    //         }
-    //       }
-    //     }
-    //   });
-
-    //   await setOrderIds(newArr);
-    //   await setCheckoutModal(true);
-    // } else if (_orderDataFromTable.length !== 0) {
-    //   await setOrderFromTable(_orderDataFromTable);
-    // }
-    // history.push(`/tables/pagenumber/${number}/tableid/${code}/${match?.params?.storeId}`);
-  };
-
 
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
-  const [IdMenuOrder, setIdMenuOrder] = useState([])
-
 
   const _onChangeMenuCheckbox = async (event, id, index) => {
     if (event?.target?.checked === true) {
@@ -283,15 +195,6 @@ export default function TableList() {
 
     }
   };
-
-
-
-
-  // const _handleUpdate = async () => {
-  //   await updateOrderItem(checkedToUpdate, DOING_STATUS);
-  //   // window.location.reload();
-  // };
-
 
   /**
    * ຍົກເລີກອໍເດີ
@@ -335,7 +238,6 @@ export default function TableList() {
     for (let i = 0; i < checkedToUpdate?.length; i++) {
       billId.push(checkedToUpdate[i]?.id)
     }
-    // _handleUpdate()
 
     await updateOrderItem(checkedToUpdate, DOING_STATUS);
 
@@ -628,6 +530,7 @@ export default function TableList() {
         tableData={tableData}
         show={menuItemDetailModal}
         getTableOrders={getTableOrders}
+        getTable={_getTable}
         hide={() => setMenuItemDetailModal(false)}
       />
       {/* <UpdateOrderModal
