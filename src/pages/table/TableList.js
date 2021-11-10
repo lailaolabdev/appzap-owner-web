@@ -151,10 +151,11 @@ export default function TableList() {
   
 
 
+
   /**
    * Get Table
    */
-  const _getTable = async () => {
+   const _getTable = async () => {
     const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
     await fetch(url)
       .then(response => response.json())
@@ -162,6 +163,21 @@ export default function TableList() {
         setDataTable(response)
       })
   }
+
+
+  /**
+   * Get Table Orders
+   */
+  const getTableOrders = async (_table) => {
+    const url = END_POINT + `/orders?code=${_table?.code}`;
+    let res= await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        setDataOrder(response)
+      })
+      return res
+  }
+
 
 
   /**
@@ -179,20 +195,13 @@ export default function TableList() {
     setIsLoading(false)
   }
 
-  const getTableOrders = async (_table) => {
-    const url = END_POINT + `/orders?code=${_table?.code}`;
-    let res= await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-      })
-      return res
-  }
+  
 
   const _resetTableOrder = ()=>{
     getTableOrders(table)
     _getTable()
     setDataOrder([])
+    tableData()
   }
 
   const _handlecheckout = async () => {
