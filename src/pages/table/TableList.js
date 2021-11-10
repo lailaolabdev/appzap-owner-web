@@ -393,6 +393,14 @@ export default function TableList() {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
 
+
+  const convertTableStatus = (_table) =>{
+    if(_table?.isOpened && _table?.staffConfirm)return <div style={{color:"green"}}>ເປີດແລ້ວ</div>
+    else if(_table?.isOpened && !_table?.staffConfirm)return  <div style={{color:"#FB6E3B"}}>ລໍຖ້າຢືນຢັນ</div>
+    else if(!_table?.isOpened && !_table?.staffConfirm)return <div style={{color:"#eee"}}>ວ່າງ</div>
+    else return "-"
+  }
+
   return (
     <div style={TITLE_HEADER}>
       <div style={{ display: 'none' }}>
@@ -459,7 +467,8 @@ export default function TableList() {
                           height: 140,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor: tableId == table?.table_id ? "#FB6E3B" : "white",
+                          backgroundColor: table?.staffConfirm ? "#FB6E3B" : "white",
+                          border: tableId == table?.table_id ? "2px solid #FB6E3B" : "2px solid  white",
                         }}
                         className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
                         onClick={async () => {
@@ -478,9 +487,10 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: tableId == table?.table_id ? "white" : "#C4C4C4", fontWeight: "bold", fontSize: 40 }}>ຕູບ {table?.table_id}</div>
-                            <div style={{ color: tableId == table?.table_id ? "white" : "red" }}>{table?.code}</div>
-                            <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.isOpened)} )</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>ຕູບ {table?.table_id}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
+                            {/* <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.isOpened)} )</div> */}
+                            <div >{ convertTableStatus(table)}</div>
                           </span>
                         </div>
                       </Button>
@@ -570,7 +580,7 @@ export default function TableList() {
                           <td>{orderItem?.quantity}</td>
                           <td>
                             <div
-                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "blue" : "red" }}
+                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "" : "red" }}
                             >
                               {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
                             </div>
