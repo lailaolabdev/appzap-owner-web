@@ -345,39 +345,39 @@ export default function TableList() {
   /**
    * ເປີດໂຕະ
    */
-  const _openTable = async()=>{
+  const _openTable = async () => {
     await axios
-    .put(
-      END_POINT + `/updateGenerates/${tableData?.code}`,
-      {
-        isOpened:true,
-        staffConfirm:true
-      },
-      {
-        headers: await getHeaders(),
-      }
-    ).then(async function (response) {
-      //update Table
-      let _tableList = [...tableList]
-      let _newTable = _tableList.map((table)=>{
-        if(table?.code == tableData?.code)return{
-          ...table,
-            isOpened:true,
-            staffConfirm:true
+      .put(
+        END_POINT + `/updateGenerates/${tableData?.code}`,
+        {
+          isOpened: true,
+          staffConfirm: true
+        },
+        {
+          headers: await getHeaders(),
         }
-        else return table
+      ).then(async function (response) {
+        //update Table
+        let _tableList = [...tableList]
+        let _newTable = _tableList.map((table) => {
+          if (table?.code == tableData?.code) return {
+            ...table,
+            isOpened: true,
+            staffConfirm: true
+          }
+          else return table
+        })
+        setTableList(_newTable)
+        Swal.fire({
+          icon: 'success',
+          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+          showConfirmButton: false,
+          timer: 1800
+        })
       })
-      setTableList(_newTable)
-      Swal.fire({
-        icon: 'success',
-        title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
-        showConfirmButton: false,
-        timer: 1800
-      })
-    })
-    .catch(function (error) {
-      errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-    });
+      .catch(function (error) {
+        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+      });
   }
 
 
@@ -394,10 +394,10 @@ export default function TableList() {
   }
 
 
-  const convertTableStatus = (_table) =>{
-    if(_table?.isOpened && _table?.staffConfirm)return <div style={{color:"green"}}>ເປີດແລ້ວ</div>
-    else if(_table?.isOpened && !_table?.staffConfirm)return  <div style={{color:"#FB6E3B"}}>ລໍຖ້າຢືນຢັນ</div>
-    else if(!_table?.isOpened && !_table?.staffConfirm)return <div style={{color:"#eee"}}>ວ່າງ</div>
+  const convertTableStatus = (_table) => {
+    if (_table?.isOpened && _table?.staffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
+    else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#FB6E3B" }}>ລໍຖ້າຢືນຢັນ</div>
+    else if (!_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else return "-"
   }
 
@@ -489,8 +489,7 @@ export default function TableList() {
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>ຕູບ {table?.table_id}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
-                            {/* <div style={{ color: table?.code === activeTableId ? STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#FFF" : "green" : STATUS_OPENTABLE(table?.isOpened) === 'ວ່າງ' ? "#C4C4C4" : "green", fontWeight: "bold" }}> ( {STATUS_OPENTABLE(table?.isOpened)} )</div> */}
-                            <div >{ convertTableStatus(table)}</div>
+                            <div >{convertTableStatus(table)}</div>
                           </span>
                         </div>
                       </Button>
@@ -619,16 +618,16 @@ export default function TableList() {
           >
             <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{tableData?.table_id}</p>
             <QRCode
-              logoImage={
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1004px-Google_%22G%22_Logo.svg.png"
-              }
-              value="https://github.com/gcoro/react-qrcode-logo"
+              value={JSON.stringify({
+                storeId: tableData?.storeId,
+                tableId: tableData?.code
+              })}
               style={{ width: 100 }}
             />
             <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
             <div style={{ height: 30 }} />
             <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => _openTable()}>
-              <FontAwesomeIcon icon={!tableData?.isOpened ? faArchway:faCheckCircle} style={{ color: "#fff" }} /> {!tableData?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
+              <FontAwesomeIcon icon={!tableData?.isOpened ? faArchway : faCheckCircle} style={{ color: "#fff" }} /> {!tableData?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
           </div>}
 
           {tableData == null && <div style={{
