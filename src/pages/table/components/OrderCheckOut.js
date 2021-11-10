@@ -66,6 +66,7 @@ const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
   
   
   const _checkBill = async () => {
+    console.log({data})
     if (data) {
       await axios
         .put(

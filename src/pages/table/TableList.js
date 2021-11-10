@@ -200,7 +200,7 @@ export default function TableList() {
     getTableOrders(table)
     _getTable()
     setDataOrder([])
-    tableData()
+    setTimeout(()=>{setTableData()},100)
   }
 
   const _handlecheckout = async () => {
@@ -446,7 +446,7 @@ export default function TableList() {
             </Container>
           </div>
           {/* Detail Table */}
-          <div
+          {tableData != null && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -547,7 +547,24 @@ export default function TableList() {
                 <div style={{ marginBottom: 100 }} />
               </Container>
             }
-          </div>
+          </div>}
+
+          {tableData == null && <div style={{
+              width: "60%",
+              backgroundColor: "#FFF",
+              maxHeight: "90vh",
+              borderColor: "black",
+              overflowY: "scroll",
+              borderWidth: 1,
+              paddingLeft: 20,
+              paddingTop: 20,
+              display:"flex",
+              justifyContent:"center",
+              alignItems:"center"
+            }}>
+              <p style={{margin:0,fontSize:30}}>
+              ເລືອກໂຕະເພື່ອເບິ່ງອໍເດີ</p>
+            </div>}
         </div>
       </div>
 
