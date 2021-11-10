@@ -165,15 +165,17 @@ export default function TableList() {
     let checkout = table?.order?.checkout
     // _onHandlerTableDetail(table.table_id, checkout, table?.code);
     // const url = END_POINT + `/orders?code=${table?.code}&status=NOTCART`;
+    getTableOrders(table)
+    setIsLoading(false)
+  }
 
-    const url = END_POINT + `/orders?code=${table?.code}`;
+  const getTableOrders = async (_table) => {
+    const url = END_POINT + `/orders?code=${_table?.code}`;
     await fetch(url)
       .then(response => response.json())
       .then(response => {
         setDataOrder(response)
       })
-
-    setIsLoading(false)
   }
 
 
@@ -283,7 +285,7 @@ export default function TableList() {
   };
 
 
-  
+
 
   // const _handleUpdate = async () => {
   //   await updateOrderItem(checkedToUpdate, DOING_STATUS);
@@ -352,9 +354,9 @@ export default function TableList() {
   }
 
 
-    /**
-     * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
-     */
+  /**
+   * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
+   */
   const _updateToServe = async () => {
     if (checkedToUpdate.length == 0) {
       Swal.fire({
@@ -558,7 +560,7 @@ export default function TableList() {
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister}  style={{ color: "#fff" }} /> Checkout</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
                     <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ກວດສອບຍອດການສັ່ງ</Button>
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
@@ -625,6 +627,7 @@ export default function TableList() {
         data={newData}
         tableData={tableData}
         show={menuItemDetailModal}
+        getTableOrders={getTableOrders}
         hide={() => setMenuItemDetailModal(false)}
       />
       {/* <UpdateOrderModal
