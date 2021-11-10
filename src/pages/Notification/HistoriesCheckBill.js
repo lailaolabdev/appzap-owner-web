@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import useReactRouter from "use-react-router";
-import MenusItemDetail from '../table/components/MenusItemDetail'
+import OrderCheckOut from '../table/components/OrderCheckOut'
 
 import {
   Col,
@@ -172,7 +172,7 @@ export default function HistoriesCheckBill() {
         </div>
         }
       </Container>
-      <MenusItemDetail
+      <OrderCheckOut
         data={newData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}

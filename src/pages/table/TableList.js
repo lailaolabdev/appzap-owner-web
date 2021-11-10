@@ -16,6 +16,7 @@ import {
   faCommentDots,
   faChartArea,
   faPrint,
+  faCashRegister,
 } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 
@@ -27,7 +28,7 @@ import Loading from "../../components/Loading";
 import UpdateOrderModal from "./components/UpdateOrderModal";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import CancelModal from "./components/CancelModal";
-import MenusItemDetail from "./components/MenusItemDetail";
+import OrderCheckOut from "./components/OrderCheckOut";
 import { orderStatus, STATUS_OPENTABLE } from "../../helpers";
 import {
   getTables,
@@ -66,6 +67,7 @@ import {
   END_POINT,
 } from "../../constants/index";
 import { END_POINT_SEVER } from "../../constants/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
@@ -83,6 +85,7 @@ export default function TableList() {
   const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
+  const [tableData, setTableData] = useState();
   const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [showTable, setShowTable] = useState(false);
@@ -156,6 +159,7 @@ export default function TableList() {
     setTableId(table.table_id);
     setTableCode(table?.order?.code);
     setGenerateCode(table?.code);
+    setTableData(table)
     setCheckedToUpdate([]);
 
     let checkout = table?.order?.checkout
@@ -408,7 +412,7 @@ export default function TableList() {
   const _checkOut = async () => {
     document.getElementById('btnPrint').click();
   }
-  const _onClickMenuDetail = async () => {
+  const _onCheckOut = async () => {
     await setMenuItemDetailModal(true);
   };
 
@@ -554,8 +558,8 @@ export default function TableList() {
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
                   <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onClickMenuDetail()}>Checkout</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ໄລ່ເງີນ</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister}  style={{ color: "#fff" }} /> Checkout</Button>
+                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ກວດສອບຍອດການສັ່ງ</Button>
                     <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
                 </div>
@@ -617,8 +621,9 @@ export default function TableList() {
         </div>
       </div>
 
-      <MenusItemDetail
+      <OrderCheckOut
         data={newData}
+        tableData={tableData}
         show={menuItemDetailModal}
         hide={() => setMenuItemDetailModal(false)}
       />
