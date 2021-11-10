@@ -120,7 +120,6 @@ export default function TableList() {
    */
   useEffect(() => {
     let newData = []
-    console.log({dataOrder})
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
@@ -322,7 +321,6 @@ export default function TableList() {
       setCheckedToUpdate(allData)
     } else {
       setcheckBoxAll(false)
-      // setCheckedToUpdate()
       setCheckedToUpdate([])
     }
   }
@@ -343,14 +341,15 @@ export default function TableList() {
   const _checkOut = async () => {
     document.getElementById('btnPrint').click();
   }
+
   const _onCheckOut = async () => {
-    await setMenuItemDetailModal(true);
+    setMenuItemDetailModal(true);
   };
 
   const _goToAddOrder = (tableId, code) => {
-    // console.log(tableId, code);
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
+
   return (
     <div style={TITLE_HEADER}>
       <div style={{ display: 'none' }}>
@@ -556,8 +555,6 @@ export default function TableList() {
         data={newData}
         tableData={tableData}
         show={menuItemDetailModal}
-        getTableOrders={getTableOrders}
-        getTable={_getTable}
         resetTableOrder={_resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />

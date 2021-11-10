@@ -16,9 +16,8 @@ import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from 'sweetalert2'
 
-const OrderCheckOut = ({ data, tableData, show, hide,getTableOrders,getTable,resetTableOrder }) => {
+const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
   const { history, location, match } = useReactRouter();
-  const [getTokken, setgetTokken] = useState();
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
 
@@ -33,10 +32,6 @@ const OrderCheckOut = ({ data, tableData, show, hide,getTableOrders,getTable,res
   // });
 
   useEffect(() => {
-    const _localData =  getLocalData();
-      if (_localData) {
-        setgetTokken(_localData);
-      }
     Getdata();
   }, [data]);
   
