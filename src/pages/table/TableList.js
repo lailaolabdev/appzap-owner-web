@@ -620,7 +620,7 @@ export default function TableList() {
             <QRCode
               value={JSON.stringify({
                 storeId: tableData?.storeId,
-                tableId: tableData?.code
+                tableId: tableData?._id
               })}
               style={{ width: 100 }}
             />
