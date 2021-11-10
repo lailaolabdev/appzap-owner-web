@@ -26,3 +26,23 @@ div {
   box-shadow: 0.25rem 0rem 0.25rem darkgray;
   /* display: row; */
 }
+
+
+.blink_card {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  100%{
+    opacity: 1;
+    background-color: #FB6E3B;
+  }
+  50% {
+    opacity: 0.5;
+    background-color: #FB6E3B;
+  }
+  0% {
+    opacity: 0.2;
+    background-color: #fff;
+  }
+}
