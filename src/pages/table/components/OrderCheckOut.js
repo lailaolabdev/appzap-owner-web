@@ -20,6 +20,7 @@ const OrderCheckOut = ({ data, tableData, show, hide }) => {
   const { history, location, match } = useReactRouter();
   const [getTokken, setgetTokken] = useState();
   const [NewData, setNewData] = useState();
+  const [total, setTotal] = useState();
 
   // const socket = socketIOClient(END_POINT);
   // socket.on(`checkoutSuccess${getTokken?.DATA?.storeId}`, (data) => {
@@ -32,13 +33,18 @@ const OrderCheckOut = ({ data, tableData, show, hide }) => {
   // });
 
   useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData();
+    const _localData =  getLocalData();
       if (_localData) {
         setgetTokken(_localData);
       }
-    };
-    fetchData();
+    Getdata();
+  }, [data]);
+  
+  useEffect(() => {
+    const _localData =  getLocalData();
+      if (_localData) {
+        setgetTokken(_localData);
+      }
     Getdata();
   }, [data]);
 
@@ -55,12 +61,18 @@ const OrderCheckOut = ({ data, tableData, show, hide }) => {
     setNewData(resData?.data);
   };
 
-  let total = 0;
-  if (NewData && NewData.length > 0) {
-    for (let orderItem of NewData) {
-      total += orderItem?.quantity * orderItem?.price;
+
+  const _calculateTotal =()=>{
+    let _total = 0;
+    if (NewData && NewData.length > 0) {
+      for (let orderItem of NewData) {
+        _total += orderItem?.quantity * orderItem?.price;
+      }
     }
+    setTotal(_total)
   }
+
+  
   
   const _checkBill = async () => {
     if (data) {
