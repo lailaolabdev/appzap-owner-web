@@ -120,23 +120,35 @@ export default function TableList() {
    */
   useEffect(() => {
     let newData = []
-    let checkDataStatus = []
-    let checkDataStatusCancel = []
+    console.log({dataOrder})
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
         newData.push(dataOrder[i]?.order_item[k])
-        if ((dataOrder[i]?.order_item[k]?.status === "SERVED")) {
-          checkDataStatus.push(dataOrder[i]?.order_item[k]?.status)
-        }
-        if (dataOrder[i]?.order_item[k]?.status === "CANCELED") {
-          checkDataStatusCancel.push(dataOrder[i]?.order_item[k]?.status)
-        }
       }
     }
-    setCheckStatusCancel(checkDataStatusCancel)
-    setCheckStatus(checkDataStatus)
     setnewData(newData)
   }, [dataOrder])
+
+
+
+  /**
+   * Modify Order Status
+   */
+  useEffect(() => {
+    if(!newData)return;
+    let _newData = [...newData]
+    let _checkDataStatus = []
+    let _checkDataStatusCancel = []
+    _newData.map((nData)=>{
+      if(nData.status=== "SERVED")_checkDataStatus.push(nData?.status)
+      if(nData.status=== "CANCELED")_checkDataStatusCancel.push(nData?.status)
+    })
+
+    setCheckStatusCancel(_checkDataStatusCancel)
+    setCheckStatus(_checkDataStatus)
+  }, [newData])
+
+  
 
 
   /**
@@ -175,6 +187,12 @@ export default function TableList() {
         setDataOrder(response)
       })
       return res
+  }
+
+  const _resetTableOrder = ()=>{
+    getTableOrders(table)
+    _getTable()
+    setDataOrder([])
   }
 
   const _handlecheckout = async () => {
@@ -531,6 +549,7 @@ export default function TableList() {
         show={menuItemDetailModal}
         getTableOrders={getTableOrders}
         getTable={_getTable}
+        resetTableOrder={_resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
       {/* <UpdateOrderModal
