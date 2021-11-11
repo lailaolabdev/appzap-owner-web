@@ -472,7 +472,7 @@ export default function TableList() {
                         }}
                         className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
                         onClick={async () => {
-
+                          console.log(table)
                           _onSelectTable(table)
                         }}
                       >
@@ -620,7 +620,7 @@ export default function TableList() {
             <QRCode
               value={JSON.stringify({
                 storeId: tableData?.storeId,
-                tableId: tableData?._id
+                tableId: tableData?.idTable
               })}
               style={{ width: 100 }}
             />
