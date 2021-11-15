@@ -185,7 +185,7 @@ function AddOrder() {
 
   const onSubmit = async (isPrinted) => {
 
-    if(selectedMenu.length==0){
+    if (selectedMenu.length == 0) {
       Swal.fire({
         icon: 'warning',
         title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
@@ -343,12 +343,12 @@ function AddOrder() {
               <div className="col-12">
                 <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: 'bold' }}>
-                      <th>ລຳດັບ</th>
-                      <th className="text-center">ຊື່ເມນູ</th>
+                    <tr style={{ fontSize: 'bold',border:"none" }}>
+                      <th style={{ border:"none" }}>ລຳດັບ</th>
+                      <th style={{ border:"none" }} className="text-center">ຊື່ເມນູ</th>
                       {/* <th>ໂຕະ</th> */}
-                      <th>ຈຳນວນ</th>
-                      <th>ຈັດການ</th>
+                      <th style={{ border:"none" }}>ຈຳນວນ</th>
+                      <th style={{ border:"none" }}>ຈັດການ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -362,7 +362,7 @@ function AddOrder() {
                             <td>
                               {data.quantity}
                             </td>
-                            <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
+                            <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B',cursor:"pointer" }}></i></td>
                           </tr>
                         )
                       })
@@ -377,11 +377,14 @@ function AddOrder() {
                 </div>
               </div>
               <div className="col-12">
-                <div className="form-group d-flex justify-content-center">
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => null}>ຍົກເລີກ</Button>
-                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
-                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
-                </div>
+                  <div className="row" style={{margin:0}}>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>
+                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold",flex:1 }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
+                  </div>
+                  <div style={{height:10}}/>
+                  <div className="row" style={{margin:0}}>
+                    <Button variant="light" className="hover-me" style={{ height:60,marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold",flex:1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
+                  </div>
               </div>
             </div>
           </div>

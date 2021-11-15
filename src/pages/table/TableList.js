@@ -209,6 +209,7 @@ export default function TableList() {
    * @param {*} table 
    */
   const _onSelectTable = async (table) => {
+    // console.log(table)
     setIsLoading(true)
     setTableId(table.table_id);
     setTableCode(table?.order?.code);
@@ -221,6 +222,9 @@ export default function TableList() {
 
 
 
+  /**
+   * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
+   */
   const _resetTableOrder = () => {
     getTableOrders(table)
     _getTable()
@@ -535,18 +539,16 @@ export default function TableList() {
             }}
           >
             {
-              <Container fluid>
-                <Row>
-                  <Col sm={6}>
-                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
-                  </Col>
-                  <Col sm={6} style={{
-                    textAlign: 'right',
-                  }}>
-                    {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
+              <Container >
+                <Row style={{ margin: 0 }}>
+                  <Col sm={12} style={{ backgroundColor: "#eee" }}>
+                    <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
+                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {tableData?.table_id} </p>
+                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ລະຫັດເຂົ້າໂຕະ:  {tableData?.code}</p>
+                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ເວລາເປີດ:   {moment(tableData?.createdAt).format("HH:mm:ss A")}</p>
                   </Col>
                 </Row>
-                <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
+                <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15}}>
                   <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                   </div>
@@ -558,10 +560,14 @@ export default function TableList() {
                     {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
                   </div>
 
-                  <div style={{}}>
-                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
-                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _checkOut()}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>
-                    <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div style={{}}>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _checkOut()}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>
+                    </div>
+                    <div>
+                      <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
+                    </div>
                   </div>
                 </div>
                 <div style={{ display: checkedToUpdate.length == 0 ? "none" : '' }}>
@@ -588,7 +594,7 @@ export default function TableList() {
                     </thead>
                     <tbody>
                       {newData ? newData.map((orderItem, index) => (
-                        <tr key={"order" + index} style={{borderBottom:"1px solid #eee"}}>
+                        <tr key={"order" + index} style={{ borderBottom: "1px solid #eee" }}>
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
@@ -622,6 +628,9 @@ export default function TableList() {
                       )) : ""}
                     </tbody>
                   </Table>
+                  {newData.length==0&&<div className="text-center">
+                   <div style={{marginTop:50,fontSize:50}}> ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ</div>
+                    </div>}
                 </div>
                 <div style={{ marginBottom: 100 }} />
               </Container>
@@ -652,7 +661,7 @@ export default function TableList() {
             />
             <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
             <div style={{ height: 30 }} />
-            <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => _openTable()}>
+            <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => _openTable()}>
               <FontAwesomeIcon icon={!tableData?.isOpened ? faArchway : faCheckCircle} style={{ color: "#fff" }} /> {!tableData?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
           </div>}
 
