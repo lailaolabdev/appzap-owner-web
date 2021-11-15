@@ -151,18 +151,19 @@ export default function TableList() {
    */
   useEffect(() => {
     // as soon as the component is mounted, do the following tasks:
-    console.log("WELCOME!!")
     // emit USER_ONLINE event
     // socket.emit("USER_ONLINE", userId); 
 
     // // subscribe to socket events
-    // socket.on("JOIN_REQUEST_ACCEPTED", handleInviteAccepted); 
+    socket.on(`TABLE:${match?.params?.storeId}`, (data)=>{
+      console.log({data})
+      setTableList(data)
+    }); 
 
     return () => {
-      // before the component is destroyed
-      // unbind all event handlers used in this component
-      // socket.off("JOIN_REQUEST_ACCEPTED", handleInviteAccepted);
-      console.log("BYE BYE!!")
+      socket.off(`TABLE:${match?.params?.storeId}`, ()=>{
+        console.log(`BYE BYE TABLE:${match?.params?.storeId}`)
+      });
     };
   }, [socket]);
 

@@ -6,7 +6,7 @@ import Table from "react-bootstrap/Table";
 import useReactRouter from "use-react-router";
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
-
+import Swal from 'sweetalert2'
 
 /**
  * const
@@ -23,6 +23,9 @@ import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/
 import { getHeaders } from '../../services/auth';
 import Loading from '../../components/Loading';
 import { ComponentToPrint } from './components/ToPrint';
+import moment from 'moment';
+import { faCashRegister } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 function AddOrder() {
@@ -180,7 +183,18 @@ function AddOrder() {
   //   }
   // }
 
-  const onSubmit = async () => {
+  const onSubmit = async (isPrinted) => {
+
+    if(selectedMenu.length==0){
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      return;
+    }
+
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
       for (let index in selectedMenu) {
@@ -196,16 +210,19 @@ function AddOrder() {
         }
         createOrder(data, header);
       }
-      let dataInfo = {
-        code: tableId,
-        customer_nickname: userData?.data?.firstname
-      };
+      // let dataInfo = {
+      //   code: tableId,
+      //   customer_nickname: userData?.data?.firstname
+      // };
       // openTheTable(dataInfo, header);
-      document.getElementById('btnPrint').click();
+
+
+      if (isPrinted) document.getElementById('btnPrint').click();
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
       // window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
+
 
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
@@ -329,7 +346,7 @@ function AddOrder() {
                     <tr style={{ fontSize: 'bold' }}>
                       <th>ລຳດັບ</th>
                       <th>ຊື່ອໍເດີ້</th>
-                      <th>ຕູບ</th>
+                      <th>ໂຕະ</th>
                       <th>ຈຳນວນ</th>
                       <th>ເລືອກ</th>
                     </tr>
@@ -362,7 +379,8 @@ function AddOrder() {
               <div className="col-12">
                 <div className="form-group d-flex justify-content-center">
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => null}>ຍົກເລີກ</Button>
-                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit()}>ສັ່ງອາຫານ</Button>
+                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
+                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
                 </div>
               </div>
             </div>
