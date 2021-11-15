@@ -46,3 +46,8 @@ div {
     background-color: #fff;
   }
 }
+
+
+.hover-me:hover{
+  opacity: 0.8;
+}

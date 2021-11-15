@@ -345,10 +345,10 @@ function AddOrder() {
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
                     <tr style={{ fontSize: 'bold' }}>
                       <th>ລຳດັບ</th>
-                      <th>ຊື່ອໍເດີ້</th>
+                      <th className="text-center">ຊື່ເມນູ</th>
                       {/* <th>ໂຕະ</th> */}
                       <th>ຈຳນວນ</th>
-                      <th>ເລືອກ</th>
+                      <th>ຈັດການ</th>
                     </tr>
                   </thead>
                   <tbody>

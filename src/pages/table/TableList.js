@@ -14,6 +14,7 @@ import {
   faCashRegister,
   faArchway,
   faCheckCircle,
+  faFileInvoice,
 } from "@fortawesome/free-solid-svg-icons";
 
 import moment from "moment";
@@ -23,8 +24,8 @@ import { QRCode } from "react-qrcode-logo";
 /**
  * Services
  */
- import { SocketContext } from '../../services/socket';
- import {
+import { SocketContext } from '../../services/socket';
+import {
   // getOrdersWithTableId,
   updateOrderItem,
   updateOrder,
@@ -155,8 +156,8 @@ export default function TableList() {
     // socket.emit("USER_ONLINE", userId); 
 
     // // subscribe to socket events
-    socket.on(`TABLE:${match?.params?.storeId}`, (data)=>{
-      console.log({data})
+    socket.on(`TABLE:${match?.params?.storeId}`, (data) => {
+      console.log({ data })
       setTableList(data)
       Swal.fire({
         icon: 'success',
@@ -164,10 +165,10 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 10000
       })
-    }); 
+    });
 
     return () => {
-      socket.off(`TABLE:${match?.params?.storeId}`, ()=>{
+      socket.off(`TABLE:${match?.params?.storeId}`, () => {
         console.log(`BYE BYE TABLE:${match?.params?.storeId}`)
       });
     };
@@ -208,7 +209,6 @@ export default function TableList() {
    * @param {*} table 
    */
   const _onSelectTable = async (table) => {
-    console.log(table)
     setIsLoading(true)
     setTableId(table.table_id);
     setTableCode(table?.order?.code);
@@ -447,10 +447,10 @@ export default function TableList() {
           >
             <Nav.Item>
               <Nav.Link
-                style={{ color: "#FB6E3B" }}
+                style={{ color: "#FB6E3B", border: "none" }}
                 href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
               >
-                ຕູບທັງໝົດ
+                ໂຕະທັງໝົດ
               </Nav.Link>
             </Nav.Item>
             <Nav.Item
@@ -510,7 +510,7 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>ຕູບ {table?.table_id}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>ໂຕະ {table?.table_id}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
                             <div >{convertTableStatus(table)}</div>
                           </span>
@@ -538,7 +538,7 @@ export default function TableList() {
               <Container fluid>
                 <Row>
                   <Col sm={6}>
-                    <span style={PRIMARY_FONT_BLACK}>ຕູບ {tableId}  ({generateCode})</span>
+                    <span style={PRIMARY_FONT_BLACK}>ໂຕະ {tableId}  ({generateCode})</span>
                   </Col>
                   <Col sm={6} style={{
                     textAlign: 'right',
@@ -555,19 +555,20 @@ export default function TableList() {
                       (CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
                       : "none"
                   }}>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button>
+                    {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
                   </div>
-                  <div style={{ display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ? "none" : '' }}>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToKitchen()}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _updateToServe()}>ເສີບແລ້ວ</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
+
+                  <div style={{}}>
+                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
+                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _checkOut()}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>
+                    <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
                   </div>
-                  <div style={{ display: CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "none" : CheckStatus?.length === 0 ? "none" : "" }}>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
-                    <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _checkOut()}>ກວດສອບຍອດການສັ່ງ</Button>
-                    <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>+ ເພີ່ມອໍເດີ</Button>
-                  </div>
+                </div>
+                <div style={{ display: checkedToUpdate.length == 0 ? "none" : '' }}>
+                  <div>ອັບເດດເປັນສະຖານະ: </div>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _updateToKitchen()}>ສົ່ງໄປຄົວ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _updateToServe()}>ເສີບແລ້ວ</Button>
                 </div>
                 <div style={padding_white} />
                 <div>
@@ -577,46 +578,48 @@ export default function TableList() {
                   >
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr>
-                        <th style={{ width: 20 }}></th>
-                        <th style={{ width: 50 }}>ລຳດັບ</th>
-                        <th>ຊື່ເມນູ</th>
-                        <th>ຈຳນວນ</th>
-                        <th>ສະຖານະ</th>
-                        <th>ເວລາ</th>
+                        <th style={{ width: 20, border: "none" }}></th>
+                        <th style={{ width: 50, border: "none" }}>ລຳດັບ</th>
+                        <th style={{ border: "none" }}>ຊື່ເມນູ</th>
+                        <th style={{ border: "none" }}>ຈຳນວນ</th>
+                        <th style={{ border: "none" }}>ສະຖານະ</th>
+                        <th style={{ border: "none" }}>ເວລາ</th>
                       </tr>
                     </thead>
                     <tbody>
                       {newData ? newData.map((orderItem, index) => (
-                        <tr key={"order" + index}>
-                          <td>
-                            <Checkbox
-                              disabled={orderItem?.status === "SERVED"}
-                              checked={_onSelectOrderMenu(index)}
-                              onChange={(e) => _onChangeMenuCheckbox(e, orderItem?._id, index)}
-                              color="primary"
-                              inputProps={{ "aria-label": "secondary checkbox" }}
-                            />
-                          </td>
-                          <td style={{display:"flex",justifyContent:"center",alignContent:"center"}}>{index + 1}</td>
-                          <td>{orderItem?.name}</td>
-                          <td>{orderItem?.quantity}</td>
-                          <td>
-                            <div
-                              style={{ border: "1px", borderRadius: "10px", color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "" : "red" }}
-                            >
-                              {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
+                        <tr key={"order" + index} style={{borderBottom:"1px solid #eee"}}>
+                          <td style={{ border: "none" }}>
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
+                              <Checkbox
+                                disabled={orderItem?.status === "SERVED"}
+                                checked={_onSelectOrderMenu(index)}
+                                onChange={(e) => _onChangeMenuCheckbox(e, orderItem?._id, index)}
+                                color="primary"
+                                inputProps={{ "aria-label": "secondary checkbox" }}
+                              />
                             </div>
                           </td>
+                          <td ><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
+                          <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.name}</p></div></td>
+                          <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.quantity}</p></div></td>
                           <td>
+                            <div
+                              style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50, color: orderItem?.status === `SERVED` ? "green" : orderItem?.status === 'DOING' ? "" : "red" }}
+                            >
+                              <p style={{ margin: 0 }}>{orderItem?.status ? orderStatus(orderItem?.status) : "-"}</p>
+                            </div>
+                          </td>
+                          {/* <td>
                             {orderItem?.createdAt
                               ? moment(orderItem?.createdAt).format("HH:mm A")
                               : "-"}
-                          </td>
+                          </td> */}
+                          <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.createdAt
+                            ? moment(orderItem?.createdAt).format("HH:mm A")
+                            : "-"}</p></div></td>
                         </tr>
                       )) : ""}
-                      <tr>
-                        <td></td>
-                      </tr>
                     </tbody>
                   </Table>
                 </div>
@@ -702,4 +705,5 @@ const NAV = {
   backgroundColor: "#F9F9F9",
   marginTop: -10,
   paddingTop: 10,
+  border: "none"
 };
