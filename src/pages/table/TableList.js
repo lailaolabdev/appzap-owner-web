@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import useReactRouter from "use-react-router";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
@@ -6,23 +6,32 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
+import { Checkbox } from "@material-ui/core";
 import ReactToPrint from 'react-to-print';
-import { ComponentToPrint } from './components/ToPrint';
-import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
+import Swal from 'sweetalert2'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPen,
-  faRecycle,
-  faCommentDots,
-  faChartArea,
-  faPrint,
   faCashRegister,
   faArchway,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+
 import moment from "moment";
 import axios from "axios";
-import socketIOClient from "socket.io-client";
+import { QRCode } from "react-qrcode-logo";
+
+/**
+ * Services
+ */
+ import { SocketContext } from '../../services/socket';
+ import {
+  // getOrdersWithTableId,
+  updateOrderItem,
+  updateOrder,
+} from "../../services/order";
+import { getHeaders } from "../../services/auth";
+import { errorAdd } from "../../helpers/sweetalert";
+
 /**
  * component
  * */
@@ -32,17 +41,7 @@ import UserCheckoutModal from "./components/UserCheckoutModal";
 import CancelModal from "./components/CancelModal";
 import OrderCheckOut from "./components/OrderCheckOut";
 import { orderStatus, STATUS_OPENTABLE } from "../../helpers";
-import {
-  getTables,
-  getTableWithOrder,
-  generatedCode,
-} from "../../services/table";
-import {
-  getOrdersWithTableId,
-  updateOrderItem,
-  updateOrder,
-} from "../../services/order";
-import Swal from 'sweetalert2'
+import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
 
 /**
  * const
@@ -68,24 +67,24 @@ import {
   BUTTON_EDIT_HOVER,
   END_POINT,
 } from "../../constants/index";
-import { END_POINT_SEVER } from "../../constants/api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { QRCode } from "react-qrcode-logo";
-import { getHeaders } from "../../services/auth";
-import { errorAdd } from "../../helpers/sweetalert";
+
+
+
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
   const number = match?.params?.number;
-  const socket = socketIOClient(END_POINT_SEVER);
   let activeTableId = match?.params?.tableId;
 
+  /**
+    * useContext
+    */
+  const socket = useContext(SocketContext);
 
 
   /**
    * useState
    */
-  const [reLoadData, setreLoadData] = useState()
   const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [table, setTable] = useState([]);
@@ -93,18 +92,11 @@ export default function TableList() {
   const [tableData, setTableData] = useState();
   const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
-  const [showTable, setShowTable] = useState(false);
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [cancelOrderModal, setCancelOrderModal] = useState(false);
-  //ເມື່ອ generateCode: ture
   const [generateCode, setGenerateCode] = useState();
-  const [showOrderModal, setShowOrderModal] = useState(false);
-  // ຂໍ້ມູນສະແດ່ໃນ table
-  const [orderFromTable, setOrderFromTable] = useState();
   const [idTable, setTableCode] = useState("");
-  const [data, setData] = useState();
-  // =====>>>> query data order in table
   const [dataOrder, setDataOrder] = useState([])
   const [newData, setnewData] = useState([])
   const [tableList, setTableList] = useState([])
@@ -153,6 +145,26 @@ export default function TableList() {
   }, [newData])
 
 
+
+  /**
+   * Get Table
+   */
+  useEffect(() => {
+    // as soon as the component is mounted, do the following tasks:
+    console.log("WELCOME!!")
+    // emit USER_ONLINE event
+    // socket.emit("USER_ONLINE", userId); 
+
+    // // subscribe to socket events
+    // socket.on("JOIN_REQUEST_ACCEPTED", handleInviteAccepted); 
+
+    return () => {
+      // before the component is destroyed
+      // unbind all event handlers used in this component
+      // socket.off("JOIN_REQUEST_ACCEPTED", handleInviteAccepted);
+      console.log("BYE BYE!!")
+    };
+  }, [socket]);
 
 
 
@@ -368,6 +380,11 @@ export default function TableList() {
           else return table
         })
         setTableList(_newTable)
+        setTableData({
+          ...tableData,
+          isOpened: true,
+          staffConfirm: true
+        })
         Swal.fire({
           icon: 'success',
           title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
@@ -592,7 +609,7 @@ export default function TableList() {
                         </tr>
                       )) : ""}
                       <tr>
-                        <td>{data?.text}</td>
+                        <td></td>
                       </tr>
                     </tbody>
                   </Table>
@@ -620,7 +637,7 @@ export default function TableList() {
             <QRCode
               value={JSON.stringify({
                 storeId: tableData?.storeId,
-                tableId: tableData?.idTable
+                tableId: tableData?.tableId
               })}
               style={{ width: 100 }}
             />
