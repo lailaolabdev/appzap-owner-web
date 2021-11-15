@@ -141,13 +141,20 @@ function AddOrder() {
   }
 
   const createOrder = async (data, header) => {
+    console.log({ data })
     try {
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': header.authorization
       }
 
-      axios.post(END_POINT_SEVER + "/orders", data, {
+      axios.post(END_POINT_SEVER + "/v2/ordersByadmin", {
+        "menu": data,
+        // "customer_nickname": "Joy xaiyavong",
+        "storeId": userData?.data?.storeId,
+        table_id: code,
+        code: tableId,
+      }, {
         headers: headers
       })
         .then((response) => {
@@ -161,27 +168,6 @@ function AddOrder() {
     }
   }
 
-
-  // const openTheTable = async (data, header) => {
-  //   try {
-  //     const headers = {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': header.authorization
-  //     }
-
-  //     axios.post(END_POINT_SEVER + "/opens", data, {
-  //       headers: headers
-  //     })
-  //       .then((response) => {
-  //         console.log(response);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       })
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
 
   const onSubmit = async (isPrinted) => {
 
@@ -197,31 +183,19 @@ function AddOrder() {
 
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
-      for (let index in selectedMenu) {
-        let data = {
-          menu: selectedMenu[index].id,
-          storeId: userData?.data?.storeId,
-          quantity: selectedMenu[index].quantity,
-          note: note,
-          table_id: code,
-          code: tableId,
-          customer_nickname: userData?.data?.firstname,
-          is_from_website: true
-        }
-        createOrder(data, header);
-      }
-      // let dataInfo = {
-      //   code: tableId,
-      //   customer_nickname: userData?.data?.firstname
-      // };
-      // openTheTable(dataInfo, header);
+      await createOrder(selectedMenu, header);
 
-
+      Swal.fire({
+        icon: 'success',
+        title: "ເພີ່ມອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 1800
+      })
       if (isPrinted) document.getElementById('btnPrint').click();
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
-      // window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
+
 
 
   return <div style={TITLE_HEADER}>
@@ -343,12 +317,12 @@ function AddOrder() {
               <div className="col-12">
                 <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: 'bold',border:"none" }}>
-                      <th style={{ border:"none" }}>ລຳດັບ</th>
-                      <th style={{ border:"none" }} className="text-center">ຊື່ເມນູ</th>
+                    <tr style={{ fontSize: 'bold', border: "none" }}>
+                      <th style={{ border: "none" }}>ລຳດັບ</th>
+                      <th style={{ border: "none" }} className="text-center">ຊື່ເມນູ</th>
                       {/* <th>ໂຕະ</th> */}
-                      <th style={{ border:"none" }}>ຈຳນວນ</th>
-                      <th style={{ border:"none" }}>ຈັດການ</th>
+                      <th style={{ border: "none" }}>ຈຳນວນ</th>
+                      <th style={{ border: "none" }}>ຈັດການ</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -362,7 +336,7 @@ function AddOrder() {
                             <td>
                               {data.quantity}
                             </td>
-                            <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B',cursor:"pointer" }}></i></td>
+                            <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B', cursor: "pointer" }}></i></td>
                           </tr>
                         )
                       })
@@ -377,14 +351,14 @@ function AddOrder() {
                 </div>
               </div>
               <div className="col-12">
-                  <div className="row" style={{margin:0}}>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>
-                    <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold",flex:1 }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
-                  </div>
-                  <div style={{height:10}}/>
-                  <div className="row" style={{margin:0}}>
-                    <Button variant="light" className="hover-me" style={{ height:60,marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold",flex:1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
-                  </div>
+                <div className="row" style={{ margin: 0 }}>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>
+                  <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
+                </div>
+                <div style={{ height: 10 }} />
+                <div className="row" style={{ margin: 0 }}>
+                  <Button variant="light" className="hover-me" style={{ height: 60, marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
+                </div>
               </div>
             </div>
           </div>
