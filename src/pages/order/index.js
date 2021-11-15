@@ -17,7 +17,7 @@ import CancelModal from "./component/CancelModal";
  */
 import { updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS, SERVE_STATUS, END_POINT, USER_KEY } from "../../constants";
+import { CANCEL_STATUS, DOING_STATUS, SERVE_STATUS, END_POINT, USER_KEY, TITLE_HEADER } from "../../constants";
 import { SocketContext } from '../../services/socket';
 
 const Order = () => {
@@ -134,7 +134,7 @@ const Order = () => {
     }
   }
   return (
-    <div>
+    <div style={{}}>
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>

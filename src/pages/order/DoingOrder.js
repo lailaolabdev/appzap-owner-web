@@ -113,26 +113,29 @@ const Order = () => {
             {ordersDoing &&
               ordersDoing?.map((order, index) => (
                 <tr key={index}>
-                  <td>
+                  <td  >
+                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                     <Checkbox
                       checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
                       onChange={(e) => _handleCheckbox(e, order?._id, index)}
                       color="primary"
                       inputProps={{ "aria-label": "secondary checkbox" }}
                     />
+                    </div>
                   </td>
-                  <td>{index + 1}</td>
-                  <td>{order?.name ?? "-"}</td>
-                  <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.orderId?.table_id ?? "-"}</td>
-                  <td>{order?.orderId?.code ?? "-"}</td>
-                  <td style={{ color: "blue", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
-                  <td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></div></td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></div></td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
+                  
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}
+                      : "-"}</p></div>
                   </td>
-                  <td>{order?.note ?? "-"}</td>
+                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></div></td>
                 </tr>
               ))}
           </tbody>

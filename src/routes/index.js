@@ -68,11 +68,11 @@ const Index = () => {
                 onToggle={(exp) => _onToggle(exp)}
               />
               {/* sidenav */}
-              <Main>
+              <Main style={{padding:0}}>
                 {/* Contents */}
                 <div
                   style={{
-                    marginTop: 70,
+                    marginTop: 65,
                   }}
                 >
                   {/* private routes */}
