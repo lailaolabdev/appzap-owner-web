@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import useReactRouter from "use-react-router";
 import OrderNavbar from "./component/OrderNavbar";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Nav, ButtonGroup, Form, Col } from "react-bootstrap";
-import { Checkbox, FormControlLabel} from "@material-ui/core";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 
 /**
  * import components
@@ -17,8 +17,8 @@ import CancelModal from "./component/CancelModal";
  */
 import { updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS,SERVE_STATUS, END_POINT, USER_KEY } from "../../constants";
-import { END_POINT_SEVER } from "../../constants/api";
+import { CANCEL_STATUS, DOING_STATUS, SERVE_STATUS, END_POINT, USER_KEY } from "../../constants";
+import { SocketContext } from '../../services/socket';
 
 const Order = () => {
   const { match } = useReactRouter();
@@ -28,6 +28,13 @@ const Order = () => {
   const [updateModal, setUpdateModal] = useState(false);
   const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [userData, setUserData] = useState({})
+
+  /**
+  * useContext
+  */
+  const socket = useContext(SocketContext);
+
+
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
@@ -41,7 +48,7 @@ const Order = () => {
     await updateOrderItem(checkedToUpdate, DOING_STATUS, userData?.data?.storeId);
     window.location.reload();
   };
-    const _handleUpdateServe = async () => {
+  const _handleUpdateServe = async () => {
     await updateOrderItem(checkedToUpdate, SERVE_STATUS);
     window.location.reload();
   };
@@ -61,16 +68,34 @@ const Order = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
-  const socket = socketIOClient(END_POINT_SEVER);
-  socket.on(`createorder${userData?.data?.storeId}`, data => {
-    setreLoadData(data)
-  });
+  // const socket = socketIOClient(END_POINT_SEVER);
+  // socket.on(`createorder${userData?.data?.storeId}`, data => {
+  //   setreLoadData(data)
+  // });
   useEffect(() => {
     getData()
   }, [])
   useEffect(() => {
     getData()
   }, [reLoadData])
+
+
+  /**
+   * Subscribe Order Event
+   */
+   useEffect(() => {
+    // as soon as the component is mounted, do the following tasks:
+    // emit USER_ONLINE event
+    console.log("ORDER WELCOME")
+
+    // // subscribe to socket events
+    socket.on(`ORDER:${userData?.data?.storeId}`, (data)=>{
+      console.log({data})
+    }); 
+  })
+
+
+
   const getData = async (tokken) => {
     await setIsLoading(true);
     await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${match?.params?.id}`, {
@@ -90,9 +115,9 @@ const Order = () => {
   const _checkAll = (item) => {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
-      let allData =[]
-      for (let e = 0; e < orderItems?.length; e++){
-        allData.push({id:orderItems[e]?._id})
+      let allData = []
+      for (let e = 0; e < orderItems?.length; e++) {
+        allData.push({ id: orderItems[e]?._id })
       }
       setCheckedToUpdate(allData)
     } else {
@@ -102,23 +127,23 @@ const Order = () => {
     }
   }
   const _onSelectBox = (index) => {
-      for (let i = 0; i < checkedToUpdate?.length; i++){
-        if (checkedToUpdate[i]?.number === index) {
-          return "true"
-       }
+    for (let i = 0; i < checkedToUpdate?.length; i++) {
+      if (checkedToUpdate[i]?.number === index) {
+        return "true"
       }
+    }
   }
   return (
     <div>
-      <OrderNavbar/>
-      <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15,paddingLeft:15,paddingRight:15 }}>
-        <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center"}}>
-          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e)=>_checkAll(e)}/>} label={<div style={{ fontFamily:"NotoSansLao",fontWeight:"bold"}}>ເລືອກທັງໝົດ</div>}/>
+      <OrderNavbar />
+      <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
+        <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
+          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} />
         </div>
         <div>
           <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
           <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdateServe()}>ເສີບແລ້ວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
         </div>
       </div>
       <Container fluid className="mt-3">
@@ -143,7 +168,7 @@ const Order = () => {
                   <tr key={index}>
                     <td>
                       <Checkbox
-                        checked={_onSelectBox(index) ? _onSelectBox(index):checkBoxAll}
+                        checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
                         onChange={(e) => _handleCheckbox(e, order?._id, index)}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
@@ -164,7 +189,7 @@ const Order = () => {
                   </tr>
                 )
               })
-               
+
             }
           </tbody>
         </Table>

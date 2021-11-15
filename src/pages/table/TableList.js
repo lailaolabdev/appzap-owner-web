@@ -158,6 +158,12 @@ export default function TableList() {
     socket.on(`TABLE:${match?.params?.storeId}`, (data)=>{
       console.log({data})
       setTableList(data)
+      Swal.fire({
+        icon: 'success',
+        title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
+        showConfirmButton: false,
+        timer: 10000
+      })
     }); 
 
     return () => {
@@ -178,7 +184,6 @@ export default function TableList() {
       .then(response => response.json())
       .then(response => {
         setTableList(response)
-        console.log({ response })
       })
   }
 
@@ -203,6 +208,7 @@ export default function TableList() {
    * @param {*} table 
    */
   const _onSelectTable = async (table) => {
+    console.log(table)
     setIsLoading(true)
     setTableId(table.table_id);
     setTableCode(table?.order?.code);
@@ -414,7 +420,7 @@ export default function TableList() {
 
   const convertTableStatus = (_table) => {
     if (_table?.isOpened && _table?.staffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
-    else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#FB6E3B" }}>ລໍຖ້າຢືນຢັນ</div>
+    else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
     else if (!_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else return "-"
   }
@@ -490,7 +496,6 @@ export default function TableList() {
                         }}
                         className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
                         onClick={async () => {
-                          console.log(table)
                           _onSelectTable(table)
                         }}
                       >
@@ -592,7 +597,7 @@ export default function TableList() {
                               inputProps={{ "aria-label": "secondary checkbox" }}
                             />
                           </td>
-                          <td>{index + 1}</td>
+                          <td style={{display:"flex",justifyContent:"center",alignContent:"center"}}>{index + 1}</td>
                           <td>{orderItem?.name}</td>
                           <td>{orderItem?.quantity}</td>
                           <td>

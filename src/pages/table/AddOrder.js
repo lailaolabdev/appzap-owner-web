@@ -346,7 +346,7 @@ function AddOrder() {
                     <tr style={{ fontSize: 'bold' }}>
                       <th>ລຳດັບ</th>
                       <th>ຊື່ອໍເດີ້</th>
-                      <th>ໂຕະ</th>
+                      {/* <th>ໂຕະ</th> */}
                       <th>ຈຳນວນ</th>
                       <th>ເລືອກ</th>
                     </tr>
@@ -358,7 +358,7 @@ function AddOrder() {
                           <tr key={"selectMenu" + index}>
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
-                            <td>{tableId}</td>
+                            {/* <td>{tableId}</td> */}
                             <td>
                               {data.quantity}
                             </td>
