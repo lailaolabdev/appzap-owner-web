@@ -4,6 +4,7 @@ import Container from "react-bootstrap/Container";
 import { Table, Button, Nav, ButtonGroup, Form, Col } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
+import Swal from 'sweetalert2'
 
 /**
  * import components
@@ -64,7 +65,7 @@ const Order = () => {
       });
     };
   }, [socket, userData])
-  
+
 
   const getData = async (tokken) => {
     await setIsLoading(true);
@@ -76,20 +77,27 @@ const Order = () => {
   }
 
 
-  const _handleCancel = async () => {
-    let _updateItems = orderItems.filter((item) => item.isChecked)
-    await updateOrderItem(_updateItems, CANCEL_STATUS);
+  const _handleUpdateOrderStatus = async (status) => {
+    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
+      return {
+        ...i,
+        status,
+        id: i._id
+      }
+    })
+    let _resOrderUpdate = await updateOrderItem(_updateItems, CANCEL_STATUS,match?.params?.id);
+    if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
+      let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+      setOrderItems(_newOrderItem)
+      Swal.fire({
+       icon: 'success',
+       title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+       showConfirmButton: false,
+       timer: 10000
+     })
+   }
   };
 
-  const _handleUpdate = async () => {
-    let _updateItems = orderItems.filter((item) => item.isChecked)
-    await updateOrderItem(_updateItems, DOING_STATUS, userData?.data?.storeId);
-  };
-
-  const _handleUpdateServe = async () => {
-    let _updateItems = orderItems.filter((item) => item.isChecked)
-    await updateOrderItem(_updateItems, SERVE_STATUS);
-  };
 
   const _handleCheckbox = async (order) => {
     let _orderItems = [...orderItems]
@@ -117,7 +125,7 @@ const Order = () => {
       billId.push(checkedToUpdate[i]?.id)
     }
     await window.open(`/BillForChef/?id=${billId}`);
-    _handleUpdate()
+    // _handleUpdate()
   }
 
   /**
@@ -155,9 +163,9 @@ const Order = () => {
           <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} />
         </div>
         <div>
-          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-          <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _prinbill()}>ສົ່ງໄປຄົວ</Button>
-          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateServe()}>ເສີບແລ້ວ</Button>
+          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(CANCEL_STATUS)}>ຍົກເລີກ</Button>
+          <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(DOING_STATUS)}>ສົ່ງໄປຄົວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(SERVE_STATUS)}>ເສີບແລ້ວ</Button>
         </div>
       </div>
       <Container fluid className="mt-3">
@@ -210,7 +218,7 @@ const Order = () => {
           </tbody>
         </Table>
       </Container>
-      <CancelModal
+      {/* <CancelModal
         show={cancelModal}
         hide={() => setCancelModal(false)}
         handleCancel={_handleCancel}
@@ -219,7 +227,7 @@ const Order = () => {
         show={updateModal}
         hide={() => setUpdateModal(false)}
         handleUpdate={_handleUpdate}
-      />
+      /> */}
     </div>
   );
 };

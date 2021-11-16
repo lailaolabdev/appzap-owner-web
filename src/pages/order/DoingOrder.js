@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import Container from "react-bootstrap/Container";
-import { Table, Button} from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import moment from "moment";
 import OrderNavbar from "./component/OrderNavbar";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
-
+import * as _ from "lodash"
+import Swal from 'sweetalert2'
 /**
  * import components
  */
@@ -24,10 +25,8 @@ const Order = () => {
    */
   const { match } = useReactRouter();
   const [updateModal, setUpdateModal] = useState(false);
-  const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [ordersDoing, setOrdersDoing] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [checkBoxAll, setcheckBoxAll] = useState(false);
 
   useEffect(() => {
     getData()
@@ -43,23 +42,25 @@ const Order = () => {
   }
 
   const _handleUpdate = async () => {
-    let _updateItems = ordersDoing.filter((item) => item.isChecked)
-    await updateOrderItem(_updateItems, SERVE_STATUS);
+    let _updateItems = ordersDoing.filter((item) => item.isChecked).map((i) => {
+      return {
+        ...i,
+        status: SERVE_STATUS,
+        id: i._id
+      }
+    })
+    let _resOrderUpdate = await updateOrderItem(_updateItems, SERVE_STATUS, match?.params?.id);
+    if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
+       let _newOrderItem = ordersDoing.filter((item) => !item.isChecked);
+       setOrdersDoing(_newOrderItem)
+       Swal.fire({
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 10000
+      })
+    }
   };
-
-  // const _handleCheckbox = async (event, id, index) => {
-  //   if (event?.target?.checked === true) {
-  //     let _addData = [];
-  //     _addData.push({ id: id, checked: event.target.checked, number: index });
-  //     setCheckedToUpdate([
-  //       ...checkedToUpdate,
-  //       ..._addData,
-  //     ]);
-  //   } else {
-  //     const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
-  //     setCheckedToUpdate(_removeId);
-  //   }
-  // };
 
   const _handleCheckbox = async (order) => {
     let _ordersDoing = [...ordersDoing]
@@ -75,52 +76,29 @@ const Order = () => {
     setOrdersDoing(_newOrdersDoing)
   };
 
-  // const _checkAll = (item) => {
-  //   if (item?.target?.checked === true) {
-  //     setcheckBoxAll(true)
-  //     let allData = []
-  //     for (let e = 0; e < ordersDoing?.length; e++) {
-  //       allData.push({ id: ordersDoing[e]?._id })
-  //     }
-  //     setCheckedToUpdate(allData)
-  //   } else {
-  //     setcheckBoxAll(false)
-  //     setCheckedToUpdate()
-  //     setCheckedToUpdate([])
-  //   }
-  // }
-
-    /**
-   * ເລືອກທຸກອັນ
-   */
-     const _checkAll = (item) => {
-      let _ordersDoing = [...ordersDoing]
-      let _newOrderItems;
-      if (item?.target?.checked) {
-        _newOrderItems = _ordersDoing.map((item) => {
-          return {
-            ...item,
-            isChecked: true
-          }
-        })
-      } else {
-        _newOrderItems = _ordersDoing.map((item) => {
-          return {
-            ...item,
-            isChecked: false
-          }
-        }) 
-      }
-      setOrdersDoing(_newOrderItems)
+  /**
+ * ເລືອກທຸກອັນ
+ */
+  const _checkAll = (item) => {
+    let _ordersDoing = [...ordersDoing]
+    let _newOrderItems;
+    if (item?.target?.checked) {
+      _newOrderItems = _ordersDoing.map((item) => {
+        return {
+          ...item,
+          isChecked: true
+        }
+      })
+    } else {
+      _newOrderItems = _ordersDoing.map((item) => {
+        return {
+          ...item,
+          isChecked: false
+        }
+      })
     }
-
-  // const _onSelectBox = (index) => {
-  //   for (let i = 0; i < checkedToUpdate?.length; i++) {
-  //     if (checkedToUpdate[i]?.number === index) {
-  //       return "true"
-  //     }
-  //   }
-  // }
+    setOrdersDoing(_newOrderItems)
+  }
 
   return (
     <div>
@@ -128,10 +106,10 @@ const Order = () => {
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
-          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)}/>} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} />
+          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} />
         </div>
         <div>
-          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={()=>_handleUpdate()}>ເສີບແລ້ວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdate()}>ເສີບແລ້ວ</Button>
         </div>
       </div>
       <Container fluid className="mt-3">
@@ -155,12 +133,12 @@ const Order = () => {
                 <tr key={index}>
                   <td  >
                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
-                    <Checkbox
-                      checked={order?.isChecked ? true : false}
-                      onChange={(e) => _handleCheckbox(order)}
-                      color="primary"
-                      inputProps={{ "aria-label": "secondary checkbox" }}
-                    />
+                      <Checkbox
+                        checked={order?.isChecked ? true : false}
+                        onChange={(e) => _handleCheckbox(order)}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
                     </div>
                   </td>
                   <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
@@ -169,7 +147,7 @@ const Order = () => {
                   <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
                   <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
                   <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
-                  
+
                   <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
