@@ -17,7 +17,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 import { END_POINT, COLOR_APP } from '../constants'
 import "./sidenav.css";
 import { getLocalData } from '../constants/api'
@@ -39,11 +39,11 @@ export default function Sidenav({ location, history }) {
     fetchData();
   }, [])
   // ========> check logOut
-  const socket = socketIOClient(END_POINT);
+  // const socket = socketIOClient(END_POINT);
   const [NewChackBill, setNewChackBill] = useState()
-  socket.on(`notificationCheckout${getTokken?.DATA?.storeId}`, data => {
-    setNewChackBill(data)
-  });
+  // socket.on(`notificationCheckout${getTokken?.DATA?.storeId}`, data => {
+  //   setNewChackBill(data)
+  // });
   const [checkBill, setcheckBill] = useState()
   useEffect(() => {
     const fetchData = async () => {
@@ -65,9 +65,9 @@ export default function Sidenav({ location, history }) {
 
   // ========> in orders
   const [reLoadData, setreLoadData] = useState()
-  socket.on(`createorder${getTokken?.DATA?.storeId}`, data => {
-    setreLoadData(data)
-  });
+  // socket.on(`createorder${getTokken?.DATA?.storeId}`, data => {
+  //   setreLoadData(data)
+  // });
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData()

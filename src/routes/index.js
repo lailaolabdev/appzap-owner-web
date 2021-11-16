@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import styled from "styled-components";
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 
 import Navbar from "../layouts/Navbar";
 import Sidenav from "../layouts/SideNav";
@@ -24,7 +24,7 @@ import AddOrder from '../pages/table/AddOrder';
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
 import CheckBill from "../pages/Notification/CheckBill";
-import { BillForChef } from "../pages/order/BillForChef";
+import { BillForChef } from "../pages/order/component/BillForChef";
 
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";

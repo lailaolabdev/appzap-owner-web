@@ -9,7 +9,7 @@ import { COLOR_APP, END_POINT, USER_KEY } from "../../../constants";
 import { getLocalData } from "../../../constants/api";
 import { getHeaders } from "../../../services/auth";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";

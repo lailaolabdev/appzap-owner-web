@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import useReactRouter from "use-react-router";
 import OrderNavbar from "./component/OrderNavbar";
 import Container from "react-bootstrap/Container";
@@ -68,10 +68,7 @@ const Order = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setorderItems] = useState()
   const [reLoadData, setreLoadData] = useState()
-  // const socket = socketIOClient(END_POINT_SEVER);
-  // socket.on(`createorder${userData?.data?.storeId}`, data => {
-  //   setreLoadData(data)
-  // });
+
   useEffect(() => {
     getData()
   }, [])
@@ -83,16 +80,17 @@ const Order = () => {
   /**
    * Subscribe Order Event
    */
-   useEffect(() => {
+  useEffect(() => {
     // as soon as the component is mounted, do the following tasks:
     // emit USER_ONLINE event
     console.log("ORDER WELCOME")
 
     // // subscribe to socket events
-    socket.on(`ORDER:${userData?.data?.storeId}`, (data)=>{
-      console.log({data})
-    }); 
-  })
+    console.log(`ORDER:${userData?.data?.storeId}`)
+    socket.on(`ORDER:${userData?.data?.storeId}`, (data) => {
+      console.log({ data })
+    });
+  }, [socket])
 
 
 
@@ -167,24 +165,26 @@ const Order = () => {
                 return (
                   <tr key={index}>
                     <td>
-                      <Checkbox
-                        checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
-                        onChange={(e) => _handleCheckbox(e, order?._id, index)}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                      />
+                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
+                        <Checkbox
+                          checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
+                          onChange={(e) => _handleCheckbox(e, order?._id, index)}
+                          color="primary"
+                          inputProps={{ "aria-label": "secondary checkbox" }}
+                        />
+                      </div>
                     </td>
-                    <td>{index + 1}</td>
-                    <td>{order?.name ?? "-"}</td>
-                    <td>{order?.quantity ?? "-"}</td>
-                    <td>{order?.orderId?.table_id ?? "-"}</td>
-                    <td>{order?.orderId?.code ?? "-"}</td>
-                    <td>{order?.note ?? "-"}</td>
-                    <td style={{ color: "red", fontWeight: "bold" }}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></div></td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></div></td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
+                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></div></td>
+                    <td style={{ color: "red", fontWeight: "bold" }}><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
                     <td>
-                      {order?.createdAt
+                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.createdAt
                         ? moment(order?.createdAt).format("HH:mm ")
-                        : "-"} ໂມງ
+                        : "-"} ໂມງ</p></div>
                     </td>
                   </tr>
                 )

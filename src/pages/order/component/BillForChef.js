@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Col, Image } from 'react-bootstrap';
-import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
-import { STORE } from '../../constants/api'
-import profileImage from "../../image/profile.png"
+import { END_POINT, URL_PHOTO_AW3 } from '../../../constants'
+
+
 export const BillForChef = () => {
     const { location } = useReactRouter()
     const [datanew, setData] = useState()
