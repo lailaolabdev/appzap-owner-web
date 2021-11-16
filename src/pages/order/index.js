@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import useReactRouter from "use-react-router";
-import OrderNavbar from "./component/OrderNavbar";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Nav, ButtonGroup, Form, Col } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
-// import socketIOClient from "socket.io-client";
 
 /**
  * import components
  */
 import UpdateModal from "./component/UpdateModal";
+import OrderNavbar from "./component/OrderNavbar";
 import CancelModal from "./component/CancelModal";
+
 /**
  * import function
  */
@@ -22,12 +22,13 @@ import { SocketContext } from '../../services/socket';
 
 const Order = () => {
   const { match } = useReactRouter();
-  const { number } = match?.params;
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
   const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [userData, setUserData] = useState({})
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderItems, setOrderItems] = useState()
 
   /**
   * useContext
@@ -38,59 +39,35 @@ const Order = () => {
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
+    console.log({ _localJson })
     setUserData(_localJson)
+    getData()
   }, [])
-  const _handleCancel = async () => {
-    await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
-    window.location.reload();
-  };
-  const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, DOING_STATUS, userData?.data?.storeId);
-    window.location.reload();
-  };
-  const _handleUpdateServe = async () => {
-    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
-    window.location.reload();
-  };
-  const _handleCheckbox = async (event, id, index) => {
-    if (event?.target?.checked === true) {
-      let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked, number: index });
-      setCheckedToUpdate([
-        ...checkedToUpdate,
-        ..._addData,
-      ]);
-    } else {
-      const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
-      setCheckedToUpdate(_removeId);
-    }
-  };
-  const [isLoading, setIsLoading] = useState(false);
-  const [orderItems, setorderItems] = useState()
-  const [reLoadData, setreLoadData] = useState()
 
-  useEffect(() => {
-    getData()
-  }, [])
-  useEffect(() => {
-    getData()
-  }, [reLoadData])
 
 
   /**
    * Subscribe Order Event
    */
   useEffect(() => {
-    // as soon as the component is mounted, do the following tasks:
-    // emit USER_ONLINE event
     console.log("ORDER WELCOME")
 
-    // // subscribe to socket events
-    console.log(`ORDER:${userData?.data?.storeId}`)
     socket.on(`ORDER:${userData?.data?.storeId}`, (data) => {
       console.log({ data })
+      setOrderItems(data)
     });
-  }, [socket])
+    return () => {
+      socket.off(`ORDER:${userData?.data?.storeId}`, () => {
+        console.log(`BYE BYE ORDER:${match?.params?.storeId}`)
+      });
+    };
+  }, [socket, userData])
+
+
+  useEffect(() => {
+    // _onSelectBox()
+  }, [checkedToUpdate])
+
 
 
 
@@ -99,9 +76,43 @@ const Order = () => {
     await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${match?.params?.id}`, {
       method: "GET",
     }).then(response => response.json())
-      .then(json => setorderItems(json));
+      .then(json => setOrderItems(json));
     await setIsLoading(false);
   }
+
+
+  const _handleCancel = async () => {
+    let _updateItems = orderItems.filter((item) => item.isChecked)
+    await updateOrderItem(_updateItems, CANCEL_STATUS);
+  };
+
+  const _handleUpdate = async () => {
+    let _updateItems = orderItems.filter((item) => item.isChecked)
+    await updateOrderItem(_updateItems, DOING_STATUS, userData?.data?.storeId);
+  };
+
+  const _handleUpdateServe = async () => {
+    let _updateItems = orderItems.filter((item) => item.isChecked)
+    await updateOrderItem(_updateItems, SERVE_STATUS);
+  };
+
+  const _handleCheckbox = async (order) => {
+    let _orderItems = [...orderItems]
+    let _newOrderItems = _orderItems.map((item) => {
+      if (item._id == order._id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked
+        }
+      } else return item
+    })
+
+    setOrderItems(_newOrderItems)
+  };
+
+
+
+
   const _prinbill = async () => {
     let billId = []
     for (let i = 0; i < checkedToUpdate?.length; i++) {
@@ -110,27 +121,34 @@ const Order = () => {
     await window.open(`/BillForChef/?id=${billId}`);
     _handleUpdate()
   }
+
+  /**
+   * ເລືອກທຸກອັນ
+   */
   const _checkAll = (item) => {
-    if (item?.target?.checked === true) {
-      setcheckBoxAll(true)
-      let allData = []
-      for (let e = 0; e < orderItems?.length; e++) {
-        allData.push({ id: orderItems[e]?._id })
-      }
-      setCheckedToUpdate(allData)
+    console.log(item?.target?.checked)
+    let _orderItems = [...orderItems]
+    let _newOrderItems;
+    if (item?.target?.checked) {
+      _newOrderItems = _orderItems.map((item) => {
+        return {
+          ...item,
+          isChecked: true
+        }
+      })
     } else {
-      setcheckBoxAll(false)
-      setCheckedToUpdate()
-      setCheckedToUpdate([])
+      _newOrderItems = _orderItems.map((item) => {
+        return {
+          ...item,
+          isChecked: false
+        }
+      }) 
     }
+    setOrderItems(_newOrderItems)
   }
-  const _onSelectBox = (index) => {
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      if (checkedToUpdate[i]?.number === index) {
-        return "true"
-      }
-    }
-  }
+
+
+
   return (
     <div style={{}}>
       <OrderNavbar />
@@ -167,8 +185,8 @@ const Order = () => {
                     <td>
                       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                         <Checkbox
-                          checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
-                          onChange={(e) => _handleCheckbox(e, order?._id, index)}
+                          checked={order?.isChecked ? true : false}
+                          onChange={(e) => _handleCheckbox(order)}
                           color="primary"
                           inputProps={{ "aria-label": "secondary checkbox" }}
                         />
