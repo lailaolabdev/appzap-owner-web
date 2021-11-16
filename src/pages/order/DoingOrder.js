@@ -49,7 +49,7 @@ const Order = () => {
         id: i._id
       }
     })
-    let _resOrderUpdate = await updateOrderItem(_updateItems, SERVE_STATUS, match?.params?.id);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, match?.params?.id);
     if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
        let _newOrderItem = ordersDoing.filter((item) => !item.isChecked);
        setOrdersDoing(_newOrderItem)

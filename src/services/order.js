@@ -73,7 +73,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (orderItems, status = CANCEL_STATUS, storeId) => {
+export const updateOrderItem = async (orderItems, storeId) => {
   try {
     console.log({orderItems})
     const url = `${END_POINT}/v2/updateManyOrderItems`;

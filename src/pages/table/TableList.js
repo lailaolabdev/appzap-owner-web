@@ -268,7 +268,15 @@ export default function TableList() {
       showConfirmButton: false,
       timer: 1800
     })
-    await updateOrderItem(checkedToUpdate, CANCEL_STATUS);
+
+    let _updateItems = checkedToUpdate.map((i) => {
+      return {
+        ...i,
+        status:'CANCELED',
+        id: i._id
+      }
+    })
+    await updateOrderItem(_updateItems,match?.params?.storeId);
     let newMenuOrder = newData.map((order) => {
       let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
       if (isMatched.length > 0) {
