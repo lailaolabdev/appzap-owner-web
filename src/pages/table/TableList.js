@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef, useContext, useCallback } from "react";
 import useReactRouter from "use-react-router";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
@@ -105,11 +105,23 @@ export default function TableList() {
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
 
+
+  const handleInviteAccepted = useCallback((data) => {
+    console.log("SDSDSD")
+    console.log({data})
+  }, []);
+
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
     setUserData(_localJson)
     _getTable()
+
+
+    return () => {
+      console.log(`TABLE:${match?.params?.storeId}`)
+      socket.removeAllListeners();
+    };
   }, [])
 
 
@@ -167,11 +179,6 @@ export default function TableList() {
       })
     });
 
-    return () => {
-      socket.off(`TABLE:${match?.params?.storeId}`, () => {
-        console.log(`BYE BYE TABLE:${match?.params?.storeId}`)
-      });
-    };
   }, [socket]);
 
 

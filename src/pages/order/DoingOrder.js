@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
-import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import { Table, Button} from "react-bootstrap";
 import moment from "moment";
@@ -24,8 +23,6 @@ const Order = () => {
    * routes
    */
   const { match } = useReactRouter();
-  const { number } = match?.params;
-  const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [ordersDoing, setOrdersDoing] = useState();
@@ -35,6 +32,7 @@ const Order = () => {
   useEffect(() => {
     getData()
   }, [])
+
   const getData = async (tokken) => {
     await setIsLoading(true);
     await fetch(END_POINT + `/orderItems?status=DOING&&storeId=${match?.params?.id}`, {
@@ -43,45 +41,87 @@ const Order = () => {
       .then(json => setOrdersDoing(json));
     await setIsLoading(false);
   }
+
   const _handleUpdate = async () => {
-    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
-    window.location.reload();
+    let _updateItems = ordersDoing.filter((item) => item.isChecked)
+    await updateOrderItem(_updateItems, SERVE_STATUS);
   };
-  const _handleCheckbox = async (event, id, index) => {
-    if (event?.target?.checked === true) {
-      let _addData = [];
-      _addData.push({ id: id, checked: event.target.checked, number: index });
-      setCheckedToUpdate([
-        ...checkedToUpdate,
-        ..._addData,
-      ]);
-    } else {
-      const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
-      setCheckedToUpdate(_removeId);
-    }
+
+  // const _handleCheckbox = async (event, id, index) => {
+  //   if (event?.target?.checked === true) {
+  //     let _addData = [];
+  //     _addData.push({ id: id, checked: event.target.checked, number: index });
+  //     setCheckedToUpdate([
+  //       ...checkedToUpdate,
+  //       ..._addData,
+  //     ]);
+  //   } else {
+  //     const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
+  //     setCheckedToUpdate(_removeId);
+  //   }
+  // };
+
+  const _handleCheckbox = async (order) => {
+    let _ordersDoing = [...ordersDoing]
+    let _newOrdersDoing = _ordersDoing.map((item) => {
+      if (item._id == order._id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked
+        }
+      } else return item
+    })
+
+    setOrdersDoing(_newOrdersDoing)
   };
-  const _checkAll = (item) => {
-    if (item?.target?.checked === true) {
-      setcheckBoxAll(true)
-      let allData = []
-      for (let e = 0; e < ordersDoing?.length; e++) {
-        allData.push({ id: ordersDoing[e]?._id })
+
+  // const _checkAll = (item) => {
+  //   if (item?.target?.checked === true) {
+  //     setcheckBoxAll(true)
+  //     let allData = []
+  //     for (let e = 0; e < ordersDoing?.length; e++) {
+  //       allData.push({ id: ordersDoing[e]?._id })
+  //     }
+  //     setCheckedToUpdate(allData)
+  //   } else {
+  //     setcheckBoxAll(false)
+  //     setCheckedToUpdate()
+  //     setCheckedToUpdate([])
+  //   }
+  // }
+
+    /**
+   * ເລືອກທຸກອັນ
+   */
+     const _checkAll = (item) => {
+      let _ordersDoing = [...ordersDoing]
+      let _newOrderItems;
+      if (item?.target?.checked) {
+        _newOrderItems = _ordersDoing.map((item) => {
+          return {
+            ...item,
+            isChecked: true
+          }
+        })
+      } else {
+        _newOrderItems = _ordersDoing.map((item) => {
+          return {
+            ...item,
+            isChecked: false
+          }
+        }) 
       }
-      setCheckedToUpdate(allData)
-    } else {
-      setcheckBoxAll(false)
-      setCheckedToUpdate()
-      setCheckedToUpdate([])
+      setOrdersDoing(_newOrderItems)
     }
-  }
-  const _onSelectBox = (index) => {
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      if (checkedToUpdate[i]?.number === index) {
-        return "true"
-      }
-    }
-  }
-  console.log("object", ordersDoing)
+
+  // const _onSelectBox = (index) => {
+  //   for (let i = 0; i < checkedToUpdate?.length; i++) {
+  //     if (checkedToUpdate[i]?.number === index) {
+  //       return "true"
+  //     }
+  //   }
+  // }
+
   return (
     <div>
       {isLoading ? <Loading /> : ""}
@@ -116,8 +156,8 @@ const Order = () => {
                   <td  >
                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                     <Checkbox
-                      checked={_onSelectBox(index) ? _onSelectBox(index) : checkBoxAll}
-                      onChange={(e) => _handleCheckbox(e, order?._id, index)}
+                      checked={order?.isChecked ? true : false}
+                      onChange={(e) => _handleCheckbox(order)}
                       color="primary"
                       inputProps={{ "aria-label": "secondary checkbox" }}
                     />

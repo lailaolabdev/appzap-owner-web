@@ -25,7 +25,6 @@ const Order = () => {
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-  const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
   const [orderItems, setOrderItems] = useState()
@@ -36,6 +35,9 @@ const Order = () => {
   const socket = useContext(SocketContext);
 
 
+  /**
+   * Initial Component
+   */
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
@@ -62,14 +64,7 @@ const Order = () => {
       });
     };
   }, [socket, userData])
-
-
-  useEffect(() => {
-    // _onSelectBox()
-  }, [checkedToUpdate])
-
-
-
+  
 
   const getData = async (tokken) => {
     await setIsLoading(true);
@@ -113,6 +108,9 @@ const Order = () => {
 
 
 
+  /**
+   * ພິມບິນ
+   */
   const _prinbill = async () => {
     let billId = []
     for (let i = 0; i < checkedToUpdate?.length; i++) {
