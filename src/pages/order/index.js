@@ -42,7 +42,6 @@ const Order = () => {
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
     const _localJson = JSON.parse(ADMIN)
-    console.log({ _localJson })
     setUserData(_localJson)
     getData()
   }, [])
@@ -53,10 +52,7 @@ const Order = () => {
    * Subscribe Order Event
    */
   useEffect(() => {
-    console.log("ORDER WELCOME")
-
     socket.on(`ORDER:${userData?.data?.storeId}`, (data) => {
-      console.log({ data })
       setOrderItems(data)
     });
     return () => {
@@ -132,7 +128,6 @@ const Order = () => {
    * ເລືອກທຸກອັນ
    */
   const _checkAll = (item) => {
-    console.log(item?.target?.checked)
     let _orderItems = [...orderItems]
     let _newOrderItems;
     if (item?.target?.checked) {

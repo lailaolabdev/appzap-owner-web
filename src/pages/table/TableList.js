@@ -119,7 +119,6 @@ export default function TableList() {
 
 
     return () => {
-      console.log(`TABLE:${match?.params?.storeId}`)
       socket.removeAllListeners();
     };
   }, [])
@@ -165,7 +164,6 @@ export default function TableList() {
   useEffect(() => {
     // subscribe to socket events
     socket.on(`TABLE:${match?.params?.storeId}`, (data) => {
-      console.log({ data })
       setTableList(data)
       Swal.fire({
         icon: 'success',

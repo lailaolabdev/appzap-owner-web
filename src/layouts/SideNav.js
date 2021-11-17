@@ -178,6 +178,28 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
+
+      <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faHome}
+              style={{
+                color:
+                  selected === "tables"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ສະຖານະຂອງໂຕະ
+          </NavText>
+        </NavItem>
         <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#FFFFFF" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
@@ -203,6 +225,7 @@ export default function Sidenav({ location, history }) {
             ອໍເດີ
           </NavText>
         </NavItem>
+        
         <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
@@ -226,27 +249,6 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ແຈ້ງເຕືອນ Checkbill
-          </NavText>
-        </NavItem>
-        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faHome}
-              style={{
-                color:
-                  selected === "tables"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ສະຖານະຂອງໂຕະ
           </NavText>
         </NavItem>
         <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
