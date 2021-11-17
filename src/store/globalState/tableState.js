@@ -1,23 +1,20 @@
-import { useState, useMemo, useCallback, useContext, useEffect } from "react";
-import socketio from "socket.io-client";
+import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2'
-import { END_POINT } from "../../constants";
+import { END_POINT, SERVE_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
-import { SocketContext } from "../../services/socket";
 import { getHeaders } from "../../services/auth";
+import { updateOrderItem } from "../../services/order";
+import { socket } from '../../services/socket'
 
 export const useTableState = () => {
-
-    const socket = socketio.connect(END_POINT);
 
     const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
     const [tableList, setTableList] = useState([]);
     const [openTableData, setOpenTableData] = useState([]);
     const [tableOrders, setTableOrders] = useState([]);
+    const [orderItems, setOrderItems] = useState([]);
     const [selectedTable, setSelectedTable] = useState();
-
-
 
     const initialTableSocket = useMemo(
         () => async () => {
@@ -28,10 +25,30 @@ export const useTableState = () => {
                     return table.isOpened && !table.staffConfirm
                 })
                 setOpenTableData(_openTable)
+                setTableList(data)
+                Swal.fire({
+                    icon: 'success',
+                    title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
+                    showConfirmButton: false,
+                    timer: 10000
+                })
             });
         },
         []
     );
+
+    /**
+    * Modify Order
+    */
+    useEffect(() => {
+        let orderItems = []
+        for (let i = 0; i < tableOrders?.length; i++) {
+            for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
+                orderItems.push(tableOrders[i]?.order_item[k])
+            }
+        }
+        setOrderItems(orderItems)
+    }, [tableOrders])
 
     const getTableDataStore = useMemo(
         () => async () => {
@@ -54,89 +71,143 @@ export const useTableState = () => {
     );
 
     /**
-  * Get Table Orders
-  */
+    * Get Table Orders
+    */
     const getTableOrders = async (table) => {
         setIsTableOrderLoading(true)
         const url = END_POINT + `/orders?code=${table?.code}`;
         let res = await fetch(url)
             .then(response => response.json())
             .then(response => {
-                console.log({response})
+                console.log({ response })
                 setTableOrders(response)
                 setIsTableOrderLoading(false)
             })
         return res
     }
 
-     /**
-   * Select Table
-   * @param {*} table 
-   */
-  const onSelectTable = async (table) => {
-    setSelectedTable(table)
-    await getTableOrders(table)
-  }
+    /**
+    * Select Table
+    * @param {*} table 
+    */
+    const onSelectTable = async (table) => {
+        setSelectedTable(table)
+        await getTableOrders(table)
+    }
 
 
-  /**
-   * ເປີດໂຕະ
-   */
-   const openTable = async () => {
-    await axios
-      .put(
-        END_POINT + `/updateGenerates/${selectedTable?.code}`,
-        {
-          isOpened: true,
-          staffConfirm: true
-        },
-        {
-          headers: await getHeaders(),
-        }
-      ).then(async function (response) {
-        //update Table
-        let _tableList = [...tableList]
-        let _newTable = _tableList.map((table) => {
-          if (table?.code == selectedTable?.code) return {
-            ...table,
-            isOpened: true,
-            staffConfirm: true
-          }
-          else return table
-        })
-        setTableList(_newTable)
-        setSelectedTable({
-          ...selectedTable,
-          isOpened: true,
-          staffConfirm: true
-        })
-        Swal.fire({
-          icon: 'success',
-          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
-          showConfirmButton: false,
-          timer: 1800
-        })
-      })
-      .catch(function (error) {
-        Swal.fire({
-            icon: 'erroe',
-            title: "ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ",
-            showConfirmButton: false,
-            timer: 1800
-          })
-      });
-  }
+    /**
+     * ເປີດໂຕະ
+     */
+    const openTable = async () => {
+        await axios
+            .put(
+                END_POINT + `/updateGenerates/${selectedTable?.code}`,
+                {
+                    isOpened: true,
+                    staffConfirm: true
+                },
+                {
+                    headers: await getHeaders(),
+                }
+            ).then(async function (response) {
+                //update Table
+                let _tableList = [...tableList]
+                let _newTable = _tableList.map((table) => {
+                    if (table?.code == selectedTable?.code) return {
+                        ...table,
+                        isOpened: true,
+                        staffConfirm: true
+                    }
+                    else return table
+                })
+                let _openTable = _newTable.filter((table) => {
+                    return table.isOpened && !table.staffConfirm
+                })
+                console.log({_openTable})
+                setOpenTableData(_openTable)
+                setTableList(_newTable)
+                setSelectedTable({
+                    ...selectedTable,
+                    isOpened: true,
+                    staffConfirm: true
+                })
+                Swal.fire({
+                    icon: 'success',
+                    title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+                    showConfirmButton: false,
+                    timer: 1800
+                })
+            })
+            .catch(function (error) {
+                Swal.fire({
+                    icon: 'erroe',
+                    title: "ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ",
+                    showConfirmButton: false,
+                    timer: 1800
+                })
+            });
+    }
 
-   /**
-   * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
-   */
+    /**
+    * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
+    */
     const resetTableOrder = () => {
         getTableOrders()
         getTableDataStore()
         setTableOrders([])
         setTimeout(() => { setSelectedTable() }, 100)
-      }
+    }
 
+
+    const onChangeMenuCheckbox = async (order) => {
+        let _orderItems = [...orderItems]
+        let _newOrderItems = _orderItems.map((item) => {
+            if (item._id == order._id) {
+                return {
+                    ...item,
+                    isChecked: !item.isChecked
+                }
+            } else return item
+        })
+        setOrderItems(_newOrderItems)
+    };
+
+
+    /**
+    * ອັບເດດສະຖານະອໍເດີ
+    */
+    const handleUpdateOrderStatus = async (status, storeId) => {
+
+        console.log({ orderItems })
+        let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
+            return {
+                ...i,
+                status,
+                id: i._id
+            }
+        })
+        let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
+        if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
+            let _newOrderItem = orderItems.map((item) => {
+                if (item.isChecked) {
+                    return {
+                        ...item,
+                        status,
+                        isChecked: status != SERVE_STATUS
+                    }
+                }
+                else return item
+            });
+            setOrderItems(_newOrderItem)
+            Swal.fire({
+                icon: 'success',
+                title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+                showConfirmButton: false,
+                timer: 10000
+            })
+        }
+    };
 
 
     return {
@@ -144,11 +215,14 @@ export const useTableState = () => {
         tableList,
         openTableData,
         tableOrders,
+        orderItems,
         selectedTable,
         getTableOrders,
         openTable,
         getTableDataStore,
         onSelectTable,
+        onChangeMenuCheckbox,
+        handleUpdateOrderStatus,
         resetTableOrder,
         initialTableSocket
     };

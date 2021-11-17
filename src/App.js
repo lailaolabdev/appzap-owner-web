@@ -3,10 +3,6 @@ import Routes from "./routes";
 import { SocketContext, socket } from './services/socket';
 import { StateProvider } from "./store";
 function App() {
-  return <StateProvider>
-    <SocketContext.Provider value={socket}>
-      <Routes />
-    </SocketContext.Provider>
-  </StateProvider>;
+  return <StateProvider><Routes /></StateProvider>;
 }
 export default App;

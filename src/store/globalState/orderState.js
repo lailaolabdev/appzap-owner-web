@@ -1,12 +1,9 @@
 import { useState, useMemo, useCallback, useContext, useEffect } from "react";
-import socketio from "socket.io-client";
 import { END_POINT } from "../../constants";
 import { getLocalData } from "../../constants/api";
-// import { makeApiRequest } from "../utils";
+import { socket } from '../../services/socket'
 
 export const useOrderState = () => {
-
-    const socket = socketio.connect(END_POINT);
 
     const [userData, setUserData] = useState()
     const [isLoading, setIsLoading] = useState(true);
@@ -25,15 +22,17 @@ export const useOrderState = () => {
         []
     );
 
+
+
     const getOrderItemsStore = async (status) => {
         await setIsLoading(true);
         let _userData = await getLocalData();
         await fetch(END_POINT + `/orderItems?status=${status}&&storeId=${_userData?.DATA?.storeId}`, {
-          method: "GET",
+            method: "GET",
         }).then(response => response.json())
-          .then(json => setOrderItems(json));
+            .then(json => setOrderItems(json));
         await setIsLoading(false);
-      }
+    }
 
     return {
         isLoading,

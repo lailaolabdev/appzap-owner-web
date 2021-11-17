@@ -20,10 +20,6 @@ export default function NavBar() {
   const [messageData, setmessageData] = useState()
 
 
-  /**
-    * useContext
-    */
-   const socket = useContext(SocketContext);
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
@@ -72,22 +68,6 @@ export default function NavBar() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-  /**
-   * Subcribe Socket
-   */
-   useEffect(() => {
-    // subscribe to socket events
-    socket.on(`CHAT:${userData?.data?.storeId}`, (data)=>{
-      console.log({data})
-    }); 
-
-    return () => {
-      socket.off(`CHAT:${match?.params?.storeId}`, ()=>{
-        console.log(`BYE BYE TABLE:${match?.params?.storeId}`)
-      });
-    };
-  }, [socket,userData]);
 
 
 
