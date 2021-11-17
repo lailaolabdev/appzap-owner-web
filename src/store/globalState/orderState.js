@@ -1,6 +1,8 @@
 import { useState, useMemo, useCallback, useContext, useEffect } from "react";
+import Swal from 'sweetalert2'
 import { END_POINT } from "../../constants";
 import { getLocalData } from "../../constants/api";
+import { updateOrderItem } from "../../services/order";
 import { socket } from '../../services/socket'
 
 export const useOrderState = () => {
@@ -34,11 +36,76 @@ export const useOrderState = () => {
         await setIsLoading(false);
     }
 
+
+  const handleUpdateOrderStatus = async (status,storeId) => {
+    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
+      return {
+        ...i,
+        status,
+        id: i._id
+      }
+    })
+    let _resOrderUpdate = await updateOrderItem(_updateItems,storeId);
+    if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
+      let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+      setOrderItems(_newOrderItem)
+      Swal.fire({
+       icon: 'success',
+       title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+       showConfirmButton: false,
+       timer: 10000
+     })
+   }
+  };
+
+
+  const handleCheckbox = async (order) => {
+    let _orderItems = [...orderItems]
+    let _newOrderItems = _orderItems.map((item) => {
+      if (item._id == order._id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked
+        }
+      } else return item
+    })
+
+    setOrderItems(_newOrderItems)
+  };
+
+
+  /**
+   * ເລືອກທຸກອໍເດີ
+   */
+   const checkAllOrders = (item) => {
+    let _orderItems = [...orderItems]
+    let _newOrderItems;
+    if (item?.target?.checked) {
+      _newOrderItems = _orderItems.map((item) => {
+        return {
+          ...item,
+          isChecked: true
+        }
+      })
+    } else {
+      _newOrderItems = _orderItems.map((item) => {
+        return {
+          ...item,
+          isChecked: false
+        }
+      }) 
+    }
+    // setOrderItems(_newOrderItems)
+  }
+
     return {
         isLoading,
         userData,
         orderItems,
         getOrderItemsStore,
+        handleUpdateOrderStatus,
+        handleCheckbox,
+        checkAllOrders,
         initialOrderSocket
     };
 };
