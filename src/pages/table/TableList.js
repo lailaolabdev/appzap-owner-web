@@ -99,7 +99,7 @@ export default function TableList() {
   const [generateCode, setGenerateCode] = useState();
   const [idTable, setTableCode] = useState("");
   const [dataOrder, setDataOrder] = useState([])
-  const [newData, setnewData] = useState([])
+  const [orderItems, setOrderItems] = useState([])
   const [tableList, setTableList] = useState([])
   const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [CheckStatus, setCheckStatus] = useState()
@@ -108,7 +108,7 @@ export default function TableList() {
 
   const handleInviteAccepted = useCallback((data) => {
     console.log("SDSDSD")
-    console.log({data})
+    console.log({ data })
   }, []);
 
   useEffect(() => {
@@ -129,13 +129,13 @@ export default function TableList() {
    * Modify Order
    */
   useEffect(() => {
-    let newData = []
+    let orderItems = []
     for (let i = 0; i < dataOrder?.length; i++) {
       for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
-        newData.push(dataOrder[i]?.order_item[k])
+        orderItems.push(dataOrder[i]?.order_item[k])
       }
     }
-    setnewData(newData)
+    setOrderItems(orderItems)
   }, [dataOrder])
 
 
@@ -144,18 +144,18 @@ export default function TableList() {
    * Modify Order Status
    */
   useEffect(() => {
-    if (!newData) return;
-    let _newData = [...newData]
+    if (!orderItems) return;
+    let _orderItems = [...orderItems]
     let _checkDataStatus = []
     let _checkDataStatusCancel = []
-    _newData.map((nData) => {
+    _orderItems.map((nData) => {
       if (nData.status === "SERVED") _checkDataStatus.push(nData?.status)
       if (nData.status === "CANCELED") _checkDataStatusCancel.push(nData?.status)
     })
 
     setCheckStatusCancel(_checkDataStatusCancel)
     setCheckStatus(_checkDataStatus)
-  }, [newData])
+  }, [orderItems])
 
 
 
@@ -163,11 +163,7 @@ export default function TableList() {
    * Get Table
    */
   useEffect(() => {
-    // as soon as the component is mounted, do the following tasks:
-    // emit USER_ONLINE event
-    // socket.emit("USER_ONLINE", userId); 
-
-    // // subscribe to socket events
+    // subscribe to socket events
     socket.on(`TABLE:${match?.params?.storeId}`, (data) => {
       console.log({ data })
       setTableList(data)
@@ -245,115 +241,63 @@ export default function TableList() {
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
 
-  const _onChangeMenuCheckbox = async (event, id, index) => {
-    if (event?.target?.checked === true) {
-      setCheckedToUpdate([
-        ...checkedToUpdate,
-        { id: id, checked: event.target.checked, number: index },
-      ]);
-    } else {
-      const _removeId = await checkedToUpdate?.filter((item) => item.id !== id);
-      setCheckedToUpdate(_removeId);
-
-    }
+  const _onChangeMenuCheckbox = async (order) => {
+    let _orderItems = [...orderItems]
+    let _newOrderItems = _orderItems.map((item) => {
+      if (item._id == order._id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked
+        }
+      } else return item
+    })
+    setOrderItems(_newOrderItems)
   };
 
-  /**
-   * ຍົກເລີກອໍເດີ
-   */
-  const _handleCancel = async () => {
-    if (checkedToUpdate.length == 0) Swal.fire({
-      icon: 'warning',
-      title: "ເລືອກເມນູອໍເດີກ່ອນຍົກເລີກ",
-      showConfirmButton: false,
-      timer: 1800
-    })
 
-    let _updateItems = checkedToUpdate.map((i) => {
+  /**
+   * ເຊັກເບິ່ງວ່າໄອເທັມຖືກເລືອກບໍ
+   * @returns 
+   */
+  const _orderIsChecked = () => {
+    let isIncluded = orderItems.filter((item) => item.isChecked)
+    return isIncluded.length == 0;
+  }
+
+/**
+ * ອັບເດດສະຖານະອໍເດີ
+ */
+  const _handleUpdateOrderStatus = async (status) => {
+
+    console.log({ orderItems })
+    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
       return {
         ...i,
-        status:'CANCELED',
+        status,
         id: i._id
       }
     })
-    await updateOrderItem(_updateItems,match?.params?.storeId);
-    let newMenuOrder = newData.map((order) => {
-      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
-      if (isMatched.length > 0) {
-        return {
-          ...order,
-          status: 'CANCELED'
+    let _resOrderUpdate = await updateOrderItem(_updateItems, match?.params?.storeId);
+    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
+      let _newOrderItem = orderItems.map((item) => {
+        if (item.isChecked) {
+          return {
+            ...item,
+            status,
+            isChecked: status!=SERVE_STATUS 
+          }
         }
-      } else return order
-    })
-    setnewData(newMenuOrder)
-    setCheckedToUpdate([])
-  };
-
-
-  /**
-     * ສົ່ງໄປຫາເຮືອນຄົວ
-     */
-  const _updateToKitchen = async () => {
-    if (checkedToUpdate.length == 0) {
+        else return item
+      });
+      setOrderItems(_newOrderItem)
       Swal.fire({
-        icon: 'warning',
-        title: "ເລືອກເມນູອໍເດີກ່ອນສົ່ງໄປເຮືອນຄົວ",
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
-        timer: 1800
+        timer: 10000
       })
-      return
     }
-    let billId = []
-    for (let i = 0; i < checkedToUpdate?.length; i++) {
-      billId.push(checkedToUpdate[i]?.id)
-    }
-
-    await updateOrderItem(checkedToUpdate, DOING_STATUS);
-
-    let newMenuOrder = newData.map((order) => {
-      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
-      if (isMatched.length > 0) {
-        return {
-          ...order,
-          status: 'DOING'
-        }
-      } else return order
-    })
-    setnewData(newMenuOrder)
-    setCheckedToUpdate([])
-    await window.open(`/BillForChef/?id=${billId}`);
-  }
-
-
-  /**
-   * ອັບເດດອໍເດີເປັນເຊີບແລ້ວ
-   */
-  const _updateToServe = async () => {
-    if (checkedToUpdate.length == 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: "ເລືອກເມນູອໍເດີກ່ອນອັບເດດ",
-        showConfirmButton: false,
-        timer: 1800
-      })
-      return
-    }
-    await updateOrderItem(checkedToUpdate, SERVE_STATUS);
-    let newMenuOrder = newData.map((order) => {
-      let isMatched = checkedToUpdate.filter((checkOrder) => checkOrder.id == order._id)
-      if (isMatched.length > 0) {
-        return {
-          ...order,
-          status: SERVE_STATUS
-        }
-      } else return order
-    })
-    setnewData(newMenuOrder)
-    setCheckedToUpdate([])
   };
-
-
 
   const _checkAll = (item) => {
     if (item?.target?.checked === true) {
@@ -453,7 +397,7 @@ export default function TableList() {
         />
         {tableId}  ({generateCode})
         <div style={{ display: 'none' }}>
-          <ComponentToPrintBillInTable ref={componentRef} newData={newData} tableId={tableId} generateCode={generateCode} firstname={userData?.data?.firstname} userData={userData} />
+          <ComponentToPrintBillInTable ref={componentRef} orderItems={orderItems} tableId={tableId} generateCode={generateCode} firstname={userData?.data?.firstname} userData={userData} />
         </div>
       </div>
       {isLoading ? <Loading /> : ""}
@@ -559,17 +503,17 @@ export default function TableList() {
                   <Col sm={12} style={{ backgroundColor: "#eee" }}>
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {tableData?.table_id} </p>
-                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ລະຫັດເຂົ້າໂຕະ:  {tableData?.code}</p>
-                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ເວລາເປີດ:   {moment(tableData?.createdAt).format("HH:mm:ss A")}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {tableData?.code}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(tableData?.createdAt).format("HH:mm:ss A")}</p>
                   </Col>
                 </Row>
-                <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15}}>
+                <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
                   <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                   </div>
                   <div style={{
-                    display: CheckStatus?.length === newData?.length - CheckStatusCancel?.length ?
-                      (CheckStatus?.length !== newData?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
+                    display: CheckStatus?.length === orderItems?.length - CheckStatusCancel?.length ?
+                      (CheckStatus?.length !== orderItems?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
                       : "none"
                   }}>
                     {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
@@ -585,11 +529,11 @@ export default function TableList() {
                     </div>
                   </div>
                 </div>
-                <div style={{ display: checkedToUpdate.length == 0 ? "none" : '' }}>
+                <div style={{ display: _orderIsChecked() ? "none" : '' }}>
                   <div>ອັບເດດເປັນສະຖານະ: </div>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleCancel()}>ຍົກເລີກ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _updateToKitchen()}>ສົ່ງໄປຄົວ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _updateToServe()}>ເສີບແລ້ວ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(CANCEL_STATUS)}>ຍົກເລີກ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(DOING_STATUS)}>ສົ່ງໄປຄົວ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => _handleUpdateOrderStatus(SERVE_STATUS)}>ເສີບແລ້ວ</Button>
                 </div>
                 <div style={padding_white} />
                 <div>
@@ -608,14 +552,15 @@ export default function TableList() {
                       </tr>
                     </thead>
                     <tbody>
-                      {newData ? newData.map((orderItem, index) => (
+                      {orderItems ? orderItems.map((orderItem, index) => (
                         <tr key={"order" + index} style={{ borderBottom: "1px solid #eee" }}>
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 disabled={orderItem?.status === "SERVED"}
-                                checked={_onSelectOrderMenu(index)}
-                                onChange={(e) => _onChangeMenuCheckbox(e, orderItem?._id, index)}
+                                // checked={_onSelectOrderMenu(index)}
+                                checked={orderItem?.isChecked ? true : false}
+                                onChange={(e) => _onChangeMenuCheckbox(orderItem)}
                                 color="primary"
                                 inputProps={{ "aria-label": "secondary checkbox" }}
                               />
@@ -643,9 +588,9 @@ export default function TableList() {
                       )) : ""}
                     </tbody>
                   </Table>
-                  {newData.length==0&&<div className="text-center">
-                   <div style={{marginTop:50,fontSize:50}}> ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ</div>
-                    </div>}
+                  {orderItems.length == 0 && <div className="text-center">
+                    <div style={{ marginTop: 50, fontSize: 50 }}> ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ</div>
+                  </div>}
                 </div>
                 <div style={{ marginBottom: 100 }} />
               </Container>
@@ -698,7 +643,7 @@ export default function TableList() {
       </div>
 
       <OrderCheckOut
-        data={newData}
+        data={orderItems}
         tableData={tableData}
         show={menuItemDetailModal}
         resetTableOrder={_resetTableOrder}
@@ -709,11 +654,11 @@ export default function TableList() {
         hide={() => setShowOrderModal(false)}
         handleUpdate={_handleUpdate}
       /> */}
-      <CancelModal
+      {/* <CancelModal
         show={cancelOrderModal}
         hide={() => setCancelOrderModal(false)}
         handleCancel={_handleCancel}
-      />
+      /> */}
 
       <UserCheckoutModal
         show={checkoutModel}
