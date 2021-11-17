@@ -23,9 +23,7 @@ import { QRCode } from "react-qrcode-logo";
  * component
  * */
 import Loading from "../../components/Loading";
-import UpdateOrderModal from "./components/UpdateOrderModal";
 import UserCheckoutModal from "./components/UserCheckoutModal";
-import CancelModal from "./components/CancelModal";
 import OrderCheckOut from "./components/OrderCheckOut";
 import { orderStatus } from "../../helpers";
 import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
@@ -51,7 +49,7 @@ export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
   const number = match?.params?.number;
-  let activeTableId = match?.params?.tableId;
+  const activeTableId = match?.params?.tableId;
 
   const {
     isTableOrderLoading,
@@ -252,7 +250,6 @@ export default function TableList() {
                       (CheckStatus?.length !== orderItems?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
                       : "none"
                   }}>
-                    {/* <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _goToAddOrder(tableId, generateCode)}>ເພີ່ມອໍເດີ</Button> */}
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "center" }}>
@@ -267,9 +264,9 @@ export default function TableList() {
                 </div>
                 <div style={{ display: _orderIsChecked() ? "none" : '' }}>
                   <div>ອັບເດດເປັນສະຖານະ: </div>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS,match?.params?.storeId)}>ຍົກເລີກ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS,match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS,match?.params?.storeId)}>ເສີບແລ້ວ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
                 </div>
                 <div style={padding_white} />
                 <div>
@@ -294,7 +291,6 @@ export default function TableList() {
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 disabled={orderItem?.status === "SERVED"}
-                                // checked={_onSelectOrderMenu(index)}
                                 checked={orderItem?.isChecked ? true : false}
                                 onChange={(e) => onChangeMenuCheckbox(orderItem)}
                                 color="primary"
@@ -312,11 +308,6 @@ export default function TableList() {
                               <p style={{ margin: 0 }}>{orderItem?.status ? orderStatus(orderItem?.status) : "-"}</p>
                             </div>
                           </td>
-                          {/* <td>
-                            {orderItem?.createdAt
-                              ? moment(orderItem?.createdAt).format("HH:mm A")
-                              : "-"}
-                          </td> */}
                           <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.createdAt
                             ? moment(orderItem?.createdAt).format("HH:mm A")
                             : "-"}</p></div></td>
@@ -385,16 +376,6 @@ export default function TableList() {
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
-      {/* <UpdateOrderModal
-        show={showOrderModal}
-        hide={() => setShowOrderModal(false)}
-        handleUpdate={_handleUpdate}
-      /> */}
-      {/* <CancelModal
-        show={cancelOrderModal}
-        hide={() => setCancelOrderModal(false)}
-        handleCancel={_handleCancel}
-      /> */}
 
       <UserCheckoutModal
         show={checkoutModel}
