@@ -17,7 +17,7 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
-import { END_POINT, COLOR_APP } from '../constants'
+import { END_POINT, COLOR_APP, WAITING_STATUS } from '../constants'
 import "./sidenav.css";
 import { getLocalData } from '../constants/api'
 import { SocketContext } from "../services/socket";
@@ -33,13 +33,15 @@ export default function Sidenav({ location, history }) {
     location.pathname.split("/")[1].split("-")[0]
   );
 
-  const { tableData, userData, openTableData, getTableDataStore, initialSocket, } = useStore();
-  const [getTokken, setgetTokken] = useState()
-  const [NewChackBill, setNewChackBill] = useState()
-  const [checkBill, setcheckBill] = useState()
-  const [reLoadData, setreLoadData] = useState()
-  const [orderItems, setOrderItems] = useState()
-  // const [openTableData, setOpenTableData] = useState([])
+  const { 
+    userData, 
+    openTableData, 
+    orderItems,
+    getTableDataStore,
+    getOrderItemsStore, 
+    initialOrderSocket, 
+    initialTableSocket
+  } = useStore();
 
 
   /**
@@ -47,13 +49,11 @@ export default function Sidenav({ location, history }) {
    */
   useEffect(() => {
     console.log("ORDER WELCOME SIVE BAR")
-    initialSocket()
-  }, [])
-
-  useEffect(() => {
-    if(!userData)return;
     getTableDataStore()
-  },[userData])
+    getOrderItemsStore(WAITING_STATUS)
+    initialOrderSocket()
+    initialTableSocket()
+  }, [])
 
   return (
     <SideNav
@@ -154,10 +154,10 @@ export default function Sidenav({ location, history }) {
                     : UN_SELECTED_TAB_TEXT,
               }}
             />
-            {checkBill?.length != 0 ?
+            {/* {checkBill?.length != 0 ?
               <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
               : ""
-            }
+            } */}
           </NavIcon>
           <NavText
             style={{

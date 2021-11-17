@@ -18,17 +18,25 @@ import CancelModal from "./component/CancelModal";
  */
 import { updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { CANCEL_STATUS, DOING_STATUS, SERVE_STATUS, END_POINT, USER_KEY, TITLE_HEADER } from "../../constants";
+import { CANCEL_STATUS, DOING_STATUS, SERVE_STATUS, END_POINT, USER_KEY, TITLE_HEADER, WAITING_STATUS } from "../../constants";
 import { SocketContext } from '../../services/socket';
+import { useStore } from "../../store";
 
 const Order = () => {
   const { match } = useReactRouter();
+
+  const { 
+    userData, 
+    orderItems,
+    getOrderItemsStore, 
+  } = useStore();
+
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [cancelModal, setCancelModal] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
-  const [userData, setUserData] = useState({})
+  // const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
-  const [orderItems, setOrderItems] = useState()
+  // const [orderItems, setOrderItems] = useState()
 
   /**
   * useContext
@@ -40,10 +48,7 @@ const Order = () => {
    * Initial Component
    */
   useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    setUserData(_localJson)
-    getData()
+    getOrderItemsStore(WAITING_STATUS)
   }, [])
 
 
@@ -51,26 +56,26 @@ const Order = () => {
   /**
    * Subscribe Order Event
    */
-  useEffect(() => {
-    socket.on(`ORDER:${userData?.data?.storeId}`, (data) => {
-      setOrderItems(data)
-    });
-    return () => {
-      socket.off(`ORDER:${userData?.data?.storeId}`, () => {
-        console.log(`BYE BYE ORDER:${match?.params?.storeId}`)
-      });
-    };
-  }, [socket, userData])
+  // useEffect(() => {
+  //   socket.on(`ORDER:${userData?.data?.storeId}`, (data) => {
+  //     setOrderItems(data)
+  //   });
+  //   return () => {
+  //     socket.off(`ORDER:${userData?.data?.storeId}`, () => {
+  //       console.log(`BYE BYE ORDER:${match?.params?.storeId}`)
+  //     });
+  //   };
+  // }, [socket, userData])
 
 
-  const getData = async (tokken) => {
-    await setIsLoading(true);
-    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${match?.params?.id}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setOrderItems(json));
-    await setIsLoading(false);
-  }
+  // const getData = async () => {
+  //   await setIsLoading(true);
+  //   await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${match?.params?.id}`, {
+  //     method: "GET",
+  //   }).then(response => response.json())
+  //     .then(json => setOrderItems(json));
+  //   await setIsLoading(false);
+  // }
 
 
   const _handleUpdateOrderStatus = async (status) => {
@@ -84,7 +89,7 @@ const Order = () => {
     let _resOrderUpdate = await updateOrderItem(_updateItems,match?.params?.id);
     if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
-      setOrderItems(_newOrderItem)
+      // setOrderItems(_newOrderItem)
       Swal.fire({
        icon: 'success',
        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -106,7 +111,7 @@ const Order = () => {
       } else return item
     })
 
-    setOrderItems(_newOrderItems)
+    // setOrderItems(_newOrderItems)
   };
 
 
@@ -145,7 +150,7 @@ const Order = () => {
         }
       }) 
     }
-    setOrderItems(_newOrderItems)
+    // setOrderItems(_newOrderItems)
   }
 
 
