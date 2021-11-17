@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -17,35 +17,31 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
-import { END_POINT, COLOR_APP, WAITING_STATUS } from '../constants'
+import { COLOR_APP, WAITING_STATUS } from '../constants'
 import "./sidenav.css";
-import { getLocalData } from '../constants/api'
-import { SocketContext } from "../services/socket";
 import { useStore } from "../store";
-
-const UN_SELECTED_TAB_TEXT = "#606060";
-
-
 
 export default function Sidenav({ location, history }) {
 
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+  const UN_SELECTED_TAB_TEXT = "#606060";
 
-  const { 
-    userData, 
-    openTableData, 
+
+  const {
+    userData,
+    openTableData,
     orderItems,
     getTableDataStore,
-    getOrderItemsStore, 
-    initialOrderSocket, 
+    getOrderItemsStore,
+    initialOrderSocket,
     initialTableSocket
   } = useStore();
 
 
   /**
-   * Subscribe Order Event
+   * Initial Application
    */
   useEffect(() => {
     console.log("ORDER WELCOME SIVE BAR")

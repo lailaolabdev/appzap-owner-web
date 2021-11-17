@@ -52,22 +52,14 @@ import {
   BODY,
   DIV_NAV,
   half_backgroundColor,
-  padding,
-  PRIMARY_FONT_BLACK,
-  BUTTON_EDIT,
-  BUTTON_OUTLINE_DANGER,
-  BUTTON_DELETE,
-  BUTTON_OUTLINE_DARK,
   padding_white,
-  USER_KEY,
-  ACTIVE_STATUS,
   CANCEL_STATUS,
   DOING_STATUS,
   CHECKOUT_STATUS,
   SERVE_STATUS,
-  BUTTON_EDIT_HOVER,
   END_POINT,
 } from "../../constants/index";
+import { useStore } from "../../store";
 
 
 
@@ -77,50 +69,46 @@ export default function TableList() {
   const number = match?.params?.number;
   let activeTableId = match?.params?.tableId;
 
-  /**
-    * useContext
-    */
-  const socket = useContext(SocketContext);
-
+  const {
+    isTableOrderLoading,
+    userData,
+    tableOrders,
+    tableList,
+    selectedTable,
+    // orderItems,
+    openTable,
+    getTableDataStore,
+    getTableOrders,
+    onSelectTable,
+    resetTableOrder
+  } = useStore();
 
   /**
    * useState
    */
-  const [userData, setUserData] = useState({})
+  // const [userData, setUserData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
-  const [table, setTable] = useState([]);
+  // const [table, setTable] = useState([]);
   const [tableId, setTableId] = useState(activeTableId);
-  const [tableData, setTableData] = useState();
+  // const [tableData, setTableData] = useState();
   const [orderIds, setOrderIds] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
-  const [cancelOrderModal, setCancelOrderModal] = useState(false);
+  // const [cancelOrderModal, setCancelOrderModal] = useState(false);
   const [generateCode, setGenerateCode] = useState();
-  const [idTable, setTableCode] = useState("");
-  const [dataOrder, setDataOrder] = useState([])
+  // const [idTable, setTableCode] = useState("");
+  // const [tableOrder, settableOrder] = useState([])
   const [orderItems, setOrderItems] = useState([])
-  const [tableList, setTableList] = useState([])
+  // const [tableList, setTableList] = useState([])
   const [checkBoxAll, setcheckBoxAll] = useState(false);
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
 
 
-  const handleInviteAccepted = useCallback((data) => {
-    console.log("SDSDSD")
-    console.log({ data })
-  }, []);
-
   useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY)
-    const _localJson = JSON.parse(ADMIN)
-    setUserData(_localJson)
-    _getTable()
-
-
-    return () => {
-      socket.removeAllListeners();
-    };
+    console.log("TABLE")
+    getTableDataStore()
   }, [])
 
 
@@ -129,13 +117,14 @@ export default function TableList() {
    */
   useEffect(() => {
     let orderItems = []
-    for (let i = 0; i < dataOrder?.length; i++) {
-      for (let k = 0; k < dataOrder[i]?.order_item?.length; k++) {
-        orderItems.push(dataOrder[i]?.order_item[k])
+    console.log("SDSD")
+    for (let i = 0; i < tableOrders?.length; i++) {
+      for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
+        orderItems.push(tableOrders[i]?.order_item[k])
       }
     }
     setOrderItems(orderItems)
-  }, [dataOrder])
+  }, [tableOrders])
 
 
 
@@ -158,50 +147,50 @@ export default function TableList() {
 
 
 
+  // /**
+  //  * Get Table
+  //  */
+  // useEffect(() => {
+  //   // subscribe to socket events
+  //   socket.on(`TABLE:${match?.params?.storeId}`, (data) => {
+  //     setTableList(data)
+  //     Swal.fire({
+  //       icon: 'success',
+  //       title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
+  //       showConfirmButton: false,
+  //       timer: 10000
+  //     })
+  //   });
+
+  // }, [socket]);
+
+
+
   /**
    * Get Table
    */
-  useEffect(() => {
-    // subscribe to socket events
-    socket.on(`TABLE:${match?.params?.storeId}`, (data) => {
-      setTableList(data)
-      Swal.fire({
-        icon: 'success',
-        title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
-        showConfirmButton: false,
-        timer: 10000
-      })
-    });
-
-  }, [socket]);
+  // const _getTable = async () => {
+  //   const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
+  //   await fetch(url)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       // setTableList(response)
+  //     })
+  // }
 
 
-
-  /**
-   * Get Table
-   */
-  const _getTable = async () => {
-    const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${match?.params?.storeId}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setTableList(response)
-      })
-  }
-
-
-  /**
-   * Get Table Orders
-   */
-  const getTableOrders = async (_table) => {
-    const url = END_POINT + `/orders?code=${_table?.code}`;
-    let res = await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setDataOrder(response)
-      })
-    return res
-  }
+  // /**
+  //  * Get Table Orders
+  //  */
+  // const getTableOrders = async (_table) => {
+  //   const url = END_POINT + `/orders?code=${_table?.code}`;
+  //   let res = await fetch(url)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       settableOrder(response)
+  //     })
+  //   return res
+  // }
 
 
 
@@ -209,29 +198,27 @@ export default function TableList() {
    * Select Table
    * @param {*} table 
    */
-  const _onSelectTable = async (table) => {
-    // console.log(table)
-    setIsLoading(true)
-    setTableId(table.table_id);
-    setTableCode(table?.order?.code);
-    setGenerateCode(table?.code);
-    setTableData(table)
-    setCheckedToUpdate([]);
-    await getTableOrders(table)
-    setIsLoading(false)
-  }
+  // const _onSelectTable = async (table) => {
+  //   setIsLoading(true)
+  //   setGenerateCode(table?.code);
+  //   setTableData(table)
+  //   setCheckedToUpdate([]);
+  //   await getTableOrders()
+  //   setIsLoading(false)
+  // }
 
 
 
   /**
    * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
    */
-  const _resetTableOrder = () => {
-    getTableOrders(table)
-    _getTable()
-    setDataOrder([])
-    setTimeout(() => { setTableData() }, 100)
-  }
+  // const _resetTableOrder = () => {
+  //   getTableOrders()
+  //   // _getTable()
+  //   getTableDataStore()
+  //   // settableOrder([])
+  //   // setTimeout(() => { setTableData() }, 100)
+  // }
 
   const _handlecheckout = async () => {
     await updateOrder(orderIds, CHECKOUT_STATUS);
@@ -249,7 +236,7 @@ export default function TableList() {
         }
       } else return item
     })
-    setOrderItems(_newOrderItems)
+    // setOrderItems(_newOrderItems)
   };
 
 
@@ -287,7 +274,7 @@ export default function TableList() {
         }
         else return item
       });
-      setOrderItems(_newOrderItem)
+      // setOrderItems(_newOrderItem)
       Swal.fire({
         icon: 'success',
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -301,8 +288,8 @@ export default function TableList() {
     if (item?.target?.checked === true) {
       setcheckBoxAll(true)
       let allData = []
-      for (let p = 0; p < dataOrder[0]?.order_item?.length; p++) {
-        allData.push({ id: dataOrder[0]?.order_item[p]?._id })
+      for (let p = 0; p < tableOrders[0]?.order_item?.length; p++) {
+        allData.push({ id: tableOrders[0]?.order_item[p]?._id })
       }
       setCheckedToUpdate(allData)
     } else {
@@ -322,48 +309,48 @@ export default function TableList() {
   }
 
 
-  /**
-   * ເປີດໂຕະ
-   */
-  const _openTable = async () => {
-    await axios
-      .put(
-        END_POINT + `/updateGenerates/${tableData?.code}`,
-        {
-          isOpened: true,
-          staffConfirm: true
-        },
-        {
-          headers: await getHeaders(),
-        }
-      ).then(async function (response) {
-        //update Table
-        let _tableList = [...tableList]
-        let _newTable = _tableList.map((table) => {
-          if (table?.code == tableData?.code) return {
-            ...table,
-            isOpened: true,
-            staffConfirm: true
-          }
-          else return table
-        })
-        setTableList(_newTable)
-        setTableData({
-          ...tableData,
-          isOpened: true,
-          staffConfirm: true
-        })
-        Swal.fire({
-          icon: 'success',
-          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
-          showConfirmButton: false,
-          timer: 1800
-        })
-      })
-      .catch(function (error) {
-        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-      });
-  }
+  // /**
+  //  * ເປີດໂຕະ
+  //  */
+  // const _openTable = async () => {
+  //   await axios
+  //     .put(
+  //       END_POINT + `/updateGenerates/${selectedTable?.code}`,
+  //       {
+  //         isOpened: true,
+  //         staffConfirm: true
+  //       },
+  //       {
+  //         headers: await getHeaders(),
+  //       }
+  //     ).then(async function (response) {
+  //       //update Table
+  //       let _tableList = [...tableList]
+  //       let _newTable = _tableList.map((table) => {
+  //         if (table?.code == selectedTable?.code) return {
+  //           ...table,
+  //           isOpened: true,
+  //           staffConfirm: true
+  //         }
+  //         else return table
+  //       })
+  //       // setTableList(_newTable)
+  //       // setTableData({
+  //       //   ...tableData,
+  //       //   isOpened: true,
+  //       //   staffConfirm: true
+  //       // })
+  //       Swal.fire({
+  //         icon: 'success',
+  //         title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+  //         showConfirmButton: false,
+  //         timer: 1800
+  //       })
+  //     })
+  //     .catch(function (error) {
+  //       errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+  //     });
+  // }
 
 
   const _checkOut = async () => {
@@ -398,7 +385,7 @@ export default function TableList() {
           <ComponentToPrintBillInTable ref={componentRef} orderItems={orderItems} tableId={tableId} generateCode={generateCode} firstname={userData?.data?.firstname} userData={userData} />
         </div>
       </div>
-      {isLoading ? <Loading /> : ""}
+      {isTableOrderLoading ? <Loading /> : ""}
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
           <Nav
@@ -418,15 +405,15 @@ export default function TableList() {
               className="ml-auto row mr-5"
               style={{ paddingBottom: "3px" }}
             >
-              <Row>
+              {/* <Row>
                 {" "}
                 <div
                   className="ml-2 mr-5"
                   style={{ fontWeight: "bold", color: "#FB6E3B" }}
                 >
-                  {idTable}
+                  {selectedTable?.code}
                 </div>
-              </Row>
+              </Row> */}
             </Nav.Item>
           </Nav>
         </div>
@@ -457,7 +444,7 @@ export default function TableList() {
                         }}
                         className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
                         onClick={async () => {
-                          _onSelectTable(table)
+                          onSelectTable(table)
                         }}
                       >
                         <div
@@ -483,7 +470,7 @@ export default function TableList() {
             </Container>
           </div>
           {/* Detail Table */}
-          {(tableData != null && (tableData?.staffConfirm && tableData?.isOpened)) && <div
+          {(selectedTable != null && (selectedTable?.staffConfirm && selectedTable?.isOpened)) && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -500,9 +487,9 @@ export default function TableList() {
                 <Row style={{ margin: 0 }}>
                   <Col sm={12} style={{ backgroundColor: "#eee" }}>
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
-                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {tableData?.table_id} </p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {tableData?.code}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(tableData?.createdAt).format("HH:mm:ss A")}</p>
+                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.table_id} </p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
@@ -595,7 +582,7 @@ export default function TableList() {
             }
           </div>}
 
-          {(tableData != null && (!tableData?.staffConfirm)) && <div
+          {(selectedTable != null && (!selectedTable?.staffConfirm)) && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -609,21 +596,21 @@ export default function TableList() {
               alignItems: "center"
             }}
           >
-            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{tableData?.table_id}</p>
+            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{selectedTable?.table_id}</p>
             <QRCode
               value={JSON.stringify({
-                storeId: tableData?.storeId,
-                tableId: tableData?.tableId
+                storeId: selectedTable?.storeId,
+                tableId: selectedTable?.tableId
               })}
               style={{ width: 100 }}
             />
             <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
             <div style={{ height: 30 }} />
-            <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => _openTable()}>
-              <FontAwesomeIcon icon={!tableData?.isOpened ? faArchway : faCheckCircle} style={{ color: "#fff" }} /> {!tableData?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
+            <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => openTable()}>
+              <FontAwesomeIcon icon={!selectedTable?.isOpened ? faArchway : faCheckCircle} style={{ color: "#fff" }} /> {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
           </div>}
 
-          {tableData == null && <div style={{
+          {selectedTable == null && <div style={{
             width: "60%",
             backgroundColor: "#FFF",
             maxHeight: "90vh",
@@ -642,9 +629,9 @@ export default function TableList() {
 
       <OrderCheckOut
         data={orderItems}
-        tableData={tableData}
+        tableData={selectedTable}
         show={menuItemDetailModal}
-        resetTableOrder={_resetTableOrder}
+        resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
       {/* <UpdateOrderModal
