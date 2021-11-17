@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -17,45 +17,119 @@ import {
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
-// import socketIOClient from "socket.io-client";
 import { END_POINT, COLOR_APP } from '../constants'
 import "./sidenav.css";
 import { getLocalData } from '../constants/api'
+import { SocketContext } from "../services/socket";
 const UN_SELECTED_TAB_TEXT = "#606060";
 export default function Sidenav({ location, history }) {
+
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
-  const [expandedStatus, setExpandedStatus] = useState(false);
   const [getTokken, setgetTokken] = useState()
+  const [userData, setUserData] = useState()
+  const [NewChackBill, setNewChackBill] = useState()
+  const [checkBill, setcheckBill] = useState()
+  const [reLoadData, setreLoadData] = useState()
+  const [orderItems, setOrderItems] = useState()
+  const [openTableData, setOpenTableData] = useState([])
+
+
+  /**
+    * useContext
+    */
+  const socket = useContext(SocketContext);
+
+  /**
+   * Subscribe Order Event
+   */
+  useEffect(() => {
+    console.log("ORDER WELCOME SIVE BAR")
+    if (!userData) return;
+
+    getCheckOutOrder()
+    getWaitingOrderItems()
+    getOpenTable()
+
+
+    socket.on(`ORDER:${userData?.DATA?.storeId}`, (data) => {
+      setOrderItems(data)
+    });
+
+    socket.on(`TABLE:${userData?.DATA?.storeId}`, (data) => {
+      if (data) {
+        let _openTable = data.filter((table) => {
+          return table.isOpened && !table.staffConfirm
+        })
+        setOpenTableData(_openTable)
+      }
+    });
+    return () => {
+      socket.removeAllListeners();
+    };
+  }, [userData])
+
+
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData()
+      console.log({ _localData })
       if (_localData) {
-        setgetTokken(_localData)
-        _searchDate(_localData)
+        setUserData(_localData)
       }
     }
     fetchData();
   }, [])
-  // ========> check logOut
-  // const socket = socketIOClient(END_POINT);
-  const [NewChackBill, setNewChackBill] = useState()
-  // socket.on(`notificationCheckout${getTokken?.DATA?.storeId}`, data => {
-  //   setNewChackBill(data)
-  // });
-  const [checkBill, setcheckBill] = useState()
+
+
+  // // ========> check logOut
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const _localData = await getLocalData()
+  //     if (_localData) {
+  //       getCheckOutOrder(_localData)
+  //     }
+  //   }
+  //   fetchData();
+  // }, [NewChackBill])
+
+
+
+
+  // ========> in orders
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData()
       if (_localData) {
-        _searchDate(_localData)
+        getWaitingOrderItems(_localData)
       }
     }
-    fetchData();
-  }, [NewChackBill])
-  const _searchDate = async (tokkeStoeId) => {
-    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${tokkeStoeId?.DATA?.storeId}`;
+    fetchData()
+  }, [reLoadData])
+
+
+  const getWaitingOrderItems = async () => {
+    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${userData?.DATA?.storeId}`, {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setOrderItems(json));
+  }
+
+  const getOpenTable = async () => {
+    const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${userData?.DATA?.storeId}`;
+    await fetch(url)
+      .then(response => response.json())
+      .then(response => {
+        let _openTable = response.filter((table) => {
+          return table.isOpened && !table.staffConfirm
+        })
+        setOpenTableData(_openTable)
+      })
+  }
+
+  const getCheckOutOrder = async () => {
+    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${userData?.DATA?.storeId}`;
     const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
@@ -63,27 +137,7 @@ export default function Sidenav({ location, history }) {
       })
   }
 
-  // ========> in orders
-  const [reLoadData, setreLoadData] = useState()
-  // socket.on(`createorder${getTokken?.DATA?.storeId}`, data => {
-  //   setreLoadData(data)
-  // });
-  useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData()
-      if (_localData) {
-        getData(_localData)
-      }
-    }
-    fetchData()
-  }, [reLoadData])
-  const [orderItems, setorderItems] = useState()
-  const getData = async (tokkeStoeId) => {
-    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${tokkeStoeId?.DATA?.storeId}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setorderItems(json));
-  }
+
   return (
     <SideNav
       style={{
@@ -96,22 +150,22 @@ export default function Sidenav({ location, history }) {
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
         if (selected === "orders") {
-          selected = selected + "/pagenumber/" + 1 + "/" + getTokken?.DATA?.storeId;
+          selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "tables") {
-          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + getTokken?.DATA?.storeId;;
+          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + userData?.DATA?.storeId;;
         }
         if (selected === "histories") {
-          selected = selected + "/pagenumber/" + 1 + "/" + getTokken?.DATA?.storeId;
+          selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "users") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "menu") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "category") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + getTokken?.DATA?.storeId;
+          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
         const to = "/" + selected;
 
@@ -120,7 +174,6 @@ export default function Sidenav({ location, history }) {
         }
       }}
       onToggle={(expanded) => {
-        setExpandedStatus(expanded);
       }}
     >
       <Toggle />
@@ -148,9 +201,9 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ອໍເດີ
-            </NavText>
+          </NavText>
         </NavItem>
-        <NavItem eventKey={`checkBill/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
+        <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBell}
@@ -162,7 +215,7 @@ export default function Sidenav({ location, history }) {
               }}
             />
             {checkBill?.length != 0 ?
-              <Badge variant="danger"  style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
+              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
               : ""
             }
           </NavIcon>
@@ -178,6 +231,7 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
               icon={faHome}
               style={{
                 color:
@@ -192,8 +246,8 @@ export default function Sidenav({ location, history }) {
               color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
-            ສະຖານະຂອງຕູບ
-            </NavText>
+            ສະຖານະຂອງໂຕະ
+          </NavText>
         </NavItem>
         <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
           <NavIcon>
@@ -214,7 +268,7 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ປະຫວັດການຂາຍ
-            </NavText>
+          </NavText>
         </NavItem>
         <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "" }}>
           <NavIcon>
@@ -234,7 +288,7 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ເພີ່ມອາຫານ
-            </NavText>
+          </NavText>
         </NavItem>
         <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "" }}>
           <NavIcon>
@@ -255,9 +309,9 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ຈັດການພະນັກງານ
-            </NavText>
+          </NavText>
         </NavItem>
-        <NavItem eventKey={`storeDetail/${getTokken?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
+        <NavItem eventKey={`storeDetail/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faAddressCard}
@@ -276,7 +330,7 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ຮ້ານຄ້າ
-            </NavText>
+          </NavText>
         </NavItem>
       </SideNav.Nav>
     </SideNav >
