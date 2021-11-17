@@ -21,122 +21,39 @@ import { END_POINT, COLOR_APP } from '../constants'
 import "./sidenav.css";
 import { getLocalData } from '../constants/api'
 import { SocketContext } from "../services/socket";
+import { useStore } from "../store";
+
 const UN_SELECTED_TAB_TEXT = "#606060";
+
+
+
 export default function Sidenav({ location, history }) {
 
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+
+  const { tableData, userData, openTableData, getTableDataStore, initialSocket, } = useStore();
   const [getTokken, setgetTokken] = useState()
-  const [userData, setUserData] = useState()
   const [NewChackBill, setNewChackBill] = useState()
   const [checkBill, setcheckBill] = useState()
   const [reLoadData, setreLoadData] = useState()
   const [orderItems, setOrderItems] = useState()
-  const [openTableData, setOpenTableData] = useState([])
+  // const [openTableData, setOpenTableData] = useState([])
 
-
-  /**
-    * useContext
-    */
-  const socket = useContext(SocketContext);
 
   /**
    * Subscribe Order Event
    */
   useEffect(() => {
     console.log("ORDER WELCOME SIVE BAR")
-    if (!userData) return;
-
-    getCheckOutOrder()
-    getWaitingOrderItems()
-    getOpenTable()
-
-
-    socket.on(`ORDER:${userData?.DATA?.storeId}`, (data) => {
-      setOrderItems(data)
-    });
-
-    socket.on(`TABLE:${userData?.DATA?.storeId}`, (data) => {
-      if (data) {
-        let _openTable = data.filter((table) => {
-          return table.isOpened && !table.staffConfirm
-        })
-        setOpenTableData(_openTable)
-      }
-    });
-    return () => {
-      socket.removeAllListeners();
-    };
-  }, [userData])
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData()
-      console.log({ _localData })
-      if (_localData) {
-        setUserData(_localData)
-      }
-    }
-    fetchData();
+    initialSocket()
   }, [])
 
-
-  // // ========> check logOut
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const _localData = await getLocalData()
-  //     if (_localData) {
-  //       getCheckOutOrder(_localData)
-  //     }
-  //   }
-  //   fetchData();
-  // }, [NewChackBill])
-
-
-
-
-  // ========> in orders
   useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData()
-      if (_localData) {
-        getWaitingOrderItems(_localData)
-      }
-    }
-    fetchData()
-  }, [reLoadData])
-
-
-  const getWaitingOrderItems = async () => {
-    await fetch(END_POINT + `/orderItems?status=WAITING&&storeId=${userData?.DATA?.storeId}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setOrderItems(json));
-  }
-
-  const getOpenTable = async () => {
-    const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${userData?.DATA?.storeId}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        let _openTable = response.filter((table) => {
-          return table.isOpened && !table.staffConfirm
-        })
-        setOpenTableData(_openTable)
-      })
-  }
-
-  const getCheckOutOrder = async () => {
-    const url = END_POINT + `/orders?status=CALLTOCHECKOUT&checkout=false&&storeId=${userData?.DATA?.storeId}`;
-    const _data = await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setcheckBill(response)
-      })
-  }
-
+    if(!userData)return;
+    getTableDataStore()
+  },[userData])
 
   return (
     <SideNav
@@ -179,7 +96,7 @@ export default function Sidenav({ location, history }) {
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
 
-      <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
+        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -225,7 +142,7 @@ export default function Sidenav({ location, history }) {
             ອໍເດີ
           </NavText>
         </NavItem>
-        
+
         <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
