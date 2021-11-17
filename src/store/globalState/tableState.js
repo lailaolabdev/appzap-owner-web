@@ -178,7 +178,7 @@ export const useTableState = () => {
     /**
     * ອັບເດດສະຖານະອໍເດີ
     */
-    const handleUpdateOrderStatus = async (status, storeId) => {
+    const handleUpdateTableOrderStatus = async (status, storeId) => {
 
         // console.log({ tableOrderItems })
         let _updateItems = tableOrderItems.filter((item) => item.isChecked).map((i) => {
@@ -223,7 +223,7 @@ export const useTableState = () => {
         getTableDataStore,
         onSelectTable,
         onChangeMenuCheckbox,
-        handleUpdateOrderStatus,
+        handleUpdateTableOrderStatus,
         resetTableOrder,
         initialTableSocket
     };

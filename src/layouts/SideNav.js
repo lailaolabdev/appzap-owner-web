@@ -32,8 +32,9 @@ export default function Sidenav({ location, history }) {
   const {
     userData,
     openTableData,
-    orderItems,
+    orderLoading,
     getTableDataStore,
+    waitingOrderItems,
     getOrderItemsStore,
     initialOrderSocket,
     initialTableSocket
@@ -44,7 +45,6 @@ export default function Sidenav({ location, history }) {
    * Initial Application
    */
   useEffect(() => {
-    console.log("ORDER WELCOME SIVE BAR")
     getTableDataStore()
     // getOrderItemsStore(WAITING_STATUS)
     initialOrderSocket()
@@ -124,8 +124,8 @@ export default function Sidenav({ location, history }) {
                     : UN_SELECTED_TAB_TEXT,
               }}
             />
-            {orderItems?.length != 0 ?
-              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{orderItems?.length}</Badge>
+            {waitingOrderItems?.length != 0 ?
+              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{waitingOrderItems?.length}</Badge>
               : ""
             }
           </NavIcon>
