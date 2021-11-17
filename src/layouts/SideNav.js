@@ -46,7 +46,7 @@ export default function Sidenav({ location, history }) {
   useEffect(() => {
     console.log("ORDER WELCOME SIVE BAR")
     getTableDataStore()
-    getOrderItemsStore(WAITING_STATUS)
+    // getOrderItemsStore(WAITING_STATUS)
     initialOrderSocket()
     initialTableSocket()
   }, [])

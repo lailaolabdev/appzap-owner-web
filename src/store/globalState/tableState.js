@@ -13,7 +13,7 @@ export const useTableState = () => {
     const [tableList, setTableList] = useState([]);
     const [openTableData, setOpenTableData] = useState([]);
     const [tableOrders, setTableOrders] = useState([]);
-    const [orderItems, setOrderItems] = useState([]);
+    const [tableOrderItems, setTableOrderItems] = useState([]);
     const [selectedTable, setSelectedTable] = useState();
 
     const initialTableSocket = useMemo(
@@ -41,13 +41,14 @@ export const useTableState = () => {
     * Modify Order
     */
     useEffect(() => {
-        let orderItems = []
+        let _tableOrderItems = []
         for (let i = 0; i < tableOrders?.length; i++) {
             for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
-                orderItems.push(tableOrders[i]?.order_item[k])
+                _tableOrderItems.push(tableOrders[i]?.order_item[k])
             }
         }
-        setOrderItems(orderItems)
+        // console.log({_tableOrderItems})
+        setTableOrderItems(_tableOrderItems)
     }, [tableOrders])
 
     const getTableDataStore = useMemo(
@@ -79,7 +80,7 @@ export const useTableState = () => {
         let res = await fetch(url)
             .then(response => response.json())
             .then(response => {
-                console.log({ response })
+                // console.log({ response })
                 setTableOrders(response)
                 setIsTableOrderLoading(false)
             })
@@ -124,7 +125,7 @@ export const useTableState = () => {
                 let _openTable = _newTable.filter((table) => {
                     return table.isOpened && !table.staffConfirm
                 })
-                console.log({_openTable})
+                // console.log({_openTable})
                 setOpenTableData(_openTable)
                 setTableList(_newTable)
                 setSelectedTable({
@@ -161,7 +162,7 @@ export const useTableState = () => {
 
 
     const onChangeMenuCheckbox = async (order) => {
-        let _orderItems = [...orderItems]
+        let _orderItems = [...tableOrderItems]
         let _newOrderItems = _orderItems.map((item) => {
             if (item._id == order._id) {
                 return {
@@ -170,7 +171,7 @@ export const useTableState = () => {
                 }
             } else return item
         })
-        setOrderItems(_newOrderItems)
+        setTableOrderItems(_newOrderItems)
     };
 
 
@@ -179,8 +180,8 @@ export const useTableState = () => {
     */
     const handleUpdateOrderStatus = async (status, storeId) => {
 
-        console.log({ orderItems })
-        let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
+        // console.log({ tableOrderItems })
+        let _updateItems = tableOrderItems.filter((item) => item.isChecked).map((i) => {
             return {
                 ...i,
                 status,
@@ -189,7 +190,7 @@ export const useTableState = () => {
         })
         let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
         if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
-            let _newOrderItem = orderItems.map((item) => {
+            let _newOrderItem = tableOrderItems.map((item) => {
                 if (item.isChecked) {
                     return {
                         ...item,
@@ -199,7 +200,7 @@ export const useTableState = () => {
                 }
                 else return item
             });
-            setOrderItems(_newOrderItem)
+            setTableOrderItems(_newOrderItem)
             Swal.fire({
                 icon: 'success',
                 title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -215,7 +216,7 @@ export const useTableState = () => {
         tableList,
         openTableData,
         tableOrders,
-        orderItems,
+        tableOrderItems,
         selectedTable,
         getTableOrders,
         openTable,

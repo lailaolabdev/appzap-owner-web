@@ -57,7 +57,7 @@ export default function TableList() {
     tableList,
     selectedTable,
     openTable,
-    orderItems,
+    tableOrderItems,
     getTableDataStore,
     onSelectTable,
     onChangeMenuCheckbox,
@@ -82,18 +82,18 @@ export default function TableList() {
    * Modify Order Status
    */
   useEffect(() => {
-    if (!orderItems) return;
-    let _orderItems = [...orderItems]
+    if (!tableOrderItems) return;
+    let _tableOrderItems = [...tableOrderItems]
     let _checkDataStatus = []
     let _checkDataStatusCancel = []
-    _orderItems.map((nData) => {
+    _tableOrderItems.map((nData) => {
       if (nData.status === "SERVED") _checkDataStatus.push(nData?.status)
       if (nData.status === "CANCELED") _checkDataStatusCancel.push(nData?.status)
     })
 
     setCheckStatusCancel(_checkDataStatusCancel)
     setCheckStatus(_checkDataStatus)
-  }, [orderItems])
+  }, [tableOrderItems])
 
 
   const _handlecheckout = async () => {
@@ -106,7 +106,7 @@ export default function TableList() {
    * @returns 
    */
   const _orderIsChecked = () => {
-    let isIncluded = orderItems.filter((item) => item.isChecked)
+    let isIncluded = tableOrderItems.filter((item) => item.isChecked)
     return isIncluded.length == 0;
   }
 
@@ -140,7 +140,7 @@ export default function TableList() {
         />
         {selectedTable?.table_id} ({selectedTable?.code})
         <div style={{ display: 'none' }}>
-          <ComponentToPrintBillInTable ref={componentRef} orderItems={orderItems} tableId={selectedTable?.table_id} generateCode={selectedTable?.code} firstname={userData?.data?.firstname} userData={userData} />
+          <ComponentToPrintBillInTable ref={componentRef} tableOrderItems={tableOrderItems} tableId={selectedTable?.table_id} generateCode={selectedTable?.code} firstname={userData?.data?.firstname} userData={userData} />
         </div>
       </div>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -246,8 +246,8 @@ export default function TableList() {
                     {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                   </div>
                   <div style={{
-                    display: CheckStatus?.length === orderItems?.length - CheckStatusCancel?.length ?
-                      (CheckStatus?.length !== orderItems?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
+                    display: CheckStatus?.length === tableOrderItems?.length - CheckStatusCancel?.length ?
+                      (CheckStatus?.length !== tableOrderItems?.length - CheckStatusCancel?.length ? "" : CheckStatus?.length === 0 ? "" : "none")
                       : "none"
                   }}>
                   </div>
@@ -285,7 +285,7 @@ export default function TableList() {
                       </tr>
                     </thead>
                     <tbody>
-                      {orderItems ? orderItems.map((orderItem, index) => (
+                      {tableOrderItems ? tableOrderItems.map((orderItem, index) => (
                         <tr key={"order" + index} style={{ borderBottom: "1px solid #eee" }}>
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
@@ -315,7 +315,7 @@ export default function TableList() {
                       )) : ""}
                     </tbody>
                   </Table>
-                  {orderItems.length == 0 && <div className="text-center">
+                  {tableOrderItems.length == 0 && <div className="text-center">
                     <div style={{ marginTop: 50, fontSize: 50 }}> ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ</div>
                   </div>}
                 </div>
@@ -370,7 +370,7 @@ export default function TableList() {
       </div>
 
       <OrderCheckOut
-        data={orderItems}
+        data={tableOrderItems}
         tableData={selectedTable}
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}

@@ -8,7 +8,7 @@ import { socket } from '../../services/socket'
 export const useOrderState = () => {
 
     const [userData, setUserData] = useState()
-    const [isLoading, setIsLoading] = useState(true);
+    const [orderLoading, setOrderLoading] = useState(true);
     const [orderItems, setOrderItems] = useState([]);
 
 
@@ -27,13 +27,16 @@ export const useOrderState = () => {
 
 
     const getOrderItemsStore = async (status) => {
-        await setIsLoading(true);
+        await setOrderLoading(true);
         let _userData = await getLocalData();
         await fetch(END_POINT + `/orderItems?status=${status}&&storeId=${_userData?.DATA?.storeId}`, {
             method: "GET",
         }).then(response => response.json())
-            .then(json => setOrderItems(json));
-        await setIsLoading(false);
+            .then(json => {
+                console.log({json})
+                setOrderLoading(false)
+                setOrderItems(json)
+            });
     }
 
 
@@ -95,11 +98,11 @@ export const useOrderState = () => {
         }
       }) 
     }
-    // setOrderItems(_newOrderItems)
+    setOrderItems(_newOrderItems)
   }
 
     return {
-        isLoading,
+        orderLoading,
         userData,
         orderItems,
         getOrderItemsStore,

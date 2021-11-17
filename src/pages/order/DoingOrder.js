@@ -6,110 +6,118 @@ import moment from "moment";
 import OrderNavbar from "./component/OrderNavbar";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as _ from "lodash"
-import Swal from 'sweetalert2'
 /**
  * import components
  */
-import Loading from "../../components/Loading";
 import UpdateModal from "./component/UpdateModal";
-import CancelModal from "./component/CancelModal";
 /**
  * import function
  */
-import { getOrders, updateOrderItem } from "../../services/order";
+// import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
-import { SERVE_STATUS, END_POINT } from "../../constants";
+import { SERVE_STATUS, END_POINT, DOING_STATUS } from "../../constants";
+import { useStore } from "../../store";
 const Order = () => {
-  /**
+/**
    * routes
    */
-  const { match } = useReactRouter();
+ const { match } = useReactRouter();
+
+  const { 
+    orderItems,
+    getOrderItemsStore, 
+    handleCheckbox,
+    checkAllOrders,
+    handleUpdateOrderStatus
+  } = useStore();
+
+  
   const [updateModal, setUpdateModal] = useState(false);
-  const [ordersDoing, setOrdersDoing] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [ordersDoing, setOrdersDoing] = useState();
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getData()
+    getOrderItemsStore(DOING_STATUS)
   }, [])
 
-  const getData = async (tokken) => {
-    await setIsLoading(true);
-    await fetch(END_POINT + `/orderItems?status=DOING&&storeId=${match?.params?.id}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setOrdersDoing(json));
-    await setIsLoading(false);
-  }
+  // const getData = async (tokken) => {
+  //   await setIsLoading(true);
+  //   await fetch(END_POINT + `/orderItems?status=DOING&&storeId=${match?.params?.id}`, {
+  //     method: "GET",
+  //   }).then(response => response.json())
+  //     .then(json => setOrdersDoing(json));
+  //   await setIsLoading(false);
+  // }
 
   const _handleUpdate = async () => {
-    let _updateItems = ordersDoing.filter((item) => item.isChecked).map((i) => {
-      return {
-        ...i,
-        status: SERVE_STATUS,
-        id: i._id
-      }
-    })
-    let _resOrderUpdate = await updateOrderItem(_updateItems, match?.params?.id);
-    if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
-       let _newOrderItem = ordersDoing.filter((item) => !item.isChecked);
-       setOrdersDoing(_newOrderItem)
-       Swal.fire({
-        icon: 'success',
-        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
-        showConfirmButton: false,
-        timer: 10000
-      })
-    }
+    // let _updateItems = ordersDoing.filter((item) => item.isChecked).map((i) => {
+    //   return {
+    //     ...i,
+    //     status: SERVE_STATUS,
+    //     id: i._id
+    //   }
+    // })
+    // let _resOrderUpdate = await updateOrderItem(_updateItems, match?.params?.id);
+    // if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
+    //    let _newOrderItem = ordersDoing.filter((item) => !item.isChecked);
+    //   //  setOrdersDoing(_newOrderItem)
+    //    Swal.fire({
+    //     icon: 'success',
+    //     title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+    //     showConfirmButton: false,
+    //     timer: 10000
+    //   })
+    // }
   };
 
-  const _handleCheckbox = async (order) => {
-    let _ordersDoing = [...ordersDoing]
-    let _newOrdersDoing = _ordersDoing.map((item) => {
-      if (item._id == order._id) {
-        return {
-          ...item,
-          isChecked: !item.isChecked
-        }
-      } else return item
-    })
+  // const _handleCheckbox = async (order) => {
+  //   let _ordersDoing = [...ordersDoing]
+  //   let _newOrdersDoing = _ordersDoing.map((item) => {
+  //     if (item._id == order._id) {
+  //       return {
+  //         ...item,
+  //         isChecked: !item.isChecked
+  //       }
+  //     } else return item
+  //   })
 
-    setOrdersDoing(_newOrdersDoing)
-  };
+  //   setOrdersDoing(_newOrdersDoing)
+  // };
 
   /**
  * ເລືອກທຸກອັນ
  */
-  const _checkAll = (item) => {
-    let _ordersDoing = [...ordersDoing]
-    let _newOrderItems;
-    if (item?.target?.checked) {
-      _newOrderItems = _ordersDoing.map((item) => {
-        return {
-          ...item,
-          isChecked: true
-        }
-      })
-    } else {
-      _newOrderItems = _ordersDoing.map((item) => {
-        return {
-          ...item,
-          isChecked: false
-        }
-      })
-    }
-    setOrdersDoing(_newOrderItems)
-  }
+  // const _checkAll = (item) => {
+  //   let _ordersDoing = [...ordersDoing]
+  //   let _newOrderItems;
+  //   if (item?.target?.checked) {
+  //     _newOrderItems = _ordersDoing.map((item) => {
+  //       return {
+  //         ...item,
+  //         isChecked: true
+  //       }
+  //     })
+  //   } else {
+  //     _newOrderItems = _ordersDoing.map((item) => {
+  //       return {
+  //         ...item,
+  //         isChecked: false
+  //       }
+  //     })
+  //   }
+  //   setOrdersDoing(_newOrderItems)
+  // }
 
   return (
     <div>
-      {isLoading ? <Loading /> : ""}
+      {/* {isLoading ? <Loading /> : ""} */}
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
-          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} />
+          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} />
         </div>
         <div>
-          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => _handleUpdate()}>ເສີບແລ້ວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
         </div>
       </div>
       <Container fluid className="mt-3">
@@ -128,14 +136,14 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {ordersDoing &&
-              ordersDoing?.map((order, index) => (
+            {orderItems &&
+              orderItems?.map((order, index) => (
                 <tr key={index}>
                   <td  >
                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                       <Checkbox
                         checked={order?.isChecked ? true : false}
-                        onChange={(e) => _handleCheckbox(order)}
+                        onChange={(e) => handleCheckbox(order)}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
