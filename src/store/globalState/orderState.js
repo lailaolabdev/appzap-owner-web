@@ -43,9 +43,8 @@ export const useOrderState = () => {
 
 
     const handleUpdateOrderStatus = async (status, storeId) => {
-        let _orderItems = [...orderItems]
-        console.log("{ _orderItems }")
-        console.log({ _orderItems })
+        
+        let previousStatus = orderItems[0].status;
         let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
             return {
                 ...i,
@@ -58,12 +57,13 @@ export const useOrderState = () => {
         if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
             let _newOrderItem = orderItems.filter((item) => !item.isChecked);
             setOrderItems(_newOrderItem)
-            if (status == WAITING_STATUS) setWaitingOrderItems(_newOrderItem)
+            console.log(WAITING_STATUS)
+            if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
             Swal.fire({
                 icon: 'success',
                 title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
                 showConfirmButton: false,
-                timer: 10000
+                timer: 2000
             })
         }
     };
