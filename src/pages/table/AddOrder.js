@@ -197,7 +197,7 @@ function AddOrder() {
   }
 
 
-
+  console.log("selectedMenu===>", selectedMenu)
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint

@@ -24,7 +24,7 @@ import AddOrder from '../pages/table/AddOrder';
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
 import CheckBill from "../pages/Notification/CheckBill";
-import { BillForChef } from "../pages/order/component/BillForChef";
+import { BillForChef } from "../pages/bill/BillForChef";
 
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";

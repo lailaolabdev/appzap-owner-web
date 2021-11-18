@@ -26,7 +26,9 @@ import Loading from "../../components/Loading";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import OrderCheckOut from "./components/OrderCheckOut";
 import { orderStatus } from "../../helpers";
-import { ComponentToPrintBillInTable } from './components/ToPrintBillInTable';
+import { BillForChef } from '../bill/BillForChef';
+import { BillForCheckOut } from '../bill/BillForCheckOut';
+import { STORE, getLocalData } from '../../constants/api'
 
 /**
  * const
@@ -48,12 +50,13 @@ import { useStore } from "../../store";
 export default function TableList() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
+  const componentRefA = useRef();
   const number = match?.params?.number;
   const activeTableId = match?.params?.tableId;
 
   const {
     isTableOrderLoading,
-    userData,
+    orderItemForPrintBill,
     tableList,
     selectedTable,
     openTable,
@@ -72,10 +75,12 @@ export default function TableList() {
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
+  const [dataStore, setStore] = useState()
 
 
   useEffect(() => {
     getTableDataStore()
+    getData()
   }, [])
 
   /**
@@ -110,11 +115,6 @@ export default function TableList() {
     return isIncluded.length == 0;
   }
 
-
-  const _checkOut = async () => {
-    document.getElementById('btnPrint').click();
-  }
-
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
   };
@@ -123,26 +123,20 @@ export default function TableList() {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
 
-
   const convertTableStatus = (_table) => {
     if (_table?.isOpened && _table?.staffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
     else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
     else if (!_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else return "-"
   }
-
+  const getData = async () => {
+    await fetch(STORE + `/?id=${match?.params?.storeId}`, {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setStore(json));
+  }
   return (
     <div style={TITLE_HEADER}>
-      <div style={{ display: 'none' }}>
-        <ReactToPrint
-          trigger={() => <button id="btnPrint">Print this out!</button>}
-          content={() => componentRef.current}
-        />
-        {selectedTable?.table_id} ({selectedTable?.code})
-        <div style={{ display: 'none' }}>
-          <ComponentToPrintBillInTable ref={componentRef} tableOrderItems={tableOrderItems} tableId={selectedTable?.table_id} generateCode={selectedTable?.code} firstname={userData?.data?.firstname} userData={userData} />
-        </div>
-      </div>
       {isTableOrderLoading ? <Loading /> : ""}
       <div style={{ marginTop: -10, paddingTop: 10 }}>
         <div style={DIV_NAV}>
@@ -255,7 +249,13 @@ export default function TableList() {
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <div style={{}}>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
-                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _checkOut()}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>
+                      <ReactToPrint
+                          trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>}
+                          content={() => componentRefA.current}
+                      />
+                      <div style={{ display: 'none' }}>
+                        <BillForCheckOut ref={componentRefA} newData={tableOrderItems} dataStore={dataStore} />
+                      </div>
                     </div>
                     <div>
                       <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.table_id, selectedTable?.code)}>+ ເພີ່ມອໍເດີ</Button>
@@ -265,6 +265,16 @@ export default function TableList() {
                 <div style={{ display: _orderIsChecked() ? "none" : '' }}>
                   <div>ອັບເດດເປັນສະຖານະ: </div>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
+                  <ReactToPrint
+                    trigger={() => <Button
+                      variant="light"
+                      style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }}
+                    >ພີມບີນສົ່ງໄປຄົວ</Button>}
+                    content={() => componentRef.current}
+                  />
+                  <div style={{ display: 'none' }}>
+                    <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
+                  </div>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
                 </div>

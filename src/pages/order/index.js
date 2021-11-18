@@ -1,15 +1,15 @@
-import React, { useEffect, } from "react";
+import React, { useEffect, useRef } from "react";
 import useReactRouter from "use-react-router";
 import Container from "react-bootstrap/Container";
 import { Table, Button } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
-
+import ReactToPrint from 'react-to-print';
 /**
  * import components
  */
 import OrderNavbar from "./component/OrderNavbar";
-
+import { BillForChef } from "../bill/BillForChef";
 /**
  * import function
  */
@@ -19,10 +19,12 @@ import { useStore } from "../../store";
 
 const Order = () => {
   const { match } = useReactRouter();
+  const componentRef = useRef();
 
-  const { 
+  const {
+    orderItemForPrintBill,
     orderItems,
-    getOrderItemsStore, 
+    getOrderItemsStore,
     handleCheckbox,
     checkAllOrders,
     handleUpdateOrderStatus
@@ -34,7 +36,6 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
-
   return (
     <div style={{}}>
       <OrderNavbar />
@@ -43,9 +44,19 @@ const Order = () => {
           <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} />
         </div>
         <div>
-          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS,match?.params?.id)}>ຍົກເລີກ</Button>
-          <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS,match?.params?.id)}>ສົ່ງໄປຄົວ</Button>
-          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS,match?.params?.id)}>ເສີບແລ້ວ</Button>
+          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS, match?.params?.id)}>ຍົກເລີກ</Button>
+          <ReactToPrint
+            trigger={() => <Button
+              variant="light"
+              style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }}
+            >ພີມບີນສົ່ງໄປຄົວ</Button>}
+            content={() => componentRef.current}
+          />
+          <div style={{ display: 'none' }}>
+            <BillForChef ref={componentRef} newData={orderItemForPrintBill?.length === 0 ? orderItems : orderItemForPrintBill} />
+          </div>
+          <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS, match?.params?.id)}>ສົ່ງໄປຄົວ</Button>
+          <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
         </div>
       </div>
       <Container fluid className="mt-3">

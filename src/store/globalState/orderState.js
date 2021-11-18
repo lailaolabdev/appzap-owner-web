@@ -11,6 +11,7 @@ export const useOrderState = () => {
     const [orderLoading, setOrderLoading] = useState(true);
     const [orderItems, setOrderItems] = useState([]);
     const [waitingOrderItems, setWaitingOrderItems] = useState([]);
+    const [orderItemForPrintBill, setorderItemForPrintBill] = useState([])
 
 
     const initialOrderSocket = useMemo(
@@ -70,7 +71,7 @@ export const useOrderState = () => {
 
 
     const handleCheckbox = async (order) => {
-
+        let _orderItemForPrint = []
         let _orderItems = [...orderItems]
         let _newOrderItems = _orderItems.map((item) => {
             if (item._id == order._id) {
@@ -80,7 +81,11 @@ export const useOrderState = () => {
                 }
             } else return item
         })
-        console.log(_newOrderItems)
+        for (let i = 0; i < _newOrderItems?.length; i++){
+            if (_newOrderItems[i]?.isChecked === true) _orderItemForPrint.push(_newOrderItems[i])
+        }
+
+        setorderItemForPrintBill(_orderItemForPrint)
         setOrderItems(_newOrderItems)
     };
 
@@ -110,6 +115,7 @@ export const useOrderState = () => {
     }
 
     return {
+        orderItemForPrintBill,
         orderLoading,
         userData,
         orderItems,

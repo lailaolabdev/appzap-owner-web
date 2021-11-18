@@ -15,6 +15,7 @@ export const useTableState = () => {
     const [tableOrders, setTableOrders] = useState([]);
     const [tableOrderItems, setTableOrderItems] = useState([]);
     const [selectedTable, setSelectedTable] = useState();
+    const [orderItemForPrintBill, setorderItemForPrintBill] = useState([])
 
     const initialTableSocket = useMemo(
         () => async () => {
@@ -162,6 +163,7 @@ export const useTableState = () => {
 
 
     const onChangeMenuCheckbox = async (order) => {
+        let _orderItemForPrint = []
         let _orderItems = [...tableOrderItems]
         let _newOrderItems = _orderItems.map((item) => {
             if (item._id == order._id) {
@@ -171,6 +173,11 @@ export const useTableState = () => {
                 }
             } else return item
         })
+        for (let i = 0; i < _newOrderItems?.length; i++) {
+            if (_newOrderItems[i]?.isChecked === true) _orderItemForPrint.push(_newOrderItems[i])
+        }
+
+        setorderItemForPrintBill(_orderItemForPrint)
         setTableOrderItems(_newOrderItems)
     };
 
@@ -213,6 +220,7 @@ export const useTableState = () => {
 
     return {
         isTableOrderLoading,
+        orderItemForPrintBill,
         tableList,
         openTableData,
         tableOrders,

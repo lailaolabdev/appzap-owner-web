@@ -98,7 +98,6 @@ export default function HistoryDetail() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ຊື່ຜູ້ສັ່ງ</th>
                   <th>ລະຫັດເຂົ້າລະບົບ</th>
                   <th>ຊື່ເມນູອາຫານ</th>
                   <th>ຈຳນວນ</th>
@@ -112,7 +111,6 @@ export default function HistoryDetail() {
                   return (
                     <tr index={item}>
                       <td>{index + 1}</td>
-                      <td><b>{item?.orderId?.customer_nickname}</b></td>
                       <td>{item?.code}</td>
                       <td>{item?.name}</td>
                       <td>{item?.quantity}</td>
