@@ -93,18 +93,18 @@ export default function History() {
           </Nav.Item>
           <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
             <InputGroup>
-              <div className="col-4">
+              <div className="col">
                 <label>ແຕ່ວັນທີ</label>
                 <input type="date" className="form-control" value={startDate} onChange={(e) => _setSelectedDateStart(e)}></input>
               </div>
-              <div className="col-4">
+              <div className="col">
                 <label>ຫາວັນທີ</label>
                 <input type="date" className="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
               </div>
-              <div className="col-4">
+              {/* <div className="col-4">
                 <label>ລະຫັດເຂົ້າລະບົບ</label>
                 <input type="number" className="form-control" placeholder="ລະຫັດເຂົ້າລະບົບ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
-              </div>
+              </div> */}
             </InputGroup>
           </Nav.Item>
         </div>
@@ -115,7 +115,6 @@ export default function History() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ຊື່ຜູ້ສັ່ງ</th>
                   <th>ລະຫັດເຂົ້າລະບົບ</th>
                   <th>ເລກຕູບ</th>
                   <th>ລາຄາ/ບີນ</th>
@@ -127,7 +126,6 @@ export default function History() {
                   return (
                     <tr index={item} onClick={() => _historyDetail(item?.code)}>
                       <td>{index + 1}</td>
-                      <td><b>{item?.customer_nickname}</b></td>
                       <td>{item?.code}</td>
                       <td>{item?.table_id}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.order_item))} ກີບ</b></td>

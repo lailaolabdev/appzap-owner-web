@@ -73,23 +73,45 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (data, status = CANCEL_STATUS, storeId) => {
+export const updateOrderItem = async (orderItems, storeId) => {
   try {
-    for (let orderElement of data) {
-      const url = `${END_POINT}/orderItems/${orderElement.id}`;
-      const orders = await axios.put(
-        url,
-        { status },
-        {
-          headers: await getHeaders(),
-        }
-      );
-      console.log("work work", orders);
-    }
+    console.log({orderItems})
+    const url = `${END_POINT}/v2/updateManyOrderItems`;
+    const orders = await axios.put(
+      url,
+      {
+        "orderItem": orderItems,
+        "storeId": storeId
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    console.log("work work", orders);
+    return orders;
   } catch (error) {
     console.log("get orders error:", error);
+    return error;
   }
 };
+
+// export const updateOrderItem = async (data, status = CANCEL_STATUS, storeId) => {
+//   try {
+//     for (let orderElement of data) {
+//       const url = `${END_POINT}/orderItems/${orderElement._id}`;
+//       const orders = await axios.put(
+//         url,
+//         { status },
+//         {
+//           headers: await getHeaders(),
+//         }
+//       );
+//       console.log("work work", orders);
+//     }
+//   } catch (error) {
+//     console.log("get orders error:", error);
+//   }
+// };
 
 export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {

@@ -20,7 +20,6 @@ import useReactRouter from "use-react-router"
 
 export default function StoreDetail() {
     const { history, location, match } = useReactRouter()
-
     const [isLoading, setIsLoading] = useState(false)
     const [dataStore, setStore] = useState()
     const [numBerTable, setnumBerTable] = useState(0)
@@ -52,14 +51,14 @@ export default function StoreDetail() {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerMenus(json?.length));
-            
+
         setIsLoading(false)
     }
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
+    console.log("dataStore", dataStore)
     // upload photo
     const [namePhoto, setNamePhoto] = useState('')
     const [file, setFile] = useState()
@@ -375,7 +374,7 @@ export default function StoreDetail() {
                             <Modal.Footer>
                                 <Button style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }} onClick={handleClose}>
                                     ຍົກເລີກ
-          </Button>
+                                </Button>
                                 <Button style={{ backgroundColor: COLOR_APP, color: "#ffff" }} onClick={() => handleSubmit()}>ບັນທືກ</Button>
                             </Modal.Footer>
                         </form>

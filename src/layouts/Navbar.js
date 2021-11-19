@@ -1,32 +1,25 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import Navbar from "react-bootstrap/Navbar"
 import Nav from "react-bootstrap/Nav"
 import Form from "react-bootstrap/Form"
 import Image from "react-bootstrap/Image"
 import Dropdown from "react-bootstrap/Dropdown"
-import NavDropdown from "react-bootstrap/NavDropdown"
 import { USER_KEY, END_POINT, URL_PHOTO_AW3 } from "../constants"
 import useReactRouter from "use-react-router"
 import ImageProfile from "../image/profile.png"
 import { Badge, Modal, Button, Table } from 'react-bootstrap'
-import socketIOClient from "socket.io-client";
 import moment from 'moment';
 import axios from 'axios';
+import { SocketContext } from "../services/socket"
 
 
 export default function NavBar() {
   const { history, location, match } = useReactRouter()
-  // const socket = socketIOClient(END_POINT);
   const [getmassege, setgetmassege] = useState()
   const [userData, setUserData] = useState({})
   const [messageData, setmessageData] = useState()
 
 
-  // socket.on(`messageAdmin${userData?.data?.storeId}`, data => {
-  //   const ADMIN = localStorage.getItem(USER_KEY)
-  //   const _localJson = JSON.parse(ADMIN)
-  //   _message(_localJson)
-  // });
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY)
@@ -36,19 +29,22 @@ export default function NavBar() {
       history.push(`/`)
     }
   }, [])
+
   const _onLogout = () => {
     localStorage.clear()
     sessionStorage.clear()
     history.push(`/`)
   }
-  const _message = async (item) => {
-    const url = await END_POINT + `/messages/?storeId=${item?.data?.storeId}&&status=NOT`;
-    const _data = await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setmessageData(response)
-      })
-  }
+
+  // const _message = async (item) => {
+  //   const url = await END_POINT + `/messages/?storeId=${item?.data?.storeId}&&status=NOT`;
+  //   const _data = await fetch(url)
+  //     .then(response => response.json())
+  //     .then(response => {
+  //       setmessageData(response)
+  //     })
+  // }
+
   const _updateMessage = async () => {
     let getId = []
     for (let p = 0; p < messageData?.length; p++) {
@@ -72,6 +68,9 @@ export default function NavBar() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+
+
   return (
     <div>
       <Navbar
@@ -148,7 +147,7 @@ export default function NavBar() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>ຕູບ</th>
+                <th>ໂຕະ</th>
                 <th>ຊື່</th>
                 <th>ຂໍ້ຄວາມ</th>
                 <th>ເວລາ</th>

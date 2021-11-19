@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import useReactRouter from "use-react-router";
 import axios from 'axios';
 import ReactToPrint from 'react-to-print';
-import { ComponentToPrint } from './components/ToPrint';
-
+import Swal from 'sweetalert2'
 
 /**
  * const
@@ -17,35 +14,19 @@ import { ComponentToPrint } from './components/ToPrint';
 import {
   TITLE_HEADER,
   BODY,
-  NAV,
   DIV_NAV,
-  half_backgroundColor,
-  padding,
-  PRIMARY_FONT_BLACK,
-  BUTTON_EDIT,
-  BUTTON_OUTLINE_DANGER,
-  BUTTON_DELETE,
-  BUTTON_OUTLINE_DARK,
-  padding_white,
   USER_KEY,
-  ACTIVE_STATUS,
-  CANCEL_STATUS,
-  DOING_STATUS,
-  CHECKOUT_STATUS,
-  SERVE_STATUS,
-  BUTTON_EDIT_HOVER,
-  END_POINT,
   URL_PHOTO_AW3,
 } from "../../constants/index";
 
 import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/api'
 import { getHeaders } from '../../services/auth';
-
-// bills
-import { Image } from 'react-bootstrap';
-import { STORE } from '../../constants/api'
-import profileImage from "../../image/profile.png"
 import Loading from '../../components/Loading';
+import { ComponentToPrint } from './components/ToPrint';
+import moment from 'moment';
+import { faCashRegister } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 function AddOrder() {
   const { history, location, match } = useReactRouter();
@@ -55,13 +36,12 @@ function AddOrder() {
   const [isLoading, setIsLoading] = useState(false)
   const [Categorys, setCategorys] = useState()
   const [Menus, setMenus] = useState()
-  const [getTokken, setgetTokken] = useState();
   const [note, setNote] = useState('');
   const [userData, setUserData] = useState({})
 
   const [selectedMenu, setSelectedMenu] = useState([]);
+  const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
 
 
@@ -74,7 +54,6 @@ function AddOrder() {
     const fetchData = async () => {
       const _localData = await getLocalData()
       if (_localData) {
-        setgetTokken(_localData)
         getData(_localData?.DATA?.storeId)
         getMenu(_localData?.DATA?.storeId)
       }
@@ -112,19 +91,20 @@ function AddOrder() {
       method: "GET",
     }).then(response => response.json())
       .then(json => {
-      setIsLoading(false)
+        setIsLoading(false)
         setMenus(json)
       });
   }
 
-  const addToCart = (id, name, price) => {
+  const addToCart = (menu) => {
+    setSelectedItem(menu)
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
     let data = {
-      id,
-      name,
+      id: menu._id,
+      name: menu.name,
       quantity: 1,
-      price
+      price: menu.price
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -132,7 +112,7 @@ function AddOrder() {
       let thisSelectedMenu = [...selectedMenu];
       for (let index in thisSelectedMenu) {
         // console.log(thisSelectedMenu[index]);
-        if (thisSelectedMenu[index].id === id) {
+        if (thisSelectedMenu[index]?.id === menu?._id) {
           allowToAdd = false;
           itemIndexInSelectedMenu = index;
         }
@@ -150,11 +130,10 @@ function AddOrder() {
   }
 
   const onRemoveFromCart = (id) => {
-    // console.log(selectedMenu)
     let selectedMenuCopied = [...selectedMenu];
-    for (let i = 0; i < selectedMenuCopied.length; i++){
+    for (let i = 0; i < selectedMenuCopied.length; i++) {
       var obj = selectedMenuCopied[i];
-      if(obj.id === id){
+      if (obj.id === id) {
         selectedMenuCopied.splice(i, 1);
       }
     }
@@ -162,13 +141,20 @@ function AddOrder() {
   }
 
   const createOrder = async (data, header) => {
+    console.log({ data })
     try {
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': header.authorization
       }
 
-      axios.post(END_POINT_SEVER + "/orders", data, {
+      axios.post(END_POINT_SEVER + "/v2/ordersByadmin", {
+        "menu": data,
+        // "customer_nickname": "Joy xaiyavong",
+        "storeId": userData?.data?.storeId,
+        table_id: code,
+        code: tableId,
+      }, {
         headers: headers
       })
         .then((response) => {
@@ -181,54 +167,37 @@ function AddOrder() {
       console.log(error)
     }
   }
-  const openTheTable = async (data, header) => {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': header.authorization
-      }
 
-      axios.post(END_POINT_SEVER + "/opens", data, {
-        headers: headers
+
+  const onSubmit = async (isPrinted) => {
+
+    if (selectedMenu.length == 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
+        showConfirmButton: false,
+        timer: 1800
       })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-    } catch (error) {
-      console.log(error)
+      return;
     }
-  }
-  const onSubmit = async () => {
+
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
-      for (let index in selectedMenu) {
-        let data = {
-          menu: selectedMenu[index].id,
-          storeId: userData?.data?.storeId,
-          quantity: selectedMenu[index].quantity,
-          note: note,
-          table_id: code,
-          code: tableId,
-          customer_nickname: userData?.data?.firstname,
-          is_from_website: true
-        }
-        createOrder(data, header);
-      }
-      let dataInfo = {
-        code: tableId,
-        customer_nickname: userData?.data?.firstname
-      };
-      openTheTable(dataInfo, header);
-      document.getElementById('btnPrint').click();
+      await createOrder(selectedMenu, header);
+
+      Swal.fire({
+        icon: 'success',
+        title: "ເພີ່ມອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 1800
+      })
+      if (isPrinted) document.getElementById('btnPrint').click();
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
-      // window.open(`/CheckBillOut/${userData?.data?.storeId}/?code=${tableId}`);
     }
   }
 
-  let totalPrice = 0;
+
+  console.log("selectedMenu===>", selectedMenu)
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint
@@ -294,7 +263,7 @@ function AddOrder() {
                     {
                       Categorys && Categorys.map((data, index) => {
                         return (
-                          <option key={"category"+index} value={data._id}>{data.name}</option>
+                          <option key={"category" + index} value={data._id}>{data.name}</option>
                         )
                       })
                     }
@@ -303,18 +272,19 @@ function AddOrder() {
               </div>
             </div>
             <div className="row">
-            {isLoading ? <Loading /> : ""}
+              {isLoading ? <Loading /> : ""}
               {
                 allSelectedMenu && allSelectedMenu.map((data, index) => {
                   return (
-                    <div key={"menu"+index} className="col-3" style={{ padding: 5 }} onClick={() => addToCart(data?._id, data?.name, data?.price)}>
+                    <div key={"menu" + index} className="col-3"
+                      style={{ margin: 3, padding: 0, border: data._id == selectedItem?._id ? "4px solid #FB6E3B" : "4px solid rgba(0,0,0,0)" }}
+                      onClick={() => addToCart(data)}>
                       <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
                       <div style={{
                         backgroundColor: '#000',
                         color: '#FFF',
                         position: 'relative',
                         opacity: 0.5,
-                        // top: -10,
                         padding: 10
                       }}>
                         <span>{data?.name}</span>
@@ -347,32 +317,30 @@ function AddOrder() {
               <div className="col-12">
                 <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: 'bold' }}>
-                      <th>ລຳດັບ</th>
-                      <th>ຊື່ອໍເດີ້</th>
-                      <th>ຕູບ</th>
-                      <th>ຈຳນວນ</th>
-                      <th>ເລືອກ</th>
+                    <tr style={{ fontSize: 'bold', border: "none" }}>
+                      <th style={{ border: "none" }}>ລຳດັບ</th>
+                      <th style={{ border: "none" }} className="text-center">ຊື່ເມນູ</th>
+                      {/* <th>ໂຕະ</th> */}
+                      <th style={{ border: "none" }}>ຈຳນວນ</th>
+                      <th style={{ border: "none" }}>ຈັດການ</th>
                     </tr>
                   </thead>
                   <tbody>
-                  {
-                    selectedMenu && selectedMenu.map((data, index) => {
-                      return (
-                        <tr key={"selectMenu"+index}>
-                          <td>{index + 1}</td>
-                          <td>{data.name}</td>
-                          <td>{tableId}</td>
-                          <td>
-                            {/* <i className="fa fa-plus" aria-hidden="true"></i> */}
-                            {data.quantity}
-                            {/* <i className="fa fa-minus" aria-hidden="true"></i> */}
-                          </td>
-                          <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B' }}></i></td>
-                        </tr>
-                      )
-                    })
-                  }
+                    {
+                      selectedMenu && selectedMenu.map((data, index) => {
+                        return (
+                          <tr key={"selectMenu" + index}>
+                            <td>{index + 1}</td>
+                            <td>{data.name}</td>
+                            {/* <td>{tableId}</td> */}
+                            <td>
+                              {data.quantity}
+                            </td>
+                            <td><i onClick={() => onRemoveFromCart(data.id)} className="fa fa-trash" aria-hidden="true" style={{ color: '#FB6E3B', cursor: "pointer" }}></i></td>
+                          </tr>
+                        )
+                      })
+                    }
                   </tbody>
                 </Table>
               </div>
@@ -383,9 +351,13 @@ function AddOrder() {
                 </div>
               </div>
               <div className="col-12">
-                <div className="form-group d-flex justify-content-center">
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => null}>ຍົກເລີກ</Button>
-                  <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => onSubmit()}>ສັ່ງອາຫານ</Button>
+                <div className="row" style={{ margin: 0 }}>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>
+                  <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(false)}>ສັ່ງອາຫານ</Button>
+                </div>
+                <div style={{ height: 10 }} />
+                <div className="row" style={{ margin: 0 }}>
+                  <Button variant="light" className="hover-me" style={{ height: 60, marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
                 </div>
               </div>
             </div>

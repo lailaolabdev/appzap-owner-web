@@ -9,14 +9,14 @@ import { COLOR_APP, END_POINT, USER_KEY } from "../../../constants";
 import { getLocalData } from "../../../constants/api";
 import { getHeaders } from "../../../services/auth";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
-import socketIOClient from "socket.io-client";
+// import socketIOClient from "socket.io-client";
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from 'sweetalert2'
 
-const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
+const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   const { history, location, match } = useReactRouter();
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
@@ -34,7 +34,7 @@ const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
   useEffect(() => {
     Getdata();
   }, [data]);
-  
+
   useEffect(() => {
     _calculateTotal()
   }, [NewData]);
@@ -53,7 +53,7 @@ const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
   };
 
 
-  const _calculateTotal =()=>{
+  const _calculateTotal = () => {
     let _total = 0;
     if (NewData && NewData.length > 0) {
       for (let orderItem of NewData) {
@@ -63,36 +63,63 @@ const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
     setTotal(_total)
   }
 
-  
-  
+
+
   const _checkBill = async () => {
-    console.log({data})
+    console.log({ data })
     if (data) {
-      await axios
-        .put(
-          END_POINT + `/orders/${data[0]?.orderId?._id}`,
-          {
-            status: "CHECKOUT",
-            checkout: "true",
-            code: data[0]?.orderId?.code,
-          },
-          {
-            headers: await getHeaders(),
-          }
-        )
-        .then(async function (response) {
-          Swal.fire({
-            icon: 'success',
-            title: "ສໍາເລັດການເຊັກບິນ",
-            showConfirmButton: false,
-            timer: 1800
+
+
+      if (!data[0]?.orderId?._id) {
+        await axios
+          .put(
+            END_POINT + `/updateGenerates/${tableData?.code}`,
+            {
+              "isOpened": false,
+              "staffConfirm": false
+            },
+            {
+              headers: await getHeaders(),
+            }
+          )
+          .then(async function (response) {
+            Swal.fire({
+              icon: 'success',
+              title: "ສໍາເລັດການເຊັກບິນ",
+              showConfirmButton: false,
+              timer: 1800
+            })
+            resetTableOrder()
+            hide()
           })
-          resetTableOrder()
-          hide()
-        })
-        .catch(function (error) {
-          errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-        });
+      } else {
+        await axios
+          .put(
+            END_POINT + `/orders/${data[0]?.orderId?._id}`,
+            {
+              status: "CHECKOUT",
+              checkout: "true",
+              code: data[0]?.orderId?.code,
+            },
+            {
+              headers: await getHeaders(),
+            }
+          )
+          .then(async function (response) {
+            Swal.fire({
+              icon: 'success',
+              title: "ສໍາເລັດການເຊັກບິນ",
+              showConfirmButton: false,
+              timer: 1800
+            })
+            resetTableOrder()
+            hide()
+          })
+          .catch(function (error) {
+            errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+          });
+      }
+
     } else {
       errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
     }
@@ -111,9 +138,9 @@ const OrderCheckOut = ({ data, tableData, show, hide,resetTableOrder }) => {
         <Modal.Title>ລາຍລະອຽດເມນູອໍເດີ້</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{fontSize: 30,fontWeight:"bold",margin:0}}>ໂຕະ:{tableData?.table_id}</pre>
-        <pre style={{fontSize: 16,fontWeight:"bold",margin:0}}>ລະຫັດ:{tableData?.code}</pre>
-        <pre style={{fontSize: 16,fontWeight:"bold",margin:0}}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>

@@ -26,16 +26,16 @@ export default function OrderNavbar() {
         history.push(`/orders/served/pagenumber/1/${getTokken?.DATA?.storeId}`)
     }
     return (
-        <div>
-            <Nav variant="tabs" defaultActiveKey={location?.pathname} style={{ fontWeight: "bold", }}>
+        <div style={{ backgroundColor: "#f8f8f8",border:"none" }}>
+            <Nav variant="tabs" defaultActiveKey={location?.pathname} style={{ fontWeight: "bold",backgroundColor: "#f8f8f8",border:"none" }}>
                 <Nav.Item>
-                    <Nav.Link eventKey={`/orders/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B", }} onClick={() => _order()}>ອໍເດີ້ເຂົ້າ</Nav.Link>
+                    <Nav.Link eventKey={`/orders/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B", border: "none"  }} onClick={() => _order()}>ອໍເດີ້ເຂົ້າ</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey={`/orders/doing/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B", }} onClick={() => _doing()}>ກຳລັງເຮັດ</Nav.Link>
+                    <Nav.Link eventKey={`/orders/doing/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B", border: "none"  }} onClick={() => _doing()}>ກຳລັງເຮັດ</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey={`/orders/served/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B", }} onClick={() => _served()}>ເສີບແລ້ວ</Nav.Link>
+                    <Nav.Link eventKey={`/orders/served/pagenumber/1/` + match?.params?.id} style={{ color: "#FB6E3B",  border: "none" }} onClick={() => _served()}>ເສີບແລ້ວ</Nav.Link>
                 </Nav.Item>
             </Nav>
         </div>
