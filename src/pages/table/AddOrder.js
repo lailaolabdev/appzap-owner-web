@@ -22,7 +22,7 @@ import {
 import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/api'
 import { getHeaders } from '../../services/auth';
 import Loading from '../../components/Loading';
-import { ComponentToPrint } from './components/ToPrint';
+import { BillForChef } from './components/BillForChef';
 import moment from 'moment';
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -141,7 +141,6 @@ function AddOrder() {
   }
 
   const createOrder = async (data, header) => {
-    console.log({ data })
     try {
       const headers = {
         'Content-Type': 'application/json',
@@ -195,9 +194,6 @@ function AddOrder() {
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
     }
   }
-
-
-  console.log("selectedMenu===>", selectedMenu)
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint
@@ -205,7 +201,7 @@ function AddOrder() {
         content={() => componentRef.current}
       />
       <div style={{ display: 'none' }}>
-        <ComponentToPrint ref={componentRef} note={note} userData={userData} selectedMenu={selectedMenu} tableId={tableId} code={code} />
+        <BillForChef ref={componentRef} selectedMenu={selectedMenu} code={code} />
       </div>
     </div>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
@@ -344,12 +340,12 @@ function AddOrder() {
                   </tbody>
                 </Table>
               </div>
-              <div className="col-12">
+              {/* <div className="col-12">
                 <div className="form-group">
                   <label>ຄອມເມັ້ນລົດຊາດ</label>
                   <textarea className="form-control" placeholder="ປ້ອນລົດຊາດທີ່ມັກ..." value={note} onChange={(e) => setNote(e.target.value)} />
                 </div>
-              </div>
+              </div> */}
               <div className="col-12">
                 <div className="row" style={{ margin: 0 }}>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>

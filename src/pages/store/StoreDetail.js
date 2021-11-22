@@ -58,7 +58,6 @@ export default function StoreDetail() {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    console.log("dataStore", dataStore)
     // upload photo
     const [namePhoto, setNamePhoto] = useState('')
     const [file, setFile] = useState()

@@ -37,7 +37,6 @@ export default function NotificationCheckBill() {
   const _checkbillTable = (item) => {
     history.push(`/checkBill/${match?.params?.id}/historiesCheckBill/?code=${item}`)
   }
-  console.log("orderCallCheckOut", orderCallCheckOut)
   return (
     <div style={{ minHeight: 400 }}>
       <Container fluid>
