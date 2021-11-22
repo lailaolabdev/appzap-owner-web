@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import moment from "moment";
 import { moneyCurrency } from "../../helpers"
-import { URL_PHOTO_AW3, COLOR_APP } from '../../constants'
+import { URL_PHOTO_AW3 } from '../../constants'
 import { Image } from "react-bootstrap";
 import profileImage from "../../image/profile.png"
 
@@ -12,7 +12,7 @@ export class BillForCheckOut extends React.PureComponent {
         let data = 0
         if (newData) {
             for (let i = 0; i < newData.length; i++) {
-                data += newData[i]?.price
+                data += (newData[i]?.price * newData[i]?.quantity)
             }
         }
         return (
