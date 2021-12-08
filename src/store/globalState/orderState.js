@@ -11,7 +11,7 @@ export const useOrderState = () => {
     const [orderLoading, setOrderLoading] = useState(true);
     const [orderItems, setOrderItems] = useState([]);
     const [waitingOrderItems, setWaitingOrderItems] = useState([]);
-    const [orderItemForPrintBill, setorderItemForPrintBill] = useState([])
+    const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] = useState([])
 
 
     const initialOrderSocket = useMemo(
@@ -35,7 +35,6 @@ export const useOrderState = () => {
             method: "GET",
         }).then(response => response.json())
             .then(json => {
-                console.log({ json })
                 setOrderLoading(false)
                 setOrderItems(json)
                 if (status == WAITING_STATUS) setWaitingOrderItems(json)
@@ -53,12 +52,10 @@ export const useOrderState = () => {
                 id: i._id
             }
         })
-        console.log({ _updateItems })
         let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
         if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
             let _newOrderItem = orderItems.filter((item) => !item.isChecked);
             setOrderItems(_newOrderItem)
-            console.log(WAITING_STATUS)
             if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
             Swal.fire({
                 icon: 'success',
@@ -71,7 +68,6 @@ export const useOrderState = () => {
 
 
     const handleCheckbox = async (order) => {
-        let _orderItemForPrint = []
         let _orderItems = [...orderItems]
         let _newOrderItems = _orderItems.map((item) => {
             if (item._id == order._id) {
@@ -81,15 +77,13 @@ export const useOrderState = () => {
                 }
             } else return item
         })
+        let _orderItemForPrint = []
         for (let i = 0; i < _newOrderItems?.length; i++){
             if (_newOrderItems[i]?.isChecked === true) _orderItemForPrint.push(_newOrderItems[i])
         }
-
-        setorderItemForPrintBill(_orderItemForPrint)
+        setorderItemForPrintBillSelect(_orderItemForPrint)
         setOrderItems(_newOrderItems)
     };
-
-
     /**
      * ເລືອກທຸກອໍເດີ
      */
@@ -113,9 +107,8 @@ export const useOrderState = () => {
         }
         setOrderItems(_newOrderItems)
     }
-
     return {
-        orderItemForPrintBill,
+        orderItemForPrintBillSelect,
         orderLoading,
         userData,
         orderItems,

@@ -7,19 +7,25 @@ export class BillForChef extends React.PureComponent {
             <div className="col-12 center">
                 {newData?.map((item, index) => {
                     return (
-                        <div style={{ paddingLeft: 20, paddingRight: 20,color:"#000000",fontSize:18 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <p>ຊື່ເມນູ : {item?.name}</p>
-                                <p>ເລກໂຕະ : {item?.orderId?.table_id}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <p>ຈຳນວນ : {item?.quantity}</p>
-                                <p>ເວລາ : {moment(item?.createdAt).format("HH:mm")}</p>
-                            </div>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <p>ຄອມເມັ້ນ : {item?.note}</p>
-                            </div>
-                            <hr />
+                        <div style={{ paddingLeft: 20, paddingRight: 20, color: "#000000", fontSize: 18 }}>
+                            <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
+                                <tr style={{ fontSize: "20px", color: "#000000" }}>
+                                    <td>ຊື່ເມນູ : {item?.name}</td>
+                                    <td>ເວລາ : {moment(item?.createdAt).format("HH:mm")}</td>
+                                </tr>
+                                <tr style={{ fontSize: "20px", color: "#000000" }}>
+                                    <td>ຈຳນວນ :  {item?.quantity}</td>
+                                    <td>ເລກໂຕະ :  {item?.orderId?.table_id}</td>
+                                </tr>
+                                <tr style={{ fontSize: "20px", color: "#000000" }}>
+                                    <td>ຄອມເມັ້ນ : {item?.note}</td>
+                                </tr>
+                            </table>
+                            <hr style={{
+                                color: "#000000",
+                                height: 2,
+                                borderTop: "solid 5px #000000"
+                            }} />
                         </div>
                     )
                 }
