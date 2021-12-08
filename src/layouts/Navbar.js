@@ -35,16 +35,6 @@ export default function NavBar() {
     sessionStorage.clear()
     history.push(`/`)
   }
-
-  // const _message = async (item) => {
-  //   const url = await END_POINT + `/messages/?storeId=${item?.data?.storeId}&&status=NOT`;
-  //   const _data = await fetch(url)
-  //     .then(response => response.json())
-  //     .then(response => {
-  //       setmessageData(response)
-  //     })
-  // }
-
   const _updateMessage = async () => {
     let getId = []
     for (let p = 0; p < messageData?.length; p++) {

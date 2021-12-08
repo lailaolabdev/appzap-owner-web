@@ -22,20 +22,20 @@ const Order = () => {
   const componentRef = useRef();
 
   const {
-    orderItemForPrintBill,
+    orderItemForPrintBillSelect,
     orderItems,
     getOrderItemsStore,
     handleCheckbox,
     checkAllOrders,
     handleUpdateOrderStatus
   } = useStore();
-
   /**
    * Initial Component
    */
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
+  console.log("orderItemForPrintBillSelect==>", orderItemForPrintBillSelect)
   return (
     <div style={{}}>
       <OrderNavbar />
@@ -53,7 +53,7 @@ const Order = () => {
             content={() => componentRef.current}
           />
           <div style={{ display: 'none' }}>
-            <BillForChef ref={componentRef} newData={orderItemForPrintBill?.length === 0 ? orderItems : orderItemForPrintBill} />
+            <BillForChef ref={componentRef} newData={orderItemForPrintBillSelect?.length === 0 ? orderItems : orderItemForPrintBillSelect} />
           </div>
           <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS, match?.params?.id)}>ສົ່ງໄປຄົວ</Button>
           <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>

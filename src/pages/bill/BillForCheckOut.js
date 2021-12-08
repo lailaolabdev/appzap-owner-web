@@ -16,65 +16,108 @@ export class BillForCheckOut extends React.PureComponent {
             }
         }
         return (
-            <div className="col-12 center">
-                <div>
-                    {dataStore?.image ? (
-                        <center>
-                            <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="" width="150" height="150" style={{
+            <div>
+                <table style={{ width: '40%',textAlign: 'center', fontSize: "18px", color: "#000000",display:"flex",justifyContent: "center"}}>
+                    <tr style={{ textAlign: "center" }}>
+                        {dataStore?.image ? (
+                            <div style={{ textAlign: 'center', fontSize: "18px", color: "#000000" }}>
+                                <Image src={URL_PHOTO_AW3 + dataStore?.image} alt="" width="150" height="150" style={{
+                                    height: 200,
+                                    width: 200,
+                                    color: "#000000",
+                                    fontSize: 18,
+                                    borderRadius: '50%',
+                                }} />
+                            </div>
+                        ) : (<div>
+                            <Image src={profileImage} alt="" width="150" height="150" style={{
                                 height: 200,
                                 width: 200,
                                 borderRadius: '50%',
+                                textAlign: "center",
+
+                                color: "#000000",
+                                fontSize: 18
                             }} />
-                        </center>
-                    ) : (<center>
-                        <Image src={profileImage} alt="" width="150" height="150" style={{
-                            height: 200,
-                            width: 200,
-                            borderRadius: '50%',
-                        }} />
-                    </center>)}
-                    <center>
-                    <h3 style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}> {dataStore?.name ? dataStore?.name : "-"}</h3>
-                        <h3 style={{ padding: 5 }}>ເປີດບໍລິການ</h3>
-                        <h3 style={{ padding: 5 }}>{dataStore?.dateClose + "  " + dataStore?.timeClose}</h3>
-                        <h3 className="col-5">{dataStore?.detail ? dataStore?.detail : "-"}</h3>
-                    </center>
-                </div>
-                <hr />
-                <div className="col-sm-7">
-                    <div>
-                        <h3 className="col-5">ເບີໂທ : {dataStore?.phone ? dataStore?.phone : "-"}</h3>
-                        <h3 className="col-5">whatsapp : {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}</h3>
-                    </div>
-                </div>
-                <hr />
-                <div style={{ display: "flex", justifyContent: "space-between", paddingLeft: 30, paddingRight: 30}}>
-                    <div>
-                        <h3>ເລກຕູບ : {newData[0]?.orderId?.table_id}</h3>
-                        <h3>ລະຫັດ : {newData[0]?.code}</h3>
-                    </div>
-                    <h3>ວັນທີ : {moment(newData[0]?.createdAt).format("DD/mm/YYYY")}</h3>
-                </div>
-                <table class="table">
-                    <tbody>
-                        {newData?.map((item, index) => {
-                            return (
-                                <tr>
-                                    <th>{index + 1}</th>
-                                    <td>{item?.name}</td>
-                                    <td>{item?.quantity}</td>
-                                    <td>{moneyCurrency(item?.price)}</td>
-                                </tr>
-                            )
-                        }
-                        )}
-                    </tbody>
+                        </div>)}
+                    </tr>
                 </table>
-                <hr />
-                <div style={{ display: "flex", justifyContent: "end" }}>
-                    <h3>ລວມເປັນເງີນທັ້ງໝົດ : {moneyCurrency(data)}</h3>
-                </div>
-                <hr />
+                <table style={{ textAlign: 'center', fontSize: "18px", color: "#000000" }}>
+                    <tr style={{ textAlign: "center" }}>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>{dataStore?.name ? dataStore?.name : "-"} </th>
+                    </tr>
+                    <tr style={{ textAlign: "center" }}>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>ເປີດບໍລິການ </th>
+                    </tr>
+                    <tr style={{ textAlign: "center" }}>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>{dataStore?.dateClose + "  " + dataStore?.timeClose} </th>
+                    </tr>
+                    <tr style={{ textAlign: "center" }}>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>{dataStore?.detail ? dataStore?.detail : "-"} </th>
+                    </tr>
+                </table>
+                <table style={{ width: '50%', fontSize: "18px", color: "#000000" }}>
+                    <tr>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>ເບີໂທ :{dataStore?.phone ? dataStore?.phone : "-"} </th>
+                    </tr>
+                    <tr>
+                        <th style={{ fontSize: "15px", color: "#000000" }}>whatsapp: {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}</th>
+                    </tr>
+                    <tr>
+                        <th>ເລກຕູບ :{newData[0]?.orderId?.table_id} </th>
+                    </tr>
+                    <tr>
+                        <th>ລະຫັດ: {newData[0]?.code}</th>
+                    </tr>
+                    <tr>
+                        <th>ວັນທີ:  {moment(newData[0]?.createdAt).format("DD/mm/YYYY")}</th>
+                    </tr>
+                </table>
+                <hr style={{
+                    color: "#000000",
+                    height: 5,
+                    borderTop: "solid 5px #000000"
+                }} />
+                <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
+                    <tr>
+                        <th width="5%">ລຳດັບ</th>
+                        <th width="15%">ຊື່ເມນູ</th>
+                        <th width="5%">ຈຳນວນ</th>
+                        <th width="6%">ລາຄາ</th>
+                    </tr>
+                    {newData?.map((item, index) => {
+                        return (
+                            <tr>
+                                <th>{index + 1}</th>
+                                <td>{item?.name}</td>
+                                <td>{item?.quantity}</td>
+                                <td>{moneyCurrency(item?.price)}</td>
+                            </tr>
+                        )
+                    }
+                    )}
+                </table>
+                <hr style={{
+                    color: "#000000",
+                    height: 5,
+                    borderTop:"solid 5px #000000"
+                }} />
+                <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
+                    <tr style={{ fontSize: "20px", color: "#000000" }}>
+                        <th style={{ textAlign: "center" }} colspan="3">ລວມເປັນເງີນທັງໝົດ</th>
+                        <th>{moneyCurrency(data)}</th>
+                    </tr>
+                </table>
+                <hr style={{
+                    color: "#000000",
+                    height: 5,
+                    borderTop: "solid 5px #000000"
+                }} />
+                <table style={{ width: '40%', textAlign: "center", fontSize: "18px", color: "#000000" }}>
+                    <tr style={{ fontSize: "20px", color: "#000000" }}>
+                        <th>ຂອບໃຈທີ່ໃຊ້ບໍລິການ</th>
+                    </tr>
+                </table>
             </div>
         )
     }
