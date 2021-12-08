@@ -75,18 +75,18 @@ const Order = () => {
                 <tr key={index}>
                   <td  style={{display: "flex", justifyContent: "center", alignItems: "center", height: 50}} >
                   </td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>
+                  <td><p style={{ margin: 0 }}>{index + 1}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}</p></div>
+                      : "-"}</p>
                   </td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></div></td>
+                  <td><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></td>
                 </tr>
               ))}
           </tbody>

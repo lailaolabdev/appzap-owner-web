@@ -10,14 +10,19 @@ export class BillForCheckOut extends React.PureComponent {
         let newData = this.props.newData;
         let dataStore = this.props.dataStore;
         let data = 0
+        let newDataItem =[]
         if (newData) {
             for (let i = 0; i < newData.length; i++) {
-                data += (newData[i]?.price * newData[i]?.quantity)
+                if (newData[i]?.status === "SERVED") {
+                    newDataItem.push(newData[i])
+                    data += (newData[i]?.quantity * newData[i]?.price )
+                }
             }
+            console.log("newDataItem===>", newDataItem)
         }
         return (
             <div>
-                <table style={{ width: '40%',textAlign: 'center', fontSize: "18px", color: "#000000",display:"flex",justifyContent: "center"}}>
+                <table style={{ width: '40%', textAlign: 'center', fontSize: "18px", color: "#000000", display: "flex", justifyContent: "center" }}>
                     <tr style={{ textAlign: "center" }}>
                         {dataStore?.image ? (
                             <div style={{ textAlign: 'center', fontSize: "18px", color: "#000000" }}>
@@ -64,13 +69,13 @@ export class BillForCheckOut extends React.PureComponent {
                         <th style={{ fontSize: "15px", color: "#000000" }}>whatsapp: {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}</th>
                     </tr>
                     <tr>
-                        <th>ເລກຕູບ :{newData[0]?.orderId?.table_id} </th>
+                        <th>ເລກຕູບ :{newDataItem[0]?.orderId?.table_id} </th>
                     </tr>
                     <tr>
-                        <th>ລະຫັດ: {newData[0]?.code}</th>
+                        <th>ລະຫັດ: {newDataItem[0]?.code}</th>
                     </tr>
                     <tr>
-                        <th>ວັນທີ:  {moment(newData[0]?.createdAt).format("DD/mm/YYYY")}</th>
+                        <th>ວັນທີ:  {moment(newDataItem[0]?.createdAt).format("DD/mm/YYYY")}</th>
                     </tr>
                 </table>
                 <hr style={{
@@ -85,7 +90,7 @@ export class BillForCheckOut extends React.PureComponent {
                         <th width="5%">ຈຳນວນ</th>
                         <th width="6%">ລາຄາ</th>
                     </tr>
-                    {newData?.map((item, index) => {
+                    {newDataItem?.map((item, index) => {
                         return (
                             <tr>
                                 <th>{index + 1}</th>
@@ -100,7 +105,7 @@ export class BillForCheckOut extends React.PureComponent {
                 <hr style={{
                     color: "#000000",
                     height: 5,
-                    borderTop:"solid 5px #000000"
+                    borderTop: "solid 5px #000000"
                 }} />
                 <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>

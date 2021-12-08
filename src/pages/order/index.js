@@ -63,15 +63,15 @@ const Order = () => {
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-              <th width="20px"></th>
+              <th>#</th>
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ເບີຕູບ</th>
               <th>ລະຫັດຕູບ</th>
-              <th>ຄອມເມັ້ນ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
+              <th>ຄອມເມັ້ນ</th>
             </tr>
           </thead>
           <tbody>
@@ -80,27 +80,25 @@ const Order = () => {
                 return (
                   <tr key={index}>
                     <td>
-                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                         <Checkbox
                           checked={order?.isChecked ? true : false}
                           onChange={(e) => handleCheckbox(order)}
                           color="primary"
                           inputProps={{ "aria-label": "secondary checkbox" }}
                         />
-                      </div>
                     </td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></div></td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></div></td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
-                    <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></div></td>
-                    <td style={{ color: "red", fontWeight: "bold" }}><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
+                    <td><p style={{ margin: 0 }}>{index + 1}</p></td>
+                    <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
+                    <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
+                    <td><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></td>
+                    <td><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></td>
+                    <td style={{ color: "red", fontWeight: "bold" }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></td>
                     <td>
-                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.createdAt
+                      <p style={{ margin: 0 }}>{order?.createdAt
                         ? moment(order?.createdAt).format("HH:mm ")
-                        : "-"} ໂມງ</p></div>
+                        : "-"} ໂມງ</p>
                     </td>
+                    <td><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></td>
                   </tr>
                 )
               })

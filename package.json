@@ -44,6 +44,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build:deploy": "GENERATE_SOURCEMAP=false react-scripts build && aws s3 sync ./build s3://restaurant.appzap.la",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
