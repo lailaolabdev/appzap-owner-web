@@ -33,84 +33,11 @@ const Order = () => {
 
   
   const [updateModal, setUpdateModal] = useState(false);
-  // const [ordersDoing, setOrdersDoing] = useState();
-  // const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     getOrderItemsStore(DOING_STATUS)
   }, [])
-
-  // const getData = async (tokken) => {
-  //   await setIsLoading(true);
-  //   await fetch(END_POINT + `/orderItems?status=DOING&&storeId=${match?.params?.id}`, {
-  //     method: "GET",
-  //   }).then(response => response.json())
-  //     .then(json => setOrdersDoing(json));
-  //   await setIsLoading(false);
-  // }
-
-  const _handleUpdate = async () => {
-    // let _updateItems = ordersDoing.filter((item) => item.isChecked).map((i) => {
-    //   return {
-    //     ...i,
-    //     status: SERVE_STATUS,
-    //     id: i._id
-    //   }
-    // })
-    // let _resOrderUpdate = await updateOrderItem(_updateItems, match?.params?.id);
-    // if(_resOrderUpdate?.data?.message=="UPADTE_ORDER_ITEM_SECCESS"){
-    //    let _newOrderItem = ordersDoing.filter((item) => !item.isChecked);
-    //   //  setOrdersDoing(_newOrderItem)
-    //    Swal.fire({
-    //     icon: 'success',
-    //     title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
-    //     showConfirmButton: false,
-    //     timer: 10000
-    //   })
-    // }
-  };
-
-  // const _handleCheckbox = async (order) => {
-  //   let _ordersDoing = [...ordersDoing]
-  //   let _newOrdersDoing = _ordersDoing.map((item) => {
-  //     if (item._id == order._id) {
-  //       return {
-  //         ...item,
-  //         isChecked: !item.isChecked
-  //       }
-  //     } else return item
-  //   })
-
-  //   setOrdersDoing(_newOrdersDoing)
-  // };
-
-  /**
- * ເລືອກທຸກອັນ
- */
-  // const _checkAll = (item) => {
-  //   let _ordersDoing = [...ordersDoing]
-  //   let _newOrderItems;
-  //   if (item?.target?.checked) {
-  //     _newOrderItems = _ordersDoing.map((item) => {
-  //       return {
-  //         ...item,
-  //         isChecked: true
-  //       }
-  //     })
-  //   } else {
-  //     _newOrderItems = _ordersDoing.map((item) => {
-  //       return {
-  //         ...item,
-  //         isChecked: false
-  //       }
-  //     })
-  //   }
-  //   setOrdersDoing(_newOrderItems)
-  // }
-
   return (
     <div>
-      {/* {isLoading ? <Loading /> : ""} */}
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
@@ -140,28 +67,28 @@ const Order = () => {
               orderItems?.map((order, index) => (
                 <tr key={index}>
                   <td  >
-                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
+                    
                       <Checkbox
                         checked={order?.isChecked ? true : false}
                         onChange={(e) => handleCheckbox(order)}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
-                    </div>
+                    
                   </td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></div></td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></div></td>
+                  <td><p style={{ margin: 0 }}>{index + 1}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></td>
+                  <td><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></td>
 
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>
+                  <td><p style={{ margin: 0 }}>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}</p></div>
+                      : "-"}</p>
                   </td>
-                  <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></div></td>
+                  <td><p style={{ margin: 0 }}>{order?.note ?? "-"}</p></td>
                 </tr>
               ))}
           </tbody>
@@ -175,7 +102,7 @@ const Order = () => {
       <UpdateModal
         show={updateModal}
         hide={() => setUpdateModal(false)}
-        handleUpdate={_handleUpdate}
+        // handleUpdate={_handleUpdate}
       />
     </div>
   );
