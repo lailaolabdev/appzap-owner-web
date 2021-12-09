@@ -35,7 +35,7 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
-  console.log("orderItemForPrintBillSelect==>", orderItemForPrintBillSelect)
+  // console.log("orderItems==>", orderItems)
   return (
     <div style={{}}>
       <OrderNavbar />
