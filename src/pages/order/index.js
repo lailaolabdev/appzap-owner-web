@@ -35,7 +35,6 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
-  // console.log("orderItems==>", orderItems)
   return (
     <div style={{}}>
       <OrderNavbar />
