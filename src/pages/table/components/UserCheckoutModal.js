@@ -13,7 +13,7 @@ const UserCheckoutModal = (props) => {
         <Modal.Title>ການເຊັກບິນ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>ຕູບ {props?.tableId} ຕ້ອງການເຊັກບີນ</p>
+        <p>ໂຕະ {props?.tableId} ຕ້ອງການເຊັກບີນ</p>
         <div style={{ float: "right" }}>
           <Button onClick={props.func}>ຕົກລົງ</Button>
         </div>

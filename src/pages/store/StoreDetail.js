@@ -189,8 +189,8 @@ export default function StoreDetail() {
                     <div style={{ padding: 8, backgroundColor: COLOR_APP, fontWeight: "bold", color: "#FFFFFF" }}>ຂໍ້ມູນທົ່ວໄປ</div>
                     <div style={{ height: 10 }}></div>
                     <div className="row">
-                        <div className="col-5">ຕູບທັງໝົດ</div>
-                        <div className="col-5"> {numBerTable ? numBerTable : "-"} ຕູບ</div>
+                        <div className="col-5">ໂຕະທັງໝົດ</div>
+                        <div className="col-5"> {numBerTable ? numBerTable : "-"} ໂຕະ</div>
                     </div>
                     <div style={{ height: 10 }}></div>
                     <div className="row">

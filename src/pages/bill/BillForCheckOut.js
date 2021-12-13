@@ -69,7 +69,7 @@ export class BillForCheckOut extends React.PureComponent {
                         <th style={{ fontSize: "15px", color: "#000000" }}>whatsapp: {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}</th>
                     </tr>
                     <tr>
-                        <th>ເລກຕູບ :{newDataItem[0]?.orderId?.table_id} </th>
+                        <th>ເລກໂຕະ :{newDataItem[0]?.orderId?.table_id} </th>
                     </tr>
                     <tr>
                         <th>ລະຫັດ: {newDataItem[0]?.code}</th>

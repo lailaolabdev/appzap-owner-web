@@ -32,8 +32,10 @@ import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 
 import StoreDetail from '../pages/store/StoreDetail'
-import SettingList from '../pages/settingStore/SettingList'
 // import StoreEdit from '../pages/store/StoreEdit'
+// ===========> Setting ============>
+import SettingList from '../pages/settingStore/SettingList'
+import SettingTable from '../pages/settingStore/SettingTable'
 
 const Main = styled.main`
   /* position: relative; */
@@ -156,6 +158,11 @@ const Index = () => {
                     exact
                     path="/settingStore/:id"
                     component={SettingList}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/settingStore/settingTable/:id"
+                    component={SettingTable}
                   />
                 </div>
               </Main>

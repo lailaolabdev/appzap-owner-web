@@ -48,7 +48,6 @@ export const useTableState = () => {
                 _tableOrderItems.push(tableOrders[i]?.order_item[k])
             }
         }
-        // console.log({_tableOrderItems})
         setTableOrderItems(_tableOrderItems)
     }, [tableOrders])
 

@@ -49,7 +49,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                         flexDirection: 'row',
                     }}>
                         <div className="row col-sm-12 text-center">
-                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ : {tableId} </div>
+                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ໂຕະ : {tableId} </div>
                             <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {generateCode} </div>
                         </div>
                         <div className="row col-sm-12 text-center">
@@ -67,7 +67,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                     <th>ຊື່ເມນູ</th>
                                     <th>ຈຳນວນ</th>
                                     <th>ລາຄາ</th>
-                                    <th>ເລກຕູບ</th>
+                                    <th>ເລກໂຕະ</th>
                                 </tr>
                             </thead>
                             <tbody>

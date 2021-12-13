@@ -86,7 +86,7 @@ export default function CheckBill() {
                 </Col>
                 <div>
                     <div className="row col-sm-12 text-center">
-                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ :  {newData ? newData[0]?.orderId?.table_id : "-"}</div>
+                        <div className="col-sm-6" style={{ fontWeight: "bold" }}>ໂຕະ :  {newData ? newData[0]?.orderId?.table_id : "-"}</div>
                         <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {newData ? newData[0]?.code : "-"}</div>
                     </div>
                     <div className="row col-sm-12 text-center">
