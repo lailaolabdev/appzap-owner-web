@@ -12,6 +12,7 @@ import {
   faBell,
   faBookOpen,
   faCartArrowDown,
+  faCogs,
   faHistory,
   faHome,
   faUsers,
@@ -74,9 +75,9 @@ export default function Sidenav({ location, history }) {
         if (selected === "users") {
           selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
-        if (selected === "menu") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
-        }
+        // if (selected === "menu") {
+        //   selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
+        // }
         if (selected === "category") {
           selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
@@ -185,7 +186,7 @@ export default function Sidenav({ location, history }) {
             ປະຫວັດການຂາຍ
           </NavText>
         </NavItem>
-        <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "" }}>
+        {/* <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faBookOpen}
@@ -204,8 +205,8 @@ export default function Sidenav({ location, history }) {
           >
             ເພີ່ມອາຫານ
           </NavText>
-        </NavItem>
-        <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "" }}>
+        </NavItem> */}
+        {/* <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faUsers}
@@ -225,8 +226,8 @@ export default function Sidenav({ location, history }) {
           >
             ຈັດການພະນັກງານ
           </NavText>
-        </NavItem>
-        <NavItem eventKey={`storeDetail/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
+        </NavItem> */}
+        {/* <NavItem eventKey={`storeDetail/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faAddressCard}
@@ -245,6 +246,27 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ຮ້ານຄ້າ
+          </NavText>
+        </NavItem> */}
+        <NavItem eventKey={`settingStore/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "settingStore" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faCogs}
+              style={{
+                color:
+                  selected === "settingStore"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color:
+                selected === "settingStore" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຕັ້ງຄ່າຮ້ານຄ້າ
           </NavText>
         </NavItem>
       </SideNav.Nav>

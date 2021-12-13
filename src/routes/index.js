@@ -32,6 +32,7 @@ import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 
 import StoreDetail from '../pages/store/StoreDetail'
+import SettingList from '../pages/settingStore/SettingList'
 // import StoreEdit from '../pages/store/StoreEdit'
 
 const Main = styled.main`
@@ -78,7 +79,7 @@ const Index = () => {
                   {/* private routes */}
                   <PrivateRoute
                     exact
-                    path="/storeDetail/:id"
+                    path="/settingStore/storeDetail/:id"
                     component={StoreDetail}
                   />
                   <PrivateRoute
@@ -138,18 +139,23 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/users/limit/:limit/page/:page/:id"
+                    path="/settingStore/users/limit/:limit/page/:page/:id"
                     component={Users}
                   />
                   <PrivateRoute
                     exact
-                    path="/menu/category/limit/:limit/page/:page/:id"
+                    path="/settingStore/menu/category/limit/:limit/page/:page/:id"
                     component={Category}
                   />
                   <PrivateRoute
                     exact
-                    path="/menu/limit/:limit/page/:page/:id"
+                    path="/settingStore/menu/limit/:limit/page/:page/:id"
                     component={MenuList}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/settingStore/:id"
+                    component={SettingList}
                   />
                 </div>
               </Main>

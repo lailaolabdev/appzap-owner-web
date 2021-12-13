@@ -218,7 +218,7 @@ export default function UserList() {
       {isLoading ? <AnimationLoading /> : <div>
         <div style={BODY}>
           <div className="row" style={{ padding: 30 }}>
-            <div className="col-md-12" style={{ fontSize: "20px" }}>users ( {userData?.total} )</div>
+            <div className="col-md-12" style={{ fontSize: "20px" }}>ຈຳນວນພະນັກງານ ( {userData?.total} )</div>
           </div>
           <div style={{ paddingBottom: 20 }}>
             <div className="col-md-12" >
