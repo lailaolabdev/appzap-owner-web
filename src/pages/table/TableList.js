@@ -1,11 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import useReactRouter from "use-react-router";
-import Nav from "react-bootstrap/Nav";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Table from "react-bootstrap/Table";
+import { Row, Modal, Form, Container, Button, Nav, Col, Table } from "react-bootstrap";
 import { Checkbox } from "@material-ui/core";
 import ReactToPrint from 'react-to-print';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,10 +9,13 @@ import {
   faArchway,
   faCheckCircle,
   faFileInvoice,
+  faRetweet,
 } from "@fortawesome/free-solid-svg-icons";
+import Swal from 'sweetalert2'
 
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
+import axios from 'axios';
 
 /**
  * component
@@ -44,6 +42,7 @@ import {
   SERVE_STATUS,
 } from "../../constants/index";
 import { useStore } from "../../store";
+import { END_POINT_SEVER } from '../../constants/api'
 
 
 
@@ -53,6 +52,10 @@ export default function TableList() {
   const componentRefA = useRef();
   const number = match?.params?.number;
   const activeTableId = match?.params?.tableId;
+
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const {
     isTableOrderLoading,
@@ -134,6 +137,41 @@ export default function TableList() {
       method: "GET",
     }).then(response => response.json())
       .then(json => setStore(json));
+  }
+
+  const [codeTableNew, setCodeTableNew] = useState()
+  const _changeTable = async () => {
+    if (!codeTableNew) {
+      await Swal.fire({
+        icon: 'warning',
+        title: "ກະລຸນາເລືອກໂຕະ",
+        showConfirmButton: false,
+        timer: 1500
+      })
+      return
+    }
+    try {
+      const changTable = await axios.put(END_POINT_SEVER + "/tables-changeTable/", {
+        "codeTableOld": selectedTable?.code,
+        "codeTableNew": codeTableNew
+      })
+      if (changTable?.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: "ການປ່ຽນໂຕະສໍາເລັດ",
+          showConfirmButton: false,
+          timer: 1500
+        })
+        window.location.reload();
+      }
+    } catch (err) {
+      await Swal.fire({
+        icon: 'success',
+        title: "ການປ່ຽນໂຕະບໍ່ສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 1500
+      })
+    }
   }
   return (
     <div style={TITLE_HEADER}>
@@ -248,10 +286,11 @@ export default function TableList() {
 
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <div style={{}}>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
                       <ReactToPrint
-                          trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> ກວດຍອດ</Button>}
-                          content={() => componentRefA.current}
+                        trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
+                        content={() => componentRefA.current}
                       />
                       <div style={{ display: 'none' }}>
                         <BillForCheckOut ref={componentRefA} newData={tableOrderItems} dataStore={dataStore} />
@@ -393,6 +432,35 @@ export default function TableList() {
         tableId={selectedTable?.code}
         func={_handlecheckout}
       />
+      <Modal
+        show={show}
+        onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>ລວມໂຕະ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <Form.Label>ຍ້າຍຈາກໂຕະ : {selectedTable?.table_id}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>ໄປຫາໂຕະ : </Form.Label>
+              <div style={{ height: 10 }}></div>
+              <select class="form-select form-control" aria-label="Default select example"
+                onChange={(e) => setCodeTableNew(e.target.value)}
+              >
+                <option selected disabled>ເລືອກໂຕະ</option>
+                {tableList?.map((item, index) =>
+                  <option value={item?.code} disabled={selectedTable?.table_id === item?.table_id ? true : false}>ໂຕະ {item?.table_id}</option>
+                )}
+              </select>
+            </Form.Group>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleClose()}>ຍົກເລີກ</Button>
+          <Button variant="success" onClick={() => _changeTable()}>ລວມໂຕະ</Button>
+        </Modal.Footer>
+      </Modal>
     </div >
   );
 };
