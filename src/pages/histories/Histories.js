@@ -116,7 +116,7 @@ export default function History() {
                 <tr>
                   <th>ລຳດັບ</th>
                   <th>ລະຫັດເຂົ້າລະບົບ</th>
-                  <th>ເລກຕູບ</th>
+                  <th>ເລກໂຕະ</th>
                   <th>ລາຄາ/ບີນ</th>
                   <th>ວັນທີ</th>
                 </tr>

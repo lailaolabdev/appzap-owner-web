@@ -62,9 +62,11 @@ export default function SettingList() {
                 justifyContent: "center",
                 alignItems: "center",
                 display: "flex",
-            }} disabled>
+            }}
+                onClick={() => history.push("/settingStore/settingTable/" + match?.params?.id)}
+            >
                 <FontAwesomeIcon icon={faTable} />
-                ຕັ້ງຄ່າໂຕະ (ກຳລັງພັດທະນາ)
+                ຕັ້ງຄ່າໂຕະ
             </button>
         </div>
     )

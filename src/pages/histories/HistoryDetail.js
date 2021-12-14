@@ -83,7 +83,7 @@ export default function HistoryDetail() {
         <div className="row ">
           <div className="col-sm-9">
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດຕູບ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
             </Nav.Item>
           </div>
           <div className="col-sm-3">

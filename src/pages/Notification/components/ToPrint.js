@@ -52,7 +52,7 @@ export class ComponentToPrint extends React.PureComponent {
                         flexDirection: 'row',
                     }}>
                         <div className="row col-sm-12 text-center">
-                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ຕູບ : {code} </div>
+                            <div className="col-sm-6" style={{ fontWeight: "bold" }}>ໂຕະ : {code} </div>
                             <div className="col-sm-6" style={{ fontWeight: "bold" }}>ເລກອໍເດີ : {billId} </div>
                         </div>
                         <div className="row col-sm-12 text-center">
@@ -70,7 +70,7 @@ export class ComponentToPrint extends React.PureComponent {
                                     <th>ຊື່ເມນູ</th>
                                     <th>ຈຳນວນ</th>
                                     <th>ລາຄາ</th>
-                                    <th>ເລກຕູບ</th>
+                                    <th>ເລກໂຕະ</th>
                                 </tr>
                             </thead>
                             <tbody>

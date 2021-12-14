@@ -31,3 +31,11 @@ export const errorAdd = (err) => {
         timer: 1800
     })
 }
+export const warningAlert = (item) => {
+    Swal.fire({
+        icon: 'warning',
+        title: item,
+        showConfirmButton: false,
+        timer: 1500
+    })
+}
