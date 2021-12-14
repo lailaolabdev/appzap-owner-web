@@ -11,6 +11,7 @@ export const useTableState = () => {
 
     const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
     const [tableList, setTableList] = useState([]);
+    const [tableListCheck, setTableListCheck] = useState([]);
     const [openTableData, setOpenTableData] = useState([]);
     const [tableOrders, setTableOrders] = useState([]);
     const [tableOrderItems, setTableOrderItems] = useState([]);
@@ -70,7 +71,19 @@ export const useTableState = () => {
         },
         []
     );
-
+    const getTableDataStoreList = useMemo(
+        () => async () => {
+            let _userData = await getLocalData();
+            const url = END_POINT + `/generates/?checkout=false&storeId=${_userData?.DATA?.storeId}`;
+            await fetch(url)
+                .then(response => response.json())
+                .then(response => {
+                    if (response.message == "server error") return;
+                    setTableListCheck(response)
+                })
+        },
+        []
+    );
     /**
     * Get Table Orders
     */
@@ -221,11 +234,14 @@ export const useTableState = () => {
         isTableOrderLoading,
         orderItemForPrintBill,
         tableList,
+        tableListCheck,
         openTableData,
         tableOrders,
         tableOrderItems,
         selectedTable,
+        setTableListCheck,
         getTableOrders,
+        getTableDataStoreList,
         openTable,
         getTableDataStore,
         onSelectTable,

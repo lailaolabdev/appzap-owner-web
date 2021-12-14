@@ -14,14 +14,21 @@ import profileImage from "../../image/profile.png"
 import { Formik } from 'formik';
 import axios from 'axios';
 import { STORE, TABLES, MENUS, PRESIGNED_URL, STORE_UPDATE, getLocalData } from '../../constants/api'
+import { END_POINT } from '../../constants'
 import { COLOR_APP, URL_PHOTO_AW3, COLOR_APP_CANCEL } from '../../constants'
-import { successAdd, errorAdd } from '../../helpers/sweetalert'
+import {
+    successAdd,
+    errorAdd,
+    warningAlert
+} from "../../helpers/sweetalert"
 import useReactRouter from "use-react-router"
+import "./index.css";
 
 export default function StoreDetail() {
     const { history, location, match } = useReactRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [dataStore, setStore] = useState()
+    const [dataSwitch, setDataSwitch] = useState()
     const [numBerTable, setnumBerTable] = useState(0)
     const [numBerMenus, setnumBerMenus] = useState(0)
     const [getTokken, setgetTokken] = useState()
@@ -40,7 +47,10 @@ export default function StoreDetail() {
         await fetch(STORE + `/?id=${match?.params?.id}`, {
             method: "GET",
         }).then(response => response.json())
-            .then(json => setStore(json));
+            .then(json => {
+                setStore(json)
+                setDataSwitch(json?.isOpen)
+            });
 
         await fetch(TABLES + `/?storeId=${storeId}`, {
             method: "GET",
@@ -131,6 +141,17 @@ export default function StoreDetail() {
             errorAdd('ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !')
         })
     }
+    const _updateIsOpenStore =async (data) => {
+          const res=  await axios({
+                method: 'PUT',
+                url: END_POINT + `/store_update?id=`+match?.params?.id,
+                headers: getTokken?.TOKEN,
+                data: {
+                    "isOpen": data?.isOpen === true ? false : true
+                },
+          })
+    }
+    console.log("dataSwitch===>", dataSwitch);
     return (
         <div>
             <div className="row" style={{ padding: 40 }}>
@@ -162,6 +183,10 @@ export default function StoreDetail() {
                     <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}> {dataStore?.name ? dataStore?.name : "-"}</div>
                     <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
                     <div style={{ padding: 5 }}>{dataStore?.dateClose + "  " + dataStore?.timeClose}</div>
+                    <label class="switch">
+                        <input type="checkbox" defaultChecked={dataSwitch} onClick={()=> _updateIsOpenStore(dataStore)}/>
+                        <span class="slider round"></span>
+                    </label>
                 </div>
                 <div className="col-sm-7">
                     <div style={{ padding: 8, backgroundColor: COLOR_APP, fontWeight: "bold", color: "#FFFFFF" }}>ຂໍ້ມູນເຈົ້າຂອງຮ້ານ</div>
