@@ -32,10 +32,13 @@ import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 
 import StoreDetail from '../pages/store/StoreDetail'
-// import StoreEdit from '../pages/store/StoreEdit'
 // ===========> Setting ============>
 import SettingList from '../pages/settingStore/SettingList'
 import SettingTable from '../pages/settingStore/SettingTable'
+// ===========> Dashboard ============>
+import Dashboard from '../pages/dashboard/Dashboard'
+// ===========> Promotion ============>
+import Promotion from '../pages/promotion/Promotion'
 
 const Main = styled.main`
   /* position: relative; */
@@ -79,6 +82,16 @@ const Index = () => {
                   }}
                 >
                   {/* private routes */}
+                  <PrivateRoute
+                    exact
+                    path="/dashboard"
+                    component={Dashboard}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/promotion"
+                    component={Promotion}
+                  />
                   <PrivateRoute
                     exact
                     path="/settingStore/storeDetail/:id"

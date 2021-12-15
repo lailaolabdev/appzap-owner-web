@@ -183,14 +183,14 @@ export default function Sidenav({ location, history }) {
             ປະຫວັດການຂາຍ
           </NavText>
         </NavItem>
-        <NavItem eventKey="dashBord" style={{ backgroundColor: selected === "dashBord" ? "#ffff" : "" }}>
+        <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
               icon={faTachometerAlt}
               style={{
                 color:
-                  selected === "dashBord"
+                  selected === "dashboard"
                     ? COLOR_APP
                     : UN_SELECTED_TAB_TEXT,
               }}
@@ -198,7 +198,7 @@ export default function Sidenav({ location, history }) {
           </NavIcon>
           <NavText
             style={{
-              color: selected === "dashBord" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+              color: selected === "dashboard" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ຂໍມູນສະຖິຕິ
