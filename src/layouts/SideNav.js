@@ -8,6 +8,7 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faAd,
   faAddressCard,
   faBell,
   faBookOpen,
@@ -15,6 +16,7 @@ import {
   faCogs,
   faHistory,
   faHome,
+  faTachometerAlt,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
@@ -92,7 +94,6 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-
         <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
@@ -151,10 +152,6 @@ export default function Sidenav({ location, history }) {
                     : UN_SELECTED_TAB_TEXT,
               }}
             />
-            {/* {checkBill?.length != 0 ?
-              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{checkBill?.length}</Badge>
-              : ""
-            } */}
           </NavIcon>
           <NavText
             style={{
@@ -186,13 +183,14 @@ export default function Sidenav({ location, history }) {
             ປະຫວັດການຂາຍ
           </NavText>
         </NavItem>
-        {/* <NavItem eventKey="menu" style={{ backgroundColor: selected === "menu" ? "#ffff" : "" }}>
+        <NavItem eventKey="dashBord" style={{ backgroundColor: selected === "dashBord" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              icon={faBookOpen}
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faTachometerAlt}
               style={{
                 color:
-                  selected === "menu"
+                  selected === "dashBord"
                     ? COLOR_APP
                     : UN_SELECTED_TAB_TEXT,
               }}
@@ -200,19 +198,20 @@ export default function Sidenav({ location, history }) {
           </NavIcon>
           <NavText
             style={{
-              color: selected === "menu" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+              color: selected === "dashBord" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
-            ເພີ່ມອາຫານ
+            ຂໍມູນສະຖິຕິ
           </NavText>
-        </NavItem> */}
-        {/* <NavItem eventKey={`users`} style={{ backgroundColor: selected === "users" ? "#ffff" : "" }}>
+        </NavItem>
+        <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              icon={faUsers}
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faAd}
               style={{
                 color:
-                  selected === "users"
+                  selected === "promotion"
                     ? COLOR_APP
                     : UN_SELECTED_TAB_TEXT,
               }}
@@ -220,34 +219,12 @@ export default function Sidenav({ location, history }) {
           </NavIcon>
           <NavText
             style={{
-              color:
-                selected === "users" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+              color: selected === "promotion" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
-            ຈັດການພະນັກງານ
+            ການຕະຫຼາດ
           </NavText>
-        </NavItem> */}
-        {/* <NavItem eventKey={`storeDetail/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "storeDetail" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faAddressCard}
-              style={{
-                color:
-                  selected === "storeDetail"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "storeDetail" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຮ້ານຄ້າ
-          </NavText>
-        </NavItem> */}
+        </NavItem>
         <NavItem eventKey={`settingStore/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "settingStore" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon

@@ -9,7 +9,7 @@ import {
   Button
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faLock, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
@@ -17,6 +17,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT, COLOR_APP } from '../../constants'
 import AnimationLoading from "../../constants/loading"
 import axios from 'axios';
+import { BillForCheckOut } from '../bill/BillForCheckOut';
+import { STORE, getLocalData } from '../../constants/api'
 
 
 import ReactToPrint from 'react-to-print';
@@ -27,6 +29,8 @@ const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
   const { history, location, match } = useReactRouter()
   const componentRef = useRef();
+  const componentRefA = useRef();
+
   const newDate = new Date();
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
@@ -34,6 +38,10 @@ export default function HistoriesCheckBill() {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [findeByCode, setfindeByCode] = useState()
+  const [dataStore, setStore] = useState()
+
+
+
   useEffect(() => {
     _searchDate()
   }, [startDate && endDate])
@@ -42,7 +50,15 @@ export default function HistoriesCheckBill() {
   }, [findeByCode])
   useEffect(() => {
     _searchDate()
+    getData()
   }, [])
+
+  const getData = async () => {
+    await fetch(STORE + `/?id=${match?.params?.id}`, {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setStore(json));
+  }
   const _searchDate = async () => {
     setIsLoading(true)
     const url = END_POINT + `/orders/${location?.search}`;
@@ -89,7 +105,6 @@ export default function HistoriesCheckBill() {
     GetAmount()
   }, [amountArray])
   const _checkOut = async () => {
-    // window.open(`/CheckBillOut/${match?.params?.id}/${location?.search}`);
     document.getElementById('btnPrint').click();
   }
   const _onClickMenuDetail = async () => {
@@ -123,8 +138,15 @@ export default function HistoriesCheckBill() {
           <Nav.Item className="row col-12">
             <h5 style={{ marginLeft: 30 }}><strong>ປະຫວັດຂອງບີນ ( {newData ? newData[0]?.code : '-'} )</strong></h5>
             <div className="col-sm-7"></div>
-            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, }} onClick={() => _checkOut('printMe')}>Print Bill</Button>{' '}
-            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }} onClick={() => _onClickMenuDetail()}>Check out</Button>{' '}
+
+            <ReactToPrint
+              trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
+              content={() => componentRefA.current}
+            />
+            <div style={{ display: 'none' }}>
+              <BillForCheckOut ref={componentRefA} newData={newData} dataStore={dataStore} />
+            </div>
+            <Button className="col-sm-1" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginLeft: 10 }} onClick={() => _onClickMenuDetail()}>Checkout</Button>{' '}
           </Nav.Item>
         </div>
         <div style={{ height: 20 }}></div>

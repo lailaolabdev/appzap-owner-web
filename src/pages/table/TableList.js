@@ -10,6 +10,8 @@ import {
   faCheckCircle,
   faFileInvoice,
   faRetweet,
+  faCogs,
+  faCog,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 
@@ -43,7 +45,11 @@ import {
 } from "../../constants/index";
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from '../../constants/api'
-
+import {
+    successAdd,
+    errorAdd,
+    warningAlert
+} from "../../helpers/sweetalert"
 
 
 export default function TableList() {
@@ -57,11 +63,16 @@ export default function TableList() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const [openModalSetting, setOpenModalSetting] = useState(false)
+  const [dataSettingModal, setDataSettingModal] = useState()
+
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
     tableList,
+    setTableList,
     selectedTable,
+    setSelectedTable,
     openTable,
     tableOrderItems,
     getTableDataStore,
@@ -80,12 +91,10 @@ export default function TableList() {
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
   const [dataStore, setStore] = useState()
 
-
   useEffect(() => {
     getTableDataStore()
     getData()
   }, [])
-
   /**
    * Modify Order Status
    */
@@ -98,7 +107,6 @@ export default function TableList() {
       if (nData.status === "SERVED") _checkDataStatus.push(nData?.status)
       if (nData.status === "CANCELED") _checkDataStatusCancel.push(nData?.status)
     })
-
     setCheckStatusCancel(_checkDataStatusCancel)
     setCheckStatus(_checkDataStatus)
   }, [tableOrderItems])
@@ -117,15 +125,12 @@ export default function TableList() {
     let isIncluded = tableOrderItems.filter((item) => item.isChecked)
     return isIncluded.length == 0;
   }
-
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
   };
-
   const _goToAddOrder = (tableId, code) => {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
-
   const convertTableStatus = (_table) => {
     if (_table?.isOpened && _table?.staffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
     else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
@@ -142,6 +147,7 @@ export default function TableList() {
   const [codeTableNew, setCodeTableNew] = useState()
   const _changeTable = async () => {
     if (!codeTableNew) {
+      handleClose()
       await Swal.fire({
         icon: 'warning',
         title: "ກະລຸນາເລືອກໂຕະ",
@@ -156,13 +162,16 @@ export default function TableList() {
         "codeTableNew": codeTableNew
       })
       if (changTable?.status === 200) {
+        handleClose()
+          setSelectedTable()
+              setTableList(changTable?.data)
         await Swal.fire({
           icon: 'success',
           title: "ການປ່ຽນໂຕະສໍາເລັດ",
           showConfirmButton: false,
           timer: 1500
         })
-        window.location.reload();
+          
       }
     } catch (err) {
       await Swal.fire({
@@ -172,6 +181,35 @@ export default function TableList() {
         timer: 1500
       })
     }
+  }
+  const _openModalSetting = (data) => {
+    setDataSettingModal(data)
+    setOpenModalSetting(true)
+  }
+  const _resetTable =async () => {
+        try {
+            if (tableOrderItems?.length > 0) {
+            setOpenModalSetting(false)
+                warningAlert("ບໍ່ສາມາດປິດໂຕະໄດ້ເພາະມີການໃຊ້ງານ...!")
+                return
+            }
+            const updateTable = await axios({
+                method: 'put',
+                url: END_POINT_SEVER + `/updateGenerates/`+dataSettingModal?.code,
+                data: {
+                  "isOpened":"false",
+                  "staffConfirm":"false"
+                },
+            })
+            setOpenModalSetting(false)
+          if (updateTable?.data) {
+            setSelectedTable()
+              setTableList(updateTable?.data)
+                successAdd("ການປິດໂຕະສຳເລັດ")
+            }
+        } catch (err) {
+            errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
+        }
   }
   return (
     <div style={TITLE_HEADER}>
@@ -270,12 +308,14 @@ export default function TableList() {
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.table_id} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
+                    <div className="row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: 50 }}>
+                      <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
+                      <FontAwesomeIcon icon={faCog} style={{ color: "#000000", marginRight: 10, fontSize: 25 }} onClick={() => _openModalSetting(selectedTable)} />
+                    </div>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
                   <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
-                    {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => _checkAll(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} /> */}
                   </div>
                   <div style={{
                     display: CheckStatus?.length === tableOrderItems?.length - CheckStatusCancel?.length ?
@@ -325,12 +365,12 @@ export default function TableList() {
                   >
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr>
-                        <th style={{ width: 20, border: "none" }}></th>
-                        <th style={{ width: 50, border: "none" }}>ລຳດັບ</th>
-                        <th style={{ border: "none" }}>ຊື່ເມນູ</th>
-                        <th style={{ border: "none" }}>ຈຳນວນ</th>
-                        <th style={{ border: "none" }}>ສະຖານະ</th>
-                        <th style={{ border: "none" }}>ເວລາ</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ລຳດັບ</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ຊື່ເມນູ</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ຈຳນວນ</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ສະຖານະ</th>
+                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ເວລາ</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -339,7 +379,7 @@ export default function TableList() {
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
-                                disabled={orderItem?.status === "SERVED"}
+                                // disabled={orderItem?.status === "SERVED"}
                                 checked={orderItem?.isChecked ? true : false}
                                 onChange={(e) => onChangeMenuCheckbox(orderItem)}
                                 color="primary"
@@ -459,6 +499,23 @@ export default function TableList() {
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleClose()}>ຍົກເລີກ</Button>
           <Button variant="success" onClick={() => _changeTable()}>ລວມໂຕະ</Button>
+        </Modal.Footer>
+      </Modal>
+      {/* ======== setting ======== */}
+      <Modal
+        show={openModalSetting}
+        onHide={()=>setOpenModalSetting(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>ຕັ້ງຄ່າໂຕະ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={ { textAlign: "center"}}>
+            ທ່ານຕ້ອງການປິດໂຕະ { dataSettingModal?.table_id} ນີ້ບໍ ?
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => setOpenModalSetting(false)}>ຍົກເລີກ</Button>
+          <Button variant="success" onClick={() => _resetTable()}>ປິດໂຕະ</Button>
         </Modal.Footer>
       </Modal>
     </div >

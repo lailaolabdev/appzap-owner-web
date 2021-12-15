@@ -149,7 +149,6 @@ function AddOrder() {
 
       axios.post(END_POINT_SEVER + "/v2/ordersByadmin", {
         "menu": data,
-        // "customer_nickname": "Joy xaiyavong",
         "storeId": userData?.data?.storeId,
         table_id: code,
         code: tableId,
@@ -166,10 +165,7 @@ function AddOrder() {
       console.log(error)
     }
   }
-
-
   const onSubmit = async (isPrinted) => {
-
     if (selectedMenu.length == 0) {
       Swal.fire({
         icon: 'warning',
@@ -179,11 +175,9 @@ function AddOrder() {
       })
       return;
     }
-
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
       await createOrder(selectedMenu, header);
-
       Swal.fire({
         icon: 'success',
         title: "ເພີ່ມອໍເດີສໍາເລັດ",
@@ -194,6 +188,7 @@ function AddOrder() {
       history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
     }
   }
+  console.log("note===>", note)
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint
@@ -353,7 +348,7 @@ function AddOrder() {
                 </div>
                 <div style={{ height: 10 }} />
                 <div className="row" style={{ margin: 0 }}>
-                  <Button variant="light" className="hover-me" style={{ height: 60, marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
+                  <Button variant="light" className="hover-me" style={{ height: 60, marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", flex: 1 }} onClick={() => onSubmit(true)}>ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ + <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> </Button>
                 </div>
               </div>
             </div>
