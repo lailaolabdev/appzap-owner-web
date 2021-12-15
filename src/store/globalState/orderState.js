@@ -21,6 +21,7 @@ export const useOrderState = () => {
 
             socket.on(`ORDER:${_userData?.DATA?.storeId}`, (data) => {
                 setWaitingOrderItems(data)
+                setOrderItems(data)
             });
         },
         []

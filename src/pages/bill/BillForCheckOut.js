@@ -18,7 +18,6 @@ export class BillForCheckOut extends React.PureComponent {
                     data += (newData[i]?.quantity * newData[i]?.price )
                 }
             }
-            console.log("newDataItem===>", newDataItem)
         }
         return (
             <div>
@@ -89,6 +88,7 @@ export class BillForCheckOut extends React.PureComponent {
                         <th width="15%">ຊື່ເມນູ</th>
                         <th width="5%">ຈຳນວນ</th>
                         <th width="6%">ລາຄາ</th>
+                        <th width="6%">ລາຄາລວມ</th>
                     </tr>
                     {newDataItem?.map((item, index) => {
                         return (
@@ -97,6 +97,7 @@ export class BillForCheckOut extends React.PureComponent {
                                 <td>{item?.name}</td>
                                 <td>{item?.quantity}</td>
                                 <td>{moneyCurrency(item?.price)}</td>
+                                <td>{moneyCurrency(item?.price * item?.quantity)}</td>
                             </tr>
                         )
                     }

@@ -21,13 +21,13 @@ export const useTableState = () => {
     const initialTableSocket = useMemo(
         () => async () => {
             let _userData = await getLocalData();
-
             socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
                 let _openTable = data.filter((table) => {
                     return table.isOpened && !table.staffConfirm
                 })
                 setOpenTableData(_openTable)
                 setTableList(data)
+                getTableOrders(selectedTable)
                 Swal.fire({
                     icon: 'success',
                     title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
@@ -99,7 +99,6 @@ export const useTableState = () => {
             })
         return res
     }
-
     /**
     * Select Table
     * @param {*} table 
@@ -108,8 +107,6 @@ export const useTableState = () => {
         setSelectedTable(table)
         await getTableOrders(table)
     }
-
-
     /**
      * ເປີດໂຕະ
      */
@@ -162,7 +159,6 @@ export const useTableState = () => {
                 })
             });
     }
-
     /**
     * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
     */
@@ -192,14 +188,10 @@ export const useTableState = () => {
         setorderItemForPrintBill(_orderItemForPrint)
         setTableOrderItems(_newOrderItems)
     };
-
-
     /**
     * ອັບເດດສະຖານະອໍເດີ
     */
     const handleUpdateTableOrderStatus = async (status, storeId) => {
-
-        // console.log({ tableOrderItems })
         let _updateItems = tableOrderItems.filter((item) => item.isChecked).map((i) => {
             return {
                 ...i,
@@ -229,7 +221,6 @@ export const useTableState = () => {
         }
     };
 
-
     return {
         isTableOrderLoading,
         orderItemForPrintBill,
@@ -240,6 +231,8 @@ export const useTableState = () => {
         tableOrderItems,
         selectedTable,
         setTableListCheck,
+        setTableList,
+        setSelectedTable,
         getTableOrders,
         getTableDataStoreList,
         openTable,

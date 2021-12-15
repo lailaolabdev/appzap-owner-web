@@ -40,10 +40,6 @@ const Order = () => {
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
-          <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }}>ເລືອກທັງໝົດ</div>} />
-        </div>
-        <div>
-          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS, match?.params?.id)}>ຍົກເລີກ</Button>
           <ReactToPrint
             trigger={() => <Button
               variant="light"
@@ -51,6 +47,10 @@ const Order = () => {
             >ພີມບີນສົ່ງໄປຄົວ</Button>}
             content={() => componentRef.current}
           />
+        </div>
+        <div>
+          <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(CANCEL_STATUS, match?.params?.id)}>ຍົກເລີກ</Button>
+         
           <div style={{ display: 'none' }}>
             <BillForChef ref={componentRef} newData={orderItemForPrintBillSelect?.length === 0 ? orderItems : orderItemForPrintBillSelect} />
           </div>
@@ -62,7 +62,7 @@ const Order = () => {
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-              <th>#</th>
+              <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{marginLeft:2}}/></th>
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>

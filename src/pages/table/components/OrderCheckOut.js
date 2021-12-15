@@ -21,16 +21,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
 
-  // const socket = socketIOClient(END_POINT);
-  // socket.on(`checkoutSuccess${getTokken?.DATA?.storeId}`, (data) => {
-  //   if (data) {
-  //     successAdd("ສຳເລັດການຮັບເງີນ");
-  //     setTimeout(() => {
-  //       window.location.reload();
-  //     }, 2000);
-  //   }
-  // });
-
   useEffect(() => {
     Getdata();
   }, [data]);
@@ -67,8 +57,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
 
   const _checkBill = async () => {
     if (data) {
-
-
       if (!data[0]?.orderId?._id) {
         await axios
           .put(
@@ -118,13 +106,10 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
           });
       }
-
     } else {
       errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
     }
   };
-
-
   return (
     <Modal
       show={show}
@@ -147,6 +132,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
               <th>ລາຄາ</th>
+              <th>ລາຄາລວມ</th>
             </tr>
           </thead>
           <tbody>
@@ -157,6 +143,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
                     <td>{index + 1}</td>
                     <td>{orderItem?.name ?? "-"}</td>
                     <td>{orderItem?.quantity}</td>
+                    <td>{moneyCurrency(orderItem?.price)}</td>
                     <td>
                       {orderItem?.price
                         ? moneyCurrency(orderItem?.price * orderItem?.quantity)
