@@ -75,7 +75,6 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
 
 export const updateOrderItem = async (orderItems, storeId) => {
   try {
-    console.log({orderItems})
     const url = `${END_POINT}/v2/updateManyOrderItems`;
     const orders = await axios.put(
       url,
@@ -124,7 +123,6 @@ export const updateOrder = async (data, status = CANCEL_STATUS) => {
           headers: await getHeaders(),
         }
       );
-      console.log("work work", orders);
     }
     if (status === CHECKOUT_STATUS) {
       const url = `${END_POINT}/generates/${data[0].code}`;

@@ -59,21 +59,23 @@ export default function SettingTable() {
     }
     const _changeStatusTable = async (data) => {
         if (data?.status === true) {
-            await axios({
+           let res= await axios({
                 method: 'PUT',
                 url: END_POINT + `/updateGenerates/` + data?.code,
                 data: {
                     "status": "false"
                 },
-            })
+           })
+            setTableListCheck(res?.data)
         } else {
-            await axios({
+          let res=  await axios({
                 method: 'PUT',
                 url: END_POINT + `/updateGenerates/` + data?.code,
                 data: {
                     "status": "true"
                 },
-            })
+          })
+            setTableListCheck(res?.data)
         }
 
     }

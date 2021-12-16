@@ -38,7 +38,6 @@ export const useTableState = () => {
         },
         []
     );
-
     /**
     * Modify Order
     */
@@ -196,7 +195,7 @@ export const useTableState = () => {
             return {
                 ...i,
                 status,
-                id: i._id
+                _id: i._id
             }
         })
         let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
@@ -220,7 +219,6 @@ export const useTableState = () => {
             })
         }
     };
-
     return {
         isTableOrderLoading,
         orderItemForPrintBill,

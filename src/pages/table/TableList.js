@@ -25,6 +25,7 @@ import axios from 'axios';
 import Loading from "../../components/Loading";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import OrderCheckOut from "./components/OrderCheckOut";
+import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus } from "../../helpers";
 import { BillForChef } from '../bill/BillForChef';
 import { BillForCheckOut } from '../bill/BillForCheckOut';
@@ -50,6 +51,7 @@ import {
     errorAdd,
     warningAlert
 } from "../../helpers/sweetalert"
+import { updateOrderItem } from "../../services/order";
 
 
 export default function TableList() {
@@ -65,6 +67,8 @@ export default function TableList() {
 
   const [openModalSetting, setOpenModalSetting] = useState(false)
   const [dataSettingModal, setDataSettingModal] = useState()
+  const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
+  
 
   const {
     isTableOrderLoading,
@@ -143,7 +147,6 @@ export default function TableList() {
     }).then(response => response.json())
       .then(json => setStore(json));
   }
-
   const [codeTableNew, setCodeTableNew] = useState()
   const _changeTable = async () => {
     if (!codeTableNew) {
@@ -211,6 +214,8 @@ export default function TableList() {
             errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
         }
   }
+// ==========
+
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -343,6 +348,8 @@ export default function TableList() {
                 </div>
                 <div style={{ display: _orderIsChecked() ? "none" : '' }}>
                   <div>ອັບເດດເປັນສະຖານະ: </div>
+                  <div style={{height: 20 }}></div>
+                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() =>setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
                   <ReactToPrint
                     trigger={() => <Button
@@ -465,13 +472,20 @@ export default function TableList() {
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
-
+      <FeedbackOrder
+        data={orderItemForPrintBill}
+        tableData={selectedTable}
+        show={feedbackOrderModal}
+        // resetTableOrder={resetTableOrder}
+        hide={() => setFeedbackOrderModal(false)}
+      />
       <UserCheckoutModal
         show={checkoutModel}
         hide={() => setCheckoutModal(false)}
         tableId={selectedTable?.code}
         func={_handlecheckout}
       />
+
       <Modal
         show={show}
         onHide={handleClose}>
