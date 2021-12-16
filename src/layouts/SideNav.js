@@ -186,7 +186,6 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
               icon={faTachometerAlt}
               style={{
                 color:
@@ -206,8 +205,7 @@ export default function Sidenav({ location, history }) {
         </NavItem>
         <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
           <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
+            <FontAwesomeIcons
               icon={faAd}
               style={{
                 color:
