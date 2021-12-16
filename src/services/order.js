@@ -86,7 +86,6 @@ export const updateOrderItem = async (orderItems, storeId) => {
         headers: await getHeaders(),
       }
     );
-    console.log("work work", orders);
     return orders;
   } catch (error) {
     console.log("get orders error:", error);

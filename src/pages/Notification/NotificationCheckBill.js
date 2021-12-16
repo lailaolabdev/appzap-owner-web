@@ -53,7 +53,6 @@ export default function NotificationCheckBill() {
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
                 <th>ລຳດັບ</th>
-                <th>ຊື່ລູກຄ້າ</th>
                 <th>ລະຫັດເຂົ້າລະບົບ</th>
                 <th>ເລກໂຕະ</th>
                 <th>ສະຖານະ</th>
@@ -65,7 +64,6 @@ export default function NotificationCheckBill() {
                 return (
                   <tr index={item} onClick={() => _checkbillTable(item?.code)}>
                     <td>{index + 1}</td>
-                    <td>{item?.customer_nickname}</td>
                     <td>{item?.code}</td>
                     <td>{item?.table_id}</td>
                     <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>

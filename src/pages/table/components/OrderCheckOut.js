@@ -99,7 +99,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               showConfirmButton: false,
               timer: 1800
             })
-            resetTableOrder()
+            // resetTableOrder()
             hide()
           })
           .catch(function (error) {

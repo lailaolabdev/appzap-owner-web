@@ -1,7 +1,7 @@
 import { USER_KEY } from './index'
-// export const END_POINT_SEVER = "http://localhost:7070"; //dev
+export const END_POINT_SEVER = "http://localhost:7070"; //dev
 // export const END_POINT_SEVER = "http://13.229.122.188:7070";
-export const END_POINT_SEVER = "http://13.229.122.188:7070"; // prosduction
+// export const END_POINT_SEVER = "http://13.229.122.188:7070"; // prosduction
 export const getLocalData = async () => {
     const _local = await localStorage.getItem(USER_KEY);
     const _localJson2 = await JSON.parse(_local)

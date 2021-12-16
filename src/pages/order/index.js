@@ -74,8 +74,7 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orderItems &&
-              orderItems?.map((order, index) => {
+            {orderItems?.map((order, index) => {
                 return (
                   <tr key={index}>
                     <td>

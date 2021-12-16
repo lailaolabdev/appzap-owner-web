@@ -18,7 +18,6 @@ export const useOrderState = () => {
         () => async () => {
             let _userData = await getLocalData();
             setUserData(_userData)
-
             socket.on(`ORDER:${_userData?.DATA?.storeId}`, (data) => {
                 setWaitingOrderItems(data)
                 setOrderItems(data)

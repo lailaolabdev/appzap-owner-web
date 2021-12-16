@@ -156,7 +156,6 @@ export default function HistoriesCheckBill() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ຊື່ຜູ້ສັ່ງ</th>
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>
                   <th>ລາຄາ</th>
@@ -171,7 +170,6 @@ export default function HistoriesCheckBill() {
                   return (
                     <tr index={item}>
                       <td>{index + 1}</td>
-                      <td><b>{item?.orderId?.customer_nickname}</b></td>
                       <td><b>{item?.name}</b></td>
                       <td>{item?.quantity}</td>
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
