@@ -12,7 +12,7 @@ export const useOrderState = () => {
     const [orderItems, setOrderItems] = useState([]);
     const [waitingOrderItems, setWaitingOrderItems] = useState([]);
     const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] = useState([])
-    const [callCheckBill, setCallCheckBill] = useState()
+    const [callCheckBill, setCallCheckBill] = useState([])
 
 
     const initialOrderSocket = useMemo(
@@ -24,7 +24,7 @@ export const useOrderState = () => {
                 setOrderItems(data)
             });
             socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-                setCallCheckBill(data)
+                callingCheckOut()
                 Swal.fire({
                     icon: 'success',
                     title: "ມີການແຈ້ງເກັບເງີນ",
@@ -35,8 +35,16 @@ export const useOrderState = () => {
         },
         []
     );
-
-
+    const callingCheckOut = async () => {
+        await setOrderLoading(true);
+        let _userData = await getLocalData();
+        await fetch(END_POINT + `/orders?status=CALLTOCHECKOUT&storeId=${_userData?.DATA?.storeId}`, {
+            method: "GET",
+        }).then(response => response.json())
+            .then(json => {
+                setCallCheckBill(json)
+            });
+    }
 
     const getOrderItemsStore = async (status) => {
         await setOrderLoading(true);

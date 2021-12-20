@@ -35,6 +35,7 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
+  console.log("orderItems===>", orderItems)
   return (
     <div style={{}}>
       <OrderNavbar />
@@ -74,7 +75,7 @@ const Order = () => {
             </tr>
           </thead>
           <tbody>
-            {orderItems?.map((order, index) => {
+            {orderItems && orderItems?.map((order, index) => {
                 return (
                   <tr key={index}>
                     <td>

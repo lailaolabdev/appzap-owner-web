@@ -10,7 +10,9 @@ import ImageProfile from "../image/profile.png"
 import { Badge, Modal, Button, Table } from 'react-bootstrap'
 import moment from 'moment';
 import axios from 'axios';
+import Swal from 'sweetalert2'
 import { SocketContext } from "../services/socket"
+import { socket } from '../services/socket'
 
 
 export default function NavBar() {
@@ -36,31 +38,21 @@ export default function NavBar() {
     history.push(`/`)
   }
   const _updateMessage = async () => {
-    let getId = []
-    for (let p = 0; p < messageData?.length; p++) {
-      getId.push(messageData[p]?._id)
-    }
-    // ======> update ststus= yes message
     const resData = await axios({
-      method: 'PUT',
-      url: END_POINT + `/messagesUpdateMany`,
-      data: {
-        getId
-      },
-    }).then(async function (response) {
-      if (response) {
-        window.location.reload();
-      }
-    }).catch(function (error) {
+      method: 'get',
+      url: END_POINT + `/v2/messageDetail?storeId=${userData?.data?.storeId}&read=NOT&from=TABLE`,
     })
-
+    setmessageData(resData?.data)
   }
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
-
-
+  socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
+    _updateMessage();
+    });
+useEffect(() => {
+  _updateMessage()
+}, [userData])
   return (
     <div>
       <Navbar

@@ -143,7 +143,7 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              className={callCheckBill ? "scale-animation" : ""}
+              className={callCheckBill?.length > 0 ? "scale-animation" : ""}
               icon={faBell}
               style={{
                 color:
