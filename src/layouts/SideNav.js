@@ -35,7 +35,7 @@ export default function Sidenav({ location, history }) {
   const {
     userData,
     openTableData,
-    orderLoading,
+    callCheckBill,
     getTableDataStore,
     waitingOrderItems,
     getOrderItemsStore,
@@ -53,7 +53,6 @@ export default function Sidenav({ location, history }) {
     initialOrderSocket()
     initialTableSocket()
   }, [])
-
   return (
     <SideNav
       style={{
@@ -144,6 +143,7 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
+              className={callCheckBill ? "scale-animation" : ""}
               icon={faBell}
               style={{
                 color:

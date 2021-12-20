@@ -47,9 +47,9 @@ import {
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from '../../constants/api'
 import {
-    successAdd,
-    errorAdd,
-    warningAlert
+  successAdd,
+  errorAdd,
+  warningAlert
 } from "../../helpers/sweetalert"
 import { updateOrderItem } from "../../services/order";
 
@@ -68,7 +68,7 @@ export default function TableList() {
   const [openModalSetting, setOpenModalSetting] = useState(false)
   const [dataSettingModal, setDataSettingModal] = useState()
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
-  
+
 
   const {
     isTableOrderLoading,
@@ -166,15 +166,15 @@ export default function TableList() {
       })
       if (changTable?.status === 200) {
         handleClose()
-          setSelectedTable()
-              setTableList(changTable?.data)
+        setSelectedTable()
+        setTableList(changTable?.data)
         await Swal.fire({
           icon: 'success',
           title: "ການປ່ຽນໂຕະສໍາເລັດ",
           showConfirmButton: false,
           timer: 1500
         })
-          
+
       }
     } catch (err) {
       await Swal.fire({
@@ -189,32 +189,32 @@ export default function TableList() {
     setDataSettingModal(data)
     setOpenModalSetting(true)
   }
-  const _resetTable =async () => {
-        try {
-            if (tableOrderItems?.length > 0) {
-            setOpenModalSetting(false)
-                warningAlert("ບໍ່ສາມາດປິດໂຕະໄດ້ເພາະມີການໃຊ້ງານ...!")
-                return
-            }
-            const updateTable = await axios({
-                method: 'put',
-                url: END_POINT_SEVER + `/updateGenerates/`+dataSettingModal?.code,
-                data: {
-                  "isOpened":"false",
-                  "staffConfirm":"false"
-                },
-            })
-            setOpenModalSetting(false)
-          if (updateTable?.data) {
-            setSelectedTable()
-              setTableList(updateTable?.data)
-                successAdd("ການປິດໂຕະສຳເລັດ")
-            }
-        } catch (err) {
-            errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
-        }
+  const _resetTable = async () => {
+    try {
+      if (tableOrderItems?.length > 0) {
+        setOpenModalSetting(false)
+        warningAlert("ບໍ່ສາມາດປິດໂຕະໄດ້ເພາະມີການໃຊ້ງານ...!")
+        return
+      }
+      const updateTable = await axios({
+        method: 'put',
+        url: END_POINT_SEVER + `/updateGenerates/` + dataSettingModal?.code,
+        data: {
+          "isOpened": "false",
+          "staffConfirm": "false"
+        },
+      })
+      setOpenModalSetting(false)
+      if (updateTable?.data) {
+        setSelectedTable()
+        setTableList(updateTable?.data)
+        successAdd("ການປິດໂຕະສຳເລັດ")
+      }
+    } catch (err) {
+      errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
+    }
   }
-// ==========
+  // ==========
 
   return (
     <div style={TITLE_HEADER}>
@@ -346,23 +346,27 @@ export default function TableList() {
                     </div>
                   </div>
                 </div>
-                <div style={{ display: _orderIsChecked() ? "none" : '' }}>
                   <div>ອັບເດດເປັນສະຖານະ: </div>
-                  <div style={{height: 20 }}></div>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() =>setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
-                  <ReactToPrint
-                    trigger={() => <Button
-                      variant="light"
-                      style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }}
-                    >ພີມບີນສົ່ງໄປຄົວ</Button>}
-                    content={() => componentRef.current}
-                  />
-                  <div style={{ display: 'none' }}>
-                    <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
+                  <div style={{ height: 20 }}></div>
+                <div style={{ display: _orderIsChecked() ? "none" : 'flex' , justifyContent: "space-between"}}>
+                  <div>
+                    <ReactToPrint
+                      trigger={() => <Button
+                        variant="light"
+                        style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }}
+                      >ພີມບີນສົ່ງໄປຄົວ</Button>}
+                      content={() => componentRef.current}
+                    />
+                    <div style={{ display: 'none' }}>
+                      <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
+                    </div>
                   </div>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                  <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
+                  <div>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
+                  </div>
                 </div>
                 <div style={padding_white} />
                 <div>
@@ -518,13 +522,13 @@ export default function TableList() {
       {/* ======== setting ======== */}
       <Modal
         show={openModalSetting}
-        onHide={()=>setOpenModalSetting(false)}>
+        onHide={() => setOpenModalSetting(false)}>
         <Modal.Header closeButton>
           <Modal.Title>ຕັ້ງຄ່າໂຕະ</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={ { textAlign: "center"}}>
-            ທ່ານຕ້ອງການປິດໂຕະ { dataSettingModal?.table_id} ນີ້ບໍ ?
+          <div style={{ textAlign: "center" }}>
+            ທ່ານຕ້ອງການປິດໂຕະ {dataSettingModal?.table_id} ນີ້ບໍ ?
           </div>
         </Modal.Body>
         <Modal.Footer>
