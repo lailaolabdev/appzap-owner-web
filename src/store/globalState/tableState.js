@@ -23,17 +23,19 @@ export const useTableState = () => {
             let _userData = await getLocalData();
             socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
                 let _openTable = data.filter((table) => {
+                    // console.log("table.isOpened && !table.staffConfirm====>", table.isOpened && !table.staffConfirm)
                     return table.isOpened && !table.staffConfirm
                 })
+                // console.log("data===>", data)
                 setOpenTableData(_openTable)
                 setTableList(data)
                 getTableOrders(selectedTable)
-                Swal.fire({
-                    icon: 'success',
-                    title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
-                    showConfirmButton: false,
-                    timer: 10000
-                })
+                // Swal.fire({
+                //     icon: 'success',
+                //     title: "ມີການເປີດໂຕະຈາກລູກຄ້າ",
+                //     showConfirmButton: false,
+                //     timer: 10000
+                // })
             });
         },
         []

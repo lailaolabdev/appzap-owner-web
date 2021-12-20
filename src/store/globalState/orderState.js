@@ -12,6 +12,7 @@ export const useOrderState = () => {
     const [orderItems, setOrderItems] = useState([]);
     const [waitingOrderItems, setWaitingOrderItems] = useState([]);
     const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] = useState([])
+    const [callCheckBill, setCallCheckBill] = useState()
 
 
     const initialOrderSocket = useMemo(
@@ -21,6 +22,15 @@ export const useOrderState = () => {
             socket.on(`ORDER:${_userData?.DATA?.storeId}`, (data) => {
                 setWaitingOrderItems(data)
                 setOrderItems(data)
+            });
+            socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
+                setCallCheckBill(data)
+                Swal.fire({
+                    icon: 'success',
+                    title: "ມີການແຈ້ງເກັບເງີນ",
+                    showConfirmButton: false,
+                    timer: 10000
+                })
             });
         },
         []
@@ -108,6 +118,7 @@ export const useOrderState = () => {
         setOrderItems(_newOrderItems)
     }
     return {
+        callCheckBill,
         orderItemForPrintBillSelect,
         orderLoading,
         userData,
