@@ -75,7 +75,7 @@ useEffect(() => {
           <Nav className="mr-auto" />
           <div style={{ marginLeft: 20 }}></div>
           <Image
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRM_EuMtQtLai1XobOTisIwqDSJLsyAsAzD4fu4RsNabketghLEL8iA2WIzqT0mrnHcVdU&usqp=CAU"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
             width={35}
             height={35}
             roundedCircle
