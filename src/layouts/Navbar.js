@@ -48,10 +48,10 @@ export default function NavBar() {
   const handleShow = () => setShow(true);
   socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
     _updateMessage();
-    });
-useEffect(() => {
-  _updateMessage()
-}, [userData])
+  });
+  useEffect(() => {
+    _updateMessage()
+  }, [userData])
   return (
     <div>
       <Navbar
@@ -73,6 +73,7 @@ useEffect(() => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
+          <p style={{ marginTop: 20 }}>Version:2.0.0</p>
           <div style={{ marginLeft: 20 }}></div>
           <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
@@ -80,7 +81,7 @@ useEffect(() => {
             height={35}
             roundedCircle
             onClick={() => history.push("/messagerList")}
-            // onClick={handleShow}
+          // onClick={handleShow}
           />
           <Badge variant="danger" >{messageData?.length ? messageData?.length : ""}</Badge>
           <div style={{ marginLeft: 30 }}></div>
@@ -103,7 +104,7 @@ useEffect(() => {
                   onClick={() => _onLogout()}
                 >
                   ອອກຈາກລະບົບ
-								</Dropdown.Item>
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Image
@@ -140,7 +141,7 @@ useEffect(() => {
                 return (
                   <tr>
                     <td>{index + 1}</td>
-                    <td>{item?.table_id ? item?.table_id:"-"}</td>
+                    <td>{item?.table_id ? item?.table_id : "-"}</td>
                     <td>{item?.customer_nickname}</td>
                     <td>{item?.text}</td>
                     <td>{moment(item?.createdAt).format("HH:mm a")}</td>
