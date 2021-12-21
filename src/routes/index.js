@@ -39,6 +39,8 @@ import SettingTable from '../pages/settingStore/SettingTable'
 import Dashboard from '../pages/dashboard/Dashboard'
 // ===========> Promotion ============>
 import Promotion from '../pages/promotion/Promotion'
+// ===========> MessagerList ============>
+import MessagerList from '../pages/messager/MessagerList'
 
 const Main = styled.main`
   /* position: relative; */
@@ -176,6 +178,11 @@ const Index = () => {
                     exact
                     path="/settingStore/settingTable/:id"
                     component={SettingTable}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/messagerList"
+                    component={MessagerList}
                   />
                 </div>
               </Main>

@@ -88,28 +88,9 @@ export const updateOrderItem = async (orderItems, storeId) => {
     );
     return orders;
   } catch (error) {
-    console.log("get orders error:", error);
     return error;
   }
 };
-
-// export const updateOrderItem = async (data, status = CANCEL_STATUS, storeId) => {
-//   try {
-//     for (let orderElement of data) {
-//       const url = `${END_POINT}/orderItems/${orderElement._id}`;
-//       const orders = await axios.put(
-//         url,
-//         { status },
-//         {
-//           headers: await getHeaders(),
-//         }
-//       );
-//       console.log("work work", orders);
-//     }
-//   } catch (error) {
-//     console.log("get orders error:", error);
-//   }
-// };
 
 export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {

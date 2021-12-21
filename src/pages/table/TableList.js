@@ -12,6 +12,7 @@ import {
   faRetweet,
   faCogs,
   faCog,
+  faWindowClose,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 
@@ -215,7 +216,7 @@ export default function TableList() {
     }
   }
   // ==========
-
+  console.log("tableOrderItems====>", tableOrderItems)
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -282,7 +283,7 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>ໂຕະ {table?.table_id}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>{table?.table_id}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
                             <div >{convertTableStatus(table)}</div>
                           </span>
@@ -313,10 +314,8 @@ export default function TableList() {
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.table_id} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
-                    <div className="row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", height: 50 }}>
-                      <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
-                      <FontAwesomeIcon icon={faCog} style={{ color: "#000000", marginRight: 10, fontSize: 25 }} onClick={() => _openModalSetting(selectedTable)} />
-                    </div>
+                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname}</p>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
@@ -328,9 +327,9 @@ export default function TableList() {
                       : "none"
                   }}>
                   </div>
-
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <div style={{}}>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
                       <ReactToPrint
@@ -346,9 +345,9 @@ export default function TableList() {
                     </div>
                   </div>
                 </div>
-                  <div>ອັບເດດເປັນສະຖານະ: </div>
-                  <div style={{ height: 20 }}></div>
-                <div style={{ display: _orderIsChecked() ? "none" : 'flex' , justifyContent: "space-between"}}>
+                <div>ອັບເດດເປັນສະຖານະ: </div>
+                <div style={{ height: 20 }}></div>
+                <div style={{ display: _orderIsChecked() ? "none" : 'flex', justifyContent: "space-between" }}>
                   <div>
                     <ReactToPrint
                       trigger={() => <Button
@@ -390,7 +389,6 @@ export default function TableList() {
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
-                                // disabled={orderItem?.status === "SERVED"}
                                 checked={orderItem?.isChecked ? true : false}
                                 onChange={(e) => onChangeMenuCheckbox(orderItem)}
                                 color="primary"

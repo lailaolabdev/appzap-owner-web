@@ -97,6 +97,7 @@ export default function SettingTable() {
             method: 'DELETE',
             url: END_POINT + `/deleteGeneratesAndTable`,
             data: {
+                idTable: dateDelete?._id,
                 code: dateDelete?.table_id,
                 storeId: dateDelete?.storeId
             }
@@ -133,7 +134,7 @@ export default function SettingTable() {
                                     return (
                                         <tr>
                                             <td>{index + 1}</td>
-                                            <td>ໂຕະ {table?.table_id}</td>
+                                            <td>{table?.table_id}</td>
                                             <td>{table?.code}</td>
                                             <td><label class="switch">
                                                 <input type="checkbox" defaultChecked={table?.status === true ? true : false} onClick={(e) => _changeStatusTable(table)} />

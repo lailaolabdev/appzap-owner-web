@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2'
-import { END_POINT, SERVE_STATUS } from "../../constants";
+import { END_POINT, SERVE_STATUS, WAITING_STATUS, DOING_STATUS, CANCEL_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
@@ -207,7 +207,7 @@ export const useTableState = () => {
                     return {
                         ...item,
                         status,
-                        isChecked: status != SERVE_STATUS
+                        isChecked: ![CANCEL_STATUS, SERVE_STATUS, WAITING_STATUS, DOING_STATUS].includes(status)
                     }
                 }
                 else return item

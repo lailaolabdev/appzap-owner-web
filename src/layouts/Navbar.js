@@ -10,7 +10,6 @@ import ImageProfile from "../image/profile.png"
 import { Badge, Modal, Button, Table } from 'react-bootstrap'
 import moment from 'moment';
 import axios from 'axios';
-import Swal from 'sweetalert2'
 import { SocketContext } from "../services/socket"
 import { socket } from '../services/socket'
 
@@ -80,7 +79,8 @@ useEffect(() => {
             width={35}
             height={35}
             roundedCircle
-            onClick={handleShow}
+            onClick={() => history.push("/messagerList")}
+            // onClick={handleShow}
           />
           <Badge variant="danger" >{messageData?.length ? messageData?.length : ""}</Badge>
           <div style={{ marginLeft: 30 }}></div>

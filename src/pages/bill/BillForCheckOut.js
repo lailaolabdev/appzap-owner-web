@@ -74,6 +74,9 @@ export class BillForCheckOut extends React.PureComponent {
                         <th>ລະຫັດ: {newDataItem[0]?.code}</th>
                     </tr>
                     <tr>
+                        <th>ຜູ້ຮັບຜິດຊອບ:   {newDataItem[0]?.createdBy?.firstname + " " + newDataItem[0]?.createdBy?.lastname}</th>
+                    </tr>
+                    <tr>
                         <th>ວັນທີ:  {moment(newDataItem[0]?.createdAt).format("DD/mm/YYYY")}</th>
                     </tr>
                 </table>
