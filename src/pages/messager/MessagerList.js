@@ -71,7 +71,7 @@ export default function MessagerList() {
         _getDataMessagerList();
     });
     socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
-        _getDataMessagerList();
+        // _getDataMessagerList();
     });
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
