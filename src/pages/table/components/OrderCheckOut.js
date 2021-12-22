@@ -42,7 +42,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     setNewData(resData?.data);
   };
 
-
+  console.log("data====>", data)
   const _calculateTotal = () => {
     let _total = 0;
     if (NewData && NewData.length > 0) {

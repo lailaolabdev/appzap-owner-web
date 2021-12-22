@@ -5,7 +5,7 @@ import {
   Col,
   Button,
   Container,
-  FormControl,
+  Image,
   InputGroup,
   Nav
 } from "react-bootstrap";
@@ -19,6 +19,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import { _statusCheckBill } from "../../helpers/index"
 import Sidenav from '../../layouts/SideNav'
+import empty from '../../image/empty.png'
+
 export default function NotificationCheckBill() {
   const { match, history } = useReactRouter();
   const [orderCallCheckOut, setorderCallCheckOut] = useState()
@@ -39,43 +41,45 @@ export default function NotificationCheckBill() {
   }
   return (
     <div style={{ minHeight: 400 }}>
-      <Container fluid>
-        <div className="row mt-5">
-          <h5 style={{ marginLeft: 30 }}><strong>ແຈ້ງເຕືອນ checkBill</strong></h5>
-          <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-            <InputGroup>
-            </InputGroup>
-          </Nav.Item>
-        </div>
-        <div style={{ height: 20 }}></div>
-        <Col xs={12}>
-          <Table responsive className="table">
-            <thead style={{ backgroundColor: "#F1F1F1" }}>
-              <tr>
-                <th>ລຳດັບ</th>
-                <th>ລະຫັດເຂົ້າລະບົບ</th>
-                <th>ເລກໂຕະ</th>
-                <th>ສະຖານະ</th>
-                <th>ວັນເວລາ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderCallCheckOut?.map((item, index) => {
-                return (
-                  <tr index={item} onClick={() => _checkbillTable(item?.code)}>
-                    <td>{index + 1}</td>
-                    <td>{item?.code}</td>
-                    <td>{item?.table_id}</td>
-                    <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>
-                    <td>{moment(item?.createdAt).format("DD-MM-YYYY HH:mm a")} </td>
-                  </tr>
-                )
-              }
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Container>
+      {orderCallCheckOut?.length > 0 ?
+        <Container fluid>
+          <div className="row mt-5">
+            <h5 style={{ marginLeft: 30 }}><strong>ແຈ້ງເຕືອນ checkBill</strong></h5>
+            <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
+              <InputGroup>
+              </InputGroup>
+            </Nav.Item>
+          </div>
+          <div style={{ height: 20 }}></div>
+          <Col xs={12}>
+            <Table responsive className="table">
+              <thead style={{ backgroundColor: "#F1F1F1" }}>
+                <tr>
+                  <th>ລຳດັບ</th>
+                  <th>ລະຫັດເຂົ້າລະບົບ</th>
+                  <th>ເລກໂຕະ</th>
+                  <th>ສະຖານະ</th>
+                  <th>ວັນເວລາ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderCallCheckOut?.map((item, index) => {
+                  return (
+                    <tr index={item} onClick={() => _checkbillTable(item?.code)}>
+                      <td>{index + 1}</td>
+                      <td>{item?.code}</td>
+                      <td>{item?.table_id}</td>
+                      <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>
+                      <td>{moment(item?.createdAt).format("DD-MM-YYYY HH:mm a")} </td>
+                    </tr>
+                  )
+                }
+                )}
+              </tbody>
+            </Table>
+          </Col>
+        </Container>
+        : <Image src={empty} alt="" width="100%" />}
     </div>
   )
 }

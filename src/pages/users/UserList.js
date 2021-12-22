@@ -16,6 +16,8 @@ import AnimationLoading from "../../constants/loading"
 import profileImage from "../../image/profile.png"
 import { STATUS_USERS } from '../../helpers'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
+
+
 export default function UserList() {
   const { history, location, match } = useReactRouter()
   const _limit = match.params.limit;
