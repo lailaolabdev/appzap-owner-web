@@ -42,7 +42,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     setNewData(resData?.data);
   };
 
-  console.log("data====>", data)
   const _calculateTotal = () => {
     let _total = 0;
     if (NewData && NewData.length > 0) {
@@ -52,7 +51,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     }
     setTotal(_total)
   }
-
 
 
   const _checkBill = async () => {
@@ -99,7 +97,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               showConfirmButton: false,
               timer: 1800
             })
-            // resetTableOrder()
+            resetTableOrder()
             hide()
           })
           .catch(function (error) {
