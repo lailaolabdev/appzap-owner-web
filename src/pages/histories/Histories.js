@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router"
 import {
-  Form,
-  Row,
   Col,
-  Button,
   Container,
-  FormControl,
   InputGroup,
   Nav
 } from "react-bootstrap";
@@ -101,10 +97,6 @@ export default function History() {
                 <label>ຫາວັນທີ</label>
                 <input type="date" className="form-control" value={endDate} onChange={(e) => _setSelectedDateEnd(e)}></input>
               </div>
-              {/* <div className="col-4">
-                <label>ລະຫັດເຂົ້າລະບົບ</label>
-                <input type="number" className="form-control" placeholder="ລະຫັດເຂົ້າລະບົບ . . . . ." onChange={(e) => _setSelectedCode(e)}></input>
-              </div> */}
             </InputGroup>
           </Nav.Item>
         </div>
@@ -129,13 +121,13 @@ export default function History() {
                       <td>{item?.code}</td>
                       <td>{item?.table_id}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.order_item))} ກີບ</b></td>
-                      <td>{moment(item?.createdAt).format("DD/MM/YYY ~ HH:mm a")}</td>
+                      <td>{moment(item?.createdAt).format("DD/MM/YYY HH:mm")}</td>
                     </tr>
                   )
                 }
                 )}
                 <tr>
-                  <td colSpan={4} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
+                  <td colSpan={3} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
                   <td colSpan={3} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                 </tr>
               </tbody>

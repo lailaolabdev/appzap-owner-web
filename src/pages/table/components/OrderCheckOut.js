@@ -54,7 +54,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
 
 
   const _checkBill = async () => {
-    if (data) {
+    // if (data) {
       if (!data[0]?.orderId?._id) {
         await axios
           .put(
@@ -104,9 +104,9 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
           });
       }
-    } else {
-      errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-    }
+    // } else {
+    //   errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+    // }
   };
   return (
     <Modal

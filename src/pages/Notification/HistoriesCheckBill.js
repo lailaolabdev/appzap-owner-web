@@ -23,6 +23,7 @@ import { STORE, getLocalData } from '../../constants/api'
 
 import ReactToPrint from 'react-to-print';
 import { ComponentToPrint } from './components/ToPrint';
+import { useStore } from "../../store";
 
 
 const date = new moment().format("LL");
@@ -30,7 +31,11 @@ export default function HistoriesCheckBill() {
   const { history, location, match } = useReactRouter()
   const componentRef = useRef();
   const componentRefA = useRef();
-
+  const {
+    selectedTable,
+    setSelectedTable,
+    resetTableOrder
+  } = useStore();
   const newDate = new Date();
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
@@ -194,7 +199,9 @@ export default function HistoriesCheckBill() {
       </Container>
       <OrderCheckOut
         data={newData}
+        tableData={selectedTable}
         show={menuItemDetailModal}
+        resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
     </div>

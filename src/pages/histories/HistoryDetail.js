@@ -2,28 +2,31 @@ import React, { useEffect, useState } from 'react'
 import useReactRouter from "use-react-router";
 
 import {
-  Form,
-  Row,
   Col,
-  Button,
   Container,
-  FormControl,
-  InputGroup,
   Nav
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
 import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
+import FeedbackOrder from "../table/components/FeedbackOrder";
 import AnimationLoading from "../../constants/loading"
+import { useStore } from "../../store";
+
 
 const date = new moment().format("LL");
 export default function HistoryDetail() {
   const { history, location, match } = useReactRouter();
+  const {
+    selectedTable,
+    setSelectedTable,
+  } = useStore();
   const newDate = new Date();
+  const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [data, setData] = useState([])
@@ -37,6 +40,7 @@ export default function HistoryDetail() {
   }, [findeByCode])
   useEffect(() => {
     _searchDate()
+    setSelectedTable()
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
@@ -57,9 +61,9 @@ export default function HistoryDetail() {
   const _setSelectedCode = (item) => {
     setfindeByCode(item.target.value)
   }
+  console.log("selectedTable===>", selectedTable)
   const [orderItemData, setOrderItemData] = useState()
   const [amount, setamount] = useState()
-  const [amountArray, setAmountArray] = useState()
   useEffect(() => {
     let order_item = []
     let Allamount = 0
@@ -73,7 +77,6 @@ export default function HistoryDetail() {
     }
     setamount(Allamount)
     setOrderItemData(order_item)
-
   }, [data])
 
   return (
@@ -84,6 +87,7 @@ export default function HistoryDetail() {
           <div className="col-sm-9">
             <Nav.Item>
               <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname}</strong></h5>
             </Nav.Item>
           </div>
           <div className="col-sm-3">
@@ -104,6 +108,7 @@ export default function HistoryDetail() {
                   <th>ລາຄາ/ອັນ</th>
                   <th>ລາຄາລວມ</th>
                   <th>ວັນທີ</th>
+                  <th>ຈັດການ</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,6 +122,7 @@ export default function HistoryDetail() {
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
+                      <td><FontAwesomeIcon icon={faCog} onClick={() => setFeedbackOrderModal(true)} /></td>
                     </tr>
                   )
                 }
@@ -131,6 +137,13 @@ export default function HistoryDetail() {
         </div>
         }
       </Container>
+      <FeedbackOrder
+        data={orderItemData}
+        tableData={selectedTable}
+        searchDate={_searchDate}
+        show={feedbackOrderModal}
+        hide={() => setFeedbackOrderModal(false)}
+      />
     </div>
   )
 }

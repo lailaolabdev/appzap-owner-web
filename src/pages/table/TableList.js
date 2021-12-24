@@ -10,8 +10,6 @@ import {
   faCheckCircle,
   faFileInvoice,
   faRetweet,
-  faCogs,
-  faCog,
   faWindowClose,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
@@ -30,7 +28,7 @@ import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus } from "../../helpers";
 import { BillForChef } from '../bill/BillForChef';
 import { BillForCheckOut } from '../bill/BillForCheckOut';
-import { STORE, getLocalData } from '../../constants/api'
+import { STORE } from '../../constants/api'
 
 /**
  * const
@@ -216,7 +214,6 @@ export default function TableList() {
     }
   }
   // ==========
-  console.log("tableOrderItems====>", tableOrderItems)
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -478,7 +475,6 @@ export default function TableList() {
         data={orderItemForPrintBill}
         tableData={selectedTable}
         show={feedbackOrderModal}
-        // resetTableOrder={resetTableOrder}
         hide={() => setFeedbackOrderModal(false)}
       />
       <UserCheckoutModal

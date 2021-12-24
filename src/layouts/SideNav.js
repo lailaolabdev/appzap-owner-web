@@ -9,9 +9,7 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAd,
-  faAddressCard,
   faBell,
-  faBookOpen,
   faCartArrowDown,
   faCogs,
   faHistory,
@@ -76,9 +74,6 @@ export default function Sidenav({ location, history }) {
         if (selected === "users") {
           selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
-        // if (selected === "menu") {
-        //   selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
-        // }
         if (selected === "category") {
           selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
         }
@@ -152,6 +147,10 @@ export default function Sidenav({ location, history }) {
                     : UN_SELECTED_TAB_TEXT,
               }}
             />
+            {callCheckBill?.length != 0 ?
+              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{callCheckBill?.length}</Badge>
+              : ""
+            }
           </NavIcon>
           <NavText
             style={{
@@ -186,7 +185,6 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              // className={openTableData.length > 0 ? "scale-animation" : ""}
               icon={faTachometerAlt}
               style={{
                 color:
@@ -207,7 +205,6 @@ export default function Sidenav({ location, history }) {
         <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
-              // className={openTableData.length > 0 ? "scale-animation" : ""}s
               icon={faAd}
               style={{
                 color:

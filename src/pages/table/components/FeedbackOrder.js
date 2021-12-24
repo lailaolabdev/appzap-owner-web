@@ -8,11 +8,9 @@ import moment from "moment";
 import { updateOrderItem } from "../../../services/order";
 
 
-const FeedbackOrder = ({ data, tableData, show, hide,  }) => {
+const FeedbackOrder = ({ data, tableData, show, hide, searchDate  }) => {
 
 const [saveDataItemQty, setsaveDataItemQty] = useState()
-
-
   const _feedBackOrder = async (qty, newQty, index) => {
     const dataNew = [...data];
     if (qty < newQty) return warningAlert("ຈຳນວນເກີນ...!");
@@ -25,6 +23,7 @@ const [saveDataItemQty, setsaveDataItemQty] = useState()
     if (res?.data) {
       hide();
       successAdd("ສຳເລັດການສົ່ງຄືນ")
+      searchDate()
     }
   }
   return (
@@ -39,10 +38,10 @@ const [saveDataItemQty, setsaveDataItemQty] = useState()
         <Modal.Title>ສົ່ງອາຫານຄືນ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
+        {/* <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
-        <div style={{ height: 20 }}></div>
+        <div style={{ height: 20 }}></div> */}
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
