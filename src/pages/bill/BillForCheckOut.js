@@ -19,6 +19,7 @@ export class BillForCheckOut extends React.PureComponent {
                 }
             }
         }
+        console.log("newDataItem===>", newDataItem)
         return (
             <div>
                 <table style={{ width: '40%', textAlign: 'center', fontSize: "18px", color: "#000000", display: "flex", justifyContent: "center" }}>
@@ -115,6 +116,14 @@ export class BillForCheckOut extends React.PureComponent {
                     <tr style={{ fontSize: "20px", color: "#000000" }}>
                         <th style={{ textAlign: "center" }} colspan="3">ລວມເປັນເງີນທັງໝົດ</th>
                         <th>{moneyCurrency(data)}</th>
+                    </tr>
+                    <tr style={{ fontSize: "20px", color: "#000000" }}>
+                        <th style={{ textAlign: "center" }} colspan="3">ສ່ວນຫຼຸດ </th>
+                        <th>{newDataItem && newDataItem[0]?.orderId?.discountType === "LAK" ? moneyCurrency(newDataItem[0]?.orderId?.discount) + " " + "ກີບ" : newDataItem[0]?.orderId?.discount + " " + "%"}</th>
+                    </tr>
+                    <tr style={{ fontSize: "20px", color: "#000000" }}>
+                        <th style={{ textAlign: "center" }} colspan="3">ຕ້ອງຈ່າຍທັງໝົດ</th>
+                        <th>{newDataItem && newDataItem[0]?.orderId?.discountType === "LAK" ? moneyCurrency(data - newDataItem[0]?.orderId?.discount) : moneyCurrency(data - (data * newDataItem[0]?.orderId?.discount) / 100)}</th>
                     </tr>
                 </table>
                 <hr style={{

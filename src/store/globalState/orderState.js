@@ -132,6 +132,7 @@ export const useOrderState = () => {
         userData,
         orderItems,
         waitingOrderItems,
+        callingCheckOut,
         getOrderItemsStore,
         handleUpdateOrderStatus,
         handleCheckbox,

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
 import Container from "react-bootstrap/Container";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Image } from "react-bootstrap";
 import moment from "moment";
 import OrderNavbar from "./component/OrderNavbar";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as _ from "lodash"
+import empty from '../../image/empty.png'
+
 /**
  * import components
  */
@@ -38,6 +40,7 @@ const Order = () => {
   }, [])
   return (
     <div>
+      {orderItems?.length > 0 ? <div>
       <OrderNavbar />
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
@@ -96,16 +99,13 @@ const Order = () => {
           </tbody>
         </Table>
       </Container>
-      {/* <CancelModal
-        show={cancelModal}
-        hide={() => setCancelModal(false)}
-        handleCancel={_handleCancel}
-      /> */}
       <UpdateModal
         show={updateModal}
         hide={() => setUpdateModal(false)}
         // handleUpdate={_handleUpdate}
       />
+    </div>
+       : <Image src={empty} alt="" width="100%" />}
     </div>
   );
 };

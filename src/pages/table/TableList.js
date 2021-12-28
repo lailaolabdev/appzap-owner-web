@@ -11,6 +11,7 @@ import {
   faFileInvoice,
   faRetweet,
   faWindowClose,
+  faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 
@@ -24,8 +25,9 @@ import axios from 'axios';
 import Loading from "../../components/Loading";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import OrderCheckOut from "./components/OrderCheckOut";
+import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
-import { orderStatus } from "../../helpers";
+import { orderStatus, moneyCurrency } from "../../helpers";
 import { BillForChef } from '../bill/BillForChef';
 import { BillForCheckOut } from '../bill/BillForCheckOut';
 import { STORE } from '../../constants/api'
@@ -93,7 +95,7 @@ export default function TableList() {
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
   const [dataStore, setStore] = useState()
-
+const [modalAddDiscount, setModalAddDiscount] = useState(false)
   useEffect(() => {
     getTableDataStore()
     getData()
@@ -130,6 +132,9 @@ export default function TableList() {
   }
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
+  };
+  const _onAddDiscount = async () => {
+    setModalAddDiscount(true);
   };
   const _goToAddOrder = (tableId, code) => {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -213,7 +218,7 @@ export default function TableList() {
       errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
     }
   }
-  // ==========
+  // ==========>
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -255,7 +260,6 @@ export default function TableList() {
                     <div className="card" key={"table" + index}>
                       <Button
                         key={index}
-                        // className="card-body"
                         style={{
                           width: 180,
                           height: 140,
@@ -313,6 +317,7 @@ export default function TableList() {
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(tableOrderItems[0]?.orderId?.discount)} ກີບ</p>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
@@ -328,6 +333,7 @@ export default function TableList() {
                     <div style={{}}>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onAddDiscount()}><FontAwesomeIcon icon={faPercent} style={{ color: "#fff" }} /> ເພີ່ມສ່ວນຫຼຸດ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
                       <ReactToPrint
                         trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
@@ -464,6 +470,13 @@ export default function TableList() {
         </div>
       </div>
 
+      <UpdateDiscountOrder
+        data={tableOrderItems}
+        tableData={selectedTable}
+        show={modalAddDiscount}
+        resetTableOrder={resetTableOrder}
+        hide={() => setModalAddDiscount(false)}
+      />
       <OrderCheckOut
         data={tableOrderItems}
         tableData={selectedTable}
@@ -483,7 +496,6 @@ export default function TableList() {
         tableId={selectedTable?.code}
         func={_handlecheckout}
       />
-
       <Modal
         show={show}
         onHide={handleClose}>

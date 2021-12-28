@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import useReactRouter from "use-react-router";
-import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
+import { Table, Image} from "react-bootstrap";
 import moment from "moment";
 import OrderNavbar from "./component/OrderNavbar";
+import empty from '../../image/empty.png'
 
 import Loading from "../../components/Loading";
-import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { END_POINT } from "../../constants";
 const Order = () => {
@@ -51,6 +50,7 @@ const Order = () => {
   };
   return (
     <div>
+      {ordersSev?.length > 0 ? <div>
       {isLoading ? <Loading /> : ""}
       <OrderNavbar />
       <Container fluid className="mt-3">
@@ -91,7 +91,9 @@ const Order = () => {
               ))}
           </tbody>
         </Table>
-      </Container>
+        </Container>
+      </div>
+        : <Image src={empty} alt="" width="100%" />}
     </div>
   );
 };

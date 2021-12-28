@@ -34,6 +34,7 @@ export default function Sidenav({ location, history }) {
     userData,
     openTableData,
     callCheckBill,
+    callingCheckOut,
     getTableDataStore,
     waitingOrderItems,
     getOrderItemsStore,
@@ -50,6 +51,7 @@ export default function Sidenav({ location, history }) {
     getOrderItemsStore(WAITING_STATUS)
     initialOrderSocket()
     initialTableSocket()
+    callingCheckOut()
   }, [])
   return (
     <SideNav

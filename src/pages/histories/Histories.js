@@ -103,7 +103,7 @@ export default function History() {
         <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive className="table">
+            <Table hover responsive className="table">
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
@@ -116,7 +116,7 @@ export default function History() {
               <tbody>
                 {data?.length > 0 && data?.map((item, index) => {
                   return (
-                    <tr index={item} onClick={() => _historyDetail(item?.code)}>
+                    <tr index={item} onClick={() => _historyDetail(item?.code)} style={{ cursor: 'pointer'}}>
                       <td>{index + 1}</td>
                       <td>{item?.code}</td>
                       <td>{item?.table_id}</td>

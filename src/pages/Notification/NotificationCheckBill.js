@@ -52,7 +52,7 @@ export default function NotificationCheckBill() {
           </div>
           <div style={{ height: 20 }}></div>
           <Col xs={12}>
-            <Table responsive className="table">
+            <Table hover responsive className="table">
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>

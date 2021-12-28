@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import useReactRouter from "use-react-router";
-
 import {
   Col,
   Container,
-  Nav
+  Nav,
+  Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCog, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
 import axios from 'axios';
@@ -16,28 +16,25 @@ import { END_POINT } from '../../constants'
 import FeedbackOrder from "../table/components/FeedbackOrder";
 import AnimationLoading from "../../constants/loading"
 import { useStore } from "../../store";
+import { BillForCheckOut } from '../bill/BillForCheckOut';
+import ReactToPrint from 'react-to-print';
 
 
-const date = new moment().format("LL");
 export default function HistoryDetail() {
-  const { history, location, match } = useReactRouter();
+  const { match } = useReactRouter();
+  const componentRef = useRef();
   const {
     selectedTable,
     setSelectedTable,
   } = useStore();
   const newDate = new Date();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
-  const [startDate, setSelectedDateStart] = useState('2021-04-01')
-  const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
+
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [findeByCode, setfindeByCode] = useState()
-  useEffect(() => {
-    _searchDate()
-  }, [startDate && endDate])
-  useEffect(() => {
-    _searchDate()
-  }, [findeByCode])
+  const [dataStore, setStore] = useState()
+
   useEffect(() => {
     _searchDate()
     setSelectedTable()
@@ -52,16 +49,7 @@ export default function HistoryDetail() {
       })
     setIsLoading(false)
   }
-  const _setSelectedDateStart = (item) => {
-    setSelectedDateStart(item.target.value)
-  }
-  const _setSelectedDateEnd = (item) => {
-    setSelectedDateEnd(item.target.value)
-  }
-  const _setSelectedCode = (item) => {
-    setfindeByCode(item.target.value)
-  }
-  console.log("selectedTable===>", selectedTable)
+
   const [orderItemData, setOrderItemData] = useState()
   const [amount, setamount] = useState()
   useEffect(() => {
@@ -79,26 +67,44 @@ export default function HistoryDetail() {
     setOrderItemData(order_item)
   }, [data])
 
+  useEffect(() => {
+    if (orderItemData && orderItemData[0]?.storeId) {
+      getData()
+    }
+  }, [orderItemData])
+
+  const getData = async () => {
+    await fetch(END_POINT + `/store/?id=${orderItemData[0]?.storeId}`, {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => setStore(json));
+  }
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
       <Container fluid>
         <div className="row ">
-          <div className="col-sm-9">
+          <div className="col-sm-12" style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}>
             <Nav.Item>
               <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
               <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname}</strong></h5>
             </Nav.Item>
-          </div>
-          <div className="col-sm-3">
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
+              <ReactToPrint
+                trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
+                content={() => componentRef.current}
+              />
+              <div style={{ display: 'none' }}>
+                <BillForCheckOut ref={componentRef} newData={orderItemData} dataStore={dataStore} />
+              </div>
             </Nav.Item>
           </div>
         </div>
+        <div style={{ height: 20 }}></div>
         {isLoading ? <AnimationLoading /> : <div>
           <Col xs={12}>
-            <Table responsive className="table">
+            <Table hover responsive className="table">
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
@@ -122,7 +128,7 @@ export default function HistoryDetail() {
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
-                      <td><FontAwesomeIcon icon={faCog} onClick={() => setFeedbackOrderModal(true)} /></td>
+                      <td onClick={() => setFeedbackOrderModal(true)} style={{ cursor: 'pointer' }}><FontAwesomeIcon icon={faCog} /></td>
                     </tr>
                   )
                 }

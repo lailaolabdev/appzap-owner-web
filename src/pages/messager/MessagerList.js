@@ -6,11 +6,14 @@ import {
     warningAlert
 } from "../../helpers/sweetalert"
 import { socket } from '../../services/socket'
+import AnimationLoading from "../../constants/loading"
+
 export default function MessagerList() {
     const [userData, setUserData] = useState({})
     const [dataMessagerList, setdataMessagerList] = useState([])
     const [dataMessagerDetail, setdataMessagerDetail] = useState([])
     const [dataForSent, setDataForSent] = useState('')
+    const [isLoading, setIsLoading] = useState(true)
 
 
     useEffect(() => {
@@ -29,7 +32,8 @@ export default function MessagerList() {
         setdataMessagerList(resData?.data)
     }
     // =========>
-    const _showMessageDetail =async(item) => {
+    const _showMessageDetail = async (item) => {
+        setIsLoading(true)
         const resDataDetail = await axios({
             method: 'get',
             url: END_POINT + `/v2/messageDetail/?messageListId=` + item?._id,
@@ -45,6 +49,7 @@ export default function MessagerList() {
             })
         }
         setdataMessagerDetail(resDataDetail?.data)
+        setIsLoading(false)
     }
     // =========>
     const _sentMessagerToCustomer = async () => {
@@ -76,7 +81,7 @@ export default function MessagerList() {
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
             <div style={{ width: '35%' }}>
-                <Table striped bordered hover>
+                <Table  striped bordered hover>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -87,7 +92,7 @@ export default function MessagerList() {
                     </thead>
                     <tbody>
                         {dataMessagerList?.map((item, index) =>
-                            <tr onClick={() => _showMessageDetail(item)}>
+                            <tr onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
                                 <td>{index + 1}</td>
                                 <td>{item?.code}</td>
                                 <td>{item?.text}</td>
@@ -99,20 +104,22 @@ export default function MessagerList() {
             </div>
             <div style={{ width: 10 }}></div>
             <div style={{ width: '60%', border: '2px solid #E4E4E4', alignItems: 'flex-end', flexDirection: "column" }}>
-                <div style={{padding:10}}>
-                    {dataMessagerDetail?.map((item) =>
-                        <p style={{
-                            textAlign: item?.from === "TABLE" ? 'start' : 'end',
-                            borderRadius: 8,
-                            backgroundColor: item?.from === "TABLE" ? '#E3E3E3' : "#E4E4E4",
-                            padding: 10,
-                        }}>{item?.text}</p>
-                    )}
-                </div>
+                {isLoading ? <AnimationLoading /> :
+                    <div style={{ padding: 10 }}>
+                        {dataMessagerDetail?.map((item) =>
+                            <p style={{
+                                textAlign: item?.from === "TABLE" ? 'start' : 'end',
+                                borderRadius: 8,
+                                backgroundColor: item?.from === "TABLE" ? '#E3E3E3' : "#E4E4E4",
+                                padding: 10,
+                            }}>{item?.text}</p>
+                        )}
+                    </div>
+                }
                 <hr/>
-                <InputGroup className="mb-12" style={{ padding: 10,marginLeft: 10 }}>
+                <InputGroup className="mb-12" style={{ padding: 10,marginLeft: 0 }}>
                     <Form.Control type="text" placeholder="ຂໍ້ຄວາມ..." className="col-10" value={dataForSent} onChange={(e) => setDataForSent(e?.target?.value)}/>
-                    <Button variant="success" onClick={() => _sentMessagerToCustomer()}>ສົ່ງຂໍ້ຄວາມ</Button>
+                    <Button variant="success" onClick={() => _sentMessagerToCustomer()} className="col-2" style={{ borderRadius:"0px 3px 3px 0px",marginRight:0}}>ສົ່ງຂໍ້ຄວາມ</Button>
                 </InputGroup>
             </div>
         </div>

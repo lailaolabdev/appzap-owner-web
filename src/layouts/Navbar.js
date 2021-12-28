@@ -81,6 +81,7 @@ export default function NavBar() {
             height={35}
             roundedCircle
             onClick={() => history.push("/messagerList")}
+            style={{ cursor: 'pointer'}}
           // onClick={handleShow}
           />
           <Badge variant="danger" >{messageData?.length ? messageData?.length : ""}</Badge>

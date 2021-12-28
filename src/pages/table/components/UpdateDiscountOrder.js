@@ -2,21 +2,19 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
+import { Button, ToggleButtonGroup, ButtonGroup, ToggleButton} from "react-bootstrap";
 import axios from "axios";
 import { moneyCurrency } from "../../../helpers/index";
-import { COLOR_APP, END_POINT, USER_KEY } from "../../../constants";
-import { getLocalData } from "../../../constants/api";
+import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
-// import socketIOClient from "socket.io-client";
+import { errorAdd } from "../../../helpers/sweetalert";
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from 'sweetalert2'
 
-const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
+const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) => {
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
   const [discount, setDiscount] = useState(0)
@@ -29,7 +27,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   useEffect(() => {
     _calculateTotal()
     if (NewData && NewData[0]?.orderId?.discount) setDiscount(NewData[0]?.orderId?.discount)
-    if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType === "LAK" ? "2" : "1")
+    if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType ==="LAK" ? "2":"1")
   }, [NewData]);
 
   const Getdata = async () => {
@@ -55,15 +53,18 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     setTotal(_total)
   }
 
+  const radios = [
+    { name: '%', value: '1' },
+    { name: 'ກີບ', value: '2' },
+  ];
 
-  const _checkBill = async () => {
-      if (!data[0]?.orderId?._id) {
+  const _UpdateDiscount = async () => {
         await axios
           .put(
-            END_POINT + `/updateGenerates/${tableData?.code}`,
+            END_POINT + `/ordersUpdateDiscount/${data[0]?.orderId?._id}`,
             {
-              "isOpened": false,
-              "staffConfirm": false
+              discount: discount,
+              discountType: radioValue === "1" ? "PERCENT" :"LAK"
             },
             {
               headers: await getHeaders(),
@@ -72,30 +73,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           .then(async function (response) {
             Swal.fire({
               icon: 'success',
-              title: "ສໍາເລັດການເຊັກບິນ",
-              showConfirmButton: false,
-              timer: 1800
-            })
-            resetTableOrder()
-            hide()
-          })
-      } else {
-        await axios
-          .put(
-            END_POINT + `/orders/${data[0]?.orderId?._id}`,
-            {
-              status: "CHECKOUT",
-              checkout: "true",
-              code: data[0]?.orderId?.code,
-            },
-            {
-              headers: await getHeaders(),
-            }
-          )
-          .then(async function (response) {
-            Swal.fire({
-              icon: 'success',
-              title: "ສໍາເລັດການເຊັກບິນ",
+              title: "ການເພີ່ມສ່ວນຫຼຸດສໍາເລັດ",
               showConfirmButton: false,
               timer: 1800
             })
@@ -103,11 +81,9 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             hide()
           })
           .catch(function (error) {
-            errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+            errorAdd("ການເພີ່ມສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
           });
-      }
   };
-
   return (
     <Modal
       show={show}
@@ -117,7 +93,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
       arialabelledby="contained-modal-title-vcenter"
     >
       <Modal.Header closeButton>
-        <Modal.Title>ລາຍລະອຽດເມນູອໍເດີ້</Modal.Title>
+        <Modal.Title>ເພີ່ມສ່ວນຫຼຸດ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
@@ -154,12 +130,47 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               <td colspan="4" style={{ textAlign: "center" }}>ລາຄາລວມ:</td>
               <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
-            <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ:</td>
-              <td colspan="1">{moneyCurrency(discount)} {radioValue === "1" ? "%":"ກີບ"}</td>
-            </tr>
           </tbody>
         </Table>
+        <hr/>
+        <div
+          className="p-2 col-example text-center"
+          style={{
+            backgroundColor: "#F1F1F1",
+            fontSize: 26,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center"
+          }}
+        >
+          <div className="p-2 col-example text-center" style={{ fontSize: 26 }}>
+            ສ່ວນຫຼຸດ:
+          </div>
+          <ButtonGroup>
+            {radios.map((radio, idx) => (
+              <Button
+                key={idx}
+                id={`radio-${idx}`}
+                type="radio"
+                variant={radioValue === radio.value ? 'info' : 'outline-info'}
+                name="radio"
+                value={radio.value}
+                // checked={radioValue === radio.value}
+                onClick={(e) => setRadioValue(e.currentTarget.value)}
+              >
+                {radio.name}
+              </Button>
+            ))}
+          </ButtonGroup>
+          <input type="number"
+            defaultValue={discount}
+            onChange={(e) => setDiscount(e?.target.value)}
+            style={{ marginLeft: 10 }} />
+          <span style={{ justifyContent: "flex-end", display: "row" }}>
+            {" "}
+            <b style={{ marginLeft: 10 }}>{radioValue === "1" ? "%" :"ກີບ"}</b>
+          </span>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <div
@@ -181,7 +192,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           >
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
-              <b> {moneyCurrency(radioValue === "1" ? total - (total * discount) / 100 : total - discount)} ກີບ</b>
+              <b> {moneyCurrency(radioValue === "1" ? total-(total * discount)/100 : total - discount)} ກີບ</b>
             </span>
           </div>
           <Button
@@ -193,19 +204,19 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               border: "solid 1px #FB6E3B",
               fontSize: 30,
             }}
-            onClick={() => _checkBill()}
+            onClick={() => _UpdateDiscount()}
           >
             <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "}
-            ເຊັກບິນ
+            ເພີ່ມສ່ວນຫຼຸດ
           </Button>
         </div>
       </Modal.Footer>
     </Modal>
   );
 };
-OrderCheckOut.propTypes = {
+UpdateDiscountOrder.propTypes = {
   show: PropTypes.bool,
   hide: PropTypes.func,
   data: PropTypes.array,
 };
-export default OrderCheckOut;
+export default UpdateDiscountOrder;
