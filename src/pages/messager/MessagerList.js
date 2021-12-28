@@ -92,7 +92,7 @@ export default function MessagerList() {
                     </thead>
                     <tbody>
                         {dataMessagerList?.map((item, index) =>
-                            <tr onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
+                            <tr key={"message-"+index} onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
                                 <td>{index + 1}</td>
                                 <td>{item?.code}</td>
                                 <td>{item?.text}</td>

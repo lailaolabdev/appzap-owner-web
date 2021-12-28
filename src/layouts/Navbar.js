@@ -43,15 +43,19 @@ export default function NavBar() {
     })
     setmessageData(resData?.data)
   }
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
   socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
     _updateMessage();
   });
+
   useEffect(() => {
     _updateMessage()
   }, [userData])
+  
   return (
     <div>
       <Navbar
