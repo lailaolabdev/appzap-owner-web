@@ -124,6 +124,7 @@ export default function UserList() {
   };
   // create user
   const _createUser = async (values) => {
+    console.log("AAAA", getTokken?.TOKEN);
     const resData = await axios({
       method: 'POST',
       url: USERS_CREATE,
@@ -147,7 +148,7 @@ export default function UserList() {
         }, 2000);
       }
     }).catch(function (error) {
-      console.log("error", error?.message)
+      console.log("error", error)
       errorAdd('ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ UserId ນີ້ມີແລ້ວ!')
     })
 
@@ -318,21 +319,21 @@ export default function UserList() {
           }}
           validate={values => {
             const errors = {};
-            if (!values.userId) {
-              errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
-            }
-            if (!values.password) {
-              errors.password = 'ກະລຸນາປ້ອນ Userid... !';
-            }
-            if (!values.firstname) {
-              errors.firstname = 'ກະລຸນາປ້ອນ Userid... !';
-            }
-            if (!values.lastname) {
-              errors.lastname = 'ກະລຸນາປ້ອນ Userid... !';
-            }
-            if (!values.phone) {
-              errors.phone = 'ກະລຸນາປ້ອນ Userid... !';
-            }
+            // if (!values.userId) {
+            //   errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
+            // if (!values.password) {
+            //   errors.password = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
+            // if (!values.firstname) {
+            //   errors.firstname = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
+            // if (!values.lastname) {
+            //   errors.lastname = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
+            // if (!values.phone) {
+            //   errors.phone = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -407,8 +408,8 @@ export default function UserList() {
                     onBlur={handleBlur}
                     value={values.role}
                   >
-                    <option value="USER">ພະນັກງານ</option>
-                    <option value="STORE">ຜູ້ບໍລິຫານ</option>
+                    <option value="APPZAP_STAFF">ພະນັກງານ</option>
+                    <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
                   </Form.Control>
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">

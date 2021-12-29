@@ -1,11 +1,11 @@
 import { USER_KEY } from './index'
 // export const END_POINT_SEVER = "http://localhost:7070"; //dev
-export const END_POINT_SEVER = "https://api.appzap.la"; /// prosduction
+ export const END_POINT_SEVER = "https://api.appzap.la"; //// prosduction
 export const getLocalData = async () => {
     const _local = await localStorage.getItem(USER_KEY);
     const _localJson2 = await JSON.parse(_local)
     const DATA = _localJson2?.data
-    const TOKEN = { authorization: "Ordering " + _localJson2?.accessToken }
+    const TOKEN = { authorization: "AppZap " + _localJson2?.accessToken }
     return { TOKEN, DATA };
 }
 // =====>>>>

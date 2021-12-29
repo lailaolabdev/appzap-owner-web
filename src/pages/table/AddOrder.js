@@ -140,13 +140,12 @@ function AddOrder() {
     setSelectedMenu([...selectedMenuCopied]);
   }
 
-  const createOrder = async (data, header) => {
+  const createOrder = async (data, header, isPrinted) => {
     try {
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': header.authorization
       }
-
       axios.post(END_POINT_SEVER + "/v2/ordersByadmin", {
         "menu": data,
         "storeId": userData?.data?.storeId,
@@ -155,8 +154,19 @@ function AddOrder() {
       }, {
         headers: headers
       })
-        .then((response) => {
-          console.log(response);
+        .then(async (response) => {
+          if (response?.data) {
+            await Swal.fire({
+              icon: 'success',
+              title: "ເພີ່ມອໍເດີສໍາເລັດ",
+              showConfirmButton: false,
+              timer: 1800
+            })
+            if (isPrinted) {
+              await document.getElementById('btnPrint').click();
+            }
+            history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -165,6 +175,7 @@ function AddOrder() {
       console.log(error)
     }
   }
+
   const onSubmit = async (isPrinted) => {
     if (selectedMenu.length == 0) {
       Swal.fire({
@@ -177,18 +188,9 @@ function AddOrder() {
     }
     let header = await getHeaders();
     if (selectedMenu.length != 0) {
-      await createOrder(selectedMenu, header);
-      Swal.fire({
-        icon: 'success',
-        title: "ເພີ່ມອໍເດີສໍາເລັດ",
-        showConfirmButton: false,
-        timer: 1800
-      })
-      if (isPrinted) document.getElementById('btnPrint').click();
-      history.push(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`);
+      await createOrder(selectedMenu, header, isPrinted);
     }
   }
-  console.log("note===>", note)
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint
@@ -200,7 +202,6 @@ function AddOrder() {
       </div>
     </div>
     <div style={{ marginTop: -10, paddingTop: 10 }}>
-      {/* <CheckBill /> */}
       <div style={DIV_NAV}>
         <Nav
           variant="tabs"
@@ -263,10 +264,9 @@ function AddOrder() {
               </div>
             </div>
             <div className="row">
-              {isLoading ? <Loading /> : ""}
-              {
-                allSelectedMenu && allSelectedMenu.map((data, index) => {
-                  return (
+              {isLoading ? <Loading /> :
+                allSelectedMenu && allSelectedMenu.map((data, index) =>
+                  data?.qty > 0 ?
                     <div key={"menu" + index} className="col-3"
                       style={{ margin: 3, padding: 0, border: data._id == selectedItem?._id ? "4px solid #FB6E3B" : "4px solid rgba(0,0,0,0)" }}
                       onClick={() => addToCart(data)}>
@@ -283,9 +283,8 @@ function AddOrder() {
                         <span>{data?.price}</span>
                       </div>
                     </div>
-
-                  )
-                })
+                    : <div></div>
+                )
               }
             </div>
           </div>
@@ -311,7 +310,6 @@ function AddOrder() {
                     <tr style={{ fontSize: 'bold', border: "none" }}>
                       <th style={{ border: "none" }}>ລຳດັບ</th>
                       <th style={{ border: "none" }} className="text-center">ຊື່ເມນູ</th>
-                      {/* <th>ໂຕະ</th> */}
                       <th style={{ border: "none" }}>ຈຳນວນ</th>
                       <th style={{ border: "none" }}>ຈັດການ</th>
                     </tr>
@@ -323,7 +321,6 @@ function AddOrder() {
                           <tr key={"selectMenu" + index}>
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
-                            {/* <td>{tableId}</td> */}
                             <td>
                               {data.quantity}
                             </td>
@@ -335,12 +332,6 @@ function AddOrder() {
                   </tbody>
                 </Table>
               </div>
-              {/* <div className="col-12">
-                <div className="form-group">
-                  <label>ຄອມເມັ້ນລົດຊາດ</label>
-                  <textarea className="form-control" placeholder="ປ້ອນລົດຊາດທີ່ມັກ..." value={note} onChange={(e) => setNote(e.target.value)} />
-                </div>
-              </div> */}
               <div className="col-12">
                 <div className="row" style={{ margin: 0 }}>
                   <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => history.goBack()}>ຍົກເລີກ</Button>

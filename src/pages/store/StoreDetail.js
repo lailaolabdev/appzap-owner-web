@@ -117,17 +117,20 @@ export default function StoreDetail() {
     const _updateStore = async (values) => {
         const resData = await axios({
             method: 'PUT',
-            url: STORE_UPDATE + `/?id=${dataStore?._id}`,
+            url: STORE_UPDATE,
             headers: getTokken?.TOKEN,
             data: {
-                storeName: values?.storeName,
-                adminStore: values?.adminStore,
-                whatsapp: values?.whatsapp,
-                detail: values?.detail,
-                dateClose: values?.dateClose,
-                timeClose: values?.timeClose,
-                phone: values?.phone,
-                image: namePhoto?.params?.Key,
+                id: dataStore?._id,
+                data: {
+                    storeName: values?.storeName,
+                    adminStore: values?.adminStore,
+                    whatsapp: values?.whatsapp,
+                    detail: values?.detail,
+                    dateClose: values?.dateClose,
+                    timeClose: values?.timeClose,
+                    phone: values?.phone,
+                    image: namePhoto?.params?.Key,
+                }
             },
         }).then(async function (response) {
             if (response) {

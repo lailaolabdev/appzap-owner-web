@@ -40,8 +40,8 @@ const Order = () => {
   }, [])
   return (
     <div>
-      {orderItems?.length > 0 ? <div>
       <OrderNavbar />
+      {orderItems?.length > 0 ? <div>
       <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
         <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
           {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} /> */}

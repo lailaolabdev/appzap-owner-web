@@ -3,7 +3,7 @@ import { Formik } from 'formik';
 import axios from 'axios';
 import useReactRouter from "use-react-router"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faAdjust, faEdit, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import {
   Button,
   Modal,
@@ -12,16 +12,27 @@ import {
   Image
 } from "react-bootstrap";
 import { END_POINT, BODY, COLOR_APP, URL_PHOTO_AW3 } from '../../constants'
-import { CATEGORY, MENUS, PRESIGNED_URL, getLocalData } from '../../constants/api'
+import { CATEGORY, MENUS, PRESIGNED_URL, getLocalData, END_POINT_SEVER } from '../../constants/api'
 import { moneyCurrency, STATUS_MENU } from '../../helpers'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
 import profileImage from "../../image/profile.png"
 
 export default function MenuList() {
   const { history, match } = useReactRouter()
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [getIdMenu, setGetIdMenu] = useState()
+  const [qtyMenu, setQtyMenu] = useState(0)
+  const [show4, setShow4] = useState(false);
+  const handleClose4 = () => setShow4(false);
+  const handleShow4 = (id) => {
+    setGetIdMenu(id)
+    setShow4(true);
+  }
+
   const [getTokken, setgetTokken] = useState()
 
   // =====> getCategory
@@ -186,7 +197,25 @@ export default function MenuList() {
     }).catch(function (error) {
       errorAdd('ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !')
     })
-
+  }
+  const _updateQtyCategory = async (values) => {
+    const resData = await axios({
+      method: 'PUT',
+      url: END_POINT_SEVER +"/addQty_menus",
+      data: {
+        id: getIdMenu,
+        qty: qtyMenu,
+      },
+    }).then(async function (response) {
+      handleClose4()
+      successAdd("ການເພີ່ມຈຳນວນສຳເລັດ")
+      handleClose()
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }).catch(function (error) {
+      errorAdd('ການເພີ່ມຈຳນວນບໍ່ສຳເລັດ !')
+    })
   }
   return (
     <div style={BODY}>
@@ -216,6 +245,7 @@ export default function MenuList() {
                   <th scope="col">ຊື່ອາຫານ</th>
                   <th scope="col">ລາຄາ</th>
                   <th scope="col">ສະຖານະ</th>
+                  <th scope="col">ຈຳນວນ</th>
                   <th scope="col">ໝາຍເຫດ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
@@ -246,8 +276,13 @@ export default function MenuList() {
                       <td>{data?.name}</td>
                       <td>{moneyCurrency(data?.price)}</td>
                       <td style={{ color: STATUS_MENU(data?.status) === "ປິດ" ? "red" : "green" }}>{STATUS_MENU(data?.status)}</td>
+                      <td>{data?.qty}</td>
                       <td>{data?.detail ? data?.detail : " - "}</td>
-                      <td><FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP }} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.name)} /></td>
+                      <td>
+                        <FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP, cursor: "pointer" }} />
+                        <FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red", cursor: "pointer" }} onClick={() => handleShow3(data?._id, data?.name)} />
+                        <FontAwesomeIcon icon={faPlus} style={{ marginLeft: 20, color: "red", cursor: "pointer" }} onClick={() => handleShow4(data?._id)} />
+                      </td>
                     </tr>
                   )
                 })}
@@ -256,6 +291,7 @@ export default function MenuList() {
           </div>
         </div>
       </div>
+      {/* add menu */}
       <Modal
         show={show}
         onHide={handleClose}
@@ -384,13 +420,14 @@ export default function MenuList() {
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose}>
                   ຍົກເລີກ
-          </Button>
+                </Button>
                 <Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }} onClick={() => handleSubmit()}>ບັນທືກ</Button>
               </Modal.Footer>
             </form>
           )}
         </Formik>
       </Modal>
+      {/* delete menu */}
       <Modal show={show3} onHide={handleClose3}>
         <Modal.Header closeButton>
         </Modal.Header>
@@ -544,12 +581,32 @@ export default function MenuList() {
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose2}>
                   ຍົກເລີກ
-          </Button>
+                </Button>
                 <Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }} onClick={() => handleSubmit()}>ບັນທືກ</Button>
               </Modal.Footer>
             </form>
           )}
         </Formik>
+      </Modal>
+      {/* add qty menu */}
+      <Modal show={show4} onHide={handleClose4}>
+        <Modal.Header closeButton>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={{ textAlign: "center" }}>
+            <div>ປ້ອນຈຳນວນສີນຄ້າ </div>
+            <div style={{height: 20 }}></div>
+            <input type="number" className="form-control" onChange={(e) => setQtyMenu(e?.target?.value)} />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="button" variant="secondary" onClick={handleClose4}>
+            ຍົກເລີກ
+          </Button>
+          <Button type="button" style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }} onClick={() => _updateQtyCategory()}>
+            ຢືນຢັນການເພີ່ມ
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   )

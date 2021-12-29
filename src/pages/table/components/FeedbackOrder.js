@@ -6,7 +6,7 @@ import { warningAlert, successAdd } from "../../../helpers/sweetalert";
 import { updateOrderItem } from "../../../services/order";
 
 
-const FeedbackOrder = ({ data, show, hide, searchDate }) => {
+const FeedbackOrder = ({ data, show, hide }) => {
 
   const [saveDataItemQty, setsaveDataItemQty] = useState()
   const _feedBackOrder = async (qty, newQty, index) => {
@@ -21,7 +21,6 @@ const FeedbackOrder = ({ data, show, hide, searchDate }) => {
     if (res?.data) {
       hide();
       successAdd("ສຳເລັດການສົ່ງຄືນ")
-      searchDate()
     }
   }
   return (

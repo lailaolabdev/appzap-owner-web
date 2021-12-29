@@ -50,11 +50,11 @@ export const _statusCheckBill = (item) => {
 
 }
 export const STATUS_USERS = (item) => {
-  if (item === 'ADMIN') {
+  if (item === 'APPZAP_ADMIN') {
     return "ຜູ້ໃຫ້ບໍລິຫານ"
   } else if (item === 'USER') {
     return "ພະນັກງານ"
-  } else if (item === 'STORE') {
+  } else if (item === 'APPZAP_STAFF') {
     return "ຜູ້ບໍລິຫານ"
   }
 }

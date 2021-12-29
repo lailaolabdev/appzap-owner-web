@@ -1,18 +1,19 @@
-import { useState, useMemo, useCallback, useContext, useEffect } from "react";
+import { useState, useMemo, useRef, useContext, useEffect } from "react";
 import Swal from 'sweetalert2'
 import { DOING_STATUS, END_POINT, WAITING_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import { updateOrderItem } from "../../services/order";
 import { socket } from '../../services/socket'
 
-export const useOrderState = () => {
 
+export const useOrderState = () => {
     const [userData, setUserData] = useState()
     const [orderLoading, setOrderLoading] = useState(true);
     const [orderItems, setOrderItems] = useState([]);
     const [waitingOrderItems, setWaitingOrderItems] = useState([]);
     const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] = useState([])
     const [callCheckBill, setCallCheckBill] = useState([])
+    const soundPlayer = useRef();
 
 
     const initialOrderSocket = useMemo(
@@ -22,6 +23,7 @@ export const useOrderState = () => {
             socket.on(`ORDER:${_userData?.DATA?.storeId}`, (data) => {
                 setWaitingOrderItems(data)
                 setOrderItems(data)
+                // soundPlayer.current.audioEl.current.play()
             });
             socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
                 callingCheckOut()
@@ -35,6 +37,8 @@ export const useOrderState = () => {
         },
         []
     );
+
+
     const callingCheckOut = async () => {
         await setOrderLoading(true);
         let _userData = await getLocalData();
@@ -126,6 +130,7 @@ export const useOrderState = () => {
         setOrderItems(_newOrderItems)
     }
     return {
+        soundPlayer,
         callCheckBill,
         orderItemForPrintBillSelect,
         orderLoading,
