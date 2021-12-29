@@ -50,9 +50,9 @@ const Order = () => {
   };
   return (
     <div>
+      <OrderNavbar />
       {ordersSev?.length > 0 ? <div>
       {isLoading ? <Loading /> : ""}
-      <OrderNavbar />
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>

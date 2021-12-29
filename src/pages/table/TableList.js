@@ -70,7 +70,6 @@ export default function TableList() {
   const [dataSettingModal, setDataSettingModal] = useState()
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
 
-
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
@@ -126,6 +125,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
    * ເຊັກເບິ່ງວ່າໄອເທັມຖືກເລືອກບໍ
    * @returns 
    */
+  
   const _orderIsChecked = () => {
     let isIncluded = tableOrderItems.filter((item) => item.isChecked)
     return isIncluded.length == 0;
@@ -317,7 +317,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(tableOrderItems[0]?.orderId?.discount)} ກີບ</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(tableOrderItems[0]?.orderId?.discount)} {tableOrderItems[0]?.orderId?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
