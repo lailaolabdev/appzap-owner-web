@@ -169,10 +169,10 @@ function AddOrder() {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log("AAA", error?.message);
         })
     } catch (error) {
-      console.log(error)
+      console.log("BBB", error?.message);
     }
   }
 

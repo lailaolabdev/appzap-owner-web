@@ -35,10 +35,6 @@ const FeedbackOrder = ({ data, show, hide }) => {
         <Modal.Title>ສົ່ງອາຫານຄືນ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {/* <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
-        <div style={{ height: 20 }}></div> */}
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>

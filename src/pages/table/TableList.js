@@ -178,11 +178,10 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
           showConfirmButton: false,
           timer: 1500
         })
-
       }
     } catch (err) {
       await Swal.fire({
-        icon: 'success',
+        icon: 'error',
         title: "ການປ່ຽນໂຕະບໍ່ສໍາເລັດ",
         showConfirmButton: false,
         timer: 1500

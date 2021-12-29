@@ -86,7 +86,7 @@ export const useTableState = () => {
         let res = await fetch(url)
             .then(response => response.json())
             .then(response => {
-                // console.log({ response })
+            console.log("🚀response===>", response)
                 setTableOrders(response)
                 setIsTableOrderLoading(false)
             })
