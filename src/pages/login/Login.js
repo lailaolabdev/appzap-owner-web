@@ -157,7 +157,7 @@ function Login() {
         <div style={{ padding: 40, width: "60vw", height: '100vh', backgroundColor: '#FB6E3B', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
           <Carousel interval={1500} style={{ width: "82%" }} prevIcon={false} nextIcon={false}>
             {_imgaeSlide?.map((item, index) =>
-              <Carousel.Item>
+              <Carousel.Item key={"carouse-"+index}>
                 <img
                   className="d-block"
                   src={item}

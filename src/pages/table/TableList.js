@@ -508,12 +508,12 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>ໄປຫາໂຕະ : </Form.Label>
               <div style={{ height: 10 }}></div>
-              <select class="form-select form-control" aria-label="Default select example"
+              <select className="form-select form-control" aria-label="Default select example"
                 onChange={(e) => setCodeTableNew(e.target.value)}
               >
                 <option selected disabled>ເລືອກໂຕະ</option>
                 {tableList?.map((item, index) =>
-                  <option value={item?.code} disabled={selectedTable?.table_id === item?.table_id ? true : false}>ໂຕະ {item?.table_id}</option>
+                  <option key={"talbe-"+index} value={item?.code} disabled={selectedTable?.table_id === item?.table_id ? true : false}>ໂຕະ {item?.table_id}</option>
                 )}
               </select>
             </Form.Group>

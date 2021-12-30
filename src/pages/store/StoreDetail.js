@@ -186,9 +186,9 @@ export default function StoreDetail() {
                     <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}> {dataStore?.name ? dataStore?.name : "-"}</div>
                     <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
                     <div style={{ padding: 5 }}>{dataStore?.dateClose + "  " + dataStore?.timeClose}</div>
-                    <label class="switch">
+                    <label className="switch">
                         <input type="checkbox" defaultChecked={dataSwitch} onClick={()=> _updateIsOpenStore(dataStore)}/>
-                        <span class="slider round"></span>
+                        <span className="slider round"></span>
                     </label>
                 </div>
                 <div className="col-sm-7">
