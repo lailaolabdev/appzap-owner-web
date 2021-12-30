@@ -169,10 +169,15 @@ function AddOrder() {
           }
         })
         .catch((error) => {
-          console.log("AAA", error?.message);
+          Swal.fire({
+            icon: 'warning',
+            title: "ອາຫານບໍ່ພຽງພໍ",
+            showConfirmButton: false,
+            timer: 1800
+          })
         })
     } catch (error) {
-      console.log("BBB", error?.message);
+      console.log("BBB", error);
     }
   }
 
@@ -281,6 +286,8 @@ function AddOrder() {
                         <span>{data?.name}</span>
                         <br />
                         <span>{data?.price}</span>
+                        <br />
+                        <span>ຈຳນວນທີ່ມີ : {data?.qty}</span>
                       </div>
                     </div>
                     : <div></div>
