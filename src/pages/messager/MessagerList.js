@@ -123,7 +123,7 @@ export default function MessagerList() {
                 <hr/>
                 <InputGroup className="mb-12" style={{ padding: 10,marginLeft: 0 }}>
                     <Form.Control type="text" placeholder="ຂໍ້ຄວາມ..." className="col-10" value={dataForSent} onChange={(e) => setDataForSent(e?.target?.value)}/>
-                    <Button variant="success" onClick={() => _sentMessagerToCustomer()} className="col-2" style={{ borderRadius:"0px 3px 3px 0px",marginRight:0}}>ສົ່ງຂໍ້ຄວາມ</Button>
+                    <Button  onClick={() => _sentMessagerToCustomer()} className="col-2" style={{ borderRadius: "0px 3px 3px 0px", marginRight: 0, backgroundColor:"#FB6E3B"}}>ສົ່ງຂໍ້ຄວາມ</Button>
                 </InputGroup>
             </div>
         </div>

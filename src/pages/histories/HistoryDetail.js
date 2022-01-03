@@ -4,6 +4,7 @@ import {
   Col,
   Container,
   Nav,
+  Modal,
   Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +19,8 @@ import AnimationLoading from "../../constants/loading"
 import { useStore } from "../../store";
 import { BillForCheckOut } from '../bill/BillForCheckOut';
 import ReactToPrint from 'react-to-print';
+import { warningAlert, successAdd } from "../../helpers/sweetalert";
+import { updateOrderItem } from "../../services/order";
 
 
 export default function HistoryDetail() {
@@ -27,12 +30,11 @@ export default function HistoryDetail() {
     selectedTable,
     setSelectedTable,
   } = useStore();
-  const newDate = new Date();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
+  const closeModalCallBack = () => setFeedbackOrderModal(false)
 
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [findeByCode, setfindeByCode] = useState()
   const [dataStore, setStore] = useState()
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function HistoryDetail() {
   const _searchDate = async () => {
     setIsLoading(true)
     const url = END_POINT + `/orders?status=CHECKOUT&checkout=true${match?.params?.id ? `&code=${match?.params?.id}` : ``}`;
-    const _data = await fetch(url)
+    await fetch(url)
       .then(response => response.json())
       .then(response => {
         setData(response)
@@ -54,18 +56,28 @@ export default function HistoryDetail() {
   const [amount, setamount] = useState()
   useEffect(() => {
     let order_item = []
-    let Allamount = 0
+    // let Allamount = 0
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
         if (data[i]?.order_item[k]?.status === "SERVED") {
           order_item.push(data[i]?.order_item[k])
-          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
+          // Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
         }
       }
     }
-    setamount(Allamount)
+    // setamount(Allamount)
     setOrderItemData(order_item)
   }, [data])
+
+  useEffect(() => {
+    if (orderItemData?.length > 0) {
+      let Allamount = 0
+      for (let i = 0; i < orderItemData.length; i++) {
+        Allamount += orderItemData[i]?.price * orderItemData[i]?.quantity
+      }
+      setamount(Allamount)
+    }
+  }, [orderItemData])
 
   useEffect(() => {
     if (orderItemData && orderItemData[0]?.storeId) {
@@ -79,6 +91,23 @@ export default function HistoryDetail() {
     }).then(response => response.json())
       .then(json => setStore(json));
   }
+  {/* ================> modal =============> */ }
+  const [saveDataItemQty, setsaveDataItemQty] = useState()
+  const _feedBackOrder = async (qty, newQty, index) => {
+    const dataNew = [...orderItemData];
+    if (qty < newQty) return warningAlert("ຈຳນວນເກີນ...!");
+    let changeData = dataNew[index].quantity = qty - newQty;
+    setsaveDataItemQty({ data: dataNew, storeId: dataNew[0]?.storeId })
+
+  }
+  const _saveFeedBackOrder = async () => {
+    const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
+    if (res?.data) {
+      setFeedbackOrderModal(false)
+      window.location.reload();
+      successAdd("ສຳເລັດການສົ່ງຄືນ")
+    }
+  }
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
@@ -88,7 +117,7 @@ export default function HistoryDetail() {
             <Nav.Item>
               <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
               <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
-              <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname && orderItemData[0]?.createdBy?.lastname ? orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname : ""}</strong></h5>
             </Nav.Item>
             <Nav.Item>
               <Button onClick={() => setFeedbackOrderModal(true)} variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faCog} style={{ color: "#fff" }} /> ຈັດການບີນ</Button>
@@ -142,13 +171,68 @@ export default function HistoryDetail() {
         </div>
         }
       </Container>
-      <FeedbackOrder
+
+{/* ================> modal =============> */}
+
+      {/* <FeedbackOrder
         data={orderItemData}
         tableData={selectedTable}
         searchDate={_searchDate}
         show={feedbackOrderModal}
         hide={() => setFeedbackOrderModal(false)}
-      />
+      /> */}
+      <Modal
+        show={feedbackOrderModal}
+        size={"lg"}
+        onHide={closeModalCallBack}
+        centered
+        arialabelledby="contained-modal-title-vcenter"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>ສົ່ງອາຫານຄືນ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table responsive className="staff-table-list borderless table-hover">
+            <thead style={{ backgroundColor: "#F1F1F1" }}>
+              <tr>
+                <th>ລຳດັບ</th>
+                <th>ຊື່ເມນູ</th>
+                <th>ຈຳນວນທີ່ມີ</th>
+                <th>ຈຳນວນສົ່ງຄືນ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderItemData?.map((item, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item?.name ?? "-"}</td>
+                    <td>{item?.quantity}</td>
+                    <td><input
+                      type="number"
+                      onChange={(e) => _feedBackOrder(item?.quantity, e?.target?.value, index)} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+          <div style={{ textAlign: "center" }}>
+            <Button
+              className="ml-2 pl-4 pr-4"
+              onClick={closeModalCallBack}
+              style={{
+                backgroundColor: "#FB6E3B",
+                color: "#ffff",
+                border: "solid 1px #FB6E3B",
+                fontSize: 25,
+              }}
+              onClick={() => _saveFeedBackOrder()}
+            >
+              ຢືນຢັ້ນການສົ່ງອາຫານຄືນ
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }

@@ -52,9 +52,7 @@ export const useTableState = () => {
             await fetch(url)
                 .then(response => response.json())
                 .then(response => {
-
                     if (response.message == "server error") return;
-
                     setTableList(response)
                     let _openTable = response.filter((table) => {
                         return table.isOpened && !table.staffConfirm

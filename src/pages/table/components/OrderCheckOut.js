@@ -15,12 +15,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from 'sweetalert2'
+import { useStore } from "../../../store";
 
 const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
   const [discount, setDiscount] = useState(0)
   const [radioValue, setRadioValue] = useState('1');
+
+  const {
+    callingCheckOut,
+  } = useStore();
 
   useEffect(() => {
     Getdata();
@@ -93,6 +98,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             }
           )
           .then(async function (response) {
+            callingCheckOut()
             Swal.fire({
               icon: 'success',
               title: "ສໍາເລັດການເຊັກບິນ",

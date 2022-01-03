@@ -315,7 +315,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.table_id} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname && tableOrderItems[0]?.createdBy?.lastname ? tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname:""}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(tableOrderItems[0]?.orderId?.discount)} {tableOrderItems[0]?.orderId?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>
                 </Row>
@@ -347,7 +347,8 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                     </div>
                   </div>
                 </div>
-                <div>ອັບເດດເປັນສະຖານະ: </div>
+                <div style={{ height: 20 }}></div>
+                <div style={{ display: _orderIsChecked() ? "none" : 'flex'}}>ອັບເດດເປັນສະຖານະ: </div>
                 <div style={{ height: 20 }}></div>
                 <div style={{ display: _orderIsChecked() ? "none" : 'flex', justifyContent: "space-between" }}>
                   <div>
@@ -469,13 +470,6 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         </div>
       </div>
 
-      <UpdateDiscountOrder
-        data={tableOrderItems}
-        tableData={selectedTable}
-        show={modalAddDiscount}
-        resetTableOrder={resetTableOrder}
-        hide={() => setModalAddDiscount(false)}
-      />
       <OrderCheckOut
         data={tableOrderItems}
         tableData={selectedTable}
@@ -483,18 +477,29 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
+
+      <UpdateDiscountOrder
+        data={tableOrderItems}
+        tableData={selectedTable}
+        show={modalAddDiscount}
+        resetTableOrder={resetTableOrder}
+        hide={() => setModalAddDiscount(false)}
+      />
+
       <FeedbackOrder
         data={orderItemForPrintBill}
         tableData={selectedTable}
         show={feedbackOrderModal}
         hide={() => setFeedbackOrderModal(false)}
       />
+
       <UserCheckoutModal
         show={checkoutModel}
         hide={() => setCheckoutModal(false)}
         tableId={selectedTable?.code}
         func={_handlecheckout}
       />
+
       <Modal
         show={show}
         onHide={handleClose}>
@@ -524,7 +529,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
           <Button variant="success" onClick={() => _changeTable()}>ລວມໂຕະ</Button>
         </Modal.Footer>
       </Modal>
-      {/* ======== setting ======== */}
+
       <Modal
         show={openModalSetting}
         onHide={() => setOpenModalSetting(false)}>
@@ -541,6 +546,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
           <Button variant="success" onClick={() => _resetTable()}>ປິດໂຕະ</Button>
         </Modal.Footer>
       </Modal>
+
     </div >
   );
 };
