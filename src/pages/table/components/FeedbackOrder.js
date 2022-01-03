@@ -20,6 +20,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
     const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
     if (res?.data) {
       hide();
+      window.location.reload();
       successAdd("ສຳເລັດການສົ່ງຄືນ")
     }
   }

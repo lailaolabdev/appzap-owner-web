@@ -91,6 +91,7 @@ export default function HistoryDetail() {
               <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname}</strong></h5>
             </Nav.Item>
             <Nav.Item>
+              <Button onClick={() => setFeedbackOrderModal(true)} variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faCog} style={{ color: "#fff" }} /> ຈັດການບີນ</Button>
               <ReactToPrint
                 trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
                 content={() => componentRef.current}
@@ -114,7 +115,6 @@ export default function HistoryDetail() {
                   <th>ລາຄາ/ອັນ</th>
                   <th>ລາຄາລວມ</th>
                   <th>ວັນທີ</th>
-                  <th>ຈັດການ</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,7 +128,6 @@ export default function HistoryDetail() {
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
-                      <td onClick={() => setFeedbackOrderModal(true)} style={{ cursor: 'pointer' }}><FontAwesomeIcon icon={faCog} /></td>
                     </tr>
                   )
                 }

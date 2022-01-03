@@ -78,6 +78,7 @@ export default function MessagerList() {
     socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
         _getDataMessagerList();
     });
+    console.log("dataMessagerDetail==>", dataMessagerDetail)
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
             <div style={{ width: '35%' }}>
@@ -85,6 +86,7 @@ export default function MessagerList() {
                     <thead>
                         <tr>
                             <th>#</th>
+                            {/* <th>ຊື່ຕູບ</th> */}
                             <th>ຈາກໂຕະ</th>
                             <th>ຂໍ້ຄວາມ</th>
                             <th>ອ່ານແລ້ວ</th>
@@ -94,6 +96,7 @@ export default function MessagerList() {
                         {dataMessagerList?.map((item, index) =>
                             <tr key={"message-"+index} onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
                                 <td>{index + 1}</td>
+                                {/* <td>{item?.name}</td> */}
                                 <td>{item?.code}</td>
                                 <td>{item?.text}</td>
                                 <td style={{ color: item?.read === "NOT" ? "red":"green" }}>{item?.read ==="NOT" ? "ຍັງບໍ່ໄດ້ອ່ານ":"ອ່ານແລ້ວ"}</td>
@@ -104,7 +107,8 @@ export default function MessagerList() {
             </div>
             <div style={{ width: 10 }}></div>
             <div style={{ width: '60%', border: '2px solid #E4E4E4', alignItems: 'flex-end', flexDirection: "column" }}>
-                {isLoading ? <AnimationLoading /> :
+                {dataMessagerDetail?.length <=0 ? "" :
+                        isLoading ? <AnimationLoading/>:
                     <div style={{ padding: 10 }}>
                         {dataMessagerDetail?.map((item) =>
                             <p style={{
@@ -113,7 +117,7 @@ export default function MessagerList() {
                                 backgroundColor: item?.from === "TABLE" ? '#E3E3E3' : "#E4E4E4",
                                 padding: 10,
                             }}>{item?.text}</p>
-                        )}
+                            )}
                     </div>
                 }
                 <hr/>
