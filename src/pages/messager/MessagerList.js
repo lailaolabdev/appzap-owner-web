@@ -78,7 +78,7 @@ export default function MessagerList() {
     socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
         _getDataMessagerList();
     });
-    console.log("dataMessagerDetail==>", dataMessagerDetail)
+    console.log("dataMessagerList==>", dataMessagerList)
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
             <div style={{ width: '35%' }}>
@@ -86,17 +86,17 @@ export default function MessagerList() {
                     <thead>
                         <tr>
                             <th>#</th>
-                            {/* <th>ຊື່ຕູບ</th> */}
+                            <th>ຊື່ຕູບ</th>
                             <th>ຈາກໂຕະ</th>
                             <th>ຂໍ້ຄວາມ</th>
-                            <th>ອ່ານແລ້ວ</th>
+                            <th>ສະຖານະ</th>
                         </tr>
                     </thead>
                     <tbody>
                         {dataMessagerList?.map((item, index) =>
                             <tr key={"message-"+index} onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
                                 <td>{index + 1}</td>
-                                {/* <td>{item?.name}</td> */}
+                                <td>{item?.tableName}</td>
                                 <td>{item?.code}</td>
                                 <td>{item?.text}</td>
                                 <td style={{ color: item?.read === "NOT" ? "red":"green" }}>{item?.read ==="NOT" ? "ຍັງບໍ່ໄດ້ອ່ານ":"ອ່ານແລ້ວ"}</td>
