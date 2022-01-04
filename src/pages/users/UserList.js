@@ -267,8 +267,8 @@ export default function UserList() {
                           </center>)}
                         </td>
                         <td>{data?.firstname}</td>
-                        <td>{data?.userId}</td>
                         <td>{data?.lastname}</td>
+                        <td>{data?.userId}</td>
                         <td>{STATUS_USERS(data?.role)}</td>
                         <td>{data?.phone}</td>
                         <td><FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP }} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.firstname)} /></td>

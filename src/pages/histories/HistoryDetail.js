@@ -56,57 +56,24 @@ export default function HistoryDetail() {
   const [amount, setamount] = useState()
   useEffect(() => {
     let order_item = []
-    // let Allamount = 0
+    let Allamount = 0
     for (let i = 0; i < data.length; i++) {
       for (let k = 0; k < data[i]?.order_item.length; k++) {
         if (data[i]?.order_item[k]?.status === "SERVED") {
           order_item.push(data[i]?.order_item[k])
-          // Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
+          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
         }
       }
     }
-    // setamount(Allamount)
+    setamount(Allamount)
     setOrderItemData(order_item)
   }, [data])
-
-  useEffect(() => {
-    if (orderItemData?.length > 0) {
-      let Allamount = 0
-      for (let i = 0; i < orderItemData.length; i++) {
-        Allamount += orderItemData[i]?.price * orderItemData[i]?.quantity
-      }
-      setamount(Allamount)
-    }
-  }, [orderItemData])
-
-  useEffect(() => {
-    if (orderItemData && orderItemData[0]?.storeId) {
-      getData()
-    }
-  }, [orderItemData])
 
   const getData = async () => {
     await fetch(END_POINT + `/store/?id=${orderItemData[0]?.storeId}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setStore(json));
-  }
-  {/* ================> modal =============> */ }
-  const [saveDataItemQty, setsaveDataItemQty] = useState()
-  const _feedBackOrder = async (qty, newQty, index) => {
-    const dataNew = [...orderItemData];
-    if (qty < newQty) return warningAlert("ຈຳນວນເກີນ...!");
-    let changeData = dataNew[index].quantity = qty - newQty;
-    setsaveDataItemQty({ data: dataNew, storeId: dataNew[0]?.storeId })
-
-  }
-  const _saveFeedBackOrder = async () => {
-    const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
-    if (res?.data) {
-      setFeedbackOrderModal(false)
-      window.location.reload();
-      successAdd("ສຳເລັດການສົ່ງຄືນ")
-    }
   }
   return (
     <div style={{ minHeight: 400 }}>
@@ -172,67 +139,16 @@ export default function HistoryDetail() {
         }
       </Container>
 
-{/* ================> modal =============> */}
+      {/* ================> modal =============> */}
 
-      {/* <FeedbackOrder
+      <FeedbackOrder
         data={orderItemData}
         tableData={selectedTable}
         searchDate={_searchDate}
         show={feedbackOrderModal}
-        hide={() => setFeedbackOrderModal(false)}
-      /> */}
-      <Modal
-        show={feedbackOrderModal}
-        size={"lg"}
-        onHide={closeModalCallBack}
-        centered
-        arialabelledby="contained-modal-title-vcenter"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ສົ່ງອາຫານຄືນ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table responsive className="staff-table-list borderless table-hover">
-            <thead style={{ backgroundColor: "#F1F1F1" }}>
-              <tr>
-                <th>ລຳດັບ</th>
-                <th>ຊື່ເມນູ</th>
-                <th>ຈຳນວນທີ່ມີ</th>
-                <th>ຈຳນວນສົ່ງຄືນ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orderItemData?.map((item, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{item?.name ?? "-"}</td>
-                    <td>{item?.quantity}</td>
-                    <td><input
-                      type="number"
-                      onChange={(e) => _feedBackOrder(item?.quantity, e?.target?.value, index)} /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-          <div style={{ textAlign: "center" }}>
-            <Button
-              className="ml-2 pl-4 pr-4"
-              onClick={closeModalCallBack}
-              style={{
-                backgroundColor: "#FB6E3B",
-                color: "#ffff",
-                border: "solid 1px #FB6E3B",
-                fontSize: 25,
-              }}
-              onClick={() => _saveFeedBackOrder()}
-            >
-              ຢືນຢັ້ນການສົ່ງອາຫານຄືນ
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
+        hide={closeModalCallBack}
+      />
+
     </div>
   )
 }

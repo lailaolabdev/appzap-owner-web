@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
@@ -8,20 +8,33 @@ import { updateOrderItem } from "../../../services/order";
 
 const FeedbackOrder = ({ data, show, hide }) => {
 
+  const [newDataItem, setNewDataItem] = useState([])
   const [saveDataItemQty, setsaveDataItemQty] = useState()
-  const _feedBackOrder = async (qty, newQty, index) => {
-    const dataNew = [...data];
-    if (qty < newQty) return warningAlert("ຈຳນວນເກີນ...!");
-    let changeData = dataNew[index].quantity = qty - newQty;
-    setsaveDataItemQty({ data: dataNew, storeId: dataNew[0]?.storeId })
 
+
+  useEffect(() => {
+    let _data =[]
+    for (let i = 0; i < data?.length; i++){
+      _data.push({...data[i],newQty:0})
+    }
+    setNewDataItem(_data)
+  }, [data])
+
+  const _feedBackOrder = async (qty, newQty, index) => {
+    let _newQty = parseInt(newQty)
+    let changeData = newDataItem[index].newQty =(_newQty ? _newQty : 0);
+    setsaveDataItemQty({ data: newDataItem, storeId: newDataItem[0]?.storeId })
   }
+
   const _saveFeedBackOrder = async () => {
-    const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
-    if (res?.data) {
-      hide();
-      window.location.reload();
-      successAdd("ສຳເລັດການສົ່ງຄືນ")
+    try {
+      const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
+      if (res?.data) {
+        hide();
+        window.location.reload();
+        successAdd("ສຳເລັດການສົ່ງຄືນ")
+      }
+    } catch (error) {
     }
   }
   return (
@@ -46,7 +59,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
             </tr>
           </thead>
           <tbody>
-            {data?.map((item, index) => {
+            {data && data?.map((item, index) => {
               return (
                 <tr key={index}>
                   <td>{index + 1}</td>

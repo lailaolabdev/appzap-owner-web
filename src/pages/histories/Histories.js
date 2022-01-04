@@ -121,7 +121,7 @@ export default function History() {
                       <td>{item?.code}</td>
                       <td>{item?.table_id}</td>
                       <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.order_item))} ກີບ</b></td>
-                      <td>{moment(item?.createdAt).format("DD/MM/YYY HH:mm")}</td>
+                      <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                     </tr>
                   )
                 }
