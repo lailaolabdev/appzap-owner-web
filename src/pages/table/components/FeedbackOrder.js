@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { warningAlert, successAdd } from "../../../helpers/sweetalert";
-import { updateOrderItem } from "../../../services/order";
+import { updateManyOrderItemsFeedBack } from "../../../services/order";
 
 
 const FeedbackOrder = ({ data, show, hide }) => {
@@ -28,7 +28,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
 
   const _saveFeedBackOrder = async () => {
     try {
-      const res = await updateOrderItem(saveDataItemQty?.data, saveDataItemQty?.storeId)
+      const res = await updateManyOrderItemsFeedBack(saveDataItemQty?.data, saveDataItemQty?.storeId)
       if (res?.data) {
         hide();
         window.location.reload();

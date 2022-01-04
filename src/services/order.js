@@ -91,6 +91,24 @@ export const updateOrderItem = async (orderItems, storeId) => {
     return error;
   }
 };
+export const updateManyOrderItemsFeedBack = async (orderItems, storeId) => {
+  try {
+    const url = `${END_POINT}/v2/updateManyOrderItemsFeedBack`;
+    const orders = await axios.put(
+      url,
+      {
+        "orderItem": orderItems,
+        "storeId": storeId
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return orders;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {
