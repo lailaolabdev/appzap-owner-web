@@ -41,7 +41,7 @@ export default function SettingTable() {
                 method: 'post',
                 url: END_POINT + `/createTableAndGenerateCode/`,
                 data: {
-                    "table_id": tableNumber,
+                    "nameTable": tableNumber,
                     "storeId": match?.params?.id
                 },
             })
@@ -55,7 +55,6 @@ export default function SettingTable() {
         } catch (err) {
             errorAdd("ການເພີ່ມໂຕະບໍ່ສຳເລັດ")
         }
-
     }
     const _changeStatusTable = async (data) => {
         if (data?.status === true) {
@@ -98,7 +97,7 @@ export default function SettingTable() {
             url: END_POINT + `/deleteGeneratesAndTable`,
             data: {
                 idTable: dateDelete?._id,
-                code: dateDelete?.table_id,
+                nameTable: dateDelete?.table_id,
                 storeId: dateDelete?.storeId
             }
         })

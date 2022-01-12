@@ -19,7 +19,6 @@ export class BillForCheckOut extends React.PureComponent {
                 }
             }
         }
-        console.log("newDataItem===>", newDataItem)
         return (
             <div>
                 <table style={{ width: '40%', textAlign: 'center', fontSize: "18px", color: "#000000", display: "flex", justifyContent: "center" }}>

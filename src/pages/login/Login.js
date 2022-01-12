@@ -37,7 +37,7 @@ function Login() {
 
   const _login = async ({ values }) => {
     try {
-      const user = await axios.post(`${END_POINT}/login`, values)
+      const user = await axios.post(`${END_POINT}/v3/admin/login`, values)
       await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
       await history.push(`/orders/pagenumber/1/${user?.data?.data?.storeId}`);
     } catch (error) {

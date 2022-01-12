@@ -36,19 +36,20 @@ export const useTableState = () => {
     * Modify Order
     */
     useEffect(() => {
-        let _tableOrderItems = []
-        for (let i = 0; i < tableOrders?.length; i++) {
-            for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
-                _tableOrderItems.push(tableOrders[i]?.order_item[k])
-            }
-        }
-        setTableOrderItems(_tableOrderItems)
+        console.log("tableOrders===>", tableOrders)
+        // let _tableOrderItems = []
+        // for (let i = 0; i < tableOrders?.length; i++) {
+        //     for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
+        //         _tableOrderItems.push(tableOrders[i]?.order_item[k])
+        //     }
+        // }
+        setTableOrderItems(tableOrders)
     }, [tableOrders])
 
     const getTableDataStore = useMemo(
         () => async () => {
             let _userData = await getLocalData();
-            const url = END_POINT + `/generates/?status=true&checkout=false&&storeId=${_userData?.DATA?.storeId}`;
+            const url = END_POINT + `/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
             await fetch(url)
                 .then(response => response.json())
                 .then(response => {
@@ -65,7 +66,7 @@ export const useTableState = () => {
     const getTableDataStoreList = useMemo(
         () => async () => {
             let _userData = await getLocalData();
-            const url = END_POINT + `/generates/?checkout=false&storeId=${_userData?.DATA?.storeId}`;
+            const url = END_POINT + `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}`;
             await fetch(url)
                 .then(response => response.json())
                 .then(response => {
@@ -80,11 +81,10 @@ export const useTableState = () => {
     */
     const getTableOrders = async (table) => {
         setIsTableOrderLoading(true)
-        const url = END_POINT + `/orders?code=${table?.code}`;
+        const url = END_POINT + `/v3/orders?code=${table?.code}`;
         let res = await fetch(url)
             .then(response => response.json())
             .then(response => {
-            console.log("🚀response===>", response)
                 setTableOrders(response)
                 setIsTableOrderLoading(false)
             })
@@ -102,53 +102,44 @@ export const useTableState = () => {
      * ເປີດໂຕະ
      */
     const openTable = async () => {
-        await axios
-            .put(
-                END_POINT + `/updateGenerates/${selectedTable?.code}`,
+        let resData = await axios
+            .post(
+                END_POINT + `/v3/admin/open-table`,
                 {
-                    isOpened: true,
-                    staffConfirm: true
+                    "code": selectedTable?.code
                 },
                 {
                     headers: await getHeaders(),
                 }
-            ).then(async function (response) {
-                //update Table
-                let _tableList = [...tableList]
-                let _newTable = _tableList.map((table) => {
-                    if (table?.code == selectedTable?.code) return {
-                        ...table,
-                        isOpened: true,
-                        staffConfirm: true
-                    }
-                    else return table
-                })
-                let _openTable = _newTable.filter((table) => {
-                    return table.isOpened && !table.staffConfirm
-                })
-                // console.log({_openTable})
-                setOpenTableData(_openTable)
-                setTableList(_newTable)
-                setSelectedTable({
-                    ...selectedTable,
+            )
+        if (resData?.data?.length > 0) {
+            let _tableList = [...tableList]
+            let _newTable = _tableList.map((table) => {
+                if (table?.code == selectedTable?.code) return {
+                    ...table,
                     isOpened: true,
-                    staffConfirm: true
-                })
-                Swal.fire({
-                    icon: 'success',
-                    title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
-                    showConfirmButton: false,
-                    timer: 1800
-                })
+                    isStaffConfirm: true
+                }
+                else return table
             })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'erroe',
-                    title: "ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ",
-                    showConfirmButton: false,
-                    timer: 1800
-                })
-            });
+            let _openTable = _newTable.filter((table) => {
+                return table.isOpened && !table.isStaffConfirm
+            })
+            setOpenTableData(_openTable)
+            setTableList(resData?.data)
+            setSelectedTable({
+                ...selectedTable,
+                isOpened: true,
+                isStaffConfirm: true
+            })
+            await getTableOrders(selectedTable?.code)
+            Swal.fire({
+                icon: 'success',
+                title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+                showConfirmButton: false,
+                timer: 1800
+            })
+        }
     }
     /**
     * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
@@ -159,8 +150,6 @@ export const useTableState = () => {
         setTableOrders([])
         setTimeout(() => { setSelectedTable() }, 100)
     }
-
-
     const onChangeMenuCheckbox = async (order) => {
         let _orderItemForPrint = []
         let _orderItems = [...tableOrderItems]
@@ -191,7 +180,7 @@ export const useTableState = () => {
             }
         })
         let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
-        if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
+        if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
             let _newOrderItem = tableOrderItems.map((item) => {
                 if (item.isChecked) {
                     return {

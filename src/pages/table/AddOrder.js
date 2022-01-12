@@ -20,10 +20,10 @@ import {
 } from "../../constants/index";
 
 import { CATEGORY, END_POINT_SEVER, getLocalData, MENUS } from '../../constants/api'
+import { moneyCurrency } from '../../helpers'
 import { getHeaders } from '../../services/auth';
 import Loading from '../../components/Loading';
 import { BillForChef } from './components/BillForChef';
-import moment from 'moment';
 import { faCashRegister } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -31,12 +31,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 function AddOrder() {
   const { history, location, match } = useReactRouter();
   const componentRef = useRef();
-  const tableId = match?.params?.code;
-  const code = match?.params?.tableId;
+  const code = match?.params?.code;
+  const tableId = match?.params?.tableId;
   const [isLoading, setIsLoading] = useState(false)
   const [Categorys, setCategorys] = useState()
   const [Menus, setMenus] = useState()
-  const [note, setNote] = useState('');
   const [userData, setUserData] = useState({})
 
   const [selectedMenu, setSelectedMenu] = useState([]);
@@ -61,40 +60,39 @@ function AddOrder() {
     fetchData();
   }, [])
 
-  useEffect(() => {
-    setAllSelectedMenu(Menus);
-  }, [Menus])
 
   useEffect(() => {
-    if (selectedCategory === "All") {
-      setAllSelectedMenu(Menus);
-    } else {
-      let array = Menus && Menus.filter(function (el) {
-        return el.category._id == selectedCategory;
-      });
-      setAllSelectedMenu(array);
-    }
+    // if (selectedCategory === "All") {
+    //   setAllSelectedMenu(Menus);
+    // } else {
+    //   let array = Menus && Menus.filter(function (el) {
+    //     return el.category._id == selectedCategory;
+    //   });
+    //   setAllSelectedMenu(array);
+    // }
   }, [selectedCategory]);
 
 
 
   const getData = async (id) => {
-    await fetch(CATEGORY + `/?storeId=${id}`, {
+    await fetch(CATEGORY + `storeId=${id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setCategorys(json));
   }
-
   const getMenu = async (id) => {
     setIsLoading(true)
-    await fetch(MENUS + `/?storeId=${id}`, {
+    await fetch(MENUS + `storeId=${id}&${selectedCategory === "All" ? "" : "categoryId ="+ selectedCategory}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => {
-        setIsLoading(false)
         setMenus(json)
+        setAllSelectedMenu(json)
+        setIsLoading(false)
       });
   }
+
+
 
   const addToCart = (menu) => {
     setSelectedItem(menu)
@@ -146,11 +144,11 @@ function AddOrder() {
         'Content-Type': 'application/json',
         'Authorization': header.authorization
       }
-      axios.post(END_POINT_SEVER + "/v2/ordersByadmin", {
-        "menu": data,
-        "storeId": userData?.data?.storeId,
-        table_id: code,
-        code: tableId,
+      axios.post(END_POINT_SEVER + "/v3/admin/bill/create", {
+        menu: data,
+        storeId: userData?.data?.storeId,
+        tableId: tableId,
+        code: code,
       }, {
         headers: headers
       })
@@ -169,6 +167,7 @@ function AddOrder() {
           }
         })
         .catch((error) => {
+          console.log("🚀 error===>", error)
           Swal.fire({
             icon: 'warning',
             title: "ອາຫານບໍ່ພຽງພໍ",
@@ -196,6 +195,8 @@ function AddOrder() {
       await createOrder(selectedMenu, header, isPrinted);
     }
   }
+
+
   return <div style={TITLE_HEADER}>
     <div style={{ display: 'none' }}>
       <ReactToPrint
@@ -270,12 +271,12 @@ function AddOrder() {
             </div>
             <div className="row">
               {isLoading ? <Loading /> :
-                allSelectedMenu && allSelectedMenu.map((data, index) =>
-                  data?.qty > 0 ?
+                 allSelectedMenu?.map((data, index) =>
+                   data?.quantity > 0 ?
                     <div key={"menu" + index} className="col-3"
                       style={{ margin: 3, padding: 0, border: data._id == selectedItem?._id ? "4px solid #FB6E3B" : "4px solid rgba(0,0,0,0)" }}
                       onClick={() => addToCart(data)}>
-                      <img src={URL_PHOTO_AW3 + data?.image} style={{ width: '100%', height: 200, borderRadius: 5 }} />
+                       <img src={data?.images[0] ? URL_PHOTO_AW3 + data?.images[0] :"https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="} style={{ width: '100%', height: 200, borderRadius: 5 }} />
                       <div style={{
                         backgroundColor: '#000',
                         color: '#FFF',
@@ -285,9 +286,9 @@ function AddOrder() {
                       }}>
                         <span>{data?.name}</span>
                         <br />
-                        <span>{data?.price}</span>
+                         <span>{moneyCurrency(data?.price)}</span>
                         <br />
-                        <span>ຈຳນວນທີ່ມີ : {data?.qty}</span>
+                         <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
                       </div>
                     </div>
                     : <div></div>

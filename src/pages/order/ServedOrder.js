@@ -28,7 +28,7 @@ const Order = () => {
   }, [])
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + `/orderItems?status=SERVED&&storeId=${match?.params?.id}&startDate=${moment(moment(newDate)).format("YYYY-MM-DD")}&&endDate=${moment(moment(newDate).add(1, "days")).format("YYYY-MM-DD")}`, {
+    await fetch(END_POINT + `/v3/orders?status=SERVED`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setOrdersSev(json));
@@ -61,7 +61,7 @@ const Order = () => {
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
-              <th>ເບີໂຕະ</th>
+              {/* <th>ເບີໂຕະ</th> */}
               <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
@@ -78,8 +78,8 @@ const Order = () => {
                   <td><p style={{ margin: 0 }}>{index + 1}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
-                  <td><p style={{ margin: 0 }}>{order?.orderId?.table_id ?? "-"}</p></td>
-                  <td><p style={{ margin: 0 }}>{order?.orderId?.code ?? "-"}</p></td>
+                  {/* <td><p style={{ margin: 0 }}>{order?.table_id ?? "-"}</p></td> */}
+                  <td><p style={{ margin: 0 }}>{order?.code ?? "-"}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></td>
                   <td><p style={{ margin: 0 }}>
                     {order?.createdAt

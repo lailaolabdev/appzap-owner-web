@@ -14,6 +14,7 @@ import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import AnimationLoading from "../../constants/loading"
+import { getHeaders } from '../../services/auth';
 const date = new moment().format("LL");
 export default function History() {
   const { history, location, match } = useReactRouter()
@@ -34,8 +35,16 @@ export default function History() {
   }, [])
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders/?storeId=${match?.params?.id}&&status=CHECKOUT&checkout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
-    const _data = await fetch(url)
+    let header = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': header.authorization
+    }
+    // const url = END_POINT + `/v3/bills/?storeId=${match?.params?.id}&&status=CHECKOUT&isCheckout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
+    axios.get(END_POINT + `/v3/bills/?storeId=${match?.params?.id}&&status=CHECKOUT&isCheckout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`, {
+      headers: headers
+    })
+    // const _data = await fetch(url)
       .then(response => response.json())
       .then(response => {
         setData(response)

@@ -42,7 +42,7 @@ export const useOrderState = () => {
     const callingCheckOut = async () => {
         await setOrderLoading(true);
         let _userData = await getLocalData();
-        await fetch(END_POINT + `/orders?status=CALLTOCHECKOUT&storeId=${_userData?.DATA?.storeId}`, {
+        await fetch(END_POINT + `/v3/bills?status=CALL_TO_CHECKOUT&storeId=${_userData?.DATA?.storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => {
@@ -53,7 +53,7 @@ export const useOrderState = () => {
     const getOrderItemsStore = async (status) => {
         await setOrderLoading(true);
         let _userData = await getLocalData();
-        await fetch(END_POINT + `/orderItems?status=${status}&&storeId=${_userData?.DATA?.storeId}`, {
+        await fetch(END_POINT + `/v3/orders?status=${status}&&storeId=${_userData?.DATA?.storeId}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => {
@@ -62,7 +62,6 @@ export const useOrderState = () => {
                 if (status == WAITING_STATUS) setWaitingOrderItems(json)
             });
     }
-
 
     const handleUpdateOrderStatus = async (status, storeId) => {
         

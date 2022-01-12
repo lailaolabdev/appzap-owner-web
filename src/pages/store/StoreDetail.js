@@ -154,7 +154,6 @@ export default function StoreDetail() {
                 },
           })
     }
-    console.log("dataSwitch===>", dataSwitch);
     return (
         <div>
             <div className="row" style={{ padding: 40 }}>
@@ -185,7 +184,7 @@ export default function StoreDetail() {
                     </center>)}
                     <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}> {dataStore?.name ? dataStore?.name : "-"}</div>
                     <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
-                    <div style={{ padding: 5 }}>{dataStore?.dateClose + "  " + dataStore?.timeClose}</div>
+                    <div style={{ padding: 5 }}>{dataStore?.openTime + "  " + dataStore?.closeTime}</div>
                     <label className="switch">
                         <input type="checkbox" defaultChecked={dataSwitch} onClick={()=> _updateIsOpenStore(dataStore)}/>
                         <span className="slider round"></span>
@@ -196,7 +195,7 @@ export default function StoreDetail() {
                     <div style={{ height: 10 }}></div>
                     <div className="row">
                         <div className="col-5">ຊື່ແລະນາມສະກຸນ</div>
-                        <div className="col-5">{dataStore?.adminStore ? dataStore?.adminStore : "-"}</div>
+                        <div className="col-5">{dataStore?.adminName ? dataStore?.adminName : "-"}</div>
                     </div>
                     <div style={{ height: 10 }}></div>
                     <div className="row">
@@ -273,7 +272,6 @@ export default function StoreDetail() {
                     }}
                     onSubmit={(values, { setSubmitting }) => {
                         _updateStore(values)
-
                     }}
                 >
                     {({

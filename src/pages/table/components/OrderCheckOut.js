@@ -60,9 +60,8 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     setTotal(_total)
   }
 
-
   const _checkBill = async () => {
-      if (!data[0]?.orderId?._id) {
+    if (!data[0]?.billId) {
         await axios
           .put(
             END_POINT + `/updateGenerates/${tableData?.code}`,
@@ -87,11 +86,13 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
       } else {
         await axios
           .put(
-            END_POINT + `/orders/${data[0]?.orderId?._id}`,
+            END_POINT + `/v3/bill-checkout`,
             {
-              status: "CHECKOUT",
-              checkout: "true",
-              code: data[0]?.orderId?.code,
+              id: data[0]?.billId,
+              data: {
+                "isCheckout": "true",
+                "status": "CHECKOUT"
+             }
             },
             {
               headers: await getHeaders(),
@@ -126,7 +127,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
         <Modal.Title>ລາຍລະອຽດເມນູອໍເດີ້</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.tableName}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
         <Table responsive className="staff-table-list borderless table-hover">
@@ -140,8 +141,8 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             </tr>
           </thead>
           <tbody>
-            {NewData &&
-              NewData?.map((orderItem, index) => {
+            {data &&
+              data?.map((orderItem, index) => {
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>

@@ -140,9 +140,9 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
   const convertTableStatus = (_table) => {
-    if (_table?.isOpened && _table?.staffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
-    else if (_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
-    else if (!_table?.isOpened && !_table?.staffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
+    if (_table?.isOpened && _table?.isStaffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
+    else if (_table?.isOpened && !_table?.isStaffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
+    else if (!_table?.isOpened && !_table?.isStaffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else return "-"
   }
   const getData = async () => {
@@ -264,10 +264,10 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                           height: 140,
                           border: "none",
                           outlineColor: "#FB6E3B",
-                          backgroundColor: table?.staffConfirm ? "#FB6E3B" : "white",
-                          border: selectedTable?.table_id == table?.table_id ? "2px solid #FB6E3B" : "2px solid  white",
+                          backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
+                          border: selectedTable?.tableName == table?.tableName ? "2px solid #FB6E3B" : "2px solid  white",
                         }}
-                        className={table?.isOpened && !table?.staffConfirm ? "blink_card" : ""}
+                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : ""}
                         onClick={async () => {
                           onSelectTable(table)
                         }}
@@ -283,7 +283,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 40 }}>{table?.table_id}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 30 }}>{table?.tableName}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
                             <div >{convertTableStatus(table)}</div>
                           </span>
@@ -295,7 +295,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
             </Container>
           </div>
           {/* Detail Table */}
-          {(selectedTable != null && (selectedTable?.staffConfirm && selectedTable?.isOpened)) && <div
+          {(selectedTable != null && (selectedTable?.isStaffConfirm && selectedTable?.isOpened)) && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
@@ -312,7 +312,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                 <Row style={{ margin: 0 }}>
                   <Col sm={12} style={{ backgroundColor: "#eee" }}>
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
-                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.table_id} </p>
+                    <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname && tableOrderItems[0]?.createdBy?.lastname ? tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname:""}</p>
@@ -343,7 +343,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                       </div>
                     </div>
                     <div>
-                      <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.table_id, selectedTable?.code)}>+ ເພີ່ມອໍເດີ</Button>
+                      <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.tableId, selectedTable?.code, selectedTable?._id)}>+ ເພີ່ມອໍເດີ</Button>
                     </div>
                   </div>
                 </div>
@@ -387,7 +387,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                       </tr>
                     </thead>
                     <tbody>
-                      {tableOrderItems ? tableOrderItems.map((orderItem, index) => (
+                      {tableOrderItems ? tableOrderItems?.map((orderItem, index) => (
                         <tr key={"order" + index} style={{ borderBottom: "1px solid #eee" }}>
                           <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
@@ -416,7 +416,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                       )) : ""}
                     </tbody>
                   </Table>
-                  {tableOrderItems.length == 0 && <div className="text-center">
+                  {tableOrderItems?.length == 0 && <div className="text-center">
                     <div style={{ marginTop: 50, fontSize: 50 }}> ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ</div>
                   </div>}
                 </div>
@@ -425,7 +425,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
             }
           </div>}
 
-          {(selectedTable != null && (!selectedTable?.staffConfirm)) && <div
+          {(selectedTable != null && (!selectedTable?.isStaffConfirm)) && <div
             style={{
               width: "60%",
               backgroundColor: "#FFF",
