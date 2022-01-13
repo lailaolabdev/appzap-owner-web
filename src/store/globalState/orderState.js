@@ -74,7 +74,7 @@ export const useOrderState = () => {
             }
         })
         let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
-        if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_ITEM_SECCESS") {
+        if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
             let _newOrderItem = orderItems.filter((item) => !item.isChecked);
             setOrderItems(_newOrderItem)
             if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)

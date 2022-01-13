@@ -60,7 +60,7 @@ const Order = () => {
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>
-              {/* <th>ເບີໂຕະ</th> */}
+                <th>ຈາກໂຕະ</th>
               <th>ລະຫັດໂຕະ</th>
               <th>ສະຖານະ</th>
               <th>ເວລາ</th>
@@ -84,7 +84,7 @@ const Order = () => {
                   <td><p style={{ margin: 0 }}>{index + 1}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
-                  {/* <td><p style={{ margin: 0 }}>{order?.tableName ?? "-"}</p></td> */}
+                  <td><p style={{ margin: 0 }}>{order?.tableId?.name ?? "-"}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.code ?? "-"}</p></td>
                   <td><p style={{ margin: 0 }}>{order?.status ? orderStatus(order?.status) : "-"}</p></td>
 

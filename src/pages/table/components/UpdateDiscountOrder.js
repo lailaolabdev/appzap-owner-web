@@ -21,27 +21,14 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
   const [radioValue, setRadioValue] = useState('1');
 
   useEffect(() => {
-    Getdata();
+    setNewData(data);
   }, [data]);
-
+  // console.log("data===>",data)
   useEffect(() => {
     _calculateTotal()
     if (NewData && NewData[0]?.orderId?.discount) setDiscount(NewData[0]?.orderId?.discount)
     if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType ==="LAK" ? "2":"1")
   }, [NewData]);
-
-  const Getdata = async () => {
-    let getId = [];
-    for (let i = 0; i < data?.length; i++) {
-      getId.push(data[i]?._id);
-    }
-    if (getId.length == 0) return;
-    const resData = await axios({
-      method: "GET",
-      url: END_POINT + `/orderItemArray/?id=${getId}`,
-    });
-    setNewData(resData?.data);
-  };
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -59,30 +46,37 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
   ];
 
   const _UpdateDiscount = async () => {
-        await axios
-          .put(
-            END_POINT + `/ordersUpdateDiscount/${data[0]?.orderId?._id}`,
-            {
-              discount: discount,
-              discountType: radioValue === "1" ? "PERCENT" :"LAK"
-            },
-            {
-              headers: await getHeaders(),
-            }
-          )
-          .then(async function (response) {
-            Swal.fire({
-              icon: 'success',
-              title: "ການເພີ່ມສ່ວນຫຼຸດສໍາເລັດ",
-              showConfirmButton: false,
-              timer: 1800
-            })
-            resetTableOrder()
-            hide()
-          })
-          .catch(function (error) {
-            errorAdd("ການເພີ່ມສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
-          });
+    try {
+      let header = await getHeaders();
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': header.authorization
+      }
+      const updateTable = await axios({
+        method: 'put',
+        url: END_POINT + `/v3/bill-discount`,
+        data: {
+          id: data[0]?.billId,
+          data: {
+            discount: discount,
+            discountType: radioValue === "1" ? "PERCENT" : "LAK"
+          }
+        },
+        headers: headers
+      })
+      if (updateTable?.data) {
+        Swal.fire({
+          icon: 'success',
+          title: "ການເພີ່ມສ່ວນຫຼຸດສໍາເລັດ",
+          showConfirmButton: false,
+          timer: 1800
+        })
+        resetTableOrder()
+        hide()
+      }
+    } catch (err) {
+      errorAdd("ການເພີ່ມສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
+    }
   };
   return (
     <Modal
@@ -96,7 +90,7 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
         <Modal.Title>ເພີ່ມສ່ວນຫຼຸດ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.table_id}</pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.tableName}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
         <Table responsive className="staff-table-list borderless table-hover">

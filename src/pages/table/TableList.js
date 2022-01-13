@@ -52,7 +52,7 @@ import {
   errorAdd,
   warningAlert
 } from "../../helpers/sweetalert"
-import { updateOrderItem } from "../../services/order";
+import { getHeaders } from "../../services/auth";
 
 
 export default function TableList() {
@@ -70,6 +70,16 @@ export default function TableList() {
   const [dataSettingModal, setDataSettingModal] = useState()
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
 
+  const [checkoutModel, setCheckoutModal] = useState(false);
+  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
+  const [CheckStatus, setCheckStatus] = useState()
+  const [CheckStatusCancel, setCheckStatusCancel] = useState()
+  const [dataStore, setStore] = useState()
+  const [modalAddDiscount, setModalAddDiscount] = useState(false)
+  const [resDataBill, setResDataBill] = useState({})
+  /**
+ * useState
+ */
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
@@ -86,15 +96,7 @@ export default function TableList() {
     resetTableOrder
   } = useStore();
 
-  /**
-   * useState
-   */
-  const [checkoutModel, setCheckoutModal] = useState(false);
-  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
-  const [CheckStatus, setCheckStatus] = useState()
-  const [CheckStatusCancel, setCheckStatusCancel] = useState()
-  const [dataStore, setStore] = useState()
-const [modalAddDiscount, setModalAddDiscount] = useState(false)
+
   useEffect(() => {
     getTableDataStore()
     getData()
@@ -114,18 +116,10 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
     setCheckStatusCancel(_checkDataStatusCancel)
     setCheckStatus(_checkDataStatus)
   }, [tableOrderItems])
-
-
   const _handlecheckout = async () => {
     setCheckoutModal(false);
     history.push(`/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`);
   };
-
-  /**
-   * ເຊັກເບິ່ງວ່າໄອເທັມຖືກເລືອກບໍ
-   * @returns 
-   */
-  
   const _orderIsChecked = () => {
     let isIncluded = tableOrderItems.filter((item) => item.isChecked)
     return isIncluded.length == 0;
@@ -164,9 +158,19 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
       return
     }
     try {
-      const changTable = await axios.put(END_POINT_SEVER + "/tables-changeTable/", {
-        "codeTableOld": selectedTable?.code,
-        "codeTableNew": codeTableNew
+      let header = await getHeaders();
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': header.authorization
+      }
+      const changTable = await axios({
+        method: 'put',
+        url: END_POINT_SEVER + `/v3/bill-transfer`,
+        data: {
+          "codeTableOld": selectedTable?.code,
+          "codeTableNew": codeTableNew
+        },
+        headers: headers
       })
       if (changTable?.status === 200) {
         handleClose()
@@ -199,13 +203,22 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         warningAlert("ບໍ່ສາມາດປິດໂຕະໄດ້ເພາະມີການໃຊ້ງານ...!")
         return
       }
+      let header = await getHeaders();
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': header.authorization
+      }
       const updateTable = await axios({
         method: 'put',
-        url: END_POINT_SEVER + `/updateGenerates/` + dataSettingModal?.code,
+        url: END_POINT_SEVER + `/v3/code/update`,
         data: {
+          id: dataSettingModal?._id,
+          data: {
           "isOpened": "false",
-          "staffConfirm": "false"
+          "isStaffConfirm": "false"
+          }
         },
+        headers: headers
       })
       setOpenModalSetting(false)
       if (updateTable?.data) {
@@ -214,8 +227,27 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         successAdd("ການປິດໂຕະສຳເລັດ")
       }
     } catch (err) {
+      console.log("🚀err+++>", err)
       errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
     }
+  }
+  useEffect(() => {
+    if (tableOrderItems?.length > 0) {
+      _bill(tableOrderItems[0]?.billId)
+    }
+  }, [tableOrderItems])
+  const _bill = async (billId) => {
+    let header = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': header.authorization
+    }
+    const _resBill = await axios({
+      method: 'get',
+      url: END_POINT_SEVER + `/v3/bill/` + billId,
+      headers: headers
+    })
+    setResDataBill(_resBill?.data)
   }
   // ==========>
   return (
@@ -315,8 +347,8 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {tableOrderItems[0]?.createdBy?.firstname && tableOrderItems[0]?.createdBy?.lastname ? tableOrderItems[0]?.createdBy?.firstname + " " + tableOrderItems[0]?.createdBy?.lastname:""}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(tableOrderItems[0]?.orderId?.discount)} {tableOrderItems[0]?.orderId?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
+                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {resDataBill?.createdBy?.firstname && resDataBill?.createdBy?.lastname ? resDataBill?.createdBy?.firstname + " " + resDataBill?.createdBy?.lastname:""}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(resDataBill?.discount)} {resDataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
@@ -424,7 +456,6 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
               </Container>
             }
           </div>}
-
           {(selectedTable != null && (!selectedTable?.isStaffConfirm)) && <div
             style={{
               width: "60%",
@@ -508,7 +539,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         </Modal.Header>
         <Modal.Body>
           <div>
-            <Form.Label>ຍ້າຍຈາກໂຕະ : {selectedTable?.table_id}</Form.Label>
+            <Form.Label>ຍ້າຍຈາກໂຕະ : {selectedTable?.tableName}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>ໄປຫາໂຕະ : </Form.Label>
@@ -518,7 +549,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
               >
                 <option selected disabled>ເລືອກໂຕະ</option>
                 {tableList?.map((item, index) =>
-                  <option key={"talbe-"+index} value={item?.code} disabled={selectedTable?.table_id === item?.table_id ? true : false}>ໂຕະ {item?.table_id}</option>
+                  <option key={"talbe-" + index} value={item?.code} disabled={selectedTable?.tableName === item?.tableName ? true : false}>ໂຕະ {item?.tableName}</option>
                 )}
               </select>
             </Form.Group>
@@ -538,7 +569,7 @@ const [modalAddDiscount, setModalAddDiscount] = useState(false)
         </Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            ທ່ານຕ້ອງການປິດໂຕະ {dataSettingModal?.table_id} ນີ້ບໍ ?
+            ທ່ານຕ້ອງການປິດໂຕະ {dataSettingModal?.tableName} ນີ້ບໍ ?
           </div>
         </Modal.Body>
         <Modal.Footer>

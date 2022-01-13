@@ -23,7 +23,7 @@ export const useTableState = () => {
             let _userData = await getLocalData();
             socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
                 let _openTable = data.filter((table) => {
-                    return table.isOpened && !table.staffConfirm
+                    return table.isOpened && !table.isStaffConfirm
                 })
                 setOpenTableData(_openTable)
                 setTableList(data)
@@ -36,13 +36,6 @@ export const useTableState = () => {
     * Modify Order
     */
     useEffect(() => {
-        console.log("tableOrders===>", tableOrders)
-        // let _tableOrderItems = []
-        // for (let i = 0; i < tableOrders?.length; i++) {
-        //     for (let k = 0; k < tableOrders[i]?.order_item?.length; k++) {
-        //         _tableOrderItems.push(tableOrders[i]?.order_item[k])
-        //     }
-        // }
         setTableOrderItems(tableOrders)
     }, [tableOrders])
 
@@ -56,7 +49,7 @@ export const useTableState = () => {
                     if (response.message == "server error") return;
                     setTableList(response)
                     let _openTable = response.filter((table) => {
-                        return table.isOpened && !table.staffConfirm
+                        return table.isOpened && !table.isStaffConfirm
                     })
                     setOpenTableData(_openTable)
                 })

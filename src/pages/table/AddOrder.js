@@ -145,7 +145,7 @@ function AddOrder() {
         'Authorization': header.authorization
       }
       axios.post(END_POINT_SEVER + "/v3/admin/bill/create", {
-        menu: data,
+        orders: data,
         storeId: userData?.data?.storeId,
         tableId: tableId,
         code: code,
@@ -167,7 +167,6 @@ function AddOrder() {
           }
         })
         .catch((error) => {
-          console.log("🚀 error===>", error)
           Swal.fire({
             icon: 'warning',
             title: "ອາຫານບໍ່ພຽງພໍ",
