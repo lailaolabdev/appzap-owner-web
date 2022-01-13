@@ -124,7 +124,6 @@ export default function UserList() {
   };
   // create user
   const _createUser = async (values) => {
-    console.log("AAAA", getTokken?.TOKEN);
     const resData = await axios({
       method: 'POST',
       url: USERS_CREATE,

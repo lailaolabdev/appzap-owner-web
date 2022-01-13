@@ -365,13 +365,13 @@ export default function TableList() {
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button>
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onAddDiscount()}><FontAwesomeIcon icon={faPercent} style={{ color: "#fff" }} /> ເພີ່ມສ່ວນຫຼຸດ</Button>
-                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} /> Checkout</Button>
+                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />Checkout</Button>
                       <ReactToPrint
                         trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
                         content={() => componentRefA.current}
                       />
                       <div style={{ display: 'none' }}>
-                        <BillForCheckOut ref={componentRefA} newData={tableOrderItems} dataStore={dataStore} />
+                        <BillForCheckOut ref={componentRefA} newData={resDataBill} dataStore={dataStore} />
                       </div>
                     </div>
                     <div>

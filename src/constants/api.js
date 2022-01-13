@@ -9,9 +9,9 @@ export const getLocalData = async () => {
     return { TOKEN, DATA };
 }
 // =====>>>>
-export const USERS = END_POINT_SEVER + '/users'
+export const USERS = END_POINT_SEVER + '/v3/users'
 export const USER = END_POINT_SEVER + '/user'
-export const USERS_CREATE = END_POINT_SEVER + '/user_create'
+export const USERS_CREATE = END_POINT_SEVER + '/v3/user/create'
 export const USERS_DELETE = END_POINT_SEVER + '/user_delete'
 export const USERS_UPDATE = END_POINT_SEVER + '/user_update'
 // ========

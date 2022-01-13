@@ -136,7 +136,7 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
-                    path="/histories/HistoryDetail/:id"
+                    path="/histories/HistoryDetail/:id/:storeId"
                     component={HistoryDetail}
                   />
                   <PrivateRoute

@@ -4,13 +4,12 @@ import {
   Col,
   Container,
   Nav,
-  Modal,
   Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
-import moment from 'moment';
+// import moment from 'moment';
 import axios from 'axios';
 import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
@@ -19,17 +18,20 @@ import AnimationLoading from "../../constants/loading"
 import { useStore } from "../../store";
 import { BillForCheckOut } from '../bill/BillForCheckOut';
 import ReactToPrint from 'react-to-print';
-import { warningAlert, successAdd } from "../../helpers/sweetalert";
-import { updateOrderItem } from "../../services/order";
+// import { warningAlert, successAdd } from "../../helpers/sweetalert";
+// import { updateOrderItem } from "../../services/order";
+import { getHeaders } from '../../services/auth';
 
 
 export default function HistoryDetail() {
   const { match } = useReactRouter();
   const componentRef = useRef();
+
   const {
     selectedTable,
     setSelectedTable,
   } = useStore();
+
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
   const closeModalCallBack = () => setFeedbackOrderModal(false)
 
@@ -40,15 +42,20 @@ export default function HistoryDetail() {
   useEffect(() => {
     _searchDate()
     setSelectedTable()
+    getData()
   }, [])
+
   const _searchDate = async () => {
     setIsLoading(true)
-    const url = END_POINT + `/orders?status=CHECKOUT&checkout=true${match?.params?.id ? `&code=${match?.params?.id}` : ``}`;
-    await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setData(response)
-      })
+    let header = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': header.authorization
+    }
+    let _resData = await axios.get(END_POINT + `/v3/bills?code=` + match?.params?.id, {
+      headers: headers
+    })
+    setData(_resData?.data)
     setIsLoading(false)
   }
 
@@ -57,12 +64,12 @@ export default function HistoryDetail() {
   useEffect(() => {
     let order_item = []
     let Allamount = 0
-    for (let i = 0; i < data.length; i++) {
-      for (let k = 0; k < data[i]?.order_item.length; k++) {
-        if (data[i]?.order_item[k]?.status === "SERVED") {
-          order_item.push(data[i]?.order_item[k])
-          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
-        }
+    if (data?.length > 0) {
+      for (let i = 0; i < data[0]?.orderId?.length; i++) {
+        if (data[0]?.orderId[i]?.status === "SERVED") {
+            order_item.push(data[0]?.orderId[i])
+            Allamount += data[0]?.orderId[i]?.price * data[0]?.orderId[i]?.quantity
+          }
       }
     }
     setamount(Allamount)
@@ -70,11 +77,12 @@ export default function HistoryDetail() {
   }, [data])
 
   const getData = async () => {
-    await fetch(END_POINT + `/store/?id=${orderItemData[0]?.storeId}`, {
+    await fetch(END_POINT + `/v3/store?id=${match?.params?.storeId}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setStore(json));
   }
+  console.log("dataStore===>", dataStore);
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
@@ -82,7 +90,7 @@ export default function HistoryDetail() {
         <div className="row ">
           <div className="col-sm-12" style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}>
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.table_id}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.tableName}</strong></h5>
               <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
               <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname && orderItemData[0]?.createdBy?.lastname ? orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname : ""}</strong></h5>
             </Nav.Item>
@@ -93,7 +101,7 @@ export default function HistoryDetail() {
                 content={() => componentRef.current}
               />
               <div style={{ display: 'none' }}>
-                <BillForCheckOut ref={componentRef} newData={orderItemData} dataStore={dataStore} />
+                <BillForCheckOut ref={componentRef} newData={data[0]} dataStore={dataStore} />
               </div>
             </Nav.Item>
           </div>

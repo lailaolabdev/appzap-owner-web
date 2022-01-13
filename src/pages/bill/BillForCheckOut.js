@@ -10,15 +10,16 @@ export class BillForCheckOut extends React.PureComponent {
         let newData = this.props.newData;
         let dataStore = this.props.dataStore;
         let data = 0
-        let newDataItem =[]
-        if (newData) {
-            for (let i = 0; i < newData.length; i++) {
-                if (newData[i]?.status === "SERVED") {
-                    newDataItem.push(newData[i])
-                    data += (newData[i]?.quantity * newData[i]?.price )
+        let newDataItem = []
+        if (newData?.orderId?.length > 0) {
+            for (let i = 0; i < newData?.orderId.length; i++) {
+                if (newData?.orderId[i]?.status === "SERVED") {
+                    newDataItem.push(newData?.orderId[i])
+                    data += (newData?.orderId[i]?.quantity * newData?.orderId[i]?.price )
                 }
             }
         }
+        
         return (
             <div>
                 <table style={{ width: '40%', textAlign: 'center', fontSize: "18px", color: "#000000", display: "flex", justifyContent: "center" }}>
@@ -119,11 +120,11 @@ export class BillForCheckOut extends React.PureComponent {
                     </tr>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>
                         <th style={{ textAlign: "center" }} colspan="3">ສ່ວນຫຼຸດ </th>
-                        <th>{newDataItem && newDataItem[0]?.orderId?.discountType === "LAK" ? moneyCurrency(newDataItem[0]?.orderId?.discount) + " " + "ກີບ" : newDataItem[0]?.orderId?.discount + " " + "%"}</th>
+                        <th>{newData && newData?.discountType === "LAK" ? moneyCurrency(newData?.discount) + " " + "ກີບ" : newData?.discount + " " + "%"}</th>
                     </tr>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>
                         <th style={{ textAlign: "center" }} colspan="3">ຕ້ອງຈ່າຍທັງໝົດ</th>
-                        <th>{newDataItem && newDataItem[0]?.orderId?.discountType === "LAK" ? moneyCurrency(data - newDataItem[0]?.orderId?.discount) : moneyCurrency(data - (data * newDataItem[0]?.orderId?.discount) / 100)}</th>
+                        <th>{newData && newData?.discountType === "LAK" ? moneyCurrency(data - newData?.discount) : moneyCurrency(data - (data * newData?.discount) / 100)}</th>
                     </tr>
                 </table>
                 <hr style={{

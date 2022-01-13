@@ -22,13 +22,15 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   const [total, setTotal] = useState();
   const [discount, setDiscount] = useState(0)
   const [radioValue, setRadioValue] = useState('1');
+  const [resDataBill, setResDataBill] = useState({})
 
   const {
     callingCheckOut,
   } = useStore();
 
   useEffect(() => {
-    Getdata();
+    setNewData(data)
+    _bill(data[0]?.billId)
   }, [data]);
 
   useEffect(() => {
@@ -37,19 +39,20 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType === "LAK" ? "2" : "1")
   }, [NewData]);
 
-  const Getdata = async () => {
-    let getId = [];
-    for (let i = 0; i < data?.length; i++) {
-      getId.push(data[i]?._id);
+  const _bill = async (billId) => {
+    let header = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': header.authorization
     }
-    if (getId.length == 0) return;
-    const resData = await axios({
-      method: "GET",
-      url: END_POINT + `/orderItemArray/?id=${getId}`,
-    });
-    setNewData(resData?.data);
-  };
-
+    const _resBill = await axios({
+      method: 'get',
+      url: END_POINT + `/v3/bill/` + billId,
+      headers: headers
+    })
+    setDiscount(_resBill?.data?.discount)
+    setResDataBill(_resBill?.data)
+  }
   const _calculateTotal = () => {
     let _total = 0;
     if (NewData && NewData.length > 0) {
@@ -59,7 +62,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     }
     setTotal(_total)
   }
-
   const _checkBill = async () => {
     if (!data[0]?.billId) {
         await axios
@@ -114,7 +116,6 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           });
       }
   };
-
   return (
     <Modal
       show={show}
@@ -163,7 +164,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             </tr>
             <tr>
               <td colspan="4" style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ:</td>
-              <td colspan="1">{moneyCurrency(discount)} {radioValue === "1" ? "%":"ກີບ"}</td>
+              <td colspan="1">{moneyCurrency(discount)} {resDataBill?.discountType !== "LAK" ? "%":"ກີບ"}</td>
             </tr>
           </tbody>
         </Table>
@@ -188,7 +189,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           >
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
-              <b> {moneyCurrency(radioValue === "1" ? total - (total * discount) / 100 : total - discount)} ກີບ</b>
+              <b> {moneyCurrency(resDataBill?.discountType !== "LAK" ? total - (total * discount) / 100 : total - discount)} ກີບ</b>
             </span>
           </div>
           <Button

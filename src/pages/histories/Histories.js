@@ -6,8 +6,6 @@ import {
   InputGroup,
   Nav
 } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 import moment from 'moment';
 import axios from 'axios';
@@ -15,7 +13,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT } from '../../constants'
 import AnimationLoading from "../../constants/loading"
 import { getHeaders } from '../../services/auth';
-const date = new moment().format("LL");
 export default function History() {
   const { history, location, match } = useReactRouter()
   const newDate = new Date();
@@ -40,15 +37,10 @@ export default function History() {
       'Content-Type': 'application/json',
       'Authorization': header.authorization
     }
-    // const url = END_POINT + `/v3/bills/?storeId=${match?.params?.id}&&status=CHECKOUT&isCheckout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`;
-    axios.get(END_POINT + `/v3/bills/?storeId=${match?.params?.id}&&status=CHECKOUT&isCheckout=true&startDate=${startDate}&&endDate=${moment(moment(endDate).add(1, "days")).format("YYYY-MM-DD")}&${findeByCode ? `&code=${findeByCode}` : ``}`, {
+    let _resData = await axios.get(END_POINT + `/v3/bills/?storeId=${match?.params?.id}&status=CHECKOUT&isCheckout=true&startDate=${startDate}&endDate=${endDate}`, {
       headers: headers
     })
-    // const _data = await fetch(url)
-      .then(response => response.json())
-      .then(response => {
-        setData(response)
-      })
+    setData(_resData?.data)
     setIsLoading(false)
   }
   const _setSelectedDateStart = (item) => {
@@ -61,24 +53,24 @@ export default function History() {
     setfindeByCode(item.target.value)
   }
   const [amount, setamount] = useState()
-  const [amountArray, setAmountArray] = useState()
   useEffect(() => {
     let getId = []
     let Allamount = 0
-    for (let i = 0; i < data.length; i++) {
-      for (let k = 0; k < data[i]?.order_item.length; k++) {
-        getId.push(data[i]?.order_item[k]?._id)
-        if (data[i]?.order_item[k]?.status === "SERVED") {
-          Allamount += data[i]?.order_item[k]?.price * data[i]?.order_item[k]?.quantity
+    if (data?.length > 0 || startDate || endDate) {
+      for (let i = 0; i < data?.length; i++) {
+        for (let k = 0; k < data[i]?.orderId?.length; k++) {
+          if (data[i]?.orderId[k]?.status === "SERVED") {
+            Allamount += data[i]?.orderId[k]?.price * data[i]?.orderId[k]?.quantity
+          }
         }
       }
+      setamount(Allamount)
     }
-    setamount(Allamount)
-    setAmountArray(getId)
-  }, [data])
+  }, [data, startDate, endDate])
+
   let _allmonny = (item) => {
     let total = 0
-    for (let i = 0; i < item?.length; i++){
+    for (let i = 0; i < item?.length; i++) {
       if (item[i]?.status === "SERVED") {
         total += item[i]?.price * item[i]?.quantity
       }
@@ -86,9 +78,7 @@ export default function History() {
     return total
   }
 
-  const _historyDetail = (code) => {
-    history.push(`/histories/HistoryDetail/${code}`)
-  }
+  const _historyDetail = (code) => history.push(`/histories/HistoryDetail/${code}/`+ match?.params?.id)
   return (
     <div style={{ minHeight: 400 }}>
       <Container fluid>
@@ -117,19 +107,21 @@ export default function History() {
                 <tr>
                   <th>ລຳດັບ</th>
                   <th>ລະຫັດເຂົ້າລະບົບ</th>
-                  <th>ເລກໂຕະ</th>
+                  <th>ໂຕະ</th>
                   <th>ລາຄາ/ບີນ</th>
+                  <th>ສ່ວນຫຼຸດ</th>
                   <th>ວັນທີ</th>
                 </tr>
               </thead>
               <tbody>
                 {data?.length > 0 && data?.map((item, index) => {
                   return (
-                    <tr index={item} onClick={() => _historyDetail(item?.code)} style={{ cursor: 'pointer'}}>
+                    <tr index={item} onClick={() => _historyDetail(item?.code)} style={{ cursor: 'pointer' }}>
                       <td>{index + 1}</td>
                       <td>{item?.code}</td>
-                      <td>{item?.table_id}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.order_item))} ກີບ</b></td>
+                      <td>{item?.tableId?.name}</td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.orderId))} ກີບ</b></td>
+                      <td>{item?.discount} {item?.discountType ==="LAK" ? "ກີບ":"%"}</td>
                       <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                     </tr>
                   )
