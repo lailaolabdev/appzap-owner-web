@@ -56,7 +56,7 @@ import { getHeaders } from "../../services/auth";
 
 
 export default function TableList() {
-  const { history, location, match } = useReactRouter();
+  const { history, match } = useReactRouter();
   const componentRef = useRef();
   const componentRefA = useRef();
   const number = match?.params?.number;
@@ -74,9 +74,8 @@ export default function TableList() {
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [CheckStatus, setCheckStatus] = useState()
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
-  const [dataStore, setStore] = useState()
+  const [dataBill, setDataBill] = useState()
   const [modalAddDiscount, setModalAddDiscount] = useState(false)
-  const [resDataBill, setResDataBill] = useState({})
   /**
  * useState
  */
@@ -99,7 +98,6 @@ export default function TableList() {
 
   useEffect(() => {
     getTableDataStore()
-    getData()
   }, [])
   /**
    * Modify Order Status
@@ -139,13 +137,29 @@ export default function TableList() {
     else if (!_table?.isOpened && !_table?.isStaffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else return "-"
   }
-  const getData = async () => {
-    await fetch(STORE + `/?id=${match?.params?.storeId}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setStore(json));
+
+  useEffect(() => {
+    if (tableOrderItems?.length > 0) {
+      getData(tableOrderItems[0]?.code)
+    }
+  }, [tableOrderItems])
+
+  const getData = async (code) => {
+    let header = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': header.authorization
+    }
+    const _resBill = await axios({
+      method: 'get',
+      url: END_POINT_SEVER + `/v3/bill-group/` + code,
+      headers: headers
+    })
+    setDataBill(_resBill?.data)
   }
+  
   const [codeTableNew, setCodeTableNew] = useState()
+
   const _changeTable = async () => {
     if (!codeTableNew) {
       handleClose()
@@ -192,10 +206,12 @@ export default function TableList() {
       })
     }
   }
+
   const _openModalSetting = (data) => {
     setDataSettingModal(data)
     setOpenModalSetting(true)
   }
+
   const _resetTable = async () => {
     try {
       if (tableOrderItems?.length > 0) {
@@ -227,29 +243,11 @@ export default function TableList() {
         successAdd("ການປິດໂຕະສຳເລັດ")
       }
     } catch (err) {
-      console.log("🚀err+++>", err)
       errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
     }
   }
-  useEffect(() => {
-    if (tableOrderItems?.length > 0) {
-      _bill(tableOrderItems[0]?.billId)
-    }
-  }, [tableOrderItems])
-  const _bill = async (billId) => {
-    let header = await getHeaders();
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': header.authorization
-    }
-    const _resBill = await axios({
-      method: 'get',
-      url: END_POINT_SEVER + `/v3/bill/` + billId,
-      headers: headers
-    })
-    setResDataBill(_resBill?.data)
-  }
-  // ==========>
+
+
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -347,8 +345,8 @@ export default function TableList() {
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {resDataBill?.createdBy?.firstname && resDataBill?.createdBy?.lastname ? resDataBill?.createdBy?.firstname + " " + resDataBill?.createdBy?.lastname:""}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(resDataBill?.discount)} {resDataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
+                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {dataBill?.orderId[0]?.updatedBy?.firstname && dataBill?.orderId[0]?.updatedBy?.lastname ? dataBill?.orderId[0]?.updatedBy?.firstname + " " + dataBill?.orderId[0]?.updatedBy?.lastname:""}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(dataBill?.discount)} {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
@@ -371,7 +369,7 @@ export default function TableList() {
                         content={() => componentRefA.current}
                       />
                       <div style={{ display: 'none' }}>
-                        <BillForCheckOut ref={componentRefA} newData={resDataBill} dataStore={dataStore} />
+                        <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
                       </div>
                     </div>
                     <div>
@@ -502,7 +500,7 @@ export default function TableList() {
       </div>
 
       <OrderCheckOut
-        data={tableOrderItems}
+        data={dataBill}
         tableData={selectedTable}
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}

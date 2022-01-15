@@ -82,7 +82,7 @@ function AddOrder() {
   }
   const getMenu = async (id) => {
     setIsLoading(true)
-    await fetch(MENUS + `storeId=${id}&${selectedCategory === "All" ? "" : "categoryId ="+ selectedCategory}`, {
+    await fetch(MENUS + `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId ="+ selectedCategory}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => {
@@ -257,13 +257,13 @@ function AddOrder() {
                   <label>ເລືອກປະເພດ</label>
                   <select className="form-control" onChange={(e) => setSelectedCategory(e.target.value)} >
                     <option value="All">ທັງໝົດ</option>
-                    {
+                    {/* {
                       Categorys && Categorys.map((data, index) => {
                         return (
                           <option key={"category" + index} value={data._id}>{data.name}</option>
                         )
                       })
-                    }
+                    } */}
                   </select>
                 </div>
               </div>

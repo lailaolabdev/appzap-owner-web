@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import { warningAlert, successAdd } from "../../../helpers/sweetalert";
+import { successAdd } from "../../../helpers/sweetalert";
 import { updateManyOrderItemsFeedBack } from "../../../services/order";
 
 

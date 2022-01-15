@@ -19,7 +19,7 @@ export class BillForCheckOut extends React.PureComponent {
                 }
             }
         }
-        
+        console.log("newData===>", newData)
         return (
             <div>
                 <table style={{ width: '40%', textAlign: 'center', fontSize: "18px", color: "#000000", display: "flex", justifyContent: "center" }}>
@@ -69,14 +69,13 @@ export class BillForCheckOut extends React.PureComponent {
                         <th style={{ fontSize: "15px", color: "#000000" }}>whatsapp: {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}</th>
                     </tr>
                     <tr>
-                        <th>ເລກໂຕະ :{newDataItem[0]?.orderId?.table_id} </th>
+                        <th>ໂຕະ :{newData?.orderId?.length > 0 ? newData?.orderId[0]?.tableId?.name:""} </th>
                     </tr>
                     <tr>
                         <th>ລະຫັດ: {newDataItem[0]?.code}</th>
                     </tr>
                     <tr>
-                        {/* <th>ຜູ້ຮັບຜິດຊອບ:   {newDataItem[0]?.createdBy?.firstname + " " + newDataItem[0]?.createdBy?.lastname}</th> */}
-                        <th>ຜູ້ຮັບຜິດຊອບ:   {newDataItem[0]?.createdBy?.firstname && newDataItem[0]?.createdBy?.lastname ? newDataItem[0]?.createdBy?.firstname + " " + newDataItem[0]?.createdBy?.lastname : ""}</th>
+                        <th>ຜູ້ຮັບຜິດຊອບ:   {newDataItem[0]?.updatedBy?.firstname && newDataItem[0]?.updatedBy?.lastname ? newDataItem[0]?.updatedBy?.firstname + " " + newDataItem[0]?.updatedBy?.lastname : ""}</th>
                     </tr>
                     <tr>
                         <th>ວັນທີ:  {moment(newDataItem[0]?.createdAt).format("DD/mm/YYYY")}</th>
@@ -124,7 +123,7 @@ export class BillForCheckOut extends React.PureComponent {
                     </tr>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>
                         <th style={{ textAlign: "center" }} colspan="3">ຕ້ອງຈ່າຍທັງໝົດ</th>
-                        <th>{newData && newData?.discountType === "LAK" ? moneyCurrency(data - newData?.discount) : moneyCurrency(data - (data * newData?.discount) / 100)}</th>
+                        <th>{newData && newData?.discountType === "LAK" ? moneyCurrency(data - newData?.discount) : moneyCurrency(data - (data * newData?.discount) / 100)} ກີບ</th>
                     </tr>
                 </table>
                 <hr style={{

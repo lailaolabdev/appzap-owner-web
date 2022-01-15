@@ -59,11 +59,8 @@ export const STATUS_USERS = (item) => {
   }
 }
 export const STATUS_MENU = (item) => {
-  if (item === 'HAS') {
-    return "ເປີດ"
-  } else if (item === 'DONOT') {
-    return "ປິດ"
-  }
+  if (item) return "ເປີດ"
+  if (!item) return "ປິດ"
 }
 export const STATUS_OPENTABLE = (item) => {
   if (item === false) {

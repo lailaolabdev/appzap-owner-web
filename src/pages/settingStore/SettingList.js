@@ -1,10 +1,10 @@
 import React from 'react'
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCogs, faTable, faUser, faUsers, faUtensils } from '@fortawesome/free-solid-svg-icons'
+import { faCogs, faTable, faUsers, faUtensils } from '@fortawesome/free-solid-svg-icons'
 
 export default function SettingList() {
-    const { history, location, match } = useReactRouter();
+    const { history, match } = useReactRouter();
 
     return (
         <div style={{ padding: 15 }} className="row col-sm-12 text-center">

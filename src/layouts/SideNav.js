@@ -137,7 +137,7 @@ export default function Sidenav({ location, history }) {
           </NavText>
         </NavItem>
 
-        <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
+        {/* <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               className={callCheckBill?.length > 0 ? "scale-animation" : ""}
@@ -162,7 +162,7 @@ export default function Sidenav({ location, history }) {
           >
             ແຈ້ງເຕືອນ Checkbill
           </NavText>
-        </NavItem>
+        </NavItem> */}
         <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
@@ -204,7 +204,7 @@ export default function Sidenav({ location, history }) {
             ຂໍມູນສະຖິຕິ
           </NavText>
         </NavItem> */}
-        <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
+        {/* <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faAd}
@@ -223,7 +223,7 @@ export default function Sidenav({ location, history }) {
           >
             ການຕະຫຼາດ
           </NavText>
-        </NavItem>
+        </NavItem> */}
         <NavItem eventKey={`settingStore/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "settingStore" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon

@@ -18,8 +18,7 @@ import AnimationLoading from "../../constants/loading"
 import { useStore } from "../../store";
 import { BillForCheckOut } from '../bill/BillForCheckOut';
 import ReactToPrint from 'react-to-print';
-// import { warningAlert, successAdd } from "../../helpers/sweetalert";
-// import { updateOrderItem } from "../../services/order";
+
 import { getHeaders } from '../../services/auth';
 
 
@@ -37,12 +36,10 @@ export default function HistoryDetail() {
 
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [dataStore, setStore] = useState()
 
   useEffect(() => {
     _searchDate()
     setSelectedTable()
-    getData()
   }, [])
 
   const _searchDate = async () => {
@@ -52,37 +49,29 @@ export default function HistoryDetail() {
       'Content-Type': 'application/json',
       'Authorization': header.authorization
     }
-    let _resData = await axios.get(END_POINT + `/v3/bills?code=` + match?.params?.id, {
+    let _resData = await axios.get(END_POINT + `/v3/bill-group/` + match?.params?.id, {
       headers: headers
     })
     setData(_resData?.data)
     setIsLoading(false)
   }
 
-  const [orderItemData, setOrderItemData] = useState()
   const [amount, setamount] = useState()
   useEffect(() => {
-    let order_item = []
     let Allamount = 0
-    if (data?.length > 0) {
-      for (let i = 0; i < data[0]?.orderId?.length; i++) {
-        if (data[0]?.orderId[i]?.status === "SERVED") {
-            order_item.push(data[0]?.orderId[i])
-            Allamount += data[0]?.orderId[i]?.price * data[0]?.orderId[i]?.quantity
-          }
-      }
+    if (data?.orderId?.length > 0) {
+        for (let k = 0; k < data?.orderId?.length; k++) {
+            Allamount += (data?.orderId[k]?.price * data?.orderId[k]?.quantity)
+        }
+        if (data?.discountType === "LAK") {
+          Allamount = Allamount - data?.discount
+        } else {
+          Allamount = Allamount - (Allamount * data?.discount / 100)
+        }
     }
     setamount(Allamount)
-    setOrderItemData(order_item)
   }, [data])
 
-  const getData = async () => {
-    await fetch(END_POINT + `/v3/store?id=${match?.params?.storeId}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setStore(json));
-  }
-  console.log("dataStore===>", dataStore);
   return (
     <div style={{ minHeight: 400 }}>
       <div style={{ height: 20 }}></div>
@@ -90,9 +79,9 @@ export default function HistoryDetail() {
         <div className="row ">
           <div className="col-sm-12" style={{ display: "flex", justifyContent: "space-between", alignItems: "end" }}>
             <Nav.Item>
-              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {orderItemData && orderItemData[0]?.orderId?.tableName}</strong></h5>
-              <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {orderItemData ? orderItemData[0]?.code : ""}</strong></h5>
-              <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {orderItemData && orderItemData[0]?.createdBy?.firstname && orderItemData[0]?.createdBy?.lastname ? orderItemData[0]?.createdBy?.firstname + " " + orderItemData[0]?.createdBy?.lastname : ""}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ລາຍລະອຽດໂຕະ : {data?.tableId?.name}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ເລກໃບບີນ: {data?.code}</strong></h5>
+              <h5 style={{ marginLeft: 30 }}><strong>ຜູ້ຮັບຜິດຊອບ : {data?.orderId?.length > 0 ? data?.orderId[0]?.updatedBy?.firstname : ""} {data?.orderId?.length > 0 ? data?.orderId[0]?.updatedBy?.lastname:""}</strong></h5>
             </Nav.Item>
             <Nav.Item>
               <Button onClick={() => setFeedbackOrderModal(true)} variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 45 }}><FontAwesomeIcon icon={faCog} style={{ color: "#fff" }} /> ຈັດການບີນ</Button>
@@ -101,7 +90,7 @@ export default function HistoryDetail() {
                 content={() => componentRef.current}
               />
               <div style={{ display: 'none' }}>
-                <BillForCheckOut ref={componentRef} newData={data[0]} dataStore={dataStore} />
+                <BillForCheckOut ref={componentRef} newData={data} dataStore={data?.storeId} />
               </div>
             </Nav.Item>
           </div>
@@ -122,7 +111,7 @@ export default function HistoryDetail() {
                 </tr>
               </thead>
               <tbody>
-                {orderItemData?.map((item, index) => {
+                {data?.orderId?.map((item, index) => {
                   return (
                     <tr index={item}>
                       <td>{index + 1}</td>
@@ -137,6 +126,10 @@ export default function HistoryDetail() {
                 }
                 )}
                 <tr>
+                  <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ສ່ວນຫຼຸດ : </td>
+                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.discount)} {data?.discountType === "LAK" ? "ກີບ" : "%"}</td>
+                </tr>
+                <tr>
                   <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
                   <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                 </tr>
@@ -150,7 +143,7 @@ export default function HistoryDetail() {
       {/* ================> modal =============> */}
 
       <FeedbackOrder
-        data={orderItemData}
+        data={data?.orderId}
         tableData={selectedTable}
         searchDate={_searchDate}
         show={feedbackOrderModal}

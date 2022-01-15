@@ -53,15 +53,20 @@ export default function History() {
     setfindeByCode(item.target.value)
   }
   const [amount, setamount] = useState()
+  
   useEffect(() => {
-    let getId = []
     let Allamount = 0
     if (data?.length > 0 || startDate || endDate) {
       for (let i = 0; i < data?.length; i++) {
         for (let k = 0; k < data[i]?.orderId?.length; k++) {
           if (data[i]?.orderId[k]?.status === "SERVED") {
-            Allamount += data[i]?.orderId[k]?.price * data[i]?.orderId[k]?.quantity
+            Allamount += (data[i]?.orderId[k]?.price * data[i]?.orderId[k]?.quantity)
           }
+        }
+        if (data[i]?.discountType === "LAK") {
+          Allamount = Allamount - data[i]?.discount
+        } else {
+          Allamount = Allamount - (Allamount * data[i]?.discount / 100)
         }
       }
       setamount(Allamount)
@@ -77,8 +82,22 @@ export default function History() {
     }
     return total
   }
+  let _allmonnyAndDiscount = (item, discount, discountType) => {
+    let total = 0
+    for (let i = 0; i < item?.length; i++) {
+      if (item[i]?.status === "SERVED") {
+        total += item[i]?.price * item[i]?.quantity
+      }
+    }
+    if (discountType === "LAK") {
+      total = total - discount
+    } else {
+      total = total - (total * discount / 100)
+    }
+    return total
+  }
+  const _historyDetail = (code) => history.push(`/histories/HistoryDetail/${code}/` + match?.params?.id)
 
-  const _historyDetail = (code) => history.push(`/histories/HistoryDetail/${code}/`+ match?.params?.id)
   return (
     <div style={{ minHeight: 400 }}>
       <Container fluid>
@@ -110,6 +129,7 @@ export default function History() {
                   <th>ໂຕະ</th>
                   <th>ລາຄາ/ບີນ</th>
                   <th>ສ່ວນຫຼຸດ</th>
+                  <th>ເປັນເງີນ</th>
                   <th>ວັນທີ</th>
                 </tr>
               </thead>
@@ -120,16 +140,17 @@ export default function History() {
                       <td>{index + 1}</td>
                       <td>{item?.code}</td>
                       <td>{item?.tableId?.name}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.orderId))} ກີບ</b></td>
-                      <td>{item?.discount} {item?.discountType ==="LAK" ? "ກີບ":"%"}</td>
+                      <td><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.orderId))} ກີບ</b></td>
+                      <td>{item?.discount} {item?.discountType === "LAK" ? "ກີບ" : "%"}</td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonnyAndDiscount(item?.orderId, item?.discount, item?.discountType))} ກີບ</b></td>
                       <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                     </tr>
                   )
                 }
                 )}
                 <tr>
-                  <td colSpan={3} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
-                  <td colSpan={3} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
+                  <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
+                  <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                 </tr>
               </tbody>
             </Table>

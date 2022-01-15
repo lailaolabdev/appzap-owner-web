@@ -29,37 +29,19 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
   } = useStore();
 
   useEffect(() => {
-    setNewData(data)
-    _bill(data[0]?.billId)
+    for (let i = 0; i < data?.orderId.length; i++) {
+      _calculateTotal()
+    }
   }, [data]);
 
-  useEffect(() => {
-    _calculateTotal()
-    if (NewData && NewData[0]?.orderId?.discount) setDiscount(NewData[0]?.orderId?.discount)
-    if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType === "LAK" ? "2" : "1")
-  }, [NewData]);
 
-  const _bill = async (billId) => {
-    let header = await getHeaders();
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': header.authorization
-    }
-    const _resBill = await axios({
-      method: 'get',
-      url: END_POINT + `/v3/bill/` + billId,
-      headers: headers
-    })
-    setDiscount(_resBill?.data?.discount)
-    setResDataBill(_resBill?.data)
-  }
   const _calculateTotal = () => {
     let _total = 0;
-    if (NewData && NewData.length > 0) {
-      for (let orderItem of NewData) {
-        _total += orderItem?.quantity * orderItem?.price;
+      for (let i = 0; i < data?.orderId.length; i++) {
+        if (data?.orderId[i]?.status === "SERVED") {
+          _total += (data?.orderId[i]?.quantity * data?.orderId[i]?.price)
+        }
       }
-    }
     setTotal(_total)
   }
   const _checkBill = async () => {
@@ -143,7 +125,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           </thead>
           <tbody>
             {data &&
-              data?.map((orderItem, index) => {
+              data?.orderId?.map((orderItem, index) => {
                 return (
                   <tr key={index}>
                     <td>{index + 1}</td>
@@ -159,12 +141,12 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
                 );
               })}
             <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ລາຄາລວມ:</td>
-              <td colspan="1">{moneyCurrency(total)} ກີບ</td>
+              <td colspan="4" style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ:</td>
+              <td colspan="1">{moneyCurrency(data?.discount)} {data?.discountType !== "LAK" ? "%" : "ກີບ"}</td>
             </tr>
             <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ:</td>
-              <td colspan="1">{moneyCurrency(discount)} {resDataBill?.discountType !== "LAK" ? "%":"ກີບ"}</td>
+              <td colspan="4" style={{ textAlign: "center" }}>ລາຄາລວມ:</td>
+              <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
           </tbody>
         </Table>
@@ -189,7 +171,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           >
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
-              <b> {moneyCurrency(resDataBill?.discountType !== "LAK" ? total - (total * discount) / 100 : total - discount)} ກີບ</b>
+              <b> {data && data?.discountType === "LAK" ? moneyCurrency(total - data?.discount) : moneyCurrency(total - (total * data?.discount) / 100)}</b>
             </span>
           </div>
           <Button

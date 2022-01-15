@@ -17,6 +17,8 @@ import {
     errorAdd,
     warningAlert
 } from "../../helpers/sweetalert"
+import { getHeaders } from '../../services/auth';
+
 export default function SettingTable() {
     const { history, location, match } = useReactRouter();
     const {
@@ -32,6 +34,11 @@ export default function SettingTable() {
     const handleShow = () => setShow(true);
     const [tableNumber, setTableNumber] = useState()
     const _createTable = async () => {
+        let header = await getHeaders();
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': header.authorization
+        }
         try {
             if (!tableNumber) {
                 warningAlert("ກະລຸນາປ້ອນເລກໂຕະ")
@@ -39,14 +46,15 @@ export default function SettingTable() {
             }
             const createTable = await axios({
                 method: 'post',
-                url: END_POINT + `/createTableAndGenerateCode/`,
+                url: END_POINT + `/v3/table/create`,
                 data: {
-                    "nameTable": tableNumber,
+                    "name": tableNumber,
                     "storeId": match?.params?.id
                 },
+                headers: headers
             })
             handleClose();
-            if (createTable?.data?.message === "THIS_TABLE_ID_IS_HAVEN") {
+            if (createTable?.data?.message === "INVALID_NAME") {
                 warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ")
             } else {
                 setTableListCheck([...tableListCheck, createTable?.data])
@@ -133,7 +141,7 @@ export default function SettingTable() {
                                     return (
                                         <tr>
                                             <td>{index + 1}</td>
-                                            <td>{table?.table_id}</td>
+                                            <td>{table?.tableName}</td>
                                             <td>{table?.code}</td>
                                             <td><label className="switch">
                                                 <input type="checkbox" defaultChecked={table?.status === true ? true : false} onClick={(e) => _changeStatusTable(table)} />
