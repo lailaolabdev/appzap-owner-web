@@ -7,7 +7,12 @@ import {
 } from "../../helpers/sweetalert"
 import { socket } from '../../services/socket'
 import AnimationLoading from "../../constants/loading"
-
+import { getHeaders } from '../../services/auth';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faCheck,
+    faCheckDouble,
+} from "@fortawesome/free-solid-svg-icons";
 export default function MessagerList() {
     const [userData, setUserData] = useState({})
     const [dataMessagerList, setdataMessagerList] = useState([])
@@ -27,28 +32,39 @@ export default function MessagerList() {
     const _getDataMessagerList = async () => {
         const resData = await axios({
             method: 'get',
-            url: END_POINT + `/v2/messagesList/?storeId=` + userData?.data?.storeId,
+            url: END_POINT + `/v3/admin/chat-rooms?storeId=` + userData?.data?.storeId,
         })
         setdataMessagerList(resData?.data)
     }
     // =========>
-    const _showMessageDetail = async (item) => {
+    const _showMessageDetail = async (code) => {
         setIsLoading(true)
         const resDataDetail = await axios({
             method: 'get',
-            url: END_POINT + `/v2/messageDetail/?messageListId=` + item?._id,
+            url: END_POINT + `/v3/chat-room-messages/` + code,
         })
+       
         if (resDataDetail?.data?.length > 0) {
-            const updateReadMessager = await axios({
-                method: 'put',
-                url: END_POINT + `/v2/readMessage/` + item?._id,
+            setdataMessagerDetail(resDataDetail?.data)
+            let header = await getHeaders();
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': header.authorization
+            }
+            let _data = {
+                chatRoomId: resDataDetail?.data[0]?.chatRoomId,
                 data: {
-                    "storeId": userData?.data?.storeId,
-                    "table_id": resDataDetail?.data[0]?.table_id
+                    storeId: userData?.data?.storeId,
+                    code: resDataDetail?.data[0]?.code,
                 }
+            }
+            const _resDataDetail = await axios({
+                method: 'put',
+                url: END_POINT + `/v3/admin/chat-room/update`,
+                data: _data,
+                headers: headers
             })
         }
-        setdataMessagerDetail(resDataDetail?.data)
         setIsLoading(false)
     }
     // =========>
@@ -57,18 +73,25 @@ export default function MessagerList() {
             warningAlert("ກະລຸນາປ້ອນຂໍ້ຄວາມ");
             return
         }
+        let header = await getHeaders();
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': header.authorization
+        }
         const resDataDetail = await axios({
             method: 'post',
-            url: END_POINT + `/v2/createMessages`,
+            url: END_POINT + `/v3/chat-room-message/create`,
             data: {
                 "storeId": userData?.data?.storeId,
-                "table_id": dataMessagerDetail[0]?.table_id,
+                "tableId": dataMessagerDetail[0]?.tableId,
                 "code": dataMessagerDetail[0]?.code,
-                "from": "STORE",
+                "isFrom": "STORE",
+                "type": "TEXT",
                 "text": dataForSent
-            }
+            },
+             headers: headers
         })
-        setdataMessagerDetail(resDataDetail?.data?.message)
+        setdataMessagerDetail(resDataDetail?.data)
         setDataForSent('')
     }
 
@@ -78,7 +101,6 @@ export default function MessagerList() {
     socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
         _getDataMessagerList();
     });
-    console.log("dataMessagerList==>", dataMessagerList)
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
             <div style={{ width: '35%' }}>
@@ -94,12 +116,20 @@ export default function MessagerList() {
                     </thead>
                     <tbody>
                         {dataMessagerList?.map((item, index) =>
-                            <tr key={"message-"+index} onClick={() => _showMessageDetail(item)} style={{cursor: "pointer"}}>
+                            <tr key={"message-" + index} onClick={() => _showMessageDetail(item.code)} style={{cursor: "pointer"}}>
                                 <td>{index + 1}</td>
-                                <td>{item?.tableName}</td>
+                                <td>{item?.tableId?.name}</td>
                                 <td>{item?.code}</td>
                                 <td>{item?.text}</td>
-                                <td style={{ color: item?.read === "NOT" ? "red":"green" }}>{item?.read ==="NOT" ? "ຍັງບໍ່ໄດ້ອ່ານ":"ອ່ານແລ້ວ"}</td>
+                                <td style={{ color: !item?.isRead ? "red" : "green" }}>{!item?.isRead ?
+                                    <FontAwesomeIcon
+                                    icon={faCheck}
+                                    />
+                                    :
+                                    <FontAwesomeIcon
+                                        icon={faCheckDouble}
+                                    />
+                                }</td>
                             </tr>
                         )}
                     </tbody>
@@ -112,9 +142,9 @@ export default function MessagerList() {
                     <div style={{ padding: 10 }}>
                         {dataMessagerDetail?.map((item) =>
                             <p style={{
-                                textAlign: item?.from === "TABLE" ? 'start' : 'end',
+                                textAlign: item?.isFrom === "TABLE" ? 'start' : 'end',
                                 borderRadius: 8,
-                                backgroundColor: item?.from === "TABLE" ? '#E3E3E3' : "#E4E4E4",
+                                backgroundColor: item?.isFrom === "TABLE" ? '#E3E3E3' : "#E4E4E4",
                                 padding: 10,
                             }}>{item?.text}</p>
                             )}

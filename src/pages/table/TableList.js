@@ -247,7 +247,6 @@ export default function TableList() {
     }
   }
 
-
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -261,9 +260,10 @@ export default function TableList() {
             <Nav.Item>
               <Nav.Link
                 style={{ color: "#FB6E3B", border: "none" }}
-                href={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
+                active={true}
               >
-                ໂຕະທັງໝົດ
+                ໂຕະທັງໝົດ : {tableList?.length}
+                {/* ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {tableList?.length}, ໂຕະທີ່ຫວ່ງທັງໝົດ : {tableList?.length}, ໂຕະທີ່ການ checkBill ທັງໝົດ : {tableList?.length} */}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item
@@ -283,6 +283,7 @@ export default function TableList() {
         >
           <div style={half_backgroundColor}>
             <Container>
+              <div style={{height: 10 }}></div>
               <Row>
                 {tableList &&
                   tableList.map((table, index) => (
@@ -297,7 +298,8 @@ export default function TableList() {
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
                           border: selectedTable?.tableName == table?.tableName ? "2px solid #FB6E3B" : "2px solid  white",
                         }}
-                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : ""}
+                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" :""}
+                        // className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : dataBill?.code === table?.code && dataBill?.status === "CALL_TO_CHECKOUT" ? "blink_card":""}
                         onClick={async () => {
                           onSelectTable(table)
                         }}
@@ -313,7 +315,7 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 30 }}>{table?.tableName}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 25 }}>{table?.tableName}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
                             <div >{convertTableStatus(table)}</div>
                           </span>

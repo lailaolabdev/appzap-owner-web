@@ -8,14 +8,10 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faAd,
-  faBell,
   faCartArrowDown,
   faCogs,
   faHistory,
   faHome,
-  faTachometerAlt,
-  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
 import { COLOR_APP, WAITING_STATUS } from '../constants'

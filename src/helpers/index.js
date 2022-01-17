@@ -14,6 +14,9 @@ export const orderStatus = (status) => {
     case "CART":
       return `ກຳລັງຈະສັງ`;
       break;
+    case "FEEDBACK":
+      return `ສົ່ງຄືນ`;
+      break;
     default:
       return "ຍົກເລີກແລ້ວ";
       break;

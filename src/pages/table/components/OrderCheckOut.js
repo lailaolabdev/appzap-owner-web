@@ -18,11 +18,7 @@ import Swal from 'sweetalert2'
 import { useStore } from "../../../store";
 
 const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
-  const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
-  const [discount, setDiscount] = useState(0)
-  const [radioValue, setRadioValue] = useState('1');
-  const [resDataBill, setResDataBill] = useState({})
 
   const {
     callingCheckOut,
@@ -34,69 +30,45 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     }
   }, [data]);
 
-
   const _calculateTotal = () => {
     let _total = 0;
-      for (let i = 0; i < data?.orderId.length; i++) {
-        if (data?.orderId[i]?.status === "SERVED") {
-          _total += (data?.orderId[i]?.quantity * data?.orderId[i]?.price)
-        }
+    for (let i = 0; i < data?.orderId.length; i++) {
+      if (data?.orderId[i]?.status === "SERVED") {
+        _total += (data?.orderId[i]?.quantity * data?.orderId[i]?.price)
       }
+    }
     setTotal(_total)
   }
+
   const _checkBill = async () => {
-    if (!data[0]?.billId) {
-        await axios
-          .put(
-            END_POINT + `/updateGenerates/${tableData?.code}`,
-            {
-              "isOpened": false,
-              "staffConfirm": false
-            },
-            {
-              headers: await getHeaders(),
-            }
-          )
-          .then(async function (response) {
-            Swal.fire({
-              icon: 'success',
-              title: "ສໍາເລັດການເຊັກບິນ",
-              showConfirmButton: false,
-              timer: 1800
-            })
-            resetTableOrder()
-            hide()
-          })
-      } else {
-        await axios
-          .put(
-            END_POINT + `/v3/bill-checkout`,
-            {
-              id: data[0]?.billId,
-              data: {
-                "isCheckout": "true",
-                "status": "CHECKOUT"
-             }
-            },
-            {
-              headers: await getHeaders(),
-            }
-          )
-          .then(async function (response) {
-            callingCheckOut()
-            Swal.fire({
-              icon: 'success',
-              title: "ສໍາເລັດການເຊັກບິນ",
-              showConfirmButton: false,
-              timer: 1800
-            })
-            resetTableOrder()
-            hide()
-          })
-          .catch(function (error) {
-            errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-          });
-      }
+    await axios
+      .put(
+        END_POINT + `/v3/bill-checkout`,
+        {
+          id: data?._id,
+          data: {
+            "isCheckout": "true",
+            "status": "CHECKOUT"
+          }
+        },
+        {
+          headers: await getHeaders(),
+        }
+      )
+      .then(async function (response) {
+        callingCheckOut()
+        Swal.fire({
+          icon: 'success',
+          title: "ສໍາເລັດການເຊັກບິນ",
+          showConfirmButton: false,
+          timer: 1800
+        })
+        resetTableOrder()
+        hide()
+      })
+      .catch(function (error) {
+        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+      });
   };
   return (
     <Modal
