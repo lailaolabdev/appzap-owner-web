@@ -32,6 +32,7 @@ div {
   animation: blinker 1s linear infinite;
 }
 
+
 @keyframes blinker {
   100%{
     opacity: 1;
@@ -40,6 +41,23 @@ div {
   50% {
     opacity: 0.5;
     background-color: #FB6E3B;
+  }
+  0% {
+    opacity: 0.2;
+    background-color: #fff;
+  }
+}
+.blink_cardCallCheckOut {
+  animation: blinkerCallCheckOut 1s linear infinite;
+}
+@keyframes blinkerCallCheckOut {
+  100%{
+    opacity: 1;
+    background-color: #06c200;
+  }
+  50% {
+    opacity: 0.5;
+    background-color: #06c200;
   }
   0% {
     opacity: 0.2;

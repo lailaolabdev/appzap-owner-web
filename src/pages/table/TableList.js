@@ -132,9 +132,10 @@ export default function TableList() {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
   const convertTableStatus = (_table) => {
-    if (_table?.isOpened && _table?.isStaffConfirm) return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
-    else if (_table?.isOpened && !_table?.isStaffConfirm) return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
-    else if (!_table?.isOpened && !_table?.isStaffConfirm) return <div style={{ color: "#eee" }}>ວ່າງ</div>
+    if (_table?.isOpened && _table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
+    else if (_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
+    else if (!_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "#eee" }}>ວ່າງ</div>
+    else if (_table?.statusBill === "CALL_TO_CHECKOUT") return <div style={{ color: "#fff" }}>ຕ້ອງການເຊັກບີນ</div>
     else return "-"
   }
 
@@ -246,7 +247,27 @@ export default function TableList() {
       errorAdd("ການປິດໂຕະບໍ່ສຳເລັດ")
     }
   }
-
+  const _checkStatusCode = (code) => {
+    let _open=0
+    for (let i = 0; i < code?.length; i++){
+      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout)  _open += 1
+    }
+    return _open
+  }
+  const _checkStatusCodeA = (code) => {
+    let _empty=0
+    for (let i = 0; i < code?.length; i++){
+      if (!code[i]?.isOpened && code[i]?.status && !code[i]?.isStaffConfirm && !code[i]?.isCheckout)  _empty += 1
+    }
+    return _empty
+  }
+  const _checkStatusCodeB = (code) => {
+    let _checkBill = 0
+    for (let i = 0; i < code?.length; i++){
+      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout && code[i]?.statusBill ==="CALL_TO_CHECKOUT")  _checkBill += 1
+    }
+    return _checkBill
+  }
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -262,8 +283,8 @@ export default function TableList() {
                 style={{ color: "#FB6E3B", border: "none" }}
                 active={true}
               >
-                ໂຕະທັງໝົດ : {tableList?.length}
-                {/* ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {tableList?.length}, ໂຕະທີ່ຫວ່ງທັງໝົດ : {tableList?.length}, ໂຕະທີ່ການ checkBill ທັງໝົດ : {tableList?.length} */}
+                {/* ໂຕະທັງໝົດ : {tableList?.length} */}
+                ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່ງທັງໝົດ : {_checkStatusCodeA(tableList)}, ເຊັກບີນທັງໝົດ : {_checkStatusCodeB(tableList)}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item
@@ -298,8 +319,7 @@ export default function TableList() {
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
                           border: selectedTable?.tableName == table?.tableName ? "2px solid #FB6E3B" : "2px solid  white",
                         }}
-                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" :""}
-                        // className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : dataBill?.code === table?.code && dataBill?.status === "CALL_TO_CHECKOUT" ? "blink_card":""}
+                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : table.statusBill === "CALL_TO_CHECKOUT" ? "blink_cardCallCheckOut":""}
                         onClick={async () => {
                           onSelectTable(table)
                         }}
@@ -470,7 +490,7 @@ export default function TableList() {
               alignItems: "center"
             }}
           >
-            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{selectedTable?.table_id}</p>
+            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{selectedTable?.tableName}</p>
             <QRCode
               value={JSON.stringify({
                 storeId: selectedTable?.storeId,
