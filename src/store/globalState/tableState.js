@@ -29,6 +29,15 @@ export const useTableState = () => {
                 setTableList(data)
                 getTableOrders(selectedTable)
             });
+            socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
+                getTableDataStore()
+                Swal.fire({
+                    icon: 'success',
+                    title: "ມີການແຈ້ງເກັບເງີນ",
+                    showConfirmButton: false,
+                    timer: 10000
+                })
+            });
         },
         []
     );

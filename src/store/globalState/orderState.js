@@ -23,16 +23,6 @@ export const useOrderState = () => {
             socket.on(`ORDER:${_userData?.DATA?.storeId}`, (data) => {
                 setWaitingOrderItems(data)
                 setOrderItems(data)
-                // soundPlayer.current.audioEl.current.play()
-            });
-            socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-                callingCheckOut()
-                Swal.fire({
-                    icon: 'success',
-                    title: "ມີການແຈ້ງເກັບເງີນ",
-                    showConfirmButton: false,
-                    timer: 10000
-                })
             });
         },
         []

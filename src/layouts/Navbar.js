@@ -16,9 +16,8 @@ import { socket } from '../services/socket'
 
 export default function NavBar() {
   const { history, location, match } = useReactRouter()
-  const [getmassege, setgetmassege] = useState()
   const [userData, setUserData] = useState({})
-  const [messageData, setmessageData] = useState()
+  const [messageData, setmessageData] = useState(0)
 
 
 
@@ -36,25 +35,14 @@ export default function NavBar() {
     sessionStorage.clear()
     history.push(`/`)
   }
-  const _updateMessage = async () => {
-    // const resData = await axios({
-    //   method: 'get',
-    //   url: END_POINT + `/v2/messageDetail?storeId=${userData?.data?.storeId}&read=NOT&from=TABLE`,
-    // })
-    // setmessageData(resData?.data)
-  }
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
-    _updateMessage();
+    setmessageData(data)
   });
-
-  useEffect(() => {
-    _updateMessage()
-  }, [userData])
   
   return (
     <div>
@@ -88,7 +76,7 @@ export default function NavBar() {
             style={{ cursor: 'pointer'}}
           // onClick={handleShow}
           />
-          <Badge variant="danger" >{messageData?.length ? messageData?.length : ""}</Badge>
+          <Badge variant="danger" >{messageData ?? 0}</Badge>
           <div style={{ marginLeft: 30 }}></div>
           <Form inline>
             <Dropdown>
@@ -121,50 +109,6 @@ export default function NavBar() {
           </Form>
         </Navbar.Collapse>
       </Navbar>
-      <Modal
-        show={show}
-        onHide={handleClose}
-        size="lg"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ຂໍ້ຄວາມຈາກລູກຄ້າ</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>ໂຕະ</th>
-                <th>ຊື່</th>
-                <th>ຂໍ້ຄວາມ</th>
-                <th>ເວລາ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {messageData && messageData?.map((item, index) => {
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{item?.table_id ? item?.table_id : "-"}</td>
-                    <td>{item?.customer_nickname}</td>
-                    <td>{item?.text}</td>
-                    <td>{moment(item?.createdAt).format("HH:mm a")}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={handleClose}>
-            ປິດ
-          </Button>
-          <Button variant="success" onClick={() => _updateMessage()}>
-            ອ່ານແລ້ວ
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   )
 }

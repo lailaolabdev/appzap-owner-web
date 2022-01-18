@@ -26,10 +26,11 @@ export default function MessagerList() {
         const _localJson = JSON.parse(ADMIN)
         setUserData(_localJson)
     }, [])
+
     useEffect(() => {
         _getDataMessagerList();
-    }, [userData])
-    const _getDataMessagerList = async () => {
+    }, [userData?.data?.storeId])
+    const _getDataMessagerList = async (storeId) => {
         const resData = await axios({
             method: 'get',
             url: END_POINT + `/v3/admin/chat-rooms?storeId=` + userData?.data?.storeId,
@@ -96,7 +97,7 @@ export default function MessagerList() {
     }
 
     socket.on(`READ_MESSAGER:${userData?.data?.storeId}`, (data) => {
-        _getDataMessagerList();
+        setdataMessagerDetail(data)
     });
     socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
         _getDataMessagerList();

@@ -283,7 +283,6 @@ export default function TableList() {
                 style={{ color: "#FB6E3B", border: "none" }}
                 active={true}
               >
-                {/* ໂຕະທັງໝົດ : {tableList?.length} */}
                 ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່ງທັງໝົດ : {_checkStatusCodeA(tableList)}, ເຊັກບີນທັງໝົດ : {_checkStatusCodeB(tableList)}
               </Nav.Link>
             </Nav.Item>
@@ -416,7 +415,7 @@ export default function TableList() {
                     </div>
                   </div>
                   <div>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button>
+                    {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
