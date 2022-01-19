@@ -338,7 +338,6 @@ export default function StoreDetail() {
                                         value={values.adminName}
                                         placeholder="ຊື່ເຈົ້າຂອງຮ້ານ..."
                                         style={{ border: errors.adminName && touched.adminName && errors.adminName ? "solid 1px red" : "" }}
-
                                     />
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlInput1">
@@ -376,13 +375,6 @@ export default function StoreDetail() {
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>ລາຍລະອຽດ</Form.Label>
-                                    {/* <Form.Control
-                                        type="text"
-                                        name="note"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        value={values.note}
-                                        placeholder="ເປີດບໍລິການ ວັນຈັນ - ວັນທິດ ເວລາ 9:00 - 9:30..." /> */}
                                 </Form.Group>
                                 <textarea
                                     id="note"
@@ -393,30 +385,6 @@ export default function StoreDetail() {
                                     placeholder="ຕົວຢາງເປີດບໍລິການ ວັນຈັນ - ວັນທິດ ເວລາ 9:00 - 9:30..."
                                     rows="4" cols="50">
                                 </textarea>
-                                {/* <Form.Row>
-                                    <Form.Group as={Col} controlId="formGridEmail">
-                                        <Form.Label>ເປີດບໍລິການ</Form.Label>
-                                        <Form.Control type="time"
-                                            name="dateClose"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            value={values.dateClose}
-                                            style={{ border: errors.dateClose && touched.dateClose && errors.dateClose ? "solid 1px red" : "" }}
-                                            placeholder="9:00 AM" />
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="formGridPassword">
-                                        <Form.Label>ປີດບໍລິການ</Form.Label>
-                                        <Form.Control
-                                            type="time"
-                                            name="closeTime"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            value={values.closeTime}
-                                            style={{ border: errors.closeTime && touched.closeTime && errors.closeTime ? "solid 1px red" : "" }}
-                                            placeholder="9:00PM" />
-                                    </Form.Group>
-                                </Form.Row> */}
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }} onClick={handleClose}>

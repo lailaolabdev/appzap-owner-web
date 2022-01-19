@@ -20,7 +20,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
     setNewDataItem(_data)
   }, [data])
 
-  const _feedBackOrder = async (qty, newQty, index) => {
+  const _feedBackOrder = async ( newQty, index) => {
     let _newQty = parseInt(newQty)
     let changeData = newDataItem[index].newQty =(_newQty ? _newQty : 0);
     setsaveDataItemQty({ data: newDataItem, storeId: newDataItem[0]?.storeId })

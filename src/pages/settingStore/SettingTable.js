@@ -65,10 +65,11 @@ export default function SettingTable() {
         }
     }
     const _changeStatusTable = async (data) => {
+     
         if (data?.status === true) {
            let res= await axios({
                 method: 'PUT',
-                url: END_POINT + `/updateGenerates/` + data?.code,
+               url: END_POINT + `/v3/updateGenerates/` + data?.code,
                 data: {
                     "status": "false"
                 },
@@ -77,7 +78,7 @@ export default function SettingTable() {
         } else {
           let res=  await axios({
                 method: 'PUT',
-                url: END_POINT + `/updateGenerates/` + data?.code,
+              url: END_POINT + `/v3/updateGenerates/` + data?.code,
                 data: {
                     "status": "true"
                 },
@@ -95,6 +96,11 @@ export default function SettingTable() {
         setShow3(true)
     };
     const _confirmeDelete = async () => {
+        let header = await getHeaders();
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': header.authorization
+        }
         if (dateDelete?.isOpened === true) {
             handleClose3()
             warningAlert("ລົບຂໍ້ມູນບໍ່ສຳເລັດເພາະກຳລັງໃຊ້ງານ");
@@ -102,12 +108,8 @@ export default function SettingTable() {
         }
         const resData = await axios({
             method: 'DELETE',
-            url: END_POINT + `/deleteGeneratesAndTable`,
-            data: {
-                idTable: dateDelete?._id,
-                nameTable: dateDelete?.table_id,
-                storeId: dateDelete?.storeId
-            }
+            url: END_POINT + `/v3/code/delete/` + dateDelete?._id,
+            headers: headers
         })
         if (resData?.data) {
             handleClose3()
@@ -115,7 +117,7 @@ export default function SettingTable() {
             successAdd("ລົບຂໍ້ມູນສຳເລັດ")
         }
     }
-
+    console.log("tableListCheck==>", tableListCheck);
     return (
         <div style={{ padding: 15 }} className="col-sm-12">
             <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>

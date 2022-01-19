@@ -490,7 +490,7 @@ export default function TableList() {
               alignItems: "center"
             }}
           >
-            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{selectedTable?.tableName}</p>
+            <p style={{ fontSize: 50, fontWeight: "bold" }}>{selectedTable?.tableName}</p>
             <QRCode
               value={JSON.stringify({
                 storeId: selectedTable?.storeId,
