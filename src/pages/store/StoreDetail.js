@@ -16,6 +16,7 @@ import axios from 'axios';
 import { STORE, TABLES, MENUS, PRESIGNED_URL, STORE_UPDATE, getLocalData } from '../../constants/api'
 import { END_POINT } from '../../constants'
 import { COLOR_APP, URL_PHOTO_AW3, COLOR_APP_CANCEL } from '../../constants'
+import moment from "moment";
 import {
     successAdd,
     errorAdd,
@@ -52,7 +53,7 @@ export default function StoreDetail() {
                 setDataSwitch(json?.isOpen)
             });
 
-        await fetch(TABLES + `/?storeId=${storeId}`, {
+        await fetch(TABLES + `/?storeId=${storeId}&&`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setnumBerTable(json?.length));
@@ -123,11 +124,12 @@ export default function StoreDetail() {
                 id: dataStore?._id,
                 data: {
                     storeName: values?.storeName,
-                    adminStore: values?.adminStore,
+                    adminName: values?.adminName,
                     whatsapp: values?.whatsapp,
                     detail: values?.detail,
-                    dateClose: values?.dateClose,
-                    timeClose: values?.timeClose,
+                    note: values?.note,
+                    // dateClose: values?.dateClose,
+                    // closeTime: values?.closeTime,
                     phone: values?.phone,
                     image: namePhoto?.params?.Key,
                 }
@@ -144,15 +146,15 @@ export default function StoreDetail() {
             errorAdd('ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !')
         })
     }
-    const _updateIsOpenStore =async (data) => {
-          const res=  await axios({
-                method: 'PUT',
-                url: END_POINT + `/store_update?id=`+match?.params?.id,
-                headers: getTokken?.TOKEN,
-                data: {
-                    "isOpen": data?.isOpen === true ? false : true
-                },
-          })
+    const _updateIsOpenStore = async (data) => {
+        const res = await axios({
+            method: 'PUT',
+            url: END_POINT + `/store_update?id=` + match?.params?.id,
+            headers: getTokken?.TOKEN,
+            data: {
+                "isOpen": data?.isOpen === true ? false : true
+            },
+        })
     }
     return (
         <div>
@@ -184,9 +186,9 @@ export default function StoreDetail() {
                     </center>)}
                     <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}> {dataStore?.name ? dataStore?.name : "-"}</div>
                     <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
-                    <div style={{ padding: 5 }}>{dataStore?.openTime + "  " + dataStore?.closeTime}</div>
+                    <div style={{ padding: 5 }}>{dataStore?.note}</div>
                     <label className="switch">
-                        <input type="checkbox" defaultChecked={dataSwitch} onClick={()=> _updateIsOpenStore(dataStore)}/>
+                        <input type="checkbox" defaultChecked={dataSwitch} onClick={() => _updateIsOpenStore(dataStore)} />
                         <span className="slider round"></span>
                     </label>
                 </div>
@@ -217,7 +219,7 @@ export default function StoreDetail() {
                     <div style={{ height: 10 }}></div>
                     <div className="row">
                         <div className="col-5">ໂຕະທັງໝົດ</div>
-                        <div className="col-5"> {numBerTable ? numBerTable : "-"} ໂຕະ</div>
+                        <div className="col-5"> {numBerTable} ໂຕະ</div>
                     </div>
                     <div style={{ height: 10 }}></div>
                     <div className="row">
@@ -238,36 +240,37 @@ export default function StoreDetail() {
                 <Formik
                     initialValues={{
                         storeName: dataStore?.name,
-                        adminStore: dataStore?.adminStore,
+                        adminName: dataStore?.adminName,
                         whatsapp: dataStore?.whatsapp,
                         phone: dataStore?.phone,
                         detail: dataStore?.detail,
-                        dateClose: dataStore?.dateClose,
-                        timeClose: dataStore?.timeClose,
+                        note: dataStore?.note,
+                        // dateClose: dataStore?.dateClose,
+                        // closeTime: dataStore?.closeTime,
                     }}
                     validate={values => {
                         const errors = {};
                         if (!values.storeName) {
-                            errors.storeName = 'ກະລຸນາປ້ອນ Userid... !';
+                            errors.storeName = 'ກະລຸນາປ້ອນ !';
                         }
-                        if (!values.adminStore) {
-                            errors.adminStore = 'ກະລຸນາປ້ອນ Userid... !';
+                        if (!values.adminName) {
+                            errors.adminName = 'ກະລຸນາປ້ອນ !';
                         }
                         if (!values.whatsapp) {
-                            errors.whatsapp = 'ກະລຸນາປ້ອນ Userid... !';
+                            errors.whatsapp = 'ກະລຸນາປ້ອນ !';
                         }
                         if (!values.detail) {
-                            errors.detail = 'ກະລຸນາປ້ອນ Userid... !';
+                            errors.detail = 'ກະລຸນາປ້ອນ !';
                         }
                         if (!values.phone) {
-                            errors.phone = 'ກະລຸນາປ້ອນ Userid... !';
+                            errors.phone = 'ກະລຸນາປ້ອນ !';
                         }
-                        if (!values.dateClose) {
-                            errors.dateClose = 'ກະລຸນາປ້ອນ Userid... !';
-                        }
-                        if (!values.timeClose) {
-                            errors.timeClose = 'ກະລຸນາປ້ອນ Userid... !';
-                        }
+                        // if (!values.dateClose) {
+                        //     errors.dateClose = 'ກະລຸນາປ້ອນ !';
+                        // }
+                        // if (!values.closeTime) {
+                        //     errors.closeTime = 'ກະລຸນາປ້ອນ !';
+                        // }
                         return errors;
                     }}
                     onSubmit={(values, { setSubmitting }) => {
@@ -329,13 +332,12 @@ export default function StoreDetail() {
                                     <Form.Label>ຊື່ເຈົ້າຂອງຮ້ານ</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        name="adminStore"
+                                        name="adminName"
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        value={values.adminStore}
+                                        value={values.adminName}
                                         placeholder="ຊື່ເຈົ້າຂອງຮ້ານ..."
-                                        style={{ border: errors.adminStore && touched.adminStore && errors.adminStore ? "solid 1px red" : "" }}
-
+                                        style={{ border: errors.adminName && touched.adminName && errors.adminName ? "solid 1px red" : "" }}
                                     />
                                 </Form.Group>
                                 <Form.Group controlId="exampleForm.ControlInput1">
@@ -371,30 +373,18 @@ export default function StoreDetail() {
                                         style={{ border: errors.phone && touched.phone && errors.phone ? "solid 1px red" : "" }}
                                         placeholder="ເບີໂທ..." />
                                 </Form.Group>
-                                <Form.Row>
-                                    <Form.Group as={Col} controlId="formGridEmail">
-                                        <Form.Label>ເປີດບໍລິການ</Form.Label>
-                                        <Form.Control type="text"
-                                            name="dateClose"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            value={values.dateClose}
-                                            style={{ border: errors.dateClose && touched.dateClose && errors.dateClose ? "solid 1px red" : "" }}
-                                            placeholder="ວັນຈັນ - ວັນສຸກ" />
-                                    </Form.Group>
-
-                                    <Form.Group as={Col} controlId="formGridPassword">
-                                        <Form.Label>ເວລາ</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="timeClose"
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            value={values.timeClose}
-                                            style={{ border: errors.timeClose && touched.timeClose && errors.timeClose ? "solid 1px red" : "" }}
-                                            placeholder="9:00 AM - 9:00PM" />
-                                    </Form.Group>
-                                </Form.Row>
+                                <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ລາຍລະອຽດ</Form.Label>
+                                </Form.Group>
+                                <textarea
+                                    id="note"
+                                    name="note"
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    value={values.note}
+                                    placeholder="ຕົວຢາງເປີດບໍລິການ ວັນຈັນ - ວັນທິດ ເວລາ 9:00 - 9:30..."
+                                    rows="4" cols="50">
+                                </textarea>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }} onClick={handleClose}>

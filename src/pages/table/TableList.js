@@ -132,9 +132,9 @@ export default function TableList() {
     history.push(`/addOrder/tableid/${tableId}/code/${code}`);
   }
   const convertTableStatus = (_table) => {
-    if (_table?.isOpened && _table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
-    else if (_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
-    else if (!_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "NONE") return <div style={{ color: "#eee" }}>ວ່າງ</div>
+    if (_table?.isOpened && _table?.isStaffConfirm && _table?.statusBill === "ACTIVE") return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>
+    else if (_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "ACTIVE") return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>
+    else if (!_table?.isOpened && !_table?.isStaffConfirm && _table?.statusBill === "ACTIVE") return <div style={{ color: "#eee" }}>ວ່າງ</div>
     else if (_table?.statusBill === "CALL_TO_CHECKOUT") return <div style={{ color: "#fff" }}>ຕ້ອງການເຊັກບີນ</div>
     else return "-"
   }
@@ -445,6 +445,7 @@ export default function TableList() {
                               <Checkbox
                                 checked={orderItem?.isChecked ? true : false}
                                 onChange={(e) => onChangeMenuCheckbox(orderItem)}
+                                disabled={orderItem?.status ==="FEEDBACK" ? true: false}
                                 color="primary"
                                 inputProps={{ "aria-label": "secondary checkbox" }}
                               />
@@ -489,7 +490,7 @@ export default function TableList() {
               alignItems: "center"
             }}
           >
-            <p style={{ fontSize: 50, fontWeight: "bold" }}>ໂຕະ:{selectedTable?.tableName}</p>
+            <p style={{ fontSize: 50, fontWeight: "bold" }}>{selectedTable?.tableName}</p>
             <QRCode
               value={JSON.stringify({
                 storeId: selectedTable?.storeId,
