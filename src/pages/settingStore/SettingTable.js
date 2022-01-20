@@ -65,24 +65,36 @@ export default function SettingTable() {
         }
     }
     const _changeStatusTable = async (data) => {
-     
+        let header = await getHeaders();
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': header.authorization
+        }
         if (data?.status === true) {
-           let res= await axios({
+            let res = await axios({
                 method: 'PUT',
-               url: END_POINT + `/v3/updateGenerates/` + data?.code,
+                url: END_POINT + `/v3/code/update/`,
                 data: {
-                    "status": "false"
+                    id: data._id,
+                    data: {
+                        "status": "false"
+                    }
                 },
-           })
+                  headers: headers
+            })
             setTableListCheck(res?.data)
         } else {
-          let res=  await axios({
+            let res = await axios({
                 method: 'PUT',
-              url: END_POINT + `/v3/updateGenerates/` + data?.code,
+                url: END_POINT + `/v3/code/update/`,
                 data: {
-                    "status": "true"
+                    id: data._id,
+                    data: {
+                        "status": "true"
+                    }
                 },
-          })
+                headers: headers
+            })
             setTableListCheck(res?.data)
         }
 
@@ -150,7 +162,7 @@ export default function SettingTable() {
                                                 <span className="slider round"></span>
                                             </label></td>
                                             <td style={{ color: table?.isOpened === true ? "green" : "red" }}>{table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີແລ້ວ"}</td>
-                                            <td><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(table)}/></td>
+                                            <td><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(table)} /></td>
                                         </tr>
                                     )
                                 })}
