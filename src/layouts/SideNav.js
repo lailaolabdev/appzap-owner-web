@@ -10,8 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCartArrowDown,
   faCogs,
+  faDashed,
   faHistory,
   faHome,
+  faTachometerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
 import { COLOR_APP, WAITING_STATUS } from '../constants'
@@ -86,6 +88,27 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
+        <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faTachometerAlt}
+              style={{
+                color:
+                  selected === "dashboard"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: selected === "dashboard" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ສະຖານະຂອງໂຕະ
+          </NavText>
+        </NavItem>
         <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon

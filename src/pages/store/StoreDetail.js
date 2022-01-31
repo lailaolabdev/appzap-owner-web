@@ -83,7 +83,7 @@ export default function StoreDetail() {
                 method: 'post',
                 url: PRESIGNED_URL,
                 data: {
-                    type: event.target.files[0].type
+                    name: event.target.files[0].type
                 }
             })
             setNamePhoto(responseUrl.data)

@@ -85,7 +85,7 @@ export default function MenuList() {
         method: 'post',
         url: PRESIGNED_URL,
         data: {
-          type: event.target.files[0].type
+          name: event.target.files[0].type
         }
       })
       setNamePhoto(responseUrl.data)
@@ -398,7 +398,7 @@ export default function MenuList() {
                     value={values.categoryId}
                     style={{ border: errors.categoryId && touched.categoryId && errors.categoryId ? "solid 1px red" : "" }}
                   >
-                    <option selected={true} disabled={true}>ເລືອກປະເພດອາຫານ</option>
+                    <option selected={true} disabled={true} value="">ເລືອກປະເພດອາຫານ</option>
                     {Categorys?.map((item, index) => {
                       return <option value={item?._id}>{item?.name}</option>
                     })}
