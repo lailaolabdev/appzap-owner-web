@@ -64,7 +64,11 @@ const Index = () => {
         <PublicRoute exact path="/" component={Login} />
         <PublicRoute exact path="/CheckBillOut/:id" component={CheckBill} />
         <PublicRoute exact path="/BillForChef" component={BillForChef} />
-
+        <PublicRoute
+          exact
+          path="/dashboard"
+          component={Dashboard}
+        />
         {/* After login routes (has SideNav and NavBar) */}
         <Route
           render={({ location, history }) => (
@@ -84,11 +88,11 @@ const Index = () => {
                   }}
                 >
                   {/* private routes */}
-                  <PrivateRoute
+                  {/* <PrivateRoute
                     exact
                     path="/dashboard"
                     component={Dashboard}
-                  />
+                  /> */}
                   <PrivateRoute
                     exact
                     path="/promotion"
