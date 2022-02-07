@@ -78,8 +78,8 @@ export default function Dashboard() {
             <Card
               bg="Primary"
               text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '20rem' }}
-              className="mb-2"
+              style={{ width: '15rem' }}
+              className="sm-4"
             >
               <Card.Body>
                 <Card.Text style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
@@ -94,8 +94,8 @@ export default function Dashboard() {
             <Card
               bg="Primary"
               text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '20rem' }}
-              className="mb-2"
+              style={{ width: '15rem' }}
+              className="sm-4"
             >
               <Card.Body>
                 <Card.Text style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
@@ -110,8 +110,8 @@ export default function Dashboard() {
             <Card
               bg="Primary"
               text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '20rem' }}
-              className="mb-2"
+              style={{ width: '15rem' }}
+              className="sm-4"
             >
               <Card.Body>
                 <Card.Text style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
@@ -186,7 +186,7 @@ export default function Dashboard() {
             />
           </div> */}
         </div> : changeUi === "CATEGORY" ? <div className="row">
-          <div style={{ width: '100%', padding: 20, border: "solid 2px #FB6E3B" }}>
+          <div style={{ width: '100%', padding: 20, border: "solid 3px #FB6E3B" ,borderRadius:8}}>
             {data?.length > 0 ? data?.map((item) =>
               <div>
                 <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
@@ -198,7 +198,7 @@ export default function Dashboard() {
             ) : ""}
           </div>
         </div> :
-          <div style={{ width: '100%', padding: 20, border: "solid 2px #FB6E3B" }}>
+          <div style={{ width: '100%', padding: 20, border: "solid 3px #FB6E3B", borderRadius: 8 }}>
             {data?.length > 0 ? data?.map((item) =>
               <div>
                 <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
