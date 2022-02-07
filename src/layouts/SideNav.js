@@ -62,11 +62,14 @@ export default function Sidenav({ location, history }) {
       }}
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
+        if (selected === "dashboard") {
+          selected = selected + "/" + userData?.DATA?.storeId;
+        }
         if (selected === "orders") {
           selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "tables") {
-          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + userData?.DATA?.storeId;;
+          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + userData?.DATA?.storeId;
         }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
