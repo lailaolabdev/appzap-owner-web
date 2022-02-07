@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import moment from 'moment';
 import axios from "axios";
 import useReactRouter from "use-react-router"
-import { Bar, Pie } from "react-chartjs-2";
 import { Card, CardGroup, Table } from 'react-bootstrap'
+import { END_POINT_SEVER} from '../../constants/api'
 export default function Dashboard() {
   const { history, match } = useReactRouter()
   let _spitHistory = history?.location?.search.split("=")
@@ -14,16 +14,20 @@ export default function Dashboard() {
   const [startDate, setSelectedDateStart] = useState('2021-04-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [changeUi, setChangeUi] = useState("CHECKBILL");
+  // =========>
   useEffect(() => {
     _data()
   }, [])
+  // =========>
   useEffect(() => {
     _data()
   }, [changeUi, endDate, startDate])
+  // =========>
+
   const _data = async () => {
     if (changeUi === "CHECKBILL") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get(END_POINT_SEVER+"/v3/dashboard/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -33,7 +37,7 @@ export default function Dashboard() {
     }
     if (changeUi === "CATEGORY") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get(END_POINT_SEVER+"/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -43,7 +47,7 @@ export default function Dashboard() {
     }
     if (changeUi === "MENUS") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get(END_POINT_SEVER+"/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -69,7 +73,6 @@ export default function Dashboard() {
       borderWidth: 1
     }]
   })
-  console.log("data===>", data);
   return (
     <div style={{ padding: 20 }}>
       <div style={{ marginLeft: 50 }}>
