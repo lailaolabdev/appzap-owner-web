@@ -128,19 +128,20 @@ export default function Dashboard() {
         </CardGroup>
       </div>
       <hr />
+      <div style={{ marginLeft: 30 }}>
+        <div>ຄົ້ນຫາຕາມວັນທີ</div>
+        <CardGroup>
+          <input type="date" value={startDate} onChange={(e) => setSelectedDateStart(e?.target?.value)} />
+          <input type="date" value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setSelectedDateEnd(e?.target?.value)} />
+        </CardGroup>
+      </div>
+      <hr />
       {changeUi === "CHECKBILL" ?
         <div className="row">
-          <div style={{ marginLeft: 30 }}>
-            <div>ຄົ້ນຫາຕາມວັນທີ</div>
-            <CardGroup>
-              <input type="date" value={startDate} onChange={(e) => setSelectedDateStart(e?.target?.value)} />
-              <input type="date" value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setSelectedDateEnd(e?.target?.value)} />
-            </CardGroup>
-          </div>
           <div style={{ width: '100%', padding: 20 }}>
             <div>ແຕ່ວັນທີ {startDate} ຫາວັນທີ {endDate}</div>
             <div style={{ height: 10}}></div>
-            <div>ຈຳນວນຢອດເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.amount)} ກີບ</div>
+            <div>ຈຳນວນຍອດເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.amount)} ກີບ</div>
             <div style={{ height: 20 }}></div>
             <Table striped bordered hover size="sm">
               <thead>
