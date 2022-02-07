@@ -11,7 +11,7 @@ export default function Dashboard() {
   const newDate = new Date();
 
   const [data, setData] = useState();
-  const [startDate, setSelectedDateStart] = useState('2021-04-01')
+  const [startDate, setSelectedDateStart] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   // =========>
