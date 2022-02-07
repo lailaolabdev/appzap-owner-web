@@ -6,6 +6,7 @@ import { Bar, Pie } from "react-chartjs-2";
 import { Card, CardGroup, Table } from 'react-bootstrap'
 export default function Dashboard() {
   const { history, match } = useReactRouter()
+  let _spitHistory = history?.location?.search.split("=")
 
   const newDate = new Date();
 
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const _data = async () => {
     if (changeUi === "CHECKBILL") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get("http://localhost:7070/v3/dashboard/" + _spitHistory[1] + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -32,7 +33,7 @@ export default function Dashboard() {
     }
     if (changeUi === "CATEGORY") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get("http://localhost:7070/v3/dashboard-best-sell-category/" + _spitHistory[1] + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -42,7 +43,7 @@ export default function Dashboard() {
     }
     if (changeUi === "MENUS") {
       const getDataDashBoard = await axios
-        .get("http://localhost:7070/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get("http://localhost:7070/v3/dashboard-best-sell-menu/" + _spitHistory[1] + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",

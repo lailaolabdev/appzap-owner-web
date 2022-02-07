@@ -66,7 +66,7 @@ const Index = () => {
         <PublicRoute exact path="/BillForChef" component={BillForChef} />
         <PublicRoute
           exact
-          path="/dashboard/:storeId"
+          path="/dashboard"
           component={Dashboard}
         />
         {/* After login routes (has SideNav and NavBar) */}

@@ -63,7 +63,7 @@ export default function Sidenav({ location, history }) {
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
         if (selected === "dashboard") {
-          selected = selected + "/" + userData?.DATA?.storeId;
+          selected = selected + "/?storeId=" + userData?.DATA?.storeId;
         }
         if (selected === "orders") {
           selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
