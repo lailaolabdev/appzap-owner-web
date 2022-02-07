@@ -32,7 +32,17 @@ export default function Dashboard() {
     }
     if (changeUi === "CATEGORY") {
       const getDataDashBoard = await axios
-    .get("http://localhost:7070/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        .get("http://localhost:7070/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+        })
+      setData(getDataDashBoard?.data)
+    }
+    if (changeUi === "MENUS") {
+      const getDataDashBoard = await axios
+        .get("http://localhost:7070/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json;charset=UTF-8",
@@ -119,14 +129,15 @@ export default function Dashboard() {
           <div style={{ marginLeft: 30 }}>
             <div>ຄົ້ນຫາຕາມວັນທີ</div>
             <CardGroup>
-              <input type="date" value={startDate} onChange={(e) => setSelectedDateStart(e?.target?.value)}/>
-              <input type="date" value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setSelectedDateEnd(e?.target?.value)}/>
+              <input type="date" value={startDate} onChange={(e) => setSelectedDateStart(e?.target?.value)} />
+              <input type="date" value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setSelectedDateEnd(e?.target?.value)} />
             </CardGroup>
           </div>
           <div style={{ width: '100%', padding: 20 }}>
             <div>ແຕ່ວັນທີ {startDate} ຫາວັນທີ {endDate}</div>
+            <div style={{ height: 10}}></div>
             <div>ຈຳນວນຢອດເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.amount)} ກີບ</div>
-            <div style={{height:10}}></div>
+            <div style={{ height: 20 }}></div>
             <Table striped bordered hover size="sm">
               <thead>
                 <tr>
@@ -174,146 +185,29 @@ export default function Dashboard() {
             />
           </div> */}
         </div> : changeUi === "CATEGORY" ? <div className="row">
-          <div style={{ width: '100%', padding: 20 }}>
-            <Table striped bordered hover size="sm">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>ເລກໂຕະ</th>
-                  <th>ສວ່ນຫຼຸດ</th>
-                  <th>ລາຄາ / ບີນ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-              </tbody>
-            </Table>
+          <div style={{ width: '100%', padding: 20, border: "solid 2px #FB6E3B" }}>
+            {data?.length > 0 ? data?.map((item) =>
+              <div>
+                <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
+                {item?.data?.map((itemB) =>
+                  <p>{itemB?.name} : {itemB?.quantity}</p>
+                )}
+                <hr />
+              </div>
+            ) : ""}
           </div>
-          {/* <div style={{ width: '50%', padding: 20 }}>
-            <Bar
-              data={dataChartBar}
-              options={{
-                scales: {
-                  yAxes: [
-                    {
-                      ticks: {
-                        beginAtZero: true,
-                      },
-                    },
-                  ],
-                },
-                tooltips: {
-                  mode: 'label',
-                  label: 'mylabel',
-                  callbacks: {
-                    label: function (tooltipItem) {
-                      return tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    },
-                  },
-                },
-              }}
-            />
-          </div> */}
-        </div> : <div className="row">
-          <div style={{ width: '50%', padding: 20 }}>
-            <Table striped bordered hover size="sm">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>ເລກໂຕະ</th>
-                  <th>ສວ່ນຫຼຸດ</th>
-                  <th>ລາຄາ / ບີນ</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-              </tbody>
-            </Table>
+        </div> :
+          <div style={{ width: '100%', padding: 20, border: "solid 2px #FB6E3B" }}>
+            {data?.length > 0 ? data?.map((item) =>
+              <div>
+                <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
+                {item?.data?.map((itemB) =>
+                  <p>{itemB?.name} : {itemB?.quantity}</p>
+                )}
+                <hr />
+              </div>
+            ) : ""}
           </div>
-          {/* <div style={{ width: '50%', padding: 20 }}>
-            <Bar
-              data={dataChartBar}
-              options={{
-                scales: {
-                  yAxes: [
-                    {
-                      ticks: {
-                        beginAtZero: true,
-                      },
-                    },
-                  ],
-                },
-                tooltips: {
-                  mode: 'label',
-                  label: 'mylabel',
-                  callbacks: {
-                    label: function (tooltipItem) {
-                      return tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    },
-                  },
-                },
-              }}
-            />
-          </div> */}
-        </div>
       }
       {/* <div className="row">
         <div style={{ width: '50%', padding: 20 }}>
