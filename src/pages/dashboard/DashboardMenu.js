@@ -5,7 +5,24 @@ import useReactRouter from "use-react-router"
 import { Card, CardGroup, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
 import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 // const options = {
 //   responsive: true,
@@ -15,27 +32,63 @@ import { Bar } from 'react-chartjs-2';
 //     },
 //     title: {
 //       display: true,
-//       text: 'Chart.js Bar Chart',
+//       text: 'ລາຍການເມນູຂາຍດີ',
 //     },
 //   },
 // };
-// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
-// const aaadata = {
-//   labels:['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-//   datasets: [
-//     {
-//       label: 'Dataset 1',
-//       data: labels.map(() => Math.floor(Math.random() * 1000)),
-//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//     },
-//     {
-//       label: 'Dataset 2',
-//       data: labels.map(() => Math.floor(Math.random() * 1000)),
-//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-//     },
-//   ],
-// };
+const options = {
+  plugins: {
+    title: {
+      display: true,
+      text: 'ລາຍການເມນູຂາຍດີ',
+    },
+  },
+  responsive: true,
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
+    },
+  },
+};
+
+const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+
+const aaadata = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      label: 'ລາຍການເມນູຂາຍດີ',
+      data: [1, 2, 3, 4, 5, 6, 7],
+      backgroundColor: 'rgba(251, 110, 59, 0.7)',
+    },
+  ],
+};
+
+
+const dataA = {
+  labels,
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data:  [1, 2, 3, 4, 5, 6, 7],
+      backgroundColor: 'rgba(251, 110, 59, 0.5)',
+    },
+    {
+      label: 'Dataset 2',
+      data:  [1, 2, 3, 4, 5, 6, 7],
+      backgroundColor: 'rgba(251, 110, 59, 0.6)',
+    },
+    {
+      label: 'Dataset 3',
+      data:  [1, 2, 3, 4, 5, 6, 7],
+      backgroundColor: 'rgba(251, 110, 59, 0.7)',
+    },
+  ],
+};
 
 export default function DashboardMenu({ startDate, endDate }) {
   const { history, match } = useReactRouter()
@@ -51,6 +104,14 @@ export default function DashboardMenu({ startDate, endDate }) {
     _fetchMenuData()
   }, [endDate, startDate])
   // =========>
+
+  useEffect(() => {
+    _initChartData()
+  }, [data])
+
+  const _initChartData = () => {
+      console.log(data)
+  }
 
   const _fetchMenuData = async () => {
     const getDataDashBoard = await axios
@@ -81,6 +142,8 @@ export default function DashboardMenu({ startDate, endDate }) {
   //   }]
   // })
 
+  
+
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -94,7 +157,7 @@ export default function DashboardMenu({ startDate, endDate }) {
           </div>
         ) : ""}
       </div>
-      {/* <Bar options={options} data={aaadata} /> */}
+      <Bar options={options} data={dataA} />
     </div>
   )
 }
