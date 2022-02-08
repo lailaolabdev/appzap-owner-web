@@ -69,22 +69,22 @@ const aaadata = {
 };
 
 
-const dataA = {
+const initChartData = {
   labels,
   datasets: [
     {
       label: 'Dataset 1',
-      data:  [1, 2, 3, 4, 5, 6, 7],
+      data: [1, 2, 3, 4, 5, 6, 7],
       backgroundColor: 'rgba(251, 110, 59, 0.5)',
     },
     {
       label: 'Dataset 2',
-      data:  [1, 2, 3, 4, 5, 6, 7],
+      data: [1, 2, 3, 4, 5, 6, 7],
       backgroundColor: 'rgba(251, 110, 59, 0.6)',
     },
     {
       label: 'Dataset 3',
-      data:  [1, 2, 3, 4, 5, 6, 7],
+      data: [1, 2, 3, 4, 5, 6, 7],
       backgroundColor: 'rgba(251, 110, 59, 0.7)',
     },
   ],
@@ -94,6 +94,7 @@ export default function DashboardMenu({ startDate, endDate }) {
   const { history, match } = useReactRouter()
 
   const [data, setData] = useState();
+  const [chartData, setChartData] = useState(initChartData);
 
   // =========>
   useEffect(() => {
@@ -110,12 +111,31 @@ export default function DashboardMenu({ startDate, endDate }) {
   }, [data])
 
   const _initChartData = () => {
-      console.log(data)
+    console.log(data)
+    if (!data) return;
+    let _labels = data.map((d) => d.time)
+    let _datasets = data.map((d) => {
+
+      _aSet = d.map((c)=>{
+        return {
+          label: c?.name,
+          data: [1, 2, 3, 4, 5, 6, 7],
+          backgroundColor: 'rgba(251, 110, 59, 0.7)',
+        }
+      })
+      
+    })
+    console.log(_labels)
+
+    setChartData({
+      labels: _labels,
+      datasets: _datasets
+    })
   }
 
   const _fetchMenuData = async () => {
     const getDataDashBoard = await axios
-      .get(END_POINT_SEVER + "/v3/dashboard-best-sell-category/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+      .get(END_POINT_SEVER + "/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json;charset=UTF-8",
@@ -124,26 +144,6 @@ export default function DashboardMenu({ startDate, endDate }) {
     setData(getDataDashBoard?.data)
   }
 
-  // const [dataChartBar, setDataChartBar] = useState({
-  //   labels: ["ນ້ຳດື່ມ", "ເບຍ", "ຕຳ", "ທອດ", "ຍຳ", "ແກງສົ້ມ", "ຂົ້ວຜັກ"],
-  //   datasets: [{
-  //     label: 'ສະຫຼຸບຕາມໝວດສິນຄ້າ',
-  //     data: [65, 59, 80, 81, 56, 55, 100],
-  //     backgroundColor: [
-  //       '#FB6E3B',
-  //       '#FB6E3B',
-  //       '#FB6E3B',
-  //       '#FB6E3B',
-  //       '#FB6E3B',
-  //       '#FB6E3B',
-  //       '#FB6E3B'
-  //     ],
-  //     borderWidth: 1
-  //   }]
-  // })
-
-  
-
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -151,13 +151,13 @@ export default function DashboardMenu({ startDate, endDate }) {
           <div key={"menu-" + index}>
             <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
             {item?.data?.map((itemB) =>
-              <p>{itemB?.name} : {itemB?.quantity}</p>
+              <p key={"menu-child-" + index}>{itemB?.name} : {itemB?.quantity}</p>
             )}
             <hr />
           </div>
         ) : ""}
       </div>
-      <Bar options={options} data={dataA} />
+      <Bar options={options} data={chartData} />
     </div>
   )
 }
