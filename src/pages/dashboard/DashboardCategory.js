@@ -49,7 +49,7 @@ export default function DashboardCategory({startDate, endDate }) {
     }]
   })
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 0 }}>
       <div className="row">
           <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
             {data?.length > 0 ? data?.map((item,index) =>
