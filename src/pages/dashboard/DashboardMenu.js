@@ -16,19 +16,7 @@ import {
   Legend,
 
 } from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
 ChartJS.register(ArcElement, Tooltip, Legend);
-
-
 
 export default function DashboardMenu({ startDate, endDate }) {
   const { history, match } = useReactRouter()
