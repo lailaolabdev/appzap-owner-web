@@ -4,15 +4,17 @@ import axios from "axios";
 import useReactRouter from "use-react-router"
 import { Card, CardGroup, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
-import { Bar } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
+
 } from 'chart.js';
 
 ChartJS.register(
@@ -24,77 +26,14 @@ ChartJS.register(
   Legend
 );
 
-// const options = {
-//   responsive: true,
-//   plugins: {
-//     legend: {
-//       position: 'top',
-//     },
-//     title: {
-//       display: true,
-//       text: 'ລາຍການເມນູຂາຍດີ',
-//     },
-//   },
-// };
-
-const options = {
-  plugins: {
-    title: {
-      display: true,
-      text: 'ລາຍການເມນູຂາຍດີ',
-    },
-  },
-  responsive: true,
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
-  },
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-const aaadata = {
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  datasets: [
-    {
-      label: 'ລາຍການເມນູຂາຍດີ',
-      data: [1, 2, 3, 4, 5, 6, 7],
-      backgroundColor: 'rgba(251, 110, 59, 0.7)',
-    },
-  ],
-};
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 
-const initChartData = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: [1, 2, 3, 4, 5, 6, 7],
-      backgroundColor: 'rgba(251, 110, 59, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: [1, 2, 3, 4, 5, 6, 7],
-      backgroundColor: 'rgba(251, 110, 59, 0.6)',
-    },
-    {
-      label: 'Dataset 3',
-      data: [1, 2, 3, 4, 5, 6, 7],
-      backgroundColor: 'rgba(251, 110, 59, 0.7)',
-    },
-  ],
-};
 
 export default function DashboardMenu({ startDate, endDate }) {
   const { history, match } = useReactRouter()
 
   const [data, setData] = useState();
-  const [chartData, setChartData] = useState(initChartData);
 
   // =========>
   useEffect(() => {
@@ -107,31 +46,9 @@ export default function DashboardMenu({ startDate, endDate }) {
   // =========>
 
   useEffect(() => {
-    _initChartData()
-  }, [data])
-
-  const _initChartData = () => {
-    console.log(data)
     if (!data) return;
-    let _labels = data.map((d) => d.time)
-    let _datasets = data.map((d) => {
-
-      _aSet = d.map((c)=>{
-        return {
-          label: c?.name,
-          data: [1, 2, 3, 4, 5, 6, 7],
-          backgroundColor: 'rgba(251, 110, 59, 0.7)',
-        }
-      })
-      
-    })
-    console.log(_labels)
-
-    setChartData({
-      labels: _labels,
-      datasets: _datasets
-    })
-  }
+    // _initChartData()
+  }, [data])
 
   const _fetchMenuData = async () => {
     const getDataDashBoard = await axios
@@ -144,20 +61,58 @@ export default function DashboardMenu({ startDate, endDate }) {
     setData(getDataDashBoard?.data)
   }
 
+
+  const convertPieData = (item) => {
+    let _labels = item.data.map((d) => d.name)
+    let _data = item.data.map((d) => d.quantity)
+    return {
+      labels: _labels,
+      datasets: [
+        {
+          data: _data,
+          backgroundColor: [
+            'rgba(251, 110, 59, 0.2)',
+            'rgba(251, 110, 59, 0.3)',
+            'rgba(251, 110, 59, 0.4)',
+            'rgba(251, 110, 59, 0.5)',
+            'rgba(251, 110, 59, 0.6)',
+            'rgba(251, 110, 59, 0.7)',
+          ],
+          borderColor: [
+            'rgba(251, 110, 59, 1)',
+            'rgba(251, 110, 59, 1)',
+            'rgba(251, 110, 59, 1)',
+            'rgba(251, 110, 59, 1)',
+            'rgba(251, 110, 59, 1)',
+            'rgba(251, 110, 59, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+  }
+
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
         {data?.length > 0 ? data?.map((item, index) =>
-          <div key={"menu-" + index}>
-            <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
-            {item?.data?.map((itemB) =>
-              <p key={"menu-child-" + index}>{itemB?.name} : {itemB?.quantity}</p>
-            )}
+          <div key={"menu-" + index} className="row">
+            <div className='col-5'>
+              <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
+              {item?.data?.map((itemB, aIndex) =>
+                <p key={"menu-child-" + aIndex} style={{margin:0}}>{itemB?.name} : {itemB?.quantity}</p>
+              )}
+            </div>
+            <div className='col-7'>
+              <Pie data={convertPieData(item)} />;
+            </div>
             <hr />
           </div>
         ) : ""}
       </div>
-      <Bar options={options} data={chartData} />
+
+      {/* <Bar options={options} data={chartData} /> */}
+
     </div>
   )
 }
