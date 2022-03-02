@@ -16,14 +16,14 @@ import { getHeaders } from '../../services/auth';
 export default function History() {
   const { history, location, match } = useReactRouter()
   const newDate = new Date();
-  const [startDate, setSelectedDateStart] = useState('2021-04-01')
+  const [startDate, setSelectedDateStart] = useState('2021-02-01')
   const [endDate, setSelectedDateEnd] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [findeByCode, setfindeByCode] = useState()
   useEffect(() => {
-    _searchDate()
-  }, [startDate && endDate])
+    if (startDate || endDate) _searchDate()
+  }, [startDate,endDate])
   useEffect(() => {
     _searchDate()
   }, [findeByCode])
@@ -48,9 +48,6 @@ export default function History() {
   }
   const _setSelectedDateEnd = (item) => {
     setSelectedDateEnd(item.target.value)
-  }
-  const _setSelectedCode = (item) => {
-    setfindeByCode(item.target.value)
   }
   const [amount, setamount] = useState()
   
