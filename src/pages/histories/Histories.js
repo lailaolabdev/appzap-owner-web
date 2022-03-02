@@ -55,16 +55,7 @@ export default function History() {
     let Allamount = 0
     if (data?.length > 0 || startDate || endDate) {
       for (let i = 0; i < data?.length; i++) {
-        for (let k = 0; k < data[i]?.orderId?.length; k++) {
-          if (data[i]?.orderId[k]?.status === "SERVED") {
-            Allamount += (data[i]?.orderId[k]?.price * data[i]?.orderId[k]?.quantity)
-          }
-        }
-        if (data[i]?.discountType === "LAK") {
-          Allamount = Allamount - data[i]?.discount
-        } else {
-          Allamount = Allamount - (Allamount * data[i]?.discount / 100)
-        }
+            Allamount += (data[i]?.billAmount)
       }
       setamount(Allamount)
     }
@@ -76,20 +67,6 @@ export default function History() {
       if (item[i]?.status === "SERVED") {
         total += item[i]?.price * item[i]?.quantity
       }
-    }
-    return total
-  }
-  let _allmonnyAndDiscount = (item, discount, discountType) => {
-    let total = 0
-    for (let i = 0; i < item?.length; i++) {
-      if (item[i]?.status === "SERVED") {
-        total += item[i]?.price * item[i]?.quantity
-      }
-    }
-    if (discountType === "LAK") {
-      total = total - discount
-    } else {
-      total = total - (total * discount / 100)
     }
     return total
   }
@@ -138,8 +115,8 @@ export default function History() {
                       <td>{item?.code}</td>
                       <td>{item?.tableId?.name}</td>
                       <td><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonny(item?.orderId))} ກີບ</b></td>
-                      <td>{item?.discount} {item?.discountType === "LAK" ? "ກີບ" : "%"}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_allmonnyAndDiscount(item?.orderId, item?.discount, item?.discountType))} ກີບ</b></td>
+                      <td>{item?.discountType === "LAK" ? new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.discount) : item?.discount} {item?.discountType === "LAK" ? "ກີບ" : "%"}</td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.billAmount)} ກີບ</b></td>
                       <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                     </tr>
                   )
