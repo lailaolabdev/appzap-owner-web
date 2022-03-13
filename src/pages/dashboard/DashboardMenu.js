@@ -2,20 +2,15 @@ import React, { useState, useEffect } from 'react'
 import moment from 'moment';
 import axios from "axios";
 import useReactRouter from "use-react-router"
-import { Card, CardGroup, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
   ArcElement,
-  Title,
   Tooltip,
   Legend,
-
 } from 'chart.js';
+import { moneyCurrency} from '../../helpers'
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function DashboardMenu({ startDate, endDate }) {
@@ -79,7 +74,7 @@ export default function DashboardMenu({ startDate, endDate }) {
       ],
     };
   }
-
+  console.log("data===>", data);
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -88,7 +83,7 @@ export default function DashboardMenu({ startDate, endDate }) {
             <div className='col-5'>
               <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
               {item?.data?.map((itemB, aIndex) =>
-                <p key={"menu-child-" + aIndex} style={{margin:0}}>{itemB?.name} : {itemB?.quantity}</p>
+                <p key={"menu-child-" + aIndex} style={{ margin: 0 }}>{itemB?.quantity} {itemB?.name} : {moneyCurrency(itemB?.price)} ກີບ. {moneyCurrency(itemB?.price * itemB?.quantity)} .ກີບ</p>
               )}
             </div>
             <div className='col-7'>

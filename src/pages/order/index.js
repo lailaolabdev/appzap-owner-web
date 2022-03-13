@@ -39,12 +39,11 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS)
   }, [])
-  console.log("orderItems===>", orderItems)
   return (
     <div>
       <OrderNavbar />
       {orderItems?.length > 0 ? <div>
-        <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
+        {/* <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15, paddingLeft: 15, paddingRight: 15 }}>
           <div style={{ alignItems: "end", flexDirection: 'column', display: "flex", justifyContent: "center" }}>
             <ReactToPrint
               trigger={() => <Button
@@ -62,7 +61,7 @@ const Order = () => {
             <Button variant="light" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(DOING_STATUS, match?.params?.id)}>ສົ່ງໄປຄົວ</Button>
             <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
           </div>
-        </div>
+        </div> */}
         <div>
           < ReactAudioPlayer
             src={Notification}
@@ -73,7 +72,7 @@ const Order = () => {
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
-                <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
+                {/* <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th> */}
                 <th>ລ/ດ</th>
                 <th>ຊື່ເມນູ</th>
                 <th>ຈຳນວນ</th>
@@ -88,14 +87,14 @@ const Order = () => {
               {orderItems && orderItems?.map((order, index) => {
                 return (
                   <tr key={index}>
-                    <td>
+                    {/* <td>
                       <Checkbox
                         checked={order?.isChecked ? true : false}
                         onChange={(e) => handleCheckbox(order)}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
-                    </td>
+                    </td> */}
                     <td><p style={{ margin: 0 }}>{index + 1}</p></td>
                     <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
                     <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>
