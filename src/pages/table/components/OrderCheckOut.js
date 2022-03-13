@@ -146,7 +146,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               <b> {data && data?.discountType === "LAK" ? moneyCurrency(total - data?.discount) : moneyCurrency(total - (total * data?.discount) / 100)}</b>
             </span>
           </div>
-          <Button
+          {/* <Button
             className="ml-2 pl-4 pr-4"
             onClick={hide}
             style={{
@@ -159,7 +159,7 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           >
             <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "}
             ເຊັກບິນ
-          </Button>
+          </Button> */}
         </div>
       </Modal.Footer>
     </Modal>

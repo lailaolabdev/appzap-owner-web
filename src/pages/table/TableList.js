@@ -294,7 +294,7 @@ export default function TableList() {
           </Nav>
         </div>
         <div
-          style={BODY}
+          // style={BODY}
           style={{
             display: "flex",
             paddingBottom: 50,
@@ -381,28 +381,28 @@ export default function TableList() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "center" }}>
                     <div style={{}}>
-                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button>
-                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button>
-                      <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onAddDiscount()}><FontAwesomeIcon icon={faPercent} style={{ color: "#fff" }} /> ເພີ່ມສ່ວນຫຼຸດ</Button>
+                      {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button> */}
+                      {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button> */}
+                      {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onAddDiscount()}><FontAwesomeIcon icon={faPercent} style={{ color: "#fff" }} /> ເພີ່ມສ່ວນຫຼຸດ</Button> */}
                       <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onCheckOut()}><FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />Checkout</Button>
-                      <ReactToPrint
+                      {/* <ReactToPrint
                         trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
                         content={() => componentRefA.current}
                       />
                       <div style={{ display: 'none' }}>
                         <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
-                      </div>
+                      </div> */}
                     </div>
-                    <div>
+                    {/* <div>
                       <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.tableId, selectedTable?.code, selectedTable?._id)}>+ ເພີ່ມອໍເດີ</Button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
-                <div style={{ height: 20 }}></div>
-                <div style={{ display: _orderIsChecked() ? "none" : 'flex'}}>ອັບເດດເປັນສະຖານະ: </div>
-                <div style={{ height: 20 }}></div>
+                {/* <div style={{ height: 20 }}></div> */}
+                {/* <div style={{ display: _orderIsChecked() ? "none" : 'flex'}}>ອັບເດດເປັນສະຖານະ: </div> */}
+                {/* <div style={{ height: 20 }}></div> */}
                 <div style={{ display: _orderIsChecked() ? "none" : 'flex', justifyContent: "space-between" }}>
-                  <div>
+                  {/* <div>
                     <ReactToPrint
                       trigger={() => <Button
                         variant="light"
@@ -413,12 +413,12 @@ export default function TableList() {
                     <div style={{ display: 'none' }}>
                       <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
                     </div>
-                  </div>
+                  </div> */}
                   <div>
                     {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
+                    {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button> */}
                   </div>
                 </div>
                 <div style={padding_white} />
@@ -429,7 +429,7 @@ export default function TableList() {
                   >
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr>
-                        <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th>
+                        {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
                         <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ລຳດັບ</th>
                         <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ຊື່ເມນູ</th>
                         <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>ຈຳນວນ</th>
@@ -440,7 +440,7 @@ export default function TableList() {
                     <tbody>
                       {tableOrderItems ? tableOrderItems?.map((orderItem, index) => (
                         <tr key={"order" + index} style={{ borderBottom: "1px solid #eee" }}>
-                          <td style={{ border: "none" }}>
+                          {/* <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 checked={orderItem?.isChecked ? true : false}
@@ -450,7 +450,7 @@ export default function TableList() {
                                 inputProps={{ "aria-label": "secondary checkbox" }}
                               />
                             </div>
-                          </td>
+                          </td> */}
                           <td ><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{index + 1}</p></div></td>
                           <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.name}</p></div></td>
                           <td><div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}><p style={{ margin: 0 }}>{orderItem?.quantity}</p></div></td>
