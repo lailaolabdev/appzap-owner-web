@@ -283,7 +283,7 @@ export default function TableList() {
                 style={{ color: "#FB6E3B", border: "none" }}
                 active={true}
               >
-                ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ : {_checkStatusCodeA(tableList)}, ເຊັກບີນທັງໝົດ : {_checkStatusCodeB(tableList)}
+                ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ : {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ : {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ : {_checkStatusCodeB(tableList)}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item

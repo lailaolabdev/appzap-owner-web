@@ -216,7 +216,7 @@ export default function MenuList() {
     if (resData?.data) {
       setMenus(resData?.data)
       handleClose2()
-      successAdd("ການລົບຂໍ້ມູນສຳເລັດ")
+      successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ")
     }
   }
   const _updateQtyCategory = async (values) => {

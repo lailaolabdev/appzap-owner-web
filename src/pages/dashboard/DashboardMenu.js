@@ -74,7 +74,6 @@ export default function DashboardMenu({ startDate, endDate }) {
       ],
     };
   }
-  console.log("data===>", data);
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -93,9 +92,6 @@ export default function DashboardMenu({ startDate, endDate }) {
           </div>
         ) : ""}
       </div>
-
-      {/* <Bar options={options} data={chartData} /> */}
-
     </div>
   )
 }
