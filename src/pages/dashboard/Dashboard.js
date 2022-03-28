@@ -106,6 +106,7 @@ export default function Dashboard() {
           <button type="button" className='btn btn-outline-info' onClick={() => _click7days()}>7ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click30days()}>30ວັນລ່າສຸດ</button>
+          <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => setChangeUi("MONEY_CHART")}>MoneyChart</button>
         </CardGroup>
       </div>
