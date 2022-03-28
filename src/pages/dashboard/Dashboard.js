@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import moment from 'moment';
 import useReactRouter from "use-react-router"
-import { Card, CardGroup, Table } from 'react-bootstrap'
+import { Card, CardGroup, Nav } from 'react-bootstrap'
 import { faAmericanSignLanguageInterpreting, faCashRegister, faMagic } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DashboardMenu from './DashboardMenu';
@@ -33,93 +33,45 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 20 }}>
-      <div style={{ marginLeft: 0 }}>
-        <CardGroup>
-          <CardGroup onClick={() => setChangeUi("CHECKBILL")}>
-            <Card
-              bg="Primary"
-              text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '15rem', cursor: 'pointer' }}
-              className="sm-4"
-            >
-              <Card.Body>
-                <div style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
-                  <div style={{ justifyContent: "center", flexDirection: "row", display: "flex" }}>
-                    <FontAwesomeIcon icon={faCashRegister} style={{ color: "#FB6E3B", marginTop: 3 }} />
-                    <div style={{ width: 5 }} />
-                    <p style={{ margin: 0 }}>ສະຖິຕິລາຍຮັບ</p>
-                  </div>
-                  <p style={{ fontSize: 8, color: "#777777" }}>ລາຍຮັບປະຈໍາຊ່ວງເວລາການບໍລິການ</p>
-                </div>
-              </Card.Body>
-            </Card>
-          </CardGroup>
-          <CardGroup onClick={() => setChangeUi("CATEGORY")}>
-            <Card
-              bg="Primary"
-              text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '15rem', cursor: 'pointer' }}
-              className="sm-4"
-            >
-              <Card.Body>
-                <div style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
-                  <div style={{ justifyContent: "center", flexDirection: "row", display: "flex" }}>
-                    <FontAwesomeIcon icon={faMagic} style={{ color: "#FB6E3B", marginTop: 3 }} />
-                    <div style={{ width: 5 }} />
-                    <p style={{ margin: 0 }}>ຫມວດຂາຍດີ</p>
-                  </div>
-                  <p style={{ fontSize: 8, color: "#777777" }}>ຫມວດອາຫານທີ່ໄດ້ຮັບຄວາມນິຍົມ</p>
-                </div>
-              </Card.Body>
-            </Card>
-          </CardGroup>
-          <CardGroup onClick={() => setChangeUi("MENUS")}>
-            <Card
-              bg="Primary"
-              text={"light" === 'light' ? 'dark' : 'white'}
-              style={{ width: '15rem', cursor: 'pointer' }}
-              className="sm-4"
-            >
-              <Card.Body>
-                <div style={{ alignItems: 'center', display: "flex", flexDirection: "column" }}>
-                  <div style={{ justifyContent: "center", flexDirection: "row", display: "flex" }}>
-                    <FontAwesomeIcon icon={faAmericanSignLanguageInterpreting} style={{ color: "#FB6E3B", marginTop: 3 }} />
-                    <div style={{ width: 5 }} />
-                    <p style={{ margin: 0 }}>ເມນູຂາຍດີ</p>
-                  </div>
-                  <p style={{ fontSize: 8, color: "#777777" }}>ຫມວດປະເພດອາຫານທີ່ໄດ້ຮັບຄວາມນິຍົມ</p>
-                </div>
-              </Card.Body>
-            </Card>
-          </CardGroup>
-        </CardGroup>
-      </div>
-      <hr />
+      <Nav fill variant="tabs" defaultActiveKey="/home">
+        <Nav.Item>
+          <Nav.Link eventKey="/home" onClick={() => setChangeUi("CHECKBILL")}>ສະຖານະຂອງໂຕະ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-1" onClick={() => setChangeUi("MONEY_CHART")}>ສະທິຕິການເງີນ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-2" onClick={() => setChangeUi("CATEGORY")}>ຫມວດຂາຍດີ</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-3" onClick={() => setChangeUi("MENUS")}>ເມນູຂາຍດີ</Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <div style={{ height: 20}}></div>
       <div style={{ marginLeft: 0 }}>
         <div>ຄົ້ນຫາຕາມວັນທີ</div>
+        <div style={{ height: 10 }}></div>
         <CardGroup>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e?.target?.value)} />
-          <input type="date" value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
-          <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click1day()}>1ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click7days()}>7ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click30days()}>30ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
-          <button type="button" className='btn btn-outline-info' onClick={() => setChangeUi("MONEY_CHART")}>MoneyChart</button>
+          <input type="date" className='btn btn-outline-info' value={startDate} onChange={(e) => setStartDate(e?.target?.value)} />
+          <input type="date" className='btn btn-outline-info' value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
         </CardGroup>
       </div>
       <hr />
 
       {
-        changeUi === "MONEY_CHART" && <DashboardFinance
+        changeUi === "MONEY_CHART" && <MoneyChart
           startDate={startDate}
           endDate={endDate}
         />
       }
       {
-        changeUi === "CHECKBILL" && <MoneyChart
+        changeUi === "CHECKBILL" && <DashboardFinance
           startDate={startDate}
           endDate={endDate}
         />

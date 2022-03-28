@@ -53,7 +53,6 @@ export default function DashboardCategory({ startDate, endDate }) {
   const convertPieData = (item) => {
     let _labels = item.data.map((d) => d.name)
     let _dataa = item.data.map((d) => d.quantity)
-    console.log({_dataa})
     return {
       labels: _labels,
       datasets: [

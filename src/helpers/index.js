@@ -18,7 +18,7 @@ export const orderStatus = (status) => {
       return `ສົ່ງຄືນ`;
       break;
     default:
-      return "ຍົກເລີກແລ້ວ";
+      return "ຍົກເລີກ";
       break;
   }
 };
@@ -46,7 +46,7 @@ export const _statusCheckBill = (item) => {
   } else if (item === 'ACTIVE') {
     return "ມີອໍເດີ"
   } else if (item === 'CHECKOUT') {
-    return "ຊຳລະເງີນສຳເລັດ"
+    return "ຊຳລະສຳເລັດ"
   } else if (item === 'CART') {
     return "ກຳລັງສັ່ງອາຫານ"
   }
