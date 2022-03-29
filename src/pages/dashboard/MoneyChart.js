@@ -3,7 +3,9 @@ import moment from 'moment';
 import axios from "axios";
 import useReactRouter from "use-react-router"
 import { END_POINT_SEVER } from '../../constants/api'
-import { Chart } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
+
+
 import {
     Chart as ChartJS,
     LinearScale,
@@ -90,8 +92,7 @@ export default function MoneyChart({ startDate, endDate }) {
     return (
         <div style={{ padding: 0 }}>
             <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
-                <Chart
-                    type='bar'
+                <Bar
                     data={convertPieData()}
                     options={{
                         scales: {
