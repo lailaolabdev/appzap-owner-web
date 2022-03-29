@@ -67,6 +67,15 @@ const [dataModale, setDataModale] = useState([])
     }
     return { _countOrderSuccess, _countOrderCancel }
   }
+  const _countAmount = (item) => {
+    let _amount = 0
+    if (item?.length > 0) {
+      for (let i = 0; i < item.length; i++) {
+        _amount += (item[i]?.price *item[i]?.quantity)
+      }
+    }
+    return _amount
+  }
   return (
     <div style={{ padding: 0 }}>
       <div className="row">
@@ -81,7 +90,7 @@ const [dataModale, setDataModale] = useState([])
             <div>ແຕ່ວັນທີ {startDate} ຫາວັນທີ {endDate}</div>
           </b>
           <div style={{ height: 10 }}></div>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
               <tr>
                 <th>#</th>
@@ -97,12 +106,12 @@ const [dataModale, setDataModale] = useState([])
             </thead>
             <tbody>
               {data?.checkOut?.map((item, index) =>
-                <tr key={"finance-" + index} onClick={() => handleShow(item?.orderId)}>
+                <tr key={"finance-" + index} onClick={() => handleShow(item?.orderId)} style={{ backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status) ? "#0093b8":""}}>
                   <td>{index + 1}</td>
                   <td>{item?.tableId?.name ?? "-"}</td>
                   <td>{item?.code}</td>
                   <td>{item?.discountType === "LAK" ? new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.discount) + "ກີບ" : item?.discount + "%"}</td>
-                  <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.billAmount)} ກີບ</td>
+                  <td>{["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status) ? new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(_countAmount(item?.orderId)) : new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.billAmount)} ກີບ</td>
                   <td >
                     <div style={{ display:"flex", justifyContent: "center",flexDirection: "row" }}>
                       <p style={{ marginLeft: 5 }}>{_countOrder(item?.orderId)?._countOrderSuccess} </p> 
@@ -119,7 +128,7 @@ const [dataModale, setDataModale] = useState([])
                   <td style={{
                     color:
                       item?.paymentMethod === "CASH" ? "#00496e" : "#fc8626"
-                  }}>{item?.paymentMethod === "CASH" ? "ຈ່າຍເງີນສົດ" : "ຈ່າຍເງີນໂອນ"}</td>
+                  }}>{item?.paymentMethod === "CASH" ? "ຈ່າຍເງີນສົດ" : item?.paymentMethod === "BCEL" ? "ຈ່າຍເງີນໂອນ" : "-"}</td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 </tr>
               )}
@@ -134,7 +143,7 @@ const [dataModale, setDataModale] = useState([])
           <Modal.Title>ລາຍການອາຫານ</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover size="sm" style={{fontSize:15}}>
             <thead>
               <tr>
                 <th>#</th>
