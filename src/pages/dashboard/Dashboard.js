@@ -13,7 +13,7 @@ export default function Dashboard() {
   const { history, match } = useReactRouter()
   const newDate = new Date();
 
-  const [startDate, setStartDate] = useState(moment(moment(newDate).add(-7, 'days')).format("YYYY-MM-DD"))
+  const [startDate, setStartDate] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [endDate, setEndDate] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))
   const [changeUi, setChangeUi] = useState("CHECKBILL");
 
@@ -49,8 +49,8 @@ export default function Dashboard() {
       </Nav>
       <div style={{ height: 20}}></div>
       <div style={{ marginLeft: 0 }}>
-        <div>ຄົ້ນຫາຕາມວັນທີ</div>
-        <div style={{ height: 10 }}></div>
+        {/* <div>ຄົ້ນຫາຕາມວັນທີ</div>
+        <div style={{ height: 10 }}></div> */}
         <CardGroup>
           <button type="button" className='btn btn-outline-info' onClick={() => _click1day()}>1ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
