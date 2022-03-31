@@ -8,6 +8,7 @@ import DashboardMenu from './DashboardMenu';
 import DashboardCategory from './DashboardCategory';
 import DashboardFinance from './DashboardFinance';
 import MoneyChart from './MoneyChart';
+import DashboardUser from './DashboardUser';
 import "./index.css";
 export default function Dashboard() {
   const { history, match } = useReactRouter()
@@ -46,11 +47,12 @@ export default function Dashboard() {
         <Nav.Item>
           <Nav.Link eventKey="link-3" onClick={() => setChangeUi("MENUS")}>ເມນູຂາຍດີ</Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-4" onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Nav.Link>
+        </Nav.Item>
       </Nav>
       <div style={{ height: 20}}></div>
       <div style={{ marginLeft: 0 }}>
-        {/* <div>ຄົ້ນຫາຕາມວັນທີ</div>
-        <div style={{ height: 10 }}></div> */}
         <CardGroup>
           <button type="button" className='btn btn-outline-info' onClick={() => _click1day()}>1ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
@@ -84,6 +86,12 @@ export default function Dashboard() {
       }
       {
         changeUi === "CATEGORY" && <DashboardCategory
+          startDate={startDate}
+          endDate={endDate}
+        />
+      }
+      {
+        changeUi === "STAFF" && <DashboardUser
           startDate={startDate}
           endDate={endDate}
         />

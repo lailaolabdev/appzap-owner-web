@@ -70,8 +70,8 @@ export default function DashboardFinance({ startDate, endDate }) {
           if (data?.checkOut[i]?.discountType === "LAK") _checkBill.discountCash += data?.checkOut[i]?.discount
           if (data?.checkOut[i]?.discountType !== "LAK") _checkBill.discountPercent += data?.checkOut[i]?.discount
           _checkBill.amount += _countAmount(data?.checkOut[i]?.orderId)
-          if (data?.checkOut[i]?.discountType === "LAK") _checkBill.cash += data?.checkOut[i]?.discount
-          if (data?.checkOut[i]?.discountType !== "LAK") _checkBill.transfer += data?.checkOut[i]?.discount
+          if (data?.checkOut[i]?.paymentMethod === "CASH") _checkBill.cash += data?.checkOut[i]?.billAmount
+          if (data?.checkOut[i]?.paymentMethod !== "CASH") _checkBill.transfer += data?.checkOut[i]?.billAmount
         }
         if (data?.checkOut[i]?.discountType === "LAK") _disCountDataKib += data?.checkOut[i]?.discount
         if (data?.checkOut[i]?.discountType !== "LAK") _disCountDataAon += data?.checkOut[i]?.discount
