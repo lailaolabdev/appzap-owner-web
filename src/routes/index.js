@@ -88,11 +88,11 @@ const Index = () => {
                   }}
                 >
                   {/* private routes */}
-                  {/* <PrivateRoute
+                  <PrivateRoute
                     exact
-                    path="/dashboard"
+                    path="/report/:storeId"
                     component={Dashboard}
-                  /> */}
+                  />
                   <PrivateRoute
                     exact
                     path="/promotion"

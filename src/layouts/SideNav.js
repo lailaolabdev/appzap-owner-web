@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCartArrowDown,
   faCogs,
-  faDashed,
   faHistory,
   faHome,
   faTachometerAlt,
@@ -31,7 +30,6 @@ export default function Sidenav({ location, history }) {
   const {
     userData,
     openTableData,
-    callCheckBill,
     callingCheckOut,
     getTableDataStore,
     waitingOrderItems,
@@ -65,6 +63,9 @@ export default function Sidenav({ location, history }) {
         if (selected === "dashboard") {
           selected = selected + "/" + userData?.DATA?.storeId;
         }
+        if (selected === "report") {
+          selected = selected + "/" + userData?.DATA?.storeId;
+        }
         if (selected === "orders") {
           selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
@@ -91,14 +92,14 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
+        <NavItem eventKey="report" style={{ backgroundColor: selected === "report" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
               icon={faTachometerAlt}
               style={{
                 color:
-                  selected === "dashboard"
+                  selected === "report"
                     ? COLOR_APP
                     : UN_SELECTED_TAB_TEXT,
               }}
@@ -106,7 +107,7 @@ export default function Sidenav({ location, history }) {
           </NavIcon>
           <NavText
             style={{
-              color: selected === "dashboard" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+              color: selected === "report" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
             ສະຖານະຂອງໂຕະ
