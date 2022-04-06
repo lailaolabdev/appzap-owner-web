@@ -3,14 +3,10 @@ import moment from 'moment';
 import axios from "axios";
 import useReactRouter from "use-react-router"
 import { END_POINT_SEVER } from '../../constants/api'
-import { Bar, Pie } from 'react-chartjs-2';
+import { moneyCurrency } from '../../helpers'
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
   ArcElement,
-  Title,
   Tooltip,
   Legend,
 
@@ -79,27 +75,30 @@ export default function DashboardUser({ startDate, endDate }) {
       ],
     };
   }
-  console.log("data===>", data)
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
         {data?.length > 0 ? data?.map((item, index) =>
           <div key={"menu-" + index} className="row">
             <div className='col-5'>
+              <div style={{height:10}}></div>
               <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
-              <p key={"menu-child-" + index} style={{ margin: 0 }}>{index+1}. {item?.user?.firstname}</p>
+              <p key={"menu-child-" + index} style={{ margin: 0 ,color:"blue"}}>{index+1}. {item?.user?.firstname}</p>
               <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ເສີບທັ້ງໝົດ : {item?.total}</p>
               <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ອາຫານສຳເລັດທັ້ງໝົດ : {item?.orderSuccess}</p>
               <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ອາຫານຍົກເລີກທັ້ງໝົດ : {item?.orderCancel}</p>
-              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ລາຍໄດ້ທັ້ງໝົດ : {item?.amount}</p>
+              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ລາຍໄດ້ທັ້ງໝົດ : {moneyCurrency(item?.amount)}</p>
               {item?.order?.map((itemB, indexB) => 
                 <div>
-                  <p style={{ margin: 0 }}>ໂຕະ {itemB?.code}</p>
+                  <p style={{ margin: 0, color: "orange"}}>ໂຕະ {itemB?.code}</p>
                   <p style={{ margin: 0 }}>* {itemB?.name}</p>
-                  <p style={{ margin: 0 }}>ສະຖານະ {itemB?.status}</p>
+                  <p style={{ margin: 0 ,display: "flex"}}>
+                    <div>ສະຖານະ </div>
+                    <div style={{ marginLeft: 5, color: "green" }}> {itemB?.status === "SERVED" ? "ເສີບແລ້ວ" : "-"}</div>
+                  </p>
                   <p style={{ margin: 0 }}>ຈຳນວນ {itemB?.quantity}</p>
-                  <p style={{ margin: 0 }}>ລາຄາ {itemB?.price}</p>
-                  <p style={{ margin: 0 }}>ລາຄາທັ້ງໝົດ {itemB?.amount}</p>
+                  <p style={{ margin: 0 }}>ລາຄາ {moneyCurrency(itemB?.price)}</p>
+                  <p style={{ margin: 0 }}>ລາຄາທັ້ງໝົດ {moneyCurrency(itemB?.amount)}</p>
                 </div>
               )}
             </div>

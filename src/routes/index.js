@@ -37,6 +37,7 @@ import SettingList from '../pages/settingStore/SettingList'
 import SettingTable from '../pages/settingStore/SettingTable'
 // ===========> Dashboard ============>
 import Dashboard from '../pages/dashboard/Dashboard'
+import DashboardLoyverse from '../pages/dashboardLoyverse/Dashboard'
 // ===========> Promotion ============>
 import Promotion from '../pages/promotion/Promotion'
 // ===========> MessagerList ============>
@@ -68,6 +69,11 @@ const Index = () => {
           exact
           path="/dashboard/:storeId"
           component={Dashboard}
+        />
+        <PublicRoute
+          exact
+          path="/dashboardLoyverse/:storeId"
+          component={DashboardLoyverse}
         />
         {/* After login routes (has SideNav and NavBar) */}
         <Route
