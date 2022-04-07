@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
 import moment from 'moment';
+
 import useReactRouter from "use-react-router"
 import { Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'
 import DashboardMenu from './DashboardMenu';
 import DashboardCategory from './DashboardCategory';
 import DashboardFinance from './DashboardFinance';
 import DashboardtypeMoney from './DashboardTypeMoney';
+import DashboardIncome from './DashboardIncome';
 import DashboardUser from './DashboardUser';
+import DashboardDiscount from './DashboardDiscount';
 import "./index.css";
+
+
 export default function Dashboard() {
   const { history, match } = useReactRouter()
   const newDate = new Date();
@@ -32,14 +37,14 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 20 }}>
-        <DropdownButton
-          as={ButtonGroup}
+      <DropdownButton
+        as={ButtonGroup}
         key="down"
-          id={`dropdown-split-variants-Info`}
+        id={`dropdown-split-variants-Info`}
         drop="down"
-          variant="secondary"
-          title="ເລືອກລາຍງານ"
-        >
+        variant="secondary"
+        title="ເລືອກລາຍງານ"
+      >
         <Dropdown.Item eventKey="1" onClick={() => setChangeUi("CHECKBILL")}>ສະຫຼຸບຍອດຂາຍ</Dropdown.Item>
         <Dropdown.Item eventKey="2" onClick={() => setChangeUi("MENUS")}>ລາຍງານເມນູ</Dropdown.Item>
         <Dropdown.Item eventKey="3" onClick={() => setChangeUi("CATEGORY")}>ລາຍງານໝວດອາຫານ</Dropdown.Item>
@@ -47,10 +52,28 @@ export default function Dashboard() {
         <Dropdown.Item eventKey="5" onClick={() => setChangeUi("TYPE_MONEY")}>ລາຍງານຕາມປະເພດການຊຳລະ</Dropdown.Item>
         <Dropdown.Item eventKey="6" onClick={() => setChangeUi("INCOME")}>ລາຍຮັບ</Dropdown.Item>
         <Dropdown.Item eventKey="7" onClick={() => setChangeUi("DISCOUNT")}>ສ່ວນຫຼຸດ</Dropdown.Item>
-        </DropdownButton>
+      </DropdownButton>
+      <div style={{ height: 20 }}></div>
+      <br />
+      <div style={{paddingLeft: 20 }}>
+        <input type="date" className='btn btn-outline-info' value={startDate} onChange={(e) => setStartDate(e?.target?.value)} />
+        <input type="date" className='btn btn-outline-info' value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
+      </div>
       <div style={{ height: 20 }}></div>
       {
         changeUi === "CHECKBILL" && <DashboardFinance
+          startDate={startDate}
+          endDate={endDate}
+        />
+      }
+      {
+        changeUi === "DISCOUNT" && <DashboardDiscount
+          startDate={startDate}
+          endDate={endDate}
+        />
+      }
+      {
+        changeUi === "INCOME" && <DashboardIncome
           startDate={startDate}
           endDate={endDate}
         />

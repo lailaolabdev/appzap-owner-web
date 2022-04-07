@@ -52,14 +52,14 @@ export default function DashboardMenu({ startDate, endDate }) {
   }, [data])
 
   const _fetchMenuData = async () => {
-    // const getDataDashBoard = await axios
-    //   .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json;charset=UTF-8",
-    //     },
-    //   })
-    // setData(getDataDashBoard?.data)
+    const getDataDashBoard = await axios
+      .get(END_POINT_SEVER + "/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+      })
+    setData(getDataDashBoard?.data)
   }
   const convertPieData = () => {
     let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
@@ -92,6 +92,8 @@ export default function DashboardMenu({ startDate, endDate }) {
       ],
     };
   }
+  console.log("🚀 ~ file: DashboardMenu.js ~ line 37 ~ DashboardMenu ~ data", data)
+
   return (
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
@@ -99,8 +101,8 @@ export default function DashboardMenu({ startDate, endDate }) {
           <Card.Body style={{ display: "flex", justifyContent: "space-between", textAlign: "center" }}>
             <div className="col-sm-4" style={{borderWidth:"solid 2px red"}}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <p>5 อันดับสินค้ายอดนิยม</p>
-                <p>ราคาขายสุทธิ</p>
+                <p>5 ສີນຄ້າຍອດນິຍົມ</p>
+                <p>ລາຄາຕົ້ນທຶນສີນຄ້າ</p>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <p>เบียร์</p>
@@ -144,24 +146,19 @@ export default function DashboardMenu({ startDate, endDate }) {
         </Card>
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
           <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
+            <h4>ລາຍງານເມນູ</h4>
             <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
-            <div>
-              <FontAwesomeIcon
-                icon={faTable}
-                size={40}
-              />
-            </div>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
               <thead>
                 <tr style={{ color: "E4E4E4" }}>
-                  <th>รายการ</th>
-                  <th>หมวดหมู่</th>
-                  <th>สินค้าที่ขาย</th>
-                  <th>ราคาขายสุทธิ</th>
-                  <th>ต้นทุนของสินค้า</th>
-                  <th>กำไรขั้นต้น</th>
+                  <th>ລາຍການ</th>
+                  <th>ໝວດສີນຄ້າ</th>
+                  <th>ຈຳນວນ</th>
+                  <th>ລາຄາຂາຍ</th>
+                  <th>ລາຄາຕົ້ນທຶນສີນຄ້າ</th>
+                  <th>ກຳໄລສີນຄ້າ</th>
                 </tr>
               </thead>
               <tbody>

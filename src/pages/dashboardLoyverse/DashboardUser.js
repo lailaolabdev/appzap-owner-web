@@ -52,14 +52,15 @@ export default function DashboardUser({ startDate, endDate }) {
   }, [data])
 
   const _fetchMenuData = async () => {
-    // const getDataDashBoard = await axios
-    //   .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json;charset=UTF-8",
-    //     },
-    //   })
-    // setData(getDataDashBoard?.data)
+    const getDataDashBoard = await axios
+      .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+      })
+    console.log("AAA====>", getDataDashBoard?.data)
+    setData(getDataDashBoard?.data)
   }
   const convertPieData = () => {
     let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
@@ -97,26 +98,20 @@ export default function DashboardUser({ startDate, endDate }) {
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
           <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
+            <h4>ລາຍງານພະນັກງານ</h4>
             <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
-            <div>
-              <FontAwesomeIcon
-                icon={faTable}
-                size={40}
-              />
-            </div>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
               <thead>
                 <tr style={{ color: "E4E4E4" }}>
-                  <th>ชื่อ</th>
-                  <th>ยอดขายรวม	</th>
-                  <th>การคืนเงิน	</th>
-                  <th>ส่วนลด</th>
-                  <th>ราคาขายสุทธิ</th>
-                  <th>รายรับ</th>
-                  <th>ยอดขายเฉลี่ย</th>
-                  <th>ลูกค้าลงทะเบียน</th>
+                  <th>ຊື່ພະນັກງານ</th>
+                  <th>ຍອດລວມເງິນ</th>
+                  <th>ສີນຄ້າສົ່ງຄືນ</th>
+                  <th>ສ່ວນຫຼຸດ</th>
+                  <th>ລາຄາສີນຄ້າ</th>
+                  <th>ລາຍຮັບ</th>
+                  <th>ຍອດຂາຍສະເລ່ຍ</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,7 +123,6 @@ export default function DashboardUser({ startDate, endDate }) {
                   <td>3		</td>
                   <td>₭84.000</td>
                   <td>3		</td>
-                  <td>0</td>
                 </tr>
                 <tr style={{ color: "E4E4E4" }}>
                   <td>เจ้าของ</td>
@@ -138,7 +132,6 @@ export default function DashboardUser({ startDate, endDate }) {
                   <td>3		</td>
                   <td>₭84.000</td>
                   <td>3		</td>
-                  <td>0</td>
                 </tr>
               </tbody>
             </Table>

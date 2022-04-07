@@ -30,8 +30,7 @@ ChartJS.register(
   Legend,
   Tooltip
 );
-
-export default function DashboardFinance({ startDate, endDate }) {
+export default function DashboardDiscount({ startDate, endDate }) {
   const { history, match } = useReactRouter()
 
   const [data, setData] = useState();
@@ -97,81 +96,32 @@ export default function DashboardFinance({ startDate, endDate }) {
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
-          <Card.Body>
-            <div className="grid-container" style={{ display: "flex", justifyContent: "space-between",textAlign: "center" }}>
-              <div className="grid-item" style={{borderBottom:"solid 2px green"}}>
-                <p>ລ້ວມຍອດທັ້ງໝົດ</p>
-                <p style={{color: "green"}}>₭124.000</p>
-              </div>
-              <div className="grid-item">
-                <p>ເງີນສົ່ງຄືນ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
-              </div>
-              <div className="grid-item">
-                <p>ສ່ວນຫຼຸດ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
-              </div>
-              <div className="grid-item">
-                <p>ລາຄາຕົ້ນທຶນສີນຄ້າ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
-              </div>
-              <div className="grid-item">
-                <p>ກຳໄລສີນຄ້າ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
-              </div>
-            </div>
-            <Card.Text>
-              <Line
-                data={convertPieData()}
-                options={{
-                  scales: {
-                    yAxes: [
-                      {
-                        ticks: {
-                          beginAtZero: true,
-                        },
-                      },
-                    ],
-                  },
-                  tooltips: {
-                    mode: 'label',
-                    label: 'mylabel',
-                    callbacks: {
-                      label: function (tooltipItem) {
-                        return tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                      },
-                    },
-                  },
-                }}
-              />
-            </Card.Text>
-          </Card.Body>
-        </Card>
-        <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
           <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
-            <h4>ສະຫຼຸບຍອດຂາຍ</h4>
+            <h4>ສ່ວນຫຼຸດ</h4>
             <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
               <thead>
-                <tr style={{color: "E4E4E4"}}>
-                  <th>ລາຍການ</th>
+                <tr style={{ color: "E4E4E4" }}>
                   <th>ໝວດສີນຄ້າ</th>
-                  <th>ຈຳນວນທີ່ຂາຍ</th>
+                  <th>ຈຳນວນ</th>
                   <th>ລາຄາສີນຄ້າ</th>
-                  <th>ລາຄາຕົ້ນທຶນສີນຄ້າ</th>
                   <th>ກຳໄລສີນຄ້າ</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style={{ color: "E4E4E4" }}>
-                  <td>Date</td>
-                  <td>Gross sales	</td>
-                  <td>Refunds	</td>
-                  <td>Discounts</td>
-                  <td>Net sales</td>
-                  <td>Cost of goods</td>
+                  <td>อาหาร</td>
+                  <td>2	</td>
+                  <td>₭84.000	</td>
+                  <td>₭84.000</td>
+                </tr>
+                <tr style={{ color: "E4E4E4" }}>
+                  <td>น้ำ</td>
+                  <td>3</td>
+                  <td>₭84.000	</td>
+                  <td>₭84.000</td>
                 </tr>
               </tbody>
             </Table>
@@ -181,3 +131,4 @@ export default function DashboardFinance({ startDate, endDate }) {
     </div >
   )
 }
+

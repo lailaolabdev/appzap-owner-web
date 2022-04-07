@@ -52,14 +52,14 @@ export default function DashboardtypeMoney({ startDate, endDate }) {
   }, [data])
 
   const _fetchMenuData = async () => {
-    // const getDataDashBoard = await axios
-    //   .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json;charset=UTF-8",
-    //     },
-    //   })
-    // setData(getDataDashBoard?.data)
+    const getDataDashBoard = await axios
+      .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json;charset=UTF-8",
+        },
+      })
+    setData(getDataDashBoard?.data)
   }
   const convertPieData = () => {
     let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
@@ -97,24 +97,17 @@ export default function DashboardtypeMoney({ startDate, endDate }) {
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
           <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
+            <h4>ລາຍງານຕາມປະເພດການຊຳລະ</h4>
             <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
-            <div>
-              <FontAwesomeIcon
-                icon={faTable}
-                size={40}
-              />
-            </div>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
               <thead>
                 <tr style={{ color: "E4E4E4" }}>
-                  <th>ประเภทการชำระเงิน</th>
-                  <th>ธุรกรรมการชำระเงิน		</th>
-                  <th>จำนวนเงินที่ชำระ		</th>
-                  <th>ธุรกรรมการคืนเงิน	</th>
-                  <th>จำนวนเงินคืน	</th>
-                  <th>ปริมาณสุทธิ</th>
+                  <th>ປະເພດການຊຳລະ</th>
+                  <th>ຈຳນວນ</th>
+                  <th>ຈຳນວນທີ່ເງີນຊຳລະ</th>
+                  <th>ເປັນເງີນທັ້ງໝົດ</th>
                 </tr>
               </thead>
               <tbody>
@@ -123,25 +116,18 @@ export default function DashboardtypeMoney({ startDate, endDate }) {
                   <td>1	</td>
                   <td>0</td>
                   <td>0</td>
-                  <td>₭84.000</td>
-                  <td>₭84.000</td>
-
                 </tr>
                 <tr style={{ color: "E4E4E4" }}>
                   <td>เงินสด</td>
                   <td>2</td>
                   <td>1	</td>
                   <td>0</td>
-                  <td>0</td>
-                  <td>₭84.000</td>
                 </tr>
                 <tr style={{ color: "E4E4E4" }}>
                   <td>รวม</td>
                   <td>3</td>
                   <td>1	</td>
                   <td>0</td>
-                  <td>0</td>
-                  <td>₭84.000</td>
                 </tr>
               </tbody>
             </Table>
