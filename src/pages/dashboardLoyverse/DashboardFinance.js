@@ -5,11 +5,7 @@ import useReactRouter from "use-react-router"
 import { Card, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
 import { Bar, Line } from 'react-chartjs-2';
-import { _statusCheckBill } from '../../helpers';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTable
-} from "@fortawesome/free-solid-svg-icons";
+import { _statusCheckBill, moneyCurrency } from '../../helpers';
 import {
   Chart as ChartJS,
   LinearScale,
@@ -20,7 +16,6 @@ import {
   Legend,
   Tooltip,
 } from 'chart.js';
-import { moneyCurrency } from '../../helpers'
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -54,7 +49,7 @@ export default function DashboardFinance({ startDate, endDate }) {
 
   const _fetchMenuData = async () => {
     const getDataDashBoard = await axios
-      .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
+      .get(END_POINT_SEVER + "/v3/dashboard-loyvers/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json;charset=UTF-8",
@@ -63,8 +58,8 @@ export default function DashboardFinance({ startDate, endDate }) {
     setData(getDataDashBoard?.data)
   }
   const convertPieData = () => {
-    let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
-    let _data = data?.map((d) => d?.billAmount)
+    let _labels = data?.amountDate.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
+    let _data = data?.amountDate.map((d) => d?.billAmount)
     return {
       labels: _labels,
       datasets: [
@@ -93,6 +88,7 @@ export default function DashboardFinance({ startDate, endDate }) {
       ],
     };
   }
+  console.log("data",data)
   return (
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
@@ -101,24 +97,20 @@ export default function DashboardFinance({ startDate, endDate }) {
             <div className="grid-container" style={{ display: "flex", justifyContent: "space-between",textAlign: "center" }}>
               <div className="grid-item" style={{borderBottom:"solid 2px green"}}>
                 <p>ລ້ວມຍອດທັ້ງໝົດ</p>
-                <p style={{color: "green"}}>₭124.000</p>
+                <p style={{ color: "green" }}>₭{moneyCurrency(data?.amount)}</p>
               </div>
               <div className="grid-item">
                 <p>ເງີນສົ່ງຄືນ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
+                <p style={{ color: "green" }}>₭{moneyCurrency(data?.feedBack)}</p>
               </div>
               <div className="grid-item">
                 <p>ສ່ວນຫຼຸດ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
+                <p style={{ color: "green" }}>₭{moneyCurrency(data?.discount)}</p>
               </div>
-              <div className="grid-item">
-                <p>ລາຄາຕົ້ນທຶນສີນຄ້າ</p>
+              {/* <div className="grid-item">
+                <p>ເປັນເງີນທັ້ງໝົດ</p>
                 <p style={{ color: "green" }}>₭124.000</p>
-              </div>
-              <div className="grid-item">
-                <p>ກຳໄລສີນຄ້າ</p>
-                <p style={{ color: "green" }}>₭124.000</p>
-              </div>
+              </div> */}
             </div>
             <Card.Text>
               <Line
@@ -156,23 +148,23 @@ export default function DashboardFinance({ startDate, endDate }) {
             <Table hover style={{ fontSize: 15 }}>
               <thead>
                 <tr style={{color: "E4E4E4"}}>
-                  <th>ລາຍການ</th>
-                  <th>ໝວດສີນຄ້າ</th>
-                  <th>ຈຳນວນທີ່ຂາຍ</th>
-                  <th>ລາຄາສີນຄ້າ</th>
-                  <th>ລາຄາຕົ້ນທຶນສີນຄ້າ</th>
-                  <th>ກຳໄລສີນຄ້າ</th>
+                  <th>ວັນທິ</th>
+                  <th>ເລກບີນ</th>
+                  <th>ລວມຍອດທັ້ງໝົດ</th>
+                  <th>ລວມຍອດສົ່ງຄືນ</th>
+                  <th>ສ່ວນຫຼຸດ</th>
                 </tr>
               </thead>
               <tbody>
+                {data?.amountDate?.map((item, index) =>
                 <tr style={{ color: "E4E4E4" }}>
-                  <td>Date</td>
-                  <td>Gross sales	</td>
-                  <td>Refunds	</td>
-                  <td>Discounts</td>
-                  <td>Net sales</td>
-                  <td>Cost of goods</td>
+                    <td>{item?.createdAt}</td>
+                    <td>{item?.code}</td>
+                    <td>{moneyCurrency(item?.billAmount)}</td>
+                    <td>{moneyCurrency(item?.billFeedBack)}</td>
+                    <td>{moneyCurrency(item?.billDiscount)}</td>
                 </tr>
+                )}
               </tbody>
             </Table>
           </Card.Body>

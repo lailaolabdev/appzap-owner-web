@@ -72,7 +72,7 @@ const Index = () => {
         />
         <PublicRoute
           exact
-          path="/dashboardLoyverse/:storeId"
+          path="/dashboard-loyverse/:storeId"
           component={DashboardLoyverse}
         />
         {/* After login routes (has SideNav and NavBar) */}

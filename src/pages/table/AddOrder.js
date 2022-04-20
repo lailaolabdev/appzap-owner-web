@@ -236,7 +236,7 @@ function AddOrder() {
         </Nav>
       </div>
       <div
-        style={BODY}
+        // style={BODY}
         style={{
           display: "flex",
           paddingBottom: 50,

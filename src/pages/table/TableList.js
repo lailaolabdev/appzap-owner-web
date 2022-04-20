@@ -393,9 +393,9 @@ export default function TableList() {
                         <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
                       </div> */}
                     </div>
-                    {/* <div>
+                    <div>
                       <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.tableId, selectedTable?.code, selectedTable?._id)}>+ ເພີ່ມອໍເດີ</Button>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
                 {/* <div style={{ height: 20 }}></div> */}
