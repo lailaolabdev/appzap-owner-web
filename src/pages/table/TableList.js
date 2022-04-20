@@ -312,7 +312,7 @@ export default function TableList() {
                         key={index}
                         style={{
                           width: 180,
-                          height: 140,
+                          height: 180,
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
@@ -334,9 +334,17 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 25 }}>{table?.tableName}</div>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
-                            <div >{convertTableStatus(table)}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
+                            <QRCode
+                              // value={JSON.stringify({
+                              //   storeId: selectedTable?.storeId,
+                              //   tableId: table?.tableId
+                              // })}
+                              value={'https://restaurant.appzap.la/menus/' + selectedTable?.storeId + '/' + table?.tableId}
+                              size={110}
+                            />
+                            {/* <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
+                            <div >{convertTableStatus(table)}</div> */}
                           </span>
                         </div>
                       </Button>
@@ -393,9 +401,9 @@ export default function TableList() {
                         <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
                       </div> */}
                     </div>
-                    <div>
+                    {/* <div>
                       <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.tableId, selectedTable?.code, selectedTable?._id)}>+ ເພີ່ມອໍເດີ</Button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 {/* <div style={{ height: 20 }}></div> */}
