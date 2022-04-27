@@ -41,7 +41,7 @@ export default function UserList() {
   }, [])
   const getData = async () => {
     setIsLoading(true)
-    await fetch(USERS + `/skip/0/limit/10/?storeId=${match?.params?.id}`, {
+    await fetch(USERS + `/skip/0/limit/0/?storeId=${match?.params?.id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setuserData(json));
@@ -271,7 +271,7 @@ export default function UserList() {
                   })}
                 </tbody>
               </table>
-              <div style={{ textAlign: "center" }}>
+              {/* <div style={{ textAlign: "center" }}>
                 {totalPage?.map((item, index) => {
                   return (
                     <button style={{
@@ -286,7 +286,7 @@ export default function UserList() {
                     >{item}</button>
                   )
                 })}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
