@@ -340,7 +340,7 @@ export default function TableList() {
                               //   storeId: selectedTable?.storeId,
                               //   tableId: table?.tableId
                               // })}
-                              value={'https://restaurant.appzap.la/menus/' + selectedTable?.storeId + '/' + table?.tableId}
+                              value={'https://restaurant.appzap.la/menus/' + match?.params?.storeId + '/' + table?.tableId}
                               size={110}
                             />
                             {/* <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>

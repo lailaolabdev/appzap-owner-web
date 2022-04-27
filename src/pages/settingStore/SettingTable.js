@@ -129,7 +129,6 @@ export default function SettingTable() {
             successAdd("ລົບຂໍ້ມູນສຳເລັດ")
         }
     }
-    console.log("tableListCheck==>", tableListCheck);
     return (
         <div style={{ padding: 15 }} className="col-sm-12">
             <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
