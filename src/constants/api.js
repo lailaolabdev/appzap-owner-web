@@ -13,7 +13,7 @@ export const getLocalData = async () => {
 export const USERS = END_POINT_SEVER + '/v3/users'
 export const USER = END_POINT_SEVER + '/user'
 export const USERS_CREATE = END_POINT_SEVER + '/v3/user/create'
-export const USERS_DELETE = END_POINT_SEVER + '/user_delete'
+export const USERS_DELETE = END_POINT_SEVER + '/v3/user/delete/'
 export const USERS_UPDATE = END_POINT_SEVER + '/v3/user/update'
 // ========
 export const CATEGORY = END_POINT_SEVER + '/v3/category/delete'

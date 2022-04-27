@@ -113,7 +113,6 @@ export default function UserList() {
       console.log(error)
     }
   }
-  console.log("namePhoto===>", namePhoto)
   // lung jak upload leo pic ja ma so u nee
   const ImageThumb = ({ image }) => {
     return <img src={URL.createObjectURL(image)} alt={image.name} style={{
@@ -164,7 +163,8 @@ export default function UserList() {
   const _confirmeDelete = async () => {
     const resData = await axios({
       method: 'DELETE',
-      url: USERS_DELETE + `?id=${dateDelete?.id}`,
+      url: USERS_DELETE + dateDelete?.id,
+      headers: getTokken?.TOKEN,
     }).then(async function (response) {
       successAdd("ລົບຂໍ້ມູນສຳເລັດ")
       handleClose()
