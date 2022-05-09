@@ -74,7 +74,16 @@ export default function DashboardCategory({ startDate, endDate }) {
       ],
     };
   }
+ 
 
+  let _sortNumBer = (itemNumber) => {
+    itemNumber.sort(function (a, b) {
+      return b.quantity - a.quantity;
+    });
+    return itemNumber?.map((itemB, aIndex) =>
+      <p key={"menu-child-" + aIndex} style={{ margin: 0 }}>{itemB?.name} : {itemB?.quantity}</p>
+    )
+  }
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -82,9 +91,7 @@ export default function DashboardCategory({ startDate, endDate }) {
           <div key={"menu-" + index} className="row">
             <div className='col-5'>
               <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
-              {item?.data?.map((itemB, aIndex) =>
-                <p key={"menu-child-" + aIndex} style={{margin:0}}>{itemB?.name} : {itemB?.quantity}</p>
-              )}
+              {_sortNumBer(item?.data)}
             </div>
             <div className='col-7'>
               <Pie data={convertPieData(item)} />;

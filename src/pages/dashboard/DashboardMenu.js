@@ -74,6 +74,14 @@ export default function DashboardMenu({ startDate, endDate }) {
       ],
     };
   }
+  let _sortNumBer = (itemNumber) => {
+    itemNumber.sort(function (a, b) {
+      return b.quantity - a.quantity;
+    });
+    return itemNumber?.map((itemB, aIndex) =>
+      <p key={"menu-child-" + aIndex} style={{ margin: 0 }}>{itemB?.quantity} {itemB?.name} : {moneyCurrency(itemB?.price)} ກີບ. {moneyCurrency(itemB?.price * itemB?.quantity)} .ກີບ</p>
+    )
+  }
   return (
     <div style={{ padding: 0 }}>
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
@@ -81,9 +89,10 @@ export default function DashboardMenu({ startDate, endDate }) {
           <div key={"menu-" + index} className="row">
             <div className='col-5'>
               <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
-              {item?.data?.map((itemB, aIndex) =>
+              {_sortNumBer(item?.data)}
+              {/* {item?.data?.map((itemB, aIndex) =>
                 <p key={"menu-child-" + aIndex} style={{ margin: 0 }}>{itemB?.quantity} {itemB?.name} : {moneyCurrency(itemB?.price)} ກີບ. {moneyCurrency(itemB?.price * itemB?.quantity)} .ກີບ</p>
-              )}
+              )} */}
             </div>
             <div className='col-7'>
               <Pie data={convertPieData(item)} />;

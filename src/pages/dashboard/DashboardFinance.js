@@ -107,7 +107,6 @@ export default function DashboardFinance({ startDate, endDate }) {
     }
     return _amount
   }
-  console.log("first===>", dataModale)
   return (
     <div style={{ padding: 0 }}>
       <div className="row">
