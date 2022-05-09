@@ -159,7 +159,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <th>ລາຄາ / ບີນ</th>
                 <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
                 <th>ສະຖານະຂອງໂຕະ</th>
-                <th>ສະຖານະຂອງເງີນ</th>
+                <th>ຮູບແບບການຊຳລະ</th>
                 <th>ເວລາ</th>
               </tr>
             </thead>
