@@ -37,25 +37,24 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 20 }}>
-      <DropdownButton
-        as={ButtonGroup}
-        key="down"
-        id={`dropdown-split-variants-Info`}
-        drop="down"
-        variant="secondary"
-        title="ເລືອກລາຍງານ"
-      >
-        <Dropdown.Item eventKey="1" onClick={() => setChangeUi("CHECKBILL")}>ສະຫຼຸບຍອດຂາຍ</Dropdown.Item>
-        <Dropdown.Item eventKey="2" onClick={() => setChangeUi("MENUS")}>ລາຍງານເມນູ</Dropdown.Item>
-        <Dropdown.Item eventKey="3" onClick={() => setChangeUi("CATEGORY")}>ລາຍງານໝວດອາຫານ</Dropdown.Item>
-        <Dropdown.Item eventKey="4" onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Dropdown.Item>
-        <Dropdown.Item eventKey="5" onClick={() => setChangeUi("TYPE_MONEY")}>ລາຍງານຕາມປະເພດການຊຳລະ</Dropdown.Item>
-        <Dropdown.Item eventKey="6" onClick={() => setChangeUi("INCOME")}>ລາຍຮັບ</Dropdown.Item>
-        <Dropdown.Item eventKey="7" onClick={() => setChangeUi("DISCOUNT")}>ສ່ວນຫຼຸດ</Dropdown.Item>
-      </DropdownButton>
-      <div style={{ height: 20 }}></div>
-      <br />
-      <div style={{paddingLeft: 20 }}>
+      <div style={{ paddingLeft: 20 }}>
+        <DropdownButton
+          as={ButtonGroup}
+          key="down"
+          id={`dropdown-split-variants-Info`}
+          drop="down"
+          variant="secondary"
+          title="ເລືອກລາຍງານ"
+        >
+          <Dropdown.Item eventKey="1" onClick={() => setChangeUi("CHECKBILL")}>ສະຫຼຸບຍອດຂາຍ</Dropdown.Item>
+          <Dropdown.Item eventKey="2" onClick={() => setChangeUi("MENUS")}>ລາຍງານເມນູ</Dropdown.Item>
+          <Dropdown.Item eventKey="3" onClick={() => setChangeUi("CATEGORY")}>ລາຍງານໝວດອາຫານ</Dropdown.Item>
+          <Dropdown.Item eventKey="4" onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Dropdown.Item>
+          <Dropdown.Item eventKey="5" onClick={() => setChangeUi("TYPE_MONEY")}>ລາຍງານຕາມປະເພດການຊຳລະ</Dropdown.Item>
+          <Dropdown.Item eventKey="6" onClick={() => setChangeUi("INCOME")}>ລາຍຮັບ</Dropdown.Item>
+          <Dropdown.Item eventKey="7" onClick={() => setChangeUi("DISCOUNT")}>ສ່ວນຫຼຸດ</Dropdown.Item>
+        </DropdownButton>
+        <div style={{ height: 20 }}></div>
         <input type="date" className='btn btn-outline-info' value={startDate} onChange={(e) => setStartDate(e?.target?.value)} />
         <input type="date" className='btn btn-outline-info' value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
       </div>

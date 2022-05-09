@@ -42,6 +42,8 @@ import DashboardLoyverse from '../pages/dashboardLoyverse/Dashboard'
 import Promotion from '../pages/promotion/Promotion'
 // ===========> MessagerList ============>
 import MessagerList from '../pages/messager/MessagerList'
+import MenuListMobile from '../pages/table/mobileView/MenuList'
+import CartListMobile from '../pages/table/mobileView/Cart'
 
 const Main = styled.main`
   /* position: relative; */
@@ -72,8 +74,18 @@ const Index = () => {
         />
         <PublicRoute
           exact
-          path="/dashboardLoyverse/:storeId"
+          path="/dashboard-loyverse/:storeId"
           component={DashboardLoyverse}
+        />
+        <PublicRoute
+          exact
+          path="/menus/:storeId/:tableId"
+          component={MenuListMobile}
+        />
+        <PublicRoute
+          exact
+          path="/cart/:storeId/:tableId"
+          component={CartListMobile}
         />
         {/* After login routes (has SideNav and NavBar) */}
         <Route

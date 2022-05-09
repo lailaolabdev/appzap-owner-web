@@ -41,7 +41,7 @@ export default function UserList() {
   }, [])
   const getData = async () => {
     setIsLoading(true)
-    await fetch(USERS + `/skip/0/limit/10/?storeId=${match?.params?.id}`, {
+    await fetch(USERS + `/skip/0/limit/0/?storeId=${match?.params?.id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setuserData(json));
@@ -89,7 +89,7 @@ export default function UserList() {
         method: 'post',
         url: PRESIGNED_URL,
         data: {
-          type: event.target.files[0].type
+          name: event.target.files[0].type
         }
       })
       setNamePhoto(responseUrl.data)
@@ -113,7 +113,6 @@ export default function UserList() {
       console.log(error)
     }
   }
-
   // lung jak upload leo pic ja ma so u nee
   const ImageThumb = ({ image }) => {
     return <img src={URL.createObjectURL(image)} alt={image.name} style={{
@@ -164,7 +163,8 @@ export default function UserList() {
   const _confirmeDelete = async () => {
     const resData = await axios({
       method: 'DELETE',
-      url: USERS_DELETE + `?id=${dateDelete?.id}`,
+      url: USERS_DELETE + dateDelete?.id,
+      headers: getTokken?.TOKEN,
     }).then(async function (response) {
       successAdd("ລົບຂໍ້ມູນສຳເລັດ")
       handleClose()
@@ -179,12 +179,9 @@ export default function UserList() {
   // update 
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
-  const [dataUpdate, setdataUpdate] = useState('')
+  const [dataUpdate, setdataUpdate] = useState({})
   const handleShow2 = async (item) => {
-    await fetch(USER + `?id=${item}`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setdataUpdate(json));
+    setdataUpdate(item)
     setShow2(true)
   };
   const _updateCategory = async (values) => {
@@ -196,9 +193,6 @@ export default function UserList() {
       url: USERS_UPDATE + `?id=${dataUpdate?._id}`,
       headers: getTokken?.TOKEN,
       data: {
-        storeId: getTokken?.DATA?.storeId,
-        userId: values?.userId,
-        password: values?.password,
         firstname: values?.firstname,
         lastname: values?.lastname,
         phone: values?.phone,
@@ -270,14 +264,14 @@ export default function UserList() {
                         <td>{data?.userId}</td>
                         <td>{STATUS_USERS(data?.role)}</td>
                         <td>{data?.phone}</td>
-                        <td><FontAwesomeIcon icon={faEdit} onClick={() => handleShow2(data?._id)} style={{ color: COLOR_APP }} /><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.firstname)} /></td>
+                        <td><FontAwesomeIcon icon={faEdit} style={{ color: COLOR_APP }} onClick={() => handleShow2(data)}/><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(data?._id, data?.firstname)} /></td>
 
                       </tr>
                     )
                   })}
                 </tbody>
               </table>
-              <div style={{ textAlign: "center" }}>
+              {/* <div style={{ textAlign: "center" }}>
                 {totalPage?.map((item, index) => {
                   return (
                     <button style={{
@@ -292,7 +286,7 @@ export default function UserList() {
                     >{item}</button>
                   )
                 })}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -475,9 +469,9 @@ export default function UserList() {
           }}
           validate={values => {
             const errors = {};
-            if (!values.userId) {
-              errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
-            }
+            // if (!values.userId) {
+            //   errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
+            // }
             if (!values.firstname) {
               errors.firstname = 'ກະລຸນາປ້ອນ Userid... !';
             }
@@ -532,7 +526,7 @@ export default function UserList() {
                     <div className="progress-bar" role="progressbar" style={{ width: `${imageLoading}%`, backgroundColor: COLOR_APP }} aria-valuenow={imageLoading} aria-valuemin="0" aria-valuemax="100">{imageLoading}%</div>
                   </div> : <div style={{ height: 20 }} />}
                 </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
+                {/* <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>UserId</Form.Label>
                   <Form.Control
                     type="text"
@@ -543,8 +537,8 @@ export default function UserList() {
                     placeholder="UserId..."
                     style={{ border: errors.userId && touched.userId && errors.userId ? "solid 1px red" : "" }}
                   />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
+                </Form.Group> */}
+                {/* <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     type="Password"
@@ -555,7 +549,7 @@ export default function UserList() {
                     placeholder="Password..."
 
                   />
-                </Form.Group>
+                </Form.Group> */}
                 <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
                   <Form.Control as="select"

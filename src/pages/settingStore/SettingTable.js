@@ -41,7 +41,7 @@ export default function SettingTable() {
         }
         try {
             if (!tableNumber) {
-                warningAlert("ກະລຸນາປ້ອນເລກໂຕະ")
+                warningAlert("ກະລຸນາປ້ອນລະຫັດ")
                 return
             }
             const createTable = await axios({
@@ -129,7 +129,6 @@ export default function SettingTable() {
             successAdd("ລົບຂໍ້ມູນສຳເລັດ")
         }
     }
-    console.log("tableListCheck==>", tableListCheck);
     return (
         <div style={{ padding: 15 }} className="col-sm-12">
             <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
@@ -143,7 +142,7 @@ export default function SettingTable() {
                             <thead className="thead-light">
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">ເລກໂຕະ</th>
+                                    <th scope="col">ລະຫັດ</th>
                                     <th scope="col">ລະຫັດໂຕະ</th>
                                     <th scope="col">ການເປີດ/ປິດ</th>
                                     <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th>
@@ -177,9 +176,9 @@ export default function SettingTable() {
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>ເລກໂຕະ</Form.Label>
+                        <Form.Label>ລະຫັດ</Form.Label>
                         <div style={{ height: 10 }}></div>
-                        <Form.Control type="email" placeholder="ກະລຸນາປ້ອນເລກໂຕະ" onChange={(e) => setTableNumber(e?.target?.value)} />
+                        <Form.Control type="email" placeholder="ກະລຸນາປ້ອນລະຫັດ" onChange={(e) => setTableNumber(e?.target?.value)} />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>

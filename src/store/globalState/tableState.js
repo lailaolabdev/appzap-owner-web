@@ -68,7 +68,7 @@ export const useTableState = () => {
     const getTableDataStoreList = useMemo(
         () => async () => {
             let _userData = await getLocalData();
-            const url = END_POINT + `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}`;
+            const url = END_POINT + `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
             await fetch(url)
                 .then(response => response.json())
                 .then(response => {

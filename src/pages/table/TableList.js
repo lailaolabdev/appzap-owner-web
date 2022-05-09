@@ -312,7 +312,7 @@ export default function TableList() {
                         key={index}
                         style={{
                           width: 180,
-                          height: 140,
+                          height: 180,
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
@@ -334,9 +334,17 @@ export default function TableList() {
                         </div>
                         <div>
                           <span style={{ fontSize: 20 }}>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 25 }}>{table?.tableName}</div>
-                            <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
-                            <div >{convertTableStatus(table)}</div>
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
+                            <QRCode
+                              // value={JSON.stringify({
+                              //   storeId: selectedTable?.storeId,
+                              //   tableId: table?.tableId
+                              // })}
+                              value={'https://restaurant.appzap.la/menus/' + match?.params?.storeId + '/' + table?.tableId}
+                              size={110}
+                            />
+                            {/* <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
+                            <div >{convertTableStatus(table)}</div> */}
                           </span>
                         </div>
                       </Button>
@@ -365,7 +373,7 @@ export default function TableList() {
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດໂຕະ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {dataBill?.orderId[0]?.updatedBy?.firstname && dataBill?.orderId[0]?.updatedBy?.lastname ? dataBill?.orderId[0]?.updatedBy?.firstname + " " + dataBill?.orderId[0]?.updatedBy?.lastname:""}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(dataBill?.discount)} {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>

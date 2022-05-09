@@ -107,6 +107,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     }
     return _amount
   }
+  console.log("first===>", dataModale)
   return (
     <div style={{ padding: 0 }}>
       <div className="row">
@@ -153,12 +154,12 @@ export default function DashboardFinance({ startDate, endDate }) {
               <tr>
                 <th>#</th>
                 <th>ໂຕະ</th>
-                <th>ເລກໂຕະ</th>
+                <th>ລະຫັດ</th>
                 <th>ສວ່ນຫຼຸດ</th>
                 <th>ລາຄາ / ບີນ</th>
                 <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
                 <th>ສະຖານະຂອງໂຕະ</th>
-                <th>ສະຖານະຂອງເງີນ</th>
+                <th>ຮູບແບບການຊຳລະ</th>
                 <th>ເວລາ</th>
               </tr>
             </thead>
@@ -208,6 +209,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <th>ຊື່ເມນູ</th>
                 <th>ຈຳນວນ</th>
                 <th>ສະຖານະຂອງອາຫານ</th>
+                <th>ເສີບ</th>
                 <th>ລາຄາ</th>
                 <th>ເວລາ</th>
               </tr>
@@ -226,6 +228,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                             item?.status === "CART" ? "#00496e" :
                               item?.status === "FEEDBACK" ? "#00496e" : "#bd0d00"
                   }}>{orderStatus(item?.status)}</td>
+                  <td>{item?.createdBy ? item?.createdBy?.firstname:"-"}</td>
                   <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 </tr>

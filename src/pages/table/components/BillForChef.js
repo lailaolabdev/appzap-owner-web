@@ -13,7 +13,7 @@ export class BillForChef
                         <div style={{ paddingLeft: 20, paddingRight: 20, color: "#000000", fontSize: 18 }}>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                                 <p>ຊື່ເມນູ : {item?.name}</p>
-                                <p>ເລກໂຕະ : {code}</p>
+                                <p>ລະຫັດ : {code}</p>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
                                 <p>ຈຳນວນ : {item?.quantity}</p>

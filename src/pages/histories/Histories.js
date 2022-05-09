@@ -99,7 +99,7 @@ export default function History() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ລະຫັດເຂົ້າລະບົບ</th>
+                  <th>ລະຫັດໂຕະ</th>
                   <th>ໂຕະ</th>
                   <th>ລາຄາ/ບີນ</th>
                   <th>ສ່ວນຫຼຸດ</th>

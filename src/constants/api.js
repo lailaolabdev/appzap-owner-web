@@ -1,6 +1,5 @@
 import { USER_KEY } from './index'
 // export const END_POINT_SEVER = "http://localhost:7070";
-// export const END_POINT_SEVER = "http://13.229.143.188:7070"; //dev
 export const END_POINT_SEVER = "https://api.appzap.la"; // /prosduction
 export const getLocalData = async () => {
     const _local = await localStorage.getItem(USER_KEY);
@@ -13,8 +12,8 @@ export const getLocalData = async () => {
 export const USERS = END_POINT_SEVER + '/v3/users'
 export const USER = END_POINT_SEVER + '/user'
 export const USERS_CREATE = END_POINT_SEVER + '/v3/user/create'
-export const USERS_DELETE = END_POINT_SEVER + '/user_delete'
-export const USERS_UPDATE = END_POINT_SEVER + '/user_update'
+export const USERS_DELETE = END_POINT_SEVER + '/v3/user/delete/'
+export const USERS_UPDATE = END_POINT_SEVER + '/v3/user/update'
 // ========
 export const CATEGORY = END_POINT_SEVER + '/v3/category/delete'
 export const MENUS = END_POINT_SEVER + '/v3/menus'

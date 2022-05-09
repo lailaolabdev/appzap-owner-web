@@ -163,7 +163,7 @@ export default function HistoriesCheckBill() {
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>
                   <th>ລາຄາ</th>
-                  <th>ເລກໂຕະ</th>
+                  <th>ລະຫັດ</th>
                   <th>ລະຫັດທີ່ສັ່ງ</th>
                   <th>ຍອດຂາຍ/ມື້</th>
                   <th>ວັນທີ</th>
