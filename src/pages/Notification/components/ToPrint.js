@@ -70,7 +70,7 @@ export class ComponentToPrint extends React.PureComponent {
                                     <th>ຊື່ເມນູ</th>
                                     <th>ຈຳນວນ</th>
                                     <th>ລາຄາ</th>
-                                    <th>ເລກໂຕະ</th>
+                                    <th>ລະຫັດ</th>
                                 </tr>
                             </thead>
                             <tbody>

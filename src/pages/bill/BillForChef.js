@@ -15,7 +15,7 @@ export class BillForChef extends React.PureComponent {
                                 </tr>
                                 <tr style={{ fontSize: "20px", color: "#000000" }}>
                                     <td>ຈຳນວນ :  {item?.quantity}</td>
-                                    <td>ເລກໂຕະ :  {item?.orderId?.table_id}</td>
+                                    <td>ລະຫັດ :  {item?.orderId?.table_id}</td>
                                 </tr>
                                 <tr style={{ fontSize: "20px", color: "#000000" }}>
                                     <td>ຄອມເມັ້ນ : {item?.note}</td>

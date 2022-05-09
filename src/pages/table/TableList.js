@@ -373,7 +373,7 @@ export default function TableList() {
                     <p style={{ fontSize: 30, margin: 0, fontWeight: "bold" }}>ຂໍ້ມູນໂຕະ</p>
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດໂຕະ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {dataBill?.orderId[0]?.updatedBy?.firstname && dataBill?.orderId[0]?.updatedBy?.lastname ? dataBill?.orderId[0]?.updatedBy?.firstname + " " + dataBill?.orderId[0]?.updatedBy?.lastname:""}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(dataBill?.discount)} {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
                   </Col>

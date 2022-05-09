@@ -39,7 +39,7 @@ export default function Dashboard() {
           <Nav.Link eventKey="/home" onClick={() => setChangeUi("CHECKBILL")}>ສະຖານະຂອງໂຕະ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-1" onClick={() => setChangeUi("MONEY_CHART")}>ສະທິຕິການເງີນ</Nav.Link>
+          <Nav.Link eventKey="link-1" onClick={() => setChangeUi("MONEY_CHART")}>ສະຖິຕິການເງີນ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link eventKey="link-2" onClick={() => setChangeUi("CATEGORY")}>ຫມວດຂາຍດີ</Nav.Link>

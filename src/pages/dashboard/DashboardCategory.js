@@ -6,11 +6,7 @@ import { END_POINT_SEVER } from '../../constants/api'
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
   ArcElement,
-  Title,
   Tooltip,
   Legend,
 
@@ -35,7 +31,6 @@ export default function DashboardCategory({ startDate, endDate }) {
 
   useEffect(() => {
     if (!data) return;
-    // _initChartData()
   }, [data])
 
   const _fetchCategoryData = async () => {

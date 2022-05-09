@@ -154,7 +154,7 @@ export default function DashboardFinance({ startDate, endDate }) {
               <tr>
                 <th>#</th>
                 <th>ໂຕະ</th>
-                <th>ເລກໂຕະ</th>
+                <th>ລະຫັດ</th>
                 <th>ສວ່ນຫຼຸດ</th>
                 <th>ລາຄາ / ບີນ</th>
                 <th>ເສີບແລ້ວ / ຍົກເລີກ</th>

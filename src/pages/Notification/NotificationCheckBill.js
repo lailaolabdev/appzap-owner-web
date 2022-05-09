@@ -56,8 +56,8 @@ export default function NotificationCheckBill() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ລະຫັດເຂົ້າລະບົບ</th>
-                  <th>ເລກໂຕະ</th>
+                  <th>ລະຫັດໂຕະ</th>
+                  <th>ລະຫັດ</th>
                   <th>ສະຖານະ</th>
                   <th>ວັນເວລາ</th>
                 </tr>

@@ -102,7 +102,6 @@ export default function HistoryDetail() {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th>ລຳດັບ</th>
-                  <th>ລະຫັດເຂົ້າລະບົບ</th>
                   <th>ຊື່ເມນູອາຫານ</th>
                   <th>ຈຳນວນ</th>
                   <th>ລາຄາ/ອັນ</th>
@@ -115,7 +114,6 @@ export default function HistoryDetail() {
                   return (
                     <tr index={item}>
                       <td>{index + 1}</td>
-                      <td>{item?.code}</td>
                       <td>{item?.name}</td>
                       <td>{item?.quantity}</td>
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
