@@ -344,7 +344,7 @@ export default function TableList() {
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
                             <QRCode
-                              value={'http://smart-menu-v2.s3-website-ap-southeast-1.amazonaws.com/' + match?.params?.storeId + '/' + dataStore?.whatsapp + '/' + table?.tableName}
+                              value={'http://smart-menu-lailaolab.s3-website-ap-southeast-1.amazonaws.com/' + match?.params?.storeId + '/' + dataStore?.whatsapp + '/' + table?.tableName}
                               size={130}
                             />
                           </span>
