@@ -8,10 +8,6 @@ import {
   faCashRegister,
   faArchway,
   faCheckCircle,
-  faFileInvoice,
-  faRetweet,
-  faWindowClose,
-  faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2'
 
@@ -76,6 +72,7 @@ export default function TableList() {
   const [CheckStatusCancel, setCheckStatusCancel] = useState()
   const [dataBill, setDataBill] = useState()
   const [modalAddDiscount, setModalAddDiscount] = useState(false)
+  const [dataStore, setStore] = useState()
   /**
  * useState
  */
@@ -99,6 +96,9 @@ export default function TableList() {
   useEffect(() => {
     getTableDataStore()
   }, [])
+  useEffect(() => {
+    _StoreData()
+  }, [match?.params?.storeId])
   /**
    * Modify Order Status
    */
@@ -158,7 +158,7 @@ export default function TableList() {
     })
     setDataBill(_resBill?.data)
   }
-  
+
   const [codeTableNew, setCodeTableNew] = useState()
 
   const _changeTable = async () => {
@@ -231,8 +231,8 @@ export default function TableList() {
         data: {
           id: dataSettingModal?._id,
           data: {
-          "isOpened": "false",
-          "isStaffConfirm": "false"
+            "isOpened": "false",
+            "isStaffConfirm": "false"
           }
         },
         headers: headers
@@ -248,25 +248,33 @@ export default function TableList() {
     }
   }
   const _checkStatusCode = (code) => {
-    let _open=0
-    for (let i = 0; i < code?.length; i++){
-      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout)  _open += 1
+    let _open = 0
+    for (let i = 0; i < code?.length; i++) {
+      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout) _open += 1
     }
     return _open
   }
   const _checkStatusCodeA = (code) => {
-    let _empty=0
-    for (let i = 0; i < code?.length; i++){
-      if (!code[i]?.isOpened && code[i]?.status && !code[i]?.isStaffConfirm && !code[i]?.isCheckout)  _empty += 1
+    let _empty = 0
+    for (let i = 0; i < code?.length; i++) {
+      if (!code[i]?.isOpened && code[i]?.status && !code[i]?.isStaffConfirm && !code[i]?.isCheckout) _empty += 1
     }
     return _empty
   }
   const _checkStatusCodeB = (code) => {
     let _checkBill = 0
-    for (let i = 0; i < code?.length; i++){
-      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout && code[i]?.statusBill ==="CALL_TO_CHECKOUT")  _checkBill += 1
+    for (let i = 0; i < code?.length; i++) {
+      if (code[i]?.isOpened && code[i]?.status && code[i]?.isStaffConfirm && !code[i]?.isCheckout && code[i]?.statusBill === "CALL_TO_CHECKOUT") _checkBill += 1
     }
     return _checkBill
+  }
+  const _StoreData = async () => {
+    await fetch(STORE + `/?id=${match?.params?.storeId}`, {
+      method: "GET",
+    }).then(response => response.json())
+      .then(json => {
+        setStore(json)
+      });
   }
   return (
     <div style={TITLE_HEADER}>
@@ -303,7 +311,7 @@ export default function TableList() {
         >
           <div style={half_backgroundColor}>
             <Container>
-              <div style={{height: 10 }}></div>
+              <div style={{ height: 10 }}></div>
               <Row>
                 {tableList &&
                   tableList.map((table, index) => (
@@ -311,14 +319,14 @@ export default function TableList() {
                       <Button
                         key={index}
                         style={{
-                          width: 180,
-                          height: 180,
+                          width: 200,
+                          height: 200,
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
                           border: selectedTable?.tableName == table?.tableName ? "2px solid #FB6E3B" : "2px solid  white",
                         }}
-                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : table.statusBill === "CALL_TO_CHECKOUT" ? "blink_cardCallCheckOut":""}
+                        className={table?.isOpened && !table?.isStaffConfirm ? "blink_card" : table.statusBill === "CALL_TO_CHECKOUT" ? "blink_cardCallCheckOut" : ""}
                         onClick={async () => {
                           onSelectTable(table)
                         }}
@@ -336,15 +344,9 @@ export default function TableList() {
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
                             <QRCode
-                              // value={JSON.stringify({
-                              //   storeId: selectedTable?.storeId,
-                              //   tableId: table?.tableId
-                              // })}
-                              value={'https://restaurant.appzap.la/menus/' + match?.params?.storeId + '/' + table?.tableId}
-                              size={110}
+                              value={'http://smart-menu-v2.s3-website-ap-southeast-1.amazonaws.com/' + match?.params?.storeId + '/' + dataStore?.whatsapp + '/' + table?.tableName}
+                              size={130}
                             />
-                            {/* <div style={{ color: table?.staffConfirm ? "white" : "#616161" }}>{table?.code}</div>
-                            <div >{convertTableStatus(table)}</div> */}
                           </span>
                         </div>
                       </Button>
@@ -374,8 +376,8 @@ export default function TableList() {
                     <p style={{ fontSize: 20, margin: 0, fontWeight: "bold" }}>ໂຕະ: {selectedTable?.tableName} </p>
                     <p style={{ fontSize: 20, margin: 0 }}>ລະຫັດເຂົ້າໂຕະ:  {selectedTable?.code}</p>
                     <p style={{ fontSize: 20, margin: 0 }}>ເວລາເປີດໂຕະ:   {moment(selectedTable?.createdAt).format("HH:mm:ss A")}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {dataBill?.orderId[0]?.updatedBy?.firstname && dataBill?.orderId[0]?.updatedBy?.lastname ? dataBill?.orderId[0]?.updatedBy?.firstname + " " + dataBill?.orderId[0]?.updatedBy?.lastname:""}</p>
-                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(dataBill?.discount)} {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p> 
+                    <p style={{ fontSize: 20, margin: 0 }}>ຜູ້ຮັບຜິດຊອບ:   {dataBill?.orderId[0]?.updatedBy?.firstname && dataBill?.orderId[0]?.updatedBy?.lastname ? dataBill?.orderId[0]?.updatedBy?.firstname + " " + dataBill?.orderId[0]?.updatedBy?.lastname : ""}</p>
+                    <p style={{ fontSize: 20, margin: 0 }}>ມີສ່ວນຫຼຸດ:   {moneyCurrency(dataBill?.discount)} {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}</p>
                   </Col>
                 </Row>
                 <div style={{ flexDirection: 'row', justifyContent: "space-between", display: "flex", paddingTop: 15 }}>
