@@ -1,7 +1,7 @@
 import React from 'react'
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCogs, faTable, faUsers, faUtensils } from '@fortawesome/free-solid-svg-icons'
+import { faCogs, faHistory, faTable, faUsers, faUtensils } from '@fortawesome/free-solid-svg-icons'
 
 export default function SettingList() {
     const { history, match } = useReactRouter();
@@ -67,6 +67,21 @@ export default function SettingList() {
             >
                 <FontAwesomeIcon icon={faTable} />
                 ຕັ້ງຄ່າໂຕະ
+            </button>
+            <button type="button" className="card col-2" style={{
+                padding: 10,
+                height: 100,
+                outlineColor: "#FB6E3B",
+                backgroundColor: "white",
+                border: "1px solid  #E4E4E4",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+            }}
+                onClick={() => history.push("/historyUse/" + match?.params?.id)}
+            >
+                <FontAwesomeIcon icon={faHistory} />
+                ປະຫັວດການໃຊ້ງານ
             </button>
         </div>
     )

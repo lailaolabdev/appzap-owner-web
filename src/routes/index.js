@@ -40,6 +40,9 @@ import Dashboard from '../pages/dashboard/Dashboard'
 import DashboardLoyverse from '../pages/dashboardLoyverse/Dashboard'
 // ===========> Promotion ============>
 import Promotion from '../pages/promotion/Promotion'
+// ===========> HistoryUse ============>
+import HistoryUse from '../pages/historiesUse/HistoryUse'
+
 // ===========> MessagerList ============>
 import MessagerList from '../pages/messager/MessagerList'
 import MenuListMobile from '../pages/table/mobileView/MenuList'
@@ -205,6 +208,11 @@ const Index = () => {
                     exact
                     path="/messagerList"
                     component={MessagerList}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/historyUse/:id"
+                    component={HistoryUse}
                   />
                 </div>
               </Main>

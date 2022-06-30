@@ -26,7 +26,6 @@ export const TITLE_HEADER = {
     paddingTop: 20,
     backgroundColor: "#F9F9F9",
     width: "100%",
-    maxHeight: "100vh",
 };
 
 export const HEADER = {

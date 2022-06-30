@@ -130,7 +130,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <hr />
               </div>
               <div>ຈຳນວນບີນ : {dataCheckBill?.total} ບີນ</div>
-              <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.amount)} ກີບ</div>
+              <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash + dataCheckBill?.transfer)} ກີບ</div>
               <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountCash)} ກີບ</div>
               <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountPercent)} %</div>
               <div>ຈ່າຍເງີນສົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash)} ກີບ</div>
