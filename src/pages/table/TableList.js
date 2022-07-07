@@ -504,7 +504,7 @@ export default function TableList() {
           >
             <p style={{ fontSize: 50, fontWeight: "bold" }}>{selectedTable?.tableName}</p>
             <QRCode
-              value={"https://client.appzap.la/?storeId="+selectedTable?.storeId +"&tableId="+selectedTable?.tableId}
+              value={"https://client.appzap.la/store/"+selectedTable?.storeId +"?tableId="+selectedTable?.tableId}
               style={{ width: 100 }}
             />
             <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
