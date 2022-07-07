@@ -91,7 +91,7 @@ export const font_text_black = {
     paddingTop: 10,
 };
 export const half_backgroundColor = {
-    width: "40%",
+    width: "60%",
     backgroundColor: "#fff",
     border: 1,
     height: "90vh",

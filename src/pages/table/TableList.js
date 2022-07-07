@@ -276,8 +276,6 @@ export default function TableList() {
         setStore(json)
       });
   }
-  console.log("selectedTable===>")
-  console.log(selectedTable)
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -321,8 +319,8 @@ export default function TableList() {
                       <Button
                         key={index}
                         style={{
-                          width: 200,
-                          height: 200,
+                          width: 250,
+                          height: 250,
                           border: "none",
                           outlineColor: "#FB6E3B",
                           backgroundColor: table?.isStaffConfirm ? "#FB6E3B" : "white",
@@ -345,10 +343,11 @@ export default function TableList() {
                         <div>
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
-                            {/* <QRCode
-                              value={'http://localhost:3000/' + match?.params?.storeId + '/' + table?.tableId}
-                              size={130}
-                            /> */}
+                            <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.code}</div>
+                            <QRCode
+                              value={'http://smart-menu-v2.s3-website-ap-southeast-1.amazonaws.com/' + match?.params?.storeId + '/' + table?.tableName}
+                              size={150}
+                            />
                           </span>
                         </div>
                       </Button>
@@ -505,9 +504,10 @@ export default function TableList() {
             <p style={{ fontSize: 50, fontWeight: "bold" }}>{selectedTable?.tableName}</p>
             <QRCode
               value={"https://client.appzap.la/store/"+selectedTable?.storeId +"?tableId="+selectedTable?.tableId}
-              style={{ width: 100 }}
+              size={200}
             />
             <p style={{ fontSize: 20 }}>ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ</p>
+            <p style={{ fontSize: 20 }}>( Smart-Menu && Self-Ordering)</p>
             <div style={{ height: 30 }} />
             <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", fontSize: 40, padding: 20 }} onClick={() => openTable()}>
               <FontAwesomeIcon icon={!selectedTable?.isOpened ? faArchway : faCheckCircle} style={{ color: "#fff" }} /> {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}</Button>
