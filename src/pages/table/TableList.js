@@ -276,6 +276,7 @@ export default function TableList() {
         setStore(json)
       });
   }
+  console.log("tableList===>", tableList)
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -344,10 +345,10 @@ export default function TableList() {
                           <span style={{ fontSize: 20 }}>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.tableName}</div>
                             <div style={{ color: table?.staffConfirm ? "white" : "#616161", fontWeight: "bold", fontSize: 20 }}>{table?.code}</div>
-                            <QRCode
-                              value={'http://smart-menu-v2.s3-website-ap-southeast-1.amazonaws.com/' + match?.params?.storeId + '/' + table?.tableName}
-                              size={150}
-                            />
+                            <div style={{
+                              color: table?.staffConfirm ?
+                                "white" : "#616161", fontWeight: "bold", fontSize: 20
+                            }}>{table?.isStaffConfirm ? "ມິແຂກ":"ວ່າງ"}</div>
                           </span>
                         </div>
                       </Button>
