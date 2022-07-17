@@ -8,6 +8,7 @@ import {
 import {
     END_POINT_SEVER
 } from "../../constants/api";
+import AnimationLoading from '../../constants/loading';
 
 export default function HistoryUse() {
     const { history, location, match } = useReactRouter()
@@ -18,7 +19,7 @@ export default function HistoryUse() {
     const LIMIT_PAGE = 300;
     const [pageNumber, setPageNumber] = useState(_page ?? 1);
     const [pageCountNumber, setPageCountNumber] = useState(10000);
-
+    const [isLoading, setIsLoading] = useState(false)
 
 
     useEffect(() => {
@@ -34,10 +35,12 @@ export default function HistoryUse() {
         _getdataHistories();
     }, [filtterModele])
     const _getdataHistories = async () => {
+        setIsLoading(true)
         await fetch(END_POINT_SEVER + `/v3/logs/skip/${pageNumber - 1}/limit/${LIMIT_PAGE}?storeId=${match?.params?.id}&modele=${filtterModele}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setData(json));
+        setIsLoading(false)
     }
 
     const onNextPage = () => {
@@ -51,6 +54,7 @@ export default function HistoryUse() {
 
     return (
         <div style={TITLE_HEADER}>
+            {isLoading ? <AnimationLoading /> : <div />}
             <div className="col-sm-12">
                 <Nav variant="tabs" defaultActiveKey="/checkBill">
                     <Nav.Item>
@@ -85,7 +89,7 @@ export default function HistoryUse() {
                         {data?.map((item, index) => {
                             return (
                                 <tr>
-                                    <td>{((pageNumber-1) * LIMIT_PAGE) + index + 1}</td>
+                                    <td>{((pageNumber - 1) * LIMIT_PAGE) + index + 1}</td>
                                     <td>{item?.user}</td>
                                     <td style={{ color: item?.event === "INFO" ? "green" : "red" }}>{item?.event}</td>
                                     <td>{item?.eventDetail}</td>
