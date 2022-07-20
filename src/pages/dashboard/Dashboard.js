@@ -65,8 +65,6 @@ export default function Dashboard() {
           <input type="date" className='btn btn-outline-info' value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
         </div>
       </div>
-      <hr />
-
       {
         changeUi === "MONEY_CHART" && <MoneyChart
           startDate={startDate}
