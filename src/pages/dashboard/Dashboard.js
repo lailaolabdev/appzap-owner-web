@@ -34,21 +34,21 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 20 }}>
-      <Nav fill variant="tabs" defaultActiveKey="/home">
+      <Nav fill variant="tabs" defaultActiveKey="/home" style={{ fontWeight: "bold",backgroundColor: "#f8f8f8",border:"none" ,height:60}}>
         <Nav.Item>
-          <Nav.Link eventKey="/home" onClick={() => setChangeUi("CHECKBILL")}>ສະຖານະຂອງໂຕະ</Nav.Link>
+          <Nav.Link eventKey="/home" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("CHECKBILL")}>ສະຖານະຂອງໂຕະ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-1" onClick={() => setChangeUi("MONEY_CHART")}>ສະຖິຕິການເງີນ</Nav.Link>
+          <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}   onClick={() => setChangeUi("MONEY_CHART")}>ສະຖິຕິການເງີນ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-2" onClick={() => setChangeUi("CATEGORY")}>ຫມວດຂາຍດີ</Nav.Link>
+          <Nav.Link eventKey="/best-category" style={{ color: "#FB6E3B", border: "none" ,height:60,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("CATEGORY")}>ຫມວດຂາຍດີ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-3" onClick={() => setChangeUi("MENUS")}>ເມນູຂາຍດີ</Nav.Link>
+          <Nav.Link eventKey="/best-menu" style={{ color: "#FB6E3B", border: "none" ,height:60 ,display:"flex",justifyContent:"center",alignItems:"center"}}  onClick={() => setChangeUi("MENUS")}>ເມນູຂາຍດີ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-4" onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Nav.Link>
+          <Nav.Link eventKey="/staff-history" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Nav.Link>
         </Nav.Item>
       </Nav>
       <div style={{ height: 20}}></div>

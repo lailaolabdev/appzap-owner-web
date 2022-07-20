@@ -134,7 +134,7 @@ export default function Sidenav({ location, history }) {
             ສະຖານະຂອງໂຕະ
           </NavText>
         </NavItem>
-        <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#FFFFFF" : "" }}>
+        {/* <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#FFFFFF" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faCartArrowDown}
@@ -158,7 +158,7 @@ export default function Sidenav({ location, history }) {
           >
             ອໍເດີ
           </NavText>
-        </NavItem>
+        </NavItem> */}
 
         {/* <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
           <NavIcon>
@@ -186,7 +186,7 @@ export default function Sidenav({ location, history }) {
             ແຈ້ງເຕືອນ Checkbill
           </NavText>
         </NavItem> */}
-        <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
+        {/* <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
               icon={faHistory}
@@ -206,7 +206,7 @@ export default function Sidenav({ location, history }) {
           >
             ປະຫວັດການຂາຍ
           </NavText>
-        </NavItem>
+        </NavItem> */}
         {/* <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
           <NavIcon>
             <FontAwesomeIcon
