@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import moment from 'moment';
 import useReactRouter from "use-react-router"
 import { Card, CardGroup, Nav } from 'react-bootstrap'
-import { faAmericanSignLanguageInterpreting, faCashRegister, faMagic } from '@fortawesome/free-solid-svg-icons';
+import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DashboardMenu from './DashboardMenu';
 import DashboardCategory from './DashboardCategory';
@@ -33,36 +33,37 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <Nav fill variant="tabs" defaultActiveKey="/home" style={{ fontWeight: "bold",backgroundColor: "#f8f8f8",border:"none" ,height:60}}>
+    <div style={{ padding: 10 }}>
+      <Nav fill variant="tabs" defaultActiveKey="/home" style={{ fontWeight: "bold", backgroundColor: "#f8f8f8", border: "none", height: 60 }}>
         <Nav.Item>
-          <Nav.Link eventKey="/home" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("CHECKBILL")}>ສະຖານະຂອງໂຕະ</Nav.Link>
+          <Nav.Link eventKey="/home" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("CHECKBILL")}> <FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{width:8}}></div> ສະຖານະຂອງໂຕະ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}   onClick={() => setChangeUi("MONEY_CHART")}>ສະຖິຕິການເງີນ</Nav.Link>
+          <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("MONEY_CHART")}><FontAwesomeIcon icon={faCoins} ></FontAwesomeIcon> <div style={{width:8}}></div>  ສະຖິຕິການເງີນ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/best-category" style={{ color: "#FB6E3B", border: "none" ,height:60,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("CATEGORY")}>ຫມວດຂາຍດີ</Nav.Link>
+          <Nav.Link eventKey="/best-category" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("CATEGORY")}><FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{width:8}}></div>  ຫມວດຂາຍດີ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/best-menu" style={{ color: "#FB6E3B", border: "none" ,height:60 ,display:"flex",justifyContent:"center",alignItems:"center"}}  onClick={() => setChangeUi("MENUS")}>ເມນູຂາຍດີ</Nav.Link>
+          <Nav.Link eventKey="/best-menu" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("MENUS")}><FontAwesomeIcon icon={faCertificate} ></FontAwesomeIcon> <div style={{width:8}}></div>  ເມນູຂາຍດີ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/staff-history" style={{ color: "#FB6E3B", border: "none",height:60 ,display:"flex",justifyContent:"center",alignItems:"center" }}  onClick={() => setChangeUi("STAFF")}>ລາຍງານພະນັກງານ</Nav.Link>
+          <Nav.Link eventKey="/staff-history" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("STAFF")}><FontAwesomeIcon icon={faPeopleArrows} ></FontAwesomeIcon> <div style={{width:8}}></div>  ລາຍງານພະນັກງານ</Nav.Link>
         </Nav.Item>
       </Nav>
-      <div style={{ height: 20}}></div>
-      <div style={{ marginLeft: 0 }}>
-        <CardGroup>
+      <div style={{ height: 10 }}></div>
+      <div style={{ display: "flex", justifyContent: "space-between ", }}>
+        <div style={{display: "flex", }}>
           <button type="button" className='btn btn-outline-info' onClick={() => _click1day()}>1ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click7days()}>7ວັນລ່າສຸດ</button>
           <div style={{ width: 10 }}></div>
           <button type="button" className='btn btn-outline-info' onClick={() => _click30days()}>30ວັນລ່າສຸດ</button>
-          <div style={{ width: 10 }}></div>
+        </div>
+        <div>
           <input type="date" className='btn btn-outline-info' value={startDate} onChange={(e) => setStartDate(e?.target?.value)} />
           <input type="date" className='btn btn-outline-info' value={endDate} style={{ marginLeft: 10 }} onChange={(e) => setEndDate(e?.target?.value)} />
-        </CardGroup>
+        </div>
       </div>
       <hr />
 
