@@ -5,6 +5,8 @@ import useReactRouter from "use-react-router"
 import { Table, Modal, Button } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
 import { _statusCheckBill, orderStatus } from './../../helpers';
+import { TramRounded } from '@material-ui/icons';
+import AnimationLoading from '../../constants/loading';
 
 export default function DashboardFinance({ startDate, endDate }) {
   const { history, match } = useReactRouter()
@@ -17,6 +19,7 @@ export default function DashboardFinance({ startDate, endDate }) {
   const [moneyAon, setMoneyAon] = useState(0)
   const [show, setShow] = useState(false);
   const [dataModale, setDataModale] = useState([])
+  const [isLoading, setIsLoading] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = (item) => {
     setShow(true)
@@ -29,6 +32,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     _fetchFinanceData()
   }, [endDate, startDate])
   const _fetchFinanceData = async () => {
+    setIsLoading(TramRounded)
     const getDataDashBoard = await axios
       .get(END_POINT_SEVER + "/v3/dashboard/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
         headers: {
@@ -37,7 +41,9 @@ export default function DashboardFinance({ startDate, endDate }) {
         },
       })
     setData(getDataDashBoard?.data)
+    setIsLoading(false)
   }
+  
   useEffect(() => {
     let _disCountDataKib = 0;
     let _disCountDataAon = 0;
@@ -109,6 +115,7 @@ export default function DashboardFinance({ startDate, endDate }) {
   }
   return (
     <div style={{ padding: 0 }}>
+       {isLoading && <AnimationLoading /> }
       <div className="row">
         <div style={{ width: '100%' }}>
           <div style={{ display: "flex", justifyContent: "space-around", flexDirection: "row", padding: 10 }}>

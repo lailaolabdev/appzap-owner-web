@@ -31,6 +31,7 @@ export default function MoneyChart({ startDate, endDate }) {
     const { history, match } = useReactRouter()
 
     const [data, setData] = useState();
+    const [isLoading, setIsLoading] = useState(false);
 
     // =========>
     useEffect(() => {
@@ -49,6 +50,7 @@ export default function MoneyChart({ startDate, endDate }) {
     }, [data])
 
     const _fetchMenuData = async () => {
+        setIsLoading(true)
         const getDataDashBoard = await axios
             .get(END_POINT_SEVER + "/v3/bill-report/?storeId=" + match?.params?.storeId + "&startDate=" + startDate + "&endDate=" + endDate, {
                 headers: {
@@ -57,6 +59,7 @@ export default function MoneyChart({ startDate, endDate }) {
                 },
             })
         setData(getDataDashBoard?.data)
+        setIsLoading(false)
     }
     const convertPieData = () => {
         let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) +" ກີບ")
