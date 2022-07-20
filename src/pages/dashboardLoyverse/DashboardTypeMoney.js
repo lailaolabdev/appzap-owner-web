@@ -106,8 +106,8 @@ export default function DashboardtypeMoney({ startDate, endDate }) {
                 <tr style={{ color: "E4E4E4" }}>
                   <th>ປະເພດການຊຳລະ</th>
                   <th>ຈຳນວນ</th>
-                  <th>ຈຳນວນທີ່ເງີນຊຳລະ</th>
-                  <th>ເປັນເງີນທັ້ງໝົດ</th>
+                  <th>ຈຳນວນທີ່ເງິນຊຳລະ</th>
+                  <th>ເປັນເງິນທັ້ງໝົດ</th>
                 </tr>
               </thead>
               <tbody>

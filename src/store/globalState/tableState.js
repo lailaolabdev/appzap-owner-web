@@ -33,7 +33,7 @@ export const useTableState = () => {
                 getTableDataStore()
                 Swal.fire({
                     icon: 'success',
-                    title: "ມີການແຈ້ງເກັບເງີນ",
+                    title: "ມີການແຈ້ງເກັບເງິນ",
                     showConfirmButton: false,
                     timer: 10000
                 })

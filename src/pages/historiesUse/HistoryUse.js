@@ -58,7 +58,7 @@ export default function HistoryUse() {
             <div className="col-sm-12">
                 <Nav variant="tabs" defaultActiveKey="/checkBill">
                     <Nav.Item>
-                        <Nav.Link eventKey="/checkBill" onClick={() => setFiltterModele("checkBill")}>ຄິດໄລ່ເງີນ</Nav.Link>
+                        <Nav.Link eventKey="/checkBill" onClick={() => setFiltterModele("checkBill")}>ຄິດໄລ່ເງິນ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="/canceled" onClick={() => setFiltterModele("canceled")}>ຍົກເລີກອາຫານ</Nav.Link>

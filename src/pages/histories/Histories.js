@@ -103,7 +103,7 @@ export default function History() {
                   <th>ໂຕະ</th>
                   <th>ລາຄາ/ບີນ</th>
                   <th>ສ່ວນຫຼຸດ</th>
-                  <th>ເປັນເງີນ</th>
+                  <th>ເປັນເງິນ</th>
                   <th>ວັນທີ</th>
                 </tr>
               </thead>

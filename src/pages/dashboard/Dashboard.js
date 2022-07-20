@@ -39,7 +39,7 @@ export default function Dashboard() {
           <Nav.Link eventKey="/home" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("CHECKBILL")}> <FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{width:8}}></div> ສະຖານະຂອງໂຕະ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("MONEY_CHART")}><FontAwesomeIcon icon={faCoins} ></FontAwesomeIcon> <div style={{width:8}}></div>  ສະຖິຕິການເງີນ</Nav.Link>
+          <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("MONEY_CHART")}><FontAwesomeIcon icon={faCoins} ></FontAwesomeIcon> <div style={{width:8}}></div>  ສະຖິຕິການເງິນ</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link eventKey="/best-category" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setChangeUi("CATEGORY")}><FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{width:8}}></div>  ຫມວດຂາຍດີ</Nav.Link>

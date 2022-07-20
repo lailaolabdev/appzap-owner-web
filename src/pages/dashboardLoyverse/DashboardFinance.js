@@ -100,7 +100,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <p style={{ color: "green" }}>₭{moneyCurrency(data?.amount)}</p>
               </div>
               <div className="grid-item">
-                <p>ເງີນສົ່ງຄືນ</p>
+                <p>ເງິນສົ່ງຄືນ</p>
                 <p style={{ color: "green" }}>₭{moneyCurrency(data?.feedBack)}</p>
               </div>
               <div className="grid-item">
@@ -108,7 +108,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <p style={{ color: "green" }}>₭{moneyCurrency(data?.discount)}</p>
               </div>
               {/* <div className="grid-item">
-                <p>ເປັນເງີນທັ້ງໝົດ</p>
+                <p>ເປັນເງິນທັ້ງໝົດ</p>
                 <p style={{ color: "green" }}>₭124.000</p>
               </div> */}
             </div>

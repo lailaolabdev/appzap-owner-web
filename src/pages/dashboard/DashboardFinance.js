@@ -121,15 +121,15 @@ export default function DashboardFinance({ startDate, endDate }) {
           <div style={{ display: "flex", justifyContent: "space-around", flexDirection: "row", padding: 10 }}>
             <div style={{ border: "solid 1px #FB6E3B", borderRadius: "0px 0px 8px 8px", flex: 2, margin: 5 }}>
               <div style={{ height: 50, color: "#fff", backgroundColor: "#FB6E3B", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <p style={{ margin: 0 ,fontSize:20}}>ຍອດທັ້ງໝົດ</p>
+                <p style={{ margin: 0 ,fontSize:20}}>ຍອດທັງໝົດ</p>
               </div>
               <div style={{ padding: 15 }}>
                 <div>ຈຳນວນບິນ : {data?.checkOut?.length} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.amount + dataNotCheckBill?.amount)} ກີບ</div>
-                <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(disCountDataKib)} ກີບ</div>
+                <div>ສ່ວນຫຼຸດເປັນເງິນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(disCountDataKib)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(disCountDataPercent)} %</div>
-                <div>ຈ່າຍເງີນສົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(moneyCash)} ກີບ</div>
-                <div>ຈ່າຍເງີນໂອນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(moneyAon)} ກີບ</div>
+                <div>ຈ່າຍເງິນສົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(moneyCash)} ກີບ</div>
+                <div>ຈ່າຍເງິນໂອນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(moneyAon)} ກີບ</div>
               </div>
             </div>
             <div style={{ border: "solid 1px #FB6E3B", borderRadius: "0px 0px 8px 8px", flex: 1, margin: 5 }}>
@@ -139,10 +139,10 @@ export default function DashboardFinance({ startDate, endDate }) {
               <div style={{ padding: 15 }}>
                 <div>ຈຳນວນບິນ : {dataCheckBill?.total} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash + dataCheckBill?.transfer)} ກີບ</div>
-                <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountCash)} ກີບ</div>
+                <div>ສ່ວນຫຼຸດເປັນເງິນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountCash)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountPercent)} %</div>
-                <div>ຈ່າຍເງີນສົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash)} ກີບ</div>
-                <div>ຈ່າຍເງີນໂອນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.transfer)} ກີບ</div>
+                <div>ຈ່າຍເງິນສົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash)} ກີບ</div>
+                <div>ຈ່າຍເງິນໂອນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.transfer)} ກີບ</div>
               </div>
             </div>
             <div style={{ border: "solid 1px #FB6E3B", borderRadius: "0px 0px 8px 8px", flex: 1, margin: 5 }}>
@@ -153,7 +153,7 @@ export default function DashboardFinance({ startDate, endDate }) {
               <div style={{ padding: 15 }}>
                 <div>ຈຳນວນບິນ : {dataNotCheckBill?.total} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.amount)} ກີບ</div>
-                <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.discountCash)} ກີບ</div>
+                <div>ສ່ວນຫຼຸດເປັນເງິນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.discountCash)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.discountPercent)} %</div>
               </div>
             </div>
@@ -197,7 +197,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   <td style={{
                     color:
                       item?.paymentMethod === "CASH" ? "#00496e" : "#fc8626"
-                  }}>{item?.paymentMethod === "CASH" ? "ຈ່າຍເງີນສົດ" : item?.paymentMethod === "BCEL" ? "ຈ່າຍເງີນໂອນ" : "-"}</td>
+                  }}>{item?.paymentMethod === "CASH" ? "ຈ່າຍເງິນສົດ" : item?.paymentMethod === "BCEL" ? "ຈ່າຍເງິນໂອນ" : "-"}</td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 </tr>
               )}

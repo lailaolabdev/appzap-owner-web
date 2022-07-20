@@ -114,7 +114,7 @@ export class BillForCheckOut extends React.PureComponent {
                 }} />
                 <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>
-                        <th style={{ textAlign: "center" }} colspan="3">ລວມເປັນເງີນທັງໝົດ</th>
+                        <th style={{ textAlign: "center" }} colspan="3">ລວມເປັນເງິນທັງໝົດ</th>
                         <th>{moneyCurrency(data)}</th>
                     </tr>
                     <tr style={{ fontSize: "20px", color: "#000000" }}>

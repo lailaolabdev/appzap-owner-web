@@ -42,7 +42,7 @@ export const useAuth = () => {
 }
 export const _statusCheckBill = (item) => {
   if (item === 'CALLTOCHECKOUT') {
-    return "ຕ້ອງການຈ່າຍເງີນ"
+    return "ຕ້ອງການຈ່າຍເງິນ"
   } else if (item === 'ACTIVE') {
     return "ມີອໍເດີ"
   } else if (item === 'CHECKOUT') {
