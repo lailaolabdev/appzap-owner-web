@@ -124,7 +124,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <p style={{ margin: 0 ,fontSize:20}}>ຍອດທັ້ງໝົດ</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບີນ : {data?.checkOut?.length} ບີນ</div>
+                <div>ຈຳນວນບິນ : {data?.checkOut?.length} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.amount + dataNotCheckBill?.amount)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(disCountDataKib)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(disCountDataPercent)} %</div>
@@ -134,10 +134,10 @@ export default function DashboardFinance({ startDate, endDate }) {
             </div>
             <div style={{ border: "solid 1px #FB6E3B", borderRadius: "0px 0px 8px 8px", flex: 1, margin: 5 }}>
               <div style={{ height: 50, color: "#fff", backgroundColor: "#FB6E3B", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <p style={{ margin: 0 ,fontSize:20}}>ຍອດບີນທີສຳເລັດ</p>
+                <p style={{ margin: 0 ,fontSize:20}}>ຍອດບິນທີສຳເລັດ</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບີນ : {dataCheckBill?.total} ບີນ</div>
+                <div>ຈຳນວນບິນ : {dataCheckBill?.total} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.cash + dataCheckBill?.transfer)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountCash)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataCheckBill?.discountPercent)} %</div>
@@ -148,10 +148,10 @@ export default function DashboardFinance({ startDate, endDate }) {
             <div style={{ border: "solid 1px #FB6E3B", borderRadius: "0px 0px 8px 8px", flex: 1, margin: 5 }}>
 
               <div style={{ height: 50, color: "#fff", backgroundColor: "#FB6E3B", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <p style={{ margin: 0,fontSize:20 }}>ຍອດບີນທີຍັງຄ້າງ</p>
+                <p style={{ margin: 0,fontSize:20 }}>ຍອດບິນທີຍັງຄ້າງ</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບີນ : {dataNotCheckBill?.total} ບີນ</div>
+                <div>ຈຳນວນບິນ : {dataNotCheckBill?.total} ບິນ</div>
                 <div>ຍອດທັ້ງໝົດ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.amount)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເງີນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.discountCash)} ກີບ</div>
                 <div>ສ່ວນຫຼຸດເປັນເປີເຊັນ : {new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(dataNotCheckBill?.discountPercent)} %</div>
@@ -166,7 +166,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <th>ໂຕະ</th>
                 <th>ລະຫັດ</th>
                 <th>ສວ່ນຫຼຸດ</th>
-                <th>ລາຄາ / ບີນ</th>
+                <th>ລາຄາ / ບິນ</th>
                 <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
                 <th>ສະຖານະຂອງໂຕະ</th>
                 <th>ຮູບແບບການຊຳລະ</th>

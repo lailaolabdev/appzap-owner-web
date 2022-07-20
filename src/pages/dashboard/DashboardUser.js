@@ -11,6 +11,7 @@ import {
   Legend,
 
 } from 'chart.js';
+import AnimationLoading from '../../constants/loading';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,6 +19,7 @@ export default function DashboardUser({ startDate, endDate }) {
   const { history, match } = useReactRouter()
 
   const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   // =========>
   useEffect(() => {
@@ -35,6 +37,7 @@ export default function DashboardUser({ startDate, endDate }) {
   }, [data])
 
   const _fetchCategoryData = async () => {
+    setIsLoading(true)
     const getDataDashBoard = await axios
       .get(END_POINT_SEVER + "/v3/dashboard-report-users/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
         headers: {
@@ -43,6 +46,7 @@ export default function DashboardUser({ startDate, endDate }) {
         },
       })
     setData(getDataDashBoard?.data)
+    setIsLoading(false)
   }
 
 
@@ -77,32 +81,36 @@ export default function DashboardUser({ startDate, endDate }) {
   }
   return (
     <div style={{ padding: 0 }}>
+      {isLoading && <AnimationLoading />}
       <div style={{ width: '100%', padding: 20, borderRadius: 8 }}>
+        {data && <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(data[0]?.time).format('YYYY-MM-DD')}</p>}
         {data?.length > 0 ? data?.map((item, index) =>
           <div key={"menu-" + index} className="row">
-            <div className='col-5'>
+            <div className='col-12'>
+              <div style={{ height: 10 }}></div>
+              <div style={{ display: "flex", justifyContent: "space-between",fontWeight:'bold' }}>
+                <p key={"menu-child-" + index} style={{ margin: 0, color: "blue" }}>{index + 1}. {item?.user?.firstname}</p>
+                <p key={"menu-seved-" + index} style={{ margin: 0 }}> ເສີບ : {item?.total}</p>
+                <p key={"menu-seved-" + index} style={{ margin: 0 }}> ອາຫານສຳເລັດ : {item?.orderSuccess}</p>
+                <p key={"menu-seved-" + index} style={{ margin: 0 }}> ອາຫານຍົກເລີກ : {item?.orderCancel}</p>
+                <p key={"menu-seved-" + index} style={{ margin: 0 }}> ລາຍໄດ້ທັ້ງໝົດ : {moneyCurrency(item?.amount)}</p>
+              </div>
               <div style={{height:10}}></div>
-              <p style={{ fontWeight: "bold" }}>ລາຍງານຕາມໝວດປະຈຳວັນທີ່ : {moment(item?.time).format('YYYY-MM-DD')}</p>
-              <p key={"menu-child-" + index} style={{ margin: 0 ,color:"blue"}}>{index+1}. {item?.user?.firstname}</p>
-              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ເສີບທັ້ງໝົດ : {item?.total}</p>
-              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ອາຫານສຳເລັດທັ້ງໝົດ : {item?.orderSuccess}</p>
-              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ອາຫານຍົກເລີກທັ້ງໝົດ : {item?.orderCancel}</p>
-              <p key={"menu-seved-" + index} style={{ margin: 0 }}>- ລາຍໄດ້ທັ້ງໝົດ : {moneyCurrency(item?.amount)}</p>
-              {item?.order?.map((itemB, indexB) => 
-                <div>
-                  <p style={{ margin: 0, color: "orange"}}>ໂຕະ {itemB?.code}</p>
-                  <p style={{ margin: 0 }}>* {itemB?.name}</p>
-                  <p style={{ margin: 0 ,display: "flex"}}>
+              {item?.order?.map((itemB, indexB) =>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <p style={{ margin: 0, color: "orange" }}>ໂຕະ {itemB?.code}</p>
+                  <p style={{ margin: 0, width:150 }}>* {itemB?.name}</p>
+                  <p style={{ margin: 0, display: "flex" ,width:130 }}>
                     <div>ສະຖານະ </div>
                     <div style={{ marginLeft: 5, color: "green" }}> {itemB?.status === "SERVED" ? "ເສີບແລ້ວ" : "-"}</div>
                   </p>
                   <p style={{ margin: 0 }}>ຈຳນວນ {itemB?.quantity}</p>
                   <p style={{ margin: 0 }}>ລາຄາ {moneyCurrency(itemB?.price)}</p>
-                  <p style={{ margin: 0 }}>ລາຄາທັ້ງໝົດ {moneyCurrency(itemB?.amount)}</p>
+                  <p style={{ margin: 0 }}>ລາຄາລວມ {moneyCurrency(itemB?.amount)}</p>
                 </div>
               )}
             </div>
-            <div className='col-7'>
+            <div className='col-4'>
               {/* <Pie data={convertPieData(item)} />; */}
             </div>
             <hr />
