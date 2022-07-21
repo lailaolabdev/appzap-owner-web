@@ -10,7 +10,7 @@ import {
 } from "../../constants/api";
 import AnimationLoading from '../../constants/loading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
+import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faPrint, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
 
 export default function HistoryUse() {
     const { history, location, match } = useReactRouter()
@@ -67,7 +67,7 @@ export default function HistoryUse() {
                         <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("canceled")}><FontAwesomeIcon icon={faCoins} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ຍົກເລີກອາຫານ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="/print" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("print")}><FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ປີນເຕີ</Nav.Link>
+                        <Nav.Link eventKey="/print" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("print")}><FontAwesomeIcon icon={faPrint} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ປີນເຕີ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
                         <Nav.Link eventKey="/resetBill" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("resetBill")}><FontAwesomeIcon icon={faCertificate} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ແກ້ໄຂບີນ</Nav.Link>
