@@ -9,6 +9,8 @@ import {
     END_POINT_SEVER
 } from "../../constants/api";
 import AnimationLoading from '../../constants/loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
 
 export default function HistoryUse() {
     const { history, location, match } = useReactRouter()
@@ -53,24 +55,25 @@ export default function HistoryUse() {
 
 
     return (
-        <div style={TITLE_HEADER}>
+        <div style={{}}>
             {isLoading ? <AnimationLoading /> : <div />}
             <div className="col-sm-12">
-                <Nav variant="tabs" defaultActiveKey="/checkBill">
+
+                <Nav fill variant="tabs" defaultActiveKey="/home" style={{ fontWeight: "bold", backgroundColor: "#f8f8f8", border: "none", height: 60 }}>
                     <Nav.Item>
-                        <Nav.Link eventKey="/checkBill" onClick={() => setFiltterModele("checkBill")}>ຄິດໄລ່ເງິນ</Nav.Link>
+                        <Nav.Link eventKey="/canceled" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("checkBill")}> <FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{ width: 8 }}></div> ຄິດໄລ່ເງິນ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="/canceled" onClick={() => setFiltterModele("canceled")}>ຍົກເລີກອາຫານ</Nav.Link>
+                        <Nav.Link eventKey="/finance" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("canceled")}><FontAwesomeIcon icon={faCoins} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ຍົກເລີກອາຫານ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="/print" onClick={() => setFiltterModele("print")}>ປີນເຕີ</Nav.Link>
+                        <Nav.Link eventKey="/print" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("print")}><FontAwesomeIcon icon={faTable} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ປີນເຕີ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="/resetBill" onClick={() => setFiltterModele("resetBill")}>ແກ້ໄຂບີນ</Nav.Link>
+                        <Nav.Link eventKey="/resetBill" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("resetBill")}><FontAwesomeIcon icon={faCertificate} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ແກ້ໄຂບີນ</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="/transferTable" onClick={() => setFiltterModele("transferTable")}>ຍ້າຍລວມໂຕະ</Nav.Link>
+                        <Nav.Link eventKey="/transferTable" style={{ color: "#FB6E3B", border: "none", height: 60, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setFiltterModele("transferTable")}><FontAwesomeIcon icon={faPeopleArrows} ></FontAwesomeIcon> <div style={{ width: 8 }}></div>  ຍ້າຍລວມໂຕະ</Nav.Link>
                     </Nav.Item>
                 </Nav>
             </div>
