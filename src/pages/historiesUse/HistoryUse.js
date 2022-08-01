@@ -176,7 +176,15 @@ export default function HistoryUse() {
                       {item?.event}
                     </td>
                     <td>{item?.eventDetail}</td>
-                    <td>{item?.reason || "-"}</td>
+                    <td>
+                      {item?.reason == null ||
+                      item?.reason == "" ||
+                      item?.reason == undefined ||
+                      item?.reason == "undefined" ||
+                      item?.reason == "null"
+                        ? "-"
+                        : item?.reason}
+                    </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
                     </td>
