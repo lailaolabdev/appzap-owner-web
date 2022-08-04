@@ -2,9 +2,12 @@ import React from "react";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import * as consts from "../../../../constants";
+import { getHeaders } from "../../../../services/auth";
+import { END_POINT_SEVER } from "../../../../constants/api";
+import axios from "axios";
 
 // -------------------------------------------------------------- //
-export default function PopUpAddStock({ open, onClose, data = {} }) {
+export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>
@@ -23,8 +26,28 @@ export default function PopUpAddStock({ open, onClose, data = {} }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log("values:", values);
-          onClose();
+          const fetchData = async () => {
+            try {
+              const header = await getHeaders();
+              console.log(header);
+              const res = await axios.put(
+                `${END_POINT_SEVER}/v3/stock-export`,
+                {
+                  id: data._id,
+                  data: { quantity: values.quantity },
+                },
+                { headers: { ...header } }
+              );
+              if (res.status < 300) {
+                callback(res.data);
+              }
+            } catch (err) {
+              console.log("error:", err);
+            }
+            onClose();
+            setSubmitting();
+          };
+          fetchData();
         }}>
         {({
           values,

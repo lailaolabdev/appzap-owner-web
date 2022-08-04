@@ -30,7 +30,12 @@ import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
+import FormAddMenu from "../pages/menu/form/FormAddMenu";
+import FormEditMenu from "../pages/menu/form/FormEditMenu";
+import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
+import StockCategory from "../pages/stock/Categorylist";
+import StockHistory from "../pages/stock/HistoryList";
 
 import StoreDetail from "../pages/store/StoreDetail";
 // ===========> Setting ============>
@@ -192,10 +197,35 @@ const Index = () => {
                   />
                   <PrivateRoute
                     exact
+                    path='/settingStore/menu/add'
+                    component={FormAddMenu}
+                  />
+                  <PrivateRoute
+                    exact
+                    path='/settingStore/menu/menu-stock/:id'
+                    component={FormAddMenuStock}
+                  />
+                  <PrivateRoute
+                    exact
+                    path='/settingStore/menu/Edit/:id'
+                    component={FormAddMenu}
+                  />
+
+                  <PrivateRoute
+                    exact
                     path='/settingStore/stock/limit/:limit/page/:page/:id'
                     component={StockList}
                   />
-
+                  <PrivateRoute
+                    exact
+                    path='/settingStore/stock/category/limit/:limit/page/:page/:id'
+                    component={StockCategory}
+                  />
+                  <PrivateRoute
+                    exact
+                    path='/settingStore/stock/history/limit/:limit/page/:page/:id'
+                    component={StockHistory}
+                  />
                   <PrivateRoute
                     exact
                     path='/settingStore/:id'

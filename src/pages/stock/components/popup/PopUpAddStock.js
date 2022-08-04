@@ -1,10 +1,13 @@
 import React from "react";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import axios from "axios";
+import { getHeaders } from "../../../../services/auth";
 import * as consts from "../../../../constants";
+import { END_POINT_SEVER } from "../../../../constants/api";
 
 // -------------------------------------------------------------- //
-export default function PopUpAddStock({ open, onClose, data = {} }) {
+export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>
@@ -14,17 +17,37 @@ export default function PopUpAddStock({ open, onClose, data = {} }) {
         initialValues={{}}
         validate={(values) => {
           const errors = {};
-          if (!values.note) {
-            errors.note = "ກະລຸນາປ້ອນ...";
-          }
+          // if (!values.note) {
+          //   errors.note = "ກະລຸນາປ້ອນ...";
+          // }
           if (!values.quantity) {
             errors.quantity = "ກະລຸນາປ້ອນຈຳນວນທີ່ຕ້ອງການເພີ່ມ...";
           }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log("values:", values);
-          onClose();
+          const fetchData = async () => {
+            try {
+              const header = await getHeaders();
+              console.log(header);
+              const res = await axios.put(
+                `${END_POINT_SEVER}/v3/stock-import`,
+                {
+                  id: data._id,
+                  data: { quantity: values.quantity },
+                },
+                { headers: { ...header } }
+              );
+              if (res.status < 300) {
+                callback(res.data);
+              }
+            } catch (err) {
+              console.log("error:", err);
+            }
+            onClose();
+            setSubmitting();
+          };
+          fetchData();
         }}>
         {({
           values,

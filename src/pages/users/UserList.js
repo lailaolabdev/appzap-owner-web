@@ -351,7 +351,7 @@ export default function UserList() {
             firstname: "",
             lastname: "",
             phone: "",
-            role: "USER",
+            role: "APPZAP_STAFF",
           }}
           validate={(values) => {
             const errors = {};

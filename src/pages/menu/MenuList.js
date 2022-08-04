@@ -3,20 +3,25 @@ import { Formik } from 'formik';
 import axios from 'axios';
 import useReactRouter from "use-react-router"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAdjust, faEdit, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import {
-  Button,
-  Modal,
-  Form,
-  Nav,
-  Image
-} from "react-bootstrap";
-import { BODY, COLOR_APP, URL_PHOTO_AW3 } from '../../constants'
-import { MENUS, PRESIGNED_URL, getLocalData, END_POINT_SEVER } from '../../constants/api'
-import { moneyCurrency, STATUS_MENU } from '../../helpers'
-import { successAdd, errorAdd } from '../../helpers/sweetalert'
-import profileImage from "../../image/profile.png"
-import { getHeaders } from '../../services/auth';
+  faAdjust,
+  faCubes,
+  faEdit,
+  faPlus,
+  faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
+import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
+import {
+  MENUS,
+  PRESIGNED_URL,
+  getLocalData,
+  END_POINT_SEVER,
+} from "../../constants/api";
+import { moneyCurrency, STATUS_MENU } from "../../helpers";
+import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import profileImage from "../../image/profile.png";
+import { getHeaders } from "../../services/auth";
 import { PhoneInTalkSharp } from "@material-ui/icons";
 
 export default function MenuList() {
@@ -119,7 +124,6 @@ export default function MenuList() {
       console.log(error);
     }
   };
-
   // lung jak upload leo pic ja ma so u nee
   const ImageThumb = ({ image }) => {
     return (
@@ -281,7 +285,8 @@ export default function MenuList() {
           <Button
             className='col-sm-2'
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={handleShow}>
+            // onClick={handleShow}
+            onClick={() => history.push(`/settingStore/menu/add`)}>
             ເພີ່ມເມນູອາຫານ
           </Button>{" "}
         </div>
@@ -363,6 +368,19 @@ export default function MenuList() {
                             cursor: "pointer",
                           }}
                           onClick={() => handleShow3(data?._id, data?.name)}
+                        />
+                        <FontAwesomeIcon
+                          icon={faCubes}
+                          style={{
+                            marginLeft: 20,
+                            color: "red",
+                            cursor: "pointer",
+                          }}
+                          onClick={() =>
+                            history.push(
+                              `/settingStore/menu/menu-stock/${data?._id}`
+                            )
+                          }
                         />
                       </td>
                     </tr>
