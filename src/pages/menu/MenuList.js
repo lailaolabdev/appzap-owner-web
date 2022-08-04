@@ -285,8 +285,9 @@ export default function MenuList() {
           <Button
             className='col-sm-2'
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            // onClick={handleShow}
-            onClick={() => history.push(`/settingStore/menu/add`)}>
+            onClick={handleShow}
+            // onClick={() => history.push(`/settingStore/menu/add`)}
+          >
             ເພີ່ມເມນູອາຫານ
           </Button>{" "}
         </div>
@@ -369,7 +370,7 @@ export default function MenuList() {
                           }}
                           onClick={() => handleShow3(data?._id, data?.name)}
                         />
-                        <FontAwesomeIcon
+                        {/* <FontAwesomeIcon
                           icon={faCubes}
                           style={{
                             marginLeft: 20,
@@ -381,7 +382,7 @@ export default function MenuList() {
                               `/settingStore/menu/menu-stock/${data?._id}`
                             )
                           }
-                        />
+                        /> */}
                       </td>
                     </tr>
                   );

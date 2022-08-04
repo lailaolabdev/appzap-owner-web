@@ -112,7 +112,7 @@ export default function SettingList() {
         <FontAwesomeIcon icon={faHistory} />
         ປະຫັວດການໃຊ້ງານ
       </button>
-      <button
+      {/* <button
         type='button'
         className='card col-2'
         style={{
@@ -132,7 +132,7 @@ export default function SettingList() {
         }>
         <FontAwesomeIcon icon={faBoxes} />
         ຈັກການສະຕ໊ອກ
-      </button>
+      </button> */}
     </div>
   );
 }
