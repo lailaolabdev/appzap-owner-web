@@ -342,9 +342,10 @@ function Login() {
                     textAlign: "center",
                     paddingBottom: 35,
                     display: "flex",
+                    flexDirection: "column",
                   }}>
                   <h4 style={{ fontWeight: "bold", color: COLOR_APP }}>
-                    L A I L A O
+                    A P P Z A P
                   </h4>
                   <h4
                     style={{
@@ -352,7 +353,7 @@ function Login() {
                       color: COLOR_APP,
                       marginLeft: 24,
                     }}>
-                    C F
+                    Lao Self Ordering
                   </h4>
                 </div>
                 <div
