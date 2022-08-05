@@ -19,51 +19,50 @@ import { successAdd, errorAdd } from '../../helpers/sweetalert'
 
 
 export default function UserList() {
-  const { history, location, match } = useReactRouter()
+  const { history, location, match } = useReactRouter();
   const _limit = match.params.limit;
   const _page = match.params.page;
-  const [isLoading, setIsLoading] = useState(false)
-  const [userData, setuserData] = useState()
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setuserData] = useState();
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const [getTokken, setgetTokken] = useState()
+  const [getTokken, setgetTokken] = useState();
   useEffect(() => {
     const fetchData = async () => {
-      const _localData = await getLocalData()
+      const _localData = await getLocalData();
       if (_localData) {
-        setgetTokken(_localData)
+        setgetTokken(_localData);
       }
-    }
+    };
     fetchData();
-    getData()
-  }, [])
+    getData();
+  }, []);
   const getData = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     await fetch(USERS + `/skip/0/limit/0/?storeId=${match?.params?.id}`, {
       method: "GET",
-    }).then(response => response.json())
-      .then(json => setuserData(json));
-    setIsLoading(false)
-  }
+    })
+      .then((response) => response.json())
+      .then((json) => setuserData(json));
+    setIsLoading(false);
+  };
   const _AddUser = () => {
-    history.push('/users/userAdd')
-  }
-  const _userDetail = () => {
-
-  }
+    history.push("/users/userAdd");
+  };
+  const _userDetail = () => {};
   const [totalPage, setTotalPage] = useState([]);
   useEffect(() => {
     if (userData?.total > 0) {
-      _getArrayPageNumber()
+      _getArrayPageNumber();
     }
-  }, [userData])
+  }, [userData]);
   const _getArrayPageNumber = () => {
     let rowPage = [];
     let _total = 0;
     if (userData?.total % parseInt(_limit) != 0) {
-      _total = (parseInt(userData?.total) / parseInt(_limit)) + 1;
+      _total = parseInt(userData?.total) / parseInt(_limit) + 1;
     } else {
       _total = parseInt(userData?.total) / parseInt(_limit);
     }
@@ -73,26 +72,26 @@ export default function UserList() {
     setTotalPage(rowPage);
   };
   const _nextPage = (page) => {
-    history.push(`/users/limit/${_limit}/page/${page}`)
-  }
+    history.push(`/users/limit/${_limit}/page/${page}`);
+  };
   // upload photo
-  const [namePhoto, setNamePhoto] = useState('')
-  const [file, setFile] = useState()
-  const [imageLoading, setImageLoading] = useState()
+  const [namePhoto, setNamePhoto] = useState("");
+  const [file, setFile] = useState();
+  const [imageLoading, setImageLoading] = useState();
   const handleUpload = async (event) => {
-    setImageLoading("")
+    setImageLoading("");
     try {
       setFile(event.target.files[0]);
       let formData = new FormData();
-      let fileData = event.target.files[0]
+      let fileData = event.target.files[0];
       const responseUrl = await axios({
-        method: 'post',
+        method: "post",
         url: PRESIGNED_URL,
         data: {
-          name: event.target.files[0].type
-        }
-      })
-      setNamePhoto(responseUrl.data)
+          name: event.target.files[0].type,
+        },
+      });
+      setNamePhoto(responseUrl.data);
       let afterUpload = await axios({
         method: "put",
         url: responseUrl.data.url,
@@ -105,26 +104,44 @@ export default function UserList() {
             "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
         },
         onUploadProgress: function (progressEvent) {
-          var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          setImageLoading(percentCompleted)
-        }
-      })
+          var percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setImageLoading(percentCompleted);
+        },
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   // lung jak upload leo pic ja ma so u nee
   const ImageThumb = ({ image }) => {
-    return <img src={URL.createObjectURL(image)} alt={image.name} style={{
-      borderRadius: "50%",
-      height: 200,
-      width: 200,
-    }} />;
+    return (
+      <img
+        src={URL.createObjectURL(image)}
+        alt={image.name}
+        style={{
+          borderRadius: "50%",
+          height: 200,
+          width: 200,
+        }}
+      />
+    );
   };
   // create user
   const _createUser = async (values) => {
+    console.log({
+      storeId: getTokken?.DATA?.storeId,
+      userId: values?.userId,
+      password: values?.password,
+      firstname: values?.firstname,
+      lastname: values?.lastname,
+      phone: values?.phone,
+      role: values?.role,
+      image: namePhoto?.params?.Key,
+    });
     const resData = await axios({
-      method: 'POST',
+      method: "POST",
       url: USERS_CREATE,
       headers: getTokken?.TOKEN,
       data: {
@@ -137,59 +154,62 @@ export default function UserList() {
         role: values?.role,
         image: namePhoto?.params?.Key,
       },
-    }).then(async function (response) {
-      if (response?.status === 200) {
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ")
-        handleClose()
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      }
-    }).catch(function (error) {
-      console.log("error", error)
-      errorAdd('ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ UserId ນີ້ມີແລ້ວ!')
     })
-
-  }
+      .then(async function (response) {
+        if (response?.status === 200) {
+          successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+          handleClose();
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        }
+      })
+      .catch(function (error) {
+        console.log("error", error);
+        errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ UserId ນີ້ມີແລ້ວ!");
+      });
+  };
   // ======>
   // detele menu
   const [show3, setShow3] = useState(false);
   const handleClose3 = () => setShow3(false);
-  const [dateDelete, setdateDelete] = useState('')
+  const [dateDelete, setdateDelete] = useState("");
   const handleShow3 = (id, name) => {
-    setdateDelete({ name, id })
-    setShow3(true)
+    setdateDelete({ name, id });
+    setShow3(true);
   };
   const _confirmeDelete = async () => {
     const resData = await axios({
-      method: 'DELETE',
+      method: "DELETE",
       url: USERS_DELETE + dateDelete?.id,
       headers: getTokken?.TOKEN,
-    }).then(async function (response) {
-      successAdd("ລົບຂໍ້ມູນສຳເລັດ")
-      handleClose()
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    }).catch(function (error) {
-      errorAdd('ລົບຂໍ້ມູນບໍ່ສຳເລັດ !')
     })
-  }
+      .then(async function (response) {
+        successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+        handleClose();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      })
+      .catch(function (error) {
+        errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+      });
+  };
   // =======>
-  // update 
+  // update
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
-  const [dataUpdate, setdataUpdate] = useState({})
+  const [dataUpdate, setdataUpdate] = useState({});
   const handleShow2 = async (item) => {
-    setdataUpdate(item)
-    setShow2(true)
+    setdataUpdate(item);
+    setShow2(true);
   };
   const _updateCategory = async (values) => {
     if (values?.userId === dataUpdate?.userId) {
-      delete values?.userId
+      delete values?.userId;
     }
     const resData = await axios({
-      method: 'PUT',
+      method: "PUT",
       url: USERS_UPDATE + `?id=${dataUpdate?._id}`,
       headers: getTokken?.TOKEN,
       data: {
@@ -199,16 +219,18 @@ export default function UserList() {
         role: values?.role,
         image: namePhoto?.params?.Key,
       },
-    }).then(async function (response) {
-      successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ")
-      handleClose()
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    }).catch(function (error) {
-      errorAdd('ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !')
     })
-  }
+      .then(async function (response) {
+        successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
+        handleClose();
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      })
+      .catch(function (error) {
+        errorAdd("ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !");
+      });
+  };
   return (
     <div>
       {isLoading ? (
@@ -355,21 +377,21 @@ export default function UserList() {
           }}
           validate={(values) => {
             const errors = {};
-            // if (!values.userId) {
-            //   errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
-            // if (!values.password) {
-            //   errors.password = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
-            // if (!values.firstname) {
-            //   errors.firstname = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
-            // if (!values.lastname) {
-            //   errors.lastname = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
-            // if (!values.phone) {
-            //   errors.phone = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
+            if (!values.userId) {
+              errors.userId = "ກະລຸນາປ້ອນ Userid... !";
+            }
+            if (!values.password) {
+              errors.password = "ກະລຸນາປ້ອນ Userid... !";
+            }
+            if (!values.firstname) {
+              errors.firstname = "ກະລຸນາປ້ອນ Userid... !";
+            }
+            if (!values.lastname) {
+              errors.lastname = "ກະລຸນາປ້ອນ Userid... !";
+            }
+            if (!values.phone) {
+              errors.phone = "ກະລຸນາປ້ອນ Userid... !";
+            }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -458,12 +480,7 @@ export default function UserList() {
                     onBlur={handleBlur}
                     value={values.userId}
                     placeholder='UserId...'
-                    style={{
-                      border:
-                        errors.userId && touched.userId && errors.userId
-                          ? "solid 1px red"
-                          : "",
-                    }}
+                    isInvalid={errors.userId}
                   />
                 </Form.Group>
                 <Form.Group controlId='exampleForm.ControlInput1'>
@@ -475,12 +492,7 @@ export default function UserList() {
                     onBlur={handleBlur}
                     value={values.password}
                     placeholder='Password...'
-                    style={{
-                      border:
-                        errors.password && touched.password && errors.password
-                          ? "solid 1px red"
-                          : "",
-                    }}
+                    isInvalid={errors.password}
                   />
                 </Form.Group>
                 <Form.Group controlId='exampleForm.ControlSelect1'>
