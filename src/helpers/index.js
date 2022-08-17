@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
+// 
 export const orderStatus = (status) => {
   switch (status) {
     case "WAITING":
