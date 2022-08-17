@@ -19,17 +19,6 @@ import {
   faTable,
   faTableTennis,
 } from "@fortawesome/free-solid-svg-icons";
-=======
-import {
-    TITLE_HEADER,
-} from "../../constants/index";
-import {
-    END_POINT_SEVER
-} from "../../constants/api";
-import AnimationLoading from '../../constants/loading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faPrint, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
->>>>>>> staging
 import axios from "axios";
 
 export default function HistoryUse() {

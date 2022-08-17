@@ -367,12 +367,8 @@ function Login() {
                     paddingBottom: 35,
                     display: "flex",
                     flexDirection: "column",
-<<<<<<< HEAD
-                  }}>
-=======
                   }}
                 >
->>>>>>> staging
                   <h4 style={{ fontWeight: "bold", color: COLOR_APP }}>
                     A P P Z A P
                   </h4>
@@ -380,13 +376,7 @@ function Login() {
                     style={{
                       fontWeight: "bold",
                       color: COLOR_APP,
-                      marginLeft: 24,
-<<<<<<< HEAD
-                    }}>
-=======
-                    }}
-                  >
->>>>>>> staging
+                      marginLeft: 24,}}>
                     Lao Self Ordering
                   </h4>
                 </div>
