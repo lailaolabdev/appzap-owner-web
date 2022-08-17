@@ -4,7 +4,7 @@ import Nav from "react-bootstrap/Nav"
 import Form from "react-bootstrap/Form"
 import Image from "react-bootstrap/Image"
 import Dropdown from "react-bootstrap/Dropdown"
-import { USER_KEY, END_POINT, URL_PHOTO_AW3 } from "../constants"
+import { USER_KEY, END_POINT, URL_PHOTO_AW3,VERSION } from "../constants"
 import useReactRouter from "use-react-router"
 import ImageProfile from "../image/profile.png"
 import { Badge, Modal, Button, Table } from 'react-bootstrap'
@@ -65,7 +65,7 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p style={{ marginTop: 20 }}>Version:4.0.2</p>
+          <p style={{ marginTop: 20 }}>Version:{VERSION}</p>
           <div style={{ marginLeft: 20 }}></div>
           <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"

@@ -8,18 +8,25 @@ import {
   InputGroup,
   Image,
   Modal,
-  Carousel
+  Carousel,
 } from "react-bootstrap";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import * as axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle, faEye, faEyeSlash, faHeadset, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationCircle,
+  faEye,
+  faEyeSlash,
+  faHeadset,
+  faLock,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import useReactRouter from "use-react-router";
-import Lottie from 'react-lottie';
+import Lottie from "react-lottie";
 
 // style
-import './login.css';
+import "./login.css";
 
 import { USER_KEY, END_POINT, COLOR_APP } from "../../constants";
 import useWindowDimensions from "../../helpers/useWindowDimensions";
@@ -34,7 +41,6 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
 
-
   const _login = async ({ values }) => {
     try {
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
@@ -48,15 +54,16 @@ function Login() {
       setCheckUser(true);
     }
   };
-  let _imgaeSlide = [
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+15+(1).png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+17+(1).png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+17.png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+18+(1).png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+18.png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+20.png",
-    "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+21.png",
-  ];
+  // let _imgaeSlide = [
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+15+(1).png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+17+(1).png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+17.png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+18+(1).png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+18.png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+20.png",
+  //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+21.png",
+  // ];
+  let _imgaeSlide = ["/images/slide/pro1.png", "/images/slide/pro2.png"];
 
   return (
     <div>
@@ -69,7 +76,8 @@ function Login() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-          }}>
+          }}
+        >
           <div
             style={{
               width: "40vw",
@@ -79,7 +87,8 @@ function Login() {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-            }}>
+            }}
+          >
             <Formik
               initialValues={{ userId: "", password: "" }}
               validationSchema={Yup.object({
@@ -98,7 +107,8 @@ function Login() {
               }}
               onSubmit={async (values) => {
                 await _login({ values });
-              }}>
+              }}
+            >
               {({
                 touched,
                 handleBlur,
@@ -107,7 +117,7 @@ function Login() {
                 errors,
                 values,
               }) => (
-                <Form className='' style={{ width: "70%" }}>
+                <Form className="" style={{ width: "70%" }}>
                   <div
                     style={{
                       display: "flex",
@@ -115,20 +125,23 @@ function Login() {
                       width: "100%",
                       justifyContent: "center",
                       alignItems: "center",
-                    }}>
+                    }}
+                  >
                     <div
                       style={{
                         textAlign: "center",
                         paddingBottom: 45,
                         display: "flex",
                         flexDirection: "column",
-                      }}>
+                      }}
+                    >
                       <h4
                         style={{
                           fontWeight: "bold",
                           color: COLOR_APP,
                           fontSize: 70,
-                        }}>
+                        }}
+                      >
                         A P P Z A P
                       </h4>
                       <h4
@@ -137,7 +150,8 @@ function Login() {
                           color: COLOR_APP,
                           marginLeft: 24,
                           fontSize: 30,
-                        }}>
+                        }}
+                      >
                         Lao Self Ordering
                       </h4>
                       <h4
@@ -146,19 +160,21 @@ function Login() {
                           color: COLOR_APP,
                           marginLeft: 24,
                           fontSize: 30,
-                        }}>
+                        }}
+                      >
                         ສໍາລັບຮ້ານອາຫານ
                       </h4>
                     </div>
                     <div style={{ height: 45 }} />
                     <div
-                      className='text-start'
-                      style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}>
+                      className="text-start"
+                      style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}
+                    >
                       ຊື່ຜູ້ໃຊ້ລະບົບ
                     </div>
                     <Form.Control
-                      type='text'
-                      placeholder='ຊື່ຜູ້ໃຊ້...'
+                      type="text"
+                      placeholder="ຊື່ຜູ້ໃຊ້..."
                       onChange={handleChange("userId")}
                       onBlur={handleBlur}
                       value={values.userId}
@@ -169,7 +185,7 @@ function Login() {
                       }}
                     />
                     {errors.userId && (
-                      <div className='text-start' style={{ width: "100%" }}>
+                      <div className="text-start" style={{ width: "100%" }}>
                         <span style={{ fontSize: 12, color: "red" }}>
                           {errors.userId}
                         </span>
@@ -177,8 +193,9 @@ function Login() {
                     )}
                     <div style={{ height: 10 }} />
                     <div
-                      className='text-start'
-                      style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}>
+                      className="text-start"
+                      style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}
+                    >
                       ລະຫັດຜ່ານ
                     </div>
                     <div
@@ -189,10 +206,11 @@ function Login() {
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
-                      }}>
+                      }}
+                    >
                       <Form.Control
                         type={isPasswordType ? "password" : "text"}
-                        placeholder='ລະຫັດຜ່ານ...'
+                        placeholder="ລະຫັດຜ່ານ..."
                         onChange={handleChange("password")}
                         onBlur={handleBlur}
                         value={values.password}
@@ -211,7 +229,7 @@ function Login() {
                     </div>
                     <div style={{ width: "100%", display: "flex" }}>
                       {errors.password && (
-                        <div className='text-start' style={{ width: "100%" }}>
+                        <div className="text-start" style={{ width: "100%" }}>
                           <span style={{ fontSize: 12, color: "red" }}>
                             {errors.password}
                           </span>
@@ -226,7 +244,8 @@ function Login() {
                         fontWeight: "bold",
                         color: "red",
                         display: checkUser === false ? "none" : "",
-                      }}>
+                      }}
+                    >
                       ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ຊື່ຜູ້ໃຊ້ລະບົບ ບໍ່ຖືກຕ້ອງ
                     </div>
                     <Button
@@ -237,13 +256,15 @@ function Login() {
                         width: "100%",
                         fontSize: 18,
                       }}
-                      onClick={handleSubmit}>
+                      onClick={handleSubmit}
+                    >
                       ເຂົ້າສູ່ລະບົບ{" "}
                     </Button>
                     <div style={{ height: 50 }} />
                     <a
                       onClick={() => history.push("/privacy-policy")}
-                      style={{ cursor: "pointer" }}>
+                      style={{ cursor: "pointer" }}
+                    >
                       <u>ນະໂຍບາຍການນໍາໃຊ້</u>
                     </a>
                     <div style={{ height: 40 }} />
@@ -254,7 +275,8 @@ function Login() {
                         padding: 15,
                         backgroundColor: "#fff",
                         cursor: "pointer",
-                      }}>
+                      }}
+                    >
                       <FontAwesomeIcon
                         icon={faHeadset}
                         style={{ color: "#FB6E3B", fontSize: 60 }}
@@ -285,12 +307,12 @@ function Login() {
               nextIcon={false}>
               {_imgaeSlide?.map((item, index) => (
                 <Carousel.Item key={"carouse-" + index}>
-                  <img
+                    <img
                     className='d-block'
-                    src={item}
+                      src={item}
                     alt='First slide'
                     style={{ width: "100%" }}
-                  />
+                    />
                 </Carousel.Item>
               ))}
             </Carousel>
@@ -312,7 +334,8 @@ function Login() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-          }}>
+          }}
+        >
           <Formik
             initialValues={{ userId: "", password: "" }}
             validate={(values) => {
@@ -327,7 +350,8 @@ function Login() {
             }}
             onSubmit={async (values) => {
               await _login({ values });
-            }}>
+            }}
+          >
             {({
               touched,
               handleBlur,
@@ -336,14 +360,19 @@ function Login() {
               errors,
               values,
             }) => (
-              <Form className='' style={{}}>
+              <Form className="" style={{}}>
                 <div
                   style={{
                     textAlign: "center",
                     paddingBottom: 35,
                     display: "flex",
                     flexDirection: "column",
+<<<<<<< HEAD
                   }}>
+=======
+                  }}
+                >
+>>>>>>> staging
                   <h4 style={{ fontWeight: "bold", color: COLOR_APP }}>
                     A P P Z A P
                   </h4>
@@ -352,7 +381,12 @@ function Login() {
                       fontWeight: "bold",
                       color: COLOR_APP,
                       marginLeft: 24,
+<<<<<<< HEAD
                     }}>
+=======
+                    }}
+                  >
+>>>>>>> staging
                     Lao Self Ordering
                   </h4>
                 </div>
@@ -362,8 +396,9 @@ function Login() {
                     flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                  }}>
-                  <div className='text-start'>
+                  }}
+                >
+                  <div className="text-start">
                     <label style={{ color: "#4B4A4A" }}>ຊື່ຜູ້ໃຊ້ລະບົບ</label>
                     <div
                       style={{
@@ -371,11 +406,12 @@ function Login() {
                         flexDirection: "row",
                         justifyContent: "center",
                         alignItems: "center",
-                      }}>
+                      }}
+                    >
                       <FormControl
-                        id='inlineFormInputGroup1'
-                        type='text'
-                        placeholder='ຊື່ຜູ້ໃຊ້...'
+                        id="inlineFormInputGroup1"
+                        type="text"
+                        placeholder="ຊື່ຜູ້ໃຊ້..."
                         onChange={handleChange("userId")}
                         onBlur={handleBlur}
                         value={values.userId}
@@ -388,7 +424,7 @@ function Login() {
                     )}
                   </div>
 
-                  <div className='text-start'>
+                  <div className="text-start">
                     <div style={{ height: 10 }}></div>
                     <label style={{ color: "#4B4A4A" }}>ລະຫັດຜ່ານ</label>
                     <div
@@ -397,11 +433,12 @@ function Login() {
                         flexDirection: "row",
                         justifyContent: "center",
                         alignItems: "center",
-                      }}>
+                      }}
+                    >
                       <FormControl
-                        id='inlineFormInputGroup1'
-                        type='password'
-                        placeholder='ລະຫັດຜ່ານ...'
+                        id="inlineFormInputGroup1"
+                        type="password"
+                        placeholder="ລະຫັດຜ່ານ..."
                         onChange={handleChange("password")}
                         onBlur={handleBlur}
                         value={values.password}
@@ -422,7 +459,8 @@ function Login() {
                       fontWeight: "bold",
                       color: "red",
                       display: checkUser === false ? "none" : "",
-                    }}>
+                    }}
+                  >
                     ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ຊື່ຜູ້ໃຊ້ລະບົບ ບໍ່ຖືກຕ້ອງ
                   </div>
                   <Button
@@ -433,14 +471,16 @@ function Login() {
                       width: 150,
                       color: "#fff",
                     }}
-                    onClick={handleSubmit}>
+                    onClick={handleSubmit}
+                  >
                     ເຂົ້າສູ່ລະບົບ{" "}
                   </Button>
 
                   <div style={{ height: 30 }} />
                   <a
                     onClick={() => history.push("/privacy-policy")}
-                    style={{ cursor: "pointer", color: "#FB6E3B" }}>
+                    style={{ cursor: "pointer", color: "#FB6E3B" }}
+                  >
                     <u>ນະໂຍບາຍການນໍາໃຊ້</u>
                   </a>
                   <div style={{ height: 50 }} />
@@ -455,9 +495,10 @@ function Login() {
       {popupDate && (
         <Modal
           show={popupDate?.isPublished}
-          size='xl'
-          aria-labelledby='contained-modal-title-vcenter'
-          centered>
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
           <Modal.Header
             style={{
               display: "flex",
@@ -465,7 +506,8 @@ function Login() {
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
-            }}>
+            }}
+          >
             {width > 700 ? (
               <h3>{popupDate?.title ?? ""}</h3>
             ) : (
@@ -480,7 +522,8 @@ function Login() {
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
-            }}>
+            }}
+          >
             {width > 700 ? (
               <h5 style={{ textAlign: "center" }}>{popupDate?.detail ?? ""}</h5>
             ) : (
@@ -501,7 +544,6 @@ function Login() {
       )}
     </div>
   );
-
 }
 
 export default Login;

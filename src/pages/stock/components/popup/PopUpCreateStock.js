@@ -8,6 +8,7 @@ import {
   getLocalData,
   END_POINT_SEVER,
 } from "../../../../constants/api";
+import { successAdd, errorAdd } from "../../../../helpers/sweetalert";
 
 export default function PopUpCreateStock({ onClose, open, callback }) {
   // state
@@ -16,6 +17,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
   const [namePhoto, setNamePhoto] = useState("");
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
+  const [otherUnit, setOtherUnit] = useState(false);
   const handleUpload = async (event) => {
     // setImageLoading("");
     try {
@@ -103,7 +105,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
   }, []);
 
   return (
-    <Modal show={open} onHide={onClose} backdrop='static' keyboard={false}>
+    <Modal show={open} onHide={onClose} /*backdrop="static"*/ keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>ສ້າງສະຕ໊ອກ</Modal.Title>
       </Modal.Header>
@@ -139,9 +141,19 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          _createStock(values);
-          //   _createMenu(values);
-        }}>
+          const fetchData = async () => {
+            try {
+              await _createStock(values);
+              successAdd("ສ້າງສະຕ໊ອກສຳເລັດ");
+            } catch (error) {
+              console.log(error);
+              errorAdd("ສ້າງສະຕ໊ອນບໍ່ສຳເລັດ");
+            }
+            setSubmitting(false);
+          };
+          fetchData();
+        }}
+      >
         {({
           values,
           errors,
@@ -155,76 +167,17 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
         }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Body>
-              <div className='col-sm-12 center' style={{ textAlign: "center" }}>
-                <input
-                  type='file'
-                  id='file-upload'
-                  onChange={handleUpload}
-                  hidden
-                />
-                <label for='file-upload'>
-                  <div
-                    style={{
-                      backgroundColor: "#E4E4E4E4",
-                      height: 200,
-                      width: 200,
-                      borderRadius: "10%",
-                      cursor: "pointer",
-                      display: "flex",
-                    }}>
-                    {file ? (
-                      <ImageThumb image={file} />
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          height: 200,
-                          width: 200,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}>
-                        <p
-                          style={{
-                            color: "#fff",
-                            fontSize: 80,
-                            fontWeight: "bold",
-                          }}>
-                          +
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </label>
-                {/* progass */}
-                {imageLoading ? (
-                  <div className='progress' style={{ height: 20 }}>
-                    <div
-                      className='progress-bar'
-                      role='progressbar'
-                      style={{
-                        width: `${imageLoading}%`,
-                        backgroundColor: COLOR_APP,
-                      }}
-                      aria-valuenow={imageLoading}
-                      aria-valuemin='0'
-                      aria-valuemax='100'>
-                      {imageLoading}%
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ height: 20 }} />
-                )}
-              </div>
-              <Form.Group controlId='exampleForm.ControlSelect1'>
+              <Form.Group controlId="exampleForm.ControlSelect1">
                 <Form.Label>ປະເພດສະຕ໊ອກ</Form.Label>
                 <Form.Control
-                  as='select'
-                  name='stockCategoryId'
+                  as="select"
+                  name="stockCategoryId"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.stockCategoryId}
-                  isInvalid={errors.stockCategoryId}>
-                  <option selected={true} disabled={true} value=''>
+                  isInvalid={errors.stockCategoryId}
+                >
+                  <option selected={true} disabled={true} value="">
                     ເລືອກປະເພດສະຕ໊ອກ
                   </option>
                   {Categorys?.map((item, index) => {
@@ -232,54 +185,15 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   })}
                 </Form.Control>
               </Form.Group>
-              <div class='form-row'>
-                <div class='col-3'>
-                  <div class='form-group'>
-                    <label>ສະຖານະເປີດ/ປິດ</label>
-                  </div>
-                </div>
-                <div class='col-9'>
-                  <div class='form-row'>
-                    <div class='col'>
-                      <div class='custom-control custom-radio custom-control-inline'>
-                        <input
-                          type='radio'
-                          id='open'
-                          name='isOpened'
-                          defaultChecked={values.isOpened}
-                          class='custom-control-input'
-                          onChange={() => setFieldValue("isOpened", true)}
-                        />
-                        <label class='custom-control-label' for='open'>
-                          ເປີດ
-                        </label>
-                      </div>
-                      <div class='custom-control custom-radio custom-control-inline'>
-                        <input
-                          type='radio'
-                          id='off'
-                          name='isOpened'
-                          defaultChecked={!values.isOpened}
-                          class='custom-control-input'
-                          onChange={() => setFieldValue("isOpened", false)}
-                        />
-                        <label class='custom-control-label' for='off'>
-                          ປິດ
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ຊື່ສະຕ໊ອກ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='name'
+                  type="text"
+                  name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder='ຊື່ອາຫານ...'
+                  placeholder="ຊື່ອາຫານ..."
                   style={{
                     border:
                       errors.name && touched.name && errors.name
@@ -289,54 +203,82 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 />
               </Form.Group>
 
-              <Form.Group controlId='exampleForm.ControlInput1'>
-                <Form.Label>ຈຳນວນ</Form.Label>
+              <Form.Group controlId="exampleForm.ControlInput1">
+                <Form.Label>ຈຳນວນສະຕ໊ອກ</Form.Label>
                 <Form.Control
-                  type='number'
-                  name='quantity'
+                  type="number"
+                  name="quantity"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.quantity}
-                  placeholder='ຈຳນວນ...'
-                  style={{
-                    border:
-                      errors.quantity && touched.quantity && errors.quantity
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  placeholder="ຈຳນວນສະຕ໊ອກ..."
+                  isInvalid={errors?.quantity}
                 />
               </Form.Group>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ຫົວໜ່ວຍ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='unit'
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.unit}
-                  placeholder='ຫົວໜ່ວຍ...'
-                  style={{
-                    border:
-                      errors.unit && touched.unit && errors.unit
-                        ? "solid 1px red"
-                        : "",
+                  as="select"
+                  onChange={(e) => {
+                    if (e.target.value != "other") {
+                      setOtherUnit(false);
+                      setFieldValue("unit", e.target.value);
+                    } else {
+                      setOtherUnit(true);
+                    }
                   }}
-                />
+                  // onBlur={handleBlur}
+                  value={
+                    ["ກຣາມ", "ໝັດ", "ແກ້ວ"].filter((e) => e == values.unit)
+                      ?.length > 0
+                      ? values.unit
+                      : "other"
+                  }
+                  isInvalid={errors.unit}
+                >
+                  <option selected={true} disabled={true} value="">
+                    ເລືອກຫົວໜ່ວຍ
+                  </option>
+                  {["ກຣາມ", "ໝັດ", "ແກ້ວ"].map((e, i) => (
+                    <option value={e} key={i}>
+                      {e}
+                    </option>
+                  ))}
+                  <option value="other">ອື່ນໆ</option>
+                </Form.Control>
+                {otherUnit && (
+                  <Form.Control
+                    type="text"
+                    name="unit"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.unit}
+                    placeholder="ຫົວໜ່ວຍ..."
+                    style={{
+                      border:
+                        errors.unit && touched.unit && errors.unit
+                          ? "solid 1px red"
+                          : "",
+                      marginTop: 10,
+                    }}
+                  />
+                )}
               </Form.Group>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ໝາຍເຫດ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='detail'
+                  type="text"
+                  name="detail"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.detail}
-                  placeholder='ໝາຍເຫດ...'
+                  placeholder="ໝາຍເຫດ..."
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant='danger' onClick={onClose}>
+              <Button variant="danger" onClick={onClose}>
                 ຍົກເລີກ
               </Button>
               <Button
@@ -345,7 +287,9 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   color: "#ffff",
                   border: 0,
                 }}
-                onClick={handleSubmit}>
+                disabled={isSubmitting}
+                onClick={handleSubmit}
+              >
                 ບັນທືກ
               </Button>
             </Modal.Footer>

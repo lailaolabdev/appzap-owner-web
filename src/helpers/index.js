@@ -1,5 +1,5 @@
-import * as _ from "lodash"
-import { USER_KEY } from "../constants"
+import * as _ from "lodash";
+import { USER_KEY } from "../constants";
 export const orderStatus = (status) => {
   switch (status) {
     case "WAITING":
@@ -55,13 +55,13 @@ export const STATUS_USERS = (item) => {
   }
 };
 export const STATUS_MENU = (item) => {
-  if (item) return "ເປີດ"
-  if (!item) return "ປິດ"
-}
+  if (item) return "ເປີດ";
+  if (!item) return "ປິດ";
+};
 export const STATUS_OPENTABLE = (item) => {
   if (item === false) {
-    return "ວ່າງ"
+    return "ວ່າງ";
   } else if (item === true) {
-    return "ເປີດແລ້ວ"
+    return "ເປີດແລ້ວ";
   }
-}
+};

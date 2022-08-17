@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { Formik } from 'formik';
-import axios from 'axios';
-import useReactRouter from "use-react-router"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { useState, useEffect } from "react";
+import { Formik } from "formik";
+import axios from "axios";
+import useReactRouter from "use-react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdjust,
   faCubes,
@@ -23,6 +23,7 @@ import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
 import { getHeaders } from "../../services/auth";
 import { PhoneInTalkSharp } from "@material-ui/icons";
+import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 
 export default function MenuList() {
   const { history, match } = useReactRouter();
@@ -44,6 +45,7 @@ export default function MenuList() {
   };
 
   const [getTokken, setgetTokken] = useState();
+  const [filterName, setFilterName] = useState("");
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
@@ -51,31 +53,43 @@ export default function MenuList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const _localData = await getLocalData();
-      if (_localData) {
-        setgetTokken(_localData);
-        getcategory(_localData?.DATA?.storeId);
-        getMenu(_localData?.DATA?.storeId);
+      try {
+        const _localData = await getLocalData();
+        if (_localData) {
+          setgetTokken(_localData);
+          getcategory(_localData?.DATA?.storeId);
+          getMenu(_localData?.DATA?.storeId);
+        }
+      } catch (err) {
+        console.log(err);
       }
     };
     fetchData();
   }, []);
   const getcategory = async (id) => {
-    await fetch(
-      END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => setCategorys(json));
+    try {
+      await fetch(
+        END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setCategorys(json));
+    } catch (err) {
+      console.log(err);
+    }
   };
   const getMenu = async (id) => {
-    await fetch(MENUS + `/?isOpened=true&storeId=${id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setMenus(json));
+    try {
+      await fetch(MENUS + `/?isOpened=true&storeId=${id}`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((json) => setMenus(json));
+    } catch (err) {
+      console.log(err);
+    }
   };
   const _menuList = () => {
     history.push(`/settingStore/menu/limit/40/page/1/${match?.params?.id}`);
@@ -234,7 +248,7 @@ export default function MenuList() {
       headers: headers,
     });
     if (resData?.data) {
-      setMenus(resData?.data);
+      // setMenus(resData?.data);
       handleClose2();
       successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
     }
@@ -265,146 +279,164 @@ export default function MenuList() {
   return (
     <div style={BODY}>
       <div>
-        <Nav variant='tabs' defaultActiveKey='/settingStore/menu'>
+        <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
           <Nav.Item>
-            <Nav.Link eventKey='/settingStore/menu' onClick={() => _menuList()}>
+            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
               ເມນູອາຫານ
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='/settingStore/category'
-              onClick={() => _category()}>
+              eventKey="/settingStore/category"
+              onClick={() => _category()}
+            >
               ປະເພດອາຫານ
             </Nav.Link>
           </Nav.Item>
         </Nav>
       </div>
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div className='col-sm-12 text-right'>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 190px" }}>
+          <Form.Control
+            type="text"
+            placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
+            value={filterName}
+            onChange={(e) => {
+              setFilterName(e.target.value);
+            }}
+          />
+          <div />
           <Button
-            className='col-sm-2'
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
-            // onClick={() => history.push(`/settingStore/menu/add`)}
           >
             ເພີ່ມເມນູອາຫານ
-          </Button>{" "}
+          </Button>
         </div>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className='col-sm-12'>
-            <table className='table table-hover'>
-              <thead className='thead-light'>
+          <div className="col-sm-12" style={{ overflow: "auto" }}>
+            <table className="table table-hover" style={{ minWidth: 700 }}>
+              <thead className="thead-light">
                 <tr>
-                  <th scope='col'>#</th>
-                  <th scope='col'>ຮູບພາບ</th>
-                  <th scope='col'>ຊື່ປະເພດອາຫານ</th>
-                  <th scope='col'>ຊື່ອາຫານ</th>
-                  <th scope='col'>ລາຄາ</th>
-                  <th scope='col'>ສະຖານະ</th>
-                  <th scope='col'>ຈຳນວນ</th>
-                  <th scope='col'>ໝາຍເຫດ</th>
-                  <th scope='col'>ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">#</th>
+                  <th scope="col">ຮູບພາບ</th>
+                  <th scope="col">ຊື່ປະເພດອາຫານ</th>
+                  <th scope="col">ຊື່ອາຫານ</th>
+                  <th scope="col">ລາຄາ</th>
+                  {/* <th scope="col">ສະຖານະ</th> */}
+                  {/* <th scope='col'>ຈຳນວນ</th> */}
+                  <th scope="col">ໝາຍເຫດ</th>
+                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
               </thead>
               <tbody>
-                {Menus?.map((data, index) => {
-                  return (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>
-                        {data?.images.length > 0 ? (
-                          <center>
-                            <Image
-                              src={URL_PHOTO_AW3 + data?.images[0]}
-                              width='150'
-                              height='150'
-                              style={{
-                                height: 50,
-                                width: 50,
-                                borderRadius: "50%",
-                              }}
-                            />
-                          </center>
-                        ) : (
-                          <center>
-                            <Image
-                              src={profileImage}
-                              width='150'
-                              height='150'
-                              style={{
-                                height: 50,
-                                width: 50,
-                                borderRadius: "50%",
-                              }}
-                            />
-                          </center>
-                        )}
-                      </td>
-                      <td>{data?.categoryId?.name}</td>
-                      <td>{data?.name}</td>
-                      <td>{moneyCurrency(data?.price)}</td>
-                      <td style={{ color: data?.isOpened ? "green" : "red" }}>
+                {Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
+                  (data, index) => {
+                    return (
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>
+                          {data?.images.length > 0 ? (
+                            <center>
+                              <Image
+                                src={URL_PHOTO_AW3 + data?.images[0]}
+                                width="150"
+                                height="150"
+                                style={{
+                                  height: 50,
+                                  width: 50,
+                                  borderRadius: "50%",
+                                }}
+                              />
+                            </center>
+                          ) : (
+                            <center>
+                              <Image
+                                src={profileImage}
+                                width="150"
+                                height="150"
+                                style={{
+                                  height: 50,
+                                  width: 50,
+                                  borderRadius: "50%",
+                                }}
+                              />
+                            </center>
+                          )}
+                        </td>
+                        <td>{data?.categoryId?.name}</td>
+                        <td>{data?.name}</td>
+                        <td>{moneyCurrency(data?.price)}</td>
+                        {/* <td style={{ color: data?.isOpened ? "green" : "red" }}>
                         {STATUS_MENU(data?.isOpened)}
-                      </td>
-                      <td
+                      </td> */}
+                        {/* <td
                         style={{
                           color: data?.quantity < 10 ? "red" : "green",
                         }}>
                         {data?.quantity}
-                      </td>
-                      <td>{data?.detail ? data?.detail : " - "}</td>
-                      <td>
-                        <FontAwesomeIcon
-                          icon={faEdit}
-                          onClick={() => handleShow2(data)}
-                          style={{ color: COLOR_APP, cursor: "pointer" }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          style={{
-                            marginLeft: 20,
-                            color: "red",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handleShow3(data?._id, data?.name)}
-                        />
-                        {/* <FontAwesomeIcon
-                          icon={faCubes}
-                          style={{
-                            marginLeft: 20,
-                            color: "red",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            history.push(
-                              `/settingStore/menu/menu-stock/${data?._id}`
-                            )
-                          }
-                        /> */}
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </td> */}
+                        <td>{data?.detail ? data?.detail : " "}</td>
+                        <td>
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            onClick={() => handleShow2(data)}
+                            style={{ color: COLOR_APP, cursor: "pointer" }}
+                          />
+                          <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            style={{
+                              marginLeft: 20,
+                              color: "red",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleShow3(data?._id, data?.name)}
+                          />
+                          <FontAwesomeIcon
+                            icon={faCubes}
+                            style={{
+                              marginLeft: 20,
+                              color: "red",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              history.push(
+                                `/settingStore/menu/menu-stock/${data?._id}`
+                              )
+                            }
+                          />
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
               </tbody>
             </table>
           </div>
         </div>
       </div>
-      ;{/* add menu */}
+      {/* >>>>>>>>>>>>> popup >>>>>>>>>>>> */}
+      <PopUpConfirmDeletion
+        open={show3}
+        text={dateDelete?.name}
+        onClose={handleClose3}
+        onSubmit={_confirmeDelete}
+      />
+      {/* add menu */}
       <Modal
         show={show}
         onHide={handleClose}
-        backdrop='static'
-        keyboard={false}>
+        // backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>ເພີ່ມເມນູອາຫານ</Modal.Title>
         </Modal.Header>
         <Formik
           initialValues={{
             name: "",
-            quantity: "",
+            quantity: 1,
             categoryId: "",
             price: "",
             detail: "",
@@ -418,20 +450,16 @@ export default function MenuList() {
             if (!values.price) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
-            if (!values.quantity) {
-              errors.quantity = "ກະລຸນາປ້ອນ...";
-            }
             if (!values.categoryId) {
               errors.categoryId = "ກະລຸນາປ້ອນ...";
             }
-            if (!values.unit) {
-              errors.unit = "ກະລຸນາປ້ອນ...";
-            }
+
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
             _createMenu(values);
-          }}>
+          }}
+        >
           {({
             values,
             errors,
@@ -445,15 +473,16 @@ export default function MenuList() {
             <form onSubmit={handleSubmit}>
               <Modal.Body>
                 <div
-                  className='col-sm-12 center'
-                  style={{ textAlign: "center" }}>
+                  className="col-sm-12 center"
+                  style={{ textAlign: "center" }}
+                >
                   <input
-                    type='file'
-                    id='file-upload'
+                    type="file"
+                    id="file-upload"
                     onChange={handleUpload}
                     hidden
                   />
-                  <label for='file-upload'>
+                  <label for="file-upload">
                     <div
                       style={{
                         backgroundColor: "#E4E4E4E4",
@@ -462,7 +491,8 @@ export default function MenuList() {
                         borderRadius: "10%",
                         cursor: "pointer",
                         display: "flex",
-                      }}>
+                      }}
+                    >
                       {file ? (
                         <ImageThumb image={file} />
                       ) : (
@@ -473,13 +503,15 @@ export default function MenuList() {
                             width: 200,
                             justifyContent: "center",
                             alignItems: "center",
-                          }}>
+                          }}
+                        >
                           <p
                             style={{
                               color: "#fff",
                               fontSize: 80,
                               fontWeight: "bold",
-                            }}>
+                            }}
+                          >
                             +
                           </p>
                         </div>
@@ -488,17 +520,18 @@ export default function MenuList() {
                   </label>
                   {/* progass */}
                   {imageLoading ? (
-                    <div className='progress' style={{ height: 20 }}>
+                    <div className="progress" style={{ height: 20 }}>
                       <div
-                        className='progress-bar'
-                        role='progressbar'
+                        className="progress-bar"
+                        role="progressbar"
                         style={{
                           width: `${imageLoading}%`,
                           backgroundColor: COLOR_APP,
                         }}
                         aria-valuenow={imageLoading}
-                        aria-valuemin='0'
-                        aria-valuemax='100'>
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         {imageLoading}%
                       </div>
                     </div>
@@ -506,11 +539,11 @@ export default function MenuList() {
                     <div style={{ height: 20 }} />
                   )}
                 </div>
-                <Form.Group controlId='exampleForm.ControlSelect1'>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control
-                    as='select'
-                    name='categoryId'
+                    as="select"
+                    name="categoryId"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.categoryId}
@@ -521,8 +554,9 @@ export default function MenuList() {
                         errors.categoryId
                           ? "solid 1px red"
                           : "",
-                    }}>
-                    <option selected={true} disabled={true} value=''>
+                    }}
+                  >
+                    <option selected={true} disabled={true} value="">
                       ເລືອກປະເພດອາຫານ
                     </option>
                     {Categorys?.map((item, index) => {
@@ -530,53 +564,53 @@ export default function MenuList() {
                     })}
                   </Form.Control>
                 </Form.Group>
-                <div class='form-row'>
-                  <div class='col-3'>
-                    <div class='form-group'>
+                {/* <div class="form-row">
+                  <div class="col-3">
+                    <div class="form-group">
                       <label>ສະຖານະເປີດ/ປິດ</label>
                     </div>
                   </div>
-                  <div class='col-9'>
-                    <div class='form-row'>
-                      <div class='col'>
-                        <div class='custom-control custom-radio custom-control-inline'>
+                  <div class="col-9">
+                    <div class="form-row">
+                      <div class="col">
+                        <div class="custom-control custom-radio custom-control-inline">
                           <input
-                            type='radio'
-                            id='open'
-                            name='isOpened'
+                            type="radio"
+                            id="open"
+                            name="isOpened"
                             defaultChecked
-                            class='custom-control-input'
+                            class="custom-control-input"
                             onChange={() => setIsOpened(true)}
                           />
-                          <label class='custom-control-label' for='open'>
+                          <label class="custom-control-label" for="open">
                             ເປີດ
                           </label>
                         </div>
-                        <div class='custom-control custom-radio custom-control-inline'>
+                        <div class="custom-control custom-radio custom-control-inline">
                           <input
-                            type='radio'
-                            id='off'
-                            name='isOpened'
-                            class='custom-control-input'
+                            type="radio"
+                            id="off"
+                            name="isOpened"
+                            class="custom-control-input"
                             onChange={() => setIsOpened(false)}
                           />
-                          <label class='custom-control-label' for='off'>
+                          <label class="custom-control-label" for="off">
                             ປິດ
                           </label>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                </div> */}
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ອາຫານ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='name'
+                    type="text"
+                    name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder='ຊື່ອາຫານ...'
+                    placeholder="ຊື່ອາຫານ..."
                     style={{
                       border:
                         errors.name && touched.name && errors.name
@@ -585,15 +619,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ລາຄາ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='price'
+                    type="number"
+                    name="price"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.price}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.price && touched.price && errors.price
@@ -602,15 +636,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                {/* <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຈຳນວນ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='quantity'
+                    type="number"
+                    name="quantity"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.quantity}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.quantity && touched.quantity && errors.quantity
@@ -619,15 +653,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຫົວໜ່ວຍ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='unit'
+                    type="text"
+                    name="unit"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.unit}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.unit && touched.unit && errors.unit
@@ -635,21 +669,21 @@ export default function MenuList() {
                           : "",
                     }}
                   />
-                </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                </Form.Group> */}
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='detail'
+                    type="text"
+                    name="detail"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.detail}
-                    placeholder='ໝາຍເຫດ...'
+                    placeholder="ໝາຍເຫດ..."
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant='danger' onClick={handleClose}>
+                <Button variant="danger" onClick={handleClose}>
                   ຍົກເລີກ
                 </Button>
                 <Button
@@ -658,7 +692,8 @@ export default function MenuList() {
                     color: "#ffff",
                     border: 0,
                   }}
-                  onClick={() => handleSubmit()}>
+                  onClick={() => handleSubmit()}
+                >
                   ບັນທືກ
                 </Button>
               </Modal.Footer>
@@ -666,32 +701,13 @@ export default function MenuList() {
           )}
         </Formik>
       </Modal>
-      ;{/* delete menu */}
-      <Modal show={show3} onHide={handleClose3}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
-            <div style={{ color: "red" }}>{dateDelete?.name}</div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose3}>
-            ຍົກເລີກ
-          </Button>
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _confirmeDelete()}>
-            ຢືນຢັນການລົບ
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      ;{/* update menu */}
+      {/* update menu */}
       <Modal
         show={show2}
         onHide={handleClose2}
-        backdrop='static'
-        keyboard={false}>
+        // backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>ອັບເດດເມນູອາຫານ</Modal.Title>
         </Modal.Header>
@@ -714,9 +730,16 @@ export default function MenuList() {
             }
             return errors;
           }}
-          onSubmit={(values, { setSubmitting }) => {
-            _updateCategory(values);
-          }}>
+          onSubmit={async (values, { setSubmitting }) => {
+            await _updateCategory(values);
+            const _localData = await getLocalData();
+            if (_localData) {
+              setgetTokken(_localData);
+              // getcategory(_localData?.DATA?.storeId);
+              getMenu(_localData?.DATA?.storeId);
+            }
+          }}
+        >
           {({
             values,
             errors,
@@ -730,15 +753,16 @@ export default function MenuList() {
             <form onSubmit={handleSubmit}>
               <Modal.Body>
                 <div
-                  className='col-sm-12 center'
-                  style={{ textAlign: "center" }}>
+                  className="col-sm-12 center"
+                  style={{ textAlign: "center" }}
+                >
                   <input
-                    type='file'
-                    id='file-upload'
+                    type="file"
+                    id="file-upload"
                     onChange={handleUpload}
                     hidden
                   />
-                  <label for='file-upload'>
+                  <label for="file-upload">
                     <div
                       style={{
                         backgroundColor: "#E4E4E4E4",
@@ -747,16 +771,17 @@ export default function MenuList() {
                         borderRadius: "10%",
                         cursor: "pointer",
                         display: "flex",
-                      }}>
+                      }}
+                    >
                       {file ? (
                         <ImageThumb image={file} />
                       ) : (
                         <center>
                           <Image
                             src={URL_PHOTO_AW3 + dataUpdate?.images[0]}
-                            alt=''
-                            width='150'
-                            height='150'
+                            alt=""
+                            width="150"
+                            height="150"
                             style={{
                               height: 200,
                               width: 200,
@@ -769,17 +794,18 @@ export default function MenuList() {
                   </label>
                   {/* progass */}
                   {imageLoading ? (
-                    <div className='progress' style={{ height: 20 }}>
+                    <div className="progress" style={{ height: 20 }}>
                       <div
-                        className='progress-bar'
-                        role='progressbar'
+                        className="progress-bar"
+                        role="progressbar"
                         style={{
                           width: `${imageLoading}%`,
                           backgroundColor: COLOR_APP,
                         }}
                         aria-valuenow={imageLoading}
-                        aria-valuemin='0'
-                        aria-valuemax='100'>
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         {imageLoading}%
                       </div>
                     </div>
@@ -787,14 +813,15 @@ export default function MenuList() {
                     <div style={{ height: 20 }} />
                   )}
                 </div>
-                <Form.Group controlId='exampleForm.ControlSelect1'>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control
-                    as='select'
-                    name='categoryId'
+                    as="select"
+                    name="categoryId"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.categoryId}>
+                    value={values.categoryId}
+                  >
                     <option selected={true} disabled={true}>
                       ເລືອກປະເພດອາຫານ
                     </option>
@@ -803,40 +830,40 @@ export default function MenuList() {
                     })}
                   </Form.Control>
                 </Form.Group>
-                <div class='form-row'>
-                  <div class='col-3'>
-                    <div class='form-group'>
+                {/* <div class="form-row">
+                  <div class="col-3">
+                    <div class="form-group">
                       <label>ສະຖານະເປີດ/ປິດ</label>
                     </div>
                   </div>
-                  <div class='col-9'>
-                    <div class='form-row'>
-                      <div class='col'>
-                        <div class='custom-control custom-radio custom-control-inline'>
+                  <div class="col-9">
+                    <div class="form-row">
+                      <div class="col">
+                        <div class="custom-control custom-radio custom-control-inline">
                           <input
-                            type='radio'
-                            id='open'
-                            name='isOpened'
+                            type="radio"
+                            id="open"
+                            name="isOpened"
                             defaultChecked={dataUpdate?.isOpened ? true : false}
-                            class='custom-control-input'
+                            class="custom-control-input"
                             onChange={() => setIsOpened(true)}
                           />
-                          <label class='custom-control-label' for='open'>
+                          <label class="custom-control-label" for="open">
                             ເປີດ
                           </label>
                         </div>
-                        <div class='custom-control custom-radio custom-control-inline'>
+                        <div class="custom-control custom-radio custom-control-inline">
                           <input
-                            type='radio'
-                            id='off'
-                            name='isOpened'
+                            type="radio"
+                            id="off"
+                            name="isOpened"
                             defaultChecked={
                               !dataUpdate?.isOpened ? true : false
                             }
-                            class='custom-control-input'
+                            class="custom-control-input"
                             onChange={() => setIsOpened(false)}
                           />
-                          <label class='custom-control-label' for='off'>
+                          <label class="custom-control-label" for="off">
                             ປິດ
                           </label>
                         </div>
@@ -844,30 +871,31 @@ export default function MenuList() {
                     </div>
                   </div>
                 </div>
-                <Form.Group controlId='exampleForm.ControlSelect1'>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ສະຖານະ</Form.Label>
                   <Form.Control
-                    as='select'
-                    name='status'
+                    as="select"
+                    name="status"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.status}>
+                    value={values.status}
+                  >
                     <option selected={true} disabled={true}>
                       ເລືອກສະຖານະ
                     </option>
-                    <option value='HAS'>ເປີດ</option>
-                    <option value='DONOT'>ປິດ</option>
+                    <option value="HAS">ເປີດ</option>
+                    <option value="DONOT">ປິດ</option>
                   </Form.Control>
-                </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                </Form.Group> */}
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ອາຫານ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='name'
+                    type="text"
+                    name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder='ຊື່ອາຫານ...'
+                    placeholder="ຊື່ອາຫານ..."
                     style={{
                       border:
                         errors.name && touched.name && errors.name
@@ -876,15 +904,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ລາຄາ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='price'
+                    type="number"
+                    name="price"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.price}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.price && touched.price && errors.price
@@ -893,15 +921,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                {/* <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຈຳນວນ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='quantity'
+                    type="number"
+                    name="quantity"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.quantity}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.quantity && touched.quantity && errors.quantity
@@ -910,15 +938,15 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຫົວໜ່ວຍ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='unit'
+                    type="text"
+                    name="unit"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.unit}
-                    placeholder='ລາຄາ...'
+                    placeholder="ລາຄາ..."
                     style={{
                       border:
                         errors.unit && touched.unit && errors.unit
@@ -926,21 +954,21 @@ export default function MenuList() {
                           : "",
                     }}
                   />
-                </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                </Form.Group> */}
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='detail'
+                    type="text"
+                    name="detail"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.detail}
-                    placeholder='ໝາຍເຫດ...'
+                    placeholder="ໝາຍເຫດ..."
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant='danger' onClick={handleClose2}>
+                <Button variant="danger" onClick={handleClose2}>
                   ຍົກເລີກ
                 </Button>
                 <Button
@@ -949,7 +977,8 @@ export default function MenuList() {
                     color: "#ffff",
                     border: 0,
                   }}
-                  onClick={() => handleSubmit()}>
+                  onClick={() => handleSubmit()}
+                >
                   ບັນທືກ
                 </Button>
               </Modal.Footer>
@@ -957,7 +986,7 @@ export default function MenuList() {
           )}
         </Formik>
       </Modal>
-      ;{/* add qty menu */}
+      {/* add qty menu */}
       <Modal show={show4} onHide={handleClose4}>
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
@@ -965,24 +994,26 @@ export default function MenuList() {
             <div>ປ້ອນຈຳນວນສີນຄ້າ </div>
             <div style={{ height: 20 }}></div>
             <input
-              type='number'
-              className='form-control'
+              type="number"
+              className="form-control"
               onChange={(e) => setQtyMenu(e?.target?.value)}
             />
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button type='button' variant='secondary' onClick={handleClose4}>
+          <Button type="button" variant="secondary" onClick={handleClose4}>
             ຍົກເລີກ
           </Button>
           <Button
-            type='button'
+            type="button"
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _updateQtyCategory()}>
+            onClick={() => _updateQtyCategory()}
+          >
             ຢືນຢັນການເພີ່ມ
           </Button>
         </Modal.Footer>
       </Modal>
+      {/* <<<<<<<<<<<<<< popup <<<<<<<<<<<<<< */}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 
@@ -8,6 +8,7 @@ export default function PopUpConfirmDeletion({
   onClose,
   onSubmit,
 }) {
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton></Modal.Header>
@@ -18,12 +19,17 @@ export default function PopUpConfirmDeletion({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={onClose}>
+        <Button disabled={buttonDisabled} variant="secondary" onClick={onClose}>
           ຍົກເລີກ
         </Button>
         <Button
+          disabled={buttonDisabled}
           style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-          onClick={onSubmit}>
+          onClick={() => {
+            setButtonDisabled(true);
+            onSubmit().then(() => setButtonDisabled(false));
+          }}
+        >
           ຢືນຢັນການລົບ
         </Button>
       </Modal.Footer>

@@ -9,17 +9,13 @@ import { BODY, COLOR_APP } from "../../constants";
 import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import NavList from "./components/NavList";
 import moment from "moment";
+import { useParams } from "react-router-dom";
 
 export default function Historylist() {
+  const {id} = useParams();
+  // state
   const [getTokken, setgetTokken] = useState();
-  // sta
-
-  // create
-  const [show, setShow] = useState(false);
-  // modal delete
-  const [show3, setShow3] = useState(false);
   const [histories, setHistories] = useState([]);
-
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -37,26 +33,26 @@ export default function Historylist() {
     setIsLoading(true);
     const _resHistory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/stock-histories`,
+      url: END_POINT_SEVER + `/v3/stock-histories?storeId=${id}`,
     });
     setHistories(_resHistory?.data);
     setIsLoading(false);
   };
   return (
     <div style={BODY}>
-      <NavList ActiveKey='/settingStore/stock/history' />
+      <NavList ActiveKey="/settingStore/stock/history" />
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className='col-sm-12'>
-            <table className='table table-hover'>
-              <thead className='thead-light'>
+          <div className="col-sm-12">
+            <table className="table table-hover">
+              <thead className="thead-light">
                 <tr>
-                  <th scope='col'>#</th>
-                  <th scope='col'>ລາຍການຊະຕ໊ອກ</th>
-                  <th scope='col'>ປະເພດ</th>
-                  <th scope='col'>ຈຳນວນ</th>
-                  <th scope='col'>ວັນທີ</th>
+                  <th scope="col">#</th>
+                  <th scope="col">ລາຍການຊະຕ໊ອກ</th>
+                  <th scope="col">ປະເພດ</th>
+                  <th scope="col">ຈຳນວນ</th>
+                  <th scope="col">ວັນທີ</th>
                 </tr>
               </thead>
               <tbody>

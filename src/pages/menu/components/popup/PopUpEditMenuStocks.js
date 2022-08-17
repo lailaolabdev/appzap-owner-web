@@ -3,7 +3,7 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../../../constants";
 import { Formik } from "formik";
 
-export default function PopUpAddMenuStocks({ open, onClose, onSubmit, data }) {
+export default function PopUpEditMenuStocks({ open, onClose, onSubmit, data }) {
   return (
     <Modal show={open} onHide={onClose}>
       <Formik
@@ -11,6 +11,7 @@ export default function PopUpAddMenuStocks({ open, onClose, onSubmit, data }) {
           _id: data?._id,
           stockCategoryId: data?.stockCategoryId,
           name: data?.name,
+          quantity: data?.quantity,
         }}
         validate={(values) => {
           const errors = {};
@@ -32,7 +33,7 @@ export default function PopUpAddMenuStocks({ open, onClose, onSubmit, data }) {
         }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Header closeButton>
-              <Modal.Title>ເພີ່ມເມນູສະຕ໊ອກ</Modal.Title>
+              <Modal.Title>ແກ້ໄຊເມນູສະຕ໊ອກ</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form.Group controlId='exampleForm.ControlInput1'>
