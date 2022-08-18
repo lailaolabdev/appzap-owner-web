@@ -160,7 +160,7 @@ export default function SettingTable() {
                                                 <input type="checkbox" defaultChecked={table?.status === true ? true : false} onClick={(e) => _changeStatusTable(table)} />
                                                 <span className="slider round"></span>
                                             </label></td>
-                                            <td style={{ color: table?.isOpened === true ? "green" : "red" }}>{table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີແລ້ວ"}</td>
+                                            <td style={{ color: table?.isOpened === true ? "green" : "red" }}>{table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີ"}</td>
                                             <td><FontAwesomeIcon icon={faTrashAlt} style={{ marginLeft: 20, color: "red" }} onClick={() => handleShow3(table)} /></td>
                                         </tr>
                                     )
