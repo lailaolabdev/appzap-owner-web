@@ -1,6 +1,6 @@
 import { END_POINT_SEVER } from './api'
 export const USER_KEY = "@userKey";
-export const VERSION = "4.4.0";
+export const VERSION = "4.4.1";
 export const URL_PHOTO_AW3 = "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/"
 // export const END_POINT = END_POINT_SEVER;
 export const END_POINT = END_POINT_SEVER;
