@@ -18,6 +18,7 @@ import NavList from "./components/NavList";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import ButtonPrimary from "../../components/button/ButtonPrimary";
 
 // ------------------------------------------------------------------------------- //
 
@@ -154,63 +155,70 @@ export default function MenuList() {
                 </tr>
               </thead>
               <tbody>
-                {stocks?.filter((e) => e?.name?.startsWith(filterName)).map((data, index) => {
-                  return (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{data?.name}</td>
-                      <td>{data?.stockCategoryId?.name}</td>
-                      {/* <td style={{ color: data?.isOpened ? "green" : "red" }}>
+                {stocks
+                  ?.filter((e) => e?.name?.startsWith(filterName))
+                  .map((data, index) => {
+                    return (
+                      <tr>
+                        <td>{index + 1}</td>
+                        <td>{data?.name}</td>
+                        <td>{data?.stockCategoryId?.name}</td>
+                        {/* <td style={{ color: data?.isOpened ? "green" : "red" }}>
                         {STATUS_MENU(data?.isOpened)}
                       </td> */}
-                      <td
-                        style={{
-                          color: data?.quantity < 10 ? "red" : "green",
-                        }}
-                      >
-                        {data?.quantity} {data?.unit}
-                      </td>
-                      <td>
-                        <FontAwesomeIcon
-                          icon={faMinus}
+                        <td
                           style={{
-                            marginLeft: 20,
-                            color: "red",
-                            cursor: "pointer",
+                            color: data?.quantity < 10 ? "red" : "green",
                           }}
-                          onClick={() => {
-                            setSelect(data);
-                            setPopMinusStock(true);
-                          }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faPlus}
-                          style={{
-                            marginLeft: 20,
-                            color: "red",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            setSelect(data);
-                            setPopAddStock(true);
-                          }}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          style={{
-                            marginLeft: 20,
-                            color: "red",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            setSelect(data);
-                            setPopDeleteStock(true);
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
+                        >
+                          {data?.quantity} {data?.unit}
+                        </td>
+                        <td>
+                          <div style={{ display: "flex", gap: 10 }}>
+                            <ButtonPrimary
+                              onClick={() => {
+                                setSelect(data);
+                                setPopDeleteStock(true);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faMinus}
+                                style={{
+                                  color: "white",
+                                }}
+                              />
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                              onClick={() => {
+                                setSelect(data);
+                                setPopDeleteStock(true);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faPlus}
+                                style={{
+                                  color: "white",
+                                }}
+                              />
+                            </ButtonPrimary>
+                            <ButtonPrimary
+                              onClick={() => {
+                                setSelect(data);
+                                setPopDeleteStock(true);
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                style={{
+                                  color: "white",
+                                }}
+                              />
+                            </ButtonPrimary>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
             <div style={{ display: "flex", justifyContent: "center" }}>
