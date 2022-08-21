@@ -178,7 +178,7 @@ export default function MenuList() {
                             <ButtonPrimary
                               onClick={() => {
                                 setSelect(data);
-                                setPopDeleteStock(true);
+                                setPopMinusStock(true);
                               }}
                             >
                               <FontAwesomeIcon
@@ -191,7 +191,7 @@ export default function MenuList() {
                             <ButtonPrimary
                               onClick={() => {
                                 setSelect(data);
-                                setPopDeleteStock(true);
+                                setPopAddStock(true);
                               }}
                             >
                               <FontAwesomeIcon
