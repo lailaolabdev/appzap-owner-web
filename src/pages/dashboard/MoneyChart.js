@@ -62,8 +62,9 @@ export default function MoneyChart({ startDate, endDate }) {
         setIsLoading(false)
     }
     const convertPieData = () => {
-        let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) +" ກີບ")
-        let _data = data?.map((d) => d?.billAmount)
+        let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ" + " | cach:" + moneyCurrency(d?.cash) + " | transfer:" + moneyCurrency(d?.money_transfer))
+        let _data = data?.map((d) => d?.billAmount);
+
         return {
             labels: _labels,
             datasets: [
