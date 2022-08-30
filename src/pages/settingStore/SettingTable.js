@@ -145,8 +145,8 @@ export default function SettingTable() {
     const handleClose3 = () => setShow3(false);
     const [dateDelete, setdateDelete] = useState('')
     const handleShow3 = (item) => {
-        // setdateDelete(item)
-        setShow4(true)
+        setdateDelete(item)
+        setShow3(true)
     };
     const handleShow4 = (item) => {
         console.log(item);
