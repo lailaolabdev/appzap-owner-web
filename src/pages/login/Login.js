@@ -299,27 +299,29 @@ function Login() {
               justifyContent: "center",
               alignItems: "center",
               overflow: "hidden",
-            }}>
+            }}
+          >
             <Carousel
               interval={1500}
               style={{ width: "82%" }}
               prevIcon={false}
-              nextIcon={false}>
+              nextIcon={false}
+            >
               {_imgaeSlide?.map((item, index) => (
                 <Carousel.Item key={"carouse-" + index}>
-                    <img
-                    className='d-block'
-                      src={item}
-                    alt='First slide'
+                  <img
+                    className="d-block"
+                    src={item}
+                    alt="First slide"
                     style={{ width: "100%" }}
-                    />
+                  />
                 </Carousel.Item>
               ))}
             </Carousel>
           </div>
-          <Modal show={isLoading} keyboard={false} size='lg'>
+          <Modal show={isLoading} keyboard={false} size="lg">
             {" "}
-            <div className='text-center' style={{ padding: 30 }}>
+            <div className="text-center" style={{ padding: 30 }}>
               <p style={{ fontSize: 30 }}>ກໍາລັງເຂົ້າສູ່ລະບົບ</p>
             </div>
             <AnimationLoading />
@@ -376,7 +378,9 @@ function Login() {
                     style={{
                       fontWeight: "bold",
                       color: COLOR_APP,
-                      marginLeft: 24,}}>
+                      marginLeft: 24,
+                    }}
+                  >
                     Lao Self Ordering
                   </h4>
                 </div>
@@ -522,10 +526,7 @@ function Login() {
             <br />
             {popupDate?.animation && (
               <Lottie
-                options={{
-                  loop: true,
-                  path: popupDate?.animation,
-                }}
+                options={{ loop: true, path: popupDate?.animation }}
                 width={width > 700 ? 400 : width * 0.8}
               />
             )}
