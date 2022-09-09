@@ -10,6 +10,7 @@ import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import NavList from "./components/NavList";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import { stockType } from "../../helpers/stockType";
 
 export default function Historylist() {
   const {id} = useParams();
@@ -62,7 +63,7 @@ export default function Historylist() {
                       <tr>
                         <td>{index + 1}</td>
                         <td>{data?.stockId?.name}</td>
-                        <td>{data?.type}</td>
+                        <td>{stockType(data?.type)}</td>
                         <td>{data?.quantity}</td>
                         <td>{moment(data?.createdAt).format("DD/MM/YYYY")}</td>
                       </tr>
