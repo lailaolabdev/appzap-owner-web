@@ -19,9 +19,17 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
         initialValues={{}}
         validate={(values) => {
           const errors = {};
-          // if (!values.note) {
-          //   errors.note = "ກະລຸນາປ້ອນ...";
-          // }
+            let _currentQuantity = data?.quantity
+            let _minusQuantity = values?.quantity
+
+            if(_minusQuantity > _currentQuantity) {
+              errors.quantity = "ຈຳນວນທີ່ຕ້ອງການລົບບໍ່ຖືກຕ້ອງ"
+            }
+
+            if(_minusQuantity.toString().includes("-")){
+              errors.quantity = "ຈຳນວນທີ່ຕ້ອງການລົບບໍ່ຖືກຕ້ອງ"
+            }
+
           if (!values.quantity) {
             errors.quantity = "ກະລຸນາປ້ອນຈຳນວນທີ່ຕ້ອງການເພີ່ມ...";
           }
@@ -29,6 +37,7 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
         }}
         onSubmit={(values, { setSubmitting }) => {
           const fetchData = async () => {
+           
             try {
               const header = await getHeaders();
               const _localData = await getLocalData();
@@ -90,7 +99,7 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຈຳນວນທີ່ຕ້ອງການລົບອອກຈາກສະຕ໊ອກ</Form.Label>
+                <Form.Label>ຈຳນວນທີ່ຕ້ອງການລົບອອກຈາກສະຕ໊ອກ {`( - )`}</Form.Label>
                 <Form.Control
                   type="number"
                   name="quantity"
@@ -100,6 +109,7 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                   placeholder="ຈຳນວນ"
                   isInvalid={errors.quantity}
                 />
+                {errors && errors.quantity}
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ໝາຍເຫດ</Form.Label>
