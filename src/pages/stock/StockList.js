@@ -19,6 +19,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
+import { thousandSeparator } from "../../helpers/thousandSeparator";
 
 // ------------------------------------------------------------------------------- //
 
@@ -149,7 +150,6 @@ export default function MenuList() {
                   <th scope="col">#</th>
                   <th scope="col">ຊື່ສິນຄ້າ</th>
                   <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
-                  {/* <th scope='col'>ສະຖານະ</th> */}
                   <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
@@ -163,15 +163,12 @@ export default function MenuList() {
                         <td>{index + 1}</td>
                         <td>{data?.name}</td>
                         <td>{data?.stockCategoryId?.name}</td>
-                        {/* <td style={{ color: data?.isOpened ? "green" : "red" }}>
-                        {STATUS_MENU(data?.isOpened)}
-                      </td> */}
                         <td
                           style={{
                             color: data?.quantity < 10 ? "red" : "green",
                           }}
                         >
-                          {data?.quantity} {data?.unit}
+                          {thousandSeparator(data?.quantity)} {data?.unit}
                         </td>
                         <td>
                           <div style={{ display: "flex", gap: 10 }}>
