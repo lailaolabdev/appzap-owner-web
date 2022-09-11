@@ -239,7 +239,7 @@ export default function MenuList() {
       />
       <PopUpCreateStock
         open={popCreateStock}
-        onClose={() => setPopCreateStock(false)}
+        onClose={()=>setPopCreateStock(false)}
         callback={() => getStock()}
       />
       <PopUpConfirmDeletion
