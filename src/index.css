@@ -27,6 +27,16 @@ div {
   /* display: row; */
 }
 
+.appzap_button {
+  background-color: #FB6E3B;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  min-width: 4rem;
+  font-size: 1rem;
+  color: white;
+}
+
 
 .blink_card {
   animation: blinker 1s linear infinite;

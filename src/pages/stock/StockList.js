@@ -156,7 +156,7 @@ export default function MenuList() {
               </thead>
               <tbody>
                 {stocks
-                  ?.filter((e) => e?.name?.startsWith(filterName))
+                  ?.filter((e) => e?.name?.includes(filterName))
                   .map((data, index) => {
                     return (
                       <tr>
