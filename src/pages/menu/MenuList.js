@@ -24,6 +24,7 @@ import profileImage from "../../image/profile.png";
 import { getHeaders } from "../../services/auth";
 import { PhoneInTalkSharp } from "@material-ui/icons";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import Upload from "../../components/Upload";
 
 export default function MenuList() {
   const { history, match } = useReactRouter();
@@ -103,55 +104,9 @@ export default function MenuList() {
   const [namePhoto, setNamePhoto] = useState("");
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState();
-  const handleUpload = async (event) => {
-    setImageLoading("");
-    try {
-      setFile(event.target.files[0]);
-      let fileData = event.target.files[0];
-      const responseUrl = await axios({
-        method: "post",
-        url: PRESIGNED_URL,
-        data: {
-          name: event.target.files[0].type,
-        },
-      });
-      setNamePhoto(responseUrl.data);
-      let afterUpload = await axios({
-        method: "put",
-        url: responseUrl.data.url,
-        data: fileData,
-        headers: {
-          "Content-Type": " file/*; image/*",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
-        },
-        onUploadProgress: function (progressEvent) {
-          var percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setImageLoading(percentCompleted);
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   // lung jak upload leo pic ja ma so u nee
-  const ImageThumb = ({ image }) => {
-    return (
-      <img
-        src={URL.createObjectURL(image)}
-        alt={image.name}
-        style={{
-          borderRadius: "10%",
-          height: 200,
-          width: 200,
-        }}
-      />
-    );
-  };
+
   // ======> create menu
   const _createMenu = async (values) => {
     let header = await getHeaders();
@@ -171,7 +126,7 @@ export default function MenuList() {
           detail: values?.detail,
           unit: values?.unit,
           isOpened: isOpened,
-          images: [namePhoto?.params?.Key],
+          images: [...values?.images],
           storeId: getTokken?.DATA?.storeId,
         },
         headers: headers,
@@ -242,7 +197,7 @@ export default function MenuList() {
           detail: values?.detail,
           unit: values?.unit,
           isOpened: isOpened,
-          images: [namePhoto?.params?.Key ?? dataUpdate?.images[0]],
+          images: [...values?.images],
         },
       },
       headers: headers,
@@ -440,6 +395,7 @@ export default function MenuList() {
             categoryId: "",
             price: "",
             detail: "",
+            images: [],
             unit: "",
           }}
           validate={(values) => {
@@ -447,13 +403,12 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            if (!values.price) {
+            if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
             if (!values.categoryId) {
               errors.categoryId = "ກະລຸນາປ້ອນ...";
             }
-
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -466,79 +421,20 @@ export default function MenuList() {
             touched,
             handleChange,
             handleBlur,
+            setFieldValue,
             handleSubmit,
             isSubmitting,
             /* and other goodies */
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Body>
-                <div
-                  className="col-sm-12 center"
-                  style={{ textAlign: "center" }}
-                >
-                  <input
-                    type="file"
-                    id="file-upload"
-                    onChange={handleUpload}
-                    hidden
-                  />
-                  <label for="file-upload">
-                    <div
-                      style={{
-                        backgroundColor: "#E4E4E4E4",
-                        height: 200,
-                        width: 200,
-                        borderRadius: "10%",
-                        cursor: "pointer",
-                        display: "flex",
-                      }}
-                    >
-                      {file ? (
-                        <ImageThumb image={file} />
-                      ) : (
-                        <div
-                          style={{
-                            display: "flex",
-                            height: 200,
-                            width: 200,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <p
-                            style={{
-                              color: "#fff",
-                              fontSize: 80,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            +
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                  {/* progass */}
-                  {imageLoading ? (
-                    <div className="progress" style={{ height: 20 }}>
-                      <div
-                        className="progress-bar"
-                        role="progressbar"
-                        style={{
-                          width: `${imageLoading}%`,
-                          backgroundColor: COLOR_APP,
-                        }}
-                        aria-valuenow={imageLoading}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        {imageLoading}%
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ height: 20 }} />
-                  )}
-                </div>
+                <Upload
+                  src={values?.images?.[0] || ""}
+                  removeImage={() => setFieldValue("images", [])}
+                  onChange={(e) => {
+                    setFieldValue("images", [e.name]);
+                  }}
+                />
                 <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control
@@ -714,6 +610,7 @@ export default function MenuList() {
         <Formik
           initialValues={{
             name: dataUpdate?.name,
+            images: dataUpdate?.images,
             quantity: dataUpdate?.quantity,
             categoryId: dataUpdate?.categoryId?._id,
             price: dataUpdate?.price,
@@ -725,19 +622,22 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            if (!values.price) {
+            if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
             return errors;
           }}
-          onSubmit={async (values, { setSubmitting }) => {
-            await _updateCategory(values);
-            const _localData = await getLocalData();
-            if (_localData) {
-              setgetTokken(_localData);
-              // getcategory(_localData?.DATA?.storeId);
-              getMenu(_localData?.DATA?.storeId);
-            }
+          onSubmit={(values, { setSubmitting }) => {
+            const getData = async () => {
+              await _updateCategory(values);
+              const _localData = await getLocalData();
+              if (_localData) {
+                setgetTokken(_localData);
+                // getcategory(_localData?.DATA?.storeId);
+                getMenu(_localData?.DATA?.storeId);
+              }
+            };
+            getData();
           }}
         >
           {({
@@ -747,72 +647,19 @@ export default function MenuList() {
             handleChange,
             handleBlur,
             handleSubmit,
+            setFieldValue,
             isSubmitting,
             /* and other goodies */
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Body>
-                <div
-                  className="col-sm-12 center"
-                  style={{ textAlign: "center" }}
-                >
-                  <input
-                    type="file"
-                    id="file-upload"
-                    onChange={handleUpload}
-                    hidden
-                  />
-                  <label for="file-upload">
-                    <div
-                      style={{
-                        backgroundColor: "#E4E4E4E4",
-                        height: 200,
-                        width: 200,
-                        borderRadius: "10%",
-                        cursor: "pointer",
-                        display: "flex",
-                      }}
-                    >
-                      {file ? (
-                        <ImageThumb image={file} />
-                      ) : (
-                        <center>
-                          <Image
-                            src={URL_PHOTO_AW3 + dataUpdate?.images[0]}
-                            alt=""
-                            width="150"
-                            height="150"
-                            style={{
-                              height: 200,
-                              width: 200,
-                              borderRadius: "10%",
-                            }}
-                          />
-                        </center>
-                      )}
-                    </div>
-                  </label>
-                  {/* progass */}
-                  {imageLoading ? (
-                    <div className="progress" style={{ height: 20 }}>
-                      <div
-                        className="progress-bar"
-                        role="progressbar"
-                        style={{
-                          width: `${imageLoading}%`,
-                          backgroundColor: COLOR_APP,
-                        }}
-                        aria-valuenow={imageLoading}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        {imageLoading}%
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ height: 20 }} />
-                  )}
-                </div>
+                <Upload
+                  src={values?.images?.[0] || ""}
+                  removeImage={() => setFieldValue("images", [])}
+                  onChange={(e) => {
+                    setFieldValue("images", [e.name]);
+                  }}
+                />
                 <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control

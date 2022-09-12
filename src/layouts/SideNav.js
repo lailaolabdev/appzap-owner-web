@@ -110,7 +110,7 @@ export default function Sidenav({ location, history }) {
               color: selected === "report" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
             }}
           >
-            ສະຖານະຂອງໂຕະ
+            ສະຖິຕິລວມ
           </NavText>
         </NavItem>
         <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
