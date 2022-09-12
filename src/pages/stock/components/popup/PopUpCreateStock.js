@@ -135,6 +135,9 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           if (!values.unit) {
             errors.unit = "ກະລຸນາປ້ອນ...";
           }
+          if (!values.otherUnit) {
+            errors.otherUnit = "ກະລຸນາປ້ອນ...";
+          }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
@@ -243,6 +246,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   <Form.Control
                     type="text"
                     name="otherUnit"
+                    isInvalid={errors.otherUnit}
                     onChange={(e)=>{
                       setFieldValue("otherUnit", e.target.value);
                     }}
