@@ -4,7 +4,7 @@ import axios from "axios";
 import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav } from "react-bootstrap";
+import { Button, Modal, Form, Nav, Spinner } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
 import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import NavList from "./components/NavList";
@@ -108,11 +108,16 @@ export default function Historylist() {
                   })}
               </tbody>
             </table>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {isLoading ? <Spinner animation="border" /> : ""}
+            </div>
+            {!isLoading ? 
            <div style={{display: 'flex', justifyContent: 'center'}}>
               <button className="appzap_button" onClick={()=>onBackPage()}>ກັບຄືນ</button>
               <p style={{margin: '5px 1rem'}}>{pageNumber} / {pageCountNumber}</p>
               <button className="appzap_button" onClick={()=>onNextPage()}>ຕໍ່ໄປ</button>
            </div>
+           : ""}
           </div>
         </div>
       </div>
