@@ -17,7 +17,6 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
   const [namePhoto, setNamePhoto] = useState("");
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
-  const [otherUnit, setOtherUnit] = useState(false);
   const handleUpload = async (event) => {
     // setImageLoading("");
     try {
@@ -119,6 +118,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           isDeleted: false,
           name: "",
           unit: "",
+          otherUnit: "",
           stockCategoryId: "",
         }}
         validate={(values) => {
@@ -126,9 +126,6 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           if (!values.name) {
             errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
           }
-          //   if (!values.price) {
-          //     errors.price = "ກະລຸນາປ້ອນລາຄາ...";
-          //   }
           if (!values.quantity) {
             errors.quantity = "ກະລຸນາປ້ອນ...";
           }
@@ -138,9 +135,17 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           if (!values.unit) {
             errors.unit = "ກະລຸນາປ້ອນ...";
           }
+          if (!values.otherUnit) {
+            errors.otherUnit = "ກະລຸນາປ້ອນ...";
+          }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
+          let  _values = values;
+          if(values.otherUnit !== ""){
+            _values.unit = values.otherUnit;
+          }
+
           const fetchData = async () => {
             try {
               await _createStock(values);
@@ -163,6 +168,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           handleSubmit,
           isSubmitting,
           setFieldValue,
+          
           /* and other goodies */
         }) => (
           <form onSubmit={handleSubmit}>
@@ -221,39 +227,31 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 <Form.Control
                   as="select"
                   onChange={(e) => {
-                    if (e.target.value != "other") {
-                      setOtherUnit(false);
-                      setFieldValue("unit", e.target.value);
-                    } else {
-                      setOtherUnit(true);
-                    }
+                    setFieldValue("unit", e.target.value);
                   }}
-                  // onBlur={handleBlur}
                   value={
-                    ["ກຣາມ", "ໝັດ", "ແກ້ວ"].filter((e) => e == values.unit)
-                      ?.length > 0
-                      ? values.unit
-                      : "other"
+                    values.unit
                   }
                   isInvalid={errors.unit}
                 >
                   <option selected={true} disabled={true} value="">
                     ເລືອກຫົວໜ່ວຍ
                   </option>
-                  {["ກຣາມ", "ໝັດ", "ແກ້ວ"].map((e, i) => (
-                    <option value={e} key={i}>
-                      {e}
-                    </option>
-                  ))}
-                  <option value="other">ອື່ນໆ</option>
+                  <option value="ກຣາມ">ກຣາມ</option>
+                  <option value="ໝັດ">ໝັດ</option>
+                  <option value="ແກ້ວ">ແກ້ວ</option>
+                  <option value="ອື່ນໆ">ອື່ນໆ</option>
                 </Form.Control>
-                {otherUnit && (
+                {values.unit === "ອື່ນໆ" && (
                   <Form.Control
                     type="text"
-                    name="unit"
-                    onChange={handleChange}
+                    name="otherUnit"
+                    isInvalid={errors.otherUnit}
+                    onChange={(e)=>{
+                      setFieldValue("otherUnit", e.target.value);
+                    }}
                     onBlur={handleBlur}
-                    value={values.unit}
+                    value={values.otherUnit}
                     placeholder="ຫົວໜ່ວຍ..."
                     style={{
                       border:
