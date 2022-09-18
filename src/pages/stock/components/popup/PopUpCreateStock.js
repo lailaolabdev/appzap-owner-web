@@ -126,7 +126,10 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           if (!values.name) {
             errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
           }
-          if (!values.quantity) {
+          if (parseInt(values.quantity) < 0) {
+            errors.quantity = "ກະລຸນາປ້ອນ...";
+          }
+          if (isNaN(parseInt(values.quantity))) {
             errors.quantity = "ກະລຸນາປ້ອນ...";
           }
           if (!values.stockCategoryId) {
@@ -141,8 +144,8 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          let  _values = values;
-          if(values.otherUnit !== ""){
+          let _values = values;
+          if (values.otherUnit !== "") {
             _values.unit = values.otherUnit;
           }
 
@@ -168,7 +171,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           handleSubmit,
           isSubmitting,
           setFieldValue,
-          
+
           /* and other goodies */
         }) => (
           <form onSubmit={handleSubmit}>
@@ -229,9 +232,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   onChange={(e) => {
                     setFieldValue("unit", e.target.value);
                   }}
-                  value={
-                    values.unit
-                  }
+                  value={values.unit}
                   isInvalid={errors.unit}
                 >
                   <option selected={true} disabled={true} value="">
@@ -247,7 +248,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                     type="text"
                     name="otherUnit"
                     isInvalid={errors.otherUnit}
-                    onChange={(e)=>{
+                    onChange={(e) => {
                       setFieldValue("otherUnit", e.target.value);
                     }}
                     onBlur={handleBlur}
