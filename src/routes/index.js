@@ -36,6 +36,7 @@ import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
 import StockCategory from "../pages/stock/Categorylist";
 import StockHistory from "../pages/stock/HistoryList";
+import ReservationList from "../pages/reservation/ReservationList";
 
 import StoreDetail from "../pages/store/StoreDetail";
 // ===========> Setting ============>
@@ -241,10 +242,16 @@ const Index = () => {
                     path='/messagerList'
                     component={MessagerList}
                   />
+                  
                   <PrivateRoute
                     exact
                     path='/historyUse/:id'
                     component={HistoryUse}
+                  />
+                  <PrivateRoute
+                    exact
+                    path='/reservations'
+                    component={ReservationList}
                   />
                 </div>
               </Main>

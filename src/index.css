@@ -11,6 +11,7 @@ body,
 label,
 div {
   margin: 0;
+  box-sizing: border-box;
   font-family: "NotoSansLao";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

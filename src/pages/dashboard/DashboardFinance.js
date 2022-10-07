@@ -119,6 +119,7 @@ export default function DashboardFinance({ startDate, endDate }) {
       }
     }
     setDataCheckBill(_checkBill);
+    console.log("dataCheckBill",dataCheckBill);
     setDataNotCheckBill(_notCheckBill);
     setMoneyAon(_aon);
     setMoneyCash(_cash);
@@ -252,7 +253,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <div>
                   ຍອດທັ້ງໝົດ :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.cash + dataCheckBill?.transfer
+                    (dataCheckBill?.cash || 0) + dataCheckBill?.transfer || (0)
                   )}{" "}
                   ກີບ
                 </div>

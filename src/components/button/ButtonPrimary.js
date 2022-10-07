@@ -1,7 +1,7 @@
 import React from "react";
 import * as consts from "../../constants";
 
-export default function ButtonPrimary({ text, children, ...other }) {
+export default function ButtonPrimary({ text, children,style, ...other }) {
   return (
     <div
       style={{
@@ -12,6 +12,7 @@ export default function ButtonPrimary({ text, children, ...other }) {
         justifyContent: "center",
         alignItems: "center",
         cursor: "pointer",
+        ...style
       }}
       {...other}
     >

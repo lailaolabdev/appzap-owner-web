@@ -12,6 +12,7 @@ import {
   faCogs,
   faHistory,
   faHome,
+  faList,
   faTachometerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from 'react-bootstrap'
@@ -266,6 +267,28 @@ export default function Sidenav({ location, history }) {
             }}
           >
             ຕັ້ງຄ່າຮ້ານຄ້າ
+          </NavText>
+        </NavItem>
+
+        <NavItem eventKey={`reservations`} style={{ backgroundColor: selected === "reservations" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faList}
+              style={{
+                color:
+                  selected === "reservations"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color:
+                selected === "reservations" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຈັດການການຈອງໂຕະ
           </NavText>
         </NavItem>
       </SideNav.Nav>
