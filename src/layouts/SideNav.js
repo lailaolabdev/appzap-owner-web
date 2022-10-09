@@ -8,6 +8,7 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBoxOpen,
   faCartArrowDown,
   faCogs,
   faHistory,
@@ -291,6 +292,29 @@ export default function Sidenav({ location, history }) {
             ຈັດການການຈອງໂຕະ
           </NavText>
         </NavItem>
+
+        <NavItem eventKey={`menu`} style={{ backgroundColor: selected === "reservations" ? "#ffff" : "" }}>
+          <NavIcon>
+            <FontAwesomeIcon
+              icon={faBoxOpen}
+              style={{
+                color:
+                  selected === "menu"
+                    ? COLOR_APP
+                    : UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color:
+                selected === "menu" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຈັດການເມນູຫາການ
+          </NavText>
+        </NavItem>
+        
       </SideNav.Nav>
     </SideNav >
   );

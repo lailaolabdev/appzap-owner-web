@@ -29,7 +29,7 @@ div {
 }
 
 .appzap_button {
-  background-color: #FB6E3B;
+  background-color: #fb6e3b;
   outline: none;
   border: none;
   border-radius: 10px;
@@ -38,20 +38,18 @@ div {
   color: white;
 }
 
-
 .blink_card {
   animation: blinker 1s linear infinite;
 }
 
-
 @keyframes blinker {
-  100%{
+  100% {
     opacity: 1;
-    background-color: #FB6E3B;
+    background-color: #fb6e3b;
   }
   50% {
     opacity: 0.5;
-    background-color: #FB6E3B;
+    background-color: #fb6e3b;
   }
   0% {
     opacity: 0.2;
@@ -62,7 +60,7 @@ div {
   animation: blinkerCallCheckOut 1s linear infinite;
 }
 @keyframes blinkerCallCheckOut {
-  100%{
+  100% {
     opacity: 1;
     background-color: #06c200;
   }
@@ -76,27 +74,36 @@ div {
   }
 }
 
-
-.hover-me:hover{
+.hover-me:hover {
   opacity: 0.8;
 }
 
-
-
-.scale-animation{
+.scale-animation {
   animation: leaves 1s linear infinite;
 }
 @keyframes leaves {
   0% {
-      transform: scale(2.0);
+    transform: scale(2);
   }
   50% {
-      transform: scale(1.0);
+    transform: scale(1);
   }
   100% {
-      transform: scale(2.0);
+    transform: scale(2);
   }
 }
 
+/* default */
 
-
+td,
+th {
+  padding: 10px;
+  text-align: center;
+  font-family: "NotoSansLao", Arial, Helvetica, sans-serif;
+}
+tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+td {
+  color: #5a5a5a;
+}

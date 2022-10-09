@@ -253,6 +253,11 @@ const Index = () => {
                     path='/reservations'
                     component={ReservationList}
                   />
+                  <PrivateRoute
+                    exact
+                    path='/menu'
+                    component={MenuList}
+                  />
                 </div>
               </Main>
             </React.Fragment>
