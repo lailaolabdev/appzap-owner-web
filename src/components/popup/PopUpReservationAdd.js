@@ -4,7 +4,7 @@ import { COLOR_APP } from "../../constants";
 import { Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 
-const PopUpAddReservation = ({ open, text1, text2, onClose, onSubmit }) => {
+const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
@@ -235,4 +235,4 @@ const PopUpAddReservation = ({ open, text1, text2, onClose, onSubmit }) => {
   );
 };
 
-export default PopUpAddReservation;
+export default PopUpReservationAdd;

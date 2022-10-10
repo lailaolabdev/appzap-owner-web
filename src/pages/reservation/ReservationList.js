@@ -5,7 +5,8 @@ import { COLOR_APP } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
-import PopUpAddReservation from "../../components/popup/PopUpAddReservation";
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import ButtonIcon from "../../components/button/ButtonIcon";
 // services
 import {
   addReservation,
@@ -16,18 +17,22 @@ import {
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import ButtonTab from "../../components/button/ButtonTab";
 import ButtonManamentReservation from "../../components/button/ButtonManamentReservation";
+import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
+import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const { history, location, match } = useReactRouter();
-  const _limit = match.params.limit;
-  const _page = match.params.page;
-  const [isLoading, setIsLoading] = useState(false);
+  const { match } = useReactRouter();
+  // const _limit = match.params.limit;
+  // const _page = match.params.page;
 
   //   state
+  const [isLoading, setIsLoading] = useState(false);
+  const [tabSelect, setTabSelect] = useState("ALL"); // ["ALL","WATTING","STAFF_CONFIRM","CANCEL"]
   const [reservationsData, setReservationsData] = useState();
   const [select, setSelect] = useState();
   const [popup, setPopup] = useState({
+    detail: false,
     delete: false,
     add: false,
     confirm: false,
@@ -35,33 +40,38 @@ export default function ReservationList() {
   });
 
   // functions
-  const onReject = (select) => {
+  const handleReject = (select) => {
     setPopup((prev) => ({ ...prev, delete: true }));
     setSelect(select);
   };
   const onSubmitReject = async () => {
     updateReservation({ status: "CANCEL" }, select?._id).then(() => {
       setPopup((prev) => ({ ...prev, delete: false }));
-      getData();
+      getData("CANCEL");
     });
   };
-  const onConfirm = (select) => {
+  const handleConfirm = (select) => {
     setPopup((prev) => ({ ...prev, confirm: true }));
     setSelect(select);
   };
   const onSubmitConfirm = async () => {
     updateReservation({ status: "STAFF_CONFIRM" }, select?._id).then(() => {
       setPopup((prev) => ({ ...prev, confirm: false }));
-      getData();
+      getData("STAFF_CONFIRM");
     });
   };
-  const getData = async () => {
-    const _localData = await getLocalData();
-    const storeId = _localData?.DATA?.storeId;
-    console.log("_localData", _localData);
-    getReservation(storeId).then((e) => {
-      setReservationsData(e);
-    });
+  const handleShowDetail = (select) => {
+    setPopup((prev) => ({ ...prev, detail: true }));
+    setSelect(select);
+  };
+  const getData = async (status) => {
+    setIsLoading(true);
+    let findBy = "";
+    if (status) findBy += `&status=${status}`;
+    const data = await getReservation(findBy);
+    setReservationsData(data);
+    setIsLoading(false);
+    return;
   };
   // useEffect
   useEffect(() => {
@@ -88,10 +98,42 @@ export default function ReservationList() {
                 gap: 10,
               }}
             >
-              <ButtonTab active>ລາຍການທັງໝົດ</ButtonTab>
-              <ButtonTab>ລາຍການທີ່ລໍຖ້າອະນຸມັດ</ButtonTab>
-              <ButtonTab>ລາຍການທີ່ອະນຸມັດ</ButtonTab>
-              <ButtonTab>ປະຫວັດການຈອງ</ButtonTab>
+              <ButtonTab
+                active={tabSelect == "ALL"}
+                onClick={() => {
+                  getData();
+                  setTabSelect("ALL");
+                }}
+              >
+                ລາຍການທັງໝົດ
+              </ButtonTab>
+              <ButtonTab
+                active={tabSelect == "WATTING"}
+                onClick={() => {
+                  getData("WATTING");
+                  setTabSelect("WATTING");
+                }}
+              >
+                ລາຍການທີ່ລໍຖ້າອະນຸມັດ
+              </ButtonTab>
+              <ButtonTab
+                active={tabSelect == "STAFF_CONFIRM"}
+                onClick={() => {
+                  getData("STAFF_CONFIRM");
+                  setTabSelect("CONFIRM");
+                }}
+              >
+                ລາຍການທີ່ອະນຸມັດ
+              </ButtonTab>
+              <ButtonTab
+                active={tabSelect == "CANCEL"}
+                onClick={() => {
+                  getData("CANCEL");
+                  setTabSelect("CANCEL");
+                }}
+              >
+                ປະຫວັດການຈອງ
+              </ButtonTab>
             </div>
             <div>
               <ButtonPrimary
@@ -129,13 +171,27 @@ export default function ReservationList() {
                   <th style={{ color: COLOR_APP }}>ວັນທີ / ເດືອນ / ປີ</th>
                   <th style={{ color: COLOR_APP }}>ເວລາ</th>
                   <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
-                  <th style={{ color: COLOR_APP }}>ຈັດການ</th>
-                  <th></th>
+                  <th style={{ color: COLOR_APP, maxWidth: 200, width: 200 }}>
+                    ຈັດການ
+                  </th>
+                  <th style={{ maxWidth: 50, width: 50 }}></th>
                 </tr>
               </thead>
               <tbody>
                 {reservationsData?.map((item, index) => (
-                  <tr key={index} style={{ borderBottom: "1px solid #EBEBEB" }}>
+                  <tr
+                    key={index}
+                    style={{ borderBottom: "1px solid #EBEBEB" }}
+                    onClick={(e) => {
+                      if (
+                        e.target.cellIndex > 5 ||
+                        e.target.cellIndex == undefined
+                      ) {
+                        return;
+                      }
+                      handleShowDetail(item);
+                    }}
+                  >
                     <td>{index + 1}</td>
                     <td>{item?.clientNames?.[0]}</td>
                     <td>{item?.clientPhone}</td>
@@ -149,12 +205,24 @@ export default function ReservationList() {
                       {item?.startTime &&
                         moment.parseZone(item?.startTime).format("HH:ss")}
                     </td>
-                    <td></td>
+                    <td>{item?.clientNumber}</td>
                     <td>
-                      <ButtonManamentReservation status={item?.status} />
+                      <ButtonManamentReservation
+                        status={item?.status}
+                        handleConfirm={() => {
+                          handleConfirm(item);
+                        }}
+                        handleReject={() => {
+                          handleReject(item);
+                        }}
+                      />
                     </td>
                     <td>
-                      <div>00</div>
+                      <ButtonIcon>
+                        <BiDotsVerticalRounded
+                          style={{ width: 18, height: 18 }}
+                        />
+                      </ButtonIcon>
                     </td>
                   </tr>
                 ))}
@@ -178,7 +246,7 @@ export default function ReservationList() {
         onClose={() => setPopup((prev) => ({ ...prev, confirm: false }))}
         onSubmit={onSubmitConfirm}
       />
-      <PopUpAddReservation
+      <PopUpReservationAdd
         open={popup?.add}
         onClose={() => setPopup((prev) => ({ ...prev, add: false }))}
         onSubmit={async (e) => {
@@ -188,7 +256,11 @@ export default function ReservationList() {
           setPopup((prev) => ({ ...prev, add: false }));
         }}
       />
+      <PopUpReservationDetail
+        open={popup?.detail}
+        onClose={() => setPopup((prev) => ({ ...prev, detail: false }))}
+        data={select}
+      />
     </div>
   );
 }
-

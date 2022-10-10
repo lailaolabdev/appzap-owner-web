@@ -9,25 +9,21 @@ import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBoxOpen,
-  faCartArrowDown,
   faCogs,
-  faHistory,
   faHome,
   faList,
   faTachometerAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Badge } from 'react-bootstrap'
-import { COLOR_APP, WAITING_STATUS } from '../constants'
+// import { Badge } from "react-bootstrap";
+import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 
 export default function Sidenav({ location, history }) {
-
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
   const UN_SELECTED_TAB_TEXT = "#606060";
-
 
   const {
     userData,
@@ -37,20 +33,49 @@ export default function Sidenav({ location, history }) {
     waitingOrderItems,
     getOrderItemsStore,
     initialOrderSocket,
-    initialTableSocket
+    initialTableSocket,
   } = useStore();
 
-
-  /**
-   * Initial Application
-   */
+  const itemList = [
+    {
+      title: "ສະຖິຕິລວມ",
+      key: "report",
+      icon: faTachometerAlt,
+      typeStore: "",
+    },
+    {
+      title: "ສະຖານະຂອງໂຕະ",
+      key: "tables",
+      icon: faHome,
+      typeStore: "",
+    },
+    {
+      title: "ຈັດການການຈອງໂຕະ",
+      key: "reservations",
+      icon: faList,
+      typeStore: "",
+    },
+    {
+      title: "ຈັດການເມນູຫາການ",
+      key: "menu",
+      typeStore: "",
+      icon: faBoxOpen,
+    },
+    {
+      title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
+      key: `settingStore/${userData?.DATA?.storeId}`,
+      typeStore: "",
+      icon: faCogs,
+    },
+  ];
+  
   useEffect(() => {
-    getTableDataStore()
-    getOrderItemsStore(WAITING_STATUS)
-    initialOrderSocket()
-    initialTableSocket()
-    callingCheckOut()
-  }, [])
+    getTableDataStore();
+    getOrderItemsStore(WAITING_STATUS);
+    initialOrderSocket();
+    initialTableSocket();
+    callingCheckOut();
+  }, []);
   return (
     <SideNav
       style={{
@@ -69,19 +94,41 @@ export default function Sidenav({ location, history }) {
           selected = selected + "/" + userData?.DATA?.storeId;
         }
         if (selected === "orders") {
-          selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
+          selected =
+            selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "tables") {
-          selected = selected + "/pagenumber/" + 1 + "/tableid/00" + "/" + userData?.DATA?.storeId;
+          selected =
+            selected +
+            "/pagenumber/" +
+            1 +
+            "/tableid/00" +
+            "/" +
+            userData?.DATA?.storeId;
         }
         if (selected === "histories") {
-          selected = selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
+          selected =
+            selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
         }
         if (selected === "users") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
+          selected =
+            selected +
+            "/limit/" +
+            40 +
+            "/page/" +
+            1 +
+            "/" +
+            userData?.DATA?.storeId;
         }
         if (selected === "category") {
-          selected = selected + "/limit/" + 40 + "/page/" + 1 + "/" + userData?.DATA?.storeId;
+          selected =
+            selected +
+            "/limit/" +
+            40 +
+            "/page/" +
+            1 +
+            "/" +
+            userData?.DATA?.storeId;
         }
         const to = "/" + selected;
 
@@ -89,233 +136,34 @@ export default function Sidenav({ location, history }) {
           history.push(to);
         }
       }}
-      onToggle={(expanded) => {
-      }}
+      onToggle={(expanded) => {}}
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <NavItem eventKey="report" style={{ backgroundColor: selected === "report" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faTachometerAlt}
-              style={{
-                color:
-                  selected === "report"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "report" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
+        {itemList.map((e) => (
+          <NavItem
+            eventKey={e?.key}
+            style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
           >
-            ສະຖິຕິລວມ
-          </NavText>
-        </NavItem>
-        <NavItem eventKey="tables" style={{ backgroundColor: selected === "tables" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faHome}
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={e?.icon}
+                style={{
+                  color: selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                }}
+              />
+            </NavIcon>
+            <NavText
               style={{
-                color:
-                  selected === "tables"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
+                color: selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
               }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "tables" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ສະຖານະຂອງໂຕະ
-          </NavText>
-        </NavItem>
-        {/* <NavItem eventKey="orders" style={{ backgroundColor: selected === "orders" ? "#FFFFFF" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faCartArrowDown}
-              style={{
-                color:
-                  selected === "orders"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-            {waitingOrderItems?.length != 0 ?
-              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{waitingOrderItems?.length}</Badge>
-              : ""
-            }
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "orders" ? COLOR_APP
-                : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ອໍເດີ
-          </NavText>
-        </NavItem> */}
-
-        {/* <NavItem eventKey={`checkBill/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "checkBill" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              className={callCheckBill?.length > 0 ? "scale-animation" : ""}
-              icon={faBell}
-              style={{
-                color:
-                  selected === "checkBill"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-            {callCheckBill?.length != 0 ?
-              <Badge variant="danger" style={{ borderRadius: 50, fontSize: 10 }}>{callCheckBill?.length}</Badge>
-              : ""
-            }
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "checkBill" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ແຈ້ງເຕືອນ Checkbill
-          </NavText>
-        </NavItem> */}
-        {/* <NavItem eventKey="histories" style={{ backgroundColor: selected === "histories" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faHistory}
-              style={{
-                color:
-                  selected === "histories"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "histories" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ປະຫວັດການຂາຍ
-          </NavText>
-        </NavItem> */}
-        {/* <NavItem eventKey="dashboard" style={{ backgroundColor: selected === "dashboard" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faTachometerAlt}
-              style={{
-                color:
-                  selected === "dashboard"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "dashboard" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຂໍມູນສະຖິຕິ
-          </NavText>
-        </NavItem> */}
-        {/* <NavItem eventKey="promotion" style={{ backgroundColor: selected === "promotion" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faAd}
-              style={{
-                color:
-                  selected === "promotion"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: selected === "promotion" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ການຕະຫຼາດ
-          </NavText>
-        </NavItem> */}
-        <NavItem eventKey={`settingStore/${userData?.DATA?.storeId}`} style={{ backgroundColor: selected === "settingStore" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faCogs}
-              style={{
-                color:
-                  selected === "settingStore"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "settingStore" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຕັ້ງຄ່າຮ້ານຄ້າ
-          </NavText>
-        </NavItem>
-
-        <NavItem eventKey={`reservations`} style={{ backgroundColor: selected === "reservations" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faList}
-              style={{
-                color:
-                  selected === "reservations"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "reservations" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຈັດການການຈອງໂຕະ
-          </NavText>
-        </NavItem>
-
-        <NavItem eventKey={`menu`} style={{ backgroundColor: selected === "reservations" ? "#ffff" : "" }}>
-          <NavIcon>
-            <FontAwesomeIcon
-              icon={faBoxOpen}
-              style={{
-                color:
-                  selected === "menu"
-                    ? COLOR_APP
-                    : UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color:
-                selected === "menu" ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຈັດການເມນູຫາການ
-          </NavText>
-        </NavItem>
-        
+            >
+              {e?.title}
+            </NavText>
+          </NavItem>
+        ))}
       </SideNav.Nav>
-    </SideNav >
+    </SideNav>
   );
 }

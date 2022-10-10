@@ -1,18 +1,12 @@
 import axios from "axios";
-import {
-  ACTIVE_STATUS,
-  CANCEL_STATUS,
-  CHECKOUT_STATUS,
-  END_POINT,
-  WAITING_STATUS,
-  END_POINT_VERSION,
-} from "../constants";
-import { getLocalData } from "../constants/api";
+import { END_POINT } from "../constants";
+import { getLocalData, END_POINT_APP } from "../constants/api";
 import { getHeaders } from "./auth";
 
-export const getReservation = async (storeId) => {
+export const getReservation = async (findBy) => {
   try {
-    const url = `${END_POINT}/${END_POINT_VERSION}/reservations?storeId=${storeId}`;
+    const LocalData = await getLocalData();
+    const url = `${END_POINT_APP}/v3/reservations?storeId=${LocalData?.DATA?.storeId}${findBy}`;
     const reservation = await axios.get(url, {
       headers: await getHeaders(),
     });
@@ -29,10 +23,14 @@ export const getReservation = async (storeId) => {
 export const addReservation = async (data) => {
   try {
     const _localData = await getLocalData();
-    const url = `${END_POINT}/${END_POINT_VERSION}/reservation/create`;
-    const reservation = await axios.post(url, {...data,storeId:_localData?.DATA?.storeId}, {
-      headers: await getHeaders(),
-    });
+    const url = `${END_POINT_APP}/v3/reservation/create`;
+    const reservation = await axios.post(
+      url,
+      { ...data, storeId: _localData?.DATA?.storeId },
+      {
+        headers: await getHeaders(),
+      }
+    );
     if (reservation) {
       let data = reservation?.data;
       return data;
@@ -46,7 +44,7 @@ export const addReservation = async (data) => {
 
 export const updateReservation = async (data, id) => {
   try {
-    const url = `${END_POINT}/v3/reservation/update`;
+    const url = `${END_POINT_APP}/v3/reservation/update`;
     const reservation = await axios.put(
       url,
       {
