@@ -4,53 +4,60 @@ import { COLOR_APP } from "../../constants";
 import { Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 
-const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
   const [startTime, setStartTime] = useState();
-  const [endTime, setEndTime] = useState();
-  const [startDate, setStartDate] = useState(
-    moment.parseZone(Date.now()).format()
-  );
-  const [endDate, setEndDate] = useState(moment.parseZone(Date.now()).format());
+  const [startDate, setStartDate] = useState();
+  const handleClose = () => {
+    setStartTime();
+    setStartDate();
+    onClose();
+  };
   return (
-    <Modal show={open} onHide={onClose}>
+    <Modal show={open} onHide={handleClose}>
       <Modal.Header closeButton>ເພີ່ມງາຍການຈອງໂຕະ</Modal.Header>
       <Formik
         initialValues={{}}
         validate={(values) => {
           const errors = {};
-          if (!values.clientPhone) {
+          if (!values?.clientPhone) {
             errors.clientPhone = "ກະລຸນາປ້ອນ...";
           }
-          if (!values.clientWhatsapp) {
-            errors.clientWhatsapp = "ກະລຸນາປ້ອນ...";
+          if (values?.clientPhone < 1) {
+            errors.clientPhone = "ກະລຸນາປ້ອນ...";
           }
-          if (!values.clientNames[0]) {
+          if (values?.clientPhone?.length !== 8) {
+            errors.clientPhone = "ກະລຸນາປ້ອນ...";
+          }
+          if (isNaN(parseInt(values?.clientPhone))) {
+            errors.clientPhone = "ກະລຸນາປ້ອນ...";
+          }
+          if (!values?.clientNames?.[0]) {
             errors.clientNames = "ກະລຸນາປ້ອນ...";
           }
-          if (!values.clientNumber) {
+          if (!values?.clientNumber) {
             errors.clientNumber = "ກະລຸນາປ້ອນ...";
           }
-          if (values.clientNumber < 1) {
+          if (values?.clientNumber < 1) {
+            errors.clientNumber = "ກະລຸນາປ້ອນ...";
+          }
+          if (isNaN(parseInt(values?.clientNumber))) {
             errors.clientNumber = "ກະລຸນາປ້ອນ...";
           }
           if (!startTime) {
             errors.startTime = "ກະລຸນາປ້ອນ...";
           }
-          if (!endTime) {
-            errors.endTime = "ກະລຸນາປ້ອນ...";
-          }
           if (!startDate) {
             errors.startDate = "ກະລຸນາປ້ອນ...";
-          }
-          if (!endDate) {
-            errors.endDate = "ກະລຸນາປ້ອນ...";
           }
 
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then(() => setSubmitting(false));
+          onSubmit(values).then(() => {
+            setStartTime();
+            setStartDate();
+            setSubmitting(false);
+          });
         }}
       >
         {({
@@ -73,6 +80,7 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                   name="clientNames[0]"
                   value={values?.clientNames?.[0]}
                   isInvalid={errors.clientNames}
+                  onBlur={handleBlur}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -80,24 +88,16 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                 <Form.Label>ເບີໂທລະສັບ</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="ເບີໂທລະສັບ"
+                  maxlength="8"
+                  placeholder="ເບີໂທລະສັບ 8 ໂຕເລກ"
                   name="clientPhone"
                   value={values?.clientPhone}
                   isInvalid={errors.clientPhone}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
               </Form.Group>
-              <Form.Group>
-                <Form.Label>ເບີ Whatsapp</Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="ເບີ Whatsapp"
-                  name="clientWhatsapp"
-                  value={values?.clientWhatsapp}
-                  isInvalid={errors.clientWhatsapp}
-                  onChange={handleChange}
-                />
-              </Form.Group>
+
               <Form.Group>
                 <Form.Label>ຈຳນວນຄົນ</Form.Label>
                 <Form.Control
@@ -107,6 +107,7 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                   value={values?.clientNumber}
                   isInvalid={errors.clientNumber}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
               </Form.Group>
               <Form.Group>
@@ -129,6 +130,7 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                         );
                       }}
                       isInvalid={errors.startDate}
+                      onBlur={handleBlur}
                     />
                   </div>
                   <div style={{ flexGrow: 1 }}>
@@ -148,51 +150,8 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                             .format()
                         );
                       }}
+                      onBlur={handleBlur}
                       isInvalid={errors.startTime}
-                    />
-                  </div>
-                </div>
-              </Form.Group>
-              <Form.Group>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <div style={{ flexGrow: 1 }}>
-                    <Form.Label>ວັນທີກັບ</Form.Label>
-                    <Form.Control
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => {
-                        setEndDate(e.target.value);
-                        setFieldValue(
-                          "endTime",
-                          moment
-                            .parseZone(
-                              `${endDate} ${endTime}`,
-                              "YYYY-MM-DD HH:mm"
-                            )
-                            .format()
-                        );
-                      }}
-                      isInvalid={errors.endDate}
-                    />
-                  </div>
-                  <div style={{ flexGrow: 1 }}>
-                    <Form.Label>ເວລາກັບ</Form.Label>
-                    <Form.Control
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => {
-                        setEndTime(e.target.value);
-                        setFieldValue(
-                          "endTime",
-                          moment
-                            .parseZone(
-                              `${endDate} ${endTime}`,
-                              "YYYY-MM-DD HH:mm"
-                            )
-                            .format()
-                        );
-                      }}
-                      isInvalid={errors.endTime}
                     />
                   </div>
                 </div>
@@ -204,16 +163,13 @@ const PopUpReservationAdd = ({ open, text1, text2, onClose, onSubmit }) => {
                   name="clientComment"
                   value={values?.clientComment}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   isInvalid={errors.clientComment}
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button
-                disabled={buttonDisabled}
-                variant="secondary"
-                onClick={onClose}
-              >
+              <Button type="button" variant="secondary" onClick={handleClose}>
                 ຍົກເລີກ
               </Button>
               <Button

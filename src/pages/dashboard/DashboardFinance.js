@@ -7,6 +7,7 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { _statusCheckBill, orderStatus } from "./../../helpers";
 import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
+import { getDashboard } from "../../services/dashboard";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const { history, match } = useReactRouter();
@@ -32,23 +33,12 @@ export default function DashboardFinance({ startDate, endDate }) {
     _fetchFinanceData();
   }, [endDate, startDate]);
   const _fetchFinanceData = async () => {
+    let findBy = "";
+    findBy += "&dateFrom=" + startDate;
+    findBy += "&dateTo=" + endDate;
+    const data = await getDashboard(findBy);
     setIsLoading(TramRounded);
-    const getDataDashBoard = await axios.get(
-      END_POINT_SEVER +
-        "/v3/dashboard/" +
-        match?.params?.storeId +
-        "/startTime/" +
-        startDate +
-        "/endTime/" +
-        endDate,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-      }
-    );
-    setData(getDataDashBoard?.data);
+    setData(data);
     setIsLoading(false);
   };
 
@@ -101,8 +91,10 @@ export default function DashboardFinance({ startDate, endDate }) {
               data?.checkOut[i]?.transferAmount + data?.checkOut[i]?.payAmount >
               data?.checkOut[i]?.billAmount
             ) {
-              _checkBill.cash += data?.checkOut[i]?.billAmount - data?.checkOut[i]?.transferAmount ;
-            } else{
+              _checkBill.cash +=
+                data?.checkOut[i]?.billAmount -
+                data?.checkOut[i]?.transferAmount;
+            } else {
               _checkBill.cash += data?.checkOut[i]?.payAmount;
             }
             _checkBill.transfer += data?.checkOut[i]?.transferAmount;
@@ -119,7 +111,6 @@ export default function DashboardFinance({ startDate, endDate }) {
       }
     }
     setDataCheckBill(_checkBill);
-    console.log("dataCheckBill",dataCheckBill);
     setDataNotCheckBill(_notCheckBill);
     setMoneyAon(_aon);
     setMoneyCash(_cash);
@@ -149,6 +140,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     }
     return _amount;
   };
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <AnimationLoading />}
@@ -220,7 +212,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   ກີບ
                 </div>
                 <div>
-                ຍັງຄ້າງ :{" "}
+                  ຍັງຄ້າງ :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
@@ -253,7 +245,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <div>
                   ຍອດທັ້ງໝົດ :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    (dataCheckBill?.cash || 0) + dataCheckBill?.transfer || (0)
+                    (dataCheckBill?.cash || 0) + dataCheckBill?.transfer || 0
                   )}{" "}
                   ກີບ
                 </div>

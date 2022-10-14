@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import axios from "axios";
 import { PRESIGNED_URL } from "../../../constants/api";
 import { COLOR_APP } from "../../../constants";
-import { STATUS_MENU } from "../../../helpers";
 import { getLocalData, END_POINT_SEVER } from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -24,42 +23,6 @@ export default function FormAddMenu() {
   const [menuStocks, setMenuStocks] = useState([]);
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
-
-  const handleUpload = async (event) => {
-    // setImageLoading("");
-    try {
-      setFile(event.target.files[0]);
-      let fileData = event.target.files[0];
-      const responseUrl = await axios({
-        method: "post",
-        url: PRESIGNED_URL,
-        data: {
-          name: event.target.files[0].type,
-        },
-      });
-      setNamePhoto(responseUrl.data);
-      let afterUpload = await axios({
-        method: "put",
-        url: responseUrl.data.url,
-        data: fileData,
-        headers: {
-          "Content-Type": " file/*; image/*",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
-        },
-        onUploadProgress: function (progressEvent) {
-          var percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setImageLoading(percentCompleted);
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const ImageThumb = ({ image }) => {
     return (

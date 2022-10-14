@@ -19,12 +19,10 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
           detail: data?.detail,
           note: data?.note,
           image: data?.image,
-
-          // dateClose: data?.dateClose,
-          // closeTime: data?.closeTime,
         }}
         validate={(values) => {
           const errors = {};
+
           if (!values.name) {
             errors.name = "ກະລຸນາປ້ອນ !";
           }
@@ -40,12 +38,6 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
           if (!values.phone) {
             errors.phone = "ກະລຸນາປ້ອນ !";
           }
-          // if (!values.dateClose) {
-          //     errors.dateClose = 'ກະລຸນາປ້ອນ !';
-          // }
-          // if (!values.closeTime) {
-          //     errors.closeTime = 'ກະລຸນາປ້ອນ !';
-          // }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
@@ -84,12 +76,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onBlur={handleBlur}
                   value={values.name}
                   placeholder="ຊື່ຮ້ານ..."
-                  style={{
-                    border:
-                      errors.name && touched.name && errors.name
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  isInvalid={errors.name && touched.name && errors.name}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
@@ -101,12 +88,9 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onBlur={handleBlur}
                   value={values.adminName}
                   placeholder="ຊື່ເຈົ້າຂອງຮ້ານ..."
-                  style={{
-                    border:
-                      errors.adminName && touched.adminName && errors.adminName
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  isInvalid={
+                    errors.adminName && touched.adminName && errors.adminName
+                  }
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
@@ -117,12 +101,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.detail}
-                  style={{
-                    border:
-                      errors.detail && touched.detail && errors.detail
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  isInvalid={errors.detail && touched.detail && errors.detail}
                   placeholder="ຂໍ້ມູນທີ່ຢູ່..."
                 />
               </Form.Group>
@@ -134,12 +113,9 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.whatsapp}
-                  style={{
-                    border:
-                      errors.whatsapp && touched.whatsapp && errors.whatsapp
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  isInvalid={
+                    errors.whatsapp && touched.whatsapp && errors.whatsapp
+                  }
                   placeholder="whatsapp..."
                 />
               </Form.Group>
@@ -151,28 +127,21 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.phone}
-                  style={{
-                    border:
-                      errors.phone && touched.phone && errors.phone
-                        ? "solid 1px red"
-                        : "",
-                  }}
+                  isInvalid={errors.phone && touched.phone && errors.phone}
                   placeholder="ເບີໂທ..."
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ລາຍລະອຽດ</Form.Label>
               </Form.Group>
-              <textarea
-                id="note"
+              <Form.Control
+                as="textarea"
                 name="note"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.note}
                 placeholder="ຕົວຢາງເປີດບໍລິການ ວັນຈັນ - ວັນທິດ ເວລາ 9:00 - 9:30..."
-                rows="4"
-                cols="50"
-              ></textarea>
+              ></Form.Control>
             </Modal.Body>
             <Modal.Footer>
               <Button

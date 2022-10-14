@@ -19,13 +19,13 @@ const PopUpReservationDetail = ({ open, data, onClose, onSubmit }) => {
         <CustomCart>
           <span style={{ textAlign: "right" }}>ວັນ - ເວລາທີ່ຈອງ :</span>
           <span style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>
+            <span>
               {data?.startTime &&
                 moment.parseZone(data?.startTime).format("DD / MM / YYYY")}
             </span>
             <span>
               {data?.startTime &&
-                moment.parseZone(data?.startTime).format("LT")}
+                moment.parseZone(data?.startTime).format("HH:ss")}
             </span>
           </span>
         </CustomCart>

@@ -47,7 +47,7 @@ export default function ReservationList() {
   const onSubmitReject = async () => {
     updateReservation({ status: "CANCEL" }, select?._id).then(() => {
       setPopup((prev) => ({ ...prev, delete: false }));
-      getData("CANCEL");
+      getData();
     });
   };
   const handleConfirm = (select) => {
@@ -57,7 +57,7 @@ export default function ReservationList() {
   const onSubmitConfirm = async () => {
     updateReservation({ status: "STAFF_CONFIRM" }, select?._id).then(() => {
       setPopup((prev) => ({ ...prev, confirm: false }));
-      getData("STAFF_CONFIRM");
+      getData();
     });
   };
   const handleShowDetail = (select) => {
@@ -65,6 +65,9 @@ export default function ReservationList() {
     setSelect(select);
   };
   const getData = async (status) => {
+    if (tabSelect != "ALL" && tabSelect != "") {
+      status = tabSelect;
+    }
     setIsLoading(true);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
@@ -76,7 +79,7 @@ export default function ReservationList() {
   // useEffect
   useEffect(() => {
     getData();
-  }, []);
+  }, [tabSelect]);
 
   return (
     <div>
@@ -101,7 +104,7 @@ export default function ReservationList() {
               <ButtonTab
                 active={tabSelect == "ALL"}
                 onClick={() => {
-                  getData();
+                  // getData();
                   setTabSelect("ALL");
                 }}
               >
@@ -110,7 +113,7 @@ export default function ReservationList() {
               <ButtonTab
                 active={tabSelect == "WATTING"}
                 onClick={() => {
-                  getData("WATTING");
+                  // getData("WATTING");
                   setTabSelect("WATTING");
                 }}
               >
@@ -119,8 +122,8 @@ export default function ReservationList() {
               <ButtonTab
                 active={tabSelect == "STAFF_CONFIRM"}
                 onClick={() => {
-                  getData("STAFF_CONFIRM");
-                  setTabSelect("CONFIRM");
+                  // getData("STAFF_CONFIRM");
+                  setTabSelect("STAFF_CONFIRM");
                 }}
               >
                 ລາຍການທີ່ອະນຸມັດ
@@ -128,7 +131,7 @@ export default function ReservationList() {
               <ButtonTab
                 active={tabSelect == "CANCEL"}
                 onClick={() => {
-                  getData("CANCEL");
+                  // getData("CANCEL");
                   setTabSelect("CANCEL");
                 }}
               >
@@ -250,7 +253,7 @@ export default function ReservationList() {
         open={popup?.add}
         onClose={() => setPopup((prev) => ({ ...prev, add: false }))}
         onSubmit={async (e) => {
-          alert(JSON.stringify(e));
+          // alert(JSON.stringify(e));
           await addReservation(e);
           getData();
           setPopup((prev) => ({ ...prev, add: false }));
