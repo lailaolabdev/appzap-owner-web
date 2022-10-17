@@ -7,16 +7,14 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 
-// import "@fullcalendar/core/main.css";
-// import "@fullcalendar/daygrid/main.css";
-// import "@fullcalendar/timegrid/main.css";
-
 import events from "./events";
 
 export default function ReservationDashboard() {
   return (
     <div>
-      <div style={{ padding: 10 }}>ລາຍງານການຈອງ</div>
+      <div style={{ padding: 10, fontSize: 22, fontWeight: "bold" }}>
+        ລາຍງານການຈອງ
+      </div>
       <div style={{ padding: 10, display: "grid", gridGap: 20 }}>
         <div
           style={{
@@ -45,8 +43,8 @@ export default function ReservationDashboard() {
               gridGap: 10,
             }}
           >
-            <StatisticCard />
-            <StatisticCard />
+            <ComingSoonCard />
+            <ComingSoonCard />
           </div>
         </div>
       </div>
@@ -134,6 +132,25 @@ const CalendarCard = ({ ...ohter }) => {
         plugins={[dayGridPlugin, timeGridPlugin]}
         events={events}
       />
+    </div>
+  );
+};
+
+const ComingSoonCard = ({ color = "rgb(251, 110, 59)" }) => {
+  return (
+    <div
+      style={{
+        backgroundColor: "rgba(251, 110, 59,0.3)",
+        border: `1px solid ${color}`,
+        borderRadius: 8,
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        color: color,
+      }}
+    >
+      Coming soon...
     </div>
   );
 };
