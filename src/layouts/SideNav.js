@@ -13,6 +13,7 @@ import {
   faHome,
   faList,
   faTachometerAlt,
+  faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
@@ -50,9 +51,15 @@ export default function Sidenav({ location, history }) {
       typeStore: "",
     },
     {
-      title: "ຈັດການການຈອງໂຕະ",
+      title: "ຈັດການການຈອງ",
       key: "reservations",
       icon: faList,
+      typeStore: "",
+    },
+    {
+      title: "ລາຍງານການຈອງ",
+      key: "reservation-dashboard",
+      icon: faChartBar,
       typeStore: "",
     },
     {
@@ -68,7 +75,7 @@ export default function Sidenav({ location, history }) {
       icon: faCogs,
     },
   ];
-  
+
   useEffect(() => {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);

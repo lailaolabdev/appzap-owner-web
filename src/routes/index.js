@@ -54,6 +54,7 @@ import HistoryUse from "../pages/historiesUse/HistoryUse";
 import MessagerList from "../pages/messager/MessagerList";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
 import CartListMobile from "../pages/table/mobileView/Cart";
+import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 
 const Main = styled.main`
   /* position: relative; */
@@ -253,6 +254,11 @@ function Index() {
                     exact
                     path="/reservations"
                     component={ReservationList}
+                  />
+                  <PrivateRoute
+                    exact
+                    path="/reservation-dashboard"
+                    component={ReservationDashboard}
                   />
                   <PrivateRoute exact path="/menu" component={MenuList} />
                 </div>

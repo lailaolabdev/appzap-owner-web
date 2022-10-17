@@ -19,6 +19,7 @@ import ButtonTab from "../../components/button/ButtonTab";
 import ButtonManamentReservation from "../../components/button/ButtonManamentReservation";
 import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
 import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
+import { Form } from "react-bootstrap";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
@@ -135,7 +136,7 @@ export default function ReservationList() {
                   setTabSelect("CANCEL");
                 }}
               >
-                ປະຫວັດການຈອງ
+                ລາຍການທີ່ຍົກເລີກ
               </ButtonTab>
             </div>
             <div>
@@ -174,8 +175,14 @@ export default function ReservationList() {
                   <th style={{ color: COLOR_APP }}>ວັນທີ / ເດືອນ / ປີ</th>
                   <th style={{ color: COLOR_APP }}>ເວລາ</th>
                   <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
-                  <th style={{ color: COLOR_APP, maxWidth: 200, width: 200 }}>
-                    ຈັດການ
+                  <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Form.Control type="date" style={{ maxWidth: 100 }} />
+                      <div style={{ paddingLeft: 10, paddingRight: 10 }}>
+                        to
+                      </div>
+                      <Form.Control type="date" style={{ maxWidth: 100 }} />
+                    </div>
                   </th>
                   <th style={{ maxWidth: 50, width: 50 }}></th>
                 </tr>
