@@ -10,7 +10,7 @@ import ButtonIcon from "../../components/button/ButtonIcon";
 // services
 import {
   addReservation,
-  getReservation,
+  getReservations,
   updateReservation,
 } from "../../services/reservation";
 // popup
@@ -72,7 +72,7 @@ export default function ReservationList() {
     setIsLoading(true);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
-    const data = await getReservation(findBy);
+    const data = await getReservations(findBy);
     setReservationsData(data);
     setIsLoading(false);
     return;

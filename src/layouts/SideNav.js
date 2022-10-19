@@ -35,6 +35,7 @@ export default function Sidenav({ location, history }) {
     getOrderItemsStore,
     initialOrderSocket,
     initialTableSocket,
+    storeDetail
   } = useStore();
 
   const itemList = [
@@ -43,36 +44,42 @@ export default function Sidenav({ location, history }) {
       key: "report",
       icon: faTachometerAlt,
       typeStore: "",
+      hidden:!storeDetail?.hasPOS
     },
     {
       title: "ສະຖານະຂອງໂຕະ",
       key: "tables",
       icon: faHome,
       typeStore: "",
+      hidden:!storeDetail?.hasPOS
     },
     {
       title: "ຈັດການການຈອງ",
       key: "reservations",
       icon: faList,
       typeStore: "",
+      hidden:!storeDetail?.hasReservation
     },
     {
       title: "ລາຍງານການຈອງ",
       key: "reservation-dashboard",
       icon: faChartBar,
       typeStore: "",
+      hidden:!storeDetail?.hasReservation
     },
     {
       title: "ຈັດການເມນູຫາການ",
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
+      hidden:!storeDetail?.hasSmartMenu
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: `settingStore/${userData?.DATA?.storeId}`,
       typeStore: "",
       icon: faCogs,
+      hidden:!storeDetail?.hasPOS
     },
   ];
 
@@ -147,7 +154,7 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        {itemList.map((e) => (
+        {itemList.filter((e)=>!e?.hidden).map((e) => (
           <NavItem
             eventKey={e?.key}
             style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
