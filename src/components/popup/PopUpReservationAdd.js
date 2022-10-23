@@ -14,7 +14,7 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
   };
   return (
     <Modal show={open} onHide={handleClose}>
-      <Modal.Header closeButton>ເພີ່ມງາຍການຈອງໂຕະ</Modal.Header>
+      <Modal.Header closeButton>ເພີ່ມການຈອງໂຕະ</Modal.Header>
       <Formik
         initialValues={{}}
         validate={(values) => {
@@ -73,7 +73,7 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
           <form onSubmit={handleSubmit}>
             <Modal.Body>
               <Form.Group>
-                <Form.Label>ຊື່ຜູ້ຈ້ອງ</Form.Label>
+                <Form.Label>ຊື່ຜູ້ຈອງ</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="ຊື່"
@@ -101,7 +101,7 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
               <Form.Group>
                 <Form.Label>ຈຳນວນຄົນ</Form.Label>
                 <Form.Control
-                  type="text"
+                  type="number"
                   placeholder="ຈຳນວນຄົນ"
                   name="clientNumber"
                   value={values?.clientNumber}
@@ -157,7 +157,7 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
                 </div>
               </Form.Group>
               <Form.Group>
-                <Form.Label>ຄອມເມນ</Form.Label>
+                <Form.Label>ຄອມເມັ້ນ</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="clientComment"

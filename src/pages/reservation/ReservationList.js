@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useReactRouter from "use-react-router";
-import moment from "moment";
+import moment from "moment-timezone";
 import { COLOR_APP } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
@@ -208,12 +208,12 @@ export default function ReservationList() {
                     <td>
                       {item?.startTime &&
                         moment
-                          .parseZone(item?.startTime)
+                          .tz(item?.startTime, "Asia/Laos")
                           .format("DD / MM / YYYY")}
                     </td>
                     <td>
                       {item?.startTime &&
-                        moment.parseZone(item?.startTime).format("HH:ss")}
+                        moment.tz(item?.startTime, "Asia/Thailand").format("LT")}
                     </td>
                     <td>{item?.clientNumber}</td>
                     <td>
@@ -243,14 +243,14 @@ export default function ReservationList() {
       )}
       {/* >>>>>>>>>>>>> popup <<<<<<<<<<<<<<< */}
       <PopUpConfirm
-        text1="ຖ່ານຕ້ອງການປະຕິເສດບໍ?"
+        text1="ທ່ານຕ້ອງການປະຕິເສດບໍ ?"
         text2={select?.clientPhone}
         open={popup?.delete}
         onClose={() => setPopup((prev) => ({ ...prev, delete: false }))}
         onSubmit={onSubmitReject}
       />
       <PopUpConfirm
-        text1="ຍືນຍັນການຈອງ"
+        text1="ຢືນຢັນການຈອງ"
         text2={select?.clientPhone}
         open={popup?.confirm}
         onClose={() => setPopup((prev) => ({ ...prev, confirm: false }))}

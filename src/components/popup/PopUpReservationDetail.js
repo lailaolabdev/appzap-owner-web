@@ -25,7 +25,7 @@ const PopUpReservationDetail = ({ open, data, onClose, onSubmit }) => {
             </span>
             <span>
               {data?.startTime &&
-                moment.parseZone(data?.startTime).format("HH:ss")}
+                moment.parseZone(data?.startTime).format("LT")}
             </span>
           </span>
         </CustomCart>
