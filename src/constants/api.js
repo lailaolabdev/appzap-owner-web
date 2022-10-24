@@ -1,5 +1,4 @@
 import { USER_KEY } from './index'
-// export const END_POINT_SEVER = "http://13.229.122.188:7070";
 
 export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
 export const END_POINT_APP = "https://app-api.appzap.la/app"; // /prosdusction
