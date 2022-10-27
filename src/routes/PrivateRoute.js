@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Redirect } from "react-router-dom";
-import { useAuth } from "../helpers"
+import { useAuth } from "../helpers";
+import { useStore } from "../store";
+import { getStore } from "../services/store";
+import { getLocalData } from "../constants/api";
 
 function PrivateRoute({ component: Component, headerTitle, ...rest }) {
-  const isAuthenticated = useAuth()
+  const isAuthenticated = useAuth();
   return (
     <Route
       {...rest}
@@ -13,11 +16,11 @@ function PrivateRoute({ component: Component, headerTitle, ...rest }) {
             <Component {...props} />
           </div>
         ) : (
-            <Redirect to="/" />
-          )
+          <Redirect to="/" />
+        )
       }
     />
-  )
+  );
 }
 
 export default PrivateRoute;

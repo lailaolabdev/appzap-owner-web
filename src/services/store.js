@@ -11,6 +11,15 @@ export const getStores = async () => {
     return error;
   }
 };
+export const getStore = async (storeId) => {
+  try {
+    const url = `${END_POINT_APP}/v3/store?id=${storeId}`;
+    const res = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const updateStore = async (data, id) => {
   try {

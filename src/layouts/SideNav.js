@@ -8,14 +8,12 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBorderAll,
   faBoxOpen,
   faCogs,
   faHome,
   faList,
-  faPooStorm,
-  faTable,
   faTachometerAlt,
+  faChartBar,
 } from "@fortawesome/free-solid-svg-icons";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
@@ -37,6 +35,7 @@ export default function Sidenav({ location, history }) {
     getOrderItemsStore,
     initialOrderSocket,
     initialTableSocket,
+    storeDetail
   } = useStore();
 
   const itemList = [
@@ -45,36 +44,42 @@ export default function Sidenav({ location, history }) {
       key: "report",
       icon: faTachometerAlt,
       typeStore: "",
+      hidden:!storeDetail?.hasPOS
     },
     {
       title: "ສະຖານະຂອງໂຕະ",
       key: "tables",
       icon: faHome,
       typeStore: "",
+      hidden:!storeDetail?.hasPOS
     },
     {
-      title: "ຈັດການການຈອງໂຕະ",
+      title: "ຈັດການການຈອງ",
       key: "reservations",
       icon: faList,
       typeStore: "",
+      hidden:!storeDetail?.hasReservation
+    },
+    {
+      title: "ລາຍງານການຈອງ",
+      key: "reservation-dashboard",
+      icon: faChartBar,
+      typeStore: "",
+      hidden:!storeDetail?.hasReservation
     },
     {
       title: "ຈັດການເມນູຫາການ",
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
+      hidden:!storeDetail?.hasSmartMenu
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: `settingStore/${userData?.DATA?.storeId}`,
       typeStore: "",
       icon: faCogs,
-    },
-    {
-      title: "ສະຖານະຂອງໂຕະ",
-      key: "tablelist",
-      typeStore: "",
-      icon: faTable,
+      hidden:!storeDetail?.hasPOS
     },
   ];
 
@@ -149,7 +154,7 @@ export default function Sidenav({ location, history }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        {itemList.map((e) => (
+        {itemList.filter((e)=>!e?.hidden).map((e) => (
           <NavItem
             eventKey={e?.key}
             style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}

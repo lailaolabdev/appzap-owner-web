@@ -24,6 +24,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useReactRouter from "use-react-router";
 import Lottie from "react-lottie";
+import { useStore } from "../../store";
+import { getStore } from "../../services/store";
 
 // style
 import "./login.css";
@@ -40,12 +42,20 @@ function Login() {
   const [popupDate, setPopupData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
+  const {
+    isStoreDetailLoading,
+    setStoreDetailLoading,
+    storeDetail,
+    setStoreDetail,
+  } = useStore();
 
   const _login = async ({ values }) => {
     try {
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
-      if (user.data.data.role === "APPZAP_ADMIN") {
-        await localStorage.setItem(USER_KEY, JSON.stringify(user.data));
+      if (user?.data?.data?.role === "APPZAP_ADMIN") {
+        await localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
+        const data = await getStore(user?.data?.data?.storeId);
+        setStoreDetail(data);
         await history.push(`/report/${user?.data?.data?.storeId}`);
       } else {
         setCheckUser(true);
@@ -54,6 +64,7 @@ function Login() {
       setCheckUser(true);
     }
   };
+
   // let _imgaeSlide = [
   //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+15+(1).png",
   //   "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/Web+1920+%E2%80%93+17+(1).png",

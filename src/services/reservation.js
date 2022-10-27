@@ -3,7 +3,24 @@ import { END_POINT } from "../constants";
 import { getLocalData, END_POINT_APP } from "../constants/api";
 import { getHeaders } from "./auth";
 
-export const getReservation = async (findBy) => {
+export const getReservationsCount = async (findBy) => {
+  try {
+    const LocalData = await getLocalData();
+    const url = `${END_POINT_APP}/v3/reservations/count?storeId=${LocalData?.DATA?.storeId}${findBy}`;
+    const reservationsCount = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    if (reservationsCount) {
+      let data = reservationsCount?.data;
+      return data;
+    }
+    return null;
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
+};
+
+export const getReservations = async (findBy) => {
   try {
     const LocalData = await getLocalData();
     const url = `${END_POINT_APP}/v3/reservations?storeId=${LocalData?.DATA?.storeId}${findBy}`;
