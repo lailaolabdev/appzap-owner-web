@@ -54,6 +54,8 @@ import HistoryUse from "../pages/historiesUse/HistoryUse";
 import MessagerList from "../pages/messager/MessagerList";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
 import CartListMobile from "../pages/table/mobileView/Cart";
+import tableList from "../pages/card/tableList";
+import AddOder from "../pages/card/AddOder";
 
 const Main = styled.main`
   /* position: relative; */
@@ -255,6 +257,8 @@ function Index() {
                     component={ReservationList}
                   />
                   <PrivateRoute exact path="/menu" component={MenuList} />
+                  <PrivateRoute exact path="/tablelist" component={tableList} />
+                  <PrivateRoute exact path="/addorder" component={AddOder} />
                 </div>
               </Main>
             </React.Fragment>
@@ -266,4 +270,3 @@ function Index() {
 }
 
 export default Index;
-

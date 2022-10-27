@@ -20,7 +20,7 @@ export default function NavBar() {
 
   useEffect(() => {
     const getData = () => {
-      const ADMIN =  localStorage.getItem(USER_KEY);
+      const ADMIN = localStorage.getItem(USER_KEY);
       const _localJson = JSON.parse(ADMIN);
       setUserData(_localJson);
       if (!ADMIN) {

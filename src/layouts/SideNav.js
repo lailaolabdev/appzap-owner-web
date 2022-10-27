@@ -8,10 +8,13 @@ import SideNav, {
 import "@trendmicro/react-sidenav/dist/react-sidenav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBorderAll,
   faBoxOpen,
   faCogs,
   faHome,
   faList,
+  faPooStorm,
+  faTable,
   faTachometerAlt,
 } from "@fortawesome/free-solid-svg-icons";
 // import { Badge } from "react-bootstrap";
@@ -67,8 +70,14 @@ export default function Sidenav({ location, history }) {
       typeStore: "",
       icon: faCogs,
     },
+    {
+      title: "ສະຖານະຂອງໂຕະ",
+      key: "tablelist",
+      typeStore: "",
+      icon: faTable,
+    },
   ];
-  
+
   useEffect(() => {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);
