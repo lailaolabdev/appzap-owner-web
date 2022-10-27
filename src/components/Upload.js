@@ -3,6 +3,7 @@ import axios from "axios";
 import { PRESIGNED_URL } from "../constants/api";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../constants";
 import { Clear } from "@material-ui/icons";
+import { FaWindowClose } from "react-icons/fa";
 
 export default function Upload({
   src,
@@ -61,7 +62,7 @@ export default function Upload({
     }
   };
   return (
-    <div className="col-sm-12 center" style={{ textAlign: "center" }}>
+    <div>
       <input
         type="file"
         id="file-upload"
@@ -70,31 +71,36 @@ export default function Upload({
         accept="image/png, image/jpeg, image/jpg"
         hidden
       />
-      <label for="file-upload" style={{ position: "relative" }}>
+      <div style={{ position: "relative" }}>
         {removeImage ? (
           <div
             style={{
-              backgroundColor: "red",
-              padding: 5,
               position: "absolute",
-              top: "-10px",
-              right: "-10px",
-              borderRadius: "50%",
+              bottom: 0,
+              right: "50%",
+              transform: "translateX(50%)",
+              backgroundColor: "orange",
+              width: 100,
+              borderRadius: "20px 20px 0 0",
               color: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               cursor: "pointer",
             }}
             onClick={removeImage}
           >
-            <Clear />
+            ລົບຮູບ
           </div>
         ) : (
           ""
         )}
-        <div
+        <label
+          for="file-upload"
           style={{
             backgroundColor: "#E4E4E4E4",
-            height: 200,
-            width: 200,
+            height: 160,
+            width: 160,
             borderRadius: "10%",
             cursor: "pointer",
             display: "flex",
@@ -106,8 +112,8 @@ export default function Upload({
               alt={alt}
               style={{
                 borderRadius: "10%",
-                height: 200,
-                width: 200,
+                height: 160,
+                width: 160,
                 objectFit: "cover",
               }}
               {...other}
@@ -116,8 +122,8 @@ export default function Upload({
             <div
               style={{
                 display: "flex",
-                height: 200,
-                width: 200,
+                height: 160,
+                width: 160,
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -133,8 +139,8 @@ export default function Upload({
               </p>
             </div>
           )}
-        </div>
-      </label>
+        </label>
+      </div>
       {/* progass */}
       {imageLoading ? (
         <div className="progress" style={{ height: 20 }}>
