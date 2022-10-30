@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useReactRouter from "use-react-router";
-import moment from "moment-timezone";
-import { COLOR_APP } from "../../constants";
+import moment from "moment";
+import { COLOR_APP, USER_KEY } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
@@ -25,6 +25,7 @@ import { Form } from "react-bootstrap";
 export default function ReservationList() {
   const { match } = useReactRouter();
   const storeId = match.params.storeId;
+
   // const _limit = match.params.limit;
   // const _page = match.params.page;
 
@@ -73,7 +74,7 @@ export default function ReservationList() {
     setIsLoading(true);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
-    const data = await getReservations(findBy,storeId);
+    const data = await getReservations(findBy, storeId);
     setReservationsData(data);
     setIsLoading(false);
     return;
@@ -81,6 +82,14 @@ export default function ReservationList() {
   // useEffect
   useEffect(() => {
     getData();
+    const queryData = window?.location?.href
+      ?.split("?")?.[1]
+      ?.split("&")
+      ?.map((e) => e.split("="));
+    const token = queryData?.find((e) => e[0] === "token")[1];
+    if (token) {
+      localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
+    }
   }, [tabSelect]);
 
   return (
@@ -209,12 +218,12 @@ export default function ReservationList() {
                     <td>
                       {item?.startTime &&
                         moment
-                          .tz(item?.startTime, "Asia/Laos")
+                          .parseZone(item?.startTime)
                           .format("DD / MM / YYYY")}
                     </td>
                     <td>
                       {item?.startTime &&
-                        moment.tz(item?.startTime, "Asia/Thailand").format("LT")}
+                        moment.parseZone(item?.startTime).format("LT")}
                     </td>
                     <td>{item?.clientNumber}</td>
                     <td>

@@ -1,7 +1,7 @@
 import React from "react";
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
-import { SocketContext, socket } from "./services/socket";
+// import { SocketContext, socket } from "./services/socket";
 import { StateProvider } from "./store";
 const theme = {
   xl: "@media screen and (min-width: 1536px)",

@@ -27,9 +27,9 @@ export default function MessagerList() {
         setUserData(_localJson)
     }, [])
 
-    useEffect(() => {
-        _getDataMessagerList();
-    }, [userData?.data?.storeId])
+    // useEffect(() => {
+    //     _getDataMessagerList();
+    // }, [userData?.data?.storeId])
     const _getDataMessagerList = async (storeId) => {
         const resData = await axios({
             method: 'get',
@@ -96,12 +96,12 @@ export default function MessagerList() {
         setDataForSent('')
     }
 
-    socket.on(`READ_MESSAGER:${userData?.data?.storeId}`, (data) => {
-        setdataMessagerDetail(data)
-    });
-    socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
-        _getDataMessagerList();
-    });
+    // socket.on(`READ_MESSAGER:${userData?.data?.storeId}`, (data) => {
+    //     setdataMessagerDetail(data)
+    // });
+    // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
+    //     _getDataMessagerList();
+    // });
     return (
         <div style={{ paddingLeft: 40, display: 'flex', flexDirection: 'row' }} className="row col-sm-12">
             <div style={{ width: '35%' }}>
