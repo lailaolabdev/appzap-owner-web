@@ -20,10 +20,12 @@ export const getReservationsCount = async (findBy) => {
   }
 };
 
-export const getReservations = async (findBy) => {
+export const getReservations = async (findBy, storeId) => {
   try {
     const LocalData = await getLocalData();
-    const url = `${END_POINT_APP}/v3/reservations?storeId=${LocalData?.DATA?.storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v3/reservations?storeId=${
+      storeId || LocalData?.DATA?.storeId
+    }${findBy}`;
     const reservation = await axios.get(url, {
       headers: await getHeaders(),
     });

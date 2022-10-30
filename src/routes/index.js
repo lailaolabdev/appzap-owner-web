@@ -101,6 +101,11 @@ function Index() {
           path="/history-use-only/:id"
           component={HistoryUse}
         />
+        <PrivateRoute 
+        exact
+        path="/public/reservation/:storeId"
+        component={ReservationList}
+        />
         <Route
           render={({ location, history }) => (
             <React.Fragment>

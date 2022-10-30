@@ -24,6 +24,7 @@ import { Form } from "react-bootstrap";
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
   const { match } = useReactRouter();
+  const storeId = match.params.storeId;
   // const _limit = match.params.limit;
   // const _page = match.params.page;
 
@@ -72,7 +73,7 @@ export default function ReservationList() {
     setIsLoading(true);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
-    const data = await getReservations(findBy);
+    const data = await getReservations(findBy,storeId);
     setReservationsData(data);
     setIsLoading(false);
     return;
