@@ -101,7 +101,7 @@ function Index() {
           path="/history-use-only/:id"
           component={HistoryUse}
         />
-        <PrivateRoute 
+        <PublicRoute 
         exact
         path="/public/reservation/:storeId"
         component={ReservationList}
