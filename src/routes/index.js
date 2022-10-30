@@ -56,6 +56,8 @@ import MenuListMobile from "../pages/table/mobileView/MenuList";
 import CartListMobile from "../pages/table/mobileView/Cart";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 
+import MenuRoutes from "./Menu.routes";
+
 const Main = styled.main`
   /* position: relative; */
   overflow: hidden;
@@ -98,6 +100,11 @@ function Index() {
           exact
           path="/history-use-only/:id"
           component={HistoryUse}
+        />
+        <PrivateRoute 
+        exact
+        path="/public/reservation/:storeId"
+        component={ReservationList}
         />
         <Route
           render={({ location, history }) => (
@@ -261,6 +268,7 @@ function Index() {
                     component={ReservationDashboard}
                   />
                   <PrivateRoute exact path="/menu" component={MenuList} />
+                  <MenuRoutes />
                 </div>
               </Main>
             </React.Fragment>
@@ -272,4 +280,3 @@ function Index() {
 }
 
 export default Index;
-

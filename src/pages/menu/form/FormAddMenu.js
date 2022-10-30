@@ -195,7 +195,8 @@ export default function FormAddMenu() {
         onSubmit={(values, { setSubmitting }) => {
           _createMenu(values);
           _createMenuStock(menuStocks);
-        }}>
+        }}
+      >
         {({
           values,
           errors,
@@ -208,14 +209,14 @@ export default function FormAddMenu() {
           /* and other goodies */
         }) => (
           <form onSubmit={handleSubmit}>
-            <div className='col-sm-12 center' style={{ textAlign: "center" }}>
+            <div className="col-sm-12 center" style={{ textAlign: "center" }}>
               <input
-                type='file'
-                id='file-upload'
+                type="file"
+                id="file-upload"
                 // onChange={handleUpload}
                 hidden
               />
-              <label for='file-upload'>
+              <label for="file-upload">
                 <div
                   style={{
                     backgroundColor: "#E4E4E4E4",
@@ -224,7 +225,8 @@ export default function FormAddMenu() {
                     borderRadius: "10%",
                     cursor: "pointer",
                     display: "flex",
-                  }}>
+                  }}
+                >
                   {file ? (
                     <ImageThumb image={file} />
                   ) : (
@@ -235,13 +237,15 @@ export default function FormAddMenu() {
                         width: 200,
                         justifyContent: "center",
                         alignItems: "center",
-                      }}>
+                      }}
+                    >
                       <p
                         style={{
                           color: "#fff",
                           fontSize: 80,
                           fontWeight: "bold",
-                        }}>
+                        }}
+                      >
                         +
                       </p>
                     </div>
@@ -250,17 +254,18 @@ export default function FormAddMenu() {
               </label>
               {/* progass */}
               {imageLoading ? (
-                <div className='progress' style={{ height: 20 }}>
+                <div className="progress" style={{ height: 20 }}>
                   <div
-                    className='progress-bar'
-                    role='progressbar'
+                    className="progress-bar"
+                    role="progressbar"
                     style={{
                       width: `${imageLoading}%`,
                       backgroundColor: COLOR_APP,
                     }}
                     aria-valuenow={imageLoading}
-                    aria-valuemin='0'
-                    aria-valuemax='100'>
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
                     {imageLoading}%
                   </div>
                 </div>
@@ -268,11 +273,20 @@ export default function FormAddMenu() {
                 <div style={{ height: 20 }} />
               )}
             </div>
-            <Form.Group controlId='exampleForm.ControlSelect1'>
+            <Form.Group>
+              <Form.Label>ລຳດັບ</Form.Label>
+              <Form.Control
+                type="text"
+                name="sort"
+                value={values.sort}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="exampleForm.ControlSelect1">
               <Form.Label>ປະເພດອາຫານ</Form.Label>
               <Form.Control
-                as='select'
-                name='categoryId'
+                as="select"
+                name="categoryId"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.categoryId}
@@ -281,8 +295,9 @@ export default function FormAddMenu() {
                     errors.categoryId && touched.categoryId && errors.categoryId
                       ? "solid 1px red"
                       : "",
-                }}>
-                <option selected={true} disabled={true} value=''>
+                }}
+              >
+                <option selected={true} disabled={true} value="">
                   ເລືອກປະເພດອາຫານ
                 </option>
                 {Categorys?.map((item, index) => {
@@ -290,38 +305,38 @@ export default function FormAddMenu() {
                 })}
               </Form.Control>
             </Form.Group>
-            <div class='form-row'>
-              <div class='col-3'>
-                <div class='form-group'>
+            <div class="form-row">
+              <div class="col-3">
+                <div class="form-group">
                   <label>ສະຖານະເປີດ/ປິດ</label>
                 </div>
               </div>
-              <div class='col-9'>
-                <div class='form-row'>
-                  <div class='col'>
-                    <div class='custom-control custom-radio custom-control-inline'>
+              <div class="col-9">
+                <div class="form-row">
+                  <div class="col">
+                    <div class="custom-control custom-radio custom-control-inline">
                       <input
-                        type='radio'
-                        id='open'
-                        name='isOpened'
+                        type="radio"
+                        id="open"
+                        name="isOpened"
                         defaultChecked={values.isOpened}
-                        class='custom-control-input'
+                        class="custom-control-input"
                         onChange={() => setFieldValue("isOpened", true)}
                       />
-                      <label class='custom-control-label' for='open'>
+                      <label class="custom-control-label" for="open">
                         ເປີດ
                       </label>
                     </div>
-                    <div class='custom-control custom-radio custom-control-inline'>
+                    <div class="custom-control custom-radio custom-control-inline">
                       <input
-                        type='radio'
-                        id='off'
-                        name='isOpened'
+                        type="radio"
+                        id="off"
+                        name="isOpened"
                         defaultChecked={!values.isOpened}
-                        class='custom-control-input'
+                        class="custom-control-input"
                         onChange={() => setFieldValue("isOpened", true)}
                       />
-                      <label class='custom-control-label' for='off'>
+                      <label class="custom-control-label" for="off">
                         ປິດ
                       </label>
                     </div>
@@ -329,15 +344,15 @@ export default function FormAddMenu() {
                 </div>
               </div>
             </div>
-            <Form.Group controlId='exampleForm.ControlInput1'>
+            <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>ຊື່ອາຫານ</Form.Label>
               <Form.Control
-                type='text'
-                name='name'
+                type="text"
+                name="name"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.name}
-                placeholder='ຊື່ອາຫານ...'
+                placeholder="ຊື່ອາຫານ..."
                 style={{
                   border:
                     errors.name && touched.name && errors.name
@@ -346,15 +361,15 @@ export default function FormAddMenu() {
                 }}
               />
             </Form.Group>
-            <Form.Group controlId='exampleForm.ControlInput1'>
+            <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>ລາຄາ</Form.Label>
               <Form.Control
-                type='number'
-                name='price'
+                type="number"
+                name="price"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.price}
-                placeholder='ລາຄາ...'
+                placeholder="ລາຄາ..."
                 style={{
                   border:
                     errors.price && touched.price && errors.price
@@ -363,15 +378,15 @@ export default function FormAddMenu() {
                 }}
               />
             </Form.Group>
-            <Form.Group controlId='exampleForm.ControlInput1'>
+            <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>ຈຳນວນ</Form.Label>
               <Form.Control
-                type='number'
-                name='quantity'
+                type="number"
+                name="quantity"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.quantity}
-                placeholder='ລາຄາ...'
+                placeholder="ລາຄາ..."
                 style={{
                   border:
                     errors.quantity && touched.quantity && errors.quantity
@@ -380,15 +395,15 @@ export default function FormAddMenu() {
                 }}
               />
             </Form.Group>
-            <Form.Group controlId='exampleForm.ControlInput1'>
+            <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>ຫົວໜ່ວຍ</Form.Label>
               <Form.Control
-                type='text'
-                name='unit'
+                type="text"
+                name="unit"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.unit}
-                placeholder='ລາຄາ...'
+                placeholder="ລາຄາ..."
                 style={{
                   border:
                     errors.unit && touched.unit && errors.unit
@@ -397,15 +412,15 @@ export default function FormAddMenu() {
                 }}
               />
             </Form.Group>
-            <Form.Group controlId='exampleForm.ControlInput1'>
+            <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>ໝາຍເຫດ</Form.Label>
               <Form.Control
-                type='text'
-                name='detail'
+                type="text"
+                name="detail"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.detail}
-                placeholder='ໝາຍເຫດ...'
+                placeholder="ໝາຍເຫດ..."
               />
             </Form.Group>
 
@@ -414,19 +429,20 @@ export default function FormAddMenu() {
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 10,
-              }}>
+              }}
+            >
               <div>
                 <div style={{ textAlign: "center" }}>ສະຕ໊ອກທັງໝົດ</div>
-                <div className='col-sm-12'>
-                  <table className='table table-hover'>
-                    <thead className='thead-light'>
+                <div className="col-sm-12">
+                  <table className="table table-hover">
+                    <thead className="thead-light">
                       <tr>
-                        <th scope='col'>#</th>
-                        <th scope='col'>ຊື່ສິນຄ້າ</th>
-                        <th scope='col'>ໝວດໝູ່ສິນຄ້າ</th>
+                        <th scope="col">#</th>
+                        <th scope="col">ຊື່ສິນຄ້າ</th>
+                        <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
                         {/* <th scope='col'>ສະຖານະ</th> */}
-                        <th scope='col'>ຈຳນວນສະຕ໊ອກ</th>
-                        <th scope='col'>ຈັດການຂໍ້ມູນ</th>
+                        <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
+                        <th scope="col">ຈັດການຂໍ້ມູນ</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -445,7 +461,8 @@ export default function FormAddMenu() {
                             <td
                               style={{
                                 color: data?.quantity < 10 ? "red" : "green",
-                              }}>
+                              }}
+                            >
                               {data?.quantity}
                             </td>
                             <td>
@@ -468,22 +485,22 @@ export default function FormAddMenu() {
                     </tbody>
                   </table>
                   <div style={{ display: "flex", justifyContent: "center" }}>
-                    {isLoading ? <Spinner animation='border' /> : ""}
+                    {isLoading ? <Spinner animation="border" /> : ""}
                   </div>
                 </div>
               </div>
               <div>
                 <div style={{ textAlign: "center" }}>ສະຕ໊ອກທີຕ້ອງການ</div>
-                <div className='col-sm-12'>
-                  <table className='table table-hover'>
-                    <thead className='thead-light'>
+                <div className="col-sm-12">
+                  <table className="table table-hover">
+                    <thead className="thead-light">
                       <tr>
-                        <th scope='col'>#</th>
-                        <th scope='col'>ຊື່ສິນຄ້າ</th>
-                        <th scope='col'>ໝວດໝູ່ສິນຄ້າ</th>
+                        <th scope="col">#</th>
+                        <th scope="col">ຊື່ສິນຄ້າ</th>
+                        <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
                         {/* <th scope='col'>ສະຖານະ</th> */}
-                        <th scope='col'>ຈຳນວນທີຕ້ອງການ</th>
-                        <th scope='col'>ຈັດການຂໍ້ມູນ</th>
+                        <th scope="col">ຈຳນວນທີຕ້ອງການ</th>
+                        <th scope="col">ຈັດການຂໍ້ມູນ</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -502,7 +519,8 @@ export default function FormAddMenu() {
                             <td
                               style={{
                                 color: data?.quantity < 10 ? "red" : "green",
-                              }}>
+                              }}
+                            >
                               {data?.quantity}
                             </td>
                             <td>
@@ -528,7 +546,7 @@ export default function FormAddMenu() {
                 </div>
               </div>
             </div>
-            <Button variant='danger' onClick={() => {}}>
+            <Button variant="danger" onClick={() => {}}>
               ຍົກເລີກ
             </Button>
             <Button
@@ -537,7 +555,8 @@ export default function FormAddMenu() {
                 color: "#ffff",
                 border: 0,
               }}
-              onClick={() => handleSubmit()}>
+              onClick={() => handleSubmit()}
+            >
               ບັນທືກ
             </Button>
           </form>

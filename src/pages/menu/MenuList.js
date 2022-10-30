@@ -435,6 +435,16 @@ export default function MenuList() {
                     setFieldValue("images", [e.name]);
                   }}
                 />
+                <Form.Group>
+                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="sort"
+                    placeholder="ລຳດັບ"
+                    value={values.sort}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control
@@ -612,6 +622,7 @@ export default function MenuList() {
             name: dataUpdate?.name,
             images: dataUpdate?.images,
             quantity: dataUpdate?.quantity,
+            sort: dataUpdate?.sort,
             categoryId: dataUpdate?.categoryId?._id,
             price: dataUpdate?.price,
             detail: dataUpdate?.detail,
@@ -660,6 +671,16 @@ export default function MenuList() {
                     setFieldValue("images", [e.name]);
                   }}
                 />
+                <Form.Group>
+                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="sort"
+                    placeholder="ລຳດັບ"
+                    value={values.sort}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control

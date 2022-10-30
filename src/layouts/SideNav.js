@@ -86,8 +86,8 @@ export default function Sidenav({ location, history }) {
   useEffect(() => {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);
-    initialOrderSocket();
-    initialTableSocket();
+    // initialOrderSocket();
+    // initialTableSocket();
     callingCheckOut();
   }, []);
   return (

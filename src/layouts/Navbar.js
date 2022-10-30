@@ -40,9 +40,9 @@ export default function NavBar() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
-    setmessageData(data);
-  });
+  // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
+  //   setmessageData(data);
+  // });
 
   return (
     <div>
