@@ -76,7 +76,7 @@ export default function Sidenav({ location, history }) {
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-      key: `settingStore/${userData?.DATA?.storeId}`,
+      key: `settingStore/${storeDetail?._id}`,
       typeStore: "",
       icon: faCogs,
       hidden:!storeDetail?.hasPOS
@@ -102,14 +102,14 @@ export default function Sidenav({ location, history }) {
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
         if (selected === "dashboard") {
-          selected = selected + "/" + userData?.DATA?.storeId;
+          selected = selected + "/" + storeDetail?._id;
         }
         if (selected === "report") {
-          selected = selected + "/" + userData?.DATA?.storeId;
+          selected = selected + "/" + storeDetail?._id;
         }
         if (selected === "orders") {
           selected =
-            selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
+            selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "tables") {
           selected =
@@ -118,11 +118,11 @@ export default function Sidenav({ location, history }) {
             1 +
             "/tableid/00" +
             "/" +
-            userData?.DATA?.storeId;
+            storeDetail?._id;
         }
         if (selected === "histories") {
           selected =
-            selected + "/pagenumber/" + 1 + "/" + userData?.DATA?.storeId;
+            selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "users") {
           selected =
@@ -132,7 +132,7 @@ export default function Sidenav({ location, history }) {
             "/page/" +
             1 +
             "/" +
-            userData?.DATA?.storeId;
+            storeDetail?._id;
         }
         if (selected === "category") {
           selected =
@@ -142,7 +142,7 @@ export default function Sidenav({ location, history }) {
             "/page/" +
             1 +
             "/" +
-            userData?.DATA?.storeId;
+            storeDetail?._id;
         }
         const to = "/" + selected;
 
