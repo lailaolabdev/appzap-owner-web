@@ -1,22 +1,34 @@
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLOR_APP } from "../../constants";
 import { Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 
-const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
-  const [startTime, setStartTime] = useState();
-  const [startDate, setStartDate] = useState();
+const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
+  const [startTime, setStartTime] = useState(
+    moment.parseZone(value?.startTime).format("H:mm")
+  );
+  const [startDate, setStartDate] = useState(
+    moment.parseZone(value?.startTime).format("YYYY-MM-DD")
+  );
   const handleClose = () => {
     setStartTime();
     setStartDate();
     onClose();
   };
+  // console.log(moment.parseZone(value?.startTime).format("H:mm"));
+  useEffect(() => {
+    const _time = moment.parseZone(value?.startTime).format("H:mm");
+    setStartDate(moment.parseZone(value?.startTime).format("YYYY-MM-DD"));
+    setStartTime(_time == "0:00" ? "12:00" : _time);
+  }, [value]);
   return (
     <Modal show={open} onHide={handleClose}>
       <Modal.Header closeButton>ເພີ່ມການຈອງໂຕະ</Modal.Header>
       <Formik
-        initialValues={{}}
+        initialValues={{
+          ...value,
+        }}
         validate={(values) => {
           const errors = {};
           if (!values?.clientPhone) {
@@ -157,7 +169,7 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
                 </div>
               </Form.Group>
               <Form.Group>
-                <Form.Label>ຄອມເມັ້ນ</Form.Label>
+                <Form.Label>ລູກຄ້າຄອມເມັ້ນ</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="clientComment"
@@ -165,6 +177,17 @@ const PopUpReservationAdd = ({ open, onClose, onSubmit }) => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   isInvalid={errors.clientComment}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>ໂຕະ (ສະຖານທີ່)</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  name="note"
+                  value={values?.note}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={errors.note}
                 />
               </Form.Group>
             </Modal.Body>

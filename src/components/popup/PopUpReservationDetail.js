@@ -1,13 +1,60 @@
 import React from "react";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import styled from "styled-components";
 import moment from "moment";
+import { COLOR_APP } from "../../constants";
 
-const PopUpReservationDetail = ({ open, data, onClose, onSubmit }) => {
+const PopUpReservationDetail = ({
+  open,
+  data,
+  onClose,
+  buttonEdit,
+  buttonCancel,
+  buttonConfirm,
+}) => {
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>ລາຍລະອຽດການຈອງ</Modal.Header>
       <Modal.Body>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 10,
+            gap: 10,
+          }}
+        >
+          <Button
+            onClick={buttonEdit}
+            style={{
+              backgroundColor: "white",
+              color: COLOR_APP,
+              borderColor: COLOR_APP,
+            }}
+          >
+            ແກ້ໄຂ
+          </Button>
+          <Button
+            onClick={buttonConfirm}
+            style={{
+              backgroundColor: "white",
+              color: COLOR_APP,
+              borderColor: COLOR_APP,
+            }}
+          >
+            ຍືນຍັນການຈອງ
+          </Button>
+          <Button
+            onClick={buttonCancel}
+            style={{
+              backgroundColor: "white",
+              color: COLOR_APP,
+              borderColor: COLOR_APP,
+            }}
+          >
+            ຍົກເລີກ
+          </Button>
+        </div>
         <CustomCart>
           <span style={{ textAlign: "right" }}>ຊື່ຜູ້ຈອງ :</span>
           <span>{data?.clientNames?.[0]}</span>
@@ -36,6 +83,10 @@ const PopUpReservationDetail = ({ open, data, onClose, onSubmit }) => {
         <CustomCart>
           <span style={{ textAlign: "right" }}>ລາຍລະອຽດເພີ່ມເຕີມ :</span>
           <span>{data?.clientComment}</span>
+        </CustomCart>
+        <CustomCart>
+          <span style={{ textAlign: "right" }}>ສະຖານທີ່ :</span>
+          <span>{data?.note}</span>
         </CustomCart>
       </Modal.Body>
     </Modal>

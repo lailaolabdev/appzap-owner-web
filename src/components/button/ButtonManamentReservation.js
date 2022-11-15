@@ -1,6 +1,7 @@
 import { BiCheckDouble } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 import ButtonPrimary from "./ButtonPrimary";
+import { COLOR_APP } from "../../constants";
 
 const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
   if (status == "CANCEL") {
@@ -8,8 +9,9 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
       <div style={{ display: "flex", gap: 10 }}>
         <ButtonPrimary
           style={{
-            color: "white",
-            backgroundColor: "#FF4A4A",
+            color: "#ccc",
+            backgroundColor: "#fff",
+            border: `1px solid #ccc`,
             height: 31,
             fontSize: 14,
             padding: 4,
@@ -35,8 +37,9 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
       <div style={{ display: "flex", gap: 10 }}>
         <ButtonPrimary
           style={{
-            color: "white",
-            backgroundColor: "#18AB00",
+            color: COLOR_APP,
+            backgroundColor: "#fff",
+            border: `1px solid ${COLOR_APP}`,
             height: 31,
             fontSize: 14,
             padding: 4,
