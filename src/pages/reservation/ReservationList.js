@@ -48,7 +48,7 @@ export default function ReservationList() {
 
   // functions
   const handleReject = (select) => {
-    setPopup();
+    setPopup({ delete: true });
     setSelect(select);
   };
   const onSubmitReject = async () => {
@@ -58,7 +58,7 @@ export default function ReservationList() {
     });
   };
   const handleConfirm = (select) => {
-    setPopup();
+    setPopup({ confirm: true });
     setSelect(select);
   };
   const onSubmitConfirm = async () => {
@@ -250,16 +250,18 @@ export default function ReservationList() {
                     <th style={{ color: COLOR_APP }}>ລຳດັບ</th>
                     <th style={{ color: COLOR_APP }}>ຊື່ຜູ້ຈອງ</th>
                     <th style={{ color: COLOR_APP }}>ເບີໂທຂອງຜູ້ຈອງ</th>
-                    <th style={{ color: COLOR_APP }}>ວັນທີ / ເດືອນ / ປີ</th>
-                    <th style={{ color: COLOR_APP }}>ເວລາ</th>
+                    <th style={{ color: COLOR_APP }}>
+                      ວັນທີ / ເດືອນ / ປີ - ເວລາ
+                    </th>
+                    <th style={{ color: COLOR_APP }}>ສະຖານທີ່(ໂຕະ)</th>
                     <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <Form.Control type="date" style={{ maxWidth: 100 }} />
+                        <Form.Control type="date" style={{ maxWidth: 100 }} disabled/>
                         <div style={{ paddingLeft: 10, paddingRight: 10 }}>
                           to
                         </div>
-                        <Form.Control type="date" style={{ maxWidth: 100 }} />
+                        <Form.Control type="date" style={{ maxWidth: 100 }} disabled/>
                       </div>
                     </th>
                     <th style={{ maxWidth: 50, width: 50 }}></th>
@@ -287,12 +289,12 @@ export default function ReservationList() {
                         {item?.startTime &&
                           moment
                             .parseZone(item?.startTime)
-                            .format("DD / MM / YYYY")}
-                      </td>
-                      <td>
+                            .format("DD/MM/YYYY")}{" "}
+                        -{" "}
                         {item?.startTime &&
                           moment.parseZone(item?.startTime).format("LT")}
                       </td>
+                      <td>{item?.note}</td>
                       <td>{item?.clientNumber}</td>
                       <td>
                         <ButtonManamentReservation
