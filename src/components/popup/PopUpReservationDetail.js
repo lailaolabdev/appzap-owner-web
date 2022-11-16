@@ -88,6 +88,18 @@ const PopUpReservationDetail = ({
           <span style={{ textAlign: "right" }}>ສະຖານທີ່ :</span>
           <span>{data?.note}</span>
         </CustomCart>
+        <CustomCart>
+          <span style={{ textAlign: "right" }}>ວັນທີສ້າງ ແລະ ອັບເດດ :</span>
+          <span>
+            {data?.createdAt &&
+              moment
+                .parseZone(data?.createdAt)
+                .format("DD / MM / YYYY LT")}{" "}
+            -{" "}
+            {data?.updatedAt &&
+              moment.parseZone(data?.updatedAt).format("DD / MM / YYYY LT")}
+          </span>
+        </CustomCart>
       </Modal.Body>
     </Modal>
   );

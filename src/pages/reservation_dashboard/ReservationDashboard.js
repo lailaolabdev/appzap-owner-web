@@ -20,6 +20,7 @@ export default function ReservationDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [reservationsData, setReservationsData] = useState();
   const [reservationsCount, setReservationsCount] = useState();
+  const [updateNow, setUpdateNow] = useState();
 
   // variable
   const eventReservation = reservationsData?.map((e) => ({
@@ -30,6 +31,15 @@ export default function ReservationDashboard() {
 
   // func
   const getData = async () => {
+    setIsLoading(true);
+    let findBy = "";
+    findBy += `&status=STAFF_CONFIRM`;
+    const data = await getReservations(findBy);
+    setReservationsData(data);
+    setIsLoading(false);
+    return;
+  };
+  const getUpdateNow = async () => {
     setIsLoading(true);
     let findBy = "";
     findBy += `&status=STAFF_CONFIRM`;
@@ -75,7 +85,7 @@ export default function ReservationDashboard() {
             }
           />
           <StatisticCard
-            value="60 ຄົນ"
+            value={`60 ຄົນ`}
             name="ຈຳນວນຄົນຈອງທັງໝົດ"
             color="#00ABB3"
             icon={
