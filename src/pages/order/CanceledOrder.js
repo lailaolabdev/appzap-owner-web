@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import useReactRouter from "use-react-router";
 import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
@@ -11,12 +10,13 @@ import Loading from "../../components/Loading";
 import { getOrders } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
+import { useParams } from "react-router-dom";
 const Order = () => {
   /**
    * routes
    */
-  const { match } = useReactRouter();
-  const { number } = match?.params;
+  const params = useParams();
+  const { number } = params;
 
   /**
    * states
@@ -35,7 +35,6 @@ const Order = () => {
     };
     fetchOrder();
   }, []);
-
 
   return (
     <div>
@@ -61,7 +60,9 @@ const Order = () => {
                   <td>{order?.menu?.name ?? "-"}</td>
                   <td>{order?.quantity ?? "-"}</td>
                   <td>{order?.table_id ?? "-"}</td>
-                  <td style={{color: "green", fontWeight: "bold"}}>{order?.status ? orderStatus(order?.status) : "-"}</td>
+                  <td style={{ color: "green", fontWeight: "bold" }}>
+                    {order?.status ? orderStatus(order?.status) : "-"}
+                  </td>
                   <td>
                     {order?.createdAt
                       ? moment(order?.createdAt).format("HH:mm a")

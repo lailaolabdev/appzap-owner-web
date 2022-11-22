@@ -1,48 +1,52 @@
-import React, { useState, useEffect } from 'react'
-import useReactRouter from "use-react-router";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingBag } from "@fortawesome/free-solid-svg-icons";
-import { MENUS, CATEGORY, END_POINT_SEVER } from '../../../constants/api'
+import { MENUS, CATEGORY, END_POINT_SEVER } from "../../../constants/api";
 import { Badge, Modal, Button } from "react-bootstrap";
-import {
-  URL_PHOTO_AW3,
-} from "../../../constants/index";
-import { moneyCurrency } from '../../../helpers'
-
+import { URL_PHOTO_AW3 } from "../../../constants/index";
+import { moneyCurrency } from "../../../helpers";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function MenuList() {
-  const { history, location, match } = useReactRouter();
+  const location = useLocation();
+  const params = useParams();
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
-  const [Categorys, setCategorys] = useState([])
+  const [Categorys, setCategorys] = useState([]);
   const [selectedMenu, setSelectedMenu] = useState([]);
-  const [dataSelect, setDataSelect] = useState({})
+  const [dataSelect, setDataSelect] = useState({});
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    getMenu()
+    getMenu();
     // getData()
-  }, [])
+  }, []);
   useEffect(() => {
-    if (location?.state?.length > 0) setSelectedMenu(location?.state)
-  }, [location?.state])
+    if (location?.state?.length > 0) setSelectedMenu(location?.state);
+  }, [location?.state]);
   const getMenu = async () => {
-    await fetch(MENUS + `?storeId=${match?.params?.storeId}`, {
+    await fetch(MENUS + `?storeId=${params?.storeId}`, {
       method: "GET",
-    }).then(response => response.json())
-      .then(json => {
-        setAllSelectedMenu(json)
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        setAllSelectedMenu(json);
       });
-    await fetch(END_POINT_SEVER + `/v3/categories?storeId=${match?.params?.storeId}&isDeleted=false`, {
-      method: "GET",
-    }).then(response => response.json())
-      .then(json => setCategorys(json));
-  }
+    await fetch(
+      END_POINT_SEVER +
+        `/v3/categories?storeId=${params?.storeId}&isDeleted=false`,
+      {
+        method: "GET",
+      }
+    )
+      .then((response) => response.json())
+      .then((json) => setCategorys(json));
+  };
   const addToCart = (menu) => {
     handleShow();
-    setDataSelect(menu)
+    setDataSelect(menu);
     // setSelectedItem(menu)
     // let allowToAdd = true;
     // let itemIndexInSelectedMenu = 0;
@@ -73,8 +77,8 @@ export default function MenuList() {
     //     setSelectedMenu(copySelectedMenu);
     //   }
     // }
-  }
-  console.log("Categorys===>", Categorys)
+  };
+  console.log("Categorys===>", Categorys);
   return (
     <div style={{ padding: 10 }}>
       {/* <div className="row">
@@ -100,26 +104,43 @@ export default function MenuList() {
         }
       </div> */}
       <div className="row">
-        {
-          allSelectedMenu?.map((data, index) =>
-            <div key={"menu" + index} className="col-4"
-              style={{ fontSize: 11, padding: 0, border: data._id == selectedItem?._id ? "4px solid #FB6E3B" : "4px solid rgba(0,0,0,0)" }}
-              onClick={() => addToCart(data)}>
-              <img src={data?.images?.length > 0 ? URL_PHOTO_AW3 + data?.images[0] : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="} style={{ width: '100%', height: 150, borderRadius: 5 }} />
-              <div style={{
-                backgroundColor: '#000',
-                color: '#FFF',
-                position: 'relative',
+        {allSelectedMenu?.map((data, index) => (
+          <div
+            key={"menu" + index}
+            className="col-4"
+            style={{
+              fontSize: 11,
+              padding: 0,
+              border:
+                data._id == selectedItem?._id
+                  ? "4px solid #FB6E3B"
+                  : "4px solid rgba(0,0,0,0)",
+            }}
+            onClick={() => addToCart(data)}
+          >
+            <img
+              src={
+                data?.images?.length > 0
+                  ? URL_PHOTO_AW3 + data?.images[0]
+                  : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+              }
+              style={{ width: "100%", height: 150, borderRadius: 5 }}
+            />
+            <div
+              style={{
+                backgroundColor: "#000",
+                color: "#FFF",
+                position: "relative",
                 opacity: 0.5,
-                padding: 10
-              }}>
-                <span>{data?.name}</span>
-                <br />
-                <span>{moneyCurrency(data?.price)} ກີບ</span>
-              </div>
+                padding: 10,
+              }}
+            >
+              <span>{data?.name}</span>
+              <br />
+              <span>{moneyCurrency(data?.price)} ກີບ</span>
             </div>
-          )
-        }
+          </div>
+        ))}
       </div>
       {/* ======> */}
       <Modal
@@ -127,11 +148,19 @@ export default function MenuList() {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         show={show}
-        onHide={handleClose}>
+        onHide={handleClose}
+      >
         <Modal.Body closeButton>
           <div>
             <div>
-              <img src={dataSelect?.images?.length > 0 ? URL_PHOTO_AW3 + dataSelect?.images[0] : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="} style={{ width: '100%', height: 200, borderRadius: 5 }} />
+              <img
+                src={
+                  dataSelect?.images?.length > 0
+                    ? URL_PHOTO_AW3 + dataSelect?.images[0]
+                    : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                }
+                style={{ width: "100%", height: 200, borderRadius: 5 }}
+              />
             </div>
             <div style={{ padding: 10 }}>
               <p>{dataSelect?.name}</p>
@@ -141,5 +170,5 @@ export default function MenuList() {
         </Modal.Body>
       </Modal>
     </div>
-  )
+  );
 }

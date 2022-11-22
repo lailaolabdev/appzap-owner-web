@@ -18,6 +18,9 @@ const Box = styled("div")(({ sx, theme }) => {
         if (_i === "md") {
           _md[_item] = sx[_item][_i];
         }
+        if (_i === "sm") {
+          _sm[_item] = sx[_item][_i];
+        }
         if (_i === "xs") {
           _xs[_item] = sx[_item][_i];
         }

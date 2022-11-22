@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import useReactRouter from "use-react-router";
 import { END_POINT_SEVER } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import AnimationLoading from "../../constants/loading";
+import { useParams } from "react-router-dom";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function DashboardUser({ startDate, endDate }) {
-  const { history, match } = useReactRouter();
+  const params = useParams();
 
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,7 @@ export default function DashboardUser({ startDate, endDate }) {
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
         "/v3/dashboard-report-users/" +
-        match?.params?.storeId +
+        params?.storeId +
         "/startTime/" +
         startDate +
         "/endTime/" +

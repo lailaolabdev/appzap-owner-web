@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import useReactRouter from "use-react-router";
 import moment from "moment";
 import { COLOR_APP, USER_KEY } from "../../constants";
 import { getLocalData } from "../../constants/api";
@@ -20,14 +19,15 @@ import ButtonManamentReservation from "../../components/button/ButtonManamentRes
 import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
 import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const { match } = useReactRouter();
-  const storeId = match.params.storeId;
+  const params = useParams();
+  const storeId = params.storeId;
 
-  // const _limit = match.params.limit;
-  // const _page = match.params.page;
+  // const _limit = params.limit;
+  // const _page = params.page;
 
   //   state
   const [isLoading, setIsLoading] = useState(false);
@@ -257,11 +257,19 @@ export default function ReservationList() {
                     <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <Form.Control type="date" style={{ maxWidth: 100 }} disabled/>
+                        <Form.Control
+                          type="date"
+                          style={{ maxWidth: 100 }}
+                          disabled
+                        />
                         <div style={{ paddingLeft: 10, paddingRight: 10 }}>
                           to
                         </div>
-                        <Form.Control type="date" style={{ maxWidth: 100 }} disabled/>
+                        <Form.Control
+                          type="date"
+                          style={{ maxWidth: 100 }}
+                          disabled
+                        />
                       </div>
                     </th>
                     <th style={{ maxWidth: 50, width: 50 }}></th>

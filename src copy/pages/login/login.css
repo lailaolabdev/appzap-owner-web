@@ -1,0 +1,62 @@
+html {
+    background-color: #f1f1f1;
+}
+
+ #inlineFormInputGroup1 {
+     max-width: 300px;
+     border: 1px solid #DDDDDD;
+ }
+
+ #inlineFormInputGroup2 {
+     max-width: 300px;
+     border: 1px solid #DDDDDD;
+ }
+
+.form-btn{
+     max-width: 320px;
+     margin-left: 5%;
+ }
+
+
+ .col h1 {
+     margin: 50px;
+     font-Size: 64px;
+     text-Align: center;
+     color: #FB6E3B;
+     font-Weight: regular;
+ }
+
+
+ .contain {
+     padding-left: 180px;
+     padding-right: 130px;
+ }
+
+@media only screen and (max-width: 1090px){
+    .col h1 {
+        margin: 50px;
+        font-Size: 40px;
+        color: #FB6E3B;
+        font-Weight: regular;
+    }
+
+    .contain .text {
+        font-size: 18px;
+    }
+
+    .contain{
+        padding: 0;
+    }
+
+    
+}
+@media only screen and (max-width: 1024px){
+
+    .contain{
+        padding: 0;
+    }
+
+    
+}
+
+

@@ -1,20 +1,19 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
-import useReactRouter from "use-react-router";
-import { useHistory, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 
 export default function NavList({ ActiveKey = "/settingStore/stock" }) {
-  const History = useHistory();
+  const navigate = useNavigate()
   const { id } = useParams();
   // functions
   const _menuList = () => {
-    History.push(`/settingStore/stock/limit/40/page/1/${id}`);
+    navigate(`/settingStore/stock/limit/40/page/1/${id}`);
   };
   const _category = () => {
-    History.push(`/settingStore/stock/category/limit/40/page/1/${id}`);
+    navigate(`/settingStore/stock/category/limit/40/page/1/${id}`);
   };
   const _history = () => {
-    History.push(`/settingStore/stock/history/limit/40/page/1/${id}`);
+    navigate(`/settingStore/stock/history/limit/40/page/1/${id}`);
   };
   return (
     <div>

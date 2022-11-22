@@ -7,14 +7,14 @@ import axios from "axios";
 import { STORE, TABLES, MENUS, getLocalData } from "../../constants/api";
 import { END_POINT } from "../../constants";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import useReactRouter from "use-react-router";
 import "./index.css";
 import PopUpStoreEdit from "../../components/popup/PopUpStoreEdit";
 import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
+import { useParams } from "react-router-dom";
 
 export default function StoreDetail() {
-  const { match } = useReactRouter();
+  const params = useParams();
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function StoreDetail() {
   }, []);
   const getData = async (storeId) => {
     setIsLoading(true);
-    await fetch(STORE + `/?id=${match?.params?.id}`, {
+    await fetch(STORE + `/?id=${params?.id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -78,7 +78,7 @@ export default function StoreDetail() {
   const _updateIsOpenStore = async (data) => {
     const res = await axios({
       method: "PUT",
-      url: END_POINT + `/store_update?id=` + match?.params?.id,
+      url: END_POINT + `/store_update?id=` + params?.id,
       headers: getTokken?.TOKEN,
       data: {
         isOpen: data?.isOpen === true ? false : true,
