@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import axios from "axios";
-import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Modal, Form, Nav, Spinner } from "react-bootstrap";
@@ -9,7 +8,7 @@ import { BODY, COLOR_APP } from "../../constants";
 import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import NavList from "./components/NavList";
 import moment from "moment";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { stockType } from "../../helpers/stockType";
 import useQuery, { ObjectToQuery } from "../../helpers/useQuery";
 
@@ -20,7 +19,7 @@ export default function Historylist() {
   const [histories, setHistories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const query = useQuery();
-  const { history } = useReactRouter();
+  const navigate = useNavigate()
   const LIMIT_PAGE = 20;
   const pageNumber = parseInt(query?.page || "1");
   const limit = 20;
@@ -54,7 +53,7 @@ export default function Historylist() {
   };
 
   const onNextPage = () => {
-    history.push(
+    navigate(
       ObjectToQuery({
         ...query,
         page: parseInt(query?.page || "1") + 1,
@@ -64,7 +63,7 @@ export default function Historylist() {
   const onBackPage = () => {
     if (parseInt(query?.page) <= 1) return;
     if (!query?.page) return; // page == undefined
-    history.push(
+    navigate(
       ObjectToQuery({
         ...query,
         page: parseInt(query?.page || "1") - 1,

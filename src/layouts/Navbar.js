@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
 import { USER_KEY, END_POINT, URL_PHOTO_AW3, VERSION } from "../constants";
-import useReactRouter from "use-react-router";
+import {  useNavigate } from "react-router-dom";
 import ImageProfile from "../image/profile.png";
 import { Badge, Modal, Button, Table } from "react-bootstrap";
 import moment from "moment";
@@ -14,17 +14,17 @@ import { SocketContext } from "../services/socket";
 import { socket } from "../services/socket";
 
 export default function NavBar() {
-  const { history, location, match } = useReactRouter();
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({});
   const [messageData, setmessageData] = useState(0);
 
   useEffect(() => {
     const getData = () => {
-      const ADMIN =  localStorage.getItem(USER_KEY);
+      const ADMIN = localStorage.getItem(USER_KEY);
       const _localJson = JSON.parse(ADMIN);
       setUserData(_localJson);
       if (!ADMIN) {
-        history.push(`/`);
+        navigate(`/`);
       }
     };
     getData();
@@ -33,7 +33,7 @@ export default function NavBar() {
   const _onLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
-    history.push(`/`);
+    navigate(`/`);
   };
 
   const [show, setShow] = useState(false);
@@ -71,7 +71,7 @@ export default function NavBar() {
             width={35}
             height={35}
             roundedCircle
-            onClick={() => history.push("/messagerList")}
+            onClick={() => navigate("/messagerList")}
             style={{ cursor: "pointer" }}
             // onClick={handleShow}
           />

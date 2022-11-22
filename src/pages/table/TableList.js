@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import useReactRouter from "use-react-router";
 import {
   Row,
   Modal,
@@ -54,13 +53,15 @@ import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function TableList() {
-  const { history, match } = useReactRouter();
+  const navigate = useNavigate();
+  const params = useParams();
   const componentRef = useRef();
   const componentRefA = useRef();
-  const number = match?.params?.number;
-  const activeTableId = match?.params?.tableId;
+  const number = params?.number;
+  const activeTableId = params?.tableId;
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -101,7 +102,7 @@ export default function TableList() {
   }, []);
   useEffect(() => {
     _StoreData();
-  }, [match?.params?.storeId]);
+  }, [params?.storeId]);
   /**
    * Modify Order Status
    */
@@ -120,8 +121,8 @@ export default function TableList() {
   }, [tableOrderItems]);
   const _handlecheckout = async () => {
     setCheckoutModal(false);
-    history.push(
-      `/tables/pagenumber/${number}/tableid/${activeTableId}/${match?.params?.storeId}`
+    navigate(
+      `/tables/pagenumber/${number}/tableid/${activeTableId}/${params?.storeId}`
     );
   };
   const _orderIsChecked = () => {
@@ -135,7 +136,7 @@ export default function TableList() {
     setModalAddDiscount(true);
   };
   const _goToAddOrder = (tableId, code) => {
-    history.push(`/addOrder/tableid/${tableId}/code/${code}`);
+    navigate(`/addOrder/tableid/${tableId}/code/${code}`);
   };
   const convertTableStatus = (_table) => {
     if (
@@ -310,7 +311,7 @@ export default function TableList() {
     return _checkBill;
   };
   const _StoreData = async () => {
-    await fetch(STORE + `/?id=${match?.params?.storeId}`, {
+    await fetch(STORE + `/?id=${params?.storeId}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -592,9 +593,9 @@ export default function TableList() {
                   </div> */}
                       <div>
                         {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                        {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, match?.params?.storeId)}>ຍົກເລີກ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, match?.params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, match?.params?.storeId)}>ເສີບແລ້ວ</Button> */}
+                        {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, params?.storeId)}>ສົ່ງໄປຄົວ</Button>
+                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, params?.storeId)}>ເສີບແລ້ວ</Button> */}
                       </div>
                     </div>
                     <div style={padding_white} />

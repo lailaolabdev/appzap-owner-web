@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import useReactRouter from "use-react-router";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Image } from "react-bootstrap";
 import moment from "moment";
@@ -23,7 +22,6 @@ const Order = () => {
   /**
      * routes
      */
-  const { match } = useReactRouter();
 
   const {
     orderItems,

@@ -6,9 +6,7 @@ import {} from "@fortawesome/free-solid-svg-icons";
 import { BsXCircleFill } from "react-icons/bs";
 import { IoAdd } from "react-icons/io5";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
-import useReactRouter from "use-react-router";
 export default function TableList() {
-  const { history } = useReactRouter();
   // modalCheckBin
   const [showcheckbin, setShowCheckBin] = useState(false);
   const handleCloseCheckBin = () => setShowCheckBin(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import moment from 'moment';
-import useReactRouter from "use-react-router"
 import { Card, CardGroup, Nav } from 'react-bootstrap'
+
 import { faAmericanSignLanguageInterpreting, faCashRegister, faCertificate, faCoins, faEdit, faMagic, faPeopleArrows, faTable, faTableTennis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DashboardMenu from './DashboardMenu';
@@ -11,7 +11,6 @@ import MoneyChart from './MoneyChart';
 import DashboardUser from './DashboardUser';
 import "./index.css";
 export default function Dashboard() {
-  const { history, match } = useReactRouter()
   const newDate = new Date();
 
   const [startDate, setStartDate] = useState(moment(moment(newDate)).format("YYYY-MM-DD"))

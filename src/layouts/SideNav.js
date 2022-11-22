@@ -20,7 +20,7 @@ import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 
-export default function Sidenav({ location, history }) {
+export default function Sidenav({ location, navigate }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
@@ -35,7 +35,7 @@ export default function Sidenav({ location, history }) {
     getOrderItemsStore,
     initialOrderSocket,
     initialTableSocket,
-    storeDetail
+    storeDetail,
   } = useStore();
 
   const itemList = [
@@ -44,42 +44,42 @@ export default function Sidenav({ location, history }) {
       key: "report",
       icon: faTachometerAlt,
       typeStore: "",
-      hidden:!storeDetail?.hasPOS
+      hidden: !storeDetail?.hasPOS,
     },
     {
       title: "ສະຖານະຂອງໂຕະ",
       key: "tables",
       icon: faHome,
       typeStore: "",
-      hidden:!storeDetail?.hasPOS
+      hidden: !storeDetail?.hasPOS,
     },
     {
       title: "ຈັດການການຈອງ",
       key: "reservations",
       icon: faList,
       typeStore: "",
-      hidden:!storeDetail?.hasReservation
+      hidden: !storeDetail?.hasReservation,
     },
     {
       title: "ລາຍງານການຈອງ",
       key: "reservation-dashboard",
       icon: faChartBar,
       typeStore: "",
-      hidden:!storeDetail?.hasReservation
+      hidden: !storeDetail?.hasReservation,
     },
     {
       title: "ຈັດການເມນູຫາການ",
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
-      hidden:!storeDetail?.hasSmartMenu
+      hidden: !storeDetail?.hasSmartMenu,
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: `settingStore/${storeDetail?._id}`,
       typeStore: "",
       icon: faCogs,
-      hidden:!storeDetail?.hasPOS
+      hidden: !storeDetail?.hasPOS,
     },
   ];
 
@@ -108,8 +108,7 @@ export default function Sidenav({ location, history }) {
           selected = selected + "/" + storeDetail?._id;
         }
         if (selected === "orders") {
-          selected =
-            selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
+          selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "tables") {
           selected =
@@ -121,62 +120,52 @@ export default function Sidenav({ location, history }) {
             storeDetail?._id;
         }
         if (selected === "histories") {
-          selected =
-            selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
+          selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "users") {
           selected =
-            selected +
-            "/limit/" +
-            40 +
-            "/page/" +
-            1 +
-            "/" +
-            storeDetail?._id;
+            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "category") {
           selected =
-            selected +
-            "/limit/" +
-            40 +
-            "/page/" +
-            1 +
-            "/" +
-            storeDetail?._id;
+            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
         const to = "/" + selected;
 
         if (location.pathname !== to) {
-          history.push(to);
+          navigate(to);
         }
       }}
       onToggle={(expanded) => {}}
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        {itemList.filter((e)=>!e?.hidden).map((e) => (
-          <NavItem
-            eventKey={e?.key}
-            style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
-          >
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={e?.icon}
+        {itemList
+          .filter((e) => !e?.hidden)
+          .map((e) => (
+            <NavItem
+              eventKey={e?.key}
+              style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
+            >
+              <NavIcon>
+                <FontAwesomeIcon
+                  className={openTableData.length > 0 ? "scale-animation" : ""}
+                  icon={e?.icon}
+                  style={{
+                    color:
+                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                  }}
+                />
+              </NavIcon>
+              <NavText
                 style={{
                   color: selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
                 }}
-              />
-            </NavIcon>
-            <NavText
-              style={{
-                color: selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-              }}
-            >
-              {e?.title}
-            </NavText>
-          </NavItem>
-        ))}
+              >
+                {e?.title}
+              </NavText>
+            </NavItem>
+          ))}
       </SideNav.Nav>
     </SideNav>
   );

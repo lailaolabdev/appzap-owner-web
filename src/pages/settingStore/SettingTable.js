@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import useReactRouter from "use-react-router";
 import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store";
 import axios from "axios";
@@ -11,9 +10,10 @@ import { faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import { useParams } from "react-router-dom";
 
 export default function SettingTable() {
-  const { history, location, match } = useReactRouter();
+  const params =  useParams()
   const { tableListCheck, setTableListCheck, getTableDataStoreList } =
     useStore();
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function SettingTable() {
         data: {
           sort: sortNumber,
           name: tableNumber,
-          storeId: match?.params?.id,
+          storeId: params?.id,
         },
         headers: headers,
       });

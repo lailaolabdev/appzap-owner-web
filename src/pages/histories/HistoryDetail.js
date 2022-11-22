@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import useReactRouter from "use-react-router";
 import {
   Col,
   Container,
@@ -20,10 +19,11 @@ import { BillForCheckOut } from '../bill/BillForCheckOut';
 import ReactToPrint from 'react-to-print';
 
 import { getHeaders } from '../../services/auth';
+import { useParams } from 'react-router-dom';
 
 
 export default function HistoryDetail() {
-  const { match } = useReactRouter();
+  const params = useParams();
   const componentRef = useRef();
 
   const {
@@ -49,7 +49,7 @@ export default function HistoryDetail() {
       'Content-Type': 'application/json',
       'Authorization': header.authorization
     }
-    let _resData = await axios.get(END_POINT + `/v3/bill-group/` + match?.params?.id, {
+    let _resData = await axios.get(END_POINT + `/v3/bill-group/` + params?.id, {
       headers: headers
     })
     setData(_resData?.data)

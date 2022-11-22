@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import axios from "axios";
-import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAdjust,
@@ -25,9 +24,11 @@ import { getHeaders } from "../../services/auth";
 import { PhoneInTalkSharp } from "@material-ui/icons";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function MenuList() {
-  const { history, match } = useReactRouter();
+  const navigate= useNavigate();
+  const params = useParams();
 
   const [genderData, setGenderData] = useState("FEMALE");
   const [isOpened, setIsOpened] = useState(true);
@@ -93,11 +94,11 @@ export default function MenuList() {
     }
   };
   const _menuList = () => {
-    history.push(`/settingStore/menu/limit/40/page/1/${match?.params?.id}`);
+    navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
   const _category = () => {
-    history.push(
-      `/settingStore/menu/category/limit/40/page/1/${match?.params?.id}`
+    navigate(
+      `/settingStore/menu/category/limit/40/page/1/${params?.id}`
     );
   };
   // upload photo
@@ -356,7 +357,7 @@ export default function MenuList() {
                               cursor: "pointer",
                             }}
                             onClick={() =>
-                              history.push(
+                              navigate(
                                 `/settingStore/menu/menu-stock/${data?._id}`
                               )
                             }

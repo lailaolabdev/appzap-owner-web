@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import useReactRouter from "use-react-router";
 import { Table, Modal, Button } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { _statusCheckBill, orderStatus } from "./../../helpers";
 import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
+import { useParams } from "react-router-dom";
 
 export default function DashboardFinance({ startDate, endDate }) {
-  const { history, match } = useReactRouter();
+  const params = useParams();
   const [data, setData] = useState();
   const [disCountDataKib, setDisCountDataKib] = useState(0);
   const [disCountDataPercent, setDisCountDataPercent] = useState(0);
@@ -36,7 +36,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
         "/v3/dashboard/" +
-        match?.params?.storeId +
+        params?.storeId +
         "/startTime/" +
         startDate +
         "/endTime/" +

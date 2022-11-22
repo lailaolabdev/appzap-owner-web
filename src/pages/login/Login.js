@@ -10,6 +10,7 @@ import {
   Modal,
   Carousel,
 } from "react-bootstrap";
+
 import { Formik } from "formik";
 import * as Yup from "yup";
 import * as axios from "axios";
@@ -22,7 +23,7 @@ import {
   faLock,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import useReactRouter from "use-react-router";
+import { useNavigate, useLocation } from "react-router-dom";
 import Lottie from "react-lottie";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
@@ -35,7 +36,11 @@ import useWindowDimensions from "../../helpers/useWindowDimensions";
 import AnimationLoading from "../../components/AnimationLoading";
 
 function Login() {
-  const { history } = useReactRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
+  console.log(location);
+  // const { match } = useReactRouter();
+
   const { height, width } = useWindowDimensions();
 
   const [checkUser, setCheckUser] = useState(false);
@@ -56,7 +61,7 @@ function Login() {
         await localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
-        await history.push(`/report/${user?.data?.data?.storeId}`);
+        await navigate(`/report/${user?.data?.data?.storeId}`);
       } else {
         setCheckUser(true);
       }
@@ -273,7 +278,7 @@ function Login() {
                     </Button>
                     <div style={{ height: 50 }} />
                     <a
-                      onClick={() => history.push("/privacy-policy")}
+                      onClick={() => navigate("/privacy-policy")}
                       style={{ cursor: "pointer" }}
                     >
                       <u>ນະໂຍບາຍການນໍາໃຊ້</u>
@@ -483,7 +488,7 @@ function Login() {
 
                   <div style={{ height: 30 }} />
                   <a
-                    onClick={() => history.push("/privacy-policy")}
+                    onClick={() => navigate("/privacy-policy")}
                     style={{ cursor: "pointer", color: "#FB6E3B" }}
                   >
                     <u>ນະໂຍບາຍການນໍາໃຊ້</u>

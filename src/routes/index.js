@@ -1,282 +1,215 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import PrivateRoute from "./PrivateRoute";
-import PublicRoute from "./PublicRoute";
-import styled from "styled-components";
-// import socketIOClient from "socket.io-client";
+import React from "react";
+import Login from "../pages/login/Login";
+import { useRoutes } from "react-router-dom";
 
-import Navbar from "../layouts/Navbar";
-import Sidenav from "../layouts/SideNav";
-import { END_POINT } from "../constants";
+import MainLayout from "../layouts/MainLayout";
 
-/**
- * pages
- */
+import CheckBill from "../pages/Notification/CheckBill";
+import { BillForChef } from "../pages/bill/BillForChef";
+import Dashboard from "../pages/dashboard/Dashboard";
+// import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
+import MenuListMobile from "../pages/table/mobileView/MenuList";
+import CartListMobile from "../pages/table/mobileView/Cart";
+import HistoryUse from "../pages/historiesUse/HistoryUse";
+import ReservationList from "../pages/reservation/ReservationList";
+import Promotion from "../pages/promotion/Promotion";
+import StoreDetail from "../pages/store/StoreDetail";
 import Order from "../pages/order";
 import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
-import Histories from "../pages/histories/Histories";
-import HistoryDetail from "../pages/histories/HistoryDetail";
-import Login from "../pages/login/Login";
 import Table from "../pages/table/TableList";
 import AddOrder from "../pages/table/AddOrder";
+import Histories from "../pages/histories/Histories";
+import HistoryDetail from "../pages/histories/HistoryDetail";
 import Notification from "../pages/Notification/NotificationCheckBill";
 import HistoriesCheckBill from "../pages/Notification/HistoriesCheckBill";
-import CheckBill from "../pages/Notification/CheckBill";
-import { BillForChef } from "../pages/bill/BillForChef";
-
 import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
 import FormAddMenu from "../pages/menu/form/FormAddMenu";
-import FormEditMenu from "../pages/menu/form/FormEditMenu";
 import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
 import StockCategory from "../pages/stock/Categorylist";
 import StockHistory from "../pages/stock/HistoryList";
-import ReservationList from "../pages/reservation/ReservationList";
-
-import StoreDetail from "../pages/store/StoreDetail";
-// ===========> Setting ============>
 import SettingList from "../pages/settingStore/SettingList";
 import SettingTable from "../pages/settingStore/SettingTable";
-// ===========> Dashboard ============>
-import Dashboard from "../pages/dashboard/Dashboard";
-import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
-// ===========> Promotion ============>
-import Promotion from "../pages/promotion/Promotion";
-// ===========> HistoryUse ============>
-import HistoryUse from "../pages/historiesUse/HistoryUse";
-
-// ===========> MessagerList ============>
 import MessagerList from "../pages/messager/MessagerList";
-import MenuListMobile from "../pages/table/mobileView/MenuList";
-import CartListMobile from "../pages/table/mobileView/Cart";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 
 import MenuRoutes from "./Menu.routes";
 
-const Main = styled.main`
-  /* position: relative; */
-  overflow: hidden;
-  transition: all 0.15s;
-  padding: 0 20px;
-  margin-left: ${(props) => (props.expanded ? 240 : 60)}px;
-`;
-function Index() {
-  const [expanded, setExpanded] = React.useState(false);
-
-  const _onToggle = (exp) => {
-    setExpanded(exp);
-  };
-
-  return (
-    <Router>
-      <Switch>
-        {/* Before login routes */}
-        <PublicRoute exact path="/" component={Login} />
-        <PublicRoute exact path="/CheckBillOut/:id" component={CheckBill} />
-        <PublicRoute exact path="/BillForChef" component={BillForChef} />
-        <PublicRoute exact path="/dashboard/:storeId" component={Dashboard} />
-        <PublicRoute
-          exact
-          path="/dashboard-loyverse/:storeId"
-          component={DashboardLoyverse}
-        />
-        <PublicRoute
-          exact
-          path="/menus/:storeId/:tableId"
-          component={MenuListMobile}
-        />
-        <PublicRoute
-          exact
-          path="/cart/:storeId/:tableId"
-          component={CartListMobile}
-        />
-        {/* After login routes (has SideNav and NavBar) */}
-        <PrivateRoute
-          exact
-          path="/history-use-only/:id"
-          component={HistoryUse}
-        />
-        <PublicRoute 
-        exact
-        path="/public/reservation/:storeId"
-        component={ReservationList}
-        />
-        <Route
-          render={({ location, history }) => (
-            <React.Fragment>
-              <Navbar />
-              <Sidenav
-                location={location}
-                history={history}
-                onToggle={(exp) => _onToggle(exp)}
-              />
-              {/* sidenav */}
-              <Main style={{ padding: 0 }}>
-                {/* Contents */}
-                <div
-                  style={{
-                    marginTop: 65,
-                  }}
-                >
-                  {/* private routes */}
-                  <PrivateRoute
-                    exact
-                    path="/report/:storeId"
-                    component={Dashboard}
-                  />
-                  <PrivateRoute exact path="/promotion" component={Promotion} />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/storeDetail/:id"
-                    component={StoreDetail}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/orders/pagenumber/:number/:id"
-                    component={Order}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/orders/doing/pagenumber/:number/:id"
-                    component={DoingOrder}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/orders/served/pagenumber/:number/:id"
-                    component={ServedOrder}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/orders/canceled/pagenumber/:number"
-                    component={CanceledOrder}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/tables/pagenumber/:number/tableid/:tableId/:storeId"
-                    component={Table}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/addOrder/tableid/:tableId/code/:code"
-                    component={AddOrder}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/histories/pagenumber/:number/:id"
-                    component={Histories}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/histories/HistoryDetail/:id/:storeId"
-                    component={HistoryDetail}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/checkBill/:id"
-                    component={Notification}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/checkBill/:id/historiesCheckBill"
-                    component={HistoriesCheckBill}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/qrcode/pagenumber/:number"
-                    component={Qrcode}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/users/limit/:limit/page/:page/:id"
-                    component={Users}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/menu/category/limit/:limit/page/:page/:id"
-                    component={Category}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/menu/limit/:limit/page/:page/:id"
-                    component={MenuList}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/menu/add"
-                    component={FormAddMenu}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/menu/menu-stock/:id"
-                    component={FormAddMenuStock}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/menu/Edit/:id"
-                    component={FormAddMenu}
-                  />
-
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/stock/limit/:limit/page/:page/:id"
-                    component={StockList}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/stock/category/limit/:limit/page/:page/:id"
-                    component={StockCategory}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/stock/history/limit/:limit/page/:page/:id"
-                    component={StockHistory}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/:id"
-                    component={SettingList}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/settingStore/settingTable/:id"
-                    component={SettingTable}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/messagerList"
-                    component={MessagerList}
-                  />
-
-                  <PrivateRoute
-                    exact
-                    path="/historyUse/:id"
-                    component={HistoryUse}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/reservations"
-                    component={ReservationList}
-                  />
-                  <PrivateRoute
-                    exact
-                    path="/reservation-dashboard"
-                    component={ReservationDashboard}
-                  />
-                  <PrivateRoute exact path="/menu" component={MenuList} />
-                  <MenuRoutes />
-                </div>
-              </Main>
-            </React.Fragment>
-          )}
-        />
-      </Switch>
-    </Router>
-  );
+function Router() {
+  return useRoutes([
+    {
+      path: "/",
+      element: <Login />,
+    },
+    {
+      path: "/CheckBillOut/:id",
+      element: <CheckBill />,
+    },
+    {
+      path: "/BillForChef",
+      element: <BillForChef />, //not work
+    },
+    {
+      path: "/dashboard/:storeId",
+      element: <Dashboard />,
+    },
+    // {
+    //   path: "/dashboard-loyverse/:storeId",
+    //   element: <DashboardLoyverse />,
+    // },
+    {
+      path: "/menus/:storeId/:tableId",
+      element: <MenuListMobile />,
+    },
+    {
+      path: "/cart/:storeId/:tableId",
+      element: <CartListMobile />,
+    },
+    {
+      path: "/history-use-only/:id",
+      element: <HistoryUse />,
+    },
+    {
+      path: "/public/reservation/:storeId",
+      element: <ReservationList />,
+    },
+    {
+      path: "/",
+      element: <MainLayout />,
+      children: [
+        {
+          path: "/report/:storeId",
+          element: <Dashboard />,
+        },
+        {
+          path: "/promotion",
+          element: <Promotion />,
+        },
+        {
+          path: "/settingStore/storeDetail/:id",
+          element: <StoreDetail />,
+        },
+        {
+          path: "/orders/pagenumber/:number/:id",
+          element: <Order />,
+        },
+        {
+          path: "/orders/doing/pagenumber/:number/:id",
+          element: <DoingOrder />,
+        },
+        {
+          path: "/orders/served/pagenumber/:number/:id",
+          element: <ServedOrder />,
+        },
+        {
+          path: "/orders/canceled/pagenumber/:number",
+          element: <CanceledOrder />,
+        },
+        {
+          path: "/tables/pagenumber/:number/tableid/:tableId/:storeId",
+          element: <Table />,
+        },
+        {
+          path: "/addOrder/tableid/:tableId/code/:code",
+          element: <AddOrder />,
+        },
+        {
+          path: "/histories/pagenumber/:number/:id",
+          element: <Histories />,
+        },
+        {
+          path: "/histories/HistoryDetail/:id/:storeId",
+          element: <HistoryDetail />,
+        },
+        {
+          path: "/checkBill/:id",
+          element: <Notification />,
+        },
+        {
+          path: "/checkBill/:id/historiesCheckBill",
+          element: <HistoriesCheckBill />,
+        },
+        {
+          path: "/qrcode/pagenumber/:number",
+          element: <Qrcode />,
+        },
+        {
+          path: "/settingStore/users/limit/:limit/page/:page/:id",
+          element: <Users />,
+        },
+        {
+          path: "/settingStore/menu/category/limit/:limit/page/:page/:id",
+          element: <Category />,
+        },
+        {
+          path: "/settingStore/menu/limit/:limit/page/:page/:id",
+          element: <MenuList />,
+        },
+        {
+          path: "/settingStore/menu/add",
+          element: <FormAddMenu />,
+        },
+        {
+          path: "/settingStore/menu/menu-stock/:id",
+          element: <FormAddMenuStock />,
+        },
+        {
+          path: "/settingStore/menu/Edit/:id",
+          element: <FormAddMenu />,
+        },
+        {
+          path: "/settingStore/stock/limit/:limit/page/:page/:id",
+          element: <StockList />,
+        },
+        {
+          path: "/settingStore/stock/category/limit/:limit/page/:page/:id",
+          element: <StockCategory />,
+        },
+        {
+          path: "/settingStore/stock/history/limit/:limit/page/:page/:id",
+          element: <StockHistory />,
+        },
+        {
+          path: "/settingStore/:id",
+          element: <SettingList />,
+        },
+        {
+          path: "/settingStore/settingTable/:id",
+          element: <SettingTable />,
+        },
+        {
+          path: "/messagerList",
+          element: <MessagerList />,
+        },
+        {
+          path: "/historyUse/:id",
+          element: <HistoryUse />,
+        },
+        {
+          path: "/reservations",
+          element: <ReservationList />,
+        },
+        {
+          path: "/reservation-dashboard",
+          element: <ReservationDashboard />,
+        },
+        {
+          path: "/menu",
+          element: <MenuList />,
+        },
+        MenuRoutes,
+      ],
+    },
+    {
+      path: "*",
+      element: <h3>404</h3>,
+    },
+  ]);
 }
 
-export default Index;
+export default Router;

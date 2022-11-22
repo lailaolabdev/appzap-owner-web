@@ -12,12 +12,12 @@ import {
 import PopUpAddMenuStocks from "../components/popup/PopUpAddMenuStocks";
 import PopUpEditMenuStocks from "../components/popup/PopUpEditMenuStocks";
 import { getHeaders } from "../../../services/auth";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 // ---------------------------------------------- //
 export default function FormAddMenuStock() {
   const { id } = useParams();
-  const History = useHistory();
+  const navigate = useNavigate();
   // state
   const [popAddMenuStocks, setPopAddMenuStocks] = useState(false);
   const [popEditMenuStocks, setPopEditMenuStocks] = useState(false);
@@ -110,8 +110,9 @@ export default function FormAddMenuStock() {
         { headers }
       );
       if (res.status < 300) {
-        History.replace(
-          `/settingStore/menu/limit/40/page/1/${_localData?.DATA?.storeId}`
+        navigate(
+          `/settingStore/menu/limit/40/page/1/${_localData?.DATA?.storeId}`,
+          { replace: true }
         );
       }
     }

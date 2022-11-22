@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import useReactRouter from "use-react-router"
 import { Formik } from 'formik';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,12 +15,15 @@ import AnimationLoading from "../../constants/loading"
 import profileImage from "../../image/profile.png"
 import { STATUS_USERS } from '../../helpers'
 import { successAdd, errorAdd } from '../../helpers/sweetalert'
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 
 export default function UserList() {
-  const { history, location, match } = useReactRouter();
-  const _limit = match.params.limit;
-  const _page = match.params.page;
+  const params = useParams();
+  const navigate=useNavigate();
+  const location = useLocation()
+  const _limit = params.limit;
+  const _page = params.page;
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setuserData] = useState();
   const [show, setShow] = useState(false);
@@ -41,7 +43,7 @@ export default function UserList() {
   }, []);
   const getData = async () => {
     setIsLoading(true);
-    await fetch(USERS + `/skip/0/limit/0/?storeId=${match?.params?.id}`, {
+    await fetch(USERS + `/skip/0/limit/0/?storeId=${params?.id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -49,7 +51,7 @@ export default function UserList() {
     setIsLoading(false);
   };
   const _AddUser = () => {
-    history.push("/users/userAdd");
+    navigate("/users/userAdd");
   };
   const _userDetail = () => {};
   const [totalPage, setTotalPage] = useState([]);
@@ -72,7 +74,7 @@ export default function UserList() {
     setTotalPage(rowPage);
   };
   const _nextPage = (page) => {
-    history.push(`/users/limit/${_limit}/page/${page}`);
+    navigate(`/users/limit/${_limit}/page/${page}`);
   };
   // upload photo
   const [namePhoto, setNamePhoto] = useState("");

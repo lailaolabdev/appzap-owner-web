@@ -9,7 +9,6 @@ import {
   InputGroup,
   Nav
 } from "react-bootstrap";
-import useReactRouter from "use-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
@@ -20,9 +19,11 @@ import { END_POINT } from '../../constants'
 import { _statusCheckBill } from "../../helpers/index"
 import Sidenav from '../../layouts/SideNav'
 import empty from '../../image/empty.png'
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function NotificationCheckBill() {
-  const { match, history } = useReactRouter();
+  const navigate = useNavigate();
+  const params =useParams();
   const [orderCallCheckOut, setorderCallCheckOut] = useState()
   const newDate = new Date();
 
@@ -30,14 +31,14 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders/?storeId=${match?.params?.id}&&status=CALLTOCHECKOUT`, {
+    await fetch(`${END_POINT}/orders/?storeId=${params?.id}&&status=CALLTOCHECKOUT`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())
       .then(json => setorderCallCheckOut(json));
   }
   const _checkbillTable = (item) => {
-    history.push(`/checkBill/${match?.params?.id}/historiesCheckBill/?code=${item}`)
+    navigate(`/checkBill/${params?.id}/historiesCheckBill/?code=${item}`)
   }
   return (
     <div style={{ minHeight: 400 }}>

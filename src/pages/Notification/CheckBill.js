@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import useReactRouter from "use-react-router";
+import { useLocation,useParams } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Table, Col, Image } from 'react-bootstrap';
@@ -7,7 +7,8 @@ import { END_POINT, URL_PHOTO_AW3 } from '../../constants'
 import { STORE } from '../../constants/api'
 import profileImage from "../../image/profile.png"
 export default function CheckBill() {
-    const { history, location, match } = useReactRouter()
+    const location =useLocation();
+    const params = useParams();
     const [newData, setgetNewData] = useState()
     const [data, setData] = useState([])
     const [dataStore, setStore] = useState()
@@ -23,7 +24,7 @@ export default function CheckBill() {
             .then(response => {
                 setData(response)
             })
-        await fetch(STORE + `/?id=${match?.params?.id}`, {
+        await fetch(STORE + `/?id=${params?.id}`, {
             method: "GET",
         }).then(response => response.json())
             .then(json => setStore(json));

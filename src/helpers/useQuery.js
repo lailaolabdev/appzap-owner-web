@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import useReactRouter from "use-react-router";
 import { useLocation } from "react-router-dom";
 
 function useQuery() {

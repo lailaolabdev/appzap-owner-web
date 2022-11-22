@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import useReactRouter from "use-react-router"
-import { Nav } from 'react-bootstrap'
+import React, { useEffect, useState } from "react";
+// import useReactRouter from "use-react-router"
+import { Nav } from "react-bootstrap";
 import moment from "moment";
 import { getHeaders } from "../../services/auth";
 import { TITLE_HEADER } from "../../constants/index";
@@ -20,13 +20,15 @@ import {
   faTableTennis,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 export default function HistoryUse() {
-  const { history, location, match } = useReactRouter();
+  // const { history, location, match } = useReactRouter();
+  const params = useParams();
   const [data, setData] = useState([]);
   const [filtterModele, setFiltterModele] = useState("checkBill");
 
-  const _page = match?.params?.page;
+  const _page = params?.page;
   const LIMIT_PAGE = 300;
   const [pageNumber, setPageNumber] = useState(_page ?? 1);
   const [pageCountNumber, setPageCountNumber] = useState(10000);
@@ -50,7 +52,7 @@ export default function HistoryUse() {
       const data = await axios.get(
         END_POINT_SEVER +
           `/v3/logs/skip/${pageNumber - 1}/limit/${LIMIT_PAGE}?storeId=${
-            match?.params?.id
+            params?.id
           }&modele=${filtterModele}`,
         { headers }
       );
@@ -77,20 +79,21 @@ export default function HistoryUse() {
   return (
     <div style={{}}>
       {isLoading ? <AnimationLoading /> : <div />}
-      <div className='col-sm-12'>
+      <div className="col-sm-12">
         <Nav
           fill
-          variant='tabs'
-          defaultActiveKey='/home'
+          variant="tabs"
+          defaultActiveKey="/home"
           style={{
             fontWeight: "bold",
             backgroundColor: "#f8f8f8",
             border: "none",
             height: 60,
-          }}>
+          }}
+        >
           <Nav.Item>
             <Nav.Link
-              eventKey='/canceled'
+              eventKey="/canceled"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -99,7 +102,8 @@ export default function HistoryUse() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setFiltterModele("checkBill")}>
+              onClick={() => setFiltterModele("checkBill")}
+            >
               {" "}
               <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> ຄິດໄລ່ເງິນ
@@ -107,7 +111,7 @@ export default function HistoryUse() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='/finance'
+              eventKey="/finance"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -116,14 +120,15 @@ export default function HistoryUse() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setFiltterModele("canceled")}>
+              onClick={() => setFiltterModele("canceled")}
+            >
               <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> ຍົກເລີກອາຫານ
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='/print'
+              eventKey="/print"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -132,14 +137,15 @@ export default function HistoryUse() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setFiltterModele("print")}>
+              onClick={() => setFiltterModele("print")}
+            >
               <FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> ປີນເຕີ
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='/resetBill'
+              eventKey="/resetBill"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -148,14 +154,15 @@ export default function HistoryUse() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setFiltterModele("resetBill")}>
+              onClick={() => setFiltterModele("resetBill")}
+            >
               <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> ແກ້ໄຂບີນ
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='/transferTable'
+              eventKey="/transferTable"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -164,23 +171,24 @@ export default function HistoryUse() {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setFiltterModele("transferTable")}>
+              onClick={() => setFiltterModele("transferTable")}
+            >
               <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> ຍ້າຍລວມໂຕະ
             </Nav.Link>
           </Nav.Item>
         </Nav>
       </div>
-      <div className='col-sm-12'>
-        <table className='table table-hover'>
-          <thead className='thead-light'>
+      <div className="col-sm-12">
+        <table className="table table-hover">
+          <thead className="thead-light">
             <tr>
-              <th scope='col'>#</th>
-              <th scope='col'>ຊື່ຜູ້ຈັດການ</th>
-              <th scope='col'>ສະຖານະ</th>
-              <th scope='col'>ລາຍລະອຽດ</th>
-              <th scope='col'>ເຫດຜົນ</th>
-              <th scope='col'>ວັນເວລາ</th>
+              <th scope="col">#</th>
+              <th scope="col">ຊື່ຜູ້ຈັດການ</th>
+              <th scope="col">ສະຖານະ</th>
+              <th scope="col">ລາຍລະອຽດ</th>
+              <th scope="col">ເຫດຜົນ</th>
+              <th scope="col">ວັນເວລາ</th>
             </tr>
           </thead>
           <tbody>
@@ -192,7 +200,8 @@ export default function HistoryUse() {
                   <td
                     style={{
                       color: item?.event === "INFO" ? "green" : "red",
-                    }}>
+                    }}
+                  >
                     {item?.event}
                   </td>
                   <td>{item?.eventDetail}</td>
@@ -216,22 +225,25 @@ export default function HistoryUse() {
 
         {pageCountNumber && (
           <div
-            className='row col-12 justify-content-center'
-            style={{ marginBottom: 24 }}>
+            className="row col-12 justify-content-center"
+            style={{ marginBottom: 24 }}
+          >
             <p
-              className='col-1'
+              className="col-1"
               style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => onBackPage()}>
+              onClick={() => onBackPage()}
+            >
               <u>ກັບຄືນ </u>
             </p>
-            <p className='col-4 text-center'>
+            <p className="col-4 text-center">
               {" "}
               ຫນ້າ {pageNumber} / {pageCountNumber}{" "}
             </p>
             <p
-              className='col-1'
+              className="col-1"
               style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => onNextPage()}>
+              onClick={() => onNextPage()}
+            >
               <u> ຫນ້າຕໍ່ໄປ</u>
             </p>
           </div>

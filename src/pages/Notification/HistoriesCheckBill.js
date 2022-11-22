@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react'
-import useReactRouter from "use-react-router";
 import OrderCheckOut from '../table/components/OrderCheckOut'
 
 import {
@@ -24,11 +23,13 @@ import { STORE, getLocalData } from '../../constants/api'
 import ReactToPrint from 'react-to-print';
 import { ComponentToPrint } from './components/ToPrint';
 import { useStore } from "../../store";
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 
 const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
-  const { history, location, match } = useReactRouter()
+  const location = useLocation();
+  const params =useParams();
   const componentRef = useRef();
   const componentRefA = useRef();
   const {
@@ -59,7 +60,7 @@ export default function HistoriesCheckBill() {
   }, [])
 
   const getData = async () => {
-    await fetch(STORE + `/?id=${match?.params?.id}`, {
+    await fetch(STORE + `/?id=${params?.id}`, {
       method: "GET",
     }).then(response => response.json())
       .then(json => setStore(json));
