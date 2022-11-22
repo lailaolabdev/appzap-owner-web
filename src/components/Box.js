@@ -1,5 +1,8 @@
 import styled from "styled-components";
 const Box = styled("div")(({ sx, theme }) => {
+  if (!sx) {
+    return {};
+  }
   const { xl, lg, md, sm, xs } = sx;
   let _xl = {};
   let _lg = {};
@@ -7,7 +10,7 @@ const Box = styled("div")(({ sx, theme }) => {
   let _sm = {};
   let _xs = {};
   for (const _item in sx) {
-    if (typeof sx[_item] === "object") {
+    if (typeof sx[_item] === "object" || sx[_item] != "children") {
       for (const _i in sx[_item]) {
         if (_i === "xl") {
           _xl[_item] = sx[_item][_i];
@@ -28,27 +31,28 @@ const Box = styled("div")(({ sx, theme }) => {
     }
   }
   return {
-    [theme.xl]: {
-      ...xl,
-      ..._xl,
-    },
-    [theme.lg]: {
-      ...lg,
-      ..._lg,
-    },
-    [theme.md]: {
-      ...md,
-      ..._md,
+    [theme.xs]: {
+      ...xs,
+      ..._xs,
     },
     [theme.sm]: {
       ...sm,
       ..._sm,
     },
-    [theme.xs]: {
-      ...xs,
-      ..._xs,
+    [theme.md]: {
+      ...md,
+      ..._md,
+    },
+    [theme.lg]: {
+      ...lg,
+      ..._lg,
+    },
+    [theme.xl]: {
+      ...xl,
+      ..._xl,
     },
     ...sx,
   };
 });
+
 export default Box;
