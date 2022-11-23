@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import moment from "moment";
 import { COLOR_APP, USER_KEY } from "../../constants";
 import { getLocalData } from "../../constants/api";
@@ -20,11 +20,15 @@ import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
 import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import { socket } from "../../services/socket";
+import { useStore } from "../../store";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
   const params = useParams();
-  const storeId = params.storeId;
+  const { storeDetail } = useStore();
+  const storeId = storeDetail._id;
+  console.log(`RESERVATION:${storeDetail._id}`);
 
   // const _limit = params.limit;
   // const _page = params.page;
@@ -99,7 +103,14 @@ export default function ReservationList() {
       localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
     }
   }, [tabSelect, dateFrom, dateTo]);
-
+  useMemo(
+    () =>
+      socket.on(`RESERVATION:${storeDetail._id}`, (data) => {
+        getData();
+        console.log("first");
+      }),
+    []
+  );
   return (
     <div>
       {isLoading ? (

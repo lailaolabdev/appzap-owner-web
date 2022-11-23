@@ -36,6 +36,7 @@ export default function Sidenav({ location, history }) {
     initialOrderSocket,
     initialTableSocket,
     storeDetail,
+    initialReservationSocket,
   } = useStore();
 
   const itemList = [
@@ -88,6 +89,7 @@ export default function Sidenav({ location, history }) {
     getOrderItemsStore(WAITING_STATUS);
     // initialOrderSocket();
     // initialTableSocket();
+    initialReservationSocket();
     callingCheckOut();
   }, []);
   return (
