@@ -32,6 +32,36 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
       </div>
     );
   }
+  if (status == "SUCCESS") {
+    return(
+      <div style={{ display: "flex", gap: 10 }}>
+      <ButtonPrimary
+        style={{
+          color: COLOR_APP,
+          backgroundColor: "#5BFF33",
+          // border: `1px solid ${COLOR_APP}`,
+          height: 31,
+          fontSize: 14,
+          padding: 4,
+          
+          width: "100%",
+        }}
+        disabled
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <BiCheckDouble style={{ width: 20, height: 20 , color: "white"}} />
+          <span style={{color: "white"}}>ຢືນຢັນການຈອງສຳເລັດແລ້ວ</span>
+        </div>
+      </ButtonPrimary>
+    </div>
+    );
+  }
   if (status == "STAFF_CONFIRM") {
     return (
       <div style={{ display: "flex", gap: 10 }}>

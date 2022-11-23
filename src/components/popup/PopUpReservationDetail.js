@@ -11,6 +11,7 @@ const PopUpReservationDetail = ({
   buttonEdit,
   buttonCancel,
   buttonConfirm,
+  buttonSuccess,
 }) => {
   return (
     <Modal show={open} onHide={onClose}>
@@ -24,6 +25,16 @@ const PopUpReservationDetail = ({
             gap: 10,
           }}
         >
+            <Button
+            onClick={buttonSuccess}
+            style={{
+              backgroundColor: "white",
+              color: COLOR_APP,
+              borderColor: COLOR_APP,
+            }}
+          >
+            ສຳເລັດການຈອງ
+          </Button>
           <Button
             onClick={buttonEdit}
             style={{
