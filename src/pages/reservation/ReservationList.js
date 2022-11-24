@@ -22,6 +22,7 @@ import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
+import Box from "../../components/Box";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
@@ -167,7 +168,14 @@ export default function ReservationList() {
                 ລາຍການທີ່ຍົກເລີກ
               </ButtonTab>
             </div>
-            <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingRight: 10,
+              }}
+            >
               <ButtonPrimary
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}

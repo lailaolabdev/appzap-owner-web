@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.0.1",
+  "version": "5.1.3",
   "private": true,
   "homepage": ".",
   "dependencies": {
