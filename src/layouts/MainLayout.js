@@ -18,13 +18,13 @@ export default function MainLayout({ children }) {
       }}
     >
       <div>
-        <Box sx={{ display: { md: "block", xs: "none" } }}>
+        {/* <Box sx={{ display: { md: "block", xs: "none" } }}> */}
           <Sidenav
             location={location}
             navigate={navigate}
             onToggle={(exp) => _onToggle(exp)}
           />
-        </Box>
+        {/* </Box> */}
         <Navbar />
         <div style={{ paddingTop: 65 }} />
         <div>

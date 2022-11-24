@@ -31,23 +31,23 @@ const Box = styled("div")(({ sx, theme }) => {
     }
   }
   return {
-    [theme.xs]: {
+    [theme?.xs]: {
       ...xs,
       ..._xs,
     },
-    [theme.sm]: {
+    [theme?.sm]: {
       ...sm,
       ..._sm,
     },
-    [theme.md]: {
+    [theme?.md]: {
       ...md,
       ..._md,
     },
-    [theme.lg]: {
+    [theme?.lg]: {
       ...lg,
       ..._lg,
     },
-    [theme.xl]: {
+    [theme?.xl]: {
       ...xl,
       ..._xl,
     },
