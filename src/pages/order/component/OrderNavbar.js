@@ -66,7 +66,34 @@ export default function OrderNavbar() {
             ເສີບແລ້ວ
           </Nav.Link>
         </Nav.Item>
+        <div style={{ display: "flex", justifyContent: "space-between ", padding: "10px", }}>
+        <div>
+          <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }}>ຍົກເລີກ</button>
+        </div>
+        <div style={{ width: "10px" }}></div>
+
+        <div>
+          <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }}>ສົ່ງໄປຄົວ</button>
+        </div>
+        <div style={{ width: "10px" }}></div>
+
+        <div>
+          <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }}>ເສີບແລ້ວ</button>
+        </div>
+        </div>
       </Nav>
     </div>
   );
 }
+// let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
+// if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+//     let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+//     setOrderItems(_newOrderItem)
+//     if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
+//     Swal.fire({
+//         icon: 'success',
+//         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+//         showConfirmButton: false,
+//         timer: 2000
+//     })
+// }

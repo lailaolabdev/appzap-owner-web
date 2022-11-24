@@ -2,11 +2,14 @@ import { BiCheckDouble } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 import ButtonPrimary from "./ButtonPrimary";
 import { COLOR_APP } from "../../constants";
+import { Button } from "react-bootstrap";
+import { AiOutlineSetting } from "react-icons/ai";
+import { NowIndicatorRoot } from "@fullcalendar/react";
 
-const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
+const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handleEdit }) => {
   if (status == "CANCEL") {
     return (
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
           style={{
             color: "#ccc",
@@ -29,42 +32,46 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
             <span>ການຈອງຖືກປະຕິເສດ</span>
           </div>
         </ButtonPrimary>
+        {/* <AiOutlineSetting /> */}
+
       </div>
     );
   }
   if (status == "SUCCESS") {
-    return(
-      <div style={{ display: "flex", gap: 10 }}>
-      <ButtonPrimary
-        style={{
-          color: COLOR_APP,
-          backgroundColor: "#5BFF33",
-          // border: `1px solid ${COLOR_APP}`,
-          height: 31,
-          fontSize: 14,
-          padding: 4,
-          
-          width: "100%",
-        }}
-        disabled
-      >
-        <div
+    return (
+      <div style={{ display: "flex", gap: 10, alignItems:"center" }}>
+        <ButtonPrimary
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            color: COLOR_APP,
+            backgroundColor: "#5BFF33",
+            // border: `1px solid ${COLOR_APP}`,
+            height: 31,
+            fontSize: 14,
+            padding: 4,
+
+            width: "100%",
           }}
+          disabled
         >
-          <BiCheckDouble style={{ width: 20, height: 20 , color: "white"}} />
-          <span style={{color: "white"}}>ຢືນຢັນການຈອງສຳເລັດແລ້ວ</span>
-        </div>
-      </ButtonPrimary>
-    </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <BiCheckDouble style={{ width: 20, height: 20, color: "white" }} />
+            <span style={{ color: "white" }}>ຢືນຢັນການຈອງສຳເລັດແລ້ວ</span>
+          </div>
+        </ButtonPrimary>
+        {/* <AiOutlineSetting /> */}
+
+      </div>
     );
   }
   if (status == "STAFF_CONFIRM") {
     return (
-      <div style={{ display: "flex", gap: 10 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
           style={{
             color: COLOR_APP,
@@ -88,6 +95,9 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
             <span>ຈອງສຳເລັດແລ້ວ</span>
           </div>
         </ButtonPrimary>
+        {/* <AiOutlineSetting /> */}
+
+
       </div>
     );
   }
@@ -113,6 +123,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
           <span>ອະນຸມັດ</span>
         </div>
       </ButtonPrimary>
+
       <ButtonPrimary
         style={{
           color: "white",
@@ -132,6 +143,28 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm }) => {
           }}
         >
           <span>ບໍ່ອະນຸມັດ</span>
+        </div>
+      </ButtonPrimary>
+      <ButtonPrimary
+        style={{
+          color: "orange",
+          backgroundColor: "#fff",
+          border: `1px solid orange`,
+          height: 31,
+          fontSize: 14,
+          padding: 4,
+          width: "100%",
+        }}
+        onClick={handleEdit}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <span>ແກ້ໄຂ</span>
         </div>
       </ButtonPrimary>
     </div>

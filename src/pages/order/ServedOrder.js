@@ -9,6 +9,8 @@ import Loading from "../../components/Loading";
 import { orderStatus } from "../../helpers";
 import { END_POINT } from "../../constants";
 import { useParams } from "react-router-dom";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
+
 const Order = () => {
   /**
    * routes
@@ -62,6 +64,7 @@ const Order = () => {
             >
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
+                  
                   <th width="20px"></th>
                   <th>ລ/ດ</th>
                   <th>ຊື່ເມນູ</th>

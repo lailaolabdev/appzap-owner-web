@@ -76,7 +76,7 @@ const Order = () => {
             >
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
-                  {/* <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th> */}
+                  <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
                   <th>ລ/ດ</th>
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>
@@ -92,14 +92,14 @@ const Order = () => {
                   orderItems?.map((order, index) => {
                     return (
                       <tr key={index}>
-                        {/* <td>
+                        <td>
                       <Checkbox
                         checked={order?.isChecked ? true : false}
                         onChange={(e) => handleCheckbox(order)}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
-                    </td> */}
+                    </td>
                         <td>
                           <p style={{ margin: 0 }}>{index + 1}</p>
                         </td>

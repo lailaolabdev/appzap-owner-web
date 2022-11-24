@@ -52,9 +52,10 @@ const Order = () => {
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
-                {/* <th>
+                <th>
                   <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
-                </th> */}
+                </th>
+
                 <th>ລ/ດ</th>
                 <th>ຊື່ເມນູ</th>
                 <th>ຈຳນວນ</th>
@@ -69,7 +70,7 @@ const Order = () => {
               {orderItems &&
                 orderItems?.map((order, index) => (
                   <tr key={index}>
-                    {/* <td  >
+                    <td  >
 
                       <Checkbox
                         checked={order?.isChecked ? true : false}
@@ -78,7 +79,7 @@ const Order = () => {
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
 
-                    </td> */}
+                    </td>
                     <td><p style={{ margin: 0 }}>{index + 1}</p></td>
                     <td><p style={{ margin: 0 }}>{order?.name ?? "-"}</p></td>
                     <td><p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p></td>

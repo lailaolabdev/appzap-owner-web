@@ -202,6 +202,10 @@ function Router() {
           path: "/menu",
           element: <MenuList />,
         },
+        {
+          path: "/manageorder",
+          element: <DoingOrder />,
+        },
         MenuRoutes,
       ],
     },

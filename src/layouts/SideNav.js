@@ -14,11 +14,14 @@ import {
   faList,
   faTachometerAlt,
   faChartBar,
+  faAirFreshener,
+  faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
+// import {BiFoodMenu} from "react-icons";
 
 export default function Sidenav({ location, navigate }) {
   const [selected, setSelectStatus] = useState(
@@ -79,6 +82,13 @@ export default function Sidenav({ location, navigate }) {
       key: `settingStore/${storeDetail?._id}`,
       typeStore: "",
       icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ລາຍການອໍເດີ້",
+      key: "manageorder",
+      typeStore: "",
+      icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
     },
   ];

@@ -340,6 +340,10 @@ export default function ReservationList() {
                           handleReject={() => {
                             handleReject(item);
                           }}
+                          handleEdit={() => {
+                            setSelect(item)
+                            setPopup((prev)=> ({ ...prev, edit: true }));
+                          }}
                         />
                       </td>
                       <td>
