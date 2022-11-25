@@ -118,6 +118,7 @@ export const useOrderState = () => {
         }
         setOrderItems(_newOrderItems)
     }
+    
     return {
         soundPlayer,
         callCheckBill,

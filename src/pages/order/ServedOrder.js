@@ -30,11 +30,14 @@ const Order = () => {
   }, []);
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + `/v3/orders?status=SERVED`, {
+    await fetch(END_POINT + `/v3/orders?status=SERVED&storeId=61d8019f9d14fc92d015ee8e&limit=50`, {
       method: "GET",
     })
       .then((response) => response.json())
-      .then((json) => setOrdersSev(json));
+      .then((json) => {
+        console.log(`json`,json)
+        setOrdersSev(json)
+      });
     await setIsLoading(false);
   };
   const _handleCheckbox = async (event, id) => {
@@ -55,6 +58,9 @@ const Order = () => {
     <div>
       <OrderNavbar />
       {ordersSev?.length > 0 ? (
+        console.log("ordersSev"),
+
+        console.log(ordersSev),
         <div>
           {isLoading ? <Loading /> : ""}
           <Container fluid className="mt-3">
