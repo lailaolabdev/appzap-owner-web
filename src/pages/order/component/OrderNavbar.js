@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 import { Nav } from "react-bootstrap";
 import { getLocalData } from "../../../constants/api";
@@ -7,12 +7,16 @@ import Swal from "sweetalert2";
 import { useStore } from "../../../store";
 import { WAITING_STATUS } from "../../../constants";
 import { updateOrderItem } from "../../../services/order";
-import PopupCancle from "../../../components/popup/PopupCancle"
+import PopupCancle from "../../../components/popup/PopupCancle";
+import { socket } from "../../../services/socket";
+
 
 
 
 
 export default function OrderNavbar() {
+  const { storeDetail } = useStore();
+  const storeId = storeDetail._id;
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -33,6 +37,13 @@ export default function OrderNavbar() {
     };
     fetchData();
   }, []);
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        console.log("first");
+      }),
+    []
+  );
   const _order = () => {
     navigate(`/orders/pagenumber/1/${getTokken?.DATA?.storeId}`);
   };
@@ -156,15 +167,7 @@ export default function OrderNavbar() {
         </Nav>
       </div>
       <PopupCancle open={popup?.cancel}/>
-      {/* <PopUpReservationAdd
-        value={select}
-        open={popup?.cancel}
-        onClose={() => setPopup()}
-        onSubmit={() => {
-          // await updateReservation(e, e._id);
-          setPopup();
-        }}
-      /> */}
+      
     </div>
   );
 }
