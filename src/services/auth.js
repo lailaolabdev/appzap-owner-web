@@ -3,7 +3,7 @@ import { USER_KEY } from "../constants";
 export const getHeaders = async () => {
   try {
     const user = await localStorage.getItem(USER_KEY);
-    const token = await JSON.parse(user)["accessToken"];
+    const token = await JSON.parse(user)?.["accessToken"];
     if (token) {
       return { authorization: `AppZap ${token}` };
     } else {

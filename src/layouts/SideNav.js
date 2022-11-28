@@ -17,13 +17,14 @@ import {
   faAirFreshener,
   faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
+import Box from "../components/Box";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 // import {BiFoodMenu} from "react-icons";
 
-export default function Sidenav({ location, navigate }) {
+export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
@@ -146,7 +147,9 @@ export default function Sidenav({ location, navigate }) {
           navigate(to);
         }
       }}
-      onToggle={(expanded) => {}}
+      onToggle={(expanded) => {
+        onToggle(expanded);
+      }}
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>

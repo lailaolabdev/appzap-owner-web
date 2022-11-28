@@ -25,7 +25,7 @@ export default function ReservationDashboard() {
   // variable
   const eventReservation = reservationsData?.map((e) => ({
     title: `(${e?.clientNumber}ຄົນ)`,
-    start: moment.parseZone(e?.startTime).format(),
+    start: moment(e?.startTime).format(),
   }));
   console.log("eventReservation", eventReservation);
 
@@ -77,7 +77,7 @@ export default function ReservationDashboard() {
           }}
         >
           <StatisticCard
-            value="0 ກີບ"
+            value="- ກີບ"
             name="ຈຳນວນເງິນທັງໝົດ"
             color="#967E76"
             icon={
@@ -85,7 +85,7 @@ export default function ReservationDashboard() {
             }
           />
           <StatisticCard
-            value={`60 ຄົນ`}
+            value={`- ຄົນ`}
             name="ຈຳນວນຄົນຈອງທັງໝົດ"
             color="#00ABB3"
             icon={
@@ -118,7 +118,7 @@ export default function ReservationDashboard() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "1fr",
             gridGap: 10,
           }}
         >
@@ -130,8 +130,8 @@ export default function ReservationDashboard() {
               gridGap: 10,
             }}
           >
-            <ComingSoonCard />
-            <ComingSoonCard />
+            {/* <ComingSoonCard />
+            <ComingSoonCard /> */}
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@ const StatisticCard = ({
       >
         <div style={{ fontSize: 14, color: "white" }}>
           <FaLink style={{ color: "white", width: 15, height: 15 }} />
-          ອັບເດດລາສຸດ 23.10.2022
+          ອັບເດດລາສຸດ {moment().format("DD.MM.yyyy")}
         </div>
         <div>
           <MdBarChart style={{ color: "white", width: 20, height: 20 }} />

@@ -79,11 +79,11 @@ const PopUpReservationDetail = ({
           <span style={{ display: "flex", justifyContent: "space-between" }}>
             <span>
               {data?.startTime &&
-                moment.parseZone(data?.startTime).format("DD / MM / YYYY")}
+                moment(data?.startTime).format("DD / MM / YYYY")}
             </span>
             <span>
               {data?.startTime &&
-                moment.parseZone(data?.startTime).format("LT")}
+                moment(data?.startTime).format("LT")}
             </span>
           </span>
         </CustomCart>
@@ -104,11 +104,11 @@ const PopUpReservationDetail = ({
           <span>
             {data?.createdAt &&
               moment
-                .parseZone(data?.createdAt)
+                (data?.createdAt)
                 .format("DD / MM / YYYY LT")}{" "}
             -{" "}
             {data?.updatedAt &&
-              moment.parseZone(data?.updatedAt).format("DD / MM / YYYY LT")}
+              moment(data?.updatedAt).format("DD / MM / YYYY LT")}
           </span>
         </CustomCart>
       </Modal.Body>
