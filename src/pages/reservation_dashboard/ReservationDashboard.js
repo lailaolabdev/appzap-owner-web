@@ -25,7 +25,7 @@ export default function ReservationDashboard() {
   // variable
   const eventReservation = reservationsData?.map((e) => ({
     title: `(${e?.clientNumber}ຄົນ)`,
-    start: moment.parseZone(e?.startTime).format(),
+    start: moment(e?.startTime).format(),
   }));
   console.log("eventReservation", eventReservation);
 

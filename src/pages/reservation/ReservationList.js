@@ -315,11 +315,11 @@ export default function ReservationList() {
                       <td>
                         {item?.startTime &&
                           moment
-                            .parseZone(item?.startTime)
+                            (item?.startTime)
                             .format("DD/MM/YYYY")}{" "}
                         -{" "}
                         {item?.startTime &&
-                          moment.parseZone(item?.startTime).format("LT")}
+                          moment(item?.startTime).format("LT")}
                       </td>
                       <td>{item?.note}</td>
                       <td>{item?.clientNumber}</td>

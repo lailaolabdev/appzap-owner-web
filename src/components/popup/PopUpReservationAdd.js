@@ -6,28 +6,30 @@ import moment from "moment";
 
 const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
   const [startTime, setStartTime] = useState(
-    moment.parseZone(value?.startTime).format("H:mm")
+    moment(value?.startTime).format("HH:mm")
   );
   const [startDate, setStartDate] = useState(
-    moment.parseZone(value?.startTime).format("YYYY-MM-DD")
+    moment(value?.startTime).format("YYYY-MM-DD")
   );
   const handleClose = () => {
     setStartTime();
     setStartDate();
     onClose();
   };
-  // console.log(moment.parseZone(value?.startTime).format("H:mm"));
+  // console.log(moment(value?.startTime).format("H:mm"));
   useEffect(() => {
-    const _time = moment.parseZone(value?.startTime).format("H:mm");
-    setStartDate(moment.parseZone(value?.startTime).format("YYYY-MM-DD"));
+    const _time = moment(value?.startTime).format("HH:mm");
+    setStartDate(moment(value?.startTime).format("YYYY-MM-DD"));
     setStartTime(_time == "0:00" ? "12:00" : _time);
   }, [value]);
   return (
     <Modal show={open} onHide={handleClose}>
       <Modal.Header closeButton>ເພີ່ມການຈອງໂຕະ</Modal.Header>
       <Formik
+        enableReinitialize={true}
         initialValues={{
           ...value,
+          startTime: value?.startTime
         }}
         validate={(values) => {
           const errors = {};
@@ -37,7 +39,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
           if (values?.clientPhone < 1) {
             errors.clientPhone = "ກະລຸນາປ້ອນ...";
           }
-          if (values?.clientPhone?.length !== 8) {
+          if (values?.clientPhone?.length < 8) {
             errors.clientPhone = "ກະລຸນາປ້ອນ...";
           }
           if (isNaN(parseInt(values?.clientPhone))) {
@@ -55,20 +57,26 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
           if (isNaN(parseInt(values?.clientNumber))) {
             errors.clientNumber = "ກະລຸນາປ້ອນ...";
           }
-          if (!startTime) {
-            errors.startTime = "ກະລຸນາປ້ອນ...";
-          }
-          if (!startDate) {
-            errors.startDate = "ກະລຸນາປ້ອນ...";
-          }
 
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then(() => {
+          console.log("startDate", startDate + " " + startTime);
+          const _startTime = moment(
+            startDate + " " + startTime,
+            "YYYY-MM-DD HH:mm"
+          ).format();
+          const _value = { ...values, startTime: _startTime };
+          onSubmit(_value).then(() => {
+            console.log("test", moment(_startTime).format("YYYY-MM-DD HH:mm"));
+            console.log("HH:mm", moment(_startTime).format("HH:mm"));
+            console.log("YYYY-MM-DD", moment(_startTime).format("YYYY-MM-DD"));
             setStartTime();
             setStartDate();
             setSubmitting(false);
+            // {
+            //   ("YYYY-MM-DD HH:mm");
+            // }
           });
         }}
       >
@@ -131,17 +139,8 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                       value={startDate}
                       onChange={(e) => {
                         setStartDate(e.target.value);
-                        setFieldValue(
-                          "startTime",
-                          moment
-                            .parseZone(
-                              `${startDate} ${startTime}`,
-                              "YYYY-MM-DD HH:mm"
-                            )
-                            .format()
-                        );
                       }}
-                      isInvalid={errors.startDate}
+                      isInvalid={!startDate}
                       onBlur={handleBlur}
                     />
                   </div>
@@ -152,18 +151,9 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                       value={startTime}
                       onChange={(e) => {
                         setStartTime(e.target.value);
-                        setFieldValue(
-                          "startTime",
-                          moment
-                            .parseZone(
-                              `${startDate} ${startTime}`,
-                              "YYYY-MM-DD HH:mm"
-                            )
-                            .format()
-                        );
                       }}
                       onBlur={handleBlur}
-                      isInvalid={errors.startTime}
+                      isInvalid={!startTime}
                     />
                   </div>
                 </div>

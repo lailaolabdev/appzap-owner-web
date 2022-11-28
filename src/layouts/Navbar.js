@@ -5,13 +5,20 @@ import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
 import { USER_KEY, END_POINT, URL_PHOTO_AW3, VERSION } from "../constants";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ImageProfile from "../image/profile.png";
 import { Badge, Modal, Button, Table } from "react-bootstrap";
 import moment from "moment";
 import axios from "axios";
 import { SocketContext } from "../services/socket";
 import { socket } from "../services/socket";
+import { GiHamburgerMenu } from "react-icons/gi";
+import SideNav, {
+  Toggle,
+  NavItem,
+  NavIcon,
+  NavText,
+} from "@trendmicro/react-sidenav";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -55,7 +62,7 @@ export default function NavBar() {
           height: 64,
           position: "fixed",
           zIndex: 1,
-          marginLeft: 60,
+          // marginLeft: 60,
           paddingRight: 80,
         }}
         variant="dark"
@@ -65,8 +72,8 @@ export default function NavBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
           <p style={{ marginTop: 20 }}>Version:{VERSION}</p>
-          <div style={{ marginLeft: 20 }}></div>
-          <Image
+          {/* <div style={{ marginLeft: 20 }}></div> */}
+          {/* <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
             width={35}
             height={35}
@@ -76,7 +83,7 @@ export default function NavBar() {
             // onClick={handleShow}
           />
           <Badge variant="danger">{messageData ?? 0}</Badge>
-          <div style={{ marginLeft: 30 }}></div>
+          <div style={{ marginLeft: 30 }}></div> */}
           <Form inline>
             <Dropdown>
               <Dropdown.Toggle
@@ -101,7 +108,7 @@ export default function NavBar() {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            <Image
+            {/* <Image
               src={
                 userData?.data?.image
                   ? URL_PHOTO_AW3 + userData?.data?.image
@@ -110,7 +117,7 @@ export default function NavBar() {
               width={45}
               height={45}
               roundedCircle
-            />
+            /> */}
           </Form>
         </Navbar.Collapse>
       </Navbar>
