@@ -53,6 +53,13 @@ const Order = () => {
       }),
     []
   );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(WAITING_STATUS);
+      }),
+    []
+  );
   return (
     <div>
       <OrderNavbar />

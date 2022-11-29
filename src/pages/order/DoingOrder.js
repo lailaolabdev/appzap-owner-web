@@ -42,6 +42,13 @@ const Order = () => {
   }, [])
   useMemo(
     () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(DOING_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
       socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
         getOrderItemsStore(DOING_STATUS);
       }),
