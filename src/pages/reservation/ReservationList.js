@@ -19,20 +19,13 @@ import ButtonManamentReservation from "../../components/button/ButtonManamentRes
 import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
 import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
-import Box from "../../components/Box";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const params = useParams();
   const { storeDetail } = useStore();
   const storeId = storeDetail._id;
-  console.log(`RESERVATION:${storeDetail._id}`);
-
-  // const _limit = params.limit;
-  // const _page = params.page;
 
   //   state
   const [isLoading, setIsLoading] = useState(false);

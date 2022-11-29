@@ -31,12 +31,15 @@ import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBills } from "../../services/bill";
+import { useStore } from "../../store";
 
 function AddOrder() {
   const params = useParams();
   const navigate = useNavigate();
   const componentRef = useRef();
   const code = params?.code;
+  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -47,6 +50,8 @@ function AddOrder() {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
+
+  const { storeDetail } = useStore();
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -61,6 +66,18 @@ function AddOrder() {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}`;
+      findby += `&code=${code}`;
+      const data = await getBills(findby);
+      console.log("data", data);
+
+      setBillId(data?.[0]);
+    })();
   }, []);
 
   useEffect(() => {
