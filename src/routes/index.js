@@ -5,7 +5,8 @@ import { useRoutes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 import CheckBill from "../pages/Notification/CheckBill";
-import { BillForChef } from "../pages/bill/BillForChef";
+import BillForChef from "../pages/bill/BillForChef";
+import BillForCheckOut from "../pages/bill/BillForCheckOut";
 import Dashboard from "../pages/dashboard/Dashboard";
 // import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
@@ -52,7 +53,7 @@ function Router() {
     },
     {
       path: "/BillForChef",
-      element: <BillForChef />, //not work
+      element: <BillForChef/>, //not work
     },
     {
       path: "/dashboard/:storeId",
@@ -62,6 +63,10 @@ function Router() {
     //   path: "/dashboard-loyverse/:storeId",
     //   element: <DashboardLoyverse />,
     // },
+    {
+      path: "/BillForCheckOut",
+      element: <BillForCheckOut />
+    },
     {
       path: "/menus/:storeId/:tableId",
       element: <MenuListMobile />,
