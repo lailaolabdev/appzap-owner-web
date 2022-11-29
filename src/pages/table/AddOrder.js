@@ -163,23 +163,38 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     try {
+      const _storeId = userData?.data?.storeId;
+
+      let findby = "?";
+      findby += `storeId=${_storeId}`;
+      findby += `&code=${code}`;
+      findby += `&tableId=${tableId}`;
+      const _bills = await getBills(findby);
+      const _billId = _bills?.[0]?._id;
+      if (!_billId) {
+        Swal.fire({
+          icon: "error",
+          title: "ບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      const _body = {
+        orders: data,
+        storeId: _storeId,
+        tableId: tableId,
+        code: code,
+        billId: _billId,
+      };
       axios
-        .post(
-          END_POINT_SEVER + "/v3/admin/bill/create",
-          {
-            orders: data,
-            storeId: userData?.data?.storeId,
-            tableId: tableId,
-            code: code,
-          },
-          {
-            headers: headers,
-          }
-        )
+        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+          headers: headers,
+        })
         .then(async (response) => {
           if (response?.data) {
             await Swal.fire({
@@ -205,7 +220,13 @@ function AddOrder() {
           });
         });
     } catch (error) {
-      console.log("BBB", error);
+      console.log("error", error);
+      Swal.fire({
+        icon: "error",
+        title: "ບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1800,
+      });
     }
   };
 

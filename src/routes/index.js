@@ -216,6 +216,10 @@ function Router() {
       ],
     },
     {
+      path: "/testPrinter",
+      element: <DoingOrder />,
+    },
+    {
       path: "*",
       element: <h3>404</h3>,
     },
