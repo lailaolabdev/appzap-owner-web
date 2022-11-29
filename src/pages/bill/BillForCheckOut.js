@@ -257,6 +257,7 @@ const Price = styled.div`
 display: flex;
 `
 const Container = styled.div`
+margin: 10px;
 width: 80mm;
 `
 const Img = styled.div`
