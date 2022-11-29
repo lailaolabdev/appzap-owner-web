@@ -48,8 +48,8 @@ function Router() {
       element: <Login />,
     },
     {
-      path: "/CheckBillOut/:id",
-      element: <CheckBill />,
+      path: "/CheckBillOut/:billId",
+      element: <BillForCheckOut />,
     },
     {
       path: "/BillForChef",

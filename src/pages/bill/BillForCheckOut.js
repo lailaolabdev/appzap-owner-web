@@ -141,10 +141,51 @@
 //     }
 // }
 
-import React from 'react'
+// import React from 'react'
 import styled from 'styled-components'
+import axios from "axios";
+import { END_POINT_SEVER } from "../../constants/api";
+import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+
+
 
 export default function BillForCheckOut() {
+  const params = useParams();
+  const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
+    // const [post, setPost] = React.useState(null);
+
+    // React.useEffect(() => {
+    //   axios.get(baseURL).then((response) => {
+    //     setPost(response.data);
+    //   });
+    // }, []);
+    useEffect(() => {
+        getData();
+      }, []);
+    const getData = async () => {
+        setIsLoading(true);
+        const getDataDashBoard = await axios.get(
+          END_POINT_SEVER +
+            "/v3/bill/631574ba4c5dbf002a8620a2" +
+            params?.storeId ,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+          }
+        );
+        setData(getDataDashBoard?.data);
+        setIsLoading(false);
+      };
+      console.log(params.storeId);
+    //   console.log(storeId);
+
   return (
     <Container>
         <div style={{textAlign: "center" }}>
