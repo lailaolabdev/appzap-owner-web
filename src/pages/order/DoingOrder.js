@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Image } from "react-bootstrap";
 import moment from "moment";
@@ -18,7 +18,11 @@ import UpdateModal from "./component/UpdateModal";
 import { orderStatus } from "../../helpers";
 import { SERVE_STATUS, END_POINT, DOING_STATUS } from "../../constants";
 import { useStore } from "../../store";
+import { socket } from "../../services/socket";
+
 const Order = () => {
+  const { storeDetail } = useStore();
+  const storeId = storeDetail._id; 
   /**
      * routes
      */
@@ -36,6 +40,13 @@ const Order = () => {
   useEffect(() => {
     getOrderItemsStore(DOING_STATUS)
   }, [])
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(DOING_STATUS);
+      }),
+    []
+  );
   return (
     <div>
       <OrderNavbar />

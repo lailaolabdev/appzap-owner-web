@@ -16,7 +16,7 @@ import { socket } from "../../../services/socket";
 
 export default function OrderNavbar() {
   const { storeDetail } = useStore();
-  const storeId = storeDetail._id;
+  const storeId = storeDetail._id; 
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -24,23 +24,22 @@ export default function OrderNavbar() {
 
   const [popup, setPopup] = useState({
     cancel: false,
-    
   });
+  const fetchData = async () => {
+    const _localData = await getLocalData();
+    if (_localData) {
+      setgetTokken(_localData);
+    }
+  };
 
   const [getTokken, setgetTokken] = useState();
   useEffect(() => {
-    const fetchData = async () => {
-      const _localData = await getLocalData();
-      if (_localData) {
-        setgetTokken(_localData);
-      }
-    };
     fetchData();
   }, []);
   useMemo(
     () =>
       socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        console.log("first");
+        getOrderItemsStore(WAITING_STATUS);
       }),
     []
   );
@@ -54,6 +53,7 @@ export default function OrderNavbar() {
     navigate(`/orders/served/pagenumber/1/${getTokken?.DATA?.storeId}`);
   };
   const handleUpdateOrderStatus = async (status,) => {
+    getOrderItemsStore(WAITING_STATUS);
     const storeId = getTokken?.DATA?.storeId;
     let previousStatus = orderItems[0].status;
     let menuId;
@@ -62,14 +62,12 @@ export default function OrderNavbar() {
         status: status,
         _id: i?._id,
         menuId: i?.menuId
-
       }
     })
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    console.log(storeId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
-      setOrderItems(_newOrderItem)
+      // setOrderItems(_newOrderItem)
       if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
       Swal.fire({
         icon: 'success',
@@ -77,12 +75,38 @@ export default function OrderNavbar() {
         showConfirmButton: false,
         timer: 2000
       })
-
     }
-
   };
 
   const handleUpdateOrderStatusgo = async (status,) => {
+    getOrderItemsStore(WAITING_STATUS);
+    const storeId = getTokken?.DATA?.storeId;
+    let previousStatus = orderItems[0].status;
+    let menuId;
+    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
+    console.log(i?._id);
+      return {
+        status: status,
+        _id: i?._id,
+        menuId: i?.menuId
+      }
+    })
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+      let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+      // setOrderItems(_newOrderItem)
+      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
+      Swal.fire({
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+  };
+
+  const handleUpdateOrderStatuscancel = async (status,) => {
+    getOrderItemsStore(WAITING_STATUS);
     const storeId = getTokken?.DATA?.storeId;
     let previousStatus = orderItems[0].status;
     let menuId;
@@ -91,14 +115,12 @@ export default function OrderNavbar() {
         status: status,
         _id: i?._id,
         menuId: i?.menuId
-
       }
     })
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    console.log(storeId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
-      setOrderItems(_newOrderItem)
+      // setOrderItems(_newOrderItem)
       if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
       Swal.fire({
         icon: 'success',
@@ -112,7 +134,7 @@ export default function OrderNavbar() {
 
   return (
     <div>
-      <div style={{ backgroundColor: "#f8f8f8", border: "none" }}>
+      <div style={{ backgroundColor: "#f8f8f8", border: "none", }}>
         <Nav
           variant="tabs"
           defaultActiveKey={location?.pathname}
@@ -120,38 +142,42 @@ export default function OrderNavbar() {
             fontWeight: "bold",
             backgroundColor: "#f8f8f8",
             border: "none",
+            justifyContent: "space-between"
+
           }}
         >
-          <Nav.Item>
-            <Nav.Link
-              eventKey={`/orders/pagenumber/1/` + params?.id}
-              style={{ color: "#FB6E3B", border: "none" }}
-              onClick={() => _order()}
-            >
-              ອໍເດີ້ເຂົ້າ
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey={`/orders/doing/pagenumber/1/` + params?.id}
-              style={{ color: "#FB6E3B", border: "none" }}
-              onClick={() => _doing()}
-            >
-              ກຳລັງເຮັດ
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey={`/orders/served/pagenumber/1/` + params?.id}
-              style={{ color: "#FB6E3B", border: "none" }}
-              onClick={() => _served()}
-            >
-              ເສີບແລ້ວ
-            </Nav.Link>
-          </Nav.Item>
+          <div style={{ display: "flex" }}>
+            <Nav.Item>
+              <Nav.Link
+                eventKey={`/orders/pagenumber/1/` + params?.id}
+                style={{ color: "#FB6E3B", border: "none" }}
+                onClick={() => _order()}
+              >
+                ອໍເດີ້ເຂົ້າ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey={`/orders/doing/pagenumber/1/` + params?.id}
+                style={{ color: "#FB6E3B", border: "none" }}
+                onClick={() => _doing()}
+              >
+                ກຳລັງເຮັດ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey={`/orders/served/pagenumber/1/` + params?.id}
+                style={{ color: "#FB6E3B", border: "none" }}
+                onClick={() => _served()}
+              >
+                ເສີບແລ້ວ
+              </Nav.Link>
+            </Nav.Item>
+          </div>
           <div style={{ display: "flex", justifyContent: "space-between ", padding: "10px", }}>
             <div>
-              <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }} onClick={() => setPopup({cancel: true})} >ຍົກເລີກ</button>
+              <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatuscancel("CANCEL")} >ຍົກເລີກ</button>
             </div>
             <div style={{ width: "10px" }}></div>
 
@@ -166,8 +192,8 @@ export default function OrderNavbar() {
           </div>
         </Nav>
       </div>
-      <PopupCancle open={popup?.cancel}/>
-      
+      <PopupCancle open={popup?.cancel} onClose={()=> setPopup()} onSubmit={()=> setPopup()}/>
+
     </div>
   );
 }

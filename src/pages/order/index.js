@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Image } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
@@ -23,6 +23,8 @@ import { useStore } from "../../store";
 import empty from "../../image/empty.png";
 import ReactAudioPlayer from "react-audio-player";
 import Notification from "../../vioceNotification/ding.mp3";
+import { socket } from "../../services/socket";
+
 
 const Order = () => {
   const componentRef = useRef();
@@ -39,9 +41,18 @@ const Order = () => {
   /**
    * Initial Component
    */
+   const { storeDetail } = useStore();
+   const storeId = storeDetail._id; 
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS);
   }, []);
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(WAITING_STATUS);
+      }),
+    []
+  );
   return (
     <div>
       <OrderNavbar />
