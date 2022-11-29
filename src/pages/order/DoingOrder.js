@@ -38,12 +38,19 @@ const Order = () => {
 
   const [updateModal, setUpdateModal] = useState(false);
   useEffect(() => {
-    getOrderItemsStore(DOING_STATUS)
+    getOrderItemsStore(SERVE_STATUS)
   }, [])
   useMemo(
     () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
         getOrderItemsStore(DOING_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(SERVE_STATUS);
       }),
     []
   );
