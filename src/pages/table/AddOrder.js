@@ -204,7 +204,14 @@ function AddOrder() {
               timer: 1800,
             });
             if (isPrinted) {
-              await document.getElementById("btnPrint").click();
+              const _body = {
+                config: {
+                  ip: "192.168.100.236",
+                  port: 9100,
+                },
+                text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
+              };
+              await axios.post("http://localhost:9150/ethernet/text", _body);
             }
             navigate(
               `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
