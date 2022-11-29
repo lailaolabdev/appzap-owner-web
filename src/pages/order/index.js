@@ -44,19 +44,19 @@ const Order = () => {
    const { storeDetail } = useStore();
    const storeId = storeDetail._id; 
   useEffect(() => {
-    getOrderItemsStore(DOING_STATUS);
+    getOrderItemsStore(WAITING_STATUS);
   }, []);
   useMemo(
     () =>
       socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
+        getOrderItemsStore(WAITING_STATUS);
       }),
     []
   );
   useMemo(
     () =>
       socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
+        getOrderItemsStore(WAITING_STATUS);
       }),
     []
   );
