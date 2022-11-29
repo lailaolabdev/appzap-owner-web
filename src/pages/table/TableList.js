@@ -261,9 +261,10 @@ export default function TableList() {
         headers: headers,
       });
       setOpenModalSetting(false);
-      if (updateTable?.data) {
+      if (updateTable.status < 300) {
         setSelectedTable();
-        setTableList(updateTable?.data);
+        getTableDataStore();
+        // setTableList(updateTable?.data);
         successAdd("ການປິດໂຕະສຳເລັດ");
       }
     } catch (err) {
@@ -319,7 +320,6 @@ export default function TableList() {
         setStore(json);
       });
   };
-  console.log("tableList===>", tableList);
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -358,17 +358,24 @@ export default function TableList() {
           <div style={half_backgroundColor}>
             <Container>
               <div style={{ height: 10 }}></div>
-              <Row>
+              <div
+                style={{
+                  display: "grid",
+                  gap: 5,
+                  gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                }}
+              >
                 {tableList &&
                   tableList.map((table, index) => (
-                    <div className="card" key={"table" + index}>
-                      <Button
-                        key={index}
+                    <div
+                      style={{ border: "1px solid #FB6E3B" }}
+                      key={"table" + index}
+                    >
+                      <div
                         style={{
-                          width: 250,
-                          height: 250,
+                          width: "100%",
+                          height: "100%",
                           border: "none",
-                          outlineColor: "#FB6E3B",
                           backgroundColor: table?.isStaffConfirm
                             ? "#FB6E3B"
                             : "white",
@@ -376,6 +383,11 @@ export default function TableList() {
                             selectedTable?.tableName == table?.tableName
                               ? "2px solid #FB6E3B"
                               : "2px solid  white",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          textAlign: "center",
+                          padding: 10,
                         }}
                         className={
                           table?.isOpened && !table?.isStaffConfirm
@@ -397,46 +409,24 @@ export default function TableList() {
                           }}
                         ></div>
                         <div>
-                          <span style={{ fontSize: 20 }}>
-                            <div
-                              style={{
-                                color: table?.staffConfirm
-                                  ? "white"
-                                  : "#616161",
-                                fontWeight: "bold",
-                                fontSize: 20,
-                              }}
-                            >
-                              {table?.tableName}
-                            </div>
-                            <div
-                              style={{
-                                color: table?.staffConfirm
-                                  ? "white"
-                                  : "#616161",
-                                fontWeight: "bold",
-                                fontSize: 20,
-                              }}
-                            >
-                              {table?.code}
-                            </div>
-                            <div
-                              style={{
-                                color: table?.staffConfirm
-                                  ? "white"
-                                  : "#616161",
-                                fontWeight: "bold",
-                                fontSize: 20,
-                              }}
-                            >
+                          <span
+                            style={{
+                              fontSize: 16,
+                              color: table?.staffConfirm ? "white" : "#616161",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            <div>{table?.tableName}</div>
+                            <div>{table?.code}</div>
+                            <div>
                               {table?.isStaffConfirm ? "ມິແຂກ" : "ວ່າງ"}
                             </div>
                           </span>
                         </div>
-                      </Button>
+                      </div>
                     </div>
                   ))}
-              </Row>
+              </div>
             </Container>
           </div>
           {/* Detail Table */}
@@ -536,9 +526,60 @@ export default function TableList() {
                         style={{ display: "flex", justifyContent: "center" }}
                       >
                         <div style={{}}>
-                          {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={()=>_openModalSetting(selectedTable)}><FontAwesomeIcon icon={faWindowClose} style={{ color: "#fff", marginRight: 10 }} />ປິດໂຕະ</Button> */}
-                          {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={handleShow}><FontAwesomeIcon icon={faRetweet} style={{ color: "#fff", marginRight: 10 }} />ລວມໂຕະ</Button> */}
-                          {/* <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _onAddDiscount()}><FontAwesomeIcon icon={faPercent} style={{ color: "#fff" }} /> ເພີ່ມສ່ວນຫຼຸດ</Button> */}
+                          <Button
+                            variant="light"
+                            className="hover-me"
+                            style={{
+                              marginRight: 15,
+                              backgroundColor: "#FB6E3B",
+                              color: "#ffffff",
+                              fontWeight: "bold",
+                              height: 60,
+                            }}
+                            onClick={() => _openModalSetting(selectedTable)}
+                          >
+                            {/* <FontAwesomeIcon
+                              icon={faWindowClose}
+                              style={{ color: "#fff", marginRight: 10 }}
+                            /> */}
+                            ປິດໂຕະ
+                          </Button>
+                          <Button
+                            variant="light"
+                            className="hover-me"
+                            style={{
+                              marginRight: 15,
+                              backgroundColor: "#FB6E3B",
+                              color: "#ffffff",
+                              fontWeight: "bold",
+                              height: 60,
+                            }}
+                            onClick={handleShow}
+                          >
+                            <FontAwesomeIcon
+                              // icon={faRetweet}
+                              style={{ color: "#fff", marginRight: 10 }}
+                            />
+                            ລວມໂຕະ
+                          </Button>
+                          {/* <Button
+                            variant="light"
+                            className="hover-me"
+                            style={{
+                              marginRight: 15,
+                              backgroundColor: "#FB6E3B",
+                              color: "#ffffff",
+                              fontWeight: "bold",
+                              height: 60,
+                            }}
+                            onClick={() => _onAddDiscount()}
+                          >
+                            <FontAwesomeIcon
+                              // icon={faPercent}
+                              style={{ color: "#fff" }}
+                            />{" "}
+                            ເພີ່ມສ່ວນຫຼຸດ
+                          </Button> */}
                           <Button
                             variant="light"
                             className="hover-me"
@@ -565,14 +606,36 @@ export default function TableList() {
                         <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
                       </div> */}
                         </div>
-                        {/* <div>
-                      <Button variant="light" className="hover-me" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }} onClick={() => _goToAddOrder(selectedTable?.tableId, selectedTable?.code, selectedTable?._id)}>+ ເພີ່ມອໍເດີ</Button>
-                    </div> */}
+                        <div>
+                          <Button
+                            variant="light"
+                            className="hover-me"
+                            style={{
+                              backgroundColor: "#FB6E3B",
+                              color: "#ffffff",
+                              fontWeight: "bold",
+                              height: 60,
+                            }}
+                            onClick={() =>
+                              _goToAddOrder(
+                                selectedTable?.tableId,
+                                selectedTable?.code,
+                                selectedTable?._id
+                              )
+                            }
+                          >
+                            + ເພີ່ມອໍເດີ
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    {/* <div style={{ height: 20 }}></div> */}
-                    {/* <div style={{ display: _orderIsChecked() ? "none" : 'flex'}}>ອັບເດດເປັນສະຖານະ: </div> */}
-                    {/* <div style={{ height: 20 }}></div> */}
+                    <div style={{ height: 20 }}></div>
+                    <div
+                      style={{ display: _orderIsChecked() ? "none" : "flex" }}
+                    >
+                      ອັບເດດເປັນສະຖານະ:
+                    </div>
+                    <div style={{ height: 20 }}></div>
                     <div
                       style={{
                         display: _orderIsChecked() ? "none" : "flex",

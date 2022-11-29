@@ -10,6 +10,7 @@ import { USER_KEY } from './index'
 export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
 export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
 
+
 export const getLocalData = async () => {
     const _local = await localStorage.getItem(USER_KEY);
     const _localJson2 = await JSON.parse(_local);
@@ -17,6 +18,7 @@ export const getLocalData = async () => {
     const TOKEN = { authorization: "AppZap " + _localJson2?.accessToken }
     return { TOKEN, DATA };
 }
+
 // =====>>>>
 export const USERS = END_POINT_SEVER + '/v3/users'
 export const USER = END_POINT_SEVER + '/user'

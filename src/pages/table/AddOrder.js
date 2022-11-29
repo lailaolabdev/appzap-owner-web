@@ -31,12 +31,15 @@ import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBills } from "../../services/bill";
+import { useStore } from "../../store";
 
 function AddOrder() {
   const params = useParams();
   const navigate = useNavigate();
   const componentRef = useRef();
   const code = params?.code;
+  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -47,6 +50,8 @@ function AddOrder() {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
+
+  const { storeDetail } = useStore();
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -61,6 +66,18 @@ function AddOrder() {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}`;
+      findby += `&code=${code}`;
+      const data = await getBills(findby);
+      console.log("data", data);
+
+      setBillId(data?.[0]);
+    })();
   }, []);
 
   useEffect(() => {
@@ -146,23 +163,38 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     try {
+      const _storeId = userData?.data?.storeId;
+
+      let findby = "?";
+      findby += `storeId=${_storeId}`;
+      findby += `&code=${code}`;
+      findby += `&tableId=${tableId}`;
+      const _bills = await getBills(findby);
+      const _billId = _bills?.[0]?._id;
+      if (!_billId) {
+        Swal.fire({
+          icon: "error",
+          title: "ບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      const _body = {
+        orders: data,
+        storeId: _storeId,
+        tableId: tableId,
+        code: code,
+        billId: _billId,
+      };
       axios
-        .post(
-          END_POINT_SEVER + "/v3/admin/bill/create",
-          {
-            orders: data,
-            storeId: userData?.data?.storeId,
-            tableId: tableId,
-            code: code,
-          },
-          {
-            headers: headers,
-          }
-        )
+        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+          headers: headers,
+        })
         .then(async (response) => {
           if (response?.data) {
             await Swal.fire({
@@ -188,7 +220,13 @@ function AddOrder() {
           });
         });
     } catch (error) {
-      console.log("BBB", error);
+      console.log("error", error);
+      Swal.fire({
+        icon: "error",
+        title: "ບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1800,
+      });
     }
   };
 

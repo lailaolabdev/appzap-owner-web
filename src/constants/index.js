@@ -26,8 +26,8 @@ export const ALL_STATUS = [
 export const COLOR_APP = "#FB6E3B";
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {
-  paddingLeft: 55,
-  paddingTop: 20,
+    // paddingLeft: 55,
+    // paddingTop: 20,
   backgroundColor: "#F9F9F9",
   width: "100%",
 };

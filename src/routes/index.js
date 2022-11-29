@@ -116,9 +116,15 @@ function Router() {
           element: <CanceledOrder />,
         },
         {
+          path: "/tables",
+          element: <Table />,
+        },
+        // ຢຸດໃຊ້ເວຊັ້ນ v6^--------->
+        {
           path: "/tables/pagenumber/:number/tableid/:tableId/:storeId",
           element: <Table />,
         },
+        // <------------------ ||
         {
           path: "/addOrder/tableid/:tableId/code/:code",
           element: <AddOrder />,
@@ -213,6 +219,10 @@ function Router() {
         },
         MenuRoutes,
       ],
+    },
+    {
+      path: "/testPrinter",
+      element: <DoingOrder />,
     },
     {
       path: "*",

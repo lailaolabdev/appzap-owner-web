@@ -121,15 +121,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "orders") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
-        if (selected === "tables") {
-          selected =
-            selected +
-            "/pagenumber/" +
-            1 +
-            "/tableid/00" +
-            "/" +
-            storeDetail?._id;
-        }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
