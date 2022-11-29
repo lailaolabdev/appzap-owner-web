@@ -1,36 +1,36 @@
 import React from 'react'
-import moment from "moment";
-export class BillForChef extends React.PureComponent {
-    render() {
-        let newData = this.props.newData;
-        return (
-            <div className="col-12 center">
-                {newData?.map((item, index) => {
-                    return (
-                        <div style={{ paddingLeft: 20, paddingRight: 20, color: "#000000", fontSize: 18 }}>
-                            <table style={{ width: '40%', fontSize: "18px", color: "#000000" }}>
-                                <tr style={{ fontSize: "20px", color: "#000000" }}>
-                                    <td>ຊື່ເມນູ : {item?.name}</td>
-                                    <td>ເວລາ : {moment(item?.createdAt).format("HH:mm")}</td>
-                                </tr>
-                                <tr style={{ fontSize: "20px", color: "#000000" }}>
-                                    <td>ຈຳນວນ :  {item?.quantity}</td>
-                                    <td>ລະຫັດ :  {item?.orderId?.table_id}</td>
-                                </tr>
-                                <tr style={{ fontSize: "20px", color: "#000000" }}>
-                                    <td>ຄອມເມັ້ນ : {item?.note}</td>
-                                </tr>
-                            </table>
-                            <hr style={{
-                                color: "#000000",
-                                height: 2,
-                                borderTop: "solid 5px #000000"
-                            }} />
-                        </div>
-                    )
-                }
-                )}
-            </div>
-        )
-    }
+import styled from 'styled-components'
+
+export default function BillForChef() {
+  return (
+    <Container>
+        <div style={{textAlign: "center" }}>
+        <h1>Table3</h1>
+        </div>
+        <div style={{textAlign: "center" }}>
+            <p>ວັນທີ: 29/11/2022 15:35:00</p>
+        </div>
+        <div style={{textAlign: "center" }}>
+        <h3>Beerlao</h3>
+        </div>
+        <hr></hr>
+
+    </Container>
+  )
 }
+
+// const Name = styled.div`
+// display: grid;
+// grid-template-columns: 1fr 1fr 1fr 1fr;
+// `
+// const Price = styled.div`
+// display: flex;
+// `
+const Container = styled.div`
+width: 80mm;
+`
+// const Img = styled.div`
+// width: 90px;
+// height: 90px;
+// `
+
