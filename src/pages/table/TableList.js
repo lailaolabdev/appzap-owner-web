@@ -32,8 +32,8 @@ import OrderCheckOut from "./components/OrderCheckOut";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
-import { BillForChef } from "../bill/BillForChef";
-import { BillForCheckOut } from "../bill/BillForCheckOut";
+import { BillForChef } from "../../components/bill/BillForChef";
+import { BillForCheckOut } from "../../components/bill/BillForCheckOut";
 import { STORE } from "../../constants/api";
 
 /**

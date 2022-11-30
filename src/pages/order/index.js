@@ -7,7 +7,7 @@ import moment from "moment";
  * import components
  */
 import OrderNavbar from "./component/OrderNavbar";
-import { BillForChef } from "../bill/BillForChef";
+import { BillForChef } from "../../components/bill/BillForChef";
 /**
  * import function
  */

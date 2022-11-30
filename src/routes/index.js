@@ -5,8 +5,8 @@ import { useRoutes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 import CheckBill from "../pages/Notification/CheckBill";
-import BillForChef from "../pages/bill/BillForChef";
-import BillForCheckOut from "../pages/bill/BillForCheckOut";
+import BillForChef from "../components/bill/BillForChef";
+import BillForCheckOut from "../components/bill/BillForCheckOut";
 import Dashboard from "../pages/dashboard/Dashboard";
 // import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
