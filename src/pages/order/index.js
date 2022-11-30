@@ -60,6 +60,7 @@ const Order = () => {
       }),
     []
   );
+  
   return (
     <div>
       <OrderNavbar />
