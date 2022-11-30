@@ -30,6 +30,8 @@ import OrderCheckOut from "./components/OrderCheckOut";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
+import { BillForChef } from "../../components/bill/BillForChef80";
+import { BillForCheckOut } from "../../components/bill/BillForCheckOut80";
 import { STORE } from "../../constants/api";
 import { socket } from "../../services/socket";
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-export default function BillForChef() {
+export default function BillForChef80() {
   return (
     <Container>
         <div style={{textAlign: "center" }}>
@@ -19,18 +19,8 @@ export default function BillForChef() {
   )
 }
 
-// const Name = styled.div`
-// display: grid;
-// grid-template-columns: 1fr 1fr 1fr 1fr;
-// `
-// const Price = styled.div`
-// display: flex;
-// `
 const Container = styled.div`
 width: 80mm;
 `
-// const Img = styled.div`
-// width: 90px;
-// height: 90px;
-// `
+
 
