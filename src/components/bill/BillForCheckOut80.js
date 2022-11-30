@@ -8,39 +8,13 @@ import { getHeaders } from '../../services/auth';
 
 
 
-export default function BillForCheckOut() {
-  const params = useParams();
-  const [data, setData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-//   useEffect(() => {
-//       axios.get('/v3/bill/631574ba4c5dbf002a8620a2')
-//       .then(res => setdata(res.data))
-//     }, []);
-//     console.log(data)
-
-
-const getData = async () => {
-    const _header = getHeaders();
-    const getDataBill = await axios.get(
-      END_POINT_SEVER +
-      "/v3/bill/631574ba4c5dbf002a8620a2" ,
-      {
-        headers: _header
-      }
-    );
-    setData(getDataBill?.data);
-    console.log(_header);
-  };
+export default function BillForCheckOut80({billData}) {
+  
 
   return (
     <Container>
         <div style={{textAlign: "center" }}>
-        <h1>Lailaolab</h1>
+        <h1>{billData?.store?.name}</h1>
         </div>
         <hr></hr>
         <div style={{textAlign: "center" }}>

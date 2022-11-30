@@ -16,7 +16,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { END_POINT, COLOR_APP } from '../../constants'
 import AnimationLoading from "../../constants/loading"
 import axios from 'axios';
-import  BillForCheckOut  from '../../components/bill/BillForCheckOut';
+import  BillForCheckOut  from '../../components/bill/BillForCheckOut80';
 import { STORE, getLocalData } from '../../constants/api'
 
 

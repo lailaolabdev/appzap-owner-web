@@ -5,8 +5,10 @@ import { useRoutes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 import CheckBill from "../pages/Notification/CheckBill";
-import BillForChef from "../components/bill/BillForChef";
-import BillForCheckOut from "../components/bill/BillForCheckOut";
+import BillForChef80 from "../components/bill/BillForChef80";
+import BillForCheckOut80 from "../components/bill/BillForCheckOut80";
+import BillForCheckOut58 from "../components/bill/BillForCheckOut58";
+import BillForChef58 from "../components/bill/BillForChef58";
 import Dashboard from "../pages/dashboard/Dashboard";
 // import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
@@ -49,12 +51,17 @@ function Router() {
     },
     {
       path: "/CheckBillOut/:billId",
-      element: <BillForCheckOut />,
+      element: <BillForCheckOut80 />,
     },
     {
       path: "/BillForChef",
-      element: <BillForChef/>, //not work
+      element: <BillForChef80/>, //not work
     },
+    {
+      path: "/BillForChef",
+      element: <BillForChef58/>, //not work
+    },
+
     {
       path: "/dashboard/:storeId",
       element: <Dashboard />,
@@ -64,8 +71,12 @@ function Router() {
     //   element: <DashboardLoyverse />,
     // },
     {
-      path: "/BillForCheckOut",
-      element: <BillForCheckOut />
+      path: "/BillForCheckOut80",
+      element: <BillForCheckOut80 />
+    },
+    {
+      path: "/BillForCheckOut80",
+      element: <BillForCheckOut58 />
     },
     {
       path: "/menus/:storeId/:tableId",
