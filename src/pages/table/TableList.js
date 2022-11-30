@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   Row,
   Modal,
@@ -9,8 +9,6 @@ import {
   Col,
   Table,
 } from "react-bootstrap";
-import { Checkbox } from "@material-ui/core";
-import ReactToPrint from "react-to-print";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCashRegister,
@@ -35,6 +33,7 @@ import { orderStatus, moneyCurrency } from "../../helpers";
 import { BillForChef } from "../../components/bill/BillForChef80";
 import { BillForCheckOut } from "../../components/bill/BillForCheckOut80";
 import { STORE } from "../../constants/api";
+import { socket } from "../../services/socket";
 
 /**
  * const
@@ -95,9 +94,13 @@ export default function TableList() {
     onChangeMenuCheckbox,
     handleUpdateTableOrderStatus,
     resetTableOrder,
+    initialTableSocket,
+    storeDetail,
+    getTableOrders,
   } = useStore();
 
   useEffect(() => {
+    initialTableSocket();
     getTableDataStore();
   }, []);
   useEffect(() => {
@@ -132,34 +135,8 @@ export default function TableList() {
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
   };
-  const _onAddDiscount = async () => {
-    setModalAddDiscount(true);
-  };
   const _goToAddOrder = (tableId, code) => {
     navigate(`/addOrder/tableid/${tableId}/code/${code}`);
-  };
-  const convertTableStatus = (_table) => {
-    if (
-      _table?.isOpened &&
-      _table?.isStaffConfirm &&
-      _table?.statusBill === "ACTIVE"
-    )
-      return <div style={{ color: "green" }}>ເປີດແລ້ວ</div>;
-    else if (
-      _table?.isOpened &&
-      !_table?.isStaffConfirm &&
-      _table?.statusBill === "ACTIVE"
-    )
-      return <div style={{ color: "#fff" }}>ລໍຖ້າຢືນຢັນ</div>;
-    else if (
-      !_table?.isOpened &&
-      !_table?.isStaffConfirm &&
-      _table?.statusBill === "ACTIVE"
-    )
-      return <div style={{ color: "#eee" }}>ວ່າງ</div>;
-    else if (_table?.statusBill === "CALL_TO_CHECKOUT")
-      return <div style={{ color: "#fff" }}>ຕ້ອງການເຊັກບີນ</div>;
-    else return "-";
   };
 
   useEffect(() => {
@@ -320,6 +297,20 @@ export default function TableList() {
         setStore(json);
       });
   };
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        setSelectedTable();
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        setSelectedTable();
+      }),
+    []
+  );
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}

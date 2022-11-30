@@ -28,22 +28,18 @@ export const useTableState = () => {
     () => async () => {
       let _userData = await getLocalData();
       socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
-        let _openTable = data.filter((table) => {
-          return table.isOpened && !table.isStaffConfirm;
-        });
-        setOpenTableData(_openTable);
-        setTableList(data);
+        getTableDataStore();
         getTableOrders(selectedTable);
       });
-      socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-        getTableDataStore();
-        Swal.fire({
-          icon: "success",
-          title: "ມີການແຈ້ງເກັບເງິນ",
-          showConfirmButton: false,
-          timer: 10000,
-        });
-      });
+      // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
+      //   getTableDataStore();
+      //   Swal.fire({
+      //     icon: "success",
+      //     title: "ມີການແຈ້ງເກັບເງິນ",
+      //     showConfirmButton: false,
+      //     timer: 10000,
+      //   });
+      // });
     },
     []
   );
