@@ -5,88 +5,104 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { getHeaders } from '../../services/auth';
+import moment from "moment";
+import { moneyCurrency } from "../../helpers/index";
+import { useStore } from "../../store";
 
 
 
-export default function BillForCheckOut58() {
+
+
+
+export default function BillForCheckOut58({ storeDetail, selectedTable, dataBill, }) {
   const params = useParams();
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-//   useEffect(() => {
-//     getData();
-//   }, []);
+  const [total, setTotal] = useState();
 
-// const getData = async () => {
-//     const _header = getHeaders();
-//     const getDataBill = await axios.get(
-//       END_POINT_SEVER +
-//       "/v3/bill/631574ba4c5dbf002a8620a2" ,
-//       {
-//         headers: _header
-//       }
-//     );
-//     setData(getDataBill?.data);
-//     console.log(_header);
-//   };
+  const { callingCheckOut } = useStore();
+  useEffect(() => {
+    _calculateTotal();
+
+  }, [dataBill]);
+
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let _data of dataBill?.orderId || []) {
+      _total += _data?.quantity * _data?.price
+
+    }
+    setTotal(_total);
+  };
+
 
   return (
     <Container>
-        <div style={{textAlign: "center" }}>
-        <h1>Lailaolab</h1>
-        </div>
-        <hr></hr>
-        <div style={{textAlign: "center" }}>
-        <h3>Table3</h3>
-        </div>
-        <hr></hr>
-        <Price>
+      <div style={{ textAlign: "center" }}>
+        <h1>{storeDetail?.name}</h1>
+      </div>
+      <hr></hr>
+      <div style={{ textAlign: "center" }}>
+        <h3>{selectedTable?.tableName}</h3>
+      </div>
+      <hr></hr>
+      <Price>
         <div>
-        <p>ເບີໂທ: 02098877117</p>
-        <p>Whatapp: 02098877117</p>
-        <p>ລະຫັດໂຕະ: 123456</p>
-        <p>ວັນທີ: 29-11-2022</p>
+          <p>ເບີໂທ: {storeDetail?.phone}</p>
+          <p>Whatapp: {storeDetail?.whatsapp}</p>
+          <p>ລະຫັດໂຕະ: {dataBill?.code}</p>
+          <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
         </div>
-        <div style={{flexGrow: 1}}></div>
+        <div style={{ flexGrow: 1 }}></div>
         <Img>
-            <img src="https://chart.googleapis.com/chart?cht=qr&chl=angie&chs=500x500&choe=UTF-8" style={{wifth: "100%" ,height: "100%"}}/>
+          <img src="https://chart.googleapis.com/chart?cht=qr&chl=angie&chs=500x500&choe=UTF-8" style={{ wifth: "100%", height: "100%" }} />
         </Img>
-        </Price>
-        <hr></hr>
-        <Name>
-            <p>ລາຍການ</p>
-            <p>ຈຳນວນ</p>
-            <p>ລາຄາ</p>
-            <p>ລວມ</p>
-        </Name>
-        <hr></hr>
-        <Name>
-            <p>beerlao</p>
-            <p>4</p>
-            <p>20,000</p>
-            <p>80,000</p>
-        </Name>
-        <hr></hr>
-        <Price>
-            <div style={{flexGrow: 1}}></div>
-            <div>
-            <p>ລວມ: 80,000 ກີບ</p>
-            <p>ສ່ວນຫຼຸດ(ກີບ) 0</p>
-            </div>
-        </Price>
-        <hr></hr>
-        <Price>
-            <div style={{flexGrow: 1}}></div>
-            <h6>ເງິນທີ່ຕ້ອງຊຳລະ 100,000 ກີບ</h6>
-        </Price>
-        <hr></hr>
-        <Price>
-            <div style={{flexGrow: 1}}></div>
-            <div>
-            <p>ຮັບເງີນມາ 0</p>
-            <p>ເງີນທອນ 0</p>
-            </div>
-        </Price>
+      </Price>
+      <hr></hr>
+      <Name>
+        <p>ລາຍການ</p>
+        <p>ຈຳນວນ</p>
+        <p>ລາຄາ</p>
+        <p>ລວມ</p>
+      </Name>
+      <hr></hr>
+      <Order>
+        {
+          dataBill?.orderId?.map((item, index) => {
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
+                <p>{item?.name}</p>
+                <p>{item?.quantity}</p>
+                <p>{item?.price}</p>
+                <p>{item?.price ? moneyCurrency(item?.price * item?.quantity) : "-"}</p>
+              </div>
+            )
+          }
+          )
+        }
+      </Order>
+      <hr></hr>
+      <Price>
+        <div style={{ flexGrow: 1 }}></div>
+        <div>
+          <p>ລວມ: {moneyCurrency(total)} ກີບ</p>
+          <p>ສ່ວນຫຼຸດ(ກີບ) 0</p>
+        </div>
+      </Price>
+      <hr></hr>
+      <Price>
+        <div style={{ flexGrow: 1 }}></div>
+        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
+      </Price>
+      <hr></hr>
+      <Price>
+        <div style={{ flexGrow: 1 }}></div>
+        <div>
+          <p>ຮັບເງີນມາ 0</p>
+          <p>ເງີນທອນ 0</p>
+        </div>
+      </Price>
 
 
     </Container>
@@ -107,4 +123,8 @@ width: 58mm;
 const Img = styled.div`
 width: 90px;
 height: 90px;
+`
+const Order = styled.div`
+display: flex;
+flex-direction: column;
 `

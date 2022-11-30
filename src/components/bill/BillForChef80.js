@@ -1,19 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
+import moment from "moment";
 
-export default function BillForChef80() {
+
+export default function BillForChef80({ storeDetail, selectedTable, dataBill }) {
   return (
     <Container>
-        <div style={{textAlign: "center" }}>
-        <h1>Table3</h1>
-        </div>
-        <div style={{textAlign: "center" }}>
-            <p>ວັນທີ: 29/11/2022 15:35:00</p>
-        </div>
-        <div style={{textAlign: "center" }}>
-        <h3>Beerlao</h3>
-        </div>
-        <hr></hr>
+      <div style={{ textAlign: "center" }}>
+        <h1>{selectedTable?.tableName}</h1>
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
+      </div>
+      <div style={{ textAlign: "center" }}>
+        {
+          dataBill?.orderId?.map((item, index) => {
+            <h3>{item?.name}</h3>
+          })
+        }
+      </div>
 
     </Container>
   )

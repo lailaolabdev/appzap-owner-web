@@ -3,10 +3,33 @@ import axios from "axios";
 import { END_POINT_SEVER } from "../../constants/api";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { getHeaders } from "../../services/auth";
+import { getHeaders } from '../../services/auth';
+import { moneyCurrency } from "../../helpers/index";
+import moment from "moment";
 
-export default function BillForCheckOut80({ storeDetail, selectedTable }) {
-  console.log(storeDetail);
+import { useStore } from "../../store";
+
+
+export default function BillForCheckOut80({ storeDetail, selectedTable, dataBill, data }) {
+  console.log(dataBill);
+
+  const [total, setTotal] = useState();
+
+  const { callingCheckOut } = useStore();
+  useEffect(() => {
+    _calculateTotal();
+
+  }, [dataBill]);
+
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let _data of dataBill?.orderId || []) {
+      _total += _data?.quantity * _data?.price
+
+    }
+    setTotal(_total);
+  };
+
 
   return (
     <Container>
@@ -22,15 +45,12 @@ export default function BillForCheckOut80({ storeDetail, selectedTable }) {
         <div>
           <p>ເບີໂທ: {storeDetail?.phone}</p>
           <p>Whatapp: {storeDetail?.whatsapp}</p>
-          <p>ລະຫັດໂຕະ: {selectedTable?.code}</p>
-          <p>ວັນທີ: 29-11-2022</p>
+          <p>ລະຫັດໂຕະ: {dataBill?.code}</p>
+          <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
         </div>
         <div style={{ flexGrow: 1 }}></div>
         <Img>
-          <img
-            src="https://chart.googleapis.com/chart?cht=qr&chl=angie&chs=500x500&choe=UTF-8"
-            style={{ wifth: "100%", height: "100%" }}
-          />
+          <img src="https://chart.googleapis.com/chart?cht=qr&chl=angie&chs=500x500&choe=UTF-8" style={{ wifth: "100%", height: "100%" }} />
         </Img>
       </Price>
       <hr></hr>
@@ -41,24 +61,34 @@ export default function BillForCheckOut80({ storeDetail, selectedTable }) {
         <p>ລວມ</p>
       </Name>
       <hr></hr>
-      <Name>
-        <p>beerlao</p>
-        <p>4</p>
-        <p>20,000</p>
-        <p>80,000</p>
-      </Name>
+      <Order>
+        {
+          dataBill?.orderId?.map((item, index) => {
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
+                <p>{item?.name}</p>
+                <p>{item?.quantity}</p>
+                <p>{item?.price}</p>
+                <p>{item?.price ? moneyCurrency(item?.price * item?.quantity) : "-"}</p>
+              </div>
+            )
+          }
+          )
+        }
+
+      </Order>
       <hr></hr>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div>
-          <p>ລວມ: 80,000 ກີບ</p>
+          <p>ລວມ: {moneyCurrency(total)} ກີບ</p>
           <p>ສ່ວນຫຼຸດ(ກີບ) 0</p>
         </div>
       </Price>
       <hr></hr>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ 100,000 ກີບ</h6>
+        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
       </Price>
       <hr></hr>
       <Price>
@@ -68,6 +98,8 @@ export default function BillForCheckOut80({ storeDetail, selectedTable }) {
           <p>ເງີນທອນ 0</p>
         </div>
       </Price>
+
+
     </Container>
   );
 }
@@ -84,6 +116,10 @@ const Container = styled.div`
   width: 80mm;
 `;
 const Img = styled.div`
-  width: 90px;
-  height: 90px;
-`;
+width: 90px;
+height: 90px;
+`
+const Order = styled.div`
+display: flex;
+flex-direction: column;
+`
