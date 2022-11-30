@@ -16,7 +16,14 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { useStore } from "../../../store";
 
-const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
+const OrderCheckOut = ({
+  data,
+  tableData,
+  show,
+  hide,
+  resetTableOrder,
+  onPrintBill,
+}) => {
   console.log("data", data);
   const [total, setTotal] = useState();
 
@@ -145,16 +152,16 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
         >
           <Button
             className="ml-2 pl-4 pr-4"
-            onClick={hide}
+            // onClick={hide}
             style={{
               backgroundColor: "#FB6E3B",
               color: "#ffff",
               border: "solid 1px #FB6E3B",
               fontSize: 30,
             }}
-            // onClick={() => _checkBill()}
+            onClick={() => onPrintBill()}
           >
-            {/* <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "} */}
+            <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />
             ພິມບິນ
           </Button>
           <div className="p-2 col-example text-center" style={{ fontSize: 26 }}>
@@ -177,14 +184,14 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
           </div>
           <Button
             className="ml-2 pl-4 pr-4"
-            onClick={hide}
+            // onClick={hide}
             style={{
               backgroundColor: "#FB6E3B",
               color: "#ffff",
               border: "solid 1px #FB6E3B",
               fontSize: 30,
             }}
-            // onClick={() => _checkBill()}
+            onClick={() => _checkBill()}
           >
             <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "}
             ເຊັກບິນ

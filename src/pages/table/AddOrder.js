@@ -239,7 +239,7 @@ function AddOrder() {
   console.log(componentRef.current);
   const onPrint = async () => {
     const dataUrl = await html2canvas(componentRef.current);
-    console.log("dataUrl", dataUrl);
+    // console.log("dataUrl", dataUrl);
     const _file = await base64ToBlob(dataUrl.toDataURL());
     // link.click();
     (async () => {

@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useLayoutEffect,
+} from "react";
 import {
   Row,
   Modal,
@@ -20,6 +26,8 @@ import Swal from "sweetalert2";
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
+import html2canvas from "html2canvas";
+import { base64ToBlob, resizeImage } from "../../helpers";
 
 /**
  * component
@@ -62,8 +70,6 @@ import { getBills } from "../../services/bill";
 export default function TableList() {
   const navigate = useNavigate();
   const params = useParams();
-  const componentRef = useRef();
-  const componentRefA = useRef();
   const number = params?.number;
   const activeTableId = params?.tableId;
 
@@ -103,6 +109,9 @@ export default function TableList() {
     storeDetail,
     getTableOrders,
   } = useStore();
+  const canCheckOut = !tableOrderItems.find(
+    (e) => e?.status === "DOING" || e?.status === "WAITING"
+  )?._id;
 
   useEffect(() => {
     initialTableSocket();
@@ -167,7 +176,6 @@ export default function TableList() {
     });
     setDataBill(_resBill?.data);
   };
-
 
   const [codeTableNew, setCodeTableNew] = useState();
 
@@ -321,6 +329,45 @@ export default function TableList() {
       }),
     []
   );
+  const [widthBill, setWidthBill] = useState(0);
+  const [heightBill, setHeightBill] = useState(0);
+
+  let billRef = useRef(null);
+  useLayoutEffect(() => {
+    setWidthBill(billRef.current.offsetWidth);
+    setHeightBill(billRef.current.offsetHeight);
+  }, [billRef]);
+  const onPrintBill = async () => {
+    try {
+      console.log("dataUrl", billRef.current);
+      const dataUrl = await html2canvas(billRef.current, {
+        useCORS: true,
+        // scale: 300 / widthBill,
+      });
+      const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+      const _file = await base64ToBlob(_image64);
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", "192.168.100.236");
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      axios({
+        method: "post",
+        url: "http://localhost:9150/ethernet/image",
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // axios.post("http://localhost:9150/ethernet/text", {
+      //   config: {
+      //     ip: "192.168.100.236",
+      //     port: 9100,
+      //   },
+      //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
+      // });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
@@ -591,6 +638,7 @@ export default function TableList() {
                               fontWeight: "bold",
                               height: 60,
                             }}
+                            disabled={!canCheckOut}
                             onClick={() => _onCheckOut()}
                           >
                             <FontAwesomeIcon
@@ -908,18 +956,21 @@ export default function TableList() {
           )}
         </div>
       </div>
-      <button>
-      <BillForCheckOut80 storeDetail={storeDetail} selectedTable={selectedTable} />
+      <button ref={billRef}>
+        <BillForCheckOut80
+          storeDetail={storeDetail}
+          selectedTable={selectedTable}
+        />
       </button>
 
       <OrderCheckOut
         data={dataBill}
+        onPrintBill={onPrintBill}
         tableData={selectedTable}
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
-
 
       <UpdateDiscountOrder
         data={tableOrderItems}
