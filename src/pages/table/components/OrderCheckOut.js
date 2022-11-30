@@ -13,19 +13,18 @@ import { errorAdd, successAdd } from "../../../helpers/sweetalert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import { useStore } from "../../../store";
 
 const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
+  console.log("data", data);
   const [total, setTotal] = useState();
 
-  const {
-    callingCheckOut,
-  } = useStore();
+  const { callingCheckOut } = useStore();
 
   useEffect(() => {
     for (let i = 0; i < data?.orderId.length; i++) {
-      _calculateTotal()
+      _calculateTotal();
     }
   }, [data]);
 
@@ -33,11 +32,11 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
     let _total = 0;
     for (let i = 0; i < data?.orderId.length; i++) {
       if (data?.orderId[i]?.status === "SERVED") {
-        _total += (data?.orderId[i]?.quantity * data?.orderId[i]?.price)
+        _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
       }
     }
-    setTotal(_total)
-  }
+    setTotal(_total);
+  };
 
   const _checkBill = async () => {
     await axios
@@ -46,24 +45,24 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
         {
           id: data?._id,
           data: {
-            "isCheckout": "true",
-            "status": "CHECKOUT"
-          }
+            isCheckout: "true",
+            status: "CHECKOUT",
+          },
         },
         {
           headers: await getHeaders(),
         }
       )
       .then(async function (response) {
-        callingCheckOut()
+        callingCheckOut();
         Swal.fire({
-          icon: 'success',
+          icon: "success",
           title: "ສໍາເລັດການເຊັກບິນ",
           showConfirmButton: false,
-          timer: 1800
-        })
-        resetTableOrder()
-        hide()
+          timer: 1800,
+        });
+        resetTableOrder();
+        hide();
       })
       .catch(function (error) {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
@@ -81,9 +80,16 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
         <Modal.Title>ລາຍລະອຽດເມນູອໍເດີ້</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.tableName}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ເປີດເມື່ອ:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
+          ໂຕະ:{tableData?.tableName}
+        </pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+          ລະຫັດ:{tableData?.code}
+        </pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+          ເປີດເມື່ອ:
+          {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+        </pre>
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
@@ -112,11 +118,18 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
                 );
               })}
             <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ:</td>
-              <td colspan="1">{moneyCurrency(data?.discount)} {data?.discountType !== "LAK" ? "%" : "ກີບ"}</td>
+              <td colspan="4" style={{ textAlign: "center" }}>
+                ສ່ວນຫຼຸດ:
+              </td>
+              <td colspan="1">
+                {moneyCurrency(data?.discount)}{" "}
+                {data?.discountType !== "LAK" ? "%" : "ກີບ"}
+              </td>
             </tr>
             <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ລາຄາລວມ:</td>
+              <td colspan="4" style={{ textAlign: "center" }}>
+                ລາຄາລວມ:
+              </td>
               <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
           </tbody>
@@ -130,6 +143,20 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             alignItems: "center",
           }}
         >
+          <Button
+            className="ml-2 pl-4 pr-4"
+            onClick={hide}
+            style={{
+              backgroundColor: "#FB6E3B",
+              color: "#ffff",
+              border: "solid 1px #FB6E3B",
+              fontSize: 30,
+            }}
+            // onClick={() => _checkBill()}
+          >
+            {/* <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "} */}
+            ພິມບິນ
+          </Button>
           <div className="p-2 col-example text-center" style={{ fontSize: 26 }}>
             ຕ້ອງຈ່າຍທັງໝົດ:
           </div>
@@ -141,11 +168,14 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
             }}
           >
             <span style={{ justifyContent: "flex-end", display: "row" }}>
-              {" "}
-              <b> {data && data?.discountType === "LAK" ? moneyCurrency(total - data?.discount) : moneyCurrency(total - (total * data?.discount) / 100)}</b>
+              <b>
+                {data && data?.discountType === "LAK"
+                  ? moneyCurrency(total - data?.discount)
+                  : moneyCurrency(total - (total * data?.discount) / 100)}
+              </b>
             </span>
           </div>
-          {/* <Button
+          <Button
             className="ml-2 pl-4 pr-4"
             onClick={hide}
             style={{
@@ -154,11 +184,11 @@ const OrderCheckOut = ({ data, tableData, show, hide, resetTableOrder }) => {
               border: "solid 1px #FB6E3B",
               fontSize: 30,
             }}
-            onClick={() => _checkBill()}
+            // onClick={() => _checkBill()}
           >
             <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "}
             ເຊັກບິນ
-          </Button> */}
+          </Button>
         </div>
       </Modal.Footer>
     </Modal>
