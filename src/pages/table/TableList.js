@@ -57,6 +57,7 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBills } from "../../services/bill";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -155,9 +156,13 @@ export default function TableList() {
       "Content-Type": "application/json",
       Authorization: header.authorization,
     };
+    let findby = "?";
+    findby += `code=${code}`;
+    const _bills = await getBills(findby);
+    const _billId = _bills?.[0]?.["_id"];
     const _resBill = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/bill-group/` + code,
+      url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
       headers: headers,
     });
     setDataBill(_resBill?.data);
