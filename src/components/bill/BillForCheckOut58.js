@@ -30,11 +30,9 @@ export default function BillForCheckOut58({ storeDetail, selectedTable, dataBill
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      console.log('_data', _data)
       _total += _data?.quantity * _data?.price
 
     }
-    console.log(_total);
     setTotal(_total);
   };
 

@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import moment from "moment";
 
 
-export default function BillForChef58({ storeDetail, selectedTable, dataBill }) {
+export default function BillForChef58({ selectedOrder, selectedTable, dataBill }) {
+    console.log("selectedOrder=====>", selectedOrder)
     return (
         <Container>
             <div style={{ textAlign: "center" }}>

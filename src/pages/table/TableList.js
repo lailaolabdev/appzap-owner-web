@@ -60,6 +60,7 @@ import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
+import _ from "lodash";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -325,23 +326,46 @@ export default function TableList() {
     []
   );
 
-  const selectOrder = (data) => {
-    const _newSelect = selectedOrder;
+  // const selectOrder = (data) => {
+  //   const _newSelect = selectedOrder;
 
-    const indexOfObject = _newSelect.findIndex(object => {
-      return object._id === data?._id;
-    });
-    if (indexOfObject < 0) {
-      _newSelect.push(data)
-      setSelectedOrder(_newSelect);
-      console.log("54321", _newSelect);
-      return
+  //   const indexOfObject = _newSelect.findIndex(object => {
+  //     return object._id === data?._id;
+  //   });
+  //   if (indexOfObject < 0) {
+  //     _newSelect.push(data)
+  //     setSelectedOrder(_newSelect);
+  //     console.log("54321", _newSelect);
+  //     return
+  //   }
+  //   _newSelect.splice(indexOfObject, 1);
+  //   setSelectedOrder(_newSelect);
+  //   console.log("12345", indexOfObject);
+  //   return
+  // }
+  console.log("selectedOrder::::", selectedOrder)
+
+  const onSelect = ( e, data) => {
+    const _checked = e?.target?.checked
+    const _newData = [...selectedOrder]
+    if (_checked) {
+      _newData.push(data)
+    } else {
+      let _newData2 = [...selectedOrder]
+      if (selectedOrder.length > 0) _.remove(_newData, {id: data?.id}) 
+        else _newData2.push(data)
+        setSelectedOrder(_newData2)
     }
-    _newSelect.splice(indexOfObject, 1);
-    setSelectedOrder(_newSelect);
-    console.log("12345", indexOfObject);
-    return
+    setSelectedOrder(_newData)
   }
+
+  // const showBill = async () => {
+  //   let _checkItem = dataBill?.orderId.filter((item) => item.isChecked).map((i) => {
+  //     return {
+
+  //     }
+  //   })
+  // };
 
   return (
     <div style={TITLE_HEADER}>
@@ -761,7 +785,7 @@ export default function TableList() {
                               />
                             </div>
                           </td> */}
-                                <td><FormControlLabel control={<Checkbox name="checkedC" />} onChange={() => selectOrder(orderItem)} style={{ marginLeft: 2 }} /></td>
+                                <td><FormControlLabel control={<Checkbox name="checkedC" />} onChange={() => onSelect()} style={{ marginLeft: 2 }} /></td>
 
                                 <td>
                                   <div
@@ -940,7 +964,7 @@ export default function TableList() {
       </button>
       <button><BillForCheckOut58 storeDetail={storeDetail} selectedTable={selectedTable} dataBill={dataBill} /></button>
       <button><BillForChef80 storeDetail={storeDetail} selectedTable={selectedTable} dataBill={dataBill} /></button>
-      <button><BillForChef58 storeDetail={storeDetail} selectedTable={selectedTable} dataBill={dataBill} /></button>
+      <button><BillForChef58 storeDetail={storeDetail} selectedTable={selectedTable} dataBill={dataBill} selectedOrder={selectedOrder}/></button>
 
       <OrderCheckOut
         data={dataBill}
