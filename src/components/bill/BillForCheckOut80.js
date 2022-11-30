@@ -8,24 +8,25 @@ import { getHeaders } from '../../services/auth';
 
 
 
-export default function BillForCheckOut80({billData}) {
+export default function BillForCheckOut80({storeDetail,selectedTable}) {
+  console.log(storeDetail);
   
 
   return (
     <Container>
         <div style={{textAlign: "center" }}>
-        <h1>{billData?.store?.name}</h1>
+        <h1>{storeDetail?.name}</h1>
         </div>
         <hr></hr>
         <div style={{textAlign: "center" }}>
-        <h3>Table3</h3>
+        <h3>{selectedTable?.tableName}</h3>
         </div>
         <hr></hr>
         <Price>
         <div>
-        <p>ເບີໂທ: 02098877117</p>
-        <p>Whatapp: 02098877117</p>
-        <p>ລະຫັດໂຕະ: 123456</p>
+        <p>ເບີໂທ: {storeDetail?.phone}</p>
+        <p>Whatapp: {storeDetail?.whatsapp}</p>
+        <p>ລະຫັດໂຕະ: {selectedTable?.code}</p>
         <p>ວັນທີ: 29-11-2022</p>
         </div>
         <div style={{flexGrow: 1}}></div>

@@ -34,6 +34,10 @@ import { BillForChef } from "../../components/bill/BillForChef80";
 import { BillForCheckOut } from "../../components/bill/BillForCheckOut80";
 import { STORE } from "../../constants/api";
 import { socket } from "../../services/socket";
+import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
+import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
+import BillForChef80 from "../../components/bill/BillForChef80";
+import BillForChef58 from "../../components/bill/BillForChef58";
 
 /**
  * const
@@ -163,6 +167,7 @@ export default function TableList() {
     });
     setDataBill(_resBill?.data);
   };
+
 
   const [codeTableNew, setCodeTableNew] = useState();
 
@@ -903,6 +908,9 @@ export default function TableList() {
           )}
         </div>
       </div>
+      <button>
+      <BillForCheckOut80 storeDetail={storeDetail} selectedTable={selectedTable} />
+      </button>
 
       <OrderCheckOut
         data={dataBill}
@@ -911,6 +919,7 @@ export default function TableList() {
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
       />
+
 
       <UpdateDiscountOrder
         data={tableOrderItems}

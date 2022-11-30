@@ -54,11 +54,11 @@ function Router() {
       element: <BillForCheckOut80 />,
     },
     {
-      path: "/BillForChef",
+      path: "/BillForChef80",
       element: <BillForChef80/>, //not work
     },
     {
-      path: "/BillForChef",
+      path: "/BillForChef58",
       element: <BillForChef58/>, //not work
     },
 
@@ -75,7 +75,7 @@ function Router() {
       element: <BillForCheckOut80 />
     },
     {
-      path: "/BillForCheckOut80",
+      path: "/BillForCheckOut58",
       element: <BillForCheckOut58 />
     },
     {
