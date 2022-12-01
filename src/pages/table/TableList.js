@@ -366,7 +366,7 @@ export default function TableList() {
       bodyFormData.append("ip", "192.168.100.236");
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
-      axios({
+      await axios({
         method: "post",
         url: "http://localhost:9150/ethernet/image",
         data: bodyFormData,
@@ -379,8 +379,20 @@ export default function TableList() {
       //   },
       //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
       // });
+      await Swal.fire({
+        icon: "success",
+        title: "ປິນສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     } catch (err) {
       console.log(err);
+      await Swal.fire({
+        icon: "error",
+        title: "ປິນບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 

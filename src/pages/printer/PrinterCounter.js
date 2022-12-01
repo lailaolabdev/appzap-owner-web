@@ -2,25 +2,26 @@ import Axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import ButtonPrimary from "../../components/button/ButtonPrimary";
-import PopUpAddPrinter from "../../components/popup/PopUpAddPrinter";
-import { COLOR_APP } from "../../constants";
 import { END_POINT_SEVER } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
-import { addPrinter, getPrinters } from "../../services/printer";
+import {  getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 
 export default function PrinterCounter() {
-  const navigate = useNavigate();
 
   // state
-  const [popup, setPopup] = useState({ add: false });
   const [printers, setPrinters] = useState();
   const [selectPrinterCounter, setSelectPrinterCounter] = useState();
+  const [printsData, setPrintsData] = useState();
 
   const { storeDetail } = useStore();
-  const _prints = JSON.parse(selectPrinterCounter?.prints);
+
+  useEffect(() => {
+    if (selectPrinterCounter?.prints) {
+      const _prints = JSON.parse(selectPrinterCounter?.prints);
+      setPrintsData(_prints);
+    }
+  }, [selectPrinterCounter]);
 
   const getSelectPrinter = async () => {
     try {
@@ -76,7 +77,7 @@ export default function PrinterCounter() {
         <Form.Control
           as="select"
           name="type"
-          defaultValue={_prints?.BILL}
+          value={printsData?.BILL}
           onChange={(e) => handleChangePrinterCounter(e)}
         >
           <option value="">--ເລືອກປິນເຕີ--</option>
