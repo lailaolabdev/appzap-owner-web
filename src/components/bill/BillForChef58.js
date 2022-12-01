@@ -3,23 +3,26 @@ import styled from 'styled-components'
 import moment from "moment";
 
 
-export default function BillForChef58({ selectedOrder, selectedTable, dataBill }) {
-    console.log("selectedOrder=====>", selectedOrder)
+export default function BillForChef58({ val, selectedTable, dataBill }) {
     return (
         <Container>
             <div style={{ textAlign: "center" }}>
                 <h1>{selectedTable?.tableName}</h1>
             </div>
+            <hr></hr>
+
             <div style={{ textAlign: "center" }}>
                 <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
             </div>
+            <hr></hr>
+
             <div style={{ textAlign: "center" }}>
                 {
-                    dataBill?.orderId?.map((item, index) => {
-                        <h3>{item?.name}</h3>
-                    })
+                    val?.name
                 }
             </div>
+            <hr></hr>
+
 
         </Container>
     )
