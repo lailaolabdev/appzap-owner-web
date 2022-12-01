@@ -130,7 +130,7 @@ const Price = styled.div`
 const Container = styled.div`
   margin: 10px;
   width: 100%;
-  maxwidth: 80mm;
+  /* maxwidth: 80mm; */
 `;
 const Img = styled.div`
   width: 90px;

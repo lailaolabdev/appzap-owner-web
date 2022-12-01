@@ -50,6 +50,9 @@ const Order = () => {
   useEffect(() => {
     getData();
   }, []);
+  useEffect(() => {
+    getOrderItemsStore(SERVE_STATUS);
+  }, []);
   useMemo(
     () =>
       socket.on(`ORDER:${storeDetail._id}`, (data) => {
