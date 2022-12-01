@@ -414,14 +414,6 @@ export default function TableList() {
     setSelectedOrder(_newData);
   };
 
-  // const showBill = async () => {
-  //   let _checkItem = dataBill?.orderId.filter((item) => item.isChecked).map((i) => {
-  //     return {
-
-  //     }
-  //   })
-  // };
-
   return (
     <div style={TITLE_HEADER}>
       {isTableOrderLoading ? <Loading /> : ""}
