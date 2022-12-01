@@ -42,6 +42,7 @@ import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 
 import MenuRoutes from "./Menu.routes";
+import PrinterRoutes from "./Printer.routes";
 
 function Router() {
   return useRoutes([
@@ -55,11 +56,11 @@ function Router() {
     },
     {
       path: "/BillForChef80",
-      element: <BillForChef80/>, //not work
+      element: <BillForChef80 />, //not work
     },
     {
       path: "/BillForChef58",
-      element: <BillForChef58/>, //not work
+      element: <BillForChef58 />, //not work
     },
 
     {
@@ -72,11 +73,11 @@ function Router() {
     // },
     {
       path: "/BillForCheckOut80",
-      element: <BillForCheckOut80 />
+      element: <BillForCheckOut80 />,
     },
     {
       path: "/BillForCheckOut58",
-      element: <BillForCheckOut58 />
+      element: <BillForCheckOut58 />,
     },
     {
       path: "/menus/:storeId/:tableId",
@@ -229,6 +230,7 @@ function Router() {
           element: <DoingOrder />,
         },
         MenuRoutes,
+        PrinterRoutes,
       ],
     },
     {

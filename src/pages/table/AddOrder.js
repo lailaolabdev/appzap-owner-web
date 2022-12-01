@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
@@ -35,6 +35,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
+import BillForChef80 from "../../components/bill/BillForChef80";
+import BillForChef58 from "../../components/bill/BillForChef58";
 
 function AddOrder() {
   const params = useParams();
@@ -54,6 +56,10 @@ function AddOrder() {
 
   const { storeDetail } = useStore();
 
+  useEffect(() => {
+    console.log("allSelectedMenu", allSelectedMenu);
+    console.log("selectedMenu", selectedMenu);
+  }, [selectedMenu]);
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
     const _localJson = JSON.parse(ADMIN);
@@ -116,6 +122,7 @@ function AddOrder() {
       name: menu.name,
       quantity: 1,
       price: menu.price,
+      categoryId: menu?.categoryId,
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -195,6 +202,7 @@ function AddOrder() {
             });
             if (isPrinted) {
               //  print
+              onPrint();
             }
             navigate(
               `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
@@ -235,49 +243,65 @@ function AddOrder() {
       await createOrder(selectedMenu, header, isPrinted);
     }
   };
-  const componentRef = useRef(null);
-  console.log(componentRef.current);
+
+  const [widthBill80, setWidthBill80] = useState(0);
+  const [widthBill58, setWidthBill58] = useState(0);
+
+  let BillForChef80Ref = useRef(null);
+  let BillForChef58Ref = useRef(null);
+
+  const [billForChef80sRef, setBillForChef80sRef] = useState([]);
+
+  useLayoutEffect(() => {
+    setWidthBill80(BillForChef80Ref.current.offsetWidth);
+    setWidthBill58(BillForChef58Ref.current.offsetWidth);
+  }, [BillForChef80Ref, BillForChef58Ref]);
+
   const onPrint = async () => {
-    const dataUrl = await html2canvas(componentRef.current);
     // console.log("dataUrl", dataUrl);
+    const dataUrl = await html2canvas(BillForChef80Ref.current, {
+      useCORS: true,
+      scrollX: 10,
+      scrollY: 0,
+      scale: 530 / widthBill80,
+    });
     const _file = await base64ToBlob(dataUrl.toDataURL());
     // link.click();
-    (async () => {
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", "192.168.1.236");
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", _file);
-      axios({
-        method: "post",
-        url: "http://localhost:9150/ethernet/image",
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    })();
+    var bodyFormData = new FormData();
+    bodyFormData.append("ip", "192.168.1.237");
+    bodyFormData.append("port", "9100");
+    bodyFormData.append("image", _file);
+    axios({
+      method: "post",
+      url: "http://localhost:9150/ethernet/image",
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        overflow: "hidden",
-      }}
-    >
+    <div>
       <div
         style={{
-          flexGrow: 1,
-          height: "90vh",
-          overflowY: "scroll",
+          display: "flex",
+          overflow: "hidden",
         }}
       >
-        <div className="form-group">
-          <label>ເລືອກປະເພດ</label>
-          <select
-            className="form-control"
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="All">ທັງໝົດ</option>
-            {/* {Categorys &&
+        <div
+          style={{
+            flexGrow: 1,
+            height: "90vh",
+            overflowY: "scroll",
+          }}
+        >
+          <div className="form-group">
+            <label>ເລືອກປະເພດ</label>
+            <select
+              className="form-control"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="All">ທັງໝົດ</option>
+              {/* {Categorys &&
                   Categorys?.map((data, index) => {
                     return (
                       <option key={"category" + index} value={data?._id}>
@@ -285,164 +309,173 @@ function AddOrder() {
                       </option>
                     );
                   })} */}
-          </select>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            allSelectedMenu?.map((data, index) => (
-              <div
-                key={"menu" + index}
-                style={{
-                  border:
-                    data._id == selectedItem?._id
-                      ? "4px solid #FB6E3B"
-                      : "4px solid rgba(0,0,0,0)",
-                }}
-                onClick={() => addToCart(data)}
-              >
-                <img
-                  src={
-                    data?.images[0]
-                      ? URL_PHOTO_AW3 + data?.images[0]
-                      : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                  }
-                  style={{
-                    width: "100%",
-                    height: 200,
-                    borderRadius: 5,
-                  }}
-                />
+            </select>
+          </div>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
+          >
+            {isLoading ? (
+              <Loading />
+            ) : (
+              allSelectedMenu?.map((data, index) => (
                 <div
+                  key={"menu" + index}
                   style={{
-                    backgroundColor: "#000",
-                    color: "#FFF",
-                    position: "relative",
-                    opacity: 0.5,
-                    padding: 10,
+                    border:
+                      data._id == selectedItem?._id
+                        ? "4px solid #FB6E3B"
+                        : "4px solid rgba(0,0,0,0)",
                   }}
+                  onClick={() => addToCart(data)}
                 >
-                  <span>{data?.name}</span>
-                  <br />
-                  <span>{moneyCurrency(data?.price)}</span>
-                  <br />
-                  <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
+                  <img
+                    src={
+                      data?.images[0]
+                        ? URL_PHOTO_AW3 + data?.images[0]
+                        : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                    }
+                    style={{
+                      width: "100%",
+                      height: 200,
+                      borderRadius: 5,
+                    }}
+                  />
+                  <div
+                    style={{
+                      backgroundColor: "#000",
+                      color: "#FFF",
+                      position: "relative",
+                      opacity: 0.5,
+                      padding: 10,
+                    }}
+                  >
+                    <span>{data?.name}</span>
+                    <br />
+                    <span>{moneyCurrency(data?.price)}</span>
+                    <br />
+                    <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
-      {/* Detail Table */}
-      <div
-        style={{
-          minWidth: 500,
-          backgroundColor: "#FFF",
-          maxHeight: "90vh",
-          borderColor: "black",
-          overflowY: "scroll",
-          borderWidth: 1,
-          paddingLeft: 20,
-          paddingTop: 20,
-        }}
-      >
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <Table responsive className="table">
-                <thead style={{ backgroundColor: "#F1F1F1" }}>
-                  <tr style={{ fontSize: "bold", border: "none" }}>
-                    <th style={{ border: "none" }}>ລຳດັບ</th>
-                    <th style={{ border: "none" }} className="text-center">
-                      ຊື່ເມນູ
-                    </th>
-                    <th style={{ border: "none" }}>ຈຳນວນ</th>
-                    <th style={{ border: "none" }}>ຈັດການ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedMenu &&
-                    selectedMenu.map((data, index) => {
-                      return (
-                        <tr key={"selectMenu" + index}>
-                          <td>{index + 1}</td>
-                          <td>{data.name}</td>
-                          <td>{data.quantity}</td>
-                          <td>
-                            <i
-                              onClick={() => onRemoveFromCart(data.id)}
-                              className="fa fa-trash"
-                              aria-hidden="true"
-                              style={{
-                                color: "#FB6E3B",
-                                cursor: "pointer",
-                              }}
-                            ></i>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </Table>
-            </div>
-            <div className="col-12">
-              <div className="row" style={{ margin: 0 }}>
-                <Button
-                  variant="outline-warning"
-                  style={{
-                    marginRight: 15,
-                    border: "solid 1px #FB6E3B",
-                    color: "#FB6E3B",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => navigate.goBack()}
-                >
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  variant="light"
-                  className="hover-me"
-                  style={{
-                    marginRight: 15,
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                    flex: 1,
-                  }}
-                  onClick={() => onSubmit(false)}
-                >
-                  ສັ່ງອາຫານ
-                </Button>
+        {/* Detail Table */}
+        <div
+          style={{
+            minWidth: 500,
+            backgroundColor: "#FFF",
+            maxHeight: "90vh",
+            borderColor: "black",
+            overflowY: "scroll",
+            borderWidth: 1,
+            paddingLeft: 20,
+            paddingTop: 20,
+          }}
+        >
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <Table responsive className="table">
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr style={{ fontSize: "bold", border: "none" }}>
+                      <th style={{ border: "none" }}>ລຳດັບ</th>
+                      <th style={{ border: "none" }} className="text-center">
+                        ຊື່ເມນູ
+                      </th>
+                      <th style={{ border: "none" }}>ຈຳນວນ</th>
+                      <th style={{ border: "none" }}>ຈັດການ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedMenu &&
+                      selectedMenu.map((data, index) => {
+                        return (
+                          <tr key={"selectMenu" + index}>
+                            <td>{index + 1}</td>
+                            <td>{data.name}</td>
+                            <td>{data.quantity}</td>
+                            <td>
+                              <i
+                                onClick={() => onRemoveFromCart(data.id)}
+                                className="fa fa-trash"
+                                aria-hidden="true"
+                                style={{
+                                  color: "#FB6E3B",
+                                  cursor: "pointer",
+                                }}
+                              ></i>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </Table>
               </div>
-              <div style={{ height: 10 }} />
-              <div className="row" style={{ margin: 0 }}>
-                <Button
-                  variant="light"
-                  className="hover-me"
-                  style={{
-                    height: 60,
-                    marginRight: 15,
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                    flex: 1,
-                  }}
-                  onClick={() => {
-                    onPrint();
-                    // onSubmit(true);
-                  }}
-                >
-                  ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ +{" "}
-                  <FontAwesomeIcon
-                    icon={faCashRegister}
-                    style={{ color: "#fff" }}
-                  />{" "}
-                </Button>
+              <div className="col-12">
+                <div className="row" style={{ margin: 0 }}>
+                  <Button
+                    variant="outline-warning"
+                    style={{
+                      marginRight: 15,
+                      border: "solid 1px #FB6E3B",
+                      color: "#FB6E3B",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => navigate.goBack()}
+                  >
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    variant="light"
+                    className="hover-me"
+                    style={{
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => onSubmit(false)}
+                  >
+                    ສັ່ງອາຫານ
+                  </Button>
+                </div>
+                <div style={{ height: 10 }} />
+                <div className="row" style={{ margin: 0 }}>
+                  <Button
+                    variant="light"
+                    className="hover-me"
+                    style={{
+                      height: 60,
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => {
+                      // onPrint();
+                      onSubmit(true);
+                    }}
+                  >
+                    ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ +{" "}
+                    <FontAwesomeIcon
+                      icon={faCashRegister}
+                      style={{ color: "#fff" }}
+                    />{" "}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <div ref={BillForChef80Ref}>
+        <BillForChef80 />
+      </div>
+      <div ref={BillForChef58Ref}>
+        <BillForChef58 />
       </div>
     </div>
   );

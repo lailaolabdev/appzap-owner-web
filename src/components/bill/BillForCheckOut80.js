@@ -3,14 +3,18 @@ import axios from "axios";
 import { END_POINT_SEVER } from "../../constants/api";
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { getHeaders } from '../../services/auth';
+import { getHeaders } from "../../services/auth";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 
 import { useStore } from "../../store";
 
-
-export default function BillForCheckOut80({ storeDetail, selectedTable, dataBill, data }) {
+export default function BillForCheckOut80({
+  storeDetail,
+  selectedTable,
+  dataBill,
+  data,
+}) {
   console.log(dataBill);
 
   const [total, setTotal] = useState();
@@ -18,88 +22,100 @@ export default function BillForCheckOut80({ storeDetail, selectedTable, dataBill
   const { callingCheckOut } = useStore();
   useEffect(() => {
     _calculateTotal();
-
   }, [dataBill]);
 
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      _total += _data?.quantity * _data?.price
-
+      _total += _data?.quantity * _data?.price;
     }
     setTotal(_total);
   };
 
-
   return (
     <Container>
-      <div style={{ textAlign: "center" }}>
-        <h1>{storeDetail?.name}</h1>
-      </div>
-      <hr></hr>
-      <div style={{ textAlign: "center" }}>
-        <h3>{selectedTable?.tableName}</h3>
-      </div>
-      <hr></hr>
+      <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
+      <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
       <Price>
-        <div>
-          <p>ເບີໂທ: {storeDetail?.phone}</p>
-          <p>Whatapp: {storeDetail?.whatsapp}</p>
-          <p>ລະຫັດໂຕະ: {dataBill?.code}</p>
-          <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
+        <div style={{ textAlign: "left", fontSize: 12 }}>
+          <div>
+            ເບີໂທ:{" "}
+            <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
+          </div>
+          <div>
+            Whatapp:{" "}
+            <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
+          </div>
+          <div>
+            ລະຫັດໂຕະ:{" "}
+            <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
+          </div>
+          <div>
+            ວັນທີ:{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
+            </span>
+          </div>
         </div>
         <div style={{ flexGrow: 1 }}></div>
         <Img>
-          <img src="https://chart.googleapis.com/chart?cht=qr&chl=angie&chs=500x500&choe=UTF-8" style={{ wifth: "100%", height: "100%" }} />
+          <img
+            src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
+            style={{ wifth: "100%", height: "100%" }}
+          />
         </Img>
       </Price>
-      <hr></hr>
-      <Name>
-        <p>ລາຍການ</p>
-        <p>ຈຳນວນ</p>
-        <p>ລາຄາ</p>
-        <p>ລວມ</p>
+      <Name style={{ marginBottom: 10 }}>
+        <div style={{ textAlign: "left" }}>ລາຍການ</div>
+        <div style={{ textAlign: "center" }}>ຈຳນວນ</div>
+        <div style={{ textAlign: "right" }}>ລາຄາ</div>
+        <div style={{ textAlign: "right" }}>ລວມ</div>
       </Name>
-      <hr></hr>
       <Order>
-        {
-          dataBill?.orderId?.map((item, index) => {
-            return (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr" }}>
-                <p>{item?.name}</p>
-                <p>{item?.quantity}</p>
-                <p>{item?.price}</p>
-                <p>{item?.price ? moneyCurrency(item?.price * item?.quantity) : "-"}</p>
+        {dataBill?.orderId?.map((item, index) => {
+          return (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                fontSize: 14,
+              }}
+              key={index}
+            >
+              <div style={{ textAlign: "left" }}>{item?.name}</div>
+              <div style={{ textAlign: "center" }}>{item?.quantity}</div>
+              <div style={{ textAlign: "right" }}>
+                {item?.price ? moneyCurrency(item?.price) : "-"}
               </div>
-            )
-          }
-          )
-        }
-
+              <div style={{ textAlign: "right" }}>
+                {item?.price
+                  ? moneyCurrency(item?.price * item?.quantity)
+                  : "-"}
+              </div>
+            </div>
+          );
+        })}
       </Order>
-      <hr></hr>
+      <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div>
-          <p>ລວມ: {moneyCurrency(total)} ກີບ</p>
-          <p>ສ່ວນຫຼຸດ(ກີບ) 0</p>
+          <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
         </div>
       </Price>
-      <hr></hr>
+      <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
       </Price>
-      <hr></hr>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <div>
-          <p>ຮັບເງີນມາ 0</p>
-          <p>ເງີນທອນ 0</p>
+        <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
+          <div>ຮັບເງີນມາ 0</div>
+          <div>ເງີນທອນ 0</div>
         </div>
       </Price>
-
-
     </Container>
   );
 }
@@ -113,13 +129,15 @@ const Price = styled.div`
 `;
 const Container = styled.div`
   margin: 10px;
-  width: 80mm;
+  width: 100%;
+  maxwidth: 80mm;
 `;
 const Img = styled.div`
-width: 90px;
-height: 90px;
-`
+  width: 90px;
+  height: 90px;
+  font-size: 14px;
+`;
 const Order = styled.div`
-display: flex;
-flex-direction: column;
-`
+  display: flex;
+  flex-direction: column;
+`;

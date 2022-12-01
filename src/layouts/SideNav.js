@@ -72,7 +72,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasReservation,
     },
     {
-      title: "ຈັດການເມນູຫາການ",
+      title: "ຈັດການເມນູອາຫານ",
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
