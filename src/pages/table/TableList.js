@@ -65,7 +65,7 @@ import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
-import { useNavigate, useParams } from "react-router-dom";
+import { useAsyncError, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import _ from "lodash";
 
@@ -112,6 +112,9 @@ export default function TableList() {
     storeDetail,
     getTableOrders,
   } = useStore();
+
+  const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
+
   const canCheckOut = !tableOrderItems.find(
     (e) => e?.status === "DOING" || e?.status === "WAITING"
   )?._id;
@@ -339,8 +342,8 @@ export default function TableList() {
   let bill58Ref = useRef(null);
   useLayoutEffect(() => {
     setWidthBill80(bill80Ref.current.offsetWidth);
-    setWidthBill58(bill58Ref.current.offsetWidth)
-  }, [bill80Ref,bill58Ref]);
+    setWidthBill58(bill58Ref.current.offsetWidth);
+  }, [bill80Ref, bill58Ref]);
   const onPrintBill = async () => {
     try {
       const dataUrl = await html2canvas(bill80Ref.current, {
@@ -381,38 +384,32 @@ export default function TableList() {
     }
   };
 
-  // const selectOrder = (data) => {
-  //   const _newSelect = selectedOrder;
-
-  //   const indexOfObject = _newSelect.findIndex(object => {
-  //     return object._id === data?._id;
-  //   });
-  //   if (indexOfObject < 0) {
-  //     _newSelect.push(data)
-  //     setSelectedOrder(_newSelect);
-  //     console.log("54321", _newSelect);
-  //     return
-  //   }
-  //   _newSelect.splice(indexOfObject, 1);
-  //   setSelectedOrder(_newSelect);
-  //   console.log("12345", indexOfObject);
-  //   return
-  // }
+  const onSelect = (data) => {
+    console.log("data---->", data);
+    const _data = tableOrderItems.map((e) => {
+      if (data?._id === e?._id) {
+        return data;
+      } else {
+        return e;
+      }
+    });
+    setIsCheckedOrderItem(_data);
+  };
   console.log("selectedOrder::::", selectedOrder);
 
-  const onSelect = (e, data) => {
-    const _checked = e?.target?.checked;
-    const _newData = [...selectedOrder];
-    if (_checked) {
-      _newData.push(data);
-    } else {
-      let _newData2 = [...selectedOrder];
-      if (selectedOrder.length > 0) _.remove(_newData, { id: data?.id });
-      else _newData2.push(data);
-      setSelectedOrder(_newData2);
-    }
-    setSelectedOrder(_newData);
-  };
+  // const onSelect = (index) => {
+  //   const _checked = e?.target?.checked;
+  //   const _newData = [...selectedOrder];
+  //   if (_checked) {
+  //     _newData.push(data);
+  //   } else {
+  //     let _newData2 = [...selectedOrder];
+  //     if (selectedOrder.length > 0) _.remove(_newData, { id: data?.id });
+  //     else _newData2.push(data);
+  //     setSelectedOrder(_newData2);
+  //   }
+  //   setSelectedOrder(_newData);
+  // };
 
   return (
     <div style={TITLE_HEADER}>
@@ -839,8 +836,18 @@ export default function TableList() {
                           </td> */}
                                   <td>
                                     <FormControlLabel
-                                      control={<Checkbox name="checkedC" />}
-                                      onChange={() => onSelect()}
+                                      control={
+                                        <Checkbox
+                                          name="checked"
+                                          isChecked={orderItem?.isChecked}
+                                        />
+                                      }
+                                      onChange={(e) =>
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        })
+                                      }
                                       style={{ marginLeft: 2 }}
                                     />
                                   </td>
