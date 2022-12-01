@@ -4,7 +4,6 @@ import moment from "moment";
 
 
 export default function BillForChef80({ selectedTable, dataBill, val }) {
-  console.log("dataBill=============>", dataBill?.orderId);
   return (
     <Container>
       <div style={{ textAlign: "center" }}>

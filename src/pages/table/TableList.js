@@ -48,6 +48,7 @@ import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 
+
 /**
  * const
  **/
@@ -60,6 +61,7 @@ import {
   CANCEL_STATUS,
   DOING_STATUS,
   SERVE_STATUS,
+  WAITING_STATUS
 } from "../../constants/index";
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
@@ -68,6 +70,9 @@ import { getHeaders } from "../../services/auth";
 import { useAsyncError, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import _ from "lodash";
+import { updateOrderItem } from "../../services/order";
+
+
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -91,6 +96,10 @@ export default function TableList() {
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [dataStore, setStore] = useState();
   const [selectedOrder, setSelectedOrder] = useState([]);
+  const { orderItems, setOrderItems, getOrderItemsStore } = useStore();
+  const [getTokken, setgetTokken] = useState();
+  // const [ref , setRef] = useRef();
+
   /**
    * useState
    */
@@ -129,6 +138,9 @@ export default function TableList() {
   /**
    * Modify Order Status
    */
+  useEffect(()=>{
+    setIsCheckedOrderItem([...tableOrderItems])
+  },[selectedTable,tableOrderItems])
   useEffect(() => {
     if (!tableOrderItems) return;
     let _tableOrderItems = [...tableOrderItems];
@@ -335,6 +347,58 @@ export default function TableList() {
       }),
     []
   );
+  const [updateModal, setUpdateModal] = useState(false);
+  useEffect(() => {
+    getOrderItemsStore(DOING_STATUS)
+  }, [])
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(DOING_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(DOING_STATUS);
+      }),
+    []
+  );
+  useEffect(() => {
+    getOrderItemsStore(CANCEL_STATUS);
+  }, []);
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(CANCEL_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(CANCEL_STATUS);
+      }),
+    []
+  );
+  useEffect(() => {
+    getOrderItemsStore(SERVE_STATUS);
+  }, []);
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(SERVE_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(SERVE_STATUS);
+      }),
+    []
+  );
   const [widthBill80, setWidthBill80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
 
@@ -385,43 +449,109 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
-    console.log("data---->", data);
 
-    if(isCheckedOrderItem?.length==0){
-    const _data = tableOrderItems.map((e) => {
-      if (data?._id === e?._id) {
-        return data;
-      } else {
-        return e;
-      }
-    });
-    setIsCheckedOrderItem(_data);
-  }else{
-    const _data = isCheckedOrderItem.map((e) => {
-      if (data?._id === e?._id) {
-        return data;
-      } else {
-        return e;
-      }
-    });
-    setIsCheckedOrderItem(_data);
-  }
+    if (isCheckedOrderItem?.length == 0) {
+      const _data = tableOrderItems.map((e) => {
+        if (data?._id === e?._id) {
+          return data;
+        } else {
+          return e;
+        }
+      });
+      setIsCheckedOrderItem(_data);
+    } else {
+      const _data = isCheckedOrderItem.map((e) => {
+        if (data?._id === e?._id) {
+          return data;
+        } else {
+          return e;
+        }
+      });
+      setIsCheckedOrderItem(_data);
+    }
   };
-  console.log("selectedOrder::::", selectedOrder);
+  
 
-  // const onSelect = (index) => {
-  //   const _checked = e?.target?.checked;
-  //   const _newData = [...selectedOrder];
-  //   if (_checked) {
-  //     _newData.push(data);
-  //   } else {
-  //     let _newData2 = [...selectedOrder];
-  //     if (selectedOrder.length > 0) _.remove(_newData, { id: data?.id });
-  //     else _newData2.push(data);
-  //     setSelectedOrder(_newData2);
-  //   }
-  //   setSelectedOrder(_newData);
-  // };
+  const handleUpdateOrderStatus = async (status,) => {
+    getOrderItemsStore(SERVE_STATUS);
+    const storeId = storeDetail?._id;
+    let previousStatus = orderItems[0].status;
+    let menuId;
+    let _updateItems = isCheckedOrderItem?.filter((e) => e?.isChecked).map((i) => {
+      return {
+        status: status,
+        _id: i?._id,
+        menuId: i?.menuId,
+      }
+    })
+    console.log("_updateItems=======>", _updateItems);
+
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+      if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS)
+      Swal.fire({
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+  };
+
+  const handleUpdateOrderStatusgo = async (status,) => {
+    getOrderItemsStore(DOING_STATUS);
+    const storeId = storeDetail?._id;
+    let previousStatus = orderItems[0].status;
+    let menuId;
+    let _updateItems = isCheckedOrderItem?.filter((e) => e?.isChecked).map((i) => {
+      console.log(i?._id);
+      return {
+        status: status,
+        _id: i?._id,
+        menuId: i?.menuId
+      }
+    })
+    console.log("_updateItems=======>", _updateItems);
+
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+      if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS)
+      Swal.fire({
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+  };
+
+  const handleUpdateOrderStatuscancel = async (status,) => {
+    getOrderItemsStore(CANCEL_STATUS);
+    const storeId = storeDetail?._id;
+    let previousStatus = orderItems[0].status;
+    let menuId;
+    let _updateItems = isCheckedOrderItem?.filter((e) => e?.isChecked).map((i) => {
+
+      return {
+        status: status,
+        _id: i?._id,
+        menuId: i?.menuId
+      }
+    })
+    console.log("_updateItems=======>", _updateItems);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+      if (previousStatus == CANCEL_STATUS
+      ) getOrderItemsStore(CANCEL_STATUS,
+      )
+      Swal.fire({
+        icon: 'success',
+        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        showConfirmButton: false,
+        timer: 2000
+      })
+    }
+  };
 
   return (
     <div style={TITLE_HEADER}>
@@ -731,6 +861,23 @@ export default function TableList() {
                             + ເພີ່ມອໍເດີ
                           </Button>
                         </div>
+
+                      </div>
+
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-around", padding: "10px", }}>
+                      <div>
+                        <button style={{ backgroundColor: "#FB6E3B", color: "#fff", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatuscancel("CANCEL")}  >ຍົກເລີກ</button>
+                      </div>
+                      <div style={{ width: "10px" }}></div>
+
+                      <div>
+                        <button style={{ backgroundColor: "#FB6E3B", color: "#fff", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatusgo("DOING")}  >ສົ່ງໄປຄົວ</button>
+                      </div>
+                      <div style={{ width: "10px" }}></div>
+
+                      <div>
+                        <button style={{ backgroundColor: "#FB6E3B", color: "#fff", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatus("SERVED")} >ເສີບແລ້ວ</button>
                       </div>
                     </div>
                     <div style={{ height: 20 }}></div>
@@ -829,8 +976,8 @@ export default function TableList() {
                           </tr>
                         </thead>
                         <tbody>
-                          {tableOrderItems
-                            ? tableOrderItems?.map((orderItem, index) => (
+                          {isCheckedOrderItem
+                            ? isCheckedOrderItem?.map((orderItem, index) => (
                               <tr
                                 key={"order" + index}
                                 style={{ borderBottom: "1px solid #eee" }}
@@ -851,7 +998,7 @@ export default function TableList() {
                                     control={
                                       <Checkbox
                                         name="checked"
-                                        isChecked={orderItem?.isChecked}
+                                        isChecked={orderItem?.isChecked||false}
                                       />
                                     }
                                     onChange={(e) =>
@@ -1050,8 +1197,8 @@ export default function TableList() {
           dataBill={dataBill}
         />
       </div>
-      {isCheckedOrderItem?.filter((e)=>e?.isChecked).map((val) => {
-        return <div style={{ width: "80mm", padding: 10}}>
+      {isCheckedOrderItem?.filter((e) => e?.isChecked).map((val) => {
+        return <div style={{ width: "80mm", padding: 10 }}>
           <BillForChef80
             storeDetail={storeDetail}
             selectedTable={selectedTable}
@@ -1062,16 +1209,16 @@ export default function TableList() {
         </div>
       })}
       <div>
-      {isCheckedOrderItem?.filter((e)=>e?.isChecked).map((val) => {
-        return <div style={{ width: "80mm", padding: 10}}>
-          <BillForChef58
-            storeDetail={storeDetail}
-            selectedTable={selectedTable}
-            dataBill={dataBill}
-            val={val}
-          />
-        </div>
-      })}
+        {isCheckedOrderItem?.filter((e) => e?.isChecked).map((val) => {
+          return <div style={{ width: "80mm", padding: 10 }}>
+            <BillForChef58
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              dataBill={dataBill}
+              val={val}
+            />
+          </div>
+        })}
       </div>
 
       <OrderCheckOut
