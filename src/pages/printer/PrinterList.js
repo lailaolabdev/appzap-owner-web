@@ -4,7 +4,7 @@ import styled from "styled-components";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import PopUpAddPrinter from "../../components/popup/PopUpAddPrinter";
 import { COLOR_APP } from "../../constants";
-import { addPrinter, getPrinters } from "../../services/printer";
+import { addPrinter } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 
 export default function PrinterList() {
@@ -12,25 +12,14 @@ export default function PrinterList() {
 
   // state
   const [popup, setPopup] = useState({ add: false });
-  const [printers, setPrinters] = useState();
 
-  const { storeDetail } = useStore();
+  const { getPrintersState, printers } = useStore();
 
   const handleAddPrinter = async (value) => {
     const data = await addPrinter(value);
-    getData();
+    getPrintersState();
     setPopup();
   };
-
-  const getData = async () => {
-    let findby = "?";
-    findby += `storeId=${storeDetail?._id}`;
-    const data = await getPrinters(findby);
-    setPrinters(data);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
   return (
     <>
       <div style={{ padding: 10 }}>

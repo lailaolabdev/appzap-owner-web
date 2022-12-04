@@ -12,6 +12,7 @@ import {
   addReservation,
   getReservations,
 } from "../../services/reservation";
+import Box from "../../components/Box"
 // popup
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import ButtonTab from "../../components/button/ButtonTab";

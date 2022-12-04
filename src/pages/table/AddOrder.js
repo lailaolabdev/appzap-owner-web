@@ -54,7 +54,91 @@ function AddOrder() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
 
-  const { storeDetail } = useStore();
+  const { storeDetail, printers, selectedTable } = useStore();
+
+  const arrLength = selectedMenu?.length;
+  const billForCher80 = useRef([]);
+  const billForCher58 = useRef([]);
+  if (billForCher80.current.length !== arrLength) {
+    // add or remove refs
+    billForCher80.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCher80.current[i]);
+  }
+  if (billForCher58.current.length !== arrLength) {
+    // add or remove refs
+    billForCher58.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCher58?.current[i]);
+  }
+  const onPrintForCher = async () => {
+    const orderSelect = selectedMenu;
+    let _index = 0;
+    for (const _ref of billForCher80.current) {
+      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
+      const _printer = printers.find((e) => {
+        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
+        return e?._id == orderSelect?.[_index]?.printer;
+      });
+      console.log("_printer", _printer);
+
+      try {
+        let dataUrl;
+        if (_printer?.width == "80mm") {
+          dataUrl = await html2canvas(billForCher80?.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            // scale: 530 / widthBill80,
+          });
+        }
+        if (_printer?.width == "58mm") {
+          dataUrl = await html2canvas(billForCher58?.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            // scale: 350 / widthBill58,
+          });
+        }
+
+        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        await axios({
+          method: "post",
+          url: "http://localhost:9150/ethernet/image",
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        // axios.post("http://localhost:9150/ethernet/text", {
+        //   config: {
+        //     ip: "192.168.100.236",
+        //     port: 9100,
+        //   },
+        //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
+        // });
+        await Swal.fire({
+          icon: "success",
+          title: "ປິນສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        console.log(err);
+        await Swal.fire({
+          icon: "error",
+          title: "ປິນບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+      _index++;
+    }
+  };
 
   useEffect(() => {
     console.log("allSelectedMenu", allSelectedMenu);
@@ -114,7 +198,8 @@ function AddOrder() {
   };
 
   const addToCart = (menu) => {
-    setSelectedItem(menu);
+    console.log("menu", menu);
+    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
     let data = {
@@ -123,6 +208,7 @@ function AddOrder() {
       quantity: 1,
       price: menu.price,
       categoryId: menu?.categoryId,
+      printer: menu?.categoryId?.printer,
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -202,11 +288,12 @@ function AddOrder() {
             });
             if (isPrinted) {
               //  print
-              onPrint();
+              onPrintForCher().then(() => {
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              });
             }
-            navigate(
-              `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-            );
           }
         })
         .catch((error) => {
@@ -242,41 +329,6 @@ function AddOrder() {
     if (selectedMenu.length != 0) {
       await createOrder(selectedMenu, header, isPrinted);
     }
-  };
-
-  const [widthBill80, setWidthBill80] = useState(0);
-  const [widthBill58, setWidthBill58] = useState(0);
-
-  let BillForChef80Ref = useRef(null);
-  let BillForChef58Ref = useRef(null);
-
-  const [billForChef80sRef, setBillForChef80sRef] = useState([]);
-
-  useLayoutEffect(() => {
-    setWidthBill80(BillForChef80Ref.current.offsetWidth);
-    setWidthBill58(BillForChef58Ref.current.offsetWidth);
-  }, [BillForChef80Ref, BillForChef58Ref]);
-
-  const onPrint = async () => {
-    // console.log("dataUrl", dataUrl);
-    const dataUrl = await html2canvas(BillForChef80Ref.current, {
-      useCORS: true,
-      scrollX: 10,
-      scrollY: 0,
-      scale: 530 / widthBill80,
-    });
-    const _file = await base64ToBlob(dataUrl.toDataURL());
-    // link.click();
-    var bodyFormData = new FormData();
-    bodyFormData.append("ip", "192.168.1.237");
-    bodyFormData.append("port", "9100");
-    bodyFormData.append("image", _file);
-    axios({
-      method: "post",
-      url: "http://localhost:9150/ethernet/image",
-      data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
-    });
   };
 
   return (
@@ -471,11 +523,37 @@ function AddOrder() {
           </div>
         </div>
       </div>
-      <div ref={BillForChef80Ref}>
-        <BillForChef80 />
-      </div>
-      <div ref={BillForChef58Ref}>
-        <BillForChef58 />
+      {selectedMenu?.map((val, i) => {
+        return (
+          <div
+            style={{ width: "80mm", padding: 10 }}
+            ref={(el) => (billForCher80.current[i] = el)}
+          >
+            <BillForChef80
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              // dataBill={dataBill}
+              val={val}
+            />
+          </div>
+        );
+      })}
+      <div>
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCher58.current[i] = el)}
+            >
+              <BillForChef58
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={val}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

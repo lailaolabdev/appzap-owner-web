@@ -1,7 +1,6 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 import moment from "moment";
-
 
 export default function BillForChef80({ selectedTable, dataBill, val }) {
   return (
@@ -11,24 +10,20 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
       </div>
       <hr></hr>
       <div style={{ textAlign: "center" }}>
-        <p>ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</p>
+        <p>
+          ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+        </p>
       </div>
       <hr></hr>
 
       <div style={{ textAlign: "center" }}>
-        {
-          val?.name
-        }
+        {val?.name} ({val?.quantity})
       </div>
       <hr></hr>
-
-
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
-width: 80mm;
-`
-
-
+  width: 80mm;
+`;

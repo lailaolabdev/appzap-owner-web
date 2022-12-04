@@ -4,17 +4,16 @@ import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { END_POINT_SEVER } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
-import {  getPrinters } from "../../services/printer";
+import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 
 export default function PrinterCounter() {
-
   // state
   const [printers, setPrinters] = useState();
   const [selectPrinterCounter, setSelectPrinterCounter] = useState();
   const [printsData, setPrintsData] = useState();
 
-  const { storeDetail } = useStore();
+  const { storeDetail, getPrinterCounterState } = useStore();
 
   useEffect(() => {
     if (selectPrinterCounter?.prints) {
@@ -53,6 +52,32 @@ export default function PrinterCounter() {
         { headers: await getHeaders() }
       );
       getSelectPrinter();
+      getPrinterCounterState();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleChangePrinterHistory = async (e) => {
+    const printerId = e.target.value;
+    try {
+      const _printerPrev = JSON.parse(selectPrinterCounter?.prints);
+      const _printerForUpdate = {
+        BILL: _printerPrev?.BILL,
+        BILL_HISTORY: printerId,
+      };
+      const value = {
+        id: selectPrinterCounter?._id,
+        data: {
+          prints: JSON.stringify(_printerForUpdate),
+        },
+      };
+      const data = await Axios.put(
+        `${END_POINT_SEVER}/v3/setting/update`,
+        value,
+        { headers: await getHeaders() }
+      );
+      getSelectPrinter();
+      getPrinterCounterState();
     } catch (err) {
       console.log(err);
     }
@@ -67,18 +92,38 @@ export default function PrinterCounter() {
   useEffect(() => {
     getData();
     getSelectPrinter();
+    getPrinterCounterState();
   }, []);
   return (
     <div>
       <Form.Group>
         <Form.Label>
-          ປະເພດປິນເຕີ <span style={{ color: "red" }}>*</span>
+          ພິມບິນໜ້າໂຕະ <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
           name="type"
           value={printsData?.BILL}
           onChange={(e) => handleChangePrinterCounter(e)}
+        >
+          <option value="">--ເລືອກປິນເຕີ--</option>
+          {printers?.map((e, i) => (
+            <option value={e?._id} key={i}>
+              {e?.name} ({e?.ip})
+            </option>
+          ))}
+        </Form.Control>
+      </Form.Group>
+      <br />
+      <Form.Group>
+        <Form.Label>
+          ພິມບິນໜ້າປະຫວັດ <span style={{ color: "red" }}>*</span>
+        </Form.Label>
+        <Form.Control
+          as="select"
+          name="type"
+          value={printsData?.BILL_HISTORY}
+          onChange={(e) => handleChangePrinterHistory(e)}
         >
           <option value="">--ເລືອກປິນເຕີ--</option>
           {printers?.map((e, i) => (

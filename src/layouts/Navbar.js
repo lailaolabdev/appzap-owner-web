@@ -4,7 +4,13 @@ import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
-import { USER_KEY, END_POINT, URL_PHOTO_AW3, VERSION } from "../constants";
+import {
+  USER_KEY,
+  END_POINT,
+  URL_PHOTO_AW3,
+  VERSION,
+  COLOR_APP,
+} from "../constants";
 import { useNavigate } from "react-router-dom";
 import ImageProfile from "../image/profile.png";
 import { Badge, Modal, Button, Table } from "react-bootstrap";
@@ -19,6 +25,7 @@ import SideNav, {
   NavIcon,
   NavText,
 } from "@trendmicro/react-sidenav";
+import Box from "../components/Box";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -63,7 +70,7 @@ export default function NavBar() {
           position: "fixed",
           zIndex: 1,
           // marginLeft: 60,
-          paddingRight: 80,
+          // paddingRight: 80,
         }}
         variant="dark"
       >
@@ -71,7 +78,9 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p style={{ marginTop: 20 }}>Version:{VERSION}</p>
+          <div style={{ flexGrow: 1 }} />
+          <Language />
+          {/* <p style={{ marginTop: 20 }}>Version:{VERSION}</p> */}
           {/* <div style={{ marginLeft: 20 }}></div> */}
           {/* <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
@@ -91,13 +100,15 @@ export default function NavBar() {
                 variant=""
                 id="dropdown-basic"
               >
-                {userData
-                  ? (userData?.data?.firstname
-                      ? userData?.data?.firstname
-                      : "") +
-                    " " +
-                    (userData?.data?.lastname ? userData?.data?.lastname : "")
-                  : ""}
+                <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                  {userData
+                    ? (userData?.data?.firstname
+                        ? userData?.data?.firstname
+                        : "") +
+                      " " +
+                      (userData?.data?.lastname ? userData?.data?.lastname : "")
+                    : ""}
+                </Box>
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
@@ -124,3 +135,23 @@ export default function NavBar() {
     </div>
   );
 }
+
+const Language = () => {
+  let _l = ["LA", "EN", "中文"];
+  return (
+    <Box sx={{ display: "flex" }}>
+      {_l.map((e, i) => (
+        <Box
+          sx={{
+            padding: 10,
+            borderLeft: i > 0 ? "1px solid #ccc" : "",
+            color: COLOR_APP,
+          }}
+          key={i}
+        >
+          {e}
+        </Box>
+      ))}
+    </Box>
+  );
+};
