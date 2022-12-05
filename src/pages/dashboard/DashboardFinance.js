@@ -7,6 +7,7 @@ import { _statusCheckBill, orderStatus } from "./../../helpers";
 import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
 import { useParams } from "react-router-dom";
+import Box from "../../components/Box";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const params = useParams();
@@ -101,8 +102,10 @@ export default function DashboardFinance({ startDate, endDate }) {
               data?.checkOut[i]?.transferAmount + data?.checkOut[i]?.payAmount >
               data?.checkOut[i]?.billAmount
             ) {
-              _checkBill.cash += data?.checkOut[i]?.billAmount - data?.checkOut[i]?.transferAmount ;
-            } else{
+              _checkBill.cash +=
+                data?.checkOut[i]?.billAmount -
+                data?.checkOut[i]?.transferAmount;
+            } else {
               _checkBill.cash += data?.checkOut[i]?.payAmount;
             }
             _checkBill.transfer += data?.checkOut[i]?.transferAmount;
@@ -153,11 +156,14 @@ export default function DashboardFinance({ startDate, endDate }) {
       {isLoading && <AnimationLoading />}
       <div className="row">
         <div style={{ width: "100%" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              flexDirection: "row",
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                md: "1fr 1fr 1fr",
+                sm: "1fr 1fr",
+                xs: "1fr",
+              },
               padding: 10,
             }}
           >
@@ -175,7 +181,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   color: "#fff",
                   backgroundColor: "#FB6E3B",
                   display: "flex",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   alignItems: "center",
                 }}
               >
@@ -219,7 +225,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   ກີບ
                 </div>
                 <div>
-                ຍັງຄ້າງ :{" "}
+                  ຍັງຄ້າງ :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
@@ -241,7 +247,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   color: "#fff",
                   backgroundColor: "#FB6E3B",
                   display: "flex",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   alignItems: "center",
                 }}
               >
@@ -300,7 +306,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   color: "#fff",
                   backgroundColor: "#FB6E3B",
                   display: "flex",
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   alignItems: "center",
                 }}
               >
@@ -331,115 +337,121 @@ export default function DashboardFinance({ startDate, endDate }) {
                 </div>
               </div>
             </div>
-          </div>
+          </Box>
           <div style={{ height: 10 }}></div>
-          <Table striped hover size="sm" style={{ fontSize: 15 }}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>ໂຕະ</th>
-                <th>ລະຫັດ</th>
-                <th>ສວ່ນຫຼຸດ</th>
-                <th>ລາຄາ / ບິນ</th>
-                <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
-                <th>ສະຖານະຂອງໂຕະ</th>
-                <th>ຮູບແບບການຊຳລະ</th>
-                <th>ເວລາ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.checkOut?.map((item, index) => (
-                <tr
-                  key={"finance-" + index}
-                  onClick={() => handleShow(item?.orderId)}
-                  style={{
-                    backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
-                      item?.status
-                    )
-                      ? "#FB6E3B"
-                      : "",
-                    color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                      ? "#ffffff"
-                      : "#616161",
-                  }}
-                >
-                  <td>{index + 1}</td>
-                  <td>{item?.tableId?.name ?? "-"}</td>
-                  <td>{item?.code}</td>
-                  <td>
-                    {item?.discountType === "LAK"
-                      ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.discount) + "ກີບ"
-                      : item?.discount + "%"}
-                  </td>
-                  <td>
-                    {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                      ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(_countAmount(item?.orderId))
-                      : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.billAmount)}{" "}
-                    ກີບ
-                  </td>
-                  <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <p style={{ marginLeft: 5 }}>
-                        {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
-                      </p>
-                      <p style={{ marginLeft: 5 }}> / </p>
-                      <p
+          <div style={{ padding: 10 }}>
+            <Table striped hover size="sm" style={{ fontSize: 15 }}>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  {/* <th>ໂຕະ</th> */}
+                  <th>ລະຫັດ</th>
+                  {/* <th>ສວ່ນຫຼຸດ</th> */}
+                  <th>ລາຄາ / ບິນ</th>
+                  {/* <th>ເສີບແລ້ວ / ຍົກເລີກ</th> */}
+                  {/* <th>ສະຖານະຂອງໂຕະ</th> */}
+                  {/* <th>ຮູບແບບການຊຳລະ</th> */}
+                  <th>ເວລາ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.checkOut?.map((item, index) => (
+                  <tr
+                    key={"finance-" + index}
+                    onClick={() => handleShow(item?.orderId)}
+                    style={{
+                      backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
+                        item?.status
+                      )
+                        ? "#FB6E3B"
+                        : "",
+                      color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                        ? "#ffffff"
+                        : "#616161",
+                    }}
+                  >
+                    <td>{index + 1}</td>
+                    {/* <td>{item?.tableId?.name ?? "-"}</td> */}
+                    <td>{item?.code}</td>
+                    {/* <td>
+                      {item?.discountType === "LAK"
+                        ? new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(item?.discount) + "ກີບ"
+                        : item?.discount + "%"}
+                    </td> */}
+                    <td>
+                      {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                        ? new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
+                        : new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(item?.billAmount)}{" "}
+                      ກີບ
+                    </td>
+                    {/* <td>
+                      <div
                         style={{
-                          color:
-                            _countOrder(item?.orderId)?._countOrderCancel > 0
-                              ? "red"
-                              : "",
-                          marginLeft: 5,
+                          display: "flex",
+                          justifyContent: "center",
+                          flexDirection: "row",
                         }}
                       >
-                        {" "}
-                        {_countOrder(item?.orderId)?._countOrderCancel}
-                      </p>
-                    </div>
-                  </td>
-                  <td
-                    style={{
-                      color:
-                        item?.status === "CHECKOUT"
-                          ? "green"
-                          : item?.status === "CALLTOCHECKOUT"
-                          ? "red"
-                          : item?.status === "ACTIVE"
-                          ? "#00496e"
-                          : "",
-                    }}
-                  >
-                    {_statusCheckBill(item?.status)}
-                  </td>
-                  <td
-                    style={{
-                      color:
-                        item?.paymentMethod === "CASH" ? "#00496e" : "#fc8626",
-                    }}
-                  >
-                    {item?.paymentMethod === "CASH"
-                      ? "ຈ່າຍເງິນສົດ"
-                      : item?.paymentMethod === "BCEL"
-                      ? "ຈ່າຍເງິນໂອນ"
-                      : "-"}
-                  </td>
-                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+                        <p style={{ marginLeft: 5 }}>
+                          {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
+                        </p>
+                        <p style={{ marginLeft: 5 }}> / </p>
+                        <p
+                          style={{
+                            color:
+                              _countOrder(item?.orderId)?._countOrderCancel > 0
+                                ? "red"
+                                : "",
+                            marginLeft: 5,
+                          }}
+                        >
+                          {" "}
+                          {_countOrder(item?.orderId)?._countOrderCancel}
+                        </p>
+                      </div>
+                    </td> */}
+                    {/* <td
+                      style={{
+                        color:
+                          item?.status === "CHECKOUT"
+                            ? "green"
+                            : item?.status === "CALLTOCHECKOUT"
+                            ? "red"
+                            : item?.status === "ACTIVE"
+                            ? "#00496e"
+                            : "",
+                      }}
+                    >
+                      {_statusCheckBill(item?.status)}
+                    </td> */}
+                    {/* <td
+                      style={{
+                        color:
+                          item?.paymentMethod === "CASH"
+                            ? "#00496e"
+                            : "#fc8626",
+                      }}
+                    >
+                      {item?.paymentMethod === "CASH"
+                        ? "ຈ່າຍເງິນສົດ"
+                        : item?.paymentMethod === "BCEL"
+                        ? "ຈ່າຍເງິນໂອນ"
+                        : "-"}
+                    </td> */}
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
         <div style={{ width: "50%", padding: 20 }}></div>
       </div>

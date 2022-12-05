@@ -29,6 +29,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob, resizeImage } from "../../helpers";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
+import Box from "../../components/Box";
 
 /**
  * component
@@ -93,7 +94,13 @@ export default function TableList() {
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [dataStore, setStore] = useState();
   const [selectedOrder, setSelectedOrder] = useState([]);
-  const { orderItems, setOrderItems, getOrderItemsStore } = useStore();
+  const {
+    orderItems,
+    setOrderItems,
+    getOrderItemsStore,
+    printerCounter,
+    printers,
+  } = useStore();
   const [getTokken, setgetTokken] = useState();
 
   // const [ref , setRef] = useRef();
@@ -408,26 +415,38 @@ export default function TableList() {
   }, [bill80Ref, bill58Ref]);
   const onPrintBill = async () => {
     try {
-      const dataUrl = await html2canvas(bill80Ref.current, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-        scale: 530 / widthBill80,
-      });
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      console.log("printerBillData", printerBillData);
+      let dataImageForPrint;
+      if (printerBillData?.width == "80mm") {
+        dataImageForPrint = await html2canvas(bill80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
 
-      // const dataUrl = await html2canvas(bill58Ref.current, {
-      //   useCORS: true,
-      //   scrollX: 10,
-      //   scrollY: 0,
-      //   scale: 350 / widthBill58,
-      // });
+      if (printerBillData?.width == "58mm") {
+        dataImageForPrint = await html2canvas(bill58Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 350 / widthBill58,
+        });
+      }
+
       // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
-      const _file = await base64ToBlob(dataUrl.toDataURL());
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
-      bodyFormData.append("ip", "192.168.100.236");
+      bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
+
       await axios({
         method: "post",
         url: "http://localhost:9150/ethernet/image",
@@ -457,37 +476,56 @@ export default function TableList() {
       });
     }
   };
+
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
-  const elRefs = useRef([]);
-  if (elRefs.current.length !== arrLength) {
+  const billForCher80 = useRef([]);
+  const billForCher58 = useRef([]);
+  if (billForCher80.current.length !== arrLength) {
     // add or remove refs
-    elRefs.current = Array(arrLength)
+    billForCher80.current = Array(arrLength)
       .fill()
-      .map((_, i) => elRefs.current[i]);
+      .map((_, i) => billForCher80.current[i]);
+  }
+  if (billForCher58.current.length !== arrLength) {
+    // add or remove refs
+    billForCher58.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCher58.current[i]);
   }
   const onPrintForCher = async () => {
-    console.log(elRefs.current);
-    for (const _ref of elRefs.current) {
-      console.log("_ref", _ref);
-      try {
-        const dataUrl = await html2canvas(_ref, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 1,
-        });
+    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    let _index = 0;
+    for (const _ref of billForCher80.current) {
+      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
+      const _printer = printers.find((e) => {
+        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
+        return e?._id == orderSelect?.[_index]?.printer;
+      });
 
-        // const dataUrl = await html2canvas(bill58Ref.current, {
-        //   useCORS: true,
-        //   scrollX: 10,
-        //   scrollY: 0,
-        //   scale: 350 / widthBill58,
-        // });
+      try {
+        let dataUrl;
+        if (_printer?.width == "80mm") {
+          dataUrl = await html2canvas(billForCher80.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            scale: 530 / widthBill80,
+          });
+        }
+        if (_printer?.width == "58mm") {
+          dataUrl = await html2canvas(billForCher58.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            scale: 350 / widthBill58,
+          });
+        }
+
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
-        bodyFormData.append("ip", "192.168.100.236");
+        bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         await axios({
@@ -518,6 +556,7 @@ export default function TableList() {
           timer: 1500,
         });
       }
+      _index++;
     }
   };
 
@@ -662,10 +701,17 @@ export default function TableList() {
 
 
   return (
-    <div style={TITLE_HEADER}>
+    <div
+      style={{
+        backgroundColor: "#F9F9F9",
+        height: "100vh",
+        overflow: "hidden",
+        width: "100%",
+      }}
+    >
       {isTableOrderLoading ? <Loading /> : ""}
       <div style={{ marginTop: -10, paddingTop: 10 }}>
-        <div style={DIV_NAV}>
+        <div>
           <Nav
             variant="tabs"
             style={NAV}
@@ -688,22 +734,26 @@ export default function TableList() {
             ></Nav.Item>
           </Nav>
         </div>
-        <div
-          // style={BODY}
-          style={{
+        <Box
+          sx={{
             display: "flex",
             paddingBottom: 50,
             overflow: "hidden",
+            height: "100vh",
           }}
         >
-          <div style={half_backgroundColor}>
+          <Box sx={{ flexGrow: 1, overflow: "auto", height: "100%" }}>
             <Container>
               <div style={{ height: 10 }}></div>
-              <div
-                style={{
+              <Box
+                sx={{
                   display: "grid",
                   gap: 5,
-                  gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                  gridTemplateColumns: {
+                    md: "1fr 1fr 1fr 1fr",
+                    sm: "1fr 1fr 1fr",
+                    xs: "1fr 1fr",
+                  },
                 }}
               >
                 {tableList &&
@@ -767,143 +817,145 @@ export default function TableList() {
                       </div>
                     </div>
                   ))}
-              </div>
+              </Box>
             </Container>
-          </div>
+          </Box>
           {/* Detail Table */}
-          {selectedTable != null &&
-            selectedTable?.isStaffConfirm &&
-            selectedTable?.isOpened && (
-              <div
-                style={{
-                  width: "60%",
-                  backgroundColor: "#FFF",
-                  maxHeight: "90vh",
-                  borderColor: "black",
-                  overflowY: "scroll",
-                  borderWidth: 1,
-                  paddingLeft: 20,
-                  paddingTop: 20,
-                }}
-              >
-                {
-                  <Container>
-                    <Row style={{ margin: 0 }}>
-                      <Col sm={12} style={{ backgroundColor: "#eee" }}>
-                        <p
-                          style={{
-                            fontSize: 30,
-                            margin: 0,
-                            fontWeight: "bold",
-                          }}
-                        >
-                          ຂໍ້ມູນໂຕະ
-                        </p>
-                        <p
-                          style={{
-                            fontSize: 20,
-                            margin: 0,
-                            fontWeight: "bold",
-                          }}
-                        >
-                          ໂຕະ: {selectedTable?.tableName}{" "}
-                        </p>
-                        <p style={{ fontSize: 20, margin: 0 }}>
-                          ລະຫັດເຂົ້າໂຕະ: {selectedTable?.code}
-                        </p>
-                        <p style={{ fontSize: 20, margin: 0 }}>
-                          ເວລາເປີດໂຕະ:{" "}
-                          {moment(selectedTable?.createdAt).format(
-                            "HH:mm:ss A"
-                          )}
-                        </p>
-                        <p style={{ fontSize: 20, margin: 0 }}>
-                          ຜູ້ຮັບຜິດຊອບ:{" "}
-                          {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                          dataBill?.orderId[0]?.updatedBy?.lastname
-                            ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
-                            : ""}
-                        </p>
-                        <p style={{ fontSize: 20, margin: 0 }}>
-                          ມີສ່ວນຫຼຸດ: {moneyCurrency(dataBill?.discount)}{" "}
-                          {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
-                        </p>
-                      </Col>
-                    </Row>
-                    <div
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        display: "flex",
-                        paddingTop: 15,
-                      }}
-                    >
-                      <div
-                        style={{
-                          alignItems: "end",
-                          flexDirection: "column",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      ></div>
-                      <div
-                        style={{
-                          display:
-                            CheckStatus?.length ===
-                            tableOrderItems?.length - CheckStatusCancel?.length
-                              ? CheckStatus?.length !==
-                                tableOrderItems?.length -
-                                  CheckStatusCancel?.length
-                                ? ""
-                                : CheckStatus?.length === 0
-                                ? ""
-                                : "none"
-                              : "none",
-                        }}
-                      ></div>
-                      <div
-                        style={{ display: "flex", justifyContent: "center" }}
-                      >
-                        <div style={{}}>
-                          <Button
-                            variant="light"
-                            className="hover-me"
+          <Box sx={{ display: { xs: "none", sm: "block" }, minWidth: 600 }}>
+            {selectedTable != null &&
+              selectedTable?.isStaffConfirm &&
+              selectedTable?.isOpened && (
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#FFF",
+                    maxHeight: "90vh",
+                    borderColor: "black",
+                    overflowY: "scroll",
+                    borderWidth: 1,
+                    paddingLeft: 20,
+                    paddingTop: 20,
+                  }}
+                >
+                  {
+                    <Container>
+                      <Row style={{ margin: 0 }}>
+                        <Col sm={12} style={{ backgroundColor: "#eee" }}>
+                          <p
                             style={{
-                              marginRight: 15,
-                              backgroundColor: "#FB6E3B",
-                              color: "#ffffff",
+                              fontSize: 30,
+                              margin: 0,
                               fontWeight: "bold",
-                              height: 60,
                             }}
-                            onClick={() => _openModalSetting(selectedTable)}
                           >
-                            {/* <FontAwesomeIcon
+                            ຂໍ້ມູນໂຕະ
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 20,
+                              margin: 0,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            ໂຕະ: {selectedTable?.tableName}{" "}
+                          </p>
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            ລະຫັດເຂົ້າໂຕະ: {selectedTable?.code}
+                          </p>
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            ເວລາເປີດໂຕະ:{" "}
+                            {moment(selectedTable?.createdAt).format(
+                              "HH:mm:ss A"
+                            )}
+                          </p>
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            ຜູ້ຮັບຜິດຊອບ:{" "}
+                            {dataBill?.orderId[0]?.updatedBy?.firstname &&
+                            dataBill?.orderId[0]?.updatedBy?.lastname
+                              ? dataBill?.orderId[0]?.updatedBy?.firstname +
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              : ""}
+                          </p>
+                          <p style={{ fontSize: 20, margin: 0 }}>
+                            ມີສ່ວນຫຼຸດ: {moneyCurrency(dataBill?.discount)}{" "}
+                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
+                          </p>
+                        </Col>
+                      </Row>
+                      <div
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          display: "flex",
+                          paddingTop: 15,
+                        }}
+                      >
+                        <div
+                          style={{
+                            alignItems: "end",
+                            flexDirection: "column",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        ></div>
+                        <div
+                          style={{
+                            display:
+                              CheckStatus?.length ===
+                              tableOrderItems?.length -
+                                CheckStatusCancel?.length
+                                ? CheckStatus?.length !==
+                                  tableOrderItems?.length -
+                                    CheckStatusCancel?.length
+                                  ? ""
+                                  : CheckStatus?.length === 0
+                                  ? ""
+                                  : "none"
+                                : "none",
+                          }}
+                        ></div>
+                        <div
+                          style={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <div style={{}}>
+                            <Button
+                              variant="light"
+                              className="hover-me"
+                              style={{
+                                marginRight: 15,
+                                backgroundColor: "#FB6E3B",
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                height: 60,
+                              }}
+                              onClick={() => _openModalSetting(selectedTable)}
+                            >
+                              {/* <FontAwesomeIcon
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                            ປິດໂຕະ
-                          </Button>
-                          <Button
-                            variant="light"
-                            className="hover-me"
-                            style={{
-                              marginRight: 15,
-                              backgroundColor: "#FB6E3B",
-                              color: "#ffffff",
-                              fontWeight: "bold",
-                              height: 60,
-                            }}
-                            onClick={handleShow}
-                          >
-                            <FontAwesomeIcon
-                              // icon={faRetweet}
-                              style={{ color: "#fff", marginRight: 10 }}
-                            />
-                            ລວມໂຕະ
-                          </Button>
-                          {/* <Button
+                              ປິດໂຕະ
+                            </Button>
+                            <Button
+                              variant="light"
+                              className="hover-me"
+                              style={{
+                                marginRight: 15,
+                                backgroundColor: "#FB6E3B",
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                height: 60,
+                              }}
+                              onClick={handleShow}
+                            >
+                              <FontAwesomeIcon
+                                // icon={faRetweet}
+                                style={{ color: "#fff", marginRight: 10 }}
+                              />
+                              ລວມໂຕະ
+                            </Button>
+                            {/* <Button
                             variant="light"
                             className="hover-me"
                             style={{
@@ -921,138 +973,138 @@ export default function TableList() {
                             />{" "}
                             ເພີ່ມສ່ວນຫຼຸດ
                           </Button> */}
-                          <Button
-                            variant="light"
-                            className="hover-me"
-                            style={{
-                              marginRight: 15,
-                              backgroundColor: "#FB6E3B",
-                              color: "#ffffff",
-                              fontWeight: "bold",
-                              height: 60,
-                            }}
-                            disabled={!canCheckOut}
-                            onClick={() => _onCheckOut()}
-                          >
-                            <FontAwesomeIcon
-                              icon={faCashRegister}
-                              style={{ color: "#fff" }}
-                            />
-                            Checkout
-                          </Button>
-                          {/* <ReactToPrint
+                            <Button
+                              variant="light"
+                              className="hover-me"
+                              style={{
+                                marginRight: 15,
+                                backgroundColor: "#FB6E3B",
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                height: 60,
+                              }}
+                              disabled={!canCheckOut}
+                              onClick={() => _onCheckOut()}
+                            >
+                              <FontAwesomeIcon
+                                icon={faCashRegister}
+                                style={{ color: "#fff" }}
+                              />
+                              Checkout
+                            </Button>
+                            {/* <ReactToPrint
                         trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
                         content={() => componentRefA.current}
                       />
                       <div style={{ display: 'none' }}>
                         <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
                       </div> */}
-                        </div>
-                        <div>
-                          <Button
-                            variant="light"
-                            className="hover-me"
-                            style={{
-                              backgroundColor: "#FB6E3B",
-                              color: "#ffffff",
-                              fontWeight: "bold",
-                              height: 60,
-                            }}
-                            onClick={() =>
-                              _goToAddOrder(
-                                selectedTable?.tableId,
-                                selectedTable?.code,
-                                selectedTable?._id
-                              )
-                            }
-                          >
-                            + ເພີ່ມອໍເດີ
-                          </Button>
+                          </div>
+                          <div>
+                            <Button
+                              variant="light"
+                              className="hover-me"
+                              style={{
+                                backgroundColor: "#FB6E3B",
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                height: 60,
+                              }}
+                              onClick={() =>
+                                _goToAddOrder(
+                                  selectedTable?.tableId,
+                                  selectedTable?.code,
+                                  selectedTable?._id
+                                )
+                              }
+                            >
+                              + ເພີ່ມອໍເດີ
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        padding: "10px",
-                      }}
-                    >
-                      <Button
-                        variant="light"
-                        className="hover-me"
+                      <div
                         style={{
-                          marginRight: 15,
-                          backgroundColor: "#FB6E3B",
-                          color: "#ffffff",
-                          fontWeight: "bold",
-                          height: 60,
+                          display: "flex",
+                          justifyContent: "space-around",
+                          padding: "10px",
                         }}
-                        onClick={() => onPrintForCher()}
                       >
-                        {/* <FontAwesomeIcon
+                        <Button
+                          variant="light"
+                          className="hover-me"
+                          style={{
+                            marginRight: 15,
+                            backgroundColor: "#FB6E3B",
+                            color: "#ffffff",
+                            fontWeight: "bold",
+                            height: 60,
+                          }}
+                          onClick={() => onPrintForCher()}
+                        >
+                          {/* <FontAwesomeIcon
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                        ພິມບິນໄປຄົວ
-                      </Button>
-                      <div>
-                        <button
-                          style={{
-                            backgroundColor: "#FB6E3B",
-                            color: "#fff",
-                            border: "1px solid #FB6E3B",
-                          }}
-                          onClick={() =>
-                            handleUpdateOrderStatuscancel("CANCEL")
-                          }
-                        >
-                          ຍົກເລີກ
-                        </button>
-                      </div>
-                      <div style={{ width: "10px" }}></div>
+                          ພິມບິນໄປຄົວ
+                        </Button>
+                        <div>
+                          <button
+                            style={{
+                              backgroundColor: "#FB6E3B",
+                              color: "#fff",
+                              border: "1px solid #FB6E3B",
+                            }}
+                            onClick={() =>
+                              handleUpdateOrderStatuscancel("CANCEL")
+                            }
+                          >
+                            ຍົກເລີກ
+                          </button>
+                        </div>
+                        <div style={{ width: "10px" }}></div>
 
-                      <div>
-                        <button
-                          style={{
-                            backgroundColor: "#FB6E3B",
-                            color: "#fff",
-                            border: "1px solid #FB6E3B",
-                          }}
-                          onClick={() => handleUpdateOrderStatusgo("DOING")}
-                        >
-                          ສົ່ງໄປຄົວ
-                        </button>
-                      </div>
-                      <div style={{ width: "10px" }}></div>
+                        <div>
+                          <button
+                            style={{
+                              backgroundColor: "#FB6E3B",
+                              color: "#fff",
+                              border: "1px solid #FB6E3B",
+                            }}
+                            onClick={() => handleUpdateOrderStatusgo("DOING")}
+                          >
+                            ສົ່ງໄປຄົວ
+                          </button>
+                        </div>
+                        <div style={{ width: "10px" }}></div>
 
-                      <div>
-                        <button
-                          style={{
-                            backgroundColor: "#FB6E3B",
-                            color: "#fff",
-                            border: "1px solid #FB6E3B",
-                          }}
-                          onClick={() => handleUpdateOrderStatus("SERVED")}
-                        >
-                          ເສີບແລ້ວ
-                        </button>
+                        <div>
+                          <button
+                            style={{
+                              backgroundColor: "#FB6E3B",
+                              color: "#fff",
+                              border: "1px solid #FB6E3B",
+                            }}
+                            onClick={() => handleUpdateOrderStatus("SERVED")}
+                          >
+                            ເສີບແລ້ວ
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div style={{ height: 20 }}></div>
-                    <div
-                      style={{ display: _orderIsChecked() ? "none" : "flex" }}
-                    >
-                      ອັບເດດເປັນສະຖານະ:
-                    </div>
-                    <div style={{ height: 20 }}></div>
-                    <div
-                      style={{
-                        display: _orderIsChecked() ? "none" : "flex",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      {/* <div>
+                      <div style={{ height: 20 }}></div>
+                      <div
+                        style={{ display: _orderIsChecked() ? "none" : "flex" }}
+                      >
+                        ອັບເດດເປັນສະຖານະ:
+                      </div>
+                      <div style={{ height: 20 }}></div>
+                      <div
+                        style={{
+                          display: _orderIsChecked() ? "none" : "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        {/* <div>
                     <ReactToPrint
                       trigger={() => <Button
                         variant="light"
@@ -1064,79 +1116,84 @@ export default function TableList() {
                       <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
                     </div>
                   </div> */}
-                      <div>
-                        {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                        {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
+                        <div>
+                          {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
+                          {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, params?.storeId)}>ສົ່ງໄປຄົວ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, params?.storeId)}>ເສີບແລ້ວ</Button> */}
+                        </div>
                       </div>
-                    </div>
-                    <div style={padding_white} />
-                    <div>
-                      <Table
-                        responsive
-                        className="staff-table-list borderless table-hover"
-                      >
-                        <thead style={{ backgroundColor: "#F1F1F1" }}>
-                          <tr>
-                          <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
+                      <div style={padding_white} />
+                      <div>
+                        <Table
+                          responsive
+                          className="staff-table-list borderless table-hover"
+                        >
+                          <thead style={{ backgroundColor: "#F1F1F1" }}>
+                            <tr>
+                              <th>
+                                <FormControlLabel
+                                  control={<Checkbox name="checkedC" />}
+                                  style={{ marginLeft: 2 }}
+                                />
+                              </th>
 
-                            {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
-                            <th
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 50,
-                              }}
-                            >
-                              ລຳດັບ
-                            </th>
-                            <th
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 50,
-                              }}
-                            >
-                              ຊື່ເມນູ
-                            </th>
-                            <th
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 50,
-                              }}
-                            >
-                              ຈຳນວນ
-                            </th>
-                            <th
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 50,
-                              }}
-                            >
-                              ສະຖານະ
-                            </th>
-                            <th
-                              style={{
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: 50,
-                              }}
-                            >
-                              ເວລາ
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {isCheckedOrderItem
-                            ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  {/* <td style={{ border: "none" }}>
+                              {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
+                              <th
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height: 50,
+                                }}
+                              >
+                                ລຳດັບ
+                              </th>
+                              <th
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height: 50,
+                                }}
+                              >
+                                ຊື່ເມນູ
+                              </th>
+                              <th
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height: 50,
+                                }}
+                              >
+                                ຈຳນວນ
+                              </th>
+                              <th
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height: 50,
+                                }}
+                              >
+                                ສະຖານະ
+                              </th>
+                              <th
+                                style={{
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  height: 50,
+                                }}
+                              >
+                                ເວລາ
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {isCheckedOrderItem
+                              ? isCheckedOrderItem?.map((orderItem, index) => (
+                                  <tr
+                                    key={"order" + index}
+                                    style={{ borderBottom: "1px solid #eee" }}
+                                  >
+                                    {/* <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 checked={orderItem?.isChecked ? true : false}
@@ -1147,200 +1204,200 @@ export default function TableList() {
                               />
                             </div>
                           </td> */}
-                                  <td>
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          name="checked"
-                                          checked={
-                                            orderItem?.isChecked || false
-                                          }
-                                          // isChecked={
-                                          //   orderItem?.isChecked || false
-                                          // }
-                                        />
-                                      }
-                                      onChange={(e) =>
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        })
-                                      }
-                                      style={{ marginLeft: 2 }}
-                                    />
-                                  </td>
+                                    <td>
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            name="checked"
+                                            isChecked={
+                                              orderItem?.isChecked || false
+                                            }
+                                          />
+                                        }
+                                        onChange={(e) =>
+                                          onSelect({
+                                            ...orderItem,
+                                            isChecked: e.target.checked,
+                                          })
+                                        }
+                                        style={{ marginLeft: 2 }}
+                                      />
+                                    </td>
 
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>{index + 1}</p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.name}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.quantity}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                        color:
-                                          orderItem?.status === `SERVED`
-                                            ? "green"
-                                            : orderItem?.status === "DOING"
-                                            ? ""
-                                            : "red",
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.status
-                                          ? orderStatus(orderItem?.status)
-                                          : "-"}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.createdAt
-                                          ? moment(orderItem?.createdAt).format(
-                                              "HH:mm A"
-                                            )
-                                          : "-"}
-                                      </p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                            : ""}
-                        </tbody>
-                      </Table>
-                      {tableOrderItems?.length == 0 && (
-                        <div className="text-center">
-                          <div style={{ marginTop: 50, fontSize: 50 }}>
-                            {" "}
-                            ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>{index + 1}</p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.name}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.quantity}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                          color:
+                                            orderItem?.status === `SERVED`
+                                              ? "green"
+                                              : orderItem?.status === "DOING"
+                                              ? ""
+                                              : "red",
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.status
+                                            ? orderStatus(orderItem?.status)
+                                            : "-"}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.createdAt
+                                            ? moment(
+                                                orderItem?.createdAt
+                                              ).format("HH:mm A")
+                                            : "-"}
+                                        </p>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
+                              : ""}
+                          </tbody>
+                        </Table>
+                        {tableOrderItems?.length == 0 && (
+                          <div className="text-center">
+                            <div style={{ marginTop: 50, fontSize: 50 }}>
+                              {" "}
+                              ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ marginBottom: 100 }} />
-                  </Container>
-                }
+                        )}
+                      </div>
+                      <div style={{ marginBottom: 100 }} />
+                    </Container>
+                  }
+                </div>
+              )}
+            {selectedTable != null && !selectedTable?.isStaffConfirm && (
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#FFF",
+                  maxHeight: "90vh",
+                  borderColor: "black",
+                  overflowY: "scroll",
+                  borderWidth: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{ fontSize: 50, fontWeight: "bold" }}>
+                  {selectedTable?.tableName}
+                </p>
+                <QRCode
+                  value={
+                    "https://client.appzap.la/store/" +
+                    selectedTable?.storeId +
+                    "?tableId=" +
+                    selectedTable?.tableId
+                  }
+                  size={200}
+                />
+                <p style={{ fontSize: 20 }}>
+                  ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
+                  ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
+                </p>
+                <p style={{ fontSize: 20 }}>( Smart-Menu && Self-Ordering)</p>
+                <div style={{ height: 30 }} />
+                <Button
+                  variant="light"
+                  className="hover-me"
+                  style={{
+                    backgroundColor: "#FB6E3B",
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    fontSize: 40,
+                    padding: 20,
+                  }}
+                  onClick={() => openTable()}
+                >
+                  <FontAwesomeIcon
+                    icon={!selectedTable?.isOpened ? faArchway : faCheckCircle}
+                    style={{ color: "#fff" }}
+                  />{" "}
+                  {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
+                </Button>
               </div>
             )}
-          {selectedTable != null && !selectedTable?.isStaffConfirm && (
-            <div
-              style={{
-                width: "60%",
-                backgroundColor: "#FFF",
-                maxHeight: "90vh",
-                borderColor: "black",
-                overflowY: "scroll",
-                borderWidth: 1,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <p style={{ fontSize: 50, fontWeight: "bold" }}>
-                {selectedTable?.tableName}
-              </p>
-              <QRCode
-                value={
-                  "https://client.appzap.la/store/" +
-                  selectedTable?.storeId +
-                  "?tableId=" +
-                  selectedTable?.tableId
-                }
-                size={200}
-              />
-              <p style={{ fontSize: 20 }}>
-                ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
-                ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
-              </p>
-              <p style={{ fontSize: 20 }}>( Smart-Menu && Self-Ordering)</p>
-              <div style={{ height: 30 }} />
-              <Button
-                variant="light"
-                className="hover-me"
-                style={{
-                  backgroundColor: "#FB6E3B",
-                  color: "#ffffff",
-                  fontWeight: "bold",
-                  fontSize: 40,
-                  padding: 20,
-                }}
-                onClick={() => openTable()}
-              >
-                <FontAwesomeIcon
-                  icon={!selectedTable?.isOpened ? faArchway : faCheckCircle}
-                  style={{ color: "#fff" }}
-                />{" "}
-                {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
-              </Button>
-            </div>
-          )}
 
-          {selectedTable == null && (
-            <div
-              style={{
-                width: "60%",
-                backgroundColor: "#FFF",
-                maxHeight: "90vh",
-                borderColor: "black",
-                overflowY: "scroll",
-                borderWidth: 1,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <p style={{ margin: 0, fontSize: 30 }}>ເລືອກໂຕະເພື່ອເບິ່ງອໍເດີ</p>
-            </div>
-          )}
-        </div>
+            {selectedTable == null && (
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#FFF",
+                  maxHeight: "90vh",
+                  borderColor: "black",
+                  overflowY: "scroll",
+                  borderWidth: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <p style={{ margin: 0, fontSize: 30 }}>
+                  ເລືອກໂຕະເພື່ອເບິ່ງອໍເດີ
+                </p>
+              </div>
+            )}
+          </Box>
+        </Box>
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
@@ -1362,7 +1419,7 @@ export default function TableList() {
           return (
             <div
               style={{ width: "80mm", padding: 10 }}
-              ref={(el) => (elRefs.current[i] = el)}
+              ref={(el) => (billForCher80.current[i] = el)}
             >
               <BillForChef80
                 storeDetail={storeDetail}
@@ -1376,9 +1433,12 @@ export default function TableList() {
       <div>
         {isCheckedOrderItem
           ?.filter((e) => e?.isChecked)
-          .map((val) => {
+          .map((val, i) => {
             return (
-              <div style={{ width: "80mm", padding: 10 }}>
+              <div
+                style={{ width: "80mm", padding: 10 }}
+                ref={(el) => (billForCher58.current[i] = el)}
+              >
                 <BillForChef58
                   storeDetail={storeDetail}
                   selectedTable={selectedTable}

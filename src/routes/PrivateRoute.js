@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { useAuth } from "../helpers";
 import { useStore } from "../store";
@@ -13,7 +13,7 @@ function PrivateRoute({ component: Component, headerTitle, ...rest }) {
     const userData = JSON.parse(window.localStorage.getItem(USER_KEY));
     (async () => {
       const data = await getStore(userData?.data?.storeId);
-      setStoreDetail(data?.data)
+      setStoreDetail(data?.data);
     })();
   }, []);
   return (

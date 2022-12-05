@@ -5,19 +5,22 @@ import { useOrderState } from "./globalState/orderState";
 import { useStoreDetailState } from "./globalState/storeState";
 import { useMenuCategoryState } from "./globalState/menuCategoryState";
 import { useReservationState } from "./globalState/reservationState";
+import { usePrintersState } from "./globalState/printerState";
 
 export const StateProvider = ({ children }) => {
+  const storeDetail = useStoreDetailState();
   const order = useOrderState();
   const table = useTableState();
-  const menuCategory = useMenuCategoryState();
+  const menuCategory = useMenuCategoryState(storeDetail);
   const reservation = useReservationState();
-  const storeDetail = useStoreDetailState();
+  const printer = usePrintersState(storeDetail);
   let store = Object.assign(
     order,
     table,
     storeDetail,
     menuCategory,
-    reservation
+    reservation,
+    printer
   );
   return <Context.Provider value={store}>{children}</Context.Provider>;
 };

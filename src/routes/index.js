@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Login from "../pages/login/Login";
 import { useRoutes } from "react-router-dom";
 
@@ -44,7 +44,10 @@ import ReservationDashboard from "../pages/reservation_dashboard/ReservationDash
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
 
+import { useStore } from "../store";
+
 function Router() {
+ 
   return useRoutes([
     {
       path: "/",
