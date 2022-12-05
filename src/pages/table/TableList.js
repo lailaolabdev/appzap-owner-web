@@ -102,6 +102,7 @@ export default function TableList() {
     printers,
   } = useStore();
   const [getTokken, setgetTokken] = useState();
+
   // const [ref , setRef] = useRef();
 
   /**
@@ -580,6 +581,27 @@ export default function TableList() {
       setIsCheckedOrderItem(_data);
     }
   };
+  const checkAllOrders = (item) => {
+    // let _orderItems = [...orderItems]
+    let _newOrderItems = [];
+    if (item?.target?.checked) {
+        _newOrderItems = tableOrderItems.map((item) => {
+            return {
+                ...item,
+                isChecked: true
+            }
+        })
+    } else {
+        _newOrderItems = isCheckedOrderItem.map((item) => {
+            return {
+                ...item,
+                isChecked: false
+            }
+        })
+    }
+    console.log("first", _newOrderItems)
+    setIsCheckedOrderItem(_newOrderItems)
+}
 
   const handleUpdateOrderStatus = async (status) => {
     getOrderItemsStore(SERVE_STATUS);
@@ -595,8 +617,6 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    console.log("_updateItems=======>", _updateItems);
-
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
@@ -624,8 +644,6 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    console.log("_updateItems=======>", _updateItems);
-
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS);
@@ -652,7 +670,6 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    console.log("_updateItems=======>", _updateItems);
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       if (previousStatus == CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
@@ -664,6 +681,24 @@ export default function TableList() {
       });
     }
   };
+//   const handleCheckbox = async (order) => {
+//     let _orderItems = [...orderItems]
+//     let _newOrderItems = _orderItems.map((item) => {
+//         if (item._id == order._id) {
+//             return {
+//                 ...item,
+//                 isChecked: !item.isChecked
+//             }
+//         } else return item
+//     })
+//     let _orderItemForPrint = []
+//     for (let i = 0; i < _newOrderItems?.length; i++){
+//         if (_newOrderItems[i]?.isChecked === true) _orderItemForPrint.push(_newOrderItems[i])
+//     }
+//     setorderItemForPrintBillSelect(_orderItemForPrint)
+//     setOrderItems(_newOrderItems)
+// };
+
 
   return (
     <div
