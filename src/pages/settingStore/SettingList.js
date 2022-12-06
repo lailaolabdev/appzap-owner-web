@@ -7,12 +7,15 @@ import {
   faUsers,
   faUtensils,
   faBoxes,
+  faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
+import Box from "../../components/Box";
+import styled from "styled-components";
 
 export default function SettingList() {
   const params = useParams();
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const data = [
     {
@@ -51,33 +54,55 @@ export default function SettingList() {
       icon: <FontAwesomeIcon icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
     },
+    {
+      id: "0f90941b-c594-4365-a279-a995868ede2a",
+      title: "ຕັ້ງຄ່າປິນເຕີ້",
+      icon: <FontAwesomeIcon icon={faPrint} />,
+      path: `/printer`,
+    },
   ];
 
   return (
-    <div style={{ padding: 15 }} className="row text-center">
-      {data.map((e) => (
-        <button
-          type="button"
-          className="card col col-6 col-sm-4 col-md-3 col-lg-2"
-          style={{
-            padding: 10,
-            height: 100,
-            outlineColor: "#FB6E3B",
-            backgroundColor: "white",
-            border: "1px solid  #E4E4E4",
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-          }}
-          onClick={() =>
-            navigate(e.path)
-          }
-          key={e.id}
-        >
-          {e.icon}
-          {e.title}
-        </button>
-      ))}
+    <div style={{ height: "100%" }}>
+      <Box
+        sx={{
+          padding: 15,
+          display: "grid",
+          gridTemplateColumns: {
+            md: "repeat(4,1fr)",
+            sm: "repeat(3,1fr)",
+            xs: "repeat(2,1fr)",
+          },
+          gridGap: 10,
+          gridAutoRows: "200px",
+        }}
+      >
+        {data.map((e) => (
+          <ItemBox onClick={() => navigate(e.path)} key={e.id}>
+            {e.icon}
+            {e.title}
+          </ItemBox>
+        ))}
+      </Box>
     </div>
   );
 }
+
+const ItemBox = styled("div")({
+  padding: 10,
+  height: "100%",
+  color:"#212529",
+  outlineColor: "#FB6E3B",
+  backgroundColor: "white",
+  border: "1px solid  #E4E4E4",
+  justifyContent: "center",
+  alignItems: "center",
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+  borderRadius: 8,
+  "&:hover": {
+    backgroundColor: "rgba(251,110,59,0.2)",
+    cursor: "pointer",
+  },
+});

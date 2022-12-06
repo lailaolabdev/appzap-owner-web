@@ -6,6 +6,8 @@ import moment from "moment";
 /**
  * import function
  */
+ import { Checkbox, FormControlLabel } from "@material-ui/core";
+
 import Loading from "../../components/Loading";
 import { getOrders } from "../../services/order";
 import { orderStatus } from "../../helpers";
@@ -17,6 +19,11 @@ const Order = () => {
    */
   const params = useParams();
   const { number } = params;
+
+  // const {
+  //   handleCheckbox,
+  //   checkAllOrders,
+  // } = useStore();
 
   /**
    * states
@@ -44,6 +51,9 @@ const Order = () => {
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
+            {/* <th>
+                  <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
+                </th> */}
               <th>ລ/ດ</th>
               <th>ຊື່ເມນູ</th>
               <th>ຈຳນວນ</th>

@@ -12,6 +12,7 @@ import {
   addReservation,
   getReservations,
 } from "../../services/reservation";
+import Box from "../../components/Box"
 // popup
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import ButtonTab from "../../components/button/ButtonTab";
@@ -19,20 +20,13 @@ import ButtonManamentReservation from "../../components/button/ButtonManamentRes
 import PopUpReservationAdd from "../../components/popup/PopUpReservationAdd";
 import PopUpReservationDetail from "../../components/popup/PopUpReservationDetail";
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
-import { useParams } from "react-router-dom";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
-import Box from "../../components/Box";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const params = useParams();
   const { storeDetail } = useStore();
   const storeId = storeDetail._id;
-  console.log(`RESERVATION:${storeDetail._id}`);
-
-  // const _limit = params.limit;
-  // const _page = params.page;
 
   //   state
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +43,7 @@ export default function ReservationList() {
     add: false,
     confirm: false,
     edit: false,
+    success: false
   });
 
   // functions
@@ -58,6 +53,12 @@ export default function ReservationList() {
   };
   const onSubmitReject = async () => {
     updateReservation({ status: "CANCEL" }, select?._id).then(() => {
+      setPopup();
+      getData();
+    });
+  };
+  const onSubmitSuccess = async () => {
+    updateReservation({ status: "SUCCESS" }, select?._id).then(() => {
       setPopup();
       getData();
     });
@@ -154,6 +155,15 @@ export default function ReservationList() {
                 onClick={() => {
                   // getData("STAFF_CONFIRM");
                   setTabSelect("STAFF_CONFIRM");
+                }}
+              >
+                ລາຍການທີ່ອະນຸມັດ
+              </ButtonTab>
+              <ButtonTab
+                active={tabSelect == "SUCCESS"}
+                onClick={() => {
+                  // getData("SUCCESS");
+                  setTabSelect("SUCCESS");
                 }}
               >
                 ລາຍການທີ່ອະນຸມັດ
@@ -332,6 +342,10 @@ export default function ReservationList() {
                           handleReject={() => {
                             handleReject(item);
                           }}
+                          handleEdit={() => {
+                            setSelect(item)
+                            setPopup((prev)=> ({ ...prev, edit: true }));
+                          }}
                         />
                       </td>
                       <td>
@@ -393,6 +407,13 @@ export default function ReservationList() {
         onClose={() => setPopup((prev) => ({ ...prev, cancel: false }))}
         onSubmit={onSubmitReject}
       />
+            <PopUpConfirm
+        text1="ຢືນຢັນການຈອງສຳເລັດແລ້ວ"
+        // text2={select?.clientPhone}
+        open={popup?.success}
+        onClose={() => setPopup((prev) => ({ ...prev, success: false }))}
+        onSubmit={onSubmitSuccess}
+      />
       <PopUpReservationDetail
         open={popup?.detail}
         buttonCancel={() => {
@@ -403,6 +424,9 @@ export default function ReservationList() {
         }}
         buttonEdit={() => {
           setPopup((prev) => ({ ...prev, detail: false, edit: true }));
+        }}
+        buttonSuccess={() => {
+          setPopup((prev) => ({...prev, success: true}));
         }}
         onClose={() => setPopup((prev) => ({ ...prev, detail: false }))}
         data={select}

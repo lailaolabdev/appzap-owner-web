@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
-// 
+//
 export const orderStatus = (status) => {
   switch (status) {
     case "WAITING":
@@ -65,4 +65,60 @@ export const STATUS_OPENTABLE = (item) => {
   } else if (item === true) {
     return "ເປີດແລ້ວ";
   }
+};
+export const base64ToBlob = (dataurl) => {
+  const arr = dataurl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const sliceSize = 10;
+  const byteChars = window.atob(arr[1]);
+  const byteArrays = [];
+
+  for (
+    let offset = 0, len = byteChars.length;
+    offset < len;
+    offset += sliceSize
+  ) {
+    let slice = byteChars.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: mime });
+};
+export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
+  return new Promise((resolve) => {
+    let img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      let canvas = document.createElement("canvas");
+      const MAX_WIDTH = maxWidth;
+      const MAX_HEIGHT = maxHeight;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      let ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL());
+    };
+  });
 };

@@ -1,14 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Container from "react-bootstrap/Container";
 import { Table, Image } from "react-bootstrap";
 import moment from "moment";
 import OrderNavbar from "./component/OrderNavbar";
 import empty from "../../image/empty.png";
 
+import {
+  CANCEL_STATUS,
+  DOING_STATUS,
+  SERVE_STATUS,
+  WAITING_STATUS,
+} from "../../constants";
+
 import Loading from "../../components/Loading";
 import { orderStatus } from "../../helpers";
 import { END_POINT } from "../../constants";
 import { useParams } from "react-router-dom";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
+import { socket } from "../../services/socket";
+import { useStore } from "../../store";
+
+
+
 const Order = () => {
   /**
    * routes
@@ -23,16 +36,47 @@ const Order = () => {
   const [ordersSev, setOrdersSev] = useState([]);
   const [checkedToUpdate, setCheckedToUpdate] = useState([]);
   const newDate = new Date();
+  const { storeDetail } = useStore();
+  const storeId = storeDetail._id; 
+  const {
+    soundPlayer,
+    orderItemForPrintBillSelect,
+    orderItems,
+    getOrderItemsStore,
+    handleCheckbox,
+    checkAllOrders,
+    handleUpdateOrderStatus,
+  } = useStore();
   useEffect(() => {
     getData();
   }, []);
+  useEffect(() => {
+    getOrderItemsStore(SERVE_STATUS);
+  }, []);
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(SERVE_STATUS);
+      }),
+    []
+  );
+  useMemo(
+    () =>
+      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+        getOrderItemsStore(SERVE_STATUS);
+      }),
+    []
+  );
   const getData = async (tokken) => {
     await setIsLoading(true);
-    await fetch(END_POINT + `/v3/orders?status=SERVED`, {
+    await fetch(END_POINT + `/v3/orders?status=SERVED&storeId=61d8019f9d14fc92d015ee8e&limit=50`, {
       method: "GET",
     })
       .then((response) => response.json())
-      .then((json) => setOrdersSev(json));
+      .then((json) => {
+        console.log(`json`,json)
+        setOrdersSev(json)
+      });
     await setIsLoading(false);
   };
   const _handleCheckbox = async (event, id) => {
@@ -53,6 +97,9 @@ const Order = () => {
     <div>
       <OrderNavbar />
       {ordersSev?.length > 0 ? (
+        console.log("ordersSev"),
+
+        console.log(ordersSev),
         <div>
           {isLoading ? <Loading /> : ""}
           <Container fluid className="mt-3">
@@ -62,6 +109,7 @@ const Order = () => {
             >
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
+                  
                   <th width="20px"></th>
                   <th>ລ/ດ</th>
                   <th>ຊື່ເມນູ</th>

@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.2.1",
+  "version": "5.3.1",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
@@ -24,6 +24,7 @@
     "daterangepicker": "3.1.0",
     "faker": "6.6.6",
     "formik": "^2.1.5",
+    "html2canvas": "^1.4.1",
     "lightpick": "1.6.2",
     "lodash": "^4.17.21",
     "material-ui": "^0.20.2",
@@ -45,6 +46,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "^5.0.0",
     "react-select": "^3.1.0",
+    "react-star-ratings": "^2.3.0",
     "react-to-print": "^2.12.4",
     "rsuite-daterangepicker": "3.0.5",
     "socket.io-client": "^2.3.0",

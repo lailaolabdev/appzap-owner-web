@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
@@ -6,6 +6,8 @@ import Table from "react-bootstrap/Table";
 import axios from "axios";
 import ReactToPrint from "react-to-print";
 import Swal from "sweetalert2";
+import html2canvas from "html2canvas";
+import { base64ToBlob } from "../../helpers";
 
 /**
  * const
@@ -31,12 +33,16 @@ import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBills } from "../../services/bill";
+import { useStore } from "../../store";
+import BillForChef80 from "../../components/bill/BillForChef80";
+import BillForChef58 from "../../components/bill/BillForChef58";
 
 function AddOrder() {
   const params = useParams();
   const navigate = useNavigate();
-  const componentRef = useRef();
   const code = params?.code;
+  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -48,6 +54,96 @@ function AddOrder() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
 
+  const { storeDetail, printers, selectedTable } = useStore();
+
+  const arrLength = selectedMenu?.length;
+  const billForCher80 = useRef([]);
+  const billForCher58 = useRef([]);
+  if (billForCher80.current.length !== arrLength) {
+    // add or remove refs
+    billForCher80.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCher80.current[i]);
+  }
+  if (billForCher58.current.length !== arrLength) {
+    // add or remove refs
+    billForCher58.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCher58?.current[i]);
+  }
+  const onPrintForCher = async () => {
+    const orderSelect = selectedMenu;
+    let _index = 0;
+    for (const _ref of billForCher80.current) {
+      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
+      const _printer = printers.find((e) => {
+        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
+        return e?._id == orderSelect?.[_index]?.printer;
+      });
+      console.log("_printer", _printer);
+
+      try {
+        let dataUrl;
+        if (_printer?.width == "80mm") {
+          dataUrl = await html2canvas(billForCher80?.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            // scale: 530 / widthBill80,
+          });
+        }
+        if (_printer?.width == "58mm") {
+          dataUrl = await html2canvas(billForCher58?.current[_index], {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            // scale: 350 / widthBill58,
+          });
+        }
+
+        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        await axios({
+          method: "post",
+          url: "http://localhost:9150/ethernet/image",
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        // axios.post("http://localhost:9150/ethernet/text", {
+        //   config: {
+        //     ip: "192.168.100.236",
+        //     port: 9100,
+        //   },
+        //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
+        // });
+        await Swal.fire({
+          icon: "success",
+          title: "ປິນສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        console.log(err);
+        await Swal.fire({
+          icon: "error",
+          title: "ປິນບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+      _index++;
+    }
+  };
+
+  useEffect(() => {
+    console.log("allSelectedMenu", allSelectedMenu);
+    console.log("selectedMenu", selectedMenu);
+  }, [selectedMenu]);
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
     const _localJson = JSON.parse(ADMIN);
@@ -64,15 +160,16 @@ function AddOrder() {
   }, []);
 
   useEffect(() => {
-    // if (selectedCategory === "All") {
-    //   setAllSelectedMenu(Menus);
-    // } else {
-    //   let array = Menus && Menus.filter(function (el) {
-    //     return el.category._id == selectedCategory;
-    //   });
-    //   setAllSelectedMenu(array);
-    // }
-  }, [selectedCategory]);
+    (async () => {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}`;
+      findby += `&code=${code}`;
+      const data = await getBills(findby);
+      console.log("data", data);
+
+      setBillId(data?.[0]);
+    })();
+  }, []);
 
   const getData = async (id) => {
     await fetch(CATEGORY + `storeId=${id}`, {
@@ -101,7 +198,8 @@ function AddOrder() {
   };
 
   const addToCart = (menu) => {
-    setSelectedItem(menu);
+    console.log("menu", menu);
+    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
     let data = {
@@ -109,6 +207,8 @@ function AddOrder() {
       name: menu.name,
       quantity: 1,
       price: menu.price,
+      categoryId: menu?.categoryId,
+      printer: menu?.categoryId?.printer,
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -146,23 +246,38 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     try {
+      const _storeId = userData?.data?.storeId;
+
+      let findby = "?";
+      findby += `storeId=${_storeId}`;
+      findby += `&code=${code}`;
+      findby += `&tableId=${tableId}`;
+      const _bills = await getBills(findby);
+      const _billId = _bills?.[0]?._id;
+      if (!_billId) {
+        Swal.fire({
+          icon: "error",
+          title: "ບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      const _body = {
+        orders: data,
+        storeId: _storeId,
+        tableId: tableId,
+        code: code,
+        billId: _billId,
+      };
       axios
-        .post(
-          END_POINT_SEVER + "/v3/admin/bill/create",
-          {
-            orders: data,
-            storeId: userData?.data?.storeId,
-            tableId: tableId,
-            code: code,
-          },
-          {
-            headers: headers,
-          }
-        )
+        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+          headers: headers,
+        })
         .then(async (response) => {
           if (response?.data) {
             await Swal.fire({
@@ -172,11 +287,13 @@ function AddOrder() {
               timer: 1800,
             });
             if (isPrinted) {
-              await document.getElementById("btnPrint").click();
+              //  print
+              onPrintForCher().then(() => {
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              });
             }
-            navigate(
-              `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-            );
           }
         })
         .catch((error) => {
@@ -188,7 +305,13 @@ function AddOrder() {
           });
         });
     } catch (error) {
-      console.log("BBB", error);
+      console.log("error", error);
+      Swal.fire({
+        icon: "error",
+        title: "ບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1800,
+      });
     }
   };
 
@@ -209,246 +332,228 @@ function AddOrder() {
   };
 
   return (
-    <div style={TITLE_HEADER}>
-      <div style={{ display: "none" }}>
-        <ReactToPrint
-          trigger={() => <button id="btnPrint">Print this out!</button>}
-          content={() => componentRef.current}
-        />
-        <div style={{ display: "none" }}>
-          <BillForChef
-            ref={componentRef}
-            selectedMenu={selectedMenu}
-            code={code}
-          />
-        </div>
-      </div>
-      <div style={{ marginTop: -10, paddingTop: 10 }}>
-        <div style={DIV_NAV}>
-          <Nav
-            variant="tabs"
-            style={{
-              backgroundColor: "#F9F9F9",
-              marginTop: -10,
-              paddingTop: 10,
-            }}
-          >
-            <Nav.Item></Nav.Item>
-            <Nav.Item
-              className="ml-auto row mr-5"
-              style={{ paddingBottom: "3px" }}
-            >
-              <Row>
-                {" "}
-                <div
-                  className="ml-2 mr-5"
-                  style={{ fontWeight: "bold", color: "#FB6E3B" }}
-                ></div>
-              </Row>
-            </Nav.Item>
-          </Nav>
-        </div>
+    <div>
+      <div
+        style={{
+          display: "flex",
+          overflow: "hidden",
+        }}
+      >
         <div
-          // style={BODY}
           style={{
-            display: "flex",
-            paddingBottom: 50,
-            overflow: "hidden",
+            flexGrow: 1,
+            height: "90vh",
+            overflowY: "scroll",
           }}
         >
-          <div
-            style={{
-              width: "60%",
-              backgroundColor: "#fff",
-              border: 1,
-              height: "90vh",
-              overflowY: "scroll",
-            }}
-          >
-            <div className="container">
-              <div className="row">
-                <div className="col-6">
-                  <div className="form-group">
-                    <label>ເລືອກປະເພດ</label>
-                    <select
-                      className="form-control"
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                      <option value="All">ທັງໝົດ</option>
-                      {/* {
-                      Categorys && Categorys.map((data, index) => {
-                        return (
-                          <option key={"category" + index} value={data._id}>{data.name}</option>
-                        )
-                      })
-                    } */}
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                {isLoading ? (
-                  <Loading />
-                ) : (
-                  allSelectedMenu?.map((data, index) =>
-                    data?.quantity > 0 ? (
-                      <div
-                        key={"menu" + index}
-                        className="col-3"
-                        style={{
-                          margin: 3,
-                          padding: 0,
-                          border:
-                            data._id == selectedItem?._id
-                              ? "4px solid #FB6E3B"
-                              : "4px solid rgba(0,0,0,0)",
-                        }}
-                        onClick={() => addToCart(data)}
-                      >
-                        <img
-                          src={
-                            data?.images[0]
-                              ? URL_PHOTO_AW3 + data?.images[0]
-                              : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                          }
-                          style={{
-                            width: "100%",
-                            height: 200,
-                            borderRadius: 5,
-                          }}
-                        />
-                        <div
-                          style={{
-                            backgroundColor: "#000",
-                            color: "#FFF",
-                            position: "relative",
-                            opacity: 0.5,
-                            padding: 10,
-                          }}
-                        >
-                          <span>{data?.name}</span>
-                          <br />
-                          <span>{moneyCurrency(data?.price)}</span>
-                          <br />
-                          <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div></div>
-                    )
-                  )
-                )}
-              </div>
-            </div>
+          <div className="form-group">
+            <label>ເລືອກປະເພດ</label>
+            <select
+              className="form-control"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="All">ທັງໝົດ</option>
+              {/* {Categorys &&
+                  Categorys?.map((data, index) => {
+                    return (
+                      <option key={"category" + index} value={data?._id}>
+                        {data?.name}
+                      </option>
+                    );
+                  })} */}
+            </select>
           </div>
-          {/* Detail Table */}
           <div
-            style={{
-              width: "40%",
-              backgroundColor: "#FFF",
-              maxHeight: "90vh",
-              borderColor: "black",
-              overflowY: "scroll",
-              borderWidth: 1,
-              paddingLeft: 20,
-              paddingTop: 20,
-            }}
+            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
           >
-            <div className="container">
-              <div className="row">
-                <div className="col-12">
-                  <Table responsive className="table">
-                    <thead style={{ backgroundColor: "#F1F1F1" }}>
-                      <tr style={{ fontSize: "bold", border: "none" }}>
-                        <th style={{ border: "none" }}>ລຳດັບ</th>
-                        <th style={{ border: "none" }} className="text-center">
-                          ຊື່ເມນູ
-                        </th>
-                        <th style={{ border: "none" }}>ຈຳນວນ</th>
-                        <th style={{ border: "none" }}>ຈັດການ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedMenu &&
-                        selectedMenu.map((data, index) => {
-                          return (
-                            <tr key={"selectMenu" + index}>
-                              <td>{index + 1}</td>
-                              <td>{data.name}</td>
-                              <td>{data.quantity}</td>
-                              <td>
-                                <i
-                                  onClick={() => onRemoveFromCart(data.id)}
-                                  className="fa fa-trash"
-                                  aria-hidden="true"
-                                  style={{
-                                    color: "#FB6E3B",
-                                    cursor: "pointer",
-                                  }}
-                                ></i>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </Table>
+            {isLoading ? (
+              <Loading />
+            ) : (
+              allSelectedMenu?.map((data, index) => (
+                <div
+                  key={"menu" + index}
+                  style={{
+                    border:
+                      data._id == selectedItem?._id
+                        ? "4px solid #FB6E3B"
+                        : "4px solid rgba(0,0,0,0)",
+                  }}
+                  onClick={() => addToCart(data)}
+                >
+                  <img
+                    src={
+                      data?.images[0]
+                        ? URL_PHOTO_AW3 + data?.images[0]
+                        : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                    }
+                    style={{
+                      width: "100%",
+                      height: 200,
+                      borderRadius: 5,
+                    }}
+                  />
+                  <div
+                    style={{
+                      backgroundColor: "#000",
+                      color: "#FFF",
+                      position: "relative",
+                      opacity: 0.5,
+                      padding: 10,
+                    }}
+                  >
+                    <span>{data?.name}</span>
+                    <br />
+                    <span>{moneyCurrency(data?.price)}</span>
+                    <br />
+                    <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
+                  </div>
                 </div>
-                <div className="col-12">
-                  <div className="row" style={{ margin: 0 }}>
-                    <Button
-                      variant="outline-warning"
-                      style={{
-                        marginRight: 15,
-                        border: "solid 1px #FB6E3B",
-                        color: "#FB6E3B",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => navigate.goBack()}
-                    >
-                      ຍົກເລີກ
-                    </Button>
-                    <Button
-                      variant="light"
-                      className="hover-me"
-                      style={{
-                        marginRight: 15,
-                        backgroundColor: "#FB6E3B",
-                        color: "#ffffff",
-                        fontWeight: "bold",
-                        flex: 1,
-                      }}
-                      onClick={() => onSubmit(false)}
-                    >
-                      ສັ່ງອາຫານ
-                    </Button>
-                  </div>
-                  <div style={{ height: 10 }} />
-                  <div className="row" style={{ margin: 0 }}>
-                    <Button
-                      variant="light"
-                      className="hover-me"
-                      style={{
-                        height: 60,
-                        marginRight: 15,
-                        backgroundColor: "#FB6E3B",
-                        color: "#ffffff",
-                        fontWeight: "bold",
-                        flex: 1,
-                      }}
-                      onClick={() => onSubmit(true)}
-                    >
-                      ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ +{" "}
-                      <FontAwesomeIcon
-                        icon={faCashRegister}
-                        style={{ color: "#fff" }}
-                      />{" "}
-                    </Button>
-                  </div>
+              ))
+            )}
+          </div>
+        </div>
+        {/* Detail Table */}
+        <div
+          style={{
+            minWidth: 500,
+            backgroundColor: "#FFF",
+            maxHeight: "90vh",
+            borderColor: "black",
+            overflowY: "scroll",
+            borderWidth: 1,
+            paddingLeft: 20,
+            paddingTop: 20,
+          }}
+        >
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <Table responsive className="table">
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr style={{ fontSize: "bold", border: "none" }}>
+                      <th style={{ border: "none" }}>ລຳດັບ</th>
+                      <th style={{ border: "none" }} className="text-center">
+                        ຊື່ເມນູ
+                      </th>
+                      <th style={{ border: "none" }}>ຈຳນວນ</th>
+                      <th style={{ border: "none" }}>ຈັດການ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedMenu &&
+                      selectedMenu.map((data, index) => {
+                        return (
+                          <tr key={"selectMenu" + index}>
+                            <td>{index + 1}</td>
+                            <td>{data.name}</td>
+                            <td>{data.quantity}</td>
+                            <td>
+                              <i
+                                onClick={() => onRemoveFromCart(data.id)}
+                                className="fa fa-trash"
+                                aria-hidden="true"
+                                style={{
+                                  color: "#FB6E3B",
+                                  cursor: "pointer",
+                                }}
+                              ></i>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </Table>
+              </div>
+              <div className="col-12">
+                <div className="row" style={{ margin: 0 }}>
+                  <Button
+                    variant="outline-warning"
+                    style={{
+                      marginRight: 15,
+                      border: "solid 1px #FB6E3B",
+                      color: "#FB6E3B",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => navigate.goBack()}
+                  >
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    variant="light"
+                    className="hover-me"
+                    style={{
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => onSubmit(false)}
+                  >
+                    ສັ່ງອາຫານ
+                  </Button>
+                </div>
+                <div style={{ height: 10 }} />
+                <div className="row" style={{ margin: 0 }}>
+                  <Button
+                    variant="light"
+                    className="hover-me"
+                    style={{
+                      height: 60,
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => {
+                      // onPrint();
+                      onSubmit(true);
+                    }}
+                  >
+                    ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ +{" "}
+                    <FontAwesomeIcon
+                      icon={faCashRegister}
+                      style={{ color: "#fff" }}
+                    />{" "}
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      {selectedMenu?.map((val, i) => {
+        return (
+          <div
+            style={{ width: "80mm", padding: 10 }}
+            ref={(el) => (billForCher80.current[i] = el)}
+          >
+            <BillForChef80
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              // dataBill={dataBill}
+              val={val}
+            />
+          </div>
+        );
+      })}
+      <div>
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCher58.current[i] = el)}
+            >
+              <BillForChef58
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={val}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

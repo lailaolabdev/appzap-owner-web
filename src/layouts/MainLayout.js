@@ -11,6 +11,7 @@ export default function MainLayout({ children }) {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
+  
   return (
     <Box
       sx={{
@@ -39,8 +40,7 @@ export default function MainLayout({ children }) {
           />
         </Box>
         <Navbar />
-        <div style={{ paddingTop: 65 }} />
-        <div>
+        <div style={{ paddingTop: 65, minHeight: "100vh" }}>
           <Outlet />
         </div>
       </div>

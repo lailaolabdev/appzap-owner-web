@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Login from "../pages/login/Login";
 import { useRoutes } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
 import CheckBill from "../pages/Notification/CheckBill";
-import { BillForChef } from "../pages/bill/BillForChef";
+import BillForChef80 from "../components/bill/BillForChef80";
+import BillForCheckOut80 from "../components/bill/BillForCheckOut80";
+import BillForCheckOut58 from "../components/bill/BillForCheckOut58";
+import BillForChef58 from "../components/bill/BillForChef58";
 import Dashboard from "../pages/dashboard/Dashboard";
 // import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
@@ -39,21 +42,30 @@ import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 
 import MenuRoutes from "./Menu.routes";
+import PrinterRoutes from "./Printer.routes";
+
+import { useStore } from "../store";
 
 function Router() {
+ 
   return useRoutes([
     {
       path: "/",
       element: <Login />,
     },
     {
-      path: "/CheckBillOut/:id",
-      element: <CheckBill />,
+      path: "/CheckBillOut/:billId",
+      element: <BillForCheckOut80 />,
     },
     {
-      path: "/BillForChef",
-      element: <BillForChef />, //not work
+      path: "/BillForChef80",
+      element: <BillForChef80 />, //not work
     },
+    {
+      path: "/BillForChef58",
+      element: <BillForChef58 />, //not work
+    },
+
     {
       path: "/dashboard/:storeId",
       element: <Dashboard />,
@@ -62,6 +74,14 @@ function Router() {
     //   path: "/dashboard-loyverse/:storeId",
     //   element: <DashboardLoyverse />,
     // },
+    {
+      path: "/BillForCheckOut80",
+      element: <BillForCheckOut80 />,
+    },
+    {
+      path: "/BillForCheckOut58",
+      element: <BillForCheckOut58 />,
+    },
     {
       path: "/menus/:storeId/:tableId",
       element: <MenuListMobile />,
@@ -111,9 +131,15 @@ function Router() {
           element: <CanceledOrder />,
         },
         {
+          path: "/tables",
+          element: <Table />,
+        },
+        // ຢຸດໃຊ້ເວຊັ້ນ v6^--------->
+        {
           path: "/tables/pagenumber/:number/tableid/:tableId/:storeId",
           element: <Table />,
         },
+        // <------------------ ||
         {
           path: "/addOrder/tableid/:tableId/code/:code",
           element: <AddOrder />,
@@ -202,8 +228,17 @@ function Router() {
           path: "/menu",
           element: <MenuList />,
         },
+        {
+          path: "/manageorder",
+          element: <DoingOrder />,
+        },
         MenuRoutes,
+        PrinterRoutes,
       ],
+    },
+    {
+      path: "/testPrinter",
+      element: <DoingOrder />,
     },
     {
       path: "*",

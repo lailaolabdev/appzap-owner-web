@@ -15,7 +15,7 @@ import { END_POINT } from '../../constants'
 import FeedbackOrder from "../table/components/FeedbackOrder";
 import AnimationLoading from "../../constants/loading"
 import { useStore } from "../../store";
-import { BillForCheckOut } from '../bill/BillForCheckOut';
+import  BillForCheckOut  from '../../components/bill/BillForCheckOut80';
 import ReactToPrint from 'react-to-print';
 
 import { getHeaders } from '../../services/auth';

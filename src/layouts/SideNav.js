@@ -14,12 +14,15 @@ import {
   faList,
   faTachometerAlt,
   faChartBar,
+  faAirFreshener,
+  faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
 import Box from "../components/Box";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
+// import {BiFoodMenu} from "react-icons";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
@@ -69,7 +72,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasReservation,
     },
     {
-      title: "ຈັດການເມນູຫາການ",
+      title: "ຈັດການເມນູອາຫານ",
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
@@ -80,6 +83,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: `settingStore/${storeDetail?._id}`,
       typeStore: "",
       icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ລາຍການອໍເດີ້",
+      key: "manageorder",
+      typeStore: "",
+      icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
     },
   ];
@@ -110,15 +120,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
         }
         if (selected === "orders") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
-        }
-        if (selected === "tables") {
-          selected =
-            selected +
-            "/pagenumber/" +
-            1 +
-            "/tableid/00" +
-            "/" +
-            storeDetail?._id;
         }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;

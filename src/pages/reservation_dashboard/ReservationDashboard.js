@@ -4,6 +4,7 @@ import { BsCashCoin, BsFillCalendar2WeekFill } from "react-icons/bs";
 import { TbRelationManyToMany } from "react-icons/tb";
 import { FaLink } from "react-icons/fa";
 import styled from "styled-components";
+import Box from "../../components/Box";
 import moment from "moment";
 
 import FullCalendar from "@fullcalendar/react";
@@ -69,10 +70,10 @@ export default function ReservationDashboard() {
         ລາຍງານການຈອງ
       </div>
       <div style={{ padding: 10, display: "grid", gridGap: 20 }}>
-        <div
-          style={{
+        <Box
+          sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(4,1fr)",
+            gridTemplateColumns: { md: "repeat(4,1fr)", xs: "1fr 1fr" },
             gridGap: 10,
           }}
         >
@@ -81,7 +82,13 @@ export default function ReservationDashboard() {
             name="ຈຳນວນເງິນທັງໝົດ"
             color="#967E76"
             icon={
-              <BsCashCoin style={{ color: "#967E76", width: 50, height: 50 }} />
+              <Box
+                sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}
+              >
+                <BsCashCoin
+                  style={{ color: "#967E76", width: "100%", height: "100%" }}
+                />
+              </Box>
             }
           />
           <StatisticCard
@@ -89,9 +96,13 @@ export default function ReservationDashboard() {
             name="ຈຳນວນຄົນຈອງທັງໝົດ"
             color="#00ABB3"
             icon={
-              <MdPeopleAlt
-                style={{ color: "#00ABB3", width: 50, height: 50 }}
-              />
+              <Box
+                sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}
+              >
+                <MdPeopleAlt
+                  style={{ color: "#00ABB3", width: "100%", height: "100%" }}
+                />
+              </Box>
             }
           />
           <StatisticCard
@@ -99,9 +110,13 @@ export default function ReservationDashboard() {
             name="ຈຳນວນການຈອງທັງໝົດ"
             color="#E26868"
             icon={
-              <TbRelationManyToMany
-                style={{ color: "#E26868", width: 50, height: 50 }}
-              />
+              <Box
+                sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}
+              >
+                <TbRelationManyToMany
+                  style={{ color: "#E26868", width: "100%", height: "100%" }}
+                />
+              </Box>
             }
           />
           <StatisticCard
@@ -109,12 +124,16 @@ export default function ReservationDashboard() {
             name="ຈຳນວນຄິວປະຈຸບັນ"
             color="#674747"
             icon={
-              <BsFillCalendar2WeekFill
-                style={{ color: "#674747", width: 50, height: 50 }}
-              />
+              <Box
+                sx={{ width: { xs: 30, md: 50 }, height: { xs: 30, md: 50 } }}
+              >
+                <BsFillCalendar2WeekFill
+                  style={{ color: "#674747", width: "100%", height: "100%" }}
+                />
+              </Box>
             }
           />
-        </div>
+        </Box>
         <div
           style={{
             display: "grid",
@@ -146,57 +165,87 @@ const StatisticCard = ({
   ...ohter
 }) => {
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         border: `1px solid ${color}`,
         borderRadius: 8,
         overflow: "hidden",
       }}
       {...ohter}
     >
-      <div
-        style={{
+      <Box
+        sx={{
           minHeight: 70,
           display: "grid",
           gridTemplateColumns: "2fr 50px",
-          padding: 20,
+          padding: { md: 20, xs: 10 },
         }}
       >
         <div style={{ display: "flax", flexDirection: "column" }}>
-          <div
-            style={{
-              fontSize: 18,
+          <Box
+            sx={{
+              fontSize: { md: 18, xs: 12 },
               color: color,
               fontFamily: "Arial",
               fontWeight: "bold",
             }}
           >
             {value}
-          </div>
-          <div>{name}</div>
+          </Box>
+          <Box
+            sx={{
+              fontSize: { md: 18, xs: 12 },
+            }}
+          >
+            {name}
+          </Box>
         </div>
-        <div>{icon}</div>
-      </div>
-      <div
-        style={{
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {icon}
+        </Box>
+      </Box>
+      <Box
+        sx={{
           height: 30,
           backgroundColor: color,
-          paddingLeft: 20,
-          paddingRight: 20,
+          xs: {
+            paddingLeft: 10,
+            paddingRight: 10,
+          },
+          md: {
+            paddingLeft: 20,
+            paddingRight: 20,
+          },
           display: "grid",
           alignItems: "center",
           gridTemplateColumns: "2fr 20px",
         }}
       >
-        <div style={{ fontSize: 14, color: "white" }}>
-          <FaLink style={{ color: "white", width: 15, height: 15 }} />
+        <Box
+          sx={{
+            fontSize: { md: 14, xs: 10 },
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <Box sx={{ width: { md: 15, xs: 12 }, height: { md: 15, xs: 12 } }}>
+            <FaLink style={{ color: "white", width: "100%", height: "100%" }} />
+          </Box>
           ອັບເດດລາສຸດ {moment().format("DD.MM.yyyy")}
-        </div>
+        </Box>
         <div>
           <MdBarChart style={{ color: "white", width: 20, height: 20 }} />
         </div>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 const CalendarCard = ({ events, ...ohter }) => {

@@ -12,6 +12,7 @@ import PopUpStoreEdit from "../../components/popup/PopUpStoreEdit";
 import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
 import { useParams } from "react-router-dom";
+import StarRatings from "react-star-ratings";
 
 export default function StoreDetail() {
   const params = useParams();
@@ -144,6 +145,19 @@ export default function StoreDetail() {
           <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}>
             {" "}
             {dataStore?.name ? dataStore?.name : "-"}
+          </div>
+          <div style={{ display: "flex" }}>
+            <StarRatings
+              rating={dataStore?.reviewStar || 0}
+              starRatedColor="orange"
+              starHoverColor="orange"
+              // changeRating={3.48}
+              numberOfStars={5}
+              name="rating"
+              starDimension="20px"
+              starSpacing="4px"
+            />
+            <div>({dataStore?.reviewStarCount || 0})</div>
           </div>
           <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
           <div style={{ padding: 5 }}>{dataStore?.note}</div>
