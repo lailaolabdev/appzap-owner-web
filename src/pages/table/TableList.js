@@ -543,7 +543,7 @@ export default function TableList() {
         // });
         await Swal.fire({
           icon: "success",
-          title: "ປິນສຳເລັດ",
+          title: "ປິ້ນສຳເລັດ",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -551,7 +551,7 @@ export default function TableList() {
         console.log(err);
         await Swal.fire({
           icon: "error",
-          title: "ປິນບໍ່ສຳເລັດ",
+          title: "ປິ້ນບໍ່ສຳເລັດ",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -919,6 +919,26 @@ export default function TableList() {
                           style={{ display: "flex", justifyContent: "center" }}
                         >
                           <div style={{}}>
+
+                            <Button
+                              variant="light"
+                              className="hover-me"
+                              style={{
+                                marginRight: 15,
+                                backgroundColor: "#FB6E3B",
+                                color: "#ffffff",
+                                fontWeight: "bold",
+                                height: 60,
+                              }}
+                              onClick={() => onPrintForCher()}
+                            >
+                              {/* <FontAwesomeIcon
+                              icon={faWindowClose}
+                              style={{ color: "#fff", marginRight: 10 }}
+                            /> */}
+                              ພິມບິນໄປຄົວ
+                            </Button>
+
                             <Button
                               variant="light"
                               className="hover-me"
@@ -1030,30 +1050,15 @@ export default function TableList() {
                           padding: "10px",
                         }}
                       >
-                        <Button
-                          variant="light"
-                          className="hover-me"
-                          style={{
-                            marginRight: 15,
-                            backgroundColor: "#FB6E3B",
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            height: 60,
-                          }}
-                          onClick={() => onPrintForCher()}
-                        >
-                          {/* <FontAwesomeIcon
-                              icon={faWindowClose}
-                              style={{ color: "#fff", marginRight: 10 }}
-                            /> */}
-                          ພິມບິນໄປຄົວ
-                        </Button>
                         <div>
                           <button
                             style={{
                               backgroundColor: "#FB6E3B",
                               color: "#fff",
                               border: "1px solid #FB6E3B",
+                              // width: "100px",
+                              height: "60px",
+                              borderRadius: "3px"
                             }}
                             onClick={() =>
                               handleUpdateOrderStatuscancel("CANCEL")
@@ -1070,6 +1075,8 @@ export default function TableList() {
                               backgroundColor: "#FB6E3B",
                               color: "#fff",
                               border: "1px solid #FB6E3B",
+                              height: "60px",
+                              borderRadius: "3px"
                             }}
                             onClick={() => handleUpdateOrderStatusgo("DOING")}
                           >
@@ -1084,6 +1091,8 @@ export default function TableList() {
                               backgroundColor: "#FB6E3B",
                               color: "#fff",
                               border: "1px solid #FB6E3B",
+                              height: "60px",
+                              borderRadius: "3px"
                             }}
                             onClick={() => handleUpdateOrderStatus("SERVED")}
                           >
@@ -1131,7 +1140,7 @@ export default function TableList() {
                         >
                           <thead style={{ backgroundColor: "#F1F1F1" }}>
                             <tr>
-                            <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
+                              <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
 
                               {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
                               <th
@@ -1203,14 +1212,14 @@ export default function TableList() {
                                     <FormControlLabel
                                       control={
                                         <Checkbox
-                                        name="checked"
-                                        checked={
-                                          orderItem?.isChecked || false
-                                        }
+                                          name="checked"
+                                          checked={
+                                            orderItem?.isChecked || false
+                                          }
                                         // isChecked={
                                         //   orderItem?.isChecked || false
                                         // }
-                                      />
+                                        />
                                       }
                                       onChange={(e) =>
                                         onSelect({
