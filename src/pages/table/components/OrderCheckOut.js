@@ -24,7 +24,6 @@ const OrderCheckOut = ({
   resetTableOrder,
   onPrintBill,
 }) => {
-  console.log("data", data);
   const [total, setTotal] = useState();
 
   const { callingCheckOut } = useStore();

@@ -1,6 +1,10 @@
 {
   "name": "admin.selfordering",
+<<<<<<< HEAD
   "version": "5.4.0",
+=======
+  "version": "5.4.1",
+>>>>>>> origin/orderSale
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
