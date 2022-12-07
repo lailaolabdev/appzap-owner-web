@@ -76,7 +76,7 @@ export default function MoneyChart({ startDate, endDate }) {
         moneyCurrency(d?.billAmount) +
         " ກີບ" +
         " | cach:" +
-        moneyCurrency(d?.cash) +
+        moneyCurrency(d?.billAmount - d?.money_transfer) +
         " | transfer:" +
         moneyCurrency(d?.money_transfer)
     );

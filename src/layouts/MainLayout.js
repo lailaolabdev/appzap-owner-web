@@ -11,7 +11,7 @@ export default function MainLayout({ children }) {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
-  
+
   return (
     <Box
       sx={{

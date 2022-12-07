@@ -1,36 +1,17 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
+import packageJson from "../../package.json";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
-import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
-import {
-  USER_KEY,
-  END_POINT,
-  URL_PHOTO_AW3,
-  VERSION,
-  COLOR_APP,
-} from "../constants";
+import { USER_KEY, COLOR_APP } from "../constants";
 import { useNavigate } from "react-router-dom";
-import ImageProfile from "../image/profile.png";
-import { Badge, Modal, Button, Table } from "react-bootstrap";
-import moment from "moment";
-import axios from "axios";
-import { SocketContext } from "../services/socket";
-import { socket } from "../services/socket";
-import { GiHamburgerMenu } from "react-icons/gi";
-import SideNav, {
-  Toggle,
-  NavItem,
-  NavIcon,
-  NavText,
-} from "@trendmicro/react-sidenav";
 import Box from "../components/Box";
+import { MdPrint, MdPrintDisabled } from "react-icons/md";
 
 export default function NavBar() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState({});
-  const [messageData, setmessageData] = useState(0);
 
   useEffect(() => {
     const getData = () => {
@@ -51,8 +32,6 @@ export default function NavBar() {
   };
 
   const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
   //   setmessageData(data);
@@ -68,7 +47,10 @@ export default function NavBar() {
           width: "100%",
           height: 64,
           position: "fixed",
+          top: 0,
+          left: 0,
           zIndex: 1,
+          paddingLeft: 52 
           // marginLeft: 60,
           // paddingRight: 80,
         }}
@@ -78,10 +60,16 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
+          <p style={{ marginTop: 20 }}>v{packageJson?.version}</p>
           <div style={{ flexGrow: 1 }} />
-          <Language />
-          {/* <p style={{ marginTop: 20 }}>Version:{VERSION}</p> */}
-          {/* <div style={{ marginLeft: 20 }}></div> */}
+          <div>
+            <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+          </div>
+          <div style={{ width: 10 }} />
+          {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Language />
+          </Box> */}
+          <div style={{ width: 10 }} />
           {/* <Image
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
             width={35}
@@ -96,9 +84,12 @@ export default function NavBar() {
           <Form inline>
             <Dropdown>
               <Dropdown.Toggle
-                style={{ color: "#909090" }}
+                style={{
+                  color: "#909090",
+                  display: "flex",
+                  alignItems: "center",
+                }}
                 variant=""
-                id="dropdown-basic"
               >
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
@@ -110,7 +101,7 @@ export default function NavBar() {
                     : ""}
                 </Box>
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu className="dropdown-menu-right">
                 <Dropdown.Item
                   style={{ color: "#909090" }}
                   onClick={() => _onLogout()}
@@ -119,16 +110,6 @@ export default function NavBar() {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            {/* <Image
-              src={
-                userData?.data?.image
-                  ? URL_PHOTO_AW3 + userData?.data?.image
-                  : ImageProfile
-              }
-              width={45}
-              height={45}
-              roundedCircle
-            /> */}
           </Form>
         </Navbar.Collapse>
       </Navbar>
