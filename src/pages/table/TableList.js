@@ -130,8 +130,9 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
 
   const canCheckOut = !tableOrderItems.find(
-    (e) => e?.status === "DOING" || e?.status === "WAITING" 
+    (e) => e?.status === "DOING" || e?.status === "WAITING"  || e?.tableOrderItems?.length == 0
   )?._id;
+
 
   useEffect(() => {
     initialTableSocket();
@@ -179,10 +180,13 @@ export default function TableList() {
   useEffect(() => {
     if (tableOrderItems?.length > 0) {
       getData(tableOrderItems[0]?.code);
+    }else{
+      setDataBill();
     }
   }, [tableOrderItems]);
 
   const getData = async (code) => {
+    console.log("first");
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
@@ -525,13 +529,6 @@ export default function TableList() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        // axios.post("http://localhost:9150/ethernet/text", {
-        //   config: {
-        //     ip: "192.168.100.236",
-        //     port: 9100,
-        //   },
-        //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
-        // });
         await Swal.fire({
           icon: "success",
           title: "ປິ້ນສຳເລັດ",

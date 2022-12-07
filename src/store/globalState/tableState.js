@@ -103,6 +103,7 @@ export const useTableState = () => {
    * @param {*} table
    */
   const onSelectTable = async (table) => {
+    setTableOrderItems([])
     setSelectedTable(table);
     await getTableOrders(table);
   };
@@ -226,6 +227,7 @@ export const useTableState = () => {
     openTableData,
     tableOrders,
     tableOrderItems,
+    setTableOrderItems,
     selectedTable,
     setTableListCheck,
     setTableList,
