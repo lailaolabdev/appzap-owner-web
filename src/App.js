@@ -11,11 +11,11 @@ const theme = {
 };
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <StateProvider>
+    <StateProvider>
+      <ThemeProvider theme={theme}>
         <Routes />
-      </StateProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </StateProvider>
   );
 }
 export default App;

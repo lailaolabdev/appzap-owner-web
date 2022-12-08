@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import packageJson from "../../package.json";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -8,10 +8,21 @@ import { USER_KEY, COLOR_APP } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
+import { useStore } from "../store";
+import ReactAudioPlayer from "react-audio-player";
+
+// sound
+import messageSound from "../sound/message.mp3";
 
 export default function NavBar() {
   const navigate = useNavigate();
+
+  // state
   const [userData, setUserData] = useState({});
+  const { isConnectPrinter } = useStore();
+
+  // ref
+  const soundPlayer = useRef();
 
   useEffect(() => {
     const getData = () => {
@@ -50,7 +61,7 @@ export default function NavBar() {
           top: 0,
           left: 0,
           zIndex: 1,
-          paddingLeft: 52 
+          paddingLeft: 52,
           // marginLeft: 60,
           // paddingRight: 80,
         }}
@@ -60,11 +71,39 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p style={{ marginTop: 20 }}>v{packageJson?.version}</p>
+          <p style={{ marginTop: 20, color: "#bfbfbf" }}>
+            v{packageJson?.version}
+          </p>
+          <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
-          <div>
-            <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
-          </div>
+          {isConnectPrinter ? (
+            <div
+              style={{
+                border: "1px solid #68B984",
+                padding: 4,
+                color: "#68B984",
+                backgroundColor: "#CFFDE1",
+                borderRadius: 4,
+                fontSize: 12,
+              }}
+            >
+              <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
+            </div>
+          ) : (
+            <div
+              style={{
+                border: "1px solid #E97777",
+                padding: 4,
+                color: "#E97777",
+                backgroundColor: "#ffd8d8",
+                borderRadius: 4,
+                fontSize: 12,
+              }}
+            >
+              <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+            </div>
+          )}
+
           <div style={{ width: 10 }} />
           {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Language />

@@ -1,14 +1,14 @@
 import Axios from 'axios';
 import { USER_KEY } from './index'
 
-export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
-export const END_POINT_APP = "https://api.appzap.la"; // /prosdusction
+// export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
+// export const END_POINT_APP = "https://api.appzap.la"; // /prosdusction
 
 // export const END_POINT_SEVER = "http://localhost:7070"; // /
 // export const END_POINT_APP = "http://localhost:7070"; // /
 
-// export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
-// export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
+export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
+export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
 
 
 export const getLocalData = async () => {
@@ -26,7 +26,7 @@ export const USERS_CREATE = END_POINT_SEVER + '/v3/user/create'
 export const USERS_DELETE = END_POINT_SEVER + '/v3/user/delete/'
 export const USERS_UPDATE = END_POINT_SEVER + '/v3/user/update'
 // ========
-export const CATEGORY = END_POINT_SEVER + '/v3/category/delete'
+export const CATEGORY = END_POINT_SEVER + '/v3/categories'
 export const MENUS = END_POINT_SEVER + '/v3/menus'
 export const PRESIGNED_URL = END_POINT_SEVER + '/uploadfile'
 export const TABLES = END_POINT_SEVER + '/v3/tables'

@@ -1,5 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getPrinterCounter, getPrinters } from "../../services/printer";
+import socketio from "socket.io-client";
+const socket = socketio.connect("http://localhost:9150", {
+  reconnection: true,
+  reconnectionDelay: 5000,
+  reconnectionDelayMax: 10000,
+  reconnectionAttempts: 25,
+});
 
 export const usePrintersState = ({ storeDetail }) => {
   // state
@@ -11,6 +18,8 @@ export const usePrintersState = ({ storeDetail }) => {
 
   const [printerCounterLoading, setPrinterCounterLoading] = useState(false);
   const [printerCounter, setPrinterCounter] = useState();
+
+  const [isConnectPrinter, setIsConnectPrinter] = useState(false);
 
   // function
   const getPrintersState = async () => {
@@ -36,6 +45,16 @@ export const usePrintersState = ({ storeDetail }) => {
     getPrinterCounterState();
   }, [storeDetail]);
 
+  // stocket
+  useMemo(() => {
+    socket.on("connect", (e) => {
+      setIsConnectPrinter(socket.connected);
+    });
+    socket.on("disconnect", () => {
+      setIsConnectPrinter(socket.connected); // false
+    });
+  }, [storeDetail]);
+
   return {
     isPrintersLoading,
     setPrintersLoading,
@@ -49,6 +68,8 @@ export const usePrintersState = ({ storeDetail }) => {
     setPrinterCounterLoading,
     printerCounter,
     setPrinterCounter,
+    isConnectPrinter,
+    setIsConnectPrinter,
     // functions
     getPrintersState,
     getPrinterCounterState,

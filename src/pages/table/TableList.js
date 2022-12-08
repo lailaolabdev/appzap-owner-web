@@ -27,7 +27,7 @@ import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
 import html2canvas from "html2canvas";
-import { base64ToBlob, resizeImage } from "../../helpers";
+import { base64ToBlob } from "../../helpers";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import Box from "../../components/Box";
 
@@ -40,28 +40,22 @@ import OrderCheckOut from "./components/OrderCheckOut";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
-import { BillForChef } from "../../components/bill/BillForChef80";
-import { BillForCheckOut } from "../../components/bill/BillForCheckOut80";
 import { STORE } from "../../constants/api";
 import { socket } from "../../services/socket";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
+import CheckOutType from "./components/CheckOutType";
 
 /**
  * const
  **/
 import {
-  TITLE_HEADER,
-  BODY,
-  DIV_NAV,
-  half_backgroundColor,
   padding_white,
   CANCEL_STATUS,
   DOING_STATUS,
   SERVE_STATUS,
-  WAITING_STATUS,
 } from "../../constants/index";
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
@@ -78,7 +72,11 @@ export default function TableList() {
   const number = params?.number;
   const activeTableId = params?.tableId;
 
+  // state
   const [show, setShow] = useState(false);
+  const [popup, setPopup] = useState({
+    CheckOutType: false,
+  });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -93,7 +91,6 @@ export default function TableList() {
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [dataStore, setStore] = useState();
-  const [selectedOrder, setSelectedOrder] = useState([]);
   const {
     orderItems,
     setOrderItems,
@@ -101,7 +98,6 @@ export default function TableList() {
     printerCounter,
     printers,
   } = useStore();
-  const [getTokken, setgetTokken] = useState();
 
   // const [ref , setRef] = useRef();
 
@@ -119,20 +115,26 @@ export default function TableList() {
     tableOrderItems,
     getTableDataStore,
     onSelectTable,
-    onChangeMenuCheckbox,
-    handleUpdateTableOrderStatus,
     resetTableOrder,
     initialTableSocket,
     storeDetail,
-    getTableOrders,
+    selectTable2,
+    setSelectTable2,
   } = useStore();
+
+  const reLoadData = () => {
+    // onSelectTable(selectedTable);
+    resetTableOrder();
+  };
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
 
   const canCheckOut = !tableOrderItems.find(
-    (e) => e?.status === "DOING" || e?.status === "WAITING"  || e?.tableOrderItems?.length == 0
+    (e) =>
+      e?.status === "DOING" ||
+      e?.status === "WAITING" ||
+      e?.tableOrderItems?.length == 0
   )?._id;
-
 
   useEffect(() => {
     initialTableSocket();
@@ -180,13 +182,12 @@ export default function TableList() {
   useEffect(() => {
     if (tableOrderItems?.length > 0) {
       getData(tableOrderItems[0]?.code);
-    }else{
+    } else {
       setDataBill();
     }
   }, [tableOrderItems]);
 
   const getData = async (code) => {
-    console.log("first");
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
@@ -342,72 +343,7 @@ export default function TableList() {
         setStore(json);
       });
   };
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        setSelectedTable();
-      }),
-    []
-  );
-  useMemo(
-    () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        setSelectedTable();
-      }),
-    []
-  );
-  const [updateModal, setUpdateModal] = useState(false);
-  useEffect(() => {
-    getOrderItemsStore(DOING_STATUS);
-  }, []);
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
-      }),
-    []
-  );
-  useMemo(
-    () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
-      }),
-    []
-  );
-  useEffect(() => {
-    getOrderItemsStore(CANCEL_STATUS);
-  }, []);
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(CANCEL_STATUS);
-      }),
-    []
-  );
-  useMemo(
-    () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(CANCEL_STATUS);
-      }),
-    []
-  );
-  useEffect(() => {
-    getOrderItemsStore(SERVE_STATUS);
-  }, []);
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(SERVE_STATUS);
-      }),
-    []
-  );
-  useMemo(
-    () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(SERVE_STATUS);
-      }),
-    []
-  );
+
   const [widthBill80, setWidthBill80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
 
@@ -423,7 +359,6 @@ export default function TableList() {
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
-      console.log("printerBillData", printerBillData);
       let dataImageForPrint;
       if (printerBillData?.width == "80mm") {
         dataImageForPrint = await html2canvas(bill80Ref.current, {
@@ -576,23 +511,23 @@ export default function TableList() {
       _newOrderItems = tableOrderItems.map((item) => {
         return {
           ...item,
-          isChecked: true
-        }
-      })
+          isChecked: true,
+        };
+      });
     } else {
       _newOrderItems = isCheckedOrderItem.map((item) => {
         return {
           ...item,
-          isChecked: false
-        }
-      })
+          isChecked: false,
+        };
+      });
     }
-    console.log("first", _newOrderItems)
-    setIsCheckedOrderItem(_newOrderItems)
-  }
+    console.log("first", _newOrderItems);
+    setIsCheckedOrderItem(_newOrderItems);
+  };
 
   const handleUpdateOrderStatus = async (status) => {
-    getOrderItemsStore(SERVE_STATUS);
+    // getOrderItemsStore(SERVE_STATUS);
     const storeId = storeDetail?._id;
     let previousStatus = orderItems[0].status;
     let menuId;
@@ -614,11 +549,12 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      // onSelectTable(selectedTable);
     }
   };
 
   const handleUpdateOrderStatusgo = async (status) => {
-    getOrderItemsStore(DOING_STATUS);
+    // getOrderItemsStore(DOING_STATUS);
     const storeId = storeDetail?._id;
     let previousStatus = orderItems[0].status;
     let menuId;
@@ -641,11 +577,12 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      // onSelectTable(selectedTable);
     }
   };
 
   const handleUpdateOrderStatuscancel = async (status) => {
-    getOrderItemsStore(CANCEL_STATUS);
+    // getOrderItemsStore(CANCEL_STATUS);
     const storeId = storeDetail?._id;
     let previousStatus = orderItems[0].status;
     let menuId;
@@ -667,6 +604,7 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      // onSelectTable(selectedTable);
     }
   };
   //   const handleCheckbox = async (order) => {
@@ -687,7 +625,18 @@ export default function TableList() {
   //     setOrderItems(_newOrderItems)
   // };
 
-
+  useMemo(
+    () =>
+      socket.on(`ORDER:${storeDetail._id}`, (data) => {
+        reLoadData();
+      }),
+    [storeDetail._id]
+  );
+  useMemo(() => {
+    socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+      reLoadData();
+    });
+  }, [storeDetail._id]);
   return (
     <div
       style={{
@@ -747,7 +696,12 @@ export default function TableList() {
                 {tableList &&
                   tableList.map((table, index) => (
                     <div
-                      style={{ border: "1px solid #FB6E3B" }}
+                      style={{
+                        border: "1px solid #FB6E3B",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        cursor: "pointer",
+                      }}
                       key={"table" + index}
                     >
                       <div
@@ -755,13 +709,14 @@ export default function TableList() {
                           width: "100%",
                           height: "100%",
                           border: "none",
+                          borderRadius: 8,
                           backgroundColor: table?.isStaffConfirm
                             ? "#FB6E3B"
                             : "white",
                           border:
                             selectedTable?.tableName == table?.tableName
-                              ? "2px solid #FB6E3B"
-                              : "2px solid  white",
+                              ? "3px solid yellow"
+                              : "3px solid  white",
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
@@ -772,10 +727,10 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                              ? "blink_cardCallCheckOut"
-                              : ""
+                            ? "blink_cardCallCheckOut"
+                            : ""
                         }
-                        onClick={async () => {
+                        onClick={() => {
                           onSelectTable(table);
                         }}
                       >
@@ -818,15 +773,11 @@ export default function TableList() {
                     width: "100%",
                     backgroundColor: "#FFF",
                     maxHeight: "90vh",
-                    borderColor: "black",
                     overflowY: "scroll",
-                    borderWidth: 1,
-                    paddingLeft: 20,
-                    paddingTop: 20,
                   }}
                 >
                   {
-                    <Container>
+                    <div>
                       <Row style={{ margin: 0 }}>
                         <Col sm={12} style={{ backgroundColor: "#eee" }}>
                           <p
@@ -859,10 +810,10 @@ export default function TableList() {
                           <p style={{ fontSize: 20, margin: 0 }}>
                             ຜູ້ຮັບຜິດຊອບ:{" "}
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                            dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </p>
                           <p style={{ fontSize: 20, margin: 0 }}>
@@ -891,15 +842,15 @@ export default function TableList() {
                           style={{
                             display:
                               CheckStatus?.length ===
-                                tableOrderItems?.length -
+                              tableOrderItems?.length -
                                 CheckStatusCancel?.length
                                 ? CheckStatus?.length !==
                                   tableOrderItems?.length -
-                                  CheckStatusCancel?.length
+                                    CheckStatusCancel?.length
                                   ? ""
                                   : CheckStatus?.length === 0
-                                    ? ""
-                                    : "none"
+                                  ? ""
+                                  : "none"
                                 : "none",
                           }}
                         ></div>
@@ -907,7 +858,6 @@ export default function TableList() {
                           style={{ display: "flex", justifyContent: "center" }}
                         >
                           <div style={{}}>
-
                             <Button
                               variant="light"
                               className="hover-me"
@@ -982,26 +932,26 @@ export default function TableList() {
                             ເພີ່ມສ່ວນຫຼຸດ
                           </Button> */}
                             {
-                 
                               <Button
-                              variant="light"
-                              className="hover-me"
-                              style={{
-                                marginRight: 15,
-                                backgroundColor: "#FB6E3B",
-                                color: "#ffffff",
-                                fontWeight: "bold",
-                                height: 60,
-                              }}
-                              disabled={!canCheckOut}
-                              onClick={() => _onCheckOut()}
-                            >
-                              <FontAwesomeIcon
-                                icon={faCashRegister}
-                                style={{ color: "#fff" }}
-                              />
-                              Checkout
-                            </Button>}
+                                variant="light"
+                                className="hover-me"
+                                style={{
+                                  marginRight: 15,
+                                  backgroundColor: "#FB6E3B",
+                                  color: "#ffffff",
+                                  fontWeight: "bold",
+                                  height: 60,
+                                }}
+                                disabled={!canCheckOut}
+                                onClick={() => _onCheckOut()}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faCashRegister}
+                                  style={{ color: "#fff" }}
+                                />
+                                Checkout
+                              </Button>
+                            }
                             {/* <ReactToPrint
                         trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
                         content={() => componentRefA.current}
@@ -1048,7 +998,7 @@ export default function TableList() {
                               border: "1px solid #FB6E3B",
                               // width: "100px",
                               height: "60px",
-                              borderRadius: "3px"
+                              borderRadius: "3px",
                             }}
                             onClick={() =>
                               handleUpdateOrderStatuscancel("CANCEL")
@@ -1066,7 +1016,7 @@ export default function TableList() {
                               color: "#fff",
                               border: "1px solid #FB6E3B",
                               height: "60px",
-                              borderRadius: "3px"
+                              borderRadius: "3px",
                             }}
                             onClick={() => handleUpdateOrderStatusgo("DOING")}
                           >
@@ -1082,7 +1032,7 @@ export default function TableList() {
                               color: "#fff",
                               border: "1px solid #FB6E3B",
                               height: "60px",
-                              borderRadius: "3px"
+                              borderRadius: "3px",
                             }}
                             onClick={() => handleUpdateOrderStatus("SERVED")}
                           >
@@ -1130,7 +1080,17 @@ export default function TableList() {
                         >
                           <thead style={{ backgroundColor: "#F1F1F1" }}>
                             <tr>
-                              <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
+                              <th>
+                                <FormControlLabel
+                                  control={
+                                    <Checkbox
+                                      name="checkedC"
+                                      onChange={(e) => checkAllOrders(e)}
+                                    />
+                                  }
+                                  style={{ marginLeft: 2 }}
+                                />
+                              </th>
 
                               {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
                               <th
@@ -1183,11 +1143,11 @@ export default function TableList() {
                           <tbody>
                             {isCheckedOrderItem
                               ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  {/* <td style={{ border: "none" }}>
+                                  <tr
+                                    key={"order" + index}
+                                    style={{ borderBottom: "1px solid #eee" }}
+                                  >
+                                    {/* <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 checked={orderItem?.isChecked ? true : false}
@@ -1198,111 +1158,111 @@ export default function TableList() {
                               />
                             </div>
                           </td> */}
-                                  <td>
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          name="checked"
-                                          checked={
-                                            orderItem?.isChecked || false
-                                          }
-                                        // isChecked={
-                                        //   orderItem?.isChecked || false
-                                        // }
-                                        />
-                                      }
-                                      onChange={(e) =>
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        })
-                                      }
-                                      style={{ marginLeft: 2 }}
-                                    />
-                                  </td>
+                                    <td>
+                                      <FormControlLabel
+                                        control={
+                                          <Checkbox
+                                            name="checked"
+                                            checked={
+                                              orderItem?.isChecked || false
+                                            }
+                                            // isChecked={
+                                            //   orderItem?.isChecked || false
+                                            // }
+                                          />
+                                        }
+                                        onChange={(e) =>
+                                          onSelect({
+                                            ...orderItem,
+                                            isChecked: e.target.checked,
+                                          })
+                                        }
+                                        style={{ marginLeft: 2 }}
+                                      />
+                                    </td>
 
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>{index + 1}</p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.name}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.quantity}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                        color:
-                                          orderItem?.status === `SERVED`
-                                            ? "green"
-                                            : orderItem?.status === "DOING"
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>{index + 1}</p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.name}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.quantity}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                          color:
+                                            orderItem?.status === `SERVED`
+                                              ? "green"
+                                              : orderItem?.status === "DOING"
                                               ? ""
                                               : "red",
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.status
-                                          ? orderStatus(orderItem?.status)
-                                          : "-"}
-                                      </p>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: 50,
-                                      }}
-                                    >
-                                      <p style={{ margin: 0 }}>
-                                        {orderItem?.createdAt
-                                          ? moment(
-                                            orderItem?.createdAt
-                                          ).format("HH:mm A")
-                                          : "-"}
-                                      </p>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.status
+                                            ? orderStatus(orderItem?.status)
+                                            : "-"}
+                                        </p>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          height: 50,
+                                        }}
+                                      >
+                                        <p style={{ margin: 0 }}>
+                                          {orderItem?.createdAt
+                                            ? moment(
+                                                orderItem?.createdAt
+                                              ).format("HH:mm A")
+                                            : "-"}
+                                        </p>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
                               : ""}
                           </tbody>
                         </Table>
@@ -1316,7 +1276,7 @@ export default function TableList() {
                         )}
                       </div>
                       <div style={{ marginBottom: 100 }} />
-                    </Container>
+                    </div>
                   }
                 </div>
               )}
@@ -1447,6 +1407,13 @@ export default function TableList() {
           })}
       </div>
 
+      <CheckOutType
+        dataBill={dataBill}
+        tableData={selectedTable}
+        open={popup?.CheckOutType}
+        onClose={() => setPopup()}
+      />
+
       <OrderCheckOut
         data={dataBill}
         onPrintBill={onPrintBill}
@@ -1454,6 +1421,10 @@ export default function TableList() {
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
+        onSubmit={() => {
+          setMenuItemDetailModal(false);
+          setPopup({ CheckOutType: true });
+        }}
       />
 
       <UpdateDiscountOrder

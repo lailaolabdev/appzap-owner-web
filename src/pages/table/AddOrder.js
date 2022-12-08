@@ -5,6 +5,7 @@ import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import ReactToPrint from "react-to-print";
+import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
@@ -54,7 +55,16 @@ function AddOrder() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
 
-  const { storeDetail, printers, selectedTable } = useStore();
+  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
+
+  const [search, setSearch] = useState("");
+  console.log("allSelectedMenu", allSelectedMenu);
+  const afterSearch = _.filter(
+    allSelectedMenu,
+    (e) =>
+      (e?.name?.indexOf(search) > -1 && selectedCategory == "All") ||
+      e?.categoryId?._id == selectedCategory
+  );
 
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -121,29 +131,25 @@ function AddOrder() {
         //   },
         //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
         // });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        // await Swal.fire({
+        //   icon: "success",
+        //   title: "ປິນສຳເລັດ",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        // await Swal.fire({
+        //   icon: "error",
+        //   title: "ປິນບໍ່ສຳເລັດ",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
       }
       _index++;
     }
   };
 
-  useEffect(() => {
-    console.log("allSelectedMenu", allSelectedMenu);
-    console.log("selectedMenu", selectedMenu);
-  }, [selectedMenu]);
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
     const _localJson = JSON.parse(ADMIN);
@@ -172,7 +178,7 @@ function AddOrder() {
   }, []);
 
   const getData = async (id) => {
-    await fetch(CATEGORY + `storeId=${id}`, {
+    await fetch(CATEGORY + `?storeId=${id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -289,10 +295,16 @@ function AddOrder() {
             if (isPrinted) {
               //  print
               onPrintForCher().then(() => {
+                onSelectTable(selectedTable);
                 navigate(
                   `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                 );
               });
+            } else {
+              onSelectTable(selectedTable);
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+              );
             }
           }
         })
@@ -346,22 +358,40 @@ function AddOrder() {
             overflowY: "scroll",
           }}
         >
-          <div className="form-group">
-            <label>ເລືອກປະເພດ</label>
-            <select
-              className="form-control"
-              onChange={(e) => setSelectedCategory(e.target.value)}
-            >
-              <option value="All">ທັງໝົດ</option>
-              {/* {Categorys &&
+          <div
+            style={{
+              padding: 10,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridGap: 20,
+            }}
+          >
+            <div>
+              <label>ເລືອກປະເພດ</label>
+              <select
+                className="form-control"
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="All">ທັງໝົດ</option>
+                {Categorys &&
                   Categorys?.map((data, index) => {
                     return (
                       <option key={"category" + index} value={data?._id}>
                         {data?.name}
                       </option>
                     );
-                  })} */}
-            </select>
+                  })}
+              </select>
+            </div>
+            <div>
+              <label>ຄົ້ນຫາ</label>
+              <input
+                placeholder="ຄົ້ນຫາ"
+                className="form-control"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
           <div
             style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
@@ -369,7 +399,7 @@ function AddOrder() {
             {isLoading ? (
               <Loading />
             ) : (
-              allSelectedMenu?.map((data, index) => (
+              afterSearch?.map((data, index) => (
                 <div
                   key={"menu" + index}
                   style={{

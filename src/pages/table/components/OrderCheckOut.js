@@ -23,6 +23,7 @@ const OrderCheckOut = ({
   hide,
   resetTableOrder,
   onPrintBill,
+  onSubmit,
 }) => {
   const [total, setTotal] = useState();
 
@@ -74,12 +75,12 @@ const OrderCheckOut = ({
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
       });
   };
+
   return (
     <Modal
       show={show}
       size={"lg"}
       onHide={hide}
-      centered
       arialabelledby="contained-modal-title-vcenter"
     >
       <Modal.Header closeButton>
@@ -190,7 +191,7 @@ const OrderCheckOut = ({
               border: "solid 1px #FB6E3B",
               fontSize: 30,
             }}
-            onClick={() => _checkBill()}
+            onClick={() => onSubmit()}
           >
             <FontAwesomeIcon icon={faCashRegister} style={{ color: "#fff" }} />{" "}
             ເຊັກບິນ

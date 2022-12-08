@@ -92,6 +92,7 @@ export const base64ToBlob = (dataurl) => {
 
   return new Blob(byteArrays, { type: mime });
 };
+
 export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
   return new Promise((resolve) => {
     let img = new Image();

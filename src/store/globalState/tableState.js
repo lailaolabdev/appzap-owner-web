@@ -22,6 +22,7 @@ export const useTableState = () => {
   const [tableOrders, setTableOrders] = useState([]);
   const [tableOrderItems, setTableOrderItems] = useState([]);
   const [selectedTable, setSelectedTable] = useState();
+  const [selectTable2, setSelectTable2] = useState();
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
 
   const initialTableSocket = useMemo(
@@ -96,16 +97,23 @@ export const useTableState = () => {
         setTableOrders(response);
         setIsTableOrderLoading(false);
       });
+    setIsTableOrderLoading(false);
+
     return res;
   };
   /**
    * Select Table
    * @param {*} table
    */
+
   const onSelectTable = async (table) => {
-    setTableOrderItems([])
-    setSelectedTable(table);
-    await getTableOrders(table);
+    if (table) {
+      setTableOrderItems([]);
+      // alert(JSON.stringify(table));
+      setSelectedTable(table);
+      await getTableOrders(table);
+    } else {
+    }
   };
   /**
    * ເປີດໂຕະ
@@ -155,7 +163,7 @@ export const useTableState = () => {
    * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
    */
   const resetTableOrder = () => {
-    getTableOrders();
+    getTableOrders(selectedTable);
     getTableDataStore();
     setTableOrders([]);
     setTimeout(() => {
@@ -241,5 +249,7 @@ export const useTableState = () => {
     handleUpdateTableOrderStatus,
     resetTableOrder,
     initialTableSocket,
+    selectTable2,
+    setSelectTable2,
   };
 };
