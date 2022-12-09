@@ -344,7 +344,7 @@ export default function DashboardFinance({ startDate, endDate }) {
               <thead>
                 <tr>
                   <th>#</th>
-                  {/* <th>ໂຕະ</th> */}
+                  <th>ໂຕະ</th>
                   <th>ລະຫັດ</th>
                   {/* <th>ສວ່ນຫຼຸດ</th> */}
                   <th>ລາຄາ / ບິນ</th>
@@ -371,7 +371,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                     }}
                   >
                     <td>{index + 1}</td>
-                    {/* <td>{item?.tableId?.name ?? "-"}</td> */}
+                    <td>{item?.tableId?.name ?? "-"}</td>
                     <td>{item?.code}</td>
                     {/* <td>
                       {item?.discountType === "LAK"

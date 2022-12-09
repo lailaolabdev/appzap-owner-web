@@ -504,7 +504,11 @@ function AddOrder() {
                       color: "#FB6E3B",
                       fontWeight: "bold",
                     }}
-                    onClick={() => navigate.goBack()}
+                    onClick={() =>
+                      navigate(
+                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                      )
+                    }
                   >
                     ຍົກເລີກ
                   </Button>

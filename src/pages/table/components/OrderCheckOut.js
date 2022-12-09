@@ -45,36 +45,7 @@ const OrderCheckOut = ({
     setTotal(_total);
   };
 
-  const _checkBill = async () => {
-    await axios
-      .put(
-        END_POINT + `/v3/bill-checkout`,
-        {
-          id: data?._id,
-          data: {
-            isCheckout: "true",
-            status: "CHECKOUT",
-          },
-        },
-        {
-          headers: await getHeaders(),
-        }
-      )
-      .then(async function (response) {
-        callingCheckOut();
-        Swal.fire({
-          icon: "success",
-          title: "ສໍາເລັດການເຊັກບິນ",
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        resetTableOrder();
-        hide();
-      })
-      .catch(function (error) {
-        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
-      });
-  };
+ 
 
   return (
     <Modal
