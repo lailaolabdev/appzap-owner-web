@@ -142,6 +142,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     }
     return { _countOrderSuccess, _countOrderCancel };
   };
+
   const _countAmount = (item) => {
     let _amount = 0;
     if (item?.length > 0) {
@@ -346,11 +347,11 @@ export default function DashboardFinance({ startDate, endDate }) {
                   <th>#</th>
                   <th>ໂຕະ</th>
                   <th>ລະຫັດ</th>
-                  {/* <th>ສວ່ນຫຼຸດ</th> */}
+                  <th>ສວ່ນຫຼຸດ</th>
                   <th>ລາຄາ / ບິນ</th>
-                  {/* <th>ເສີບແລ້ວ / ຍົກເລີກ</th> */}
-                  {/* <th>ສະຖານະຂອງໂຕະ</th> */}
-                  {/* <th>ຮູບແບບການຊຳລະ</th> */}
+                  <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
+                  <th>ສະຖານະຂອງໂຕະ</th>
+                  <th>ຮູບແບບການຊຳລະ</th>
                   <th>ເວລາ</th>
                 </tr>
               </thead>
@@ -390,7 +391,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                           }).format(item?.billAmount)}{" "}
                       ກີບ
                     </td>
-                    {/* <td>
+                    <td>
                       <div
                         style={{
                           display: "flex",
@@ -415,8 +416,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                           {_countOrder(item?.orderId)?._countOrderCancel}
                         </p>
                       </div>
-                    </td> */}
-                    {/* <td
+                    </td>
+                    <td
                       style={{
                         color:
                           item?.status === "CHECKOUT"
@@ -429,8 +430,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                       }}
                     >
                       {_statusCheckBill(item?.status)}
-                    </td> */}
-                    {/* <td
+                    </td>
+                    <td
                       style={{
                         color:
                           item?.paymentMethod === "CASH"
@@ -443,7 +444,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                         : item?.paymentMethod === "BCEL"
                         ? "ຈ່າຍເງິນໂອນ"
                         : "-"}
-                    </td> */}
+                    </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
                     </td>
