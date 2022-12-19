@@ -374,13 +374,13 @@ export default function DashboardFinance({ startDate, endDate }) {
                     <td>{index + 1}</td>
                     <td>{item?.tableId?.name ?? "-"}</td>
                     <td>{item?.code}</td>
-                    {/* <td>
+                    <td>
                       {item?.discountType === "LAK"
                         ? new Intl.NumberFormat("ja-JP", {
                             currency: "JPY",
                           }).format(item?.discount) + "ກີບ"
                         : item?.discount + "%"}
-                    </td> */}
+                    </td>
                     <td>
                       {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {

@@ -30,7 +30,7 @@ export const useTableState = () => {
       let _userData = await getLocalData();
       socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
         getTableDataStore();
-        getTableOrders(selectedTable);
+        // getTableOrders(selectedTable);
       });
       // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
       //   getTableDataStore();
@@ -90,7 +90,9 @@ export const useTableState = () => {
    */
   const getTableOrders = async (table) => {
     setIsTableOrderLoading(true);
+    console.log("table", table);
     const url = END_POINT + `/v3/orders?code=${table?.code}`;
+    console.log("url", url);
     let res = await fetch(url)
       .then((response) => response.json())
       .then((response) => {
@@ -101,9 +103,9 @@ export const useTableState = () => {
 
     return res;
   };
+
   /**
    * Select Table
-   * @param {*} table
    */
 
   const onSelectTable = async (table) => {
@@ -115,9 +117,11 @@ export const useTableState = () => {
     } else {
     }
   };
+
   /**
    * ເປີດໂຕະ
    */
+
   const openTable = async () => {
     try {
       let findby = "?";
@@ -159,16 +163,18 @@ export const useTableState = () => {
       console.log("err", err);
     }
   };
+
   /**
    * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
    */
+
   const resetTableOrder = () => {
     getTableOrders(selectedTable);
     getTableDataStore();
     setTableOrders([]);
-    setTimeout(() => {
-      setSelectedTable();
-    }, 100);
+    // setTimeout(() => {
+    //   setSelectedTable();
+    // }, 100);
   };
   const onChangeMenuCheckbox = async (order) => {
     let _orderItemForPrint = [];
@@ -189,6 +195,7 @@ export const useTableState = () => {
     setorderItemForPrintBill(_orderItemForPrint);
     setTableOrderItems(_newOrderItems);
   };
+
   /**
    * ອັບເດດສະຖານະອໍເດີ
    */
@@ -227,6 +234,7 @@ export const useTableState = () => {
       });
     }
   };
+
   return {
     isTableOrderLoading,
     orderItemForPrintBill,

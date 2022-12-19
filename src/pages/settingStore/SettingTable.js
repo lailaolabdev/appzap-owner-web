@@ -13,7 +13,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { useParams } from "react-router-dom";
 
 export default function SettingTable() {
-  const params =  useParams()
+  const params = useParams();
   const { tableListCheck, setTableListCheck, getTableDataStoreList } =
     useStore();
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function SettingTable() {
       if (createTable?.data?.message === "INVALID_NAME") {
         warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
       } else {
-        setTableListCheck([...tableListCheck, createTable?.data]);
+        getTableDataStoreList();
         successAdd("ການເພີ່ມໂຕະສຳເລັດ");
       }
     } catch (err) {
@@ -88,7 +88,7 @@ export default function SettingTable() {
       if (createTable?.data?.message === "INVALID_NAME") {
         warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
       } else {
-        setTableListCheck([...tableListCheck, createTable?.data]);
+        getTableDataStoreList();
         successAdd("ການເພີ່ມໂຕະສຳເລັດ");
       }
     } catch (err) {
@@ -97,6 +97,10 @@ export default function SettingTable() {
   };
   const _changeStatusTable = async (data) => {
     try {
+      if (data?.isOpened) {
+        errorAdd("ບໍ່ສາມາດປິດໂຕະທີ່ມີແຂກໄດ້");
+        return;
+      }
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -114,18 +118,7 @@ export default function SettingTable() {
         },
         headers: headers,
       });
-      setTableListCheck((prev) =>
-        prev.map((e) => {
-          if (e._id == data._id) {
-            return {
-              ...e,
-              status,
-            };
-          } else {
-            return e;
-          }
-        })
-      );
+      getTableDataStoreList();
     } catch (err) {
       console.log("err:", err);
     }
@@ -212,7 +205,7 @@ export default function SettingTable() {
                         <label className="switch">
                           <input
                             type="checkbox"
-                            defaultChecked={
+                            checked={
                               table?.status === true ? true : false
                             }
                             onClick={(e) => _changeStatusTable(table)}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
@@ -11,6 +11,7 @@ import { errorAdd, successAdd } from "../../../helpers/sweetalert";
 import _ from "lodash";
 
 import ButtonPrimary from "../../../components/button/ButtonPrimary";
+import { useStore } from "../../../store";
 
 export default function CheckOutType({
   open,
@@ -21,9 +22,12 @@ export default function CheckOutType({
 }) {
   // state
   const [cash, setCash] = useState();
-  const [transfer, setTransfer] = useState();
+  const [transfer, setTransfer] = useState(0);
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("cash");
+  const [canCheckOut, setCanCheckOut] = useState(false);
+
+  const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
   const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
@@ -49,6 +53,9 @@ export default function CheckOutType({
         }
       )
       .then(async function (response) {
+        setSelectedTable();
+        getTableDataStore();
+        onClose();
         Swal.fire({
           icon: "success",
           title: "ສໍາເລັດການເຊັກບິນ",
@@ -64,6 +71,19 @@ export default function CheckOutType({
     _checkBill();
     onSubmit();
   };
+
+  // useEffect
+  useEffect(() => {
+    // console.log("cash", cash);
+    // console.log("transfer", transfer);
+    // console.log("totalBill", totalBill);
+    // console.log("first", cash - 0 + (transfer - 0) - totalBill);
+    if (cash - 0 + (transfer - 0) - totalBill >= 0) {
+      setCanCheckOut(true);
+    } else {
+      setCanCheckOut(false);
+    }
+  }, [cash, transfer, totalBill]);
   return (
     <Modal show={open} onHide={onClose} keyboard={false} size="xl">
       <Modal.Header closeButton>
@@ -247,7 +267,11 @@ export default function CheckOutType({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <ButtonPrimary style={{ color: "white" }} onClick={handleSubmit}>
+        <ButtonPrimary
+          style={{ color: "white" }}
+          onClick={handleSubmit}
+          disabled={!canCheckOut}
+        >
           ໄລເງິນ
         </ButtonPrimary>
       </Modal.Footer>

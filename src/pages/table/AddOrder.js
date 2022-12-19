@@ -286,7 +286,7 @@ function AddOrder() {
         })
         .then(async (response) => {
           if (response?.data) {
-            await Swal.fire({
+            Swal.fire({
               icon: "success",
               title: "ເພີ່ມອໍເດີສໍາເລັດ",
               showConfirmButton: false,
@@ -328,6 +328,7 @@ function AddOrder() {
   };
 
   const onSubmit = async (isPrinted) => {
+    setIsLoading(true);
     if (selectedMenu.length == 0) {
       Swal.fire({
         icon: "warning",
@@ -341,6 +342,7 @@ function AddOrder() {
     if (selectedMenu.length != 0) {
       await createOrder(selectedMenu, header, isPrinted);
     }
+    // setIsLoading(false);
   };
 
   return (
@@ -522,6 +524,7 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
+                    disabled={isLoading}
                     onClick={() => onSubmit(false)}
                   >
                     ສັ່ງອາຫານ
@@ -540,6 +543,7 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
+                    disabled={isLoading}
                     onClick={() => {
                       // onPrint();
                       onSubmit(true);

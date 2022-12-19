@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.4.1",
+  "version": "5.4.2",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
@@ -48,6 +48,7 @@
     "react-select": "^3.1.0",
     "react-star-ratings": "^2.3.0",
     "react-to-print": "^2.12.4",
+    "react-toastify": "^9.1.1",
     "rsuite-daterangepicker": "3.0.5",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.2.0",

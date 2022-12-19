@@ -2,6 +2,8 @@ import React from "react";
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
 import { StateProvider } from "./store";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const theme = {
   xl: "@media screen and (min-width: 1536px)",
   lg: "@media screen and (min-width: 1200px)",
@@ -14,6 +16,7 @@ function App() {
     <StateProvider>
       <ThemeProvider theme={theme}>
         <Routes />
+        <ToastContainer />
       </ThemeProvider>
     </StateProvider>
   );

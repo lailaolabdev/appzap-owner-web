@@ -15,12 +15,6 @@ import {
   Col,
   Table,
 } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCashRegister,
-  faArchway,
-  faCheckCircle,
-} from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 
 import moment from "moment";
@@ -30,6 +24,8 @@ import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import Box from "../../components/Box";
+
+import { SiAirtable } from "react-icons/si";
 
 /**
  * component
@@ -56,15 +52,17 @@ import {
   CANCEL_STATUS,
   DOING_STATUS,
   SERVE_STATUS,
+  COLOR_APP,
 } from "../../constants/index";
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
-import { useAsyncError, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
+import styled from "styled-components";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -90,13 +88,15 @@ export default function TableList() {
   const [CheckStatusCancel, setCheckStatusCancel] = useState();
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
-  const [dataStore, setStore] = useState();
+  const [reload, setReload] = useState(false);
+
   const {
     orderItems,
     setOrderItems,
     getOrderItemsStore,
     printerCounter,
     printers,
+    orderSound,
   } = useStore();
 
   // const [ref , setRef] = useRef();
@@ -104,6 +104,7 @@ export default function TableList() {
   /**
    * useState
    */
+
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
@@ -118,14 +119,22 @@ export default function TableList() {
     resetTableOrder,
     initialTableSocket,
     storeDetail,
-    selectTable2,
-    setSelectTable2,
+    getTableOrders,
   } = useStore();
 
   const reLoadData = () => {
-    // onSelectTable(selectedTable);
-    resetTableOrder();
+    setReload(true);
+    // const _selectedTable = selectedTable;
+    // await resetTableOrder();
+    // onSelect(_selectedTable);
   };
+  useEffect(() => {
+    if (reload) {
+      getTableOrders(selectedTable);
+      setReload(false);
+      orderSound();
+    }
+  }, [reload]);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
 
@@ -140,9 +149,6 @@ export default function TableList() {
     initialTableSocket();
     getTableDataStore();
   }, []);
-  useEffect(() => {
-    _StoreData();
-  }, [params?.storeId]);
   /**
    * Modify Order Status
    */
@@ -167,10 +173,6 @@ export default function TableList() {
     navigate(
       `/tables/pagenumber/${number}/tableid/${activeTableId}/${params?.storeId}`
     );
-  };
-  const _orderIsChecked = () => {
-    let isIncluded = tableOrderItems.filter((item) => item.isChecked);
-    return isIncluded.length == 0;
   };
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
@@ -334,15 +336,6 @@ export default function TableList() {
     }
     return _checkBill;
   };
-  const _StoreData = async () => {
-    await fetch(STORE + `/?id=${params?.storeId}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        setStore(json);
-      });
-  };
 
   const [widthBill80, setWidthBill80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
@@ -353,6 +346,7 @@ export default function TableList() {
     setWidthBill80(bill80Ref.current.offsetWidth);
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
+
   const onPrintBill = async () => {
     try {
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -408,8 +402,10 @@ export default function TableList() {
   };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
+
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
+
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
     billForCher80.current = Array(arrLength)
@@ -607,6 +603,7 @@ export default function TableList() {
       // onSelectTable(selectedTable);
     }
   };
+
   //   const handleCheckbox = async (order) => {
   //     let _orderItems = [...orderItems]
   //     let _newOrderItems = _orderItems.map((item) => {
@@ -641,36 +638,13 @@ export default function TableList() {
     <div
       style={{
         backgroundColor: "#F9F9F9",
-        height: "100vh",
+        height: "calc(100vh - 66px)",
         overflow: "hidden",
         width: "100%",
       }}
     >
       {isTableOrderLoading ? <Loading /> : ""}
-      <div style={{ marginTop: -10, paddingTop: 10 }}>
-        <div>
-          <Nav
-            variant="tabs"
-            style={NAV}
-            defaultActiveKey={`/tables/pagenumber/${number}/tableid/${activeTableId}`}
-          >
-            <Nav.Item>
-              <Nav.Link
-                style={{ color: "#FB6E3B", border: "none" }}
-                active={true}
-              >
-                ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
-                {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
-                {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
-                {_checkStatusCodeB(tableList)}
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item
-              className="ml-auto row mr-5"
-              style={{ paddingBottom: "3px" }}
-            ></Nav.Item>
-          </Nav>
-        </div>
+      <div>
         <Box
           sx={{
             display: "flex",
@@ -679,9 +653,22 @@ export default function TableList() {
             height: "100vh",
           }}
         >
-          <Box sx={{ flexGrow: 1, overflow: "auto", height: "100%" }}>
-            <Container>
-              <div style={{ height: 10 }}></div>
+          <Box
+            sx={{
+              flexGrow: 1,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
+              ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
+              {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
+              {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
+              {_checkStatusCodeB(tableList)}
+            </div>
+            <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
+              <div style={{ height: 10 }} />
               <Box
                 sx={{
                   display: "grid",
@@ -697,7 +684,14 @@ export default function TableList() {
                   tableList.map((table, index) => (
                     <div
                       style={{
-                        border: "1px solid #FB6E3B",
+                        border:
+                          selectedTable?.tableName == table?.tableName
+                            ? "1px solid #404258"
+                            : "1px solid #FB6E3B",
+                        backgroundColor:
+                          selectedTable?.tableName == table?.tableName
+                            ? "#404258"
+                            : "#FFF",
                         borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
@@ -710,12 +704,18 @@ export default function TableList() {
                           height: "100%",
                           border: "none",
                           borderRadius: 8,
-                          backgroundColor: table?.isStaffConfirm
-                            ? "#FB6E3B"
+                          // backgroundColor: table?.isStaffConfirm
+                          //   ? "#FB6E3B"
+                          //   : "white",
+                          background: table?.isStaffConfirm
+                            ? "rgb(251,110,59)"
+                            : "white",
+                          background: table?.isStaffConfirm
+                            ? "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                             : "white",
                           border:
                             selectedTable?.tableName == table?.tableName
-                              ? "3px solid yellow"
+                              ? "3px solid #404258"
                               : "3px solid  white",
                           display: "flex",
                           flexDirection: "column",
@@ -732,6 +732,7 @@ export default function TableList() {
                         }
                         onClick={() => {
                           onSelectTable(table);
+                          // console.log("selectTableData", table);
                         }}
                       >
                         <div
@@ -761,10 +762,19 @@ export default function TableList() {
                     </div>
                   ))}
               </Box>
+              <div style={{ height: 20 }} />
             </Container>
           </Box>
           {/* Detail Table */}
-          <Box sx={{ display: { xs: "none", sm: "block" }, minWidth: 600 }}>
+          <Box
+            sx={{
+              display: { xs: "none", sm: "block" },
+              minWidth: 420,
+              width: 420,
+              maxWidth: 420,
+              boxShadow: "-1px 0px 10px rgba(0,0,0,0.1)",
+            }}
+          >
             {selectedTable != null &&
               selectedTable?.isStaffConfirm &&
               selectedTable?.isOpened && (
@@ -778,376 +788,200 @@ export default function TableList() {
                 >
                   {
                     <div>
-                      <Row style={{ margin: 0 }}>
-                        <Col sm={12} style={{ backgroundColor: "#eee" }}>
-                          <p
+                      <div style={{ backgroundColor: "#fff", padding: 10 }}>
+                        <div
+                          style={{
+                            fontSize: 24,
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: 20,
+                          }}
+                        >
+                          <SiAirtable /> {selectedTable?.tableName}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                          }}
+                        >
+                          ລະຫັດເຂົ້າໂຕະ:{" "}
+                          <span
                             style={{
-                              fontSize: 30,
-                              margin: 0,
                               fontWeight: "bold",
+                              color: COLOR_APP,
                             }}
                           >
-                            ຂໍ້ມູນໂຕະ
-                          </p>
-                          <p
+                            {selectedTable?.code}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                          }}
+                        >
+                          ເວລາເປີດໂຕະ:{" "}
+                          <span
                             style={{
-                              fontSize: 20,
-                              margin: 0,
                               fontWeight: "bold",
+                              color: COLOR_APP,
                             }}
                           >
-                            ໂຕະ: {selectedTable?.tableName}{" "}
-                          </p>
-                          <p style={{ fontSize: 20, margin: 0 }}>
-                            ລະຫັດເຂົ້າໂຕະ: {selectedTable?.code}
-                          </p>
-                          <p style={{ fontSize: 20, margin: 0 }}>
-                            ເວລາເປີດໂຕະ:{" "}
-                            {moment(selectedTable?.createdAt).format(
-                              "HH:mm:ss A"
-                            )}
-                          </p>
-                          <p style={{ fontSize: 20, margin: 0 }}>
-                            ຜູ້ຮັບຜິດຊອບ:{" "}
+                            {moment(selectedTable?.updatedAt).format("HH:mm A")}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                          }}
+                        >
+                          ຜູ້ຮັບຜິດຊອບ:{" "}
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              color: COLOR_APP,
+                            }}
+                          >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
                             dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
                                 " " +
                                 dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
-                          </p>
-                          <p style={{ fontSize: 20, margin: 0 }}>
-                            ມີສ່ວນຫຼຸດ: {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
-                          </p>
-                        </Col>
-                      </Row>
-                      <div
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          display: "flex",
-                          paddingTop: 15,
-                        }}
-                      >
+                          </span>
+                        </div>
+
                         <div
                           style={{
-                            alignItems: "end",
-                            flexDirection: "column",
-                            display: "flex",
-                            justifyContent: "center",
+                            fontSize: 16,
                           }}
-                        ></div>
-                        <div
-                          style={{
-                            display:
-                              CheckStatus?.length ===
-                              tableOrderItems?.length -
-                                CheckStatusCancel?.length
-                                ? CheckStatus?.length !==
-                                  tableOrderItems?.length -
-                                    CheckStatusCancel?.length
-                                  ? ""
-                                  : CheckStatus?.length === 0
-                                  ? ""
-                                  : "none"
-                                : "none",
-                          }}
-                        ></div>
-                        <div
-                          style={{ display: "flex", justifyContent: "center" }}
                         >
-                          <div style={{}}>
-                            <Button
-                              variant="light"
-                              className="hover-me"
-                              style={{
-                                marginRight: 15,
-                                backgroundColor: "#FB6E3B",
-                                color: "#ffffff",
-                                fontWeight: "bold",
-                                height: 60,
-                              }}
-                              onClick={() => onPrintForCher()}
-                            >
-                              {/* <FontAwesomeIcon
-                              icon={faWindowClose}
-                              style={{ color: "#fff", marginRight: 10 }}
-                            /> */}
-                              ພິມບິນໄປຄົວ
-                            </Button>
-
-                            <Button
-                              variant="light"
-                              className="hover-me"
-                              style={{
-                                marginRight: 15,
-                                backgroundColor: "#FB6E3B",
-                                color: "#ffffff",
-                                fontWeight: "bold",
-                                height: 60,
-                              }}
-                              onClick={() => _openModalSetting(selectedTable)}
-                            >
-                              {/* <FontAwesomeIcon
-                              icon={faWindowClose}
-                              style={{ color: "#fff", marginRight: 10 }}
-                            /> */}
-                              ປິດໂຕະ
-                            </Button>
-                            <Button
-                              variant="light"
-                              className="hover-me"
-                              style={{
-                                marginRight: 15,
-                                backgroundColor: "#FB6E3B",
-                                color: "#ffffff",
-                                fontWeight: "bold",
-                                height: 60,
-                              }}
-                              onClick={handleShow}
-                            >
-                              <FontAwesomeIcon
-                                // icon={faRetweet}
-                                style={{ color: "#fff", marginRight: 10 }}
-                              />
-                              ລວມໂຕະ
-                            </Button>
-                            {/* <Button
-                            variant="light"
-                            className="hover-me"
+                          ມີສ່ວນຫຼຸດ:{" "}
+                          <span
                             style={{
-                              marginRight: 15,
-                              backgroundColor: "#FB6E3B",
-                              color: "#ffffff",
                               fontWeight: "bold",
-                              height: 60,
+                              color: COLOR_APP,
                             }}
-                            onClick={() => _onAddDiscount()}
                           >
-                            <FontAwesomeIcon
-                              // icon={faPercent}
-                              style={{ color: "#fff" }}
-                            />{" "}
-                            ເພີ່ມສ່ວນຫຼຸດ
-                          </Button> */}
-                            {
-                              <Button
-                                variant="light"
-                                className="hover-me"
-                                style={{
-                                  marginRight: 15,
-                                  backgroundColor: "#FB6E3B",
-                                  color: "#ffffff",
-                                  fontWeight: "bold",
-                                  height: 60,
-                                }}
-                                disabled={!canCheckOut}
-                                onClick={() => _onCheckOut()}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faCashRegister}
-                                  style={{ color: "#fff" }}
-                                />
-                                Checkout
-                              </Button>
-                            }
-                            {/* <ReactToPrint
-                        trigger={() => <Button variant="light" className="hover-me" style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold", height: 60 }}><FontAwesomeIcon icon={faFileInvoice} style={{ color: "#fff" }} /> CheckBill</Button>}
-                        content={() => componentRefA.current}
-                      />
-                      <div style={{ display: 'none' }}>
-                        <BillForCheckOut ref={componentRefA} newData={dataBill} dataStore={dataBill?.storeId} />
-                      </div> */}
-                          </div>
-                          <div>
-                            <Button
-                              variant="light"
-                              className="hover-me"
-                              style={{
-                                backgroundColor: "#FB6E3B",
-                                color: "#ffffff",
-                                fontWeight: "bold",
-                                height: 60,
-                              }}
-                              onClick={() =>
-                                _goToAddOrder(
-                                  selectedTable?.tableId,
-                                  selectedTable?.code,
-                                  selectedTable?._id
-                                )
-                              }
-                            >
-                              + ເພີ່ມອໍເດີ
-                            </Button>
-                          </div>
+                            {moneyCurrency(dataBill?.discount)}{" "}
+                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
+                          </span>
                         </div>
                       </div>
+                      <div
+                        style={{
+                          borderBottom: "1px dashed #ccc",
+                          marginBottom: 10,
+                        }}
+                      />
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "repeat(4,1fr)",
+                          paddingLeft: 10,
+                          paddingRight: 10,
+                        }}
+                      >
+                        <ButtonCustom onClick={() => onPrintForCher()}>
+                          ພິມບິນໄປຄົວ
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => _openModalSetting(selectedTable)}
+                        >
+                          {/* <FontAwesomeIcon
+                              icon={faWindowClose}
+                              style={{ color: "#fff", marginRight: 10 }}
+                            /> */}
+                          ປິດໂຕະ
+                        </ButtonCustom>
+                        <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => {
+                            /*_onAddDiscount()*/
+                          }}
+                        >
+                          ເພີ່ມສ່ວນຫຼຸດ
+                        </ButtonCustom>
+
+                        <ButtonCustom
+                          disabled={!canCheckOut}
+                          onClick={() => _onCheckOut()}
+                        >
+                          Checkout
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() =>
+                            _goToAddOrder(
+                              selectedTable?.tableId,
+                              selectedTable?.code,
+                              selectedTable?._id
+                            )
+                          }
+                        >
+                          + ເພີ່ມອໍເດີ
+                        </ButtonCustom>
+                      </div>
+                      <div
+                        style={{
+                          borderBottom: "1px dashed #ccc",
+                          margin: "10px 0",
+                        }}
+                      />
                       <div
                         style={{
                           display: "flex",
-                          justifyContent: "space-around",
-                          padding: "10px",
+                          padding: "0 10px",
+                          marginBottom: 10,
                         }}
                       >
-                        <div>
-                          <button
-                            style={{
-                              backgroundColor: "#FB6E3B",
-                              color: "#fff",
-                              border: "1px solid #FB6E3B",
-                              // width: "100px",
-                              height: "60px",
-                              borderRadius: "3px",
-                            }}
-                            onClick={() =>
-                              handleUpdateOrderStatuscancel("CANCEL")
-                            }
-                          >
-                            ຍົກເລີກ
-                          </button>
-                        </div>
-                        <div style={{ width: "10px" }}></div>
-
-                        <div>
-                          <button
-                            style={{
-                              backgroundColor: "#FB6E3B",
-                              color: "#fff",
-                              border: "1px solid #FB6E3B",
-                              height: "60px",
-                              borderRadius: "3px",
-                            }}
-                            onClick={() => handleUpdateOrderStatusgo("DOING")}
-                          >
-                            ສົ່ງໄປຄົວ
-                          </button>
-                        </div>
-                        <div style={{ width: "10px" }}></div>
-
-                        <div>
-                          <button
-                            style={{
-                              backgroundColor: "#FB6E3B",
-                              color: "#fff",
-                              border: "1px solid #FB6E3B",
-                              height: "60px",
-                              borderRadius: "3px",
-                            }}
-                            onClick={() => handleUpdateOrderStatus("SERVED")}
-                          >
-                            ເສີບແລ້ວ
-                          </button>
-                        </div>
+                        <ButtonCustom
+                          onClick={() =>
+                            handleUpdateOrderStatuscancel("CANCEL")
+                          }
+                        >
+                          ຍົກເລີກ
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => handleUpdateOrderStatusgo("DOING")}
+                        >
+                          ສົ່ງໄປຄົວ
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => handleUpdateOrderStatus("SERVED")}
+                        >
+                          ເສີບແລ້ວ
+                        </ButtonCustom>
                       </div>
-                      <div style={{ height: 20 }}></div>
-                      <div
-                        style={{ display: _orderIsChecked() ? "none" : "flex" }}
-                      >
-                        ອັບເດດເປັນສະຖານະ:
-                      </div>
-                      <div style={{ height: 20 }}></div>
-                      <div
-                        style={{
-                          display: _orderIsChecked() ? "none" : "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        {/* <div>
-                    <ReactToPrint
-                      trigger={() => <Button
-                        variant="light"
-                        style={{ marginRight: 15, backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }}
-                      >ພີມບີນສົ່ງໄປຄົວ</Button>}
-                      content={() => componentRef.current}
-                    />
-                    <div style={{ display: 'none' }}>
-                      <BillForChef ref={componentRef} newData={orderItemForPrintBill} />
-                    </div>
-                  </div> */}
-                        <div>
-                          {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                          {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
+
+                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
+                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, params?.storeId)}>ສົ່ງໄປຄົວ</Button>
                     <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, params?.storeId)}>ເສີບແລ້ວ</Button> */}
-                        </div>
-                      </div>
-                      <div style={padding_white} />
-                      <div>
-                        <Table
-                          responsive
-                          className="staff-table-list borderless table-hover"
-                        >
-                          <thead style={{ backgroundColor: "#F1F1F1" }}>
-                            <tr>
-                              <th>
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      name="checkedC"
-                                      onChange={(e) => checkAllOrders(e)}
-                                    />
-                                  }
-                                  style={{ marginLeft: 2 }}
-                                />
-                              </th>
 
-                              {/* <th style={{ justifyContent: "center", alignItems: "center", height: 50 }}>#</th> */}
-                              <th
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  height: 50,
-                                }}
-                              >
-                                ລຳດັບ
-                              </th>
-                              <th
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  height: 50,
-                                }}
-                              >
-                                ຊື່ເມນູ
-                              </th>
-                              <th
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  height: 50,
-                                }}
-                              >
-                                ຈຳນວນ
-                              </th>
-                              <th
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  height: 50,
-                                }}
-                              >
-                                ສະຖານະ
-                              </th>
-                              <th
-                                style={{
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  height: 50,
-                                }}
-                              >
-                                ເວລາ
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {isCheckedOrderItem
-                              ? isCheckedOrderItem?.map((orderItem, index) => (
-                                  <tr
-                                    key={"order" + index}
-                                    style={{ borderBottom: "1px solid #eee" }}
-                                  >
-                                    {/* <td style={{ border: "none" }}>
+                      <TableCustom>
+                        <thead>
+                          <tr>
+                            <th>
+                              <Checkbox
+                                name="checked"
+                                onChange={(e) => checkAllOrders(e)}
+                              />
+                            </th>
+                            <th>ລຳດັບ</th>
+                            <th>ຊື່ເມນູ</th>
+                            <th>ຈຳນວນ</th>
+                            <th>ສະຖານະ</th>
+                            <th>ຜູ້ສັ່ງ</th>
+                            <th>ເວລາ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {isCheckedOrderItem
+                            ? isCheckedOrderItem?.map((orderItem, index) => (
+                                <tr
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  {/* <td style={{ border: "none" }}>
                             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
                               <Checkbox
                                 checked={orderItem?.isChecked ? true : false}
@@ -1158,123 +992,58 @@ export default function TableList() {
                               />
                             </div>
                           </td> */}
-                                    <td>
-                                      <FormControlLabel
-                                        control={
-                                          <Checkbox
-                                            name="checked"
-                                            checked={
-                                              orderItem?.isChecked || false
-                                            }
-                                            // isChecked={
-                                            //   orderItem?.isChecked || false
-                                            // }
-                                          />
-                                        }
-                                        onChange={(e) =>
-                                          onSelect({
-                                            ...orderItem,
-                                            isChecked: e.target.checked,
-                                          })
-                                        }
-                                        style={{ marginLeft: 2 }}
-                                      />
-                                    </td>
+                                  <td>
+                                    <Checkbox
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) =>
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        })
+                                      }
+                                    />
+                                  </td>
 
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          height: 50,
-                                        }}
-                                      >
-                                        <p style={{ margin: 0 }}>{index + 1}</p>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          height: 50,
-                                        }}
-                                      >
-                                        <p style={{ margin: 0 }}>
-                                          {orderItem?.name}
-                                        </p>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          height: 50,
-                                        }}
-                                      >
-                                        <p style={{ margin: 0 }}>
-                                          {orderItem?.quantity}
-                                        </p>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          height: 50,
-                                          color:
-                                            orderItem?.status === `SERVED`
-                                              ? "green"
-                                              : orderItem?.status === "DOING"
-                                              ? ""
-                                              : "red",
-                                        }}
-                                      >
-                                        <p style={{ margin: 0 }}>
-                                          {orderItem?.status
-                                            ? orderStatus(orderItem?.status)
-                                            : "-"}
-                                        </p>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          height: 50,
-                                        }}
-                                      >
-                                        <p style={{ margin: 0 }}>
-                                          {orderItem?.createdAt
-                                            ? moment(
-                                                orderItem?.createdAt
-                                              ).format("HH:mm A")
-                                            : "-"}
-                                        </p>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))
-                              : ""}
-                          </tbody>
-                        </Table>
-                        {tableOrderItems?.length == 0 && (
-                          <div className="text-center">
-                            <div style={{ marginTop: 50, fontSize: 50 }}>
-                              {" "}
-                              ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
-                            </div>
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
+                                          ? ""
+                                          : "red",
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
+                            : ""}
+                        </tbody>
+                      </TableCustom>
+                      {tableOrderItems?.length == 0 && (
+                        <div className="text-center">
+                          <div style={{ marginTop: 50, fontSize: 50 }}>
+                            {" "}
+                            ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
+
                       <div style={{ marginBottom: 100 }} />
                     </div>
                   }
@@ -1285,19 +1054,26 @@ export default function TableList() {
                 style={{
                   width: "100%",
                   backgroundColor: "#FFF",
-                  maxHeight: "90vh",
+                  height: "100%",
                   borderColor: "black",
                   overflowY: "scroll",
                   borderWidth: 1,
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "center",
                   alignItems: "center",
+                  padding: 10,
                 }}
               >
-                <p style={{ fontSize: 50, fontWeight: "bold" }}>
-                  {selectedTable?.tableName}
-                </p>
+                <div
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    padding: 20,
+                  }}
+                >
+                  <SiAirtable /> {selectedTable?.tableName}
+                </div>
                 <QRCode
                   value={
                     "https://client.appzap.la/store/" +
@@ -1305,13 +1081,27 @@ export default function TableList() {
                     "?tableId=" +
                     selectedTable?.tableId
                   }
-                  size={200}
+                  size={150}
                 />
-                <p style={{ fontSize: 20 }}>
+                <p
+                  style={{
+                    fontSize: 18,
+                    color: "#616161",
+                    textAlign: "center",
+                  }}
+                >
                   ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
                   ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
                 </p>
-                <p style={{ fontSize: 20 }}>( Smart-Menu && Self-Ordering)</p>
+                <p
+                  style={{
+                    fontSize: 18,
+                    color: "#616161",
+                    textAlign: "center",
+                  }}
+                >
+                  ( Smart-Menu && Self-Ordering)
+                </p>
                 <div style={{ height: 30 }} />
                 <Button
                   variant="light"
@@ -1320,15 +1110,11 @@ export default function TableList() {
                     backgroundColor: "#FB6E3B",
                     color: "#ffffff",
                     fontWeight: "bold",
-                    fontSize: 40,
+                    fontSize: 20,
                     padding: 20,
                   }}
                   onClick={() => openTable()}
                 >
-                  <FontAwesomeIcon
-                    icon={!selectedTable?.isOpened ? faArchway : faCheckCircle}
-                    style={{ color: "#fff" }}
-                  />{" "}
                   {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
               </div>
@@ -1517,9 +1303,39 @@ export default function TableList() {
   );
 }
 
-const NAV = {
-  backgroundColor: "#F9F9F9",
-  marginTop: -10,
-  paddingTop: 10,
-  border: "none",
+const ButtonCustom = ({ children, ...etc }) => {
+  return (
+    <Button
+      variant="light"
+      className="hover-me"
+      style={{
+        backgroundColor: "#FB6E3B",
+        color: "#ffffff",
+        fontWeight: "bold",
+        fontSize: 10,
+      }}
+      {...etc}
+    >
+      {children}
+    </Button>
+  );
 };
+
+const TableCustom = styled("table")({
+  width: "100%",
+  fontSize: 12,
+  ["th,td"]: {
+    padding: 0,
+  },
+  ["th:first-child"]: {
+    maxWidth: 40,
+    width: 40,
+  },
+  ["td:first-child"]: {
+    maxWidth: 40,
+    width: 40,
+  },
+  thead: {
+    backgroundColor: "#e9e9e9",
+  },
+});

@@ -15,8 +15,6 @@ export default function BillForCheckOut80({
   dataBill,
   data,
 }) {
-  console.log(dataBill);
-
   const [total, setTotal] = useState();
 
   const { callingCheckOut } = useStore();
