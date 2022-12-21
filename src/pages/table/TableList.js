@@ -197,7 +197,6 @@ export default function TableList() {
       return;
     }
     try {
-      console.log(`${selectNewTable?.code}==${selectedTable?.code}`);
       const _billsNew = await getBills(`?code=${selectNewTable?.code}`);
       const _billIdNew = _billsNew?.[0]?.["_id"];
 
@@ -512,9 +511,10 @@ export default function TableList() {
   };
 
   const handleUpdateOrderStatus = async (status) => {
+    console.log("status", status);
     // getOrderItemsStore(SERVE_STATUS);
     const storeId = storeDetail?._id;
-    let previousStatus = orderItems[0].status;
+    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -527,7 +527,7 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
+      // if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -541,7 +541,7 @@ export default function TableList() {
   const handleUpdateOrderStatusgo = async (status) => {
     // getOrderItemsStore(DOING_STATUS);
     const storeId = storeDetail?._id;
-    let previousStatus = orderItems[0].status;
+    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -555,7 +555,7 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS);
+      // if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
