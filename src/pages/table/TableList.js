@@ -569,7 +569,7 @@ export default function TableList() {
   const handleUpdateOrderStatuscancel = async (status) => {
     // getOrderItemsStore(CANCEL_STATUS);
     const storeId = storeDetail?._id;
-    let previousStatus = orderItems[0].status;
+    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -582,7 +582,7 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      if (previousStatus == CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
+      // if (previousStatus == CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
