@@ -8,7 +8,7 @@ import {
   DOING_STATUS,
   CANCEL_STATUS,
 } from "../../constants";
-import { getLocalData } from "../../constants/api";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { socket } from "../../services/socket";
@@ -139,6 +139,7 @@ export const useTableState = () => {
           data: {
             isOpened: true,
             isStaffConfirm: true,
+            createdAt: new Date(),
           },
         },
         {
@@ -164,9 +165,26 @@ export const useTableState = () => {
     }
   };
 
-  /**
-   * ລີເຊັດຂໍ້ມູນໂຕະເວລາມີການອັບບເດດອໍເດີ
-   */
+  const mergeTable = async (_newTable) => {
+    try {
+      const response = await axios.put(END_POINT_SEVER + "v3/bill-transfer", {
+        headers: await getHeaders(),
+        body: {
+          billOld: selectedTable["billId"],
+          billNew: _newTable["billId"] ?? "NOT_BILL",
+          codeId: _newTable["_id"],
+        },
+      });
+
+      // print(response.body);
+
+      if (response.status == 200) {
+        resetTableOrder();
+      }
+    } catch (err) {
+      return err;
+    }
+  };
 
   const resetTableOrder = () => {
     getTableOrders(selectedTable);
@@ -238,6 +256,7 @@ export const useTableState = () => {
   return {
     isTableOrderLoading,
     orderItemForPrintBill,
+    mergeTable,
     tableList,
     tableListCheck,
     openTableData,

@@ -55,6 +55,8 @@ export default function CheckOutType({
       .then(async function (response) {
         setSelectedTable();
         getTableDataStore();
+        setCash(0);
+        setTransfer(0);
         onClose();
         Swal.fire({
           icon: "success",
@@ -85,7 +87,16 @@ export default function CheckOutType({
     }
   }, [cash, transfer, totalBill]);
   return (
-    <Modal show={open} onHide={onClose} keyboard={false} size="xl">
+    <Modal
+      show={open}
+      onHide={() => {
+        setCash(0);
+        setTransfer(0);
+        onClose();
+      }}
+      keyboard={false}
+      size="xl"
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           ຄິດໄລເງິນ ໂຕະ ({tableData?.tableName}) - ລະຫັດ {tableData?.code}
@@ -125,8 +136,8 @@ export default function CheckOutType({
                   backgroundColor: tab == "cash" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
-                  setCash();
-                  setTransfer();
+                  setCash(0);
+                  setTransfer(0);
                   setTab("cash");
                 }}
               >
@@ -138,8 +149,8 @@ export default function CheckOutType({
                   backgroundColor: tab == "transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
-                  setCash();
-                  setTransfer();
+                  setCash(0);
+                  setTransfer(totalBill);
                   setTab("transfer");
                 }}
               >
@@ -152,8 +163,8 @@ export default function CheckOutType({
                     tab == "cash_transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
-                  setCash();
-                  setTransfer();
+                  setCash(0);
+                  setTransfer(0);
                   setTab("cash_transfer");
                 }}
               >

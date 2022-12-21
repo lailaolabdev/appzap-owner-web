@@ -4,11 +4,11 @@ import { USER_KEY } from "./index";
 // export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
 // export const END_POINT_APP = "https://api.appzap.la"; // /prosdusction
 
-// export const END_POINT_SEVER = "http://localhost:7070"; // /
-// export const END_POINT_APP = "http://localhost:7070"; // /
+export const END_POINT_SEVER = "http://localhost:7070"; // /
+export const END_POINT_APP = "http://localhost:7070"; // /
 
-export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
-export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
+// export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
+// export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
 
 export const getLocalData = async () => {
   const _local = await localStorage.getItem(USER_KEY);

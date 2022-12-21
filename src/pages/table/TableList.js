@@ -5,16 +5,7 @@ import React, {
   useMemo,
   useLayoutEffect,
 } from "react";
-import {
-  Row,
-  Modal,
-  Form,
-  Container,
-  Button,
-  Nav,
-  Col,
-  Table,
-} from "react-bootstrap";
+import { Modal, Form, Container, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 import moment from "moment";
@@ -22,7 +13,7 @@ import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
+import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
 
 import { SiAirtable } from "react-icons/si";
@@ -36,7 +27,6 @@ import OrderCheckOut from "./components/OrderCheckOut";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
-import { STORE } from "../../constants/api";
 import { socket } from "../../services/socket";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
@@ -48,7 +38,6 @@ import CheckOutType from "./components/CheckOutType";
  * const
  **/
 import {
-  padding_white,
   CANCEL_STATUS,
   DOING_STATUS,
   SERVE_STATUS,
@@ -63,6 +52,7 @@ import { getBills } from "../../services/bill";
 import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
+import { getCodes } from "../../services/code";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -84,26 +74,17 @@ export default function TableList() {
 
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
-  const [CheckStatus, setCheckStatus] = useState();
-  const [CheckStatusCancel, setCheckStatusCancel] = useState();
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
 
   const {
     orderItems,
-    setOrderItems,
     getOrderItemsStore,
     printerCounter,
     printers,
     orderSound,
   } = useStore();
-
-  // const [ref , setRef] = useRef();
-
-  /**
-   * useState
-   */
 
   const {
     isTableOrderLoading,
@@ -124,9 +105,6 @@ export default function TableList() {
 
   const reLoadData = () => {
     setReload(true);
-    // const _selectedTable = selectedTable;
-    // await resetTableOrder();
-    // onSelect(_selectedTable);
   };
   useEffect(() => {
     if (reload) {
@@ -165,8 +143,6 @@ export default function TableList() {
       if (nData.status === "CANCELED")
         _checkDataStatusCancel.push(nData?.status);
     });
-    setCheckStatusCancel(_checkDataStatusCancel);
-    setCheckStatus(_checkDataStatus);
   }, [tableOrderItems]);
   const _handlecheckout = async () => {
     setCheckoutModal(false);
@@ -207,10 +183,10 @@ export default function TableList() {
     setDataBill(_resBill?.data);
   };
 
-  const [codeTableNew, setCodeTableNew] = useState();
+  const [selectNewTable, setSelectNewTable] = useState();
 
   const _changeTable = async () => {
-    if (!codeTableNew) {
+    if (!selectNewTable) {
       handleClose();
       await Swal.fire({
         icon: "warning",
@@ -221,6 +197,16 @@ export default function TableList() {
       return;
     }
     try {
+      console.log(`${selectNewTable?.code}==${selectedTable?.code}`);
+      const _billsNew = await getBills(`?code=${selectNewTable?.code}`);
+      const _billIdNew = _billsNew?.[0]?.["_id"];
+
+      const _billsOld = await getBills(`?code=${selectedTable?.code}`);
+      const _billIdOld = _billsOld?.[0]?.["_id"];
+
+      const _codesNew = await getCodes(`?code=${selectNewTable?.code}`);
+      const _codeIdNew = _codesNew?.[0]?.["_id"];
+
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -230,15 +216,16 @@ export default function TableList() {
         method: "put",
         url: END_POINT_SEVER + `/v3/bill-transfer`,
         data: {
-          codeTableOld: selectedTable?.code,
-          codeTableNew: codeTableNew,
+          billOld: _billIdOld,
+          billNew: _billIdNew ?? "NOT_BILL",
+          codeId: _codeIdNew,
         },
         headers: headers,
       });
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        setTableList(changTable?.data);
+        getTableDataStore();
         await Swal.fire({
           icon: "success",
           title: "ການປ່ຽນໂຕະສໍາເລັດ",
@@ -254,6 +241,7 @@ export default function TableList() {
         timer: 1500,
       });
     }
+    setSelectNewTable();
   };
 
   const _openModalSetting = (data) => {
@@ -505,6 +493,7 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
+        if (item?.status === "CANCEL") return item;
         return {
           ...item,
           isChecked: true,
@@ -826,7 +815,7 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moment(selectedTable?.updatedAt).format("HH:mm A")}
+                            {moment(selectedTable?.createdAt).format("HH:mm A")}
                           </span>
                         </div>
                         <div
@@ -981,19 +970,9 @@ export default function TableList() {
                                   key={"order" + index}
                                   style={{ borderBottom: "1px solid #eee" }}
                                 >
-                                  {/* <td style={{ border: "none" }}>
-                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 50 }}>
-                              <Checkbox
-                                checked={orderItem?.isChecked ? true : false}
-                                onChange={(e) => onChangeMenuCheckbox(orderItem)}
-                                disabled={orderItem?.status ==="FEEDBACK" ? true: false}
-                                color="primary"
-                                inputProps={{ "aria-label": "secondary checkbox" }}
-                              />
-                            </div>
-                          </td> */}
                                   <td>
                                     <Checkbox
+                                      disabled={orderItem?.status === "CANCEL"}
                                       name="checked"
                                       checked={orderItem?.isChecked || false}
                                       onChange={(e) =>
@@ -1249,7 +1228,13 @@ export default function TableList() {
               <select
                 className="form-select form-control"
                 aria-label="Default select example"
-                onChange={(e) => setCodeTableNew(e.target.value)}
+                value={selectNewTable?._id}
+                onChange={(e) => {
+                  const _select = tableList.find(
+                    (item) => e.target.value == item?._id
+                  );
+                  setSelectNewTable(_select);
+                }}
               >
                 <option selected disabled>
                   ເລືອກໂຕະ
@@ -1257,7 +1242,7 @@ export default function TableList() {
                 {tableList?.map((item, index) => (
                   <option
                     key={"talbe-" + index}
-                    value={item?.code}
+                    value={item?._id}
                     disabled={
                       selectedTable?.tableName === item?.tableName
                         ? true
