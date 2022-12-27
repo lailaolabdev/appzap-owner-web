@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useLayoutEffect,
-} from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 
@@ -27,22 +21,18 @@ import OrderCheckOut from "./components/OrderCheckOut";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
-import { socket } from "../../services/socket";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 
+import { PubNubProvider, usePubNub } from "pubnub-react";
+
 /**
  * const
  **/
-import {
-  CANCEL_STATUS,
-  DOING_STATUS,
-  SERVE_STATUS,
-  COLOR_APP,
-} from "../../constants/index";
+import { COLOR_APP } from "../../constants/index";
 import { useStore } from "../../store";
 import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
@@ -78,13 +68,7 @@ export default function TableList() {
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
 
-  const {
-    orderItems,
-    getOrderItemsStore,
-    printerCounter,
-    printers,
-    orderSound,
-  } = useStore();
+  const { printerCounter, printers, orderSound } = useStore();
 
   const {
     isTableOrderLoading,
@@ -98,7 +82,7 @@ export default function TableList() {
     getTableDataStore,
     onSelectTable,
     resetTableOrder,
-    initialTableSocket,
+    // initialTableSocket,
     storeDetail,
     getTableOrders,
   } = useStore();
@@ -124,7 +108,7 @@ export default function TableList() {
   )?._id;
 
   useEffect(() => {
-    initialTableSocket();
+    // initialTableSocket();
     getTableDataStore();
   }, []);
   /**
@@ -364,6 +348,8 @@ export default function TableList() {
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
 
       await axios({
         method: "post",
@@ -441,6 +427,8 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
+        bodyFormData.append("beep1", 1);
+        bodyFormData.append("beep2", 9);
         await axios({
           method: "post",
           url: "http://localhost:9150/ethernet/image",
@@ -593,36 +581,20 @@ export default function TableList() {
     }
   };
 
-  //   const handleCheckbox = async (order) => {
-  //     let _orderItems = [...orderItems]
-  //     let _newOrderItems = _orderItems.map((item) => {
-  //         if (item._id == order._id) {
-  //             return {
-  //                 ...item,
-  //                 isChecked: !item.isChecked
-  //             }
-  //         } else return item
-  //     })
-  //     let _orderItemForPrint = []
-  //     for (let i = 0; i < _newOrderItems?.length; i++){
-  //         if (_newOrderItems[i]?.isChecked === true) _orderItemForPrint.push(_newOrderItems[i])
-  //     }
-  //     setorderItemForPrintBillSelect(_orderItemForPrint)
-  //     setOrderItems(_newOrderItems)
-  // };
+  const pubnub = usePubNub();
+  const [channels] = useState([
+    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
+    `ORDER:${storeDetail._id}`,
+  ]);
+  const handleMessage = (event) => {
+    console.log("event", event);
+    reLoadData();
+  };
+  useEffect(() => {
+    pubnub.addListener({ message: handleMessage });
+    pubnub.subscribe({ channels });
+  }, [pubnub, channels]);
 
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        reLoadData();
-      }),
-    [storeDetail._id]
-  );
-  useMemo(() => {
-    socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-      reLoadData();
-    });
-  }, [storeDetail._id]);
   return (
     <div
       style={{

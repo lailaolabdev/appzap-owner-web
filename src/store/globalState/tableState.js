@@ -25,25 +25,6 @@ export const useTableState = () => {
   const [selectTable2, setSelectTable2] = useState();
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
 
-  const initialTableSocket = useMemo(
-    () => async () => {
-      let _userData = await getLocalData();
-      socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
-        getTableDataStore();
-        // getTableOrders(selectedTable);
-      });
-      // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-      //   getTableDataStore();
-      //   Swal.fire({
-      //     icon: "success",
-      //     title: "ມີການແຈ້ງເກັບເງິນ",
-      //     showConfirmButton: false,
-      //     timer: 10000,
-      //   });
-      // });
-    },
-    []
-  );
   /**
    * Modify Order
    */
@@ -275,7 +256,6 @@ export const useTableState = () => {
     onChangeMenuCheckbox,
     handleUpdateTableOrderStatus,
     resetTableOrder,
-    initialTableSocket,
     selectTable2,
     setSelectTable2,
   };

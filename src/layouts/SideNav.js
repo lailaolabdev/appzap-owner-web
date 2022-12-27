@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -17,12 +17,14 @@ import {
   faAirFreshener,
   faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
+import { socket } from "../services/socket";
 import Box from "../components/Box";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 // import {BiFoodMenu} from "react-icons";
+import { PubNubProvider, usePubNub } from "pubnub-react";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
@@ -38,8 +40,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
     waitingOrderItems,
     getOrderItemsStore,
     initialOrderSocket,
-    initialTableSocket,
+    // initialTableSocket,
     storeDetail,
+    getLocalData,
   } = useStore();
 
   const itemList = [
@@ -101,6 +104,38 @@ export default function Sidenav({ location, navigate, onToggle }) {
     // initialTableSocket();
     callingCheckOut();
   }, []);
+  // useMemo(
+  //   () => async () => {
+  //     let _userData = await getLocalData();
+  //     socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
+  //       getTableDataStore();
+  //       // getTableOrders(selectedTable);
+  //     });
+  //     // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
+  //     //   getTableDataStore();
+  //     //   Swal.fire({
+  //     //     icon: "success",
+  //     //     title: "ມີການແຈ້ງເກັບເງິນ",
+  //     //     showConfirmButton: false,
+  //     //     timer: 10000,
+  //     //   });
+  //     // });
+  //   },
+  //   []
+  // );
+
+  const pubnub = usePubNub();
+  const [channels] = useState([
+    `TABLE:${storeDetail._id}`,
+  ]);
+  const handleMessage = (event) => {
+    // console.log("event", event);
+    getTableDataStore();
+  };
+  useEffect(() => {
+    pubnub.addListener({ message: handleMessage });
+    pubnub.subscribe({ channels });
+  }, [pubnub, channels]);
   return (
     <SideNav
       style={{

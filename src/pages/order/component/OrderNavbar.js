@@ -8,7 +8,9 @@ import { useStore } from "../../../store";
 import { WAITING_STATUS } from "../../../constants";
 import { updateOrderItem } from "../../../services/order";
 import PopupCancle from "../../../components/popup/PopupCancle";
-import { socket } from "../../../services/socket";
+// import { socket } from "../../../services/socket";
+import { PubNubProvider, usePubNub } from "pubnub-react";
+
 import axios from "axios";
 import ReactToPrint from "react-to-print";
 // import Swal from "sweetalert2";
@@ -18,7 +20,6 @@ import { base64ToBlob } from "../../../helpers";
 // import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 // import BillForChef58 from "../../../components/bill/BillForChef58";
 // import BillForChef80 from "../../../components/bill/BillForChef80";
-
 
 export default function OrderNavbar() {
   // const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
@@ -63,13 +64,13 @@ export default function OrderNavbar() {
   useEffect(() => {
     fetchData();
   }, []);
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(WAITING_STATUS);
-      }),
-    []
-  );
+  // useMemo(
+  //   () =>
+  //     socket.on(`ORDER:${storeDetail._id}`, (data) => {
+  //       getOrderItemsStore(WAITING_STATUS);
+  //     }),
+  //   []
+  // );
   const _order = () => {
     navigate(`/orders/pagenumber/1/${getTokken?.DATA?.storeId}`);
   };
@@ -79,82 +80,88 @@ export default function OrderNavbar() {
   const _served = () => {
     navigate(`/orders/served/pagenumber/1/${getTokken?.DATA?.storeId}`);
   };
-  const handleUpdateOrderStatus = async (status,) => {
+  const handleUpdateOrderStatus = async (status) => {
     getOrderItemsStore(WAITING_STATUS);
     const storeId = getTokken?.DATA?.storeId;
     let previousStatus = orderItems[0].status;
     let menuId;
-    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
-      return {
-        status: status,
-        _id: i?._id,
-        menuId: i?.menuId
-      }
-    })
+    let _updateItems = orderItems
+      .filter((item) => item.isChecked)
+      .map((i) => {
+        return {
+          status: status,
+          _id: i?._id,
+          menuId: i?.menuId,
+        };
+      });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
       // setOrderItems(_newOrderItem)
-      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
+      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS);
       Swal.fire({
-        icon: 'success',
+        icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
-        timer: 2000
-      })
+        timer: 2000,
+      });
     }
   };
 
-  const handleUpdateOrderStatusgo = async (status,) => {
+  const handleUpdateOrderStatusgo = async (status) => {
     getOrderItemsStore(WAITING_STATUS);
     const storeId = getTokken?.DATA?.storeId;
     let previousStatus = orderItems[0].status;
     let menuId;
-    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
-      console.log(i?._id);
-      return {
-        status: status,
-        _id: i?._id,
-        menuId: i?.menuId
-      }
-    })
+    let _updateItems = orderItems
+      .filter((item) => item.isChecked)
+      .map((i) => {
+        console.log(i?._id);
+        return {
+          status: status,
+          _id: i?._id,
+          menuId: i?.menuId,
+        };
+      });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
       // setOrderItems(_newOrderItem)
-      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
+      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS);
       Swal.fire({
-        icon: 'success',
+        icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
-        timer: 2000
-      })
+        timer: 2000,
+      });
     }
   };
 
-  const handleUpdateOrderStatuscancel = async (status,) => {
+  const handleUpdateOrderStatuscancel = async (status) => {
     getOrderItemsStore(WAITING_STATUS);
     const storeId = getTokken?.DATA?.storeId;
     let previousStatus = orderItems[0].status;
     let menuId;
-    let _updateItems = orderItems.filter((item) => item.isChecked).map((i) => {
-      return {
-        status: status,
-        _id: i?._id,
-        menuId: i?.menuId
-      }
-    })
+    let _updateItems = orderItems
+      .filter((item) => item.isChecked)
+      .map((i) => {
+        return {
+          status: status,
+          _id: i?._id,
+          menuId: i?.menuId,
+        };
+      });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
       // setOrderItems(_newOrderItem)
-      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS)
+      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS);
       Swal.fire({
-        icon: 'success',
+        icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
-        timer: 2000
-      })
+        timer: 2000,
+      });
     }
   };
 
@@ -229,9 +236,20 @@ export default function OrderNavbar() {
   //   }
   // };
 
+  const pubnub = usePubNub();
+  const [channels] = useState([`ORDER:${storeDetail._id}`]);
+  const handleMessage = (event) => {
+    console.log("event", event);
+    // reLoadData();
+    getOrderItemsStore(WAITING_STATUS);
+  };
+  useEffect(() => {
+    pubnub.addListener({ message: handleMessage });
+    pubnub.subscribe({ channels });
+  }, [pubnub, channels]);
   return (
     <div>
-      <div style={{ backgroundColor: "#f8f8f8", border: "none", }}>
+      <div style={{ backgroundColor: "#f8f8f8", border: "none" }}>
         <Nav
           variant="tabs"
           defaultActiveKey={location?.pathname}
@@ -239,8 +257,7 @@ export default function OrderNavbar() {
             fontWeight: "bold",
             backgroundColor: "#f8f8f8",
             border: "none",
-            justifyContent: "space-between"
-
+            justifyContent: "space-between",
           }}
         >
           <div style={{ display: "flex" }}>
@@ -272,24 +289,61 @@ export default function OrderNavbar() {
               </Nav.Link>
             </Nav.Item>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between ", padding: "10px", }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between ",
+              padding: "10px",
+            }}
+          >
             <div>
-              <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatuscancel("CANCEL")} >ຍົກເລີກ</button>
+              <button
+                style={{
+                  backgroundColor: "#fff",
+                  color: "#FB6E3B",
+                  border: "1px solid #FB6E3B",
+                }}
+                onClick={() => handleUpdateOrderStatuscancel("CANCEL")}
+              >
+                ຍົກເລີກ
+              </button>
             </div>
             <div style={{ width: "10px" }}></div>
 
             <div>
-              <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatusgo("DOING")} >ສົ່ງໄປຄົວ</button>
+              <button
+                style={{
+                  backgroundColor: "#fff",
+                  color: "#FB6E3B",
+                  border: "1px solid #FB6E3B",
+                }}
+                onClick={() => handleUpdateOrderStatusgo("DOING")}
+              >
+                ສົ່ງໄປຄົວ
+              </button>
             </div>
             <div style={{ width: "10px" }}></div>
 
             <div>
-              <button style={{ backgroundColor: "#fff", color: "#FB6E3B", border: "1px solid #FB6E3B" }} onClick={() => handleUpdateOrderStatus("SERVED")}>ເສີບແລ້ວ</button>
+              <button
+                style={{
+                  backgroundColor: "#fff",
+                  color: "#FB6E3B",
+                  border: "1px solid #FB6E3B",
+                }}
+                onClick={() => handleUpdateOrderStatus("SERVED")}
+              >
+                ເສີບແລ້ວ
+              </button>
             </div>
           </div>
         </Nav>
       </div>
-      <PopupCancle open={popup?.cancel} onClose={() => setPopup()} onSubmit={() => setPopup()} />
+      <PopupCancle
+        open={popup?.cancel}
+        onClose={() => setPopup()}
+        onSubmit={() => setPopup()}
+      />
       {/* <div>
         <button style={{ backgroundColor: "#FB6E3B", color: "#fff", border: "1px solid #FB6E3B", height: "40px", margin: "10px" }} onClick={() => onPrintForCher()} >ພິມບິນໄປຄົວ</button>
       </div> */}
