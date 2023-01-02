@@ -59,7 +59,6 @@ function AddOrder() {
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
 
   const [search, setSearch] = useState("");
-  console.log("allSelectedMenu", allSelectedMenu);
   const afterSearch = _.filter(
     allSelectedMenu,
     (e) =>
@@ -86,12 +85,9 @@ function AddOrder() {
     const orderSelect = selectedMenu;
     let _index = 0;
     for (const _ref of billForCher80.current) {
-      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
       const _printer = printers.find((e) => {
-        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
         return e?._id == orderSelect?.[_index]?.printer;
       });
-      console.log("_printer", _printer);
 
       try {
         let urlForPrinter = "";
@@ -179,6 +175,12 @@ function AddOrder() {
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    // TODO: check selectTable
+    if (!selectedTable) {
+      navigate("/tables");
+    }
+  }, [selectedTable]);
 
   useEffect(() => {
     (async () => {
@@ -186,7 +188,6 @@ function AddOrder() {
       findby += `storeId=${storeDetail?._id}`;
       findby += `&code=${code}`;
       const data = await getBills(findby);
-      console.log("data", data);
 
       setBillId(data?.[0]);
     })();
@@ -223,7 +224,6 @@ function AddOrder() {
   };
 
   const addToCart = (menu) => {
-    console.log("menu", menu);
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
@@ -598,14 +598,18 @@ function AddOrder() {
       {selectedMenu?.map((val, i) => {
         return (
           <div
-            style={{ width: "80mm", padding: 10 }}
+            style={{
+              width: "80mm",
+              paddingRight: "20px",
+              paddingBottom: "10px",
+            }}
             ref={(el) => (billForCher80.current[i] = el)}
           >
             <BillForChef80
               storeDetail={storeDetail}
               selectedTable={selectedTable}
               // dataBill={dataBill}
-              val={val}
+              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
             />
           </div>
         );
@@ -614,14 +618,18 @@ function AddOrder() {
         {selectedMenu?.map((val, i) => {
           return (
             <div
-              style={{ width: "80mm", padding: 10 }}
+              style={{
+                width: "58mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
               ref={(el) => (billForCher58.current[i] = el)}
             >
               <BillForChef58
                 storeDetail={storeDetail}
                 selectedTable={selectedTable}
                 // dataBill={dataBill}
-                val={val}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
               />
             </div>
           );

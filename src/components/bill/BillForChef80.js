@@ -5,25 +5,40 @@ import moment from "moment";
 export default function BillForChef80({ selectedTable, dataBill, val }) {
   return (
     <Container>
-      <div style={{ textAlign: "center" }}>
-        <h1>{selectedTable?.tableName}</h1>
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 18,
+          fontWeight: "bold",
+          borderTop: "1px solid #000",
+        }}
+      >
+        {val?.tableId?.name || selectedTable?.name}
       </div>
-      <hr></hr>
-      <div style={{ textAlign: "center" }}>
-        <p>
-          ວັນທີ: {moment(dataBill?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
-        </p>
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 12,
+          borderBottom: "1px dotted #000",
+        }}
+      >
+        ວັນທີ: {moment(val?.createdAt).format("DD/MM/YY LT")}
       </div>
-      <hr></hr>
-
-      <div style={{ textAlign: "center" }}>
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 22,
+          fontWeight: "bold",
+          borderBottom: "1px solid #000",
+        }}
+      >
         {val?.name} ({val?.quantity})
       </div>
-      <hr></hr>
     </Container>
   );
 }
 
 const Container = styled.div`
-  width: 80mm;
+  margin: 10px;
+  width: 100%;
 `;

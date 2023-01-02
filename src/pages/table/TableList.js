@@ -456,12 +456,14 @@ export default function TableList() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (_index == 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       } catch (err) {
         console.log(err);
         await Swal.fire({
@@ -515,7 +517,6 @@ export default function TableList() {
         };
       });
     }
-    console.log("first", _newOrderItems);
     setIsCheckedOrderItem(_newOrderItems);
   };
 

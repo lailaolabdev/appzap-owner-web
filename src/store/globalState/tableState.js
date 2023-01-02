@@ -71,9 +71,7 @@ export const useTableState = () => {
    */
   const getTableOrders = async (table) => {
     setIsTableOrderLoading(true);
-    console.log("table", table);
     const url = END_POINT + `/v3/orders?code=${table?.code}`;
-    console.log("url", url);
     let res = await fetch(url)
       .then((response) => response.json())
       .then((response) => {
