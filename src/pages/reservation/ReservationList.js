@@ -22,6 +22,7 @@ import PopUpReservationDetail from "../../components/popup/PopUpReservationDetai
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
+import Loading from "../../components/Loading";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
@@ -116,7 +117,7 @@ export default function ReservationList() {
   return (
     <div>
       {isLoading ? (
-        <AnimationLoading />
+        <Loading />
       ) : (
         <div style={{ paddingLeft: 10 }}>
           <div

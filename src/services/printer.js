@@ -52,6 +52,18 @@ export const addPrinter = async (data) => {
   }
 };
 
+export const deletePrinter = async (_id) => {
+  try {
+    const url = `${END_POINT_SEVER}/v3/printer/delete/${_id}`;
+    const _printer = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+    return _printer;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getPrinterCounter = async (findby) => {
   try {
     const data = await axios.get(`${END_POINT_SEVER}/v3/settings${findby}`);

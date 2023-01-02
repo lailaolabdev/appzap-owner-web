@@ -27,7 +27,7 @@ import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 
-import { PubNubProvider, usePubNub } from "pubnub-react";
+import { usePubNub } from "pubnub-react";
 
 /**
  * const
@@ -320,6 +320,7 @@ export default function TableList() {
 
   const onPrintBill = async () => {
     try {
+      let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
@@ -342,6 +343,15 @@ export default function TableList() {
           scale: 350 / widthBill58,
         });
       }
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = "http://localhost:9150/ethernet/image";
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = "http://localhost:9150/bluetooth/image";
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = "http://localhost:9150/usb/image";
+      }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
@@ -353,7 +363,7 @@ export default function TableList() {
 
       await axios({
         method: "post",
-        url: "http://localhost:9150/ethernet/image",
+        url: urlForPrinter,
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -402,6 +412,7 @@ export default function TableList() {
       });
 
       try {
+        let urlForPrinter = "";
         let dataUrl;
         if (_printer?.width == "80mm") {
           dataUrl = await html2canvas(billForCher80.current[_index], {
@@ -419,7 +430,15 @@ export default function TableList() {
             scale: 350 / widthBill58,
           });
         }
-
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = "http://localhost:9150/ethernet/image";
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = "http://localhost:9150/bluetooth/image";
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = "http://localhost:9150/usb/image";
+        }
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
         const _file = await base64ToBlob(dataUrl.toDataURL());
@@ -427,11 +446,13 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
-        bodyFormData.append("beep1", 1);
-        bodyFormData.append("beep2", 9);
+        if (_index == 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
         await axios({
           method: "post",
-          url: "http://localhost:9150/ethernet/image",
+          url: urlForPrinter,
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -587,13 +608,16 @@ export default function TableList() {
     `ORDER:${storeDetail._id}`,
   ]);
   const handleMessage = (event) => {
-    console.log("event", event);
+    // console.log("event", event);
     reLoadData();
   };
   useEffect(() => {
-    pubnub.addListener({ message: handleMessage });
-    pubnub.subscribe({ channels });
-  }, [pubnub, channels]);
+    const run = () => {
+      pubnub.addListener({ message: handleMessage });
+      pubnub.subscribe({ channels });
+    };
+    return run();
+  }, [pubnub]);
 
   return (
     <div

@@ -31,7 +31,6 @@ import ReactAudioPlayer from "react-audio-player";
 import Notification from "../../vioceNotification/ding.mp3";
 import { socket } from "../../services/socket";
 
-
 const Order = () => {
   const componentRef = useRef();
 
@@ -79,6 +78,7 @@ const Order = () => {
       console.log("_printer", _printer);
 
       try {
+        let urlForPrinter = "";
         let dataUrl;
         if (_printer?.width == "80mm") {
           dataUrl = await html2canvas(billForCher80?.current[_index], {
@@ -94,14 +94,29 @@ const Order = () => {
             scrollY: 0,
           });
         }
+
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = "http://localhost:9150/ethernet/image";
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = "http://localhost:9150/bluetooth/image";
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = "http://localhost:9150/usb/image";
+        }
+
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
+        if (_index == 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         await axios({
           method: "post",
-          url: "http://localhost:9150/ethernet/image",
+          url: urlForPrinter,
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -170,7 +185,18 @@ const Order = () => {
             <ReactAudioPlayer src={Notification} ref={soundPlayer} />
           </div>
           <div>
-            <button style={{ backgroundColor: "#FB6E3B", color: "#fff", border: "1px solid #FB6E3B", height: "40px", margin: "10px" }} onClick={() => onPrintForCher()} >ພິມບິນໄປຄົວ</button>
+            <button
+              style={{
+                backgroundColor: "#FB6E3B",
+                color: "#fff",
+                border: "1px solid #FB6E3B",
+                height: "40px",
+                margin: "10px",
+              }}
+              onClick={() => onPrintForCher()}
+            >
+              ພິມບິນໄປຄົວ
+            </button>
           </div>
           <Container fluid className="mt-3">
             <Table
@@ -179,7 +205,17 @@ const Order = () => {
             >
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
-                  <th><FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} style={{ marginLeft: 2 }} /></th>
+                  <th>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name="checkedC"
+                          onChange={(e) => checkAllOrders(e)}
+                        />
+                      }
+                      style={{ marginLeft: 2 }}
+                    />
+                  </th>
                   <th>ລ/ດ</th>
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>

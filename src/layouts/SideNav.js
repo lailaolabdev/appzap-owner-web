@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -47,16 +47,23 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const itemList = [
     {
-      title: "ສະຖິຕິລວມ",
-      key: "report",
-      icon: faTachometerAlt,
+      title: "ສະຖານະຂອງໂຕະ",
+      key: "tables",
+      icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
     },
     {
-      title: "ສະຖານະຂອງໂຕະ",
-      key: "tables",
-      icon: faHome,
+      title: "ລາຍການອໍເດີ້",
+      key: "manageorder",
+      typeStore: "",
+      icon: faAddressCard,
+      hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ສະຖິຕິລວມ",
+      key: "report",
+      icon: faTachometerAlt,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
     },
@@ -86,13 +93,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: `settingStore/${storeDetail?._id}`,
       typeStore: "",
       icon: faCogs,
-      hidden: !storeDetail?.hasPOS,
-    },
-    {
-      title: "ລາຍການອໍເດີ້",
-      key: "manageorder",
-      typeStore: "",
-      icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
     },
   ];
@@ -125,9 +125,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   // );
 
   const pubnub = usePubNub();
-  const [channels] = useState([
-    `TABLE:${storeDetail._id}`,
-  ]);
+  const [channels] = useState([`TABLE:${storeDetail._id}`]);
   const handleMessage = (event) => {
     // console.log("event", event);
     getTableDataStore();

@@ -90,18 +90,24 @@ export default function NavBar() {
               <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
             </div>
           ) : (
-            <div
-              style={{
-                border: "1px solid #E97777",
-                padding: 4,
-                color: "#E97777",
-                backgroundColor: "#ffd8d8",
-                borderRadius: 4,
-                fontSize: 12,
-              }}
+            <a
+              href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
             >
-              <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
-            </div>
+              <div
+                style={{
+                  border: "1px solid #E97777",
+                  padding: 4,
+                  color: "#E97777",
+                  backgroundColor: "#ffd8d8",
+                  borderRadius: 4,
+                  fontSize: 12,
+                }}
+              >
+                <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+              </div>
+            </a>
           )}
 
           <div style={{ width: 10 }} />

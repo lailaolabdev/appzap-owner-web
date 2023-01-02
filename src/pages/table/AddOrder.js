@@ -46,6 +46,7 @@ function AddOrder() {
   const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
+  const [disabledButton, setDisabledButton] = useState(false);
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
   const [userData, setUserData] = useState({});
@@ -93,6 +94,7 @@ function AddOrder() {
       console.log("_printer", _printer);
 
       try {
+        let urlForPrinter = "";
         let dataUrl;
         if (_printer?.width == "80mm") {
           dataUrl = await html2canvas(billForCher80?.current[_index], {
@@ -110,6 +112,15 @@ function AddOrder() {
             // scale: 350 / widthBill58,
           });
         }
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = "http://localhost:9150/ethernet/image";
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = "http://localhost:9150/bluetooth/image";
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = "http://localhost:9150/usb/image";
+        }
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
@@ -117,10 +128,14 @@ function AddOrder() {
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
+        if (_index == 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
         bodyFormData.append("image", _file);
         await axios({
           method: "post",
-          url: "http://localhost:9150/ethernet/image",
+          url: urlForPrinter,
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -200,6 +215,10 @@ function AddOrder() {
         setMenus(json);
         setAllSelectedMenu(json);
         setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(err);
       });
   };
 
@@ -267,6 +286,7 @@ function AddOrder() {
           showConfirmButton: false,
           timer: 1800,
         });
+        setDisabledButton(false);
         return;
       }
       const headers = {
@@ -315,6 +335,7 @@ function AddOrder() {
             showConfirmButton: false,
             timer: 1800,
           });
+          setDisabledButton(false);
         });
     } catch (error) {
       console.log("error", error);
@@ -324,25 +345,34 @@ function AddOrder() {
         showConfirmButton: false,
         timer: 1800,
       });
+      setDisabledButton(false);
     }
   };
 
   const onSubmit = async (isPrinted) => {
-    setIsLoading(true);
-    if (selectedMenu.length == 0) {
-      Swal.fire({
-        icon: "warning",
-        title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
-        showConfirmButton: false,
-        timer: 1800,
-      });
-      return;
+    try {
+      setIsLoading(true);
+      if (selectedMenu.length == 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        setIsLoading(false);
+        setDisabledButton(false);
+        return;
+      }
+      let header = await getHeaders();
+      if (selectedMenu.length != 0) {
+        await createOrder(selectedMenu, header, isPrinted);
+      }
+      setIsLoading(false);
+    } catch (err) {
+      setDisabledButton(false);
+      setIsLoading(false);
+      console.log(err);
     }
-    let header = await getHeaders();
-    if (selectedMenu.length != 0) {
-      await createOrder(selectedMenu, header, isPrinted);
-    }
-    // setIsLoading(false);
   };
 
   return (
@@ -524,8 +554,11 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    disabled={isLoading}
-                    onClick={() => onSubmit(false)}
+                    disabled={disabledButton}
+                    onClick={() => {
+                      setDisabledButton(true);
+                      onSubmit(false);
+                    }}
                   >
                     ສັ່ງອາຫານ
                   </Button>
@@ -543,9 +576,10 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    disabled={isLoading}
+                    disabled={disabledButton}
                     onClick={() => {
                       // onPrint();
+                      setDisabledButton(true);
                       onSubmit(true);
                     }}
                   >
