@@ -146,7 +146,7 @@ export default function StoreDetail() {
             {" "}
             {dataStore?.name ? dataStore?.name : "-"}
           </div>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <StarRatings
               rating={dataStore?.reviewStar || 0}
               starRatedColor="orange"

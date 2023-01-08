@@ -17,7 +17,7 @@ import HistoryUse from "../pages/historiesUse/HistoryUse";
 import ReservationList from "../pages/reservation/ReservationList";
 import Promotion from "../pages/promotion/Promotion";
 import StoreDetail from "../pages/store/StoreDetail";
-import Order from "../pages/order";
+import WaitingOrder from "../pages/order/WaitingOrder";
 import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
@@ -112,15 +112,15 @@ function Router() {
           element: <StoreDetail />,
         },
         {
-          path: "/orders/pagenumber/:number/:id",
-          element: <Order />,
+          path: "/orders/waiting",
+          element: <WaitingOrder />,
         },
         {
-          path: "/orders/doing/pagenumber/:number/:id",
+          path: "/orders/doing",
           element: <DoingOrder />,
         },
         {
-          path: "/orders/served/pagenumber/:number/:id",
+          path: "/orders/served",
           element: <ServedOrder />,
         },
         {

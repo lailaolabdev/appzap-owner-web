@@ -189,14 +189,20 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             style={{ width: "100%" }}
             value={startDate}
-            onChange={(e) => setStartDate(e?.target?.value)}
+            onChange={(e) => {
+              // alert(e?.target?.value);
+              setStartDate(e?.target?.value);
+            }}
           />
           <input
             type="date"
             className="btn btn-outline-info"
             value={endDate}
             style={{ width: "100%" }}
-            onChange={(e) => setEndDate(e?.target?.value)}
+            onChange={(e) => {
+              // alert(e?.target?.value);
+              setEndDate(e?.target?.value);
+            }}
           />
         </div>
       </Box>

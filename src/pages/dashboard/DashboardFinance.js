@@ -8,6 +8,8 @@ import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
 import { useParams } from "react-router-dom";
 import Box from "../../components/Box";
+import * as _ from "lodash";
+import { getHeaders } from "../../services/auth";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const params = useParams();
@@ -34,22 +36,34 @@ export default function DashboardFinance({ startDate, endDate }) {
   }, [endDate, startDate]);
   const _fetchFinanceData = async () => {
     setIsLoading(TramRounded);
+    const url =
+      "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
+    const headers = await getHeaders();
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
-        "/v3/dashboard/" +
+        "/v3/bills?storeId=" +
         params?.storeId +
-        "/startTime/" +
+        "&startDate=" +
         startDate +
-        "/endTime/" +
+        "&endDate=" +
         endDate,
       {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
+        headers: headers,
       }
     );
-    setData(getDataDashBoard?.data);
+
+    // const _checkOut = getDataDashBoard.data.filter(
+    //   (e) => e?.isCheckout && e?.status == "CHECKOUT"
+    // );
+    const _checkOut = getDataDashBoard.data;
+    const totalPrice = _.sumBy(_checkOut, function (o) {
+      return o.billAmount;
+    });
+    const _formatJson = {
+      checkOut: _checkOut,
+      amount: totalPrice,
+    };
+    setData(_formatJson);
     setIsLoading(false);
   };
 

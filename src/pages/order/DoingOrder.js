@@ -10,6 +10,7 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import Swal from "sweetalert2";
+import { usePubNub } from "pubnub-react";
 
 /**
  * import components
@@ -56,29 +57,15 @@ const Order = () => {
   } = useStore();
 
   const [updateModal, setUpdateModal] = useState(false);
-  useEffect(() => {
-    getOrderItemsStore(DOING_STATUS);
-  }, []);
-  useMemo(
-    () =>
-      socket.on(`ORDER:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
-      }),
-    []
-  );
-  useMemo(
-    () =>
-      socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-        getOrderItemsStore(DOING_STATUS);
-      }),
-    []
-  );
-  const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
-  let bill80Ref = useRef(null);
-  let bill58Ref = useRef(null);
   const [dataBill, setDataBill] = useState();
   const [selectedMenu, setSelectedMenu] = useState([]);
-  const { storeDetaile, printers, selectedTable } = useStore();
+  const {
+    storeDetaile,
+    printers,
+    selectedTable,
+    selectOrderStatus,
+    setSelectOrderStatus,
+  } = useStore();
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -162,6 +149,36 @@ const Order = () => {
       _index++;
     }
   };
+
+  const pubnub = usePubNub();
+  const [channels] = useState([
+    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
+    `ORDER:${storeDetail._id}`,
+  ]);
+  useEffect(() => {
+    getOrderItemsStore(DOING_STATUS);
+    setSelectOrderStatus(DOING_STATUS);
+  }, []);
+  const handleMessage = (event) => {
+    // console.log("event", event);
+    console.log("selectOrderStatus", selectOrderStatus);
+    console.log("DOING_STATUS", DOING_STATUS);
+    console.log(
+      "selectOrderStatus == DOING_STATUS",
+      selectOrderStatus == DOING_STATUS
+    );
+    if (selectOrderStatus == DOING_STATUS) {
+      getOrderItemsStore(DOING_STATUS);
+    }
+  };
+  useMemo(() => {
+    const run = () => {
+      pubnub.addListener({ message: handleMessage });
+      pubnub.subscribe({ channels });
+    };
+    return run();
+  }, [pubnub, selectOrderStatus]);
+
   return (
     <div>
       <OrderNavbar />

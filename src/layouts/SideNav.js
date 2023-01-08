@@ -55,7 +55,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: "ລາຍການອໍເດີ້",
-      key: "manageorder",
+      key: "orders/waiting",
       typeStore: "",
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
