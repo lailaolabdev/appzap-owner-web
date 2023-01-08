@@ -12,15 +12,15 @@ export const useSoundState = () => {
 
   const orderSound = () => {
     _orderSound.play();
-    toast.success("ອັບເດດສະຖານະສຳເລັດ", {
-      position: "top-center",
-      autoClose: 200,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
+    // toast.success("ອັບເດດສະຖານະສຳເລັດ", {
+    //   position: "top-center",
+    //   autoClose: 200,
+    //   hideProgressBar: false,
+    //   closeOnClick: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   progress: undefined,
+    // });
   };
 
   return {
