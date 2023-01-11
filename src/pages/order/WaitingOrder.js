@@ -31,6 +31,10 @@ export default function WaitingOrder() {
     getOrderItemsStore,
     handleCheckbox,
     checkAllOrders,
+    setNewOrderTransaction,
+    setNewOrderUpdateStatusTransaction,
+    newOrderTransaction,
+    newOrderUpdateStatusTransaction,
   } = useStore();
   /**
    * Initial Component
@@ -157,6 +161,13 @@ export default function WaitingOrder() {
     setSelectOrderStatus(WAITING_STATUS);
   }, []);
 
+  useEffect(() => {
+    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+      handleMessage();
+      setNewOrderTransaction(false);
+      setNewOrderUpdateStatusTransaction(false);
+    }
+  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
   return (
     <div>
       <OrderNavbar />

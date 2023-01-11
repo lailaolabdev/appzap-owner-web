@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import { Modal, Form, Container, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 
@@ -26,6 +32,7 @@ import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
+import { socket } from "../../services/socket";
 
 import { usePubNub } from "pubnub-react";
 
@@ -82,9 +89,15 @@ export default function TableList() {
     getTableDataStore,
     onSelectTable,
     resetTableOrder,
-    // initialTableSocket,
+    initialTableSocket,
     storeDetail,
     getTableOrders,
+    newTableTransaction,
+    setNewTableTransaction,
+    newOrderTransaction,
+    setNewOrderTransaction,
+    newOrderUpdateStatusTransaction,
+    setNewOrderUpdateStatusTransaction,
   } = useStore();
 
   const reLoadData = () => {
@@ -94,7 +107,7 @@ export default function TableList() {
     if (reload) {
       getTableOrders(selectedTable);
       setReload(false);
-      orderSound();
+      // orderSound();
     }
   }, [reload]);
 
@@ -603,23 +616,36 @@ export default function TableList() {
     }
   };
 
-  const pubnub = usePubNub();
-  const [channels] = useState([
-    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
-    `ORDER:${storeDetail._id}`,
-  ]);
+  // const pubnub = usePubNub();
+  // const [channels] = useState([
+  //   `ORDER_UPDATE_STATUS:${storeDetail._id}`,
+  //   `ORDER:${storeDetail._id}`,
+  // ]);
   const handleMessage = (event) => {
     // console.log("event", event);
     reLoadData();
   };
+  // useEffect(() => {
+  //   const run = () => {
+  //     pubnub.addListener({ message: handleMessage });
+  //     pubnub.subscribe({ channels });
+  //   };
+  //   return run();
+  // }, [pubnub,]);
   useEffect(() => {
-    const run = () => {
-      pubnub.addListener({ message: handleMessage });
-      pubnub.subscribe({ channels });
-    };
-    return run();
-  }, [pubnub]);
+    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+      handleMessage();
+      setNewOrderTransaction(false);
+      setNewOrderUpdateStatusTransaction(false);
+    }
+  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
 
+  useEffect(() => {
+    if (newTableTransaction) {
+      getTableDataStore();
+      setNewOrderTransaction(false);
+    }
+  }, [newTableTransaction]);
   return (
     <div
       style={{
@@ -697,7 +723,9 @@ export default function TableList() {
                             ? "rgb(251,110,59)"
                             : "white",
                           background: table?.isStaffConfirm
-                            ? (table?.editBill ? "#bfff00" : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)")
+                            ? table?.editBill
+                              ? "#bfff00"
+                              : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                             : "white",
                           border:
                             selectedTable?.tableName == table?.tableName
@@ -713,8 +741,8 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                              ? "blink_cardCallCheckOut"
-                              : ""
+                            ? "blink_cardCallCheckOut"
+                            : ""
                         }
                         onClick={() => {
                           onSelectTable(table);
@@ -828,10 +856,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                            dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -963,51 +991,51 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                              <tr
-                                key={"order" + index}
-                                style={{ borderBottom: "1px solid #eee" }}
-                              >
-                                <td>
-                                  <Checkbox
-                                    disabled={orderItem?.status === "CANCEL"}
-                                    name="checked"
-                                    checked={orderItem?.isChecked || false}
-                                    onChange={(e) =>
-                                      onSelect({
-                                        ...orderItem,
-                                        isChecked: e.target.checked,
-                                      })
-                                    }
-                                  />
-                                </td>
+                                <tr
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td>
+                                    <Checkbox
+                                      disabled={orderItem?.status === "CANCEL"}
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) =>
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        })
+                                      }
+                                    />
+                                  </td>
 
-                                <td>{index + 1}</td>
-                                <td>{orderItem?.name}</td>
-                                <td>{orderItem?.quantity}</td>
-                                <td
-                                  style={{
-                                    color:
-                                      orderItem?.status === `SERVED`
-                                        ? "green"
-                                        : orderItem?.status === "DOING"
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                  }}
-                                >
-                                  {orderItem?.status
-                                    ? orderStatus(orderItem?.status)
-                                    : "-"}
-                                </td>
-                                <td>{orderItem?.createdBy?.firstname}</td>
-                                <td>
-                                  {orderItem?.createdAt
-                                    ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
-                                    )
-                                    : "-"}
-                                </td>
-                              </tr>
-                            ))
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
                             : ""}
                         </tbody>
                       </TableCustom>

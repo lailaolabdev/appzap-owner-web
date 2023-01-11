@@ -14,7 +14,7 @@ import { updateOrderItem } from "../../services/order";
 import { socket } from "../../services/socket";
 import { getCodes } from "../../services/code";
 
-export const useTableState = () => {
+export const useTableState = (storeDetail) => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -47,7 +47,8 @@ export const useTableState = () => {
             return table.isOpened && !table.isStaffConfirm;
           });
           setOpenTableData(_openTable);
-        });
+        })
+        .catch((err) => {});
     },
     []
   );
@@ -77,9 +78,11 @@ export const useTableState = () => {
       .then((response) => {
         setTableOrders(response);
         setIsTableOrderLoading(false);
+      })
+      .catch((err) => {
+        setIsTableOrderLoading(false);
       });
     setIsTableOrderLoading(false);
-
     return res;
   };
 
@@ -232,6 +235,26 @@ export const useTableState = () => {
     }
   };
 
+  /**
+   * Socket.io
+   * ເອົາໄວເຮັດ Realtime
+   */
+  // useMemo(() => {
+  //   socket.on(`TABLE:${storeDetail._id}`, (data) => {
+  //     getTableDataStore();
+  //     // getTableOrders(selectedTable);
+  //   });
+  //   socket.on(`ORDER:${storeDetail._id}`, (data) => {
+  //     console.log(data);
+  //     alert(JSON.stringify(data));
+  //   });
+  //   socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
+  //     console.log(data);
+  //     alert(JSON.stringify(data));
+  //   });
+  // }, [storeDetail]);
+
+  //
   return {
     isTableOrderLoading,
     orderItemForPrintBill,

@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.4.8",
+  "version": "5.4.9",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.30",

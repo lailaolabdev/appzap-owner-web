@@ -6,6 +6,7 @@ export const URL_PHOTO_AW3 =
   "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/";
 // export const END_POINT = END_POINT_SEVER;
 export const END_POINT = END_POINT_SEVER;
+export const END_POINT_SOCKET = "https://app-api-alb.appzap.la/";
 export const END_POINT_VERSION = "v3";
 export const FONT_HEADER_SIZE = 16;
 export const BUTTON_INDEX = 100;
@@ -26,8 +27,8 @@ export const ALL_STATUS = [
 export const COLOR_APP = "#FB6E3B";
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {
-    // paddingLeft: 55,
-    // paddingTop: 20,
+  // paddingLeft: 55,
+  // paddingTop: 20,
   backgroundColor: "#F9F9F9",
   width: "100%",
 };

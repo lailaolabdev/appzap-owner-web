@@ -65,6 +65,10 @@ const Order = () => {
     selectedTable,
     selectOrderStatus,
     setSelectOrderStatus,
+    newOrderTransaction,
+    newOrderUpdateStatusTransaction,
+    setNewOrderTransaction,
+    setNewOrderUpdateStatusTransaction,
   } = useStore();
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -161,12 +165,6 @@ const Order = () => {
   }, []);
   const handleMessage = (event) => {
     // console.log("event", event);
-    console.log("selectOrderStatus", selectOrderStatus);
-    console.log("DOING_STATUS", DOING_STATUS);
-    console.log(
-      "selectOrderStatus == DOING_STATUS",
-      selectOrderStatus == DOING_STATUS
-    );
     if (selectOrderStatus == DOING_STATUS) {
       getOrderItemsStore(DOING_STATUS);
     }
@@ -178,6 +176,14 @@ const Order = () => {
     };
     return run();
   }, [pubnub, selectOrderStatus]);
+
+  useEffect(() => {
+    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+      handleMessage();
+      setNewOrderTransaction(false);
+      setNewOrderUpdateStatusTransaction(false);
+    }
+  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
 
   return (
     <div>
