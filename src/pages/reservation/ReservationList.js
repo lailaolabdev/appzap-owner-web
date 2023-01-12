@@ -12,7 +12,7 @@ import {
   addReservation,
   getReservations,
 } from "../../services/reservation";
-import Box from "../../components/Box"
+import Box from "../../components/Box";
 // popup
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import ButtonTab from "../../components/button/ButtonTab";
@@ -26,7 +26,11 @@ import Loading from "../../components/Loading";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const { storeDetail } = useStore();
+  const {
+    storeDetail,
+    newOreservationTransaction,
+    setNewOreservationTransaction,
+  } = useStore();
   const storeId = storeDetail._id;
 
   //   state
@@ -44,7 +48,7 @@ export default function ReservationList() {
     add: false,
     confirm: false,
     edit: false,
-    success: false
+    success: false,
   });
 
   // functions
@@ -106,14 +110,12 @@ export default function ReservationList() {
       localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
     }
   }, [tabSelect, dateFrom, dateTo]);
-  useMemo(
-    () =>
-      socket.on(`RESERVATION:${storeDetail._id}`, (data) => {
-        getData();
-        console.log("first");
-      }),
-    []
-  );
+  useEffect(() => {
+    if (newOreservationTransaction) {
+      getData();
+      setNewOreservationTransaction(false);
+    }
+  }, [newOreservationTransaction]);
   return (
     <div>
       {isLoading ? (
@@ -325,9 +327,7 @@ export default function ReservationList() {
                       <td>{item?.clientPhone}</td>
                       <td>
                         {item?.startTime &&
-                          moment
-                            (item?.startTime)
-                            .format("DD/MM/YYYY")}{" "}
+                          moment(item?.startTime).format("DD/MM/YYYY")}{" "}
                         -{" "}
                         {item?.startTime &&
                           moment(item?.startTime).format("LT")}
@@ -344,8 +344,8 @@ export default function ReservationList() {
                             handleReject(item);
                           }}
                           handleEdit={() => {
-                            setSelect(item)
-                            setPopup((prev)=> ({ ...prev, edit: true }));
+                            setSelect(item);
+                            setPopup((prev) => ({ ...prev, edit: true }));
                           }}
                         />
                       </td>
@@ -408,7 +408,7 @@ export default function ReservationList() {
         onClose={() => setPopup((prev) => ({ ...prev, cancel: false }))}
         onSubmit={onSubmitReject}
       />
-            <PopUpConfirm
+      <PopUpConfirm
         text1="ຢືນຢັນການຈອງສຳເລັດແລ້ວ"
         // text2={select?.clientPhone}
         open={popup?.success}
@@ -427,7 +427,7 @@ export default function ReservationList() {
           setPopup((prev) => ({ ...prev, detail: false, edit: true }));
         }}
         buttonSuccess={() => {
-          setPopup((prev) => ({...prev, success: true}));
+          setPopup((prev) => ({ ...prev, success: true }));
         }}
         onClose={() => setPopup((prev) => ({ ...prev, detail: false }))}
         data={select}

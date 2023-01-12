@@ -120,10 +120,10 @@ export default function TableList() {
       e?.tableOrderItems?.length == 0
   )?._id;
 
-  useEffect(() => {
-    // initialTableSocket();
-    getTableDataStore();
-  }, []);
+  // useEffect(() => {
+  //   // initialTableSocket();
+  //   getTableDataStore();
+  // }, []);
   /**
    * Modify Order Status
    */
@@ -643,7 +643,7 @@ export default function TableList() {
   useEffect(() => {
     if (newTableTransaction) {
       getTableDataStore();
-      setNewOrderTransaction(false);
+      setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
   return (

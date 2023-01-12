@@ -13,6 +13,8 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
   const [newOrderTransaction, setNewOrderTransaction] = useState(false);
   const [newOrderUpdateStatusTransaction, setNewOrderUpdateStatusTransaction] =
     useState(false);
+  const [newOreservationTransaction, setNewOreservationTransaction] =
+    useState(false);
 
   useMemo(() => {
     socket.on("connect", (e) => {
@@ -28,6 +30,10 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
     socket.on(`ORDER_UPDATE_STATUS:${storeDetail?._id}`, () => {
       orderSound();
       setNewOrderUpdateStatusTransaction(true);
+    });
+    socket.on(`RESERVATION:${storeDetail._id}`, () => {
+      orderSound();
+      setNewOreservationTransaction(true);
     });
     socket.on("disconnect", () => {
       setSocketConneted(socket.connected);
@@ -78,5 +84,7 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
+    newOreservationTransaction,
+    setNewOreservationTransaction,
   };
 };
