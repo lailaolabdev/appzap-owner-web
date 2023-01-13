@@ -24,7 +24,7 @@ export default function CheckOutType({
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState(0);
   const [tab, setTab] = useState("cash");
-  const [forcus, setForcus] = useState("cash");
+  const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
 
   const { setSelectedTable, getTableDataStore } = useStore();
@@ -45,7 +45,7 @@ export default function CheckOutType({
             payAmount: cash,
             transferAmount: transfer,
             billAmount: totalBill,
-            paymentMethod: "CASH",
+            paymentMethod: forcus,
           },
         },
         {
@@ -139,6 +139,7 @@ export default function CheckOutType({
                   setCash(0);
                   setTransfer(0);
                   setTab("cash");
+                  setForcus("CASH");
                 }}
               >
                 ເງິນສົດ
@@ -152,6 +153,7 @@ export default function CheckOutType({
                   setCash(0);
                   setTransfer(totalBill);
                   setTab("transfer");
+                  setForcus("TRANSFER");
                 }}
               >
                 ເງິນໂອນ
