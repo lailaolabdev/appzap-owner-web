@@ -1,7 +1,6 @@
-import { useState } from "react";
 import _message from "../../sound/message.mp3";
 import _order from "../../sound/order-sound.wav";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 export const useSoundState = () => {
   let _messageSound = new Audio(_message);

@@ -1,10 +1,9 @@
 import moment from "moment";
-import { useState, useMemo, useRef, useContext, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import Swal from "sweetalert2";
-import { DOING_STATUS, END_POINT, WAITING_STATUS } from "../../constants";
+import { END_POINT, WAITING_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import { updateOrderItem } from "../../services/order";
-import { socket } from "../../services/socket";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
@@ -47,7 +46,7 @@ export const useOrderState = () => {
 
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
     let time = "";
-    if (status == "SERVED") {
+    if (status === "SERVED") {
       time = `&startDate=${moment(moment())
         .add(-1, "days")
         .format("MM-DD-YYYY")}&endDate=${moment().format("MM-DD-YYYY")}`;
@@ -67,7 +66,7 @@ export const useOrderState = () => {
       .then((json) => {
         setOrderLoading(false);
         setOrderItems(json);
-        if (status == WAITING_STATUS) setWaitingOrderItems(json);
+        if (status === WAITING_STATUS) setWaitingOrderItems(json);
       });
   };
 
@@ -83,10 +82,10 @@ export const useOrderState = () => {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
       setOrderItems(_newOrderItem);
-      if (previousStatus == WAITING_STATUS) getOrderItemsStore(WAITING_STATUS);
+      if (previousStatus === WAITING_STATUS) getOrderItemsStore(WAITING_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -99,7 +98,7 @@ export const useOrderState = () => {
   const handleCheckbox = async (order) => {
     let _orderItems = [...orderItems];
     let _newOrderItems = _orderItems.map((item) => {
-      if (item._id == order._id) {
+      if (item._id === order._id) {
         return {
           ...item,
           isChecked: !item.isChecked,

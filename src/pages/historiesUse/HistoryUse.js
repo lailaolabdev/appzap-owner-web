@@ -206,11 +206,11 @@ export default function HistoryUse() {
                   </td>
                   <td>{item?.eventDetail}</td>
                   <td>
-                    {item?.reason == null ||
-                    item?.reason == "" ||
-                    item?.reason == undefined ||
-                    item?.reason == "undefined" ||
-                    item?.reason == "null"
+                    {item?.reason === null ||
+                    item?.reason === "" ||
+                    item?.reason === undefined ||
+                    item?.reason === "undefined" ||
+                    item?.reason === "null"
                       ? "-"
                       : item?.reason}
                   </td>

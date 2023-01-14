@@ -5,7 +5,6 @@ import useReactRouter from "use-react-router";
 import { Card, Table } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { Bar } from "react-chartjs-2";
-import { _statusCheckBill } from "../../helpers";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -34,10 +33,12 @@ export default function DashboardMenu({ startDate, endDate }) {
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endDate, startDate]);
   // =========>
 
@@ -45,6 +46,7 @@ export default function DashboardMenu({ startDate, endDate }) {
     if (data?.length > 0) {
       convertPieData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const _fetchMenuData = async () => {

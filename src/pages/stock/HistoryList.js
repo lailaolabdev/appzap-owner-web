@@ -62,7 +62,7 @@ export default function Historylist() {
   };
   const onBackPage = () => {
     if (parseInt(query?.page) <= 1) return;
-    if (!query?.page) return; // page == undefined
+    if (!query?.page) return; // page === undefined
     navigate(
       ObjectToQuery({
         ...query,

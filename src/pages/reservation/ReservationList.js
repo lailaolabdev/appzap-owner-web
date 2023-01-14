@@ -136,7 +136,7 @@ export default function ReservationList() {
               }}
             >
               <ButtonTab
-                active={tabSelect == "ALL"}
+                active={tabSelect === "ALL"}
                 onClick={() => {
                   // getData();
                   setTabSelect("ALL");
@@ -145,7 +145,7 @@ export default function ReservationList() {
                 ລາຍການທັງໝົດ
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "WATTING"}
+                active={tabSelect === "WATTING"}
                 onClick={() => {
                   // getData("WATTING");
                   setTabSelect("WATTING");
@@ -154,7 +154,7 @@ export default function ReservationList() {
                 ລາຍການທີ່ລໍຖ້າອະນຸມັດ
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "STAFF_CONFIRM"}
+                active={tabSelect === "STAFF_CONFIRM"}
                 onClick={() => {
                   // getData("STAFF_CONFIRM");
                   setTabSelect("STAFF_CONFIRM");
@@ -163,7 +163,7 @@ export default function ReservationList() {
                 ລາຍການທີ່ອະນຸມັດ
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "SUCCESS"}
+                active={tabSelect === "SUCCESS"}
                 onClick={() => {
                   // getData("SUCCESS");
                   setTabSelect("SUCCESS");
@@ -172,7 +172,7 @@ export default function ReservationList() {
                 ລາຍການທີ່ອະນຸມັດ
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "CANCEL"}
+                active={tabSelect === "CANCEL"}
                 onClick={() => {
                   // getData("CANCEL");
                   setTabSelect("CANCEL");
@@ -315,7 +315,7 @@ export default function ReservationList() {
                       onClick={(e) => {
                         if (
                           e.target.cellIndex > 5 ||
-                          e.target.cellIndex == undefined
+                          e.target.cellIndex === undefined
                         ) {
                           return;
                         }

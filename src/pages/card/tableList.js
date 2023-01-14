@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
-import { Form, Button, Modal, Alert, Table, Card } from "react-bootstrap";
+import { useState } from "react";
+import { Modal, Alert, Table } from "react-bootstrap";
 import "./Card.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {} from "@fortawesome/free-solid-svg-icons";
 import { BsXCircleFill } from "react-icons/bs";
-import { IoAdd } from "react-icons/io5";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 export default function TableList() {
   // modalCheckBin

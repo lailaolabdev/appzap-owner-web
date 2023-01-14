@@ -1,27 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { Formik } from 'formik';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import React, { useEffect, useState } from "react";
+import { Formik } from "formik";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { Modal, Button, Image, Form } from "react-bootstrap";
 import {
-  Modal,
-  Button,
-  Image,
-  Form
-} from "react-bootstrap";
-import { END_POINT, HEADER, BODY, COLOR_APP, COLOR_APP_CANCEL, URL_PHOTO_AW3 } from '../../constants'
-import { USERS, USER, USERS_UPDATE, USERS_CREATE, USERS_DELETE, PRESIGNED_URL, getLocalData } from '../../constants/api'
-import AnimationLoading from "../../constants/loading"
-import profileImage from "../../image/profile.png"
-import { STATUS_USERS } from '../../helpers'
-import { successAdd, errorAdd } from '../../helpers/sweetalert'
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-
+  BODY,
+  COLOR_APP,
+  COLOR_APP_CANCEL,
+  URL_PHOTO_AW3,
+} from "../../constants";
+import {
+  USERS,
+  USERS_UPDATE,
+  USERS_CREATE,
+  USERS_DELETE,
+  PRESIGNED_URL,
+  getLocalData,
+} from "../../constants/api";
+import AnimationLoading from "../../constants/loading";
+import profileImage from "../../image/profile.png";
+import { STATUS_USERS } from "../../helpers";
+import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function UserList() {
   const params = useParams();
-  const navigate=useNavigate();
-  const location = useLocation()
+  const navigate = useNavigate();
   const _limit = params.limit;
   const _page = params.page;
   const [isLoading, setIsLoading] = useState(false);
@@ -40,6 +45,7 @@ export default function UserList() {
     };
     fetchData();
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getData = async () => {
     setIsLoading(true);
@@ -50,15 +56,13 @@ export default function UserList() {
       .then((json) => setuserData(json));
     setIsLoading(false);
   };
-  const _AddUser = () => {
-    navigate("/users/userAdd");
-  };
   const _userDetail = () => {};
-  const [totalPage, setTotalPage] = useState([]);
+  // const [totalPage, setTotalPage] = useState([]);
   useEffect(() => {
     if (userData?.total > 0) {
       _getArrayPageNumber();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
   const _getArrayPageNumber = () => {
     let rowPage = [];
@@ -71,7 +75,7 @@ export default function UserList() {
     for (let i = 1; i <= _total; i++) {
       rowPage.push(i);
     }
-    setTotalPage(rowPage);
+    // setTotalPage(rowPage);
   };
   const _nextPage = (page) => {
     navigate(`/users/limit/${_limit}/page/${page}`);
@@ -84,7 +88,7 @@ export default function UserList() {
     setImageLoading("");
     try {
       setFile(event.target.files[0]);
-      let formData = new FormData();
+      // let formData = new FormData();
       let fileData = event.target.files[0];
       const responseUrl = await axios({
         method: "post",
@@ -94,7 +98,7 @@ export default function UserList() {
         },
       });
       setNamePhoto(responseUrl.data);
-      let afterUpload = await axios({
+      await axios({
         method: "put",
         url: responseUrl.data.url,
         data: fileData,
@@ -142,7 +146,7 @@ export default function UserList() {
       role: values?.role,
       image: namePhoto?.params?.Key,
     });
-    const resData = await axios({
+    await axios({
       method: "POST",
       url: USERS_CREATE,
       headers: getTokken?.TOKEN,
@@ -181,7 +185,7 @@ export default function UserList() {
     setShow3(true);
   };
   const _confirmeDelete = async () => {
-    const resData = await axios({
+    await axios({
       method: "DELETE",
       url: USERS_DELETE + dateDelete?.id,
       headers: getTokken?.TOKEN,
@@ -210,7 +214,7 @@ export default function UserList() {
     if (values?.userId === dataUpdate?.userId) {
       delete values?.userId;
     }
-    const resData = await axios({
+    await axios({
       method: "PUT",
       url: USERS_UPDATE + `?id=${dataUpdate?._id}`,
       headers: getTokken?.TOKEN,
@@ -240,22 +244,23 @@ export default function UserList() {
       ) : (
         <div>
           <div style={BODY}>
-            <div className='row' style={{ padding: 30 }}>
-              <div className='col-md-12' style={{ fontSize: "20px" }}>
+            <div className="row" style={{ padding: 30 }}>
+              <div className="col-md-12" style={{ fontSize: "20px" }}>
                 ຈຳນວນພະນັກງານ ( {userData?.total} )
               </div>
             </div>
             <div style={{ paddingBottom: 20 }}>
-              <div className='col-md-12'>
+              <div className="col-md-12">
                 <button
-                  type='button'
-                  className='btn btn-app col-2 '
+                  type="button"
+                  className="btn btn-app col-2 "
                   style={{
                     float: "right",
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
                   }}
-                  onClick={handleShow}>
+                  onClick={handleShow}
+                >
                   {" "}
                   ເພີ່ມພະນັກງານ{" "}
                 </button>
@@ -263,25 +268,25 @@ export default function UserList() {
             </div>
             <div style={{ height: 40 }}></div>
             <div>
-              <div className='col-sm-12'>
-                <table className='table table-hover'>
-                  <thead className='thead-light'>
+              <div className="col-sm-12">
+                <table className="table table-hover">
+                  <thead className="thead-light">
                     <tr>
-                      <th scope='col'>#</th>
-                      <th scope='col'>ຮູບພາບ</th>
-                      <th scope='col'>ຊື່</th>
-                      <th scope='col'>ນາມສະກຸນ</th>
-                      <th scope='col'>UserId</th>
-                      <th scope='col'>ສິດນຳໃຊ້ລະບົບ</th>
-                      <th scope='col'>ເບີໂທລະສັບ</th>
-                      <th scope='col'>ຈັດການຂໍ້ມູນ</th>
+                      <th scope="col">#</th>
+                      <th scope="col">ຮູບພາບ</th>
+                      <th scope="col">ຊື່</th>
+                      <th scope="col">ນາມສະກຸນ</th>
+                      <th scope="col">UserId</th>
+                      <th scope="col">ສິດນຳໃຊ້ລະບົບ</th>
+                      <th scope="col">ເບີໂທລະສັບ</th>
+                      <th scope="col">ຈັດການຂໍ້ມູນ</th>
                     </tr>
                   </thead>
                   <tbody>
                     {userData?.users?.map((data, index) => {
                       return (
                         <tr onClick={() => _userDetail(data?._id)}>
-                          <th scope='row'>
+                          <th scope="row">
                             {index + 1 + parseInt(_limit) * parseInt(_page - 1)}
                           </th>
                           <td>
@@ -289,9 +294,9 @@ export default function UserList() {
                               <center>
                                 <Image
                                   src={URL_PHOTO_AW3 + data?.image}
-                                  alt=''
-                                  width='150'
-                                  height='150'
+                                  alt=""
+                                  width="150"
+                                  height="150"
                                   style={{
                                     height: 50,
                                     width: 50,
@@ -303,9 +308,9 @@ export default function UserList() {
                               <center>
                                 <Image
                                   src={profileImage}
-                                  alt=''
-                                  width='150'
-                                  height='150'
+                                  alt=""
+                                  width="150"
+                                  height="150"
                                   style={{
                                     height: 50,
                                     width: 50,
@@ -347,8 +352,8 @@ export default function UserList() {
                       height: 30,
                       border: "solid 1px #816aae",
                       marginLeft: 2,
-                      backgroundColor: parseInt(_page) == index + 1 ? COLOR_APP : "#fff",
-                      color: parseInt(_page) == index + 1 ? "#fff" : "#000",
+                      backgroundColor: parseInt(_page) === index + 1 ? COLOR_APP : "#fff",
+                      color: parseInt(_page) === index + 1 ? "#fff" : "#000",
                     }} onClick={() => _nextPage(item)}
                       key={item}
                     >{item}</button>
@@ -363,8 +368,9 @@ export default function UserList() {
       <Modal
         show={show}
         onHide={handleClose}
-        backdrop='static'
-        keyboard={false}>
+        backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>ເພີ່ມພະນັກງານ</Modal.Title>
         </Modal.Header>
@@ -398,7 +404,8 @@ export default function UserList() {
           }}
           onSubmit={(values, { setSubmitting }) => {
             _createUser(values);
-          }}>
+          }}
+        >
           {({
             values,
             errors,
@@ -412,15 +419,16 @@ export default function UserList() {
             <form onSubmit={handleSubmit}>
               <Modal.Body>
                 <div
-                  className='col-sm-12 center'
-                  style={{ textAlign: "center" }}>
+                  className="col-sm-12 center"
+                  style={{ textAlign: "center" }}
+                >
                   <input
-                    type='file'
-                    id='file-upload'
+                    type="file"
+                    id="file-upload"
                     onChange={handleUpload}
                     hidden
                   />
-                  <label for='file-upload'>
+                  <label for="file-upload">
                     <div
                       style={{
                         backgroundColor: "#E4E4E4E4",
@@ -429,7 +437,8 @@ export default function UserList() {
                         borderRadius: "50%",
                         cursor: "pointer",
                         display: "flex",
-                      }}>
+                      }}
+                    >
                       {file ? (
                         <ImageThumb image={file} />
                       ) : (
@@ -440,13 +449,15 @@ export default function UserList() {
                             width: 200,
                             justifyContent: "center",
                             alignItems: "center",
-                          }}>
+                          }}
+                        >
                           <p
                             style={{
                               color: "#fff",
                               fontSize: 80,
                               fontWeight: "bold",
-                            }}>
+                            }}
+                          >
                             +
                           </p>
                         </div>
@@ -455,17 +466,18 @@ export default function UserList() {
                   </label>
                   {/* progass */}
                   {imageLoading ? (
-                    <div className='progress' style={{ height: 20 }}>
+                    <div className="progress" style={{ height: 20 }}>
                       <div
-                        className='progress-bar'
-                        role='progressbar'
+                        className="progress-bar"
+                        role="progressbar"
                         style={{
                           width: `${imageLoading}%`,
                           backgroundColor: COLOR_APP,
                         }}
                         aria-valuenow={imageLoading}
-                        aria-valuemin='0'
-                        aria-valuemax='100'>
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         {imageLoading}%
                       </div>
                     </div>
@@ -473,47 +485,48 @@ export default function UserList() {
                     <div style={{ height: 20 }} />
                   )}
                 </div>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>UserId</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='userId'
+                    type="text"
+                    name="userId"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.userId}
-                    placeholder='UserId...'
+                    placeholder="UserId..."
                     isInvalid={errors.userId}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
-                    type='Password'
-                    name='password'
+                    type="Password"
+                    name="password"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.password}
-                    placeholder='Password...'
+                    placeholder="Password..."
                     isInvalid={errors.password}
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlSelect1'>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
                   <Form.Control
-                    as='select'
-                    name='role'
+                    as="select"
+                    name="role"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.role}>
-                    <option value='APPZAP_STAFF'>ພະນັກງານ</option>
-                    <option value='APPZAP_ADMIN'>ຜູ້ບໍລິຫານ</option>
+                    value={values.role}
+                  >
+                    <option value="APPZAP_STAFF">ພະນັກງານ</option>
+                    <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='firstname'
+                    type="text"
+                    name="firstname"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.firstname}
@@ -525,14 +538,14 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ຊື່...'
+                    placeholder="ຊື່..."
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ນາມສະກຸນ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='lastname'
+                    type="text"
+                    name="lastname"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.lastname}
@@ -542,14 +555,14 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ນາມສະກຸນ...'
+                    placeholder="ນາມສະກຸນ..."
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ເບີໂທລະສັບ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='phone'
+                    type="number"
+                    name="phone"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.phone}
@@ -559,19 +572,21 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ເບີໂທລະສັບ...'
+                    placeholder="ເບີໂທລະສັບ..."
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
                 <Button
                   style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleClose}>
+                  onClick={handleClose}
+                >
                   ຍົກເລີກ
                 </Button>
                 <Button
                   style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}>
+                  onClick={() => handleSubmit()}
+                >
                   ບັນທືກ
                 </Button>
               </Modal.Footer>
@@ -583,8 +598,9 @@ export default function UserList() {
       <Modal
         show={show2}
         onHide={handleClose2}
-        backdrop='static'
-        keyboard={false}>
+        backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>ອັບເດດຂໍ້ມູນພະນັກງານ</Modal.Title>
         </Modal.Header>
@@ -614,7 +630,8 @@ export default function UserList() {
           }}
           onSubmit={(values, { setSubmitting }) => {
             _updateCategory(values);
-          }}>
+          }}
+        >
           {({
             values,
             errors,
@@ -628,15 +645,16 @@ export default function UserList() {
             <form onSubmit={handleSubmit}>
               <Modal.Body>
                 <div
-                  className='col-sm-12 center'
-                  style={{ textAlign: "center" }}>
+                  className="col-sm-12 center"
+                  style={{ textAlign: "center" }}
+                >
                   <input
-                    type='file'
-                    id='file-upload'
+                    type="file"
+                    id="file-upload"
                     onChange={handleUpload}
                     hidden
                   />
-                  <label for='file-upload'>
+                  <label for="file-upload">
                     <div
                       style={{
                         backgroundColor: "#E4E4E4E4",
@@ -645,16 +663,17 @@ export default function UserList() {
                         borderRadius: "50%",
                         cursor: "pointer",
                         display: "flex",
-                      }}>
+                      }}
+                    >
                       {file ? (
                         <ImageThumb image={file} />
                       ) : (
                         <center>
                           <Image
                             src={URL_PHOTO_AW3 + dataUpdate?.image}
-                            alt=''
-                            width='150'
-                            height='150'
+                            alt=""
+                            width="150"
+                            height="150"
                             style={{
                               height: 200,
                               width: 200,
@@ -667,17 +686,18 @@ export default function UserList() {
                   </label>
                   {/* progass */}
                   {imageLoading ? (
-                    <div className='progress' style={{ height: 20 }}>
+                    <div className="progress" style={{ height: 20 }}>
                       <div
-                        className='progress-bar'
-                        role='progressbar'
+                        className="progress-bar"
+                        role="progressbar"
                         style={{
                           width: `${imageLoading}%`,
                           backgroundColor: COLOR_APP,
                         }}
                         aria-valuenow={imageLoading}
-                        aria-valuemin='0'
-                        aria-valuemax='100'>
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         {imageLoading}%
                       </div>
                     </div>
@@ -709,23 +729,24 @@ export default function UserList() {
 
                   />
                 </Form.Group> */}
-                <Form.Group controlId='exampleForm.ControlSelect1'>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
                   <Form.Control
-                    as='select'
-                    name='role'
+                    as="select"
+                    name="role"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.role}>
-                    <option value='APPZAP_STAFF'>ພະນັກງານ</option>
-                    <option value='APPZAP_ADMIN'>ຜູ້ບໍລິຫານ</option>
+                    value={values.role}
+                  >
+                    <option value="APPZAP_STAFF">ພະນັກງານ</option>
+                    <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
                   </Form.Control>
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='firstname'
+                    type="text"
+                    name="firstname"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.firstname}
@@ -737,14 +758,14 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ຊື່...'
+                    placeholder="ຊື່..."
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ນາມສະກຸນ</Form.Label>
                   <Form.Control
-                    type='text'
-                    name='lastname'
+                    type="text"
+                    name="lastname"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.lastname}
@@ -754,14 +775,14 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ນາມສະກຸນ...'
+                    placeholder="ນາມສະກຸນ..."
                   />
                 </Form.Group>
-                <Form.Group controlId='exampleForm.ControlInput1'>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ເບີໂທລະສັບ</Form.Label>
                   <Form.Control
-                    type='number'
-                    name='phone'
+                    type="number"
+                    name="phone"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.phone}
@@ -771,19 +792,21 @@ export default function UserList() {
                           ? "solid 1px red"
                           : "",
                     }}
-                    placeholder='ເບີໂທລະສັບ...'
+                    placeholder="ເບີໂທລະສັບ..."
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
                 <Button
                   style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleClose2}>
+                  onClick={handleClose2}
+                >
                   ຍົກເລີກ
                 </Button>
                 <Button
                   style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}>
+                  onClick={() => handleSubmit()}
+                >
                   ບັນທືກ
                 </Button>
               </Modal.Footer>
@@ -802,12 +825,13 @@ export default function UserList() {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose3}>
+          <Button variant="secondary" onClick={handleClose3}>
             ຍົກເລີກ
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _confirmeDelete()}>
+            onClick={() => _confirmeDelete()}
+          >
             ຢືນຢັນການລົບ
           </Button>
         </Modal.Footer>

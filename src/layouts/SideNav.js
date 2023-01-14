@@ -96,6 +96,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     // initialOrderSocket();
     // initialTableSocket();
     callingCheckOut();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // useMemo(
   //   () => async () => {
@@ -126,6 +127,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   useEffect(() => {
     pubnub.addListener({ message: handleMessage });
     pubnub.subscribe({ channels });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pubnub, channels]);
   return (
     <SideNav

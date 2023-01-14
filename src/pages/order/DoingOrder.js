@@ -90,21 +90,21 @@ const Order = () => {
     let _index = 0;
     for (const _ref of billForCher80.current) {
       const _printer = printers.find((e) => {
-        return e?._id == orderSelect?.[_index]?.printer;
+        return e?._id === orderSelect?.[_index]?.printer;
       });
       console.log("_printer", _printer);
 
       try {
         let urlForPrinter = "";
         let dataUrl;
-        if (_printer?.width == "80mm") {
+        if (_printer?.width === "80mm") {
           dataUrl = await html2canvas(billForCher80?.current[_index], {
             useCORS: true,
             scrollX: 10,
             scrollY: 0,
           });
         }
-        if (_printer?.width == "58mm") {
+        if (_printer?.width === "58mm") {
           dataUrl = await html2canvas(billForCher58?.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -125,7 +125,7 @@ const Order = () => {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
-        if (_index == 0) {
+        if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
@@ -165,7 +165,7 @@ const Order = () => {
   }, []);
   const handleMessage = (event) => {
     // console.log("event", event);
-    if (selectOrderStatus == DOING_STATUS) {
+    if (selectOrderStatus === DOING_STATUS) {
       getOrderItemsStore(DOING_STATUS);
     }
   };

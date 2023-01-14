@@ -62,7 +62,7 @@ export default function OrderNavbar() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = orderItems.filter((item) => !item.isChecked);
       Swal.fire({
         icon: "success",

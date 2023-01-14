@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
-import { BODY, COLOR_APP } from "../../../../constants";
+import { COLOR_APP } from "../../../../constants";
 import { END_POINT_SEVER, getLocalData } from "../../../../constants/api";
 import { getHeaders } from "../../../../services/auth";
 import axios from "axios";
@@ -55,7 +55,8 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
         }}
         onSubmit={(values, { setSubmitting }) => {
           _createCategory(values);
-        }}>
+        }}
+      >
         {({
           values,
           errors,
@@ -70,34 +71,34 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
               <Modal.Title>ແກ້ໄຂປະເພດສະຕ໊ອກ</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ຊື່ປະເພດສະຕ໊ອກ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='name'
+                  type="text"
+                  name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder='ຊື່ປະເພດສະຕ໊ອກ...'
+                  placeholder="ຊື່ປະເພດສະຕ໊ອກ..."
                 />
               </Form.Group>
               <div style={{ color: "red" }}>
                 {errors.name && touched.name && errors.name}
               </div>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ໝາຍເຫດ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='note'
+                  type="text"
+                  name="note"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.note}
-                  placeholder='ໝາຍເຫດ...'
+                  placeholder="ໝາຍເຫດ..."
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant='danger' onClick={onClose}>
+              <Button variant="danger" onClick={onClose}>
                 ຍົກເລີກ
               </Button>
               <Button
@@ -106,7 +107,8 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
                   color: "#ffff",
                   border: 0,
                 }}
-                onClick={() => handleSubmit()}>
+                onClick={() => handleSubmit()}
+              >
                 ເພີ່ມ
               </Button>
             </Modal.Footer>

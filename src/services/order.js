@@ -22,7 +22,7 @@ export const getOrders = async (
       let newOrders = [];
       for (let order of data) {
         for (let orderItem of order.order_item) {
-          if (orderItem.status == orderItemStatus) {
+          if (orderItem.status === orderItemStatus) {
             newOrders.push({
               ...orderItem,
               table_id: order?.table_id,
@@ -73,15 +73,15 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (orderItems, storeId,menuId) => {
+export const updateOrderItem = async (orderItems, storeId, menuId) => {
   try {
     const url = `${END_POINT}/v3/orders/updateMany`;
     const orders = await axios.put(
       url,
       {
-        "orders": orderItems,
-        "storeId": storeId,
-        "menuId":menuId
+        orders: orderItems,
+        storeId: storeId,
+        menuId: menuId,
       },
       {
         headers: await getHeaders(),
@@ -98,8 +98,8 @@ export const updateManyOrderItemsFeedBack = async (orderItems, storeId) => {
     const orders = await axios.put(
       url,
       {
-        "orderItem": orderItems,
-        "storeId": storeId
+        orderItem: orderItems,
+        storeId: storeId,
       },
       {
         headers: await getHeaders(),
@@ -115,7 +115,7 @@ export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {
     for (let orderElement of data) {
       const url = `${END_POINT}/orders/${orderElement.id}`;
-      const orders = await axios.put(
+      await axios.put(
         url,
         { status },
         {

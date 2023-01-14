@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Image, Spinner } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import profileImage from "../../image/profile.png";
@@ -34,6 +34,7 @@ export default function StoreDetail() {
       }
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getData = async (storeId) => {
     setIsLoading(true);
@@ -77,7 +78,7 @@ export default function StoreDetail() {
   };
   // lung jak upload leo pic ja ma so u nee
   const _updateIsOpenStore = async (data) => {
-    const res = await axios({
+    await axios({
       method: "PUT",
       url: END_POINT + `/store_update?id=` + params?.id,
       headers: getTokken?.TOKEN,

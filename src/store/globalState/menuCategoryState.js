@@ -18,6 +18,7 @@ export const useMenuCategoryState = ({ storeDetail }) => {
   // useEffect
   useEffect(() => {
     getMenuCategorysState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
   return {
     isMenuCategoryLoadings,

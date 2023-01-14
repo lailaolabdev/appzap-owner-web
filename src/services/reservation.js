@@ -1,5 +1,4 @@
 import axios from "axios";
-import { END_POINT } from "../constants";
 import { getLocalData, END_POINT_APP } from "../constants/api";
 import { getHeaders } from "./auth";
 

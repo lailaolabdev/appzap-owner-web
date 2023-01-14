@@ -38,6 +38,7 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
     socket.on("disconnect", () => {
       setSocketConneted(socket.connected);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 
   // TODO: If socket disconnet set newTransaction is true every 10s >>>>>>>>>>>>>>>>>>>>>>>>

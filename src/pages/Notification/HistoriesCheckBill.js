@@ -38,13 +38,16 @@ export default function HistoriesCheckBill() {
 
   useEffect(() => {
     _searchDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate && endDate]);
   useEffect(() => {
     _searchDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [findeByCode]);
   useEffect(() => {
     _searchDate();
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getData = async () => {
@@ -57,7 +60,7 @@ export default function HistoriesCheckBill() {
   const _searchDate = async () => {
     setIsLoading(true);
     const url = END_POINT + `/orders/${location?.search}`;
-    const _data = await fetch(url)
+    await fetch(url)
       .then((response) => response.json())
       .then((response) => {
         setData(response);
@@ -82,6 +85,7 @@ export default function HistoriesCheckBill() {
     } else if (data[0]?.checkout === true && data[0]?.status === "CHECKOUT") {
       setStatusMoney("ຊຳລະສຳເລັດ");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
   useEffect(() => {
     const GetAmount = async () => {
@@ -99,6 +103,7 @@ export default function HistoriesCheckBill() {
     };
 
     GetAmount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountArray]);
   // const _checkOut = async () => {
   //   document.getElementById('btnPrint').click();

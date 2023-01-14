@@ -74,7 +74,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     );
 
     // const _checkOut = getDataDashBoard.data.filter(
-    //   (e) => e?.isCheckout && e?.status == "CHECKOUT"
+    //   (e) => e?.isCheckout && e?.status === "CHECKOUT"
     // );
     const _checkOut = getDataDashBoard.data;
     const totalPrice = _.sumBy(_checkOut, function (o) {

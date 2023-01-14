@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
@@ -62,8 +62,8 @@ function AddOrder() {
   const afterSearch = _.filter(
     allSelectedMenu,
     (e) =>
-      (e?.name?.indexOf(search) > -1 && selectedCategory == "All") ||
-      e?.categoryId?._id == selectedCategory
+      (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
+      e?.categoryId?._id === selectedCategory
   );
 
   const arrLength = selectedMenu?.length;
@@ -86,13 +86,13 @@ function AddOrder() {
     let _index = 0;
     for (const _ref of billForCher80.current) {
       const _printer = printers.find((e) => {
-        return e?._id == orderSelect?.[_index]?.printer;
+        return e?._id === orderSelect?.[_index]?.printer;
       });
 
       try {
         let urlForPrinter = "";
         let dataUrl;
-        if (_printer?.width == "80mm") {
+        if (_printer?.width === "80mm") {
           dataUrl = await html2canvas(billForCher80?.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -100,7 +100,7 @@ function AddOrder() {
             // scale: 530 / widthBill80,
           });
         }
-        if (_printer?.width == "58mm") {
+        if (_printer?.width === "58mm") {
           dataUrl = await html2canvas(billForCher58?.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -124,7 +124,7 @@ function AddOrder() {
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
-        if (_index == 0) {
+        if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
@@ -352,7 +352,7 @@ function AddOrder() {
   const onSubmit = async (isPrinted) => {
     try {
       setIsLoading(true);
-      if (selectedMenu.length == 0) {
+      if (selectedMenu.length === 0) {
         Swal.fire({
           icon: "warning",
           title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
@@ -436,7 +436,7 @@ function AddOrder() {
                   key={"menu" + index}
                   style={{
                     border:
-                      data._id == selectedItem?._id
+                      data._id === selectedItem?._id
                         ? "4px solid #FB6E3B"
                         : "4px solid rgba(0,0,0,0)",
                   }}

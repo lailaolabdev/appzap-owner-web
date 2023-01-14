@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { getPrinterCounter, getPrinters } from "../../services/printer";
 import socketio from "socket.io-client";
-import { END_POINT_SOCKET } from "../../constants";
 const socket = socketio.connect("http://localhost:9150", {
   reconnection: true,
   reconnectionDelay: 5000,
@@ -44,6 +43,7 @@ export const usePrintersState = ({ storeDetail }) => {
   useEffect(() => {
     getPrintersState();
     getPrinterCounterState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 
   // stocket
@@ -54,6 +54,7 @@ export const usePrintersState = ({ storeDetail }) => {
     socket.on("disconnect", () => {
       setIsConnectPrinter(socket.connected); // false
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 
   return {

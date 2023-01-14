@@ -63,21 +63,21 @@ export default function WaitingOrder() {
     let _index = 0;
     for (const _ref of billForCher80.current) {
       const _printer = printers.find((e) => {
-        return e?._id == orderSelect?.[_index]?.printer;
+        return e?._id === orderSelect?.[_index]?.printer;
       });
       console.log("_printer", _printer);
 
       try {
         let urlForPrinter = "";
         let dataUrl;
-        if (_printer?.width == "80mm") {
+        if (_printer?.width === "80mm") {
           dataUrl = await html2canvas(billForCher80?.current[_index], {
             useCORS: true,
             scrollX: 10,
             scrollY: 0,
           });
         }
-        if (_printer?.width == "58mm") {
+        if (_printer?.width === "58mm") {
           dataUrl = await html2canvas(billForCher58?.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -98,7 +98,7 @@ export default function WaitingOrder() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
-        if (_index == 0) {
+        if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
@@ -141,10 +141,10 @@ export default function WaitingOrder() {
     console.log("selectOrderStatus", selectOrderStatus);
     console.log("WAITING_STATUS", WAITING_STATUS);
     console.log(
-      "selectOrderStatus == WAITING_STATUS",
-      selectOrderStatus == WAITING_STATUS
+      "selectOrderStatus === WAITING_STATUS",
+      selectOrderStatus === WAITING_STATUS
     );
-    if (selectOrderStatus == WAITING_STATUS) {
+    if (selectOrderStatus === WAITING_STATUS) {
       getOrderItemsStore(WAITING_STATUS);
     }
   };

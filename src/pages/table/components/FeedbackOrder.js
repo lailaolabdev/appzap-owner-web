@@ -22,7 +22,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
 
   const _feedBackOrder = async ( newQty, index) => {
     let _newQty = parseInt(newQty)
-    let changeData = newDataItem[index].newQty =(_newQty ? _newQty : 0);
+    // let changeData = newDataItem[index].newQty =(_newQty ? _newQty : 0);
     setsaveDataItemQty({ data: newDataItem, storeId: newDataItem[0]?.storeId })
   }
 
@@ -76,7 +76,7 @@ const FeedbackOrder = ({ data, show, hide }) => {
         <div style={{ textAlign: "center" }}>
           <Button
             className="ml-2 pl-4 pr-4"
-            onClick={hide}
+            // onClick={hide}
             style={{
               backgroundColor: "#FB6E3B",
               color: "#ffff",

@@ -35,10 +35,12 @@ export default function MoneyChart({ startDate, endDate }) {
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endDate, startDate]);
   // =========>
 
@@ -46,6 +48,7 @@ export default function MoneyChart({ startDate, endDate }) {
     if (data?.length > 0) {
       convertPieData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const _fetchMenuData = async () => {

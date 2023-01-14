@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useLayoutEffect,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 
@@ -32,9 +26,6 @@ import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
-import { socket } from "../../services/socket";
-
-import { usePubNub } from "pubnub-react";
 
 /**
  * const
@@ -46,7 +37,7 @@ import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
-import _ from "lodash";
+// import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { getCodes } from "../../services/code";
@@ -75,13 +66,12 @@ export default function TableList() {
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
 
-  const { printerCounter, printers, orderSound } = useStore();
+  const { printerCounter, printers } = useStore();
 
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
     tableList,
-    setTableList,
     selectedTable,
     setSelectedTable,
     openTable,
@@ -89,7 +79,6 @@ export default function TableList() {
     getTableDataStore,
     onSelectTable,
     resetTableOrder,
-    initialTableSocket,
     storeDetail,
     getTableOrders,
     newTableTransaction,
@@ -117,7 +106,7 @@ export default function TableList() {
     (e) =>
       e?.status === "DOING" ||
       e?.status === "WAITING" ||
-      e?.tableOrderItems?.length == 0
+      e?.tableOrderItems?.length === 0
   )?._id;
 
   // useEffect(() => {
@@ -140,6 +129,7 @@ export default function TableList() {
       if (nData.status === "CANCELED")
         _checkDataStatusCancel.push(nData?.status);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableOrderItems]);
   const _handlecheckout = async () => {
     setCheckoutModal(false);
@@ -339,7 +329,7 @@ export default function TableList() {
         (e) => e?._id === _printerCounters?.BILL
       );
       let dataImageForPrint;
-      if (printerBillData?.width == "80mm") {
+      if (printerBillData?.width === "80mm") {
         dataImageForPrint = await html2canvas(bill80Ref.current, {
           useCORS: true,
           scrollX: 10,
@@ -348,7 +338,7 @@ export default function TableList() {
         });
       }
 
-      if (printerBillData?.width == "58mm") {
+      if (printerBillData?.width === "58mm") {
         dataImageForPrint = await html2canvas(bill58Ref.current, {
           useCORS: true,
           scrollX: 10,
@@ -420,14 +410,14 @@ export default function TableList() {
     for (const _ref of billForCher80.current) {
       // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
       const _printer = printers.find((e) => {
-        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
-        return e?._id == orderSelect?.[_index]?.printer;
+        // console.log(`${e?._id} === ${orderSelect?.[_index]?._id}`)
+        return e?._id === orderSelect?.[_index]?.printer;
       });
 
       try {
         let urlForPrinter = "";
         let dataUrl;
-        if (_printer?.width == "80mm") {
+        if (_printer?.width === "80mm") {
           dataUrl = await html2canvas(billForCher80.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -435,7 +425,7 @@ export default function TableList() {
             scale: 530 / widthBill80,
           });
         }
-        if (_printer?.width == "58mm") {
+        if (_printer?.width === "58mm") {
           dataUrl = await html2canvas(billForCher58.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -459,7 +449,7 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
-        if (_index == 0) {
+        if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
@@ -469,7 +459,7 @@ export default function TableList() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        if (_index == 0) {
+        if (_index === 0) {
           await Swal.fire({
             icon: "success",
             title: "ປິ້ນສຳເລັດ",
@@ -491,7 +481,7 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
-    if (isCheckedOrderItem?.length == 0) {
+    if (isCheckedOrderItem?.length === 0) {
       const _data = tableOrderItems.map((e) => {
         if (data?._id === e?._id) {
           return data;
@@ -549,8 +539,8 @@ export default function TableList() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      // if (previousStatus === SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -577,8 +567,8 @@ export default function TableList() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS);
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      // if (previousStatus === DOING_STATUS) getOrderItemsStore(DOING_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -604,8 +594,8 @@ export default function TableList() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -697,11 +687,11 @@ export default function TableList() {
                     <div
                       style={{
                         border:
-                          selectedTable?.tableName == table?.tableName
+                          selectedTable?.tableName === table?.tableName
                             ? "1px solid #404258"
                             : "1px solid #FB6E3B",
                         backgroundColor:
-                          selectedTable?.tableName == table?.tableName
+                          selectedTable?.tableName === table?.tableName
                             ? "#404258"
                             : "#FFF",
                         borderRadius: 8,
@@ -728,7 +718,7 @@ export default function TableList() {
                               : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                             : "white",
                           border:
-                            selectedTable?.tableName == table?.tableName
+                            selectedTable?.tableName === table?.tableName
                               ? "3px solid #404258"
                               : "3px solid  white",
                           display: "flex",
@@ -1039,7 +1029,7 @@ export default function TableList() {
                             : ""}
                         </tbody>
                       </TableCustom>
-                      {tableOrderItems?.length == 0 && (
+                      {tableOrderItems?.length === 0 && (
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
@@ -1124,7 +1114,7 @@ export default function TableList() {
               </div>
             )}
 
-            {selectedTable == null && (
+            {selectedTable === null && (
               <div
                 style={{
                   width: "100%",
@@ -1256,7 +1246,7 @@ export default function TableList() {
                 value={selectNewTable?._id}
                 onChange={(e) => {
                   const _select = tableList.find(
-                    (item) => e.target.value == item?._id
+                    (item) => e.target.value === item?._id
                   );
                   setSelectNewTable(_select);
                 }}

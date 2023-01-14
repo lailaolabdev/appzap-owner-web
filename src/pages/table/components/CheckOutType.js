@@ -6,7 +6,7 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import { errorAdd } from "../../../helpers/sweetalert";
 
 import _ from "lodash";
 
@@ -133,7 +133,7 @@ export default function CheckOutType({
               <ButtonPrimary
                 style={{
                   color: "white",
-                  backgroundColor: tab == "cash" ? COLOR_APP : "#ffac8e",
+                  backgroundColor: tab === "cash" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
@@ -147,7 +147,7 @@ export default function CheckOutType({
               <ButtonPrimary
                 style={{
                   color: "white",
-                  backgroundColor: tab == "transfer" ? COLOR_APP : "#ffac8e",
+                  backgroundColor: tab === "transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
@@ -162,7 +162,7 @@ export default function CheckOutType({
                 style={{
                   color: "white",
                   backgroundColor:
-                    tab == "cash_transfer" ? COLOR_APP : "#ffac8e",
+                    tab === "cash_transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
@@ -175,7 +175,7 @@ export default function CheckOutType({
               </ButtonPrimary>
             </div>
             {/* ---------tabs--------- */}
-            <div style={{ display: tab == "cash" ? "block" : "none" }}>
+            <div style={{ display: tab === "cash" ? "block" : "none" }}>
               <div>
                 <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ)</div>
                 <input
@@ -204,7 +204,7 @@ export default function CheckOutType({
                 </div>
               </div>
             </div>
-            <div style={{ display: tab == "transfer" ? "block" : "none" }}>
+            <div style={{ display: tab === "transfer" ? "block" : "none" }}>
               <div>
                 <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ)</div>
                 <div
@@ -218,7 +218,7 @@ export default function CheckOutType({
                 </div>
               </div>
             </div>
-            <div style={{ display: tab == "cash_transfer" ? "block" : "none" }}>
+            <div style={{ display: tab === "cash_transfer" ? "block" : "none" }}>
               <div>
                 <div>(ເງິນສົດ)</div>
                 <input

@@ -1,11 +1,8 @@
 import React from 'react';
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import { Image } from 'react-bootstrap';
-import { STORE } from '../../../constants/api'
 import profileImage from "../../../image/profile.png"
-import moment from 'moment';
 
 /**
  * const
@@ -17,9 +14,7 @@ import {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         let userData = this.props.userData;
-        let totalPrice = 0;
         let selectedMenu = this.props.selectedMenu;
-        let tableId = this.props.tableId;
         let code = this.props.code;
         let StatusMoney = this.props.StatusMoney;
         let amount = this.props.amount;

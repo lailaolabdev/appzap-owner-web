@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
 import { END_POINT_SEVER } from "../../constants/api";
-import { Bar, Pie } from "react-chartjs-2";
 import { useParams } from "react-router-dom";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Chart1 from "../../components/chart/Chart1";
-import { getHeaders } from "../../services/auth";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

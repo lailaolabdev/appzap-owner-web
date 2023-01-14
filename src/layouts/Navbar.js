@@ -4,7 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
-import { USER_KEY, COLOR_APP } from "../constants";
+import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
@@ -34,6 +34,7 @@ export default function NavBar() {
       }
     };
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const _onLogout = () => {
@@ -41,7 +42,6 @@ export default function NavBar() {
     sessionStorage.clear();
     navigate(`/`);
   };
-
 
   // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
   //   setmessageData(data);

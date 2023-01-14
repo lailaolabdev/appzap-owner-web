@@ -11,7 +11,6 @@ import {
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
-import { socket } from "../../services/socket";
 import { getCodes } from "../../services/code";
 
 export const useTableState = (storeDetail) => {
@@ -41,7 +40,7 @@ export const useTableState = (storeDetail) => {
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
-          if (response.message == "server error") return;
+          if (response.message === "server error") return;
           setTableList(response);
           let _openTable = response.filter((table) => {
             return table.isOpened && !table.isStaffConfirm;
@@ -61,7 +60,7 @@ export const useTableState = (storeDetail) => {
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
-          if (response.message == "server error") return;
+          if (response.message === "server error") return;
           setTableListCheck(response);
         });
     },
@@ -160,7 +159,7 @@ export const useTableState = (storeDetail) => {
 
       // print(response.body);
 
-      if (response.status == 200) {
+      if (response.status === 200) {
         resetTableOrder();
       }
     } catch (err) {
@@ -180,7 +179,7 @@ export const useTableState = (storeDetail) => {
     let _orderItemForPrint = [];
     let _orderItems = [...tableOrderItems];
     let _newOrderItems = _orderItems.map((item) => {
-      if (item._id == order._id) {
+      if (item._id === order._id) {
         return {
           ...item,
           isChecked: !item.isChecked,
@@ -210,7 +209,7 @@ export const useTableState = (storeDetail) => {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       let _newOrderItem = tableOrderItems.map((item) => {
         if (item.isChecked) {
           return {

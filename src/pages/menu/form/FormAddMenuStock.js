@@ -289,7 +289,7 @@ export default function FormAddMenuStock() {
           setLoadStatus("SUCCESS");
           setMenuStocks([
             ...data.data.map((e) => {
-              const st = stocks.find((e2) => e2?._id == e.stockId?._id);
+              const st = stocks.find((e2) => e2?._id === e.stockId?._id);
               return {
                 ...e,
                 name: st?.name || "-",

@@ -18,16 +18,19 @@ export default function DashboardUser({ startDate, endDate }) {
   // =========>
   useEffect(() => {
     _fetchCategoryData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // =========>
   useEffect(() => {
     _fetchCategoryData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endDate, startDate]);
   // =========>
 
   useEffect(() => {
     if (!data) return;
     // _initChartData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const _fetchCategoryData = async () => {
@@ -51,35 +54,35 @@ export default function DashboardUser({ startDate, endDate }) {
     setIsLoading(false);
   };
 
-  const convertPieData = (item) => {
-    let _labels = item.data.map((d) => d.name);
-    let _dataa = item.data.map((d) => d.quantity);
-    return {
-      labels: _labels,
-      datasets: [
-        {
-          data: _dataa,
-          backgroundColor: [
-            "rgba(251, 110, 59, 0.2)",
-            "rgba(251, 110, 59, 0.3)",
-            "rgba(251, 110, 59, 0.4)",
-            "rgba(251, 110, 59, 0.5)",
-            "rgba(251, 110, 59, 0.6)",
-            "rgba(251, 110, 59, 0.7)",
-          ],
-          borderColor: [
-            "rgba(251, 110, 59, 1)",
-            "rgba(251, 110, 59, 1)",
-            "rgba(251, 110, 59, 1)",
-            "rgba(251, 110, 59, 1)",
-            "rgba(251, 110, 59, 1)",
-            "rgba(251, 110, 59, 1)",
-          ],
-          borderWidth: 1,
-        },
-      ],
-    };
-  };
+  // const convertPieData = (item) => {
+  //   let _labels = item.data.map((d) => d.name);
+  //   let _dataa = item.data.map((d) => d.quantity);
+  //   return {
+  //     labels: _labels,
+  //     datasets: [
+  //       {
+  //         data: _dataa,
+  //         backgroundColor: [
+  //           "rgba(251, 110, 59, 0.2)",
+  //           "rgba(251, 110, 59, 0.3)",
+  //           "rgba(251, 110, 59, 0.4)",
+  //           "rgba(251, 110, 59, 0.5)",
+  //           "rgba(251, 110, 59, 0.6)",
+  //           "rgba(251, 110, 59, 0.7)",
+  //         ],
+  //         borderColor: [
+  //           "rgba(251, 110, 59, 1)",
+  //           "rgba(251, 110, 59, 1)",
+  //           "rgba(251, 110, 59, 1)",
+  //           "rgba(251, 110, 59, 1)",
+  //           "rgba(251, 110, 59, 1)",
+  //           "rgba(251, 110, 59, 1)",
+  //         ],
+  //         borderWidth: 1,
+  //       },
+  //     ],
+  //   };
+  // };
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <AnimationLoading />}

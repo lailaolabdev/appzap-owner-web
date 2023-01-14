@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Button, Modal, Carousel } from "react-bootstrap";
 import packetJson from "../../../package.json";
 
@@ -6,11 +6,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import * as axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faEyeSlash,
-  faHeadset,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import Lottie from "react-lottie";
 import { useStore } from "../../store";
@@ -26,10 +22,10 @@ import AnimationLoading from "../../components/AnimationLoading";
 
 function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   // const { match } = useReactRouter();
 
-  const { height, width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   const [checkUser, setCheckUser] = useState(false);
   const [popupDate, setPopupData] = useState(null);

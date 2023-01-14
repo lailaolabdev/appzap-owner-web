@@ -22,6 +22,7 @@ export default function BillForCheckOut58({
   // useEffect
   useEffect(() => {
     _calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
 
   return (

@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Login from "../pages/login/Login";
 import { useRoutes } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
-import CheckBill from "../pages/Notification/CheckBill";
+// import CheckBill from "../pages/Notification/CheckBill";
 import BillForChef80 from "../components/bill/BillForChef80";
 import BillForCheckOut80 from "../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../components/bill/BillForCheckOut58";

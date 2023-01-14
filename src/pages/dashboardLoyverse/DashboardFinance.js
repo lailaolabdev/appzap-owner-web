@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import moment from "moment";
 import axios from "axios";
-import useReactRouter from "use-react-router"
-import { Card, Table } from 'react-bootstrap'
-import { END_POINT_SEVER } from '../../constants/api'
-import { Bar, Line } from 'react-chartjs-2';
-import { _statusCheckBill, moneyCurrency } from '../../helpers';
+import useReactRouter from "use-react-router";
+import { Card, Table } from "react-bootstrap";
+import { END_POINT_SEVER } from "../../constants/api";
+import { Line } from "react-chartjs-2";
+import { _statusCheckBill, moneyCurrency } from "../../helpers";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -15,7 +15,7 @@ import {
   LineElement,
   Legend,
   Tooltip,
-} from 'chart.js';
+} from "chart.js";
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -27,39 +27,56 @@ ChartJS.register(
 );
 
 export default function DashboardFinance({ startDate, endDate }) {
-  const { history, match } = useReactRouter()
+  const { match } = useReactRouter();
 
   const [data, setData] = useState();
 
   // =========>
   useEffect(() => {
-    _fetchMenuData()
-  }, [])
+    _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // =========>
   useEffect(() => {
-    _fetchMenuData()
-  }, [endDate, startDate])
+    _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endDate, startDate]);
   // =========>
 
   useEffect(() => {
     if (data?.length > 0) {
-      convertPieData()
+      convertPieData();
     }
-  }, [data])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const _fetchMenuData = async () => {
-    const getDataDashBoard = await axios
-      .get(END_POINT_SEVER + "/v3/dashboard-loyvers/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+    const getDataDashBoard = await axios.get(
+      END_POINT_SEVER +
+        "/v3/dashboard-loyvers/" +
+        match?.params?.storeId +
+        "/startTime/" +
+        startDate +
+        "/endTime/" +
+        endDate,
+      {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json;charset=UTF-8",
         },
-      })
-    setData(getDataDashBoard?.data)
-  }
+      }
+    );
+    setData(getDataDashBoard?.data);
+  };
   const convertPieData = () => {
-    let _labels = data?.amountDate.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
-    let _data = data?.amountDate.map((d) => d?.billAmount)
+    let _labels = data?.amountDate.map(
+      (d) =>
+        moment(d?.createdAt).format("DD/MM/yyyy") +
+        ": " +
+        moneyCurrency(d?.billAmount) +
+        " ກີບ"
+    );
+    let _data = data?.amountDate.map((d) => d?.billAmount);
     return {
       labels: _labels,
       datasets: [
@@ -67,45 +84,59 @@ export default function DashboardFinance({ startDate, endDate }) {
           data: _data,
           label: "ລາຍຮັບ",
           backgroundColor: [
-            'rgba(251, 110, 59, 0.2)',
-            'rgba(251, 110, 59, 0.3)',
-            'rgba(251, 110, 59, 0.4)',
-            'rgba(251, 110, 59, 0.5)',
-            'rgba(251, 110, 59, 0.6)',
-            'rgba(251, 110, 59, 0.7)',
+            "rgba(251, 110, 59, 0.2)",
+            "rgba(251, 110, 59, 0.3)",
+            "rgba(251, 110, 59, 0.4)",
+            "rgba(251, 110, 59, 0.5)",
+            "rgba(251, 110, 59, 0.6)",
+            "rgba(251, 110, 59, 0.7)",
           ],
           borderColor: [
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
           ],
           hoverBackgroundColor: "rgba(255,99,132,0.4)",
           borderWidth: 1,
         },
       ],
     };
-  }
-  console.log("data",data)
+  };
+  console.log("data", data);
   return (
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
           <Card.Body>
-            <div className="grid-container" style={{ display: "flex", justifyContent: "space-between",textAlign: "center" }}>
-              <div className="grid-item" style={{borderBottom:"solid 2px green"}}>
+            <div
+              className="grid-container"
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                textAlign: "center",
+              }}
+            >
+              <div
+                className="grid-item"
+                style={{ borderBottom: "solid 2px green" }}
+              >
                 <p>ລ້ວມຍອດທັ້ງໝົດ</p>
                 <p style={{ color: "green" }}>₭{moneyCurrency(data?.amount)}</p>
               </div>
               <div className="grid-item">
                 <p>ເງິນສົ່ງຄືນ</p>
-                <p style={{ color: "green" }}>₭{moneyCurrency(data?.feedBack)}</p>
+                <p style={{ color: "green" }}>
+                  ₭{moneyCurrency(data?.feedBack)}
+                </p>
               </div>
               <div className="grid-item">
                 <p>ສ່ວນຫຼຸດ</p>
-                <p style={{ color: "green" }}>₭{moneyCurrency(data?.discount)}</p>
+                <p style={{ color: "green" }}>
+                  ₭{moneyCurrency(data?.discount)}
+                </p>
               </div>
               {/* <div className="grid-item">
                 <p>ເປັນເງິນທັ້ງໝົດ</p>
@@ -126,11 +157,13 @@ export default function DashboardFinance({ startDate, endDate }) {
                     ],
                   },
                   tooltips: {
-                    mode: 'label',
-                    label: 'mylabel',
+                    mode: "label",
+                    label: "mylabel",
                     callbacks: {
                       label: function (tooltipItem) {
-                        return tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return tooltipItem.yLabel
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                       },
                     },
                   },
@@ -140,14 +173,25 @@ export default function DashboardFinance({ startDate, endDate }) {
           </Card.Body>
         </Card>
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: 20,
+            }}
+          >
             <h4>ສະຫຼຸບຍອດຂາຍ</h4>
-            <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
+            <button
+              type="button"
+              style={{ border: "0px solid white", backgroundColor: "white" }}
+            >
+              EXPORT
+            </button>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
               <thead>
-                <tr style={{color: "E4E4E4"}}>
+                <tr style={{ color: "E4E4E4" }}>
                   <th>ວັນທິ</th>
                   <th>ເລກບີນ</th>
                   <th>ລວມຍອດທັ້ງໝົດ</th>
@@ -156,20 +200,20 @@ export default function DashboardFinance({ startDate, endDate }) {
                 </tr>
               </thead>
               <tbody>
-                {data?.amountDate?.map((item, index) =>
-                <tr style={{ color: "E4E4E4" }}>
+                {data?.amountDate?.map((item, index) => (
+                  <tr style={{ color: "E4E4E4" }}>
                     <td>{item?.createdAt}</td>
                     <td>{item?.code}</td>
                     <td>{moneyCurrency(item?.billAmount)}</td>
                     <td>{moneyCurrency(item?.billFeedBack)}</td>
                     <td>{moneyCurrency(item?.billDiscount)}</td>
-                </tr>
-                )}
+                  </tr>
+                ))}
               </tbody>
             </Table>
           </Card.Body>
         </Card>
       </div>
-    </div >
-  )
+    </div>
+  );
 }

@@ -32,18 +32,18 @@ export const getTableWithOrder = async () => {
       for (let table of data) {
         arr[table.table_id] = [table.table_id, null, null];
       }
-      newOrders.map((order, index) => {
+      for (const order of newOrders) {
         let table_id = order.table_id;
         for (let i = 0; i < tableLen; i++) {
-          if (table_id == data[i].table_id) {
+          if (table_id === data[i].table_id) {
             // console.log("arr:", arr);
             arr[table_id] = [table_id, order];
           }
         }
-      });
+      }
 
       let newArr = [];
-      let code = "";
+      // let code = "";
       let index = 1;
       for (let i = 1; i < arr.length; i++) {
         // console.log("i", i);
@@ -108,7 +108,7 @@ export const getOrderData = async (tableId) => {
 
 export const updateOrderData = async (tableId, data) => {
   try {
-    const res = await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
+    await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
   } catch (error) {
     console.log("error: ", error);
   }
