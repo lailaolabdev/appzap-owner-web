@@ -2,12 +2,9 @@ import { BiCheckDouble } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 import ButtonPrimary from "./ButtonPrimary";
 import { COLOR_APP } from "../../constants";
-import { Button } from "react-bootstrap";
-import { AiOutlineSetting } from "react-icons/ai";
-import { NowIndicatorRoot } from "@fullcalendar/react";
 
 const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handleEdit }) => {
-  if (status == "CANCEL") {
+  if (status === "CANCEL") {
     return (
       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
@@ -37,7 +34,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
       </div>
     );
   }
-  if (status == "SUCCESS") {
+  if (status === "SUCCESS") {
     return (
       <div style={{ display: "flex", gap: 10, alignItems:"center" }}>
         <ButtonPrimary
@@ -69,7 +66,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
       </div>
     );
   }
-  if (status == "STAFF_CONFIRM") {
+  if (status === "STAFF_CONFIRM") {
     return (
       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary

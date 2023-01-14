@@ -42,7 +42,6 @@ export default function NavBar() {
     navigate(`/`);
   };
 
-  const [show, setShow] = useState(false);
 
   // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
   //   setmessageData(data);
@@ -162,22 +161,22 @@ export default function NavBar() {
   );
 }
 
-const Language = () => {
-  let _l = ["LA", "EN", "中文"];
-  return (
-    <Box sx={{ display: "flex" }}>
-      {_l.map((e, i) => (
-        <Box
-          sx={{
-            padding: 10,
-            borderLeft: i > 0 ? "1px solid #ccc" : "",
-            color: COLOR_APP,
-          }}
-          key={i}
-        >
-          {e}
-        </Box>
-      ))}
-    </Box>
-  );
-};
+// const Language = () => {
+//   let _l = ["LA", "EN", "中文"];
+//   return (
+//     <Box sx={{ display: "flex" }}>
+//       {_l.map((e, i) => (
+//         <Box
+//           sx={{
+//             padding: 10,
+//             borderLeft: i > 0 ? "1px solid #ccc" : "",
+//             color: COLOR_APP,
+//           }}
+//           key={i}
+//         >
+//           {e}
+//         </Box>
+//       ))}
+//     </Box>
+//   );
+// };

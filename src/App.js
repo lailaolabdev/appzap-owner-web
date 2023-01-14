@@ -2,9 +2,9 @@ import React from "react";
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
 import { StateProvider } from "./store";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, /* toast */ } from "react-toastify";
 import PubNub from "pubnub";
-import { PubNubProvider, usePubNub } from "pubnub-react";
+import { PubNubProvider } from "pubnub-react";
 import uuid from "react-uuid";
 import "react-toastify/dist/ReactToastify.css";
 const theme = {

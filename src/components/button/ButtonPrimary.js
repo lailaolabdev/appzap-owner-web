@@ -1,5 +1,4 @@
 import React from "react";
-import * as consts from "../../constants";
 
 export default function ButtonPrimary({
   text,

@@ -98,7 +98,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   name="type"
                   onChange={(e) => {
                     handleChange(e);
-                    if (e.target.value == "USB") {
+                    if (e.target.value === "USB") {
                       setFieldValue("ip", "192.168.1.1");
                     } else {
                       setFieldValue("ip", "");
@@ -116,7 +116,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   <option value="USB">USB - (coming soon)</option>
                 </Form.Control>
               </Form.Group>
-              {values?.type != "USB" ? (
+              {values?.type !== "USB" ? (
                 <Form.Group>
                   <Form.Label>
                     IP or BT <span style={{ color: "red" }}>*</span>

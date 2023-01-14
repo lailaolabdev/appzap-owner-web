@@ -1,4 +1,3 @@
-import Axios from "axios";
 import { USER_KEY } from "./index";
 
 export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction

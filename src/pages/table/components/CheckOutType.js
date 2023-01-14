@@ -168,6 +168,7 @@ export default function CheckOutType({
                   setCash(0);
                   setTransfer(0);
                   setTab("cash_transfer");
+                  setForcus("TRANSFER_CASH");
                 }}
               >
                 ເງິນສົດ + ເງິນໂອນ

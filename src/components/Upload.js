@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { PRESIGNED_URL } from "../constants/api";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../constants";
-import { Clear } from "@material-ui/icons";
-import { FaWindowClose } from "react-icons/fa";
 
 export default function Upload({
   src,
@@ -46,7 +44,7 @@ export default function Upload({
           );
           setImageLoading(percentCompleted);
           console.log("percentCompleted", percentCompleted);
-          if (percentCompleted == 100)
+          if (percentCompleted === 100)
             setTimeout(() => setImageLoading(""), 2000);
         },
       });

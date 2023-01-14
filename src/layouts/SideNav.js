@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -14,17 +14,14 @@ import {
   faList,
   faTachometerAlt,
   faChartBar,
-  faAirFreshener,
   faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
-import { socket } from "../services/socket";
-import Box from "../components/Box";
 // import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 // import {BiFoodMenu} from "react-icons";
-import { PubNubProvider, usePubNub } from "pubnub-react";
+import { usePubNub } from "pubnub-react";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
@@ -33,16 +30,12 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const UN_SELECTED_TAB_TEXT = "#606060";
 
   const {
-    userData,
     openTableData,
     callingCheckOut,
     getTableDataStore,
-    waitingOrderItems,
     getOrderItemsStore,
-    initialOrderSocket,
     // initialTableSocket,
     storeDetail,
-    getLocalData,
   } = useStore();
 
   const itemList = [
@@ -126,7 +119,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const pubnub = usePubNub();
   const [channels] = useState([`TABLE:${storeDetail._id}`]);
-  const handleMessage = (event) => {
+  const handleMessage = () => {
     // console.log("event", event);
     getTableDataStore();
   };

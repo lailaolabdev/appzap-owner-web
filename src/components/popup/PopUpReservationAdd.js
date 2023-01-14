@@ -20,7 +20,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
   useEffect(() => {
     const _time = moment(value?.startTime).format("HH:mm");
     setStartDate(moment(value?.startTime).format("YYYY-MM-DD"));
-    setStartTime(_time == "0:00" ? "12:00" : _time);
+    setStartTime(_time === "0:00" ? "12:00" : _time);
   }, [value]);
   return (
     <Modal show={open} onHide={handleClose}>

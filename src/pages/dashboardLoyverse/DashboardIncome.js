@@ -4,12 +4,7 @@ import axios from "axios";
 import useReactRouter from "use-react-router"
 import { Card, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
-import { Bar, Line } from 'react-chartjs-2';
 import { _statusCheckBill } from '../../helpers';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTable
-} from "@fortawesome/free-solid-svg-icons";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -31,7 +26,7 @@ ChartJS.register(
   Tooltip
 );
 export default function DashboardIncome({ startDate, endDate }) {
-  const { history, match } = useReactRouter()
+  const { match } = useReactRouter()
 
   const [data, setData] = useState();
 

@@ -27,7 +27,6 @@ import AnimationLoading from "../../components/AnimationLoading";
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
   // const { match } = useReactRouter();
 
   const { height, width } = useWindowDimensions();
@@ -45,7 +44,9 @@ function Login() {
         await localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
-        await navigate(`/settingStore/storeDetail/${user?.data?.data?.storeId}`);
+        await navigate(
+          `/settingStore/storeDetail/${user?.data?.data?.storeId}`
+        );
       } else {
         setCheckUser(true);
       }

@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 
-export default function PopUpStoreCancle({
-  open,
-  text,
-  onClose,
-  onSubmit,
-}) {
+export default function PopUpStoreCancle({ open, text, onClose, onSubmit }) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   return (
     <Modal show={open} onHide={onClose}>
@@ -36,7 +31,6 @@ export default function PopUpStoreCancle({
     </Modal>
   );
 }
-
 
 // export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
 //     return (

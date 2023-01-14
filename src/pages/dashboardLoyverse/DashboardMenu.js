@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import moment from "moment";
 import axios from "axios";
-import useReactRouter from "use-react-router"
-import { Card, Table } from 'react-bootstrap'
-import { END_POINT_SEVER } from '../../constants/api'
-import { Bar, Line } from 'react-chartjs-2';
-import { _statusCheckBill } from '../../helpers';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTable
-} from "@fortawesome/free-solid-svg-icons";
+import useReactRouter from "use-react-router";
+import { Card, Table } from "react-bootstrap";
+import { END_POINT_SEVER } from "../../constants/api";
+import { Bar } from "react-chartjs-2";
+import { _statusCheckBill } from "../../helpers";
 import {
   Chart as ChartJS,
   LinearScale,
@@ -19,8 +15,8 @@ import {
   LineElement,
   Legend,
   Tooltip,
-} from 'chart.js';
-import { moneyCurrency } from '../../helpers'
+} from "chart.js";
+import { moneyCurrency } from "../../helpers";
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -31,39 +27,53 @@ ChartJS.register(
   Tooltip
 );
 export default function DashboardMenu({ startDate, endDate }) {
-  const { history, match } = useReactRouter()
+  const { history, match } = useReactRouter();
 
   const [data, setData] = useState();
 
   // =========>
   useEffect(() => {
-    _fetchMenuData()
-  }, [])
+    _fetchMenuData();
+  }, []);
   // =========>
   useEffect(() => {
-    _fetchMenuData()
-  }, [endDate, startDate])
+    _fetchMenuData();
+  }, [endDate, startDate]);
   // =========>
 
   useEffect(() => {
     if (data?.length > 0) {
-      convertPieData()
+      convertPieData();
     }
-  }, [data])
+  }, [data]);
 
   const _fetchMenuData = async () => {
-    const getDataDashBoard = await axios
-      .get(END_POINT_SEVER + "/v3/dashboard-best-sell-menu/" + match?.params?.storeId + "/startTime/" + startDate + "/endTime/" + endDate, {
+    const getDataDashBoard = await axios.get(
+      END_POINT_SEVER +
+        "/v3/dashboard-best-sell-menu/" +
+        match?.params?.storeId +
+        "/startTime/" +
+        startDate +
+        "/endTime/" +
+        endDate,
+      {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json;charset=UTF-8",
         },
-      })
-    setData(getDataDashBoard?.data)
-  }
+      }
+    );
+    setData(getDataDashBoard?.data);
+  };
   const convertPieData = () => {
-    let _labels = data?.map((d) => moment(d?.createdAt).format("DD/MM/yyyy") + ": " + moneyCurrency(d?.billAmount) + " ກີບ")
-    let _data = data?.map((d) => d?.billAmount)
+    let _labels = data?.map(
+      (d) =>
+        moment(d?.createdAt).format("DD/MM/yyyy") +
+        ": " +
+        moneyCurrency(d?.billAmount) +
+        " ກີບ"
+    );
+    let _data = data?.map((d) => d?.billAmount);
     return {
       labels: _labels,
       datasets: [
@@ -71,35 +81,44 @@ export default function DashboardMenu({ startDate, endDate }) {
           data: _data,
           label: "ລາຍຮັບ",
           backgroundColor: [
-            'rgba(251, 110, 59, 0.2)',
-            'rgba(251, 110, 59, 0.3)',
-            'rgba(251, 110, 59, 0.4)',
-            'rgba(251, 110, 59, 0.5)',
-            'rgba(251, 110, 59, 0.6)',
-            'rgba(251, 110, 59, 0.7)',
+            "rgba(251, 110, 59, 0.2)",
+            "rgba(251, 110, 59, 0.3)",
+            "rgba(251, 110, 59, 0.4)",
+            "rgba(251, 110, 59, 0.5)",
+            "rgba(251, 110, 59, 0.6)",
+            "rgba(251, 110, 59, 0.7)",
           ],
           borderColor: [
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
-            'rgba(251, 110, 59, 1)',
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
+            "rgba(251, 110, 59, 1)",
           ],
           hoverBackgroundColor: "rgba(255,99,132,0.4)",
           borderWidth: 1,
         },
       ],
     };
-  }
-  console.log("🚀 ~ file: DashboardMenu.js ~ line 37 ~ DashboardMenu ~ data", data)
+  };
+  console.log(
+    "🚀 ~ file: DashboardMenu.js ~ line 37 ~ DashboardMenu ~ data",
+    data
+  );
 
   return (
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
-          <Card.Body style={{ display: "flex", justifyContent: "space-between", textAlign: "center" }}>
-            <div className="col-sm-4" style={{borderWidth:"solid 2px red"}}>
+          <Card.Body
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              textAlign: "center",
+            }}
+          >
+            <div className="col-sm-4" style={{ borderWidth: "solid 2px red" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <p>5 ສີນຄ້າຍອດນິຍົມ</p>
                 <p>ລາຄາຕົ້ນທຶນສີນຄ້າ</p>
@@ -131,11 +150,13 @@ export default function DashboardMenu({ startDate, endDate }) {
                     ],
                   },
                   tooltips: {
-                    mode: 'label',
-                    label: 'mylabel',
+                    mode: "label",
+                    label: "mylabel",
                     callbacks: {
                       label: function (tooltipItem) {
-                        return tooltipItem.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return tooltipItem.yLabel
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                       },
                     },
                   },
@@ -145,9 +166,20 @@ export default function DashboardMenu({ startDate, endDate }) {
           </Card.Body>
         </Card>
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: 20,
+            }}
+          >
             <h4>ລາຍງານເມນູ</h4>
-            <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
+            <button
+              type="button"
+              style={{ border: "0px solid white", backgroundColor: "white" }}
+            >
+              EXPORT
+            </button>
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
@@ -165,17 +197,17 @@ export default function DashboardMenu({ startDate, endDate }) {
                 <tr style={{ color: "E4E4E4" }}>
                   <td>เบียร์</td>
                   <td>น้ำ</td>
-                  <td>7		</td>
-                  <td>₭84.000	</td>
-                  <td>₭0	</td>
+                  <td>7 </td>
+                  <td>₭84.000 </td>
+                  <td>₭0 </td>
                   <td>₭84.000</td>
                 </tr>
                 <tr style={{ color: "E4E4E4" }}>
                   <td>ຕຳຫມາກຮຸງ</td>
                   <td>อาหาร</td>
                   <td>2</td>
-                  <td>₭84.000	</td>
-                  <td>₭0	</td>
+                  <td>₭84.000 </td>
+                  <td>₭0 </td>
                   <td>₭84.000</td>
                 </tr>
               </tbody>
@@ -183,6 +215,6 @@ export default function DashboardMenu({ startDate, endDate }) {
           </Card.Body>
         </Card>
       </div>
-    </div >
-  )
+    </div>
+  );
 }
