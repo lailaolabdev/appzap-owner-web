@@ -5,7 +5,7 @@ import useReactRouter from "use-react-router";
 import { Card, Table } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { Line } from "react-chartjs-2";
-import { _statusCheckBill, moneyCurrency } from "../../helpers";
+import { moneyCurrency } from "../../helpers";
 import {
   Chart as ChartJS,
   LinearScale,

@@ -12,6 +12,7 @@ import Lottie from "react-lottie";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
+import { toast } from "react-toastify";
 
 // style
 import "./login.css";
@@ -44,9 +45,28 @@ function Login() {
           `/settingStore/storeDetail/${user?.data?.data?.storeId}`
         );
       } else {
+        //  _orderSound.play();
+        toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+          position: "bottom-left",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         setCheckUser(true);
       }
     } catch (error) {
+      toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       setCheckUser(true);
     }
   };

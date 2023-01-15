@@ -10,10 +10,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import * as _ from "lodash";
 import { getHeaders } from "../../services/auth";
-import { useStore } from "../../store"
+import { useStore } from "../../store";
+import useQuery from "../../helpers/useQuery";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const navigate = useNavigate();
+
   const params = useParams();
   const [data, setData] = useState();
   const [disCountDataKib, setDisCountDataKib] = useState(0);
@@ -30,21 +32,21 @@ export default function DashboardFinance({ startDate, endDate }) {
   const { storeDetail } = useStore();
   const handleEditBill = async () => {
     try {
-      const url = END_POINT_SEVER + "/v3/bill-reset"
+      const url = END_POINT_SEVER + "/v3/bill-reset";
       const _body = {
-        "id": selectOrder?._id,
-        "storeId": storeDetail?._id
-      }
+        id: selectOrder?._id,
+        storeId: storeDetail?._id,
+      };
       const res = await axios.post(url, _body, {
-        headers: await getHeaders()
+        headers: await getHeaders(),
       });
       if (res.status < 300) {
-        navigate("/tables")
+        navigate("/tables");
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-  }
+  };
   const handleShow = (item) => {
     setShow(true);
     setDataModale(item);
@@ -57,17 +59,17 @@ export default function DashboardFinance({ startDate, endDate }) {
   }, [endDate, startDate]);
   const _fetchFinanceData = async () => {
     setIsLoading(TramRounded);
-    const url =
-      "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
+    // const url =
+    //   "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
     const headers = await getHeaders();
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
-      "/v3/bills?storeId=" +
-      params?.storeId +
-      "&startDate=" +
-      startDate +
-      "&endDate=" +
-      endDate,
+        "/v3/bills?storeId=" +
+        params?.storeId +
+        "&startDate=" +
+        startDate +
+        "&endDate=" +
+        endDate,
       {
         headers: headers,
       }
@@ -395,8 +397,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                   <tr
                     key={"finance-" + index}
                     onClick={() => {
-                      setSelectOrder(item)
-                      handleShow(item?.orderId)
+                      setSelectOrder(item);
+                      handleShow(item?.orderId);
                     }}
                     style={{
                       backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
@@ -415,18 +417,18 @@ export default function DashboardFinance({ startDate, endDate }) {
                     <td>
                       {item?.discountType === "LAK"
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.discount) + "ກີບ"
+                            currency: "JPY",
+                          }).format(item?.discount) + "ກີບ"
                         : item?.discount + "%"}
                     </td>
                     <td>
                       {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                         : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.billAmount)}{" "}
+                            currency: "JPY",
+                          }).format(item?.billAmount)}{" "}
                       ກີບ
                     </td>
                     <td>
@@ -461,10 +463,10 @@ export default function DashboardFinance({ startDate, endDate }) {
                           item?.status === "CHECKOUT"
                             ? "green"
                             : item?.status === "CALLTOCHECKOUT"
-                              ? "red"
-                              : item?.status === "ACTIVE"
-                                ? "#00496e"
-                                : "",
+                            ? "red"
+                            : item?.status === "ACTIVE"
+                            ? "#00496e"
+                            : "",
                       }}
                     >
                       {_statusCheckBill(item?.status)}
@@ -480,8 +482,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                       {item?.paymentMethod === "CASH"
                         ? "ຈ່າຍເງິນສົດ"
                         : item?.paymentMethod === "BCEL"
-                          ? "ຈ່າຍເງິນໂອນ"
-                          : "-"}
+                        ? "ຈ່າຍເງິນໂອນ"
+                        : "-"}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -499,10 +501,14 @@ export default function DashboardFinance({ startDate, endDate }) {
           <Modal.Title>ລາຍການອາຫານ</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-            <Button onClick={handleEditBill}>
-              ແກ້ໄຂບິນ
-            </Button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 10,
+            }}
+          >
+            <Button onClick={handleEditBill}>ແກ້ໄຂບິນ</Button>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
@@ -528,14 +534,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                         item?.status === "WAITING"
                           ? "#2d00a8"
                           : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                              ? "green"
-                              : item?.status === "CART"
-                                ? "#00496e"
-                                : item?.status === "FEEDBACK"
-                                  ? "#00496e"
-                                  : "#bd0d00",
+                          ? "#c48a02"
+                          : item?.status === "SERVED"
+                          ? "green"
+                          : item?.status === "CART"
+                          ? "#00496e"
+                          : item?.status === "FEEDBACK"
+                          ? "#00496e"
+                          : "#bd0d00",
                     }}
                   >
                     {orderStatus(item?.status)}

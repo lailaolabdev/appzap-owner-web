@@ -16,6 +16,7 @@ import DashboardFinance from "./DashboardFinance";
 import MoneyChart from "./MoneyChart";
 import DashboardUser from "./DashboardUser";
 import "./index.css";
+import useQuery from "../../helpers/useQuery";
 export default function Dashboard() {
   const newDate = new Date();
 
