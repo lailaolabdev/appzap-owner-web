@@ -41,6 +41,7 @@ import { getBills } from "../../services/bill";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { getCodes } from "../../services/code";
+import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -900,7 +901,8 @@ export default function TableList() {
                         <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
-                            /*_onAddDiscount()*/
+                            // _onAddDiscount();
+                            setPopup({ discount: true });
                           }}
                         >
                           ເພີ່ມສ່ວນຫຼຸດ
@@ -955,11 +957,6 @@ export default function TableList() {
                           ເສີບແລ້ວ
                         </ButtonCustom>
                       </div>
-
-                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, params?.storeId)}>ເສີບແລ້ວ</Button> */}
 
                       <TableCustom>
                         <thead>
@@ -1229,6 +1226,18 @@ export default function TableList() {
         func={_handlecheckout}
       />
 
+      <PopUpAddDiscount
+        open={popup?.discount}
+        value={isCheckedOrderItem}
+        dataBill={dataBill}
+        onClose={() => {
+          setPopup();
+        }}
+        onSubmit={async () => {
+          handleMessage();
+          getData();
+        }}
+      />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>ລວມໂຕະ</Modal.Title>

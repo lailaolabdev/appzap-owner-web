@@ -15,7 +15,7 @@ import useQuery from "../../helpers/useQuery";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const navigate = useNavigate();
-
+  const { accessToken } = useQuery();
   const params = useParams();
   const [data, setData] = useState();
   const [disCountDataKib, setDisCountDataKib] = useState(0);
@@ -38,7 +38,7 @@ export default function DashboardFinance({ startDate, endDate }) {
         storeId: storeDetail?._id,
       };
       const res = await axios.post(url, _body, {
-        headers: await getHeaders(),
+        headers: await getHeaders(accessToken),
       });
       if (res.status < 300) {
         navigate("/tables");
@@ -61,7 +61,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     setIsLoading(TramRounded);
     // const url =
     //   "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
-    const headers = await getHeaders();
+    const headers = await getHeaders(accessToken);
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
         "/v3/bills?storeId=" +

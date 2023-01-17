@@ -1,8 +1,7 @@
 import { USER_KEY } from "../constants";
 import useQuery from "../helpers/useQuery";
-export const getHeaders = async () => {
+export const getHeaders = async (accessToken) => {
   try {
-    const { accessToken } = useQuery();
     const user = await localStorage.getItem(USER_KEY);
     const token = await JSON.parse(user)?.["accessToken"];
     if (token) {
