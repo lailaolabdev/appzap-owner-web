@@ -45,7 +45,10 @@ export default function Categorylist() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      let _resData = await axios.delete(CATEGORY + `/${dateDelete?.id}`, {
+      let _resData = await axios.delete(
+        // CATEGORY + `/${dateDelete?.id}`
+        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`
+        , {
         headers: headers,
       });
       if (_resData?.data) {
