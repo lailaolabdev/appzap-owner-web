@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { Form, Button, Modal, Alert, Table, Card } from "react-bootstrap";
+import { useState } from "react";
+import { Modal, Alert, Table } from "react-bootstrap";
 import "./Card.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {} from "@fortawesome/free-solid-svg-icons";
 import { BsXCircleFill } from "react-icons/bs";
-import { IoAdd } from "react-icons/io5";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
+import { useTranslation } from "react-i18next";
+
 export default function TableList() {
   // modalCheckBin
   const [showcheckbin, setShowCheckBin] = useState(false);
@@ -26,6 +26,8 @@ export default function TableList() {
   const [showreturnproduct, setShowReturnProduct] = useState(false);
   const handleCloseReturnProduct = () => setShowReturnProduct(false);
   const handleShowReturnProduct = () => setShowReturnProduct(true);
+  const { t } = useTranslation();
+
 
   const data = [
     {
@@ -276,7 +278,7 @@ export default function TableList() {
                 &ensp; <p>ລະຫັດ : 563258</p>
               </span>
 
-              <span>ເປີດເມື່ອ : 25/2/2022 </span>
+              <span>{t('openTime')} : 25/2/2022 </span>
             </div>
           </Alert>
           <Table striped>

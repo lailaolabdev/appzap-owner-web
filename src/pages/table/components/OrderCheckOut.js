@@ -15,6 +15,7 @@ import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { useStore } from "../../../store";
+import { t } from "i18next";
 
 const OrderCheckOut = ({
   data,
@@ -65,7 +66,7 @@ const OrderCheckOut = ({
           ລະຫັດ:{tableData?.code}
         </pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-          ເປີດເມື່ອ:
+          {t('openTime')}:
           {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
         </pre>
         <Table responsive className="staff-table-list borderless table-hover">

@@ -12,6 +12,7 @@ import profileImage from "../../../image/profile.png"
 import {
     URL_PHOTO_AW3,
 } from "../../../constants/index";
+import { t } from 'i18next';
 
 export class ComponentToPrintBillInTable extends React.PureComponent {
     render() {
@@ -85,7 +86,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                 }
                                 )}
                                 <tr>
-                                    <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
+                                    <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>{t('totalPrice2')} : </td>
 
                                     <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                                 </tr>

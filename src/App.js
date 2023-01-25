@@ -15,7 +15,7 @@ const theme = {
   xs: "@media screen and (min-width: 0px)",
 };
 const pubnub = new PubNub({
-  subscribeKey: "sub-c-6170b260-0422-44d9-9c24-73fc083cbce3",
+  subscribeKey: "sub-c-beae3a2d-dfb1-4e6c-836c-db121d1df744",
   uuid: uuid(),
 });
 function App() {

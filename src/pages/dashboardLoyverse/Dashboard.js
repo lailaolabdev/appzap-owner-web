@@ -10,9 +10,13 @@ import DashboardIncome from "./DashboardIncome";
 import DashboardUser from "./DashboardUser";
 import DashboardDiscount from "./DashboardDiscount";
 import "./index.css";
+import { useTranslation } from "react-i18next";
+
 
 export default function Dashboard() {
   const newDate = new Date();
+  const { t } = useTranslation();
+
 
   const [startDate, setStartDate] = useState(
     moment(moment(newDate)).format("YYYY-MM-DD")
@@ -57,7 +61,7 @@ export default function Dashboard() {
             ລາຍງານໝວດອາຫານ
           </Dropdown.Item>
           <Dropdown.Item eventKey="4" onClick={() => setChangeUi("STAFF")}>
-            ລາຍງານພະນັກງານ
+            {t('waitstaffReport')}
           </Dropdown.Item>
           <Dropdown.Item eventKey="5" onClick={() => setChangeUi("TYPE_MONEY")}>
             ລາຍງານຕາມປະເພດການຊຳລະ

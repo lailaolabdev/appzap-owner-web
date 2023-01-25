@@ -1,11 +1,8 @@
 import React from 'react';
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import { Image } from 'react-bootstrap';
-import { STORE } from '../../../constants/api'
 import profileImage from "../../../image/profile.png"
-import moment from 'moment';
 
 /**
  * const

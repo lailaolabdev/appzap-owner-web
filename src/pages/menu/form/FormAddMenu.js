@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Spinner, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import axios from "axios";
-import { PRESIGNED_URL } from "../../../constants/api";
 import { COLOR_APP } from "../../../constants";
 import { getLocalData, END_POINT_SEVER } from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

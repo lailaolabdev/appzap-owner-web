@@ -43,12 +43,16 @@ import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { getCodes } from "../../services/code";
+import { useTranslation } from "react-i18next";
+
 
 export default function TableList() {
   const navigate = useNavigate();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
+  const { t } = useTranslation();
+
 
   // state
   const [show, setShow] = useState(false);
@@ -500,9 +504,7 @@ export default function TableList() {
 
   const handleUpdateOrderStatus = async (status) => {
     console.log("status", status);
-    // getOrderItemsStore(SERVE_STATUS);
     const storeId = storeDetail?._id;
-    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -515,7 +517,6 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -623,7 +624,7 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-              ໂຕະທັງໝົດ : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
+            {t('totalTable')} : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
               {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
               {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
               {_checkStatusCodeB(tableList)}

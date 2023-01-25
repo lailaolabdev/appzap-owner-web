@@ -6,7 +6,7 @@ import {
   Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
+import { faFileInvoice } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
 // import moment from 'moment';
 import axios from 'axios';
@@ -20,6 +20,7 @@ import ReactToPrint from 'react-to-print';
 
 import { getHeaders } from '../../services/auth';
 import { useParams } from 'react-router-dom';
+import { t } from 'i18next';
 
 
 export default function HistoryDetail() {
@@ -128,7 +129,7 @@ export default function HistoryDetail() {
                   <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.discount)} {data?.discountType === "LAK" ? "ກີບ" : "%"}</td>
                 </tr>
                 <tr>
-                  <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລວມເງິນ : </td>
+                  <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>{t('totalPrice2')} : </td>
                   <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
                 </tr>
               </tbody>

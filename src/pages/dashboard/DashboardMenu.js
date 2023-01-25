@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
 import { END_POINT_SEVER } from "../../constants/api";
-import { Bar, Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { moneyCurrency } from "../../helpers";
 import Chart1 from "../../components/chart/Chart1";

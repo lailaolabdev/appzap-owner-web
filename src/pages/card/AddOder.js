@@ -1,6 +1,5 @@
 import React from "react";
 import { Tabs, Table, Tab } from "react-bootstrap";
-import ButtonPrimary from "../../components/button/ButtonPrimary";
 export default function AddOder() {
   return (
     <>

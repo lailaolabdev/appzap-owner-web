@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import SideNav, {
   Toggle,
   NavItem,
@@ -14,35 +14,28 @@ import {
   faList,
   faTachometerAlt,
   faChartBar,
-  faAirFreshener,
   faAddressCard,
 } from "@fortawesome/free-solid-svg-icons";
-import { socket } from "../services/socket";
-import Box from "../components/Box";
-// import { Badge } from "react-bootstrap";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
-// import {BiFoodMenu} from "react-icons";
-import { PubNubProvider, usePubNub } from "pubnub-react";
+import { usePubNub } from "pubnub-react";
+import { useTranslation } from "react-i18next";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
   const UN_SELECTED_TAB_TEXT = "#606060";
+  const { t } = useTranslation();
+
 
   const {
-    userData,
     openTableData,
     callingCheckOut,
     getTableDataStore,
-    waitingOrderItems,
     getOrderItemsStore,
-    initialOrderSocket,
-    // initialTableSocket,
     storeDetail,
-    getLocalData,
   } = useStore();
 
   const itemList = [
@@ -54,7 +47,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
     },
     {
-      title: "ສະຖານະຂອງໂຕະ",
+      title: t('tableStatus'),
       key: "tables",
       icon: faHome,
       typeStore: "",

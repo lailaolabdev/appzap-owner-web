@@ -5,7 +5,6 @@ import { Table, Button, Form, InputGroup } from 'react-bootstrap'
 import {
     warningAlert
 } from "../../helpers/sweetalert"
-import { socket } from '../../services/socket'
 import AnimationLoading from "../../constants/loading"
 import { getHeaders } from '../../services/auth';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

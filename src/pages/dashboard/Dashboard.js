@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
+import { useTranslation } from "react-i18next";
 
 import {
   faCertificate,
@@ -41,6 +42,8 @@ export default function Dashboard() {
     setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
   };
 
+  const { t } = useTranslation();
+
   return (
     <div style={{ padding: 10 }}>
       <Box
@@ -71,7 +74,7 @@ export default function Dashboard() {
           >
             {" "}
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ສະຖານະຂອງໂຕະ
+            <div style={{ width: 8 }}></div> {t('tableStatus')}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -88,7 +91,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("MONEY_CHART")}
           >
             <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ສະຖິຕິການເງິນ
+            <div style={{ width: 8 }}></div> {t('financialStatic')}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -122,7 +125,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("MENUS")}
           >
             <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ເມນູຂາຍດີ
+            <div style={{ width: 8 }}></div> {t('famousMenu')}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -139,7 +142,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("STAFF")}
           >
             <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ລາຍງານພະນັກງານ
+            <div style={{ width: 8 }}></div> {t('waitstaffReport')}
           </Nav.Link>
         </Nav.Item>
       </Box>
@@ -158,7 +161,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click1day()}
           >
-            1ວັນລ່າສຸດ
+            {t('theLastList')}
           </button>
           <div style={{ width: 10 }}></div>
           <button

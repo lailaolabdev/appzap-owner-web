@@ -3,21 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Nav } from "react-bootstrap";
 import moment from "moment";
 import { getHeaders } from "../../services/auth";
-import { TITLE_HEADER } from "../../constants/index";
 import { END_POINT_SEVER } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faAmericanSignLanguageInterpreting,
-  faCashRegister,
   faCertificate,
   faCoins,
-  faEdit,
-  faMagic,
   faPeopleArrows,
   faPrint,
   faTable,
-  faTableTennis,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";
