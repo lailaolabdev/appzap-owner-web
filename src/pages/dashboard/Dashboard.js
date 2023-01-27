@@ -17,6 +17,9 @@ import MoneyChart from "./MoneyChart";
 import DashboardUser from "./DashboardUser";
 import "./index.css";
 import useQuery from "../../helpers/useQuery";
+import { COLOR_APP } from "../../constants";
+import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
+
 export default function Dashboard() {
   const newDate = new Date();
 
@@ -207,6 +210,7 @@ export default function Dashboard() {
           />
         </div>
       </Box>
+     
       {changeUi === "MONEY_CHART" && (
         <MoneyChart startDate={startDate} endDate={endDate} />
       )}

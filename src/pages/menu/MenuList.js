@@ -21,13 +21,12 @@ import { moneyCurrency, STATUS_MENU } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
 import { getHeaders } from "../../services/auth";
-import { PhoneInTalkSharp } from "@material-ui/icons";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function MenuList() {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const params = useParams();
 
   const [genderData, setGenderData] = useState("FEMALE");
@@ -97,9 +96,7 @@ export default function MenuList() {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
   const _category = () => {
-    navigate(
-      `/settingStore/menu/category/limit/40/page/1/${params?.id}`
-    );
+    navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
   // upload photo
   const [namePhoto, setNamePhoto] = useState("");

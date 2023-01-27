@@ -4,7 +4,6 @@ import axios from "axios";
 import { Table, Modal, Button } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { _statusCheckBill, orderStatus } from "./../../helpers";
-import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -12,6 +11,7 @@ import * as _ from "lodash";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
+import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     _fetchFinanceData();
   }, [endDate, startDate]);
   const _fetchFinanceData = async () => {
-    setIsLoading(TramRounded);
+    setIsLoading(true);
     // const url =
     //   "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
     const headers = await getHeaders(accessToken);
@@ -376,7 +376,28 @@ export default function DashboardFinance({ startDate, endDate }) {
               </div>
             </div>
           </Box>
-          <div style={{ height: 10 }}></div>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
+          >
+            <ButtonDownloadCSV
+              jsonData={data?.checkOut.map((item, index) => ({
+                ລຳດັບ: index + 1,
+                ເລກບິນ: item?.code,
+                ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+                ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                  ? new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(_countAmount(item?.orderId))
+                  : new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(item?.billAmount),
+                ຈ່າຍເງິນສົດ: item?.payAmount,
+                ຈ່າຍເງິນໂອນ: item?.transferAmount,
+                ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+                ລວມສ່ວນຫຼຸດ: "",
+              }))}
+            />
+          </Box>
           <div style={{ padding: 10 }}>
             <Table striped hover size="sm" style={{ fontSize: 15 }}>
               <thead>

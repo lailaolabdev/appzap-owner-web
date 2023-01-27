@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import moment from "moment";
+
 /**
  * import function
  */
-import { Checkbox, FormControlLabel } from "@material-ui/core";
 
 import Loading from "../../components/Loading";
 import { getOrders } from "../../services/order";
