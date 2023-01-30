@@ -230,9 +230,10 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 <Form.Control
                   as="select"
                   onChange={(e) => {
+                    console.log(e.target.value);
                     setFieldValue("unit", e.target.value);
+                    setFieldValue("otherUnit", e.target.value);
                   }}
-                  value={values.unit}
                   isInvalid={errors.unit}
                 >
                   <option selected={true} disabled={true} value="">
