@@ -12,6 +12,7 @@ import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
+import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const navigate = useNavigate();
@@ -379,7 +380,7 @@ export default function DashboardFinance({ startDate, endDate }) {
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
           >
-            <ButtonDownloadCSV
+            <ButtonDownloadExcel
               jsonData={data?.checkOut.map((item, index) => ({
                 ລຳດັບ: index + 1,
                 ເລກບິນ: item?.code,
