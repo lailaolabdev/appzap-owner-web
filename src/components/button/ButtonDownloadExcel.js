@@ -50,7 +50,7 @@ function ButtonDownloadExcel({ jsonData }) {
         Export CSV
       </div> */}
 
-      <JsonToExcel data={jsonData} />
+      <JsonToExcel data={jsonData} fileName="export" />
     </>
   );
 }

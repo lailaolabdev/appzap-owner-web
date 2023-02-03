@@ -395,7 +395,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 ຈ່າຍເງິນສົດ: item?.payAmount,
                 ຈ່າຍເງິນໂອນ: item?.transferAmount,
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-                ລວມສ່ວນຫຼຸດ: "",
+                ລວມສ່ວນຫຼຸດ: item?.billAmountBefore,
               }))}
             />
           </Box>
