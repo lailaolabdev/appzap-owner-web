@@ -1,0 +1,4 @@
+.allBox{
+    display: grid;
+    grid-column: 1fr 1fr;
+}

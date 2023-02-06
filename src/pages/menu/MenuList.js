@@ -188,6 +188,7 @@ export default function MenuList() {
         id: dataUpdate?._id,
         data: {
           name: values?.name,
+          name_en: values?.name_en,
           quantity: values?.quantity,
           categoryId: values?.categoryId,
           price: values?.price,
@@ -320,15 +321,6 @@ export default function MenuList() {
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.name}</td>
                         <td>{moneyCurrency(data?.price)}</td>
-                        {/* <td style={{ color: data?.isOpened ? "green" : "red" }}>
-                        {STATUS_MENU(data?.isOpened)}
-                      </td> */}
-                        {/* <td
-                        style={{
-                          color: data?.quantity < 10 ? "red" : "green",
-                        }}>
-                        {data?.quantity}
-                      </td> */}
                         <td>{data?.detail ? data?.detail : " "}</td>
                         <td>
                           <FontAwesomeIcon
@@ -400,6 +392,9 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
+            if (!values.name_en) {
+              errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
@@ -467,44 +462,6 @@ export default function MenuList() {
                     })}
                   </Form.Control>
                 </Form.Group>
-                {/* <div class="form-row">
-                  <div class="col-3">
-                    <div class="form-group">
-                      <label>ສະຖານະເປີດ/ປິດ</label>
-                    </div>
-                  </div>
-                  <div class="col-9">
-                    <div class="form-row">
-                      <div class="col">
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input
-                            type="radio"
-                            id="open"
-                            name="isOpened"
-                            defaultChecked
-                            class="custom-control-input"
-                            onChange={() => setIsOpened(true)}
-                          />
-                          <label class="custom-control-label" for="open">
-                            ເປີດ
-                          </label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                          <input
-                            type="radio"
-                            id="off"
-                            name="isOpened"
-                            class="custom-control-input"
-                            onChange={() => setIsOpened(false)}
-                          />
-                          <label class="custom-control-label" for="off">
-                            ປິດ
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ອາຫານ</Form.Label>
                   <Form.Control
@@ -517,6 +474,23 @@ export default function MenuList() {
                     style={{
                       border:
                         errors.name && touched.name && errors.name
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_en"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_en}
+                    placeholder="ຊື່ອາຫານ..."
+                    style={{
+                      border:
+                        errors.name_en && touched.name_en && errors.name_en
                           ? "solid 1px red"
                           : "",
                     }}

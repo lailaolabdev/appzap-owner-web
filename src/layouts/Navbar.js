@@ -76,8 +76,20 @@ export default function NavBar() {
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
 
-          <button onClick={() => switchLanguage("en")}>en</button>
-          <button onClick={() => switchLanguage("la")}>la</button>
+          {/* <button onClick={() => switchLanguage("en")}>en</button>
+          <button onClick={() => switchLanguage("la")}>la</button> */}
+          <div style={{
+            marginRight: "30px",
+            backgroundColor: "orange",
+            boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)"
+          }}>
+            <select
+              onChange={(e) => switchLanguage(e.target.value)}
+            >
+              <option value="la">LA</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
 
           {isConnectPrinter ? (
             <div

@@ -15,6 +15,7 @@ import {
   faTachometerAlt,
   faChartBar,
   faAddressCard,
+  faIcicles
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -88,41 +89,26 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
     },
+    {
+      title: "ປ່ຽນຕຣີມ",
+      key: "setting-theme",
+      typeStore: "",
+      icon: faIcicles,
+      // hidden: !storeDetail?.hasPOS,
+    },
   ];
 
   useEffect(() => {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);
-    // initialOrderSocket();
-    // initialTableSocket();
     callingCheckOut();
   }, []);
-  // useMemo(
-  //   () => async () => {
-  //     let _userData = await getLocalData();
-  //     socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
-  //       getTableDataStore();
-  //       // getTableOrders(selectedTable);
-  //     });
-  //     // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-  //     //   getTableDataStore();
-  //     //   Swal.fire({
-  //     //     icon: "success",
-  //     //     title: "ມີການແຈ້ງເກັບເງິນ",
-  //     //     showConfirmButton: false,
-  //     //     timer: 10000,
-  //     //   });
-  //     // });
-  //   },
-  //   []
-  // );
 
   const pubnub = usePubNub();
   const [channels] = useState([
     `TABLE:${storeDetail._id}`,
   ]);
   const handleMessage = (event) => {
-    // console.log("event", event);
     getTableDataStore();
   };
   useEffect(() => {

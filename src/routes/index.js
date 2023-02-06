@@ -39,6 +39,7 @@ import SettingList from "../pages/settingStore/SettingList";
 import SettingTable from "../pages/settingStore/SettingTable";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
+import SettingTheme from "../pages/setting_theme/settingTheme"
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
@@ -227,6 +228,10 @@ function Router() {
         {
           path: "/manageorder",
           element: <DoingOrder />,
+        },
+        {
+          path: "/setting-theme",
+          element: <SettingTheme />,
         },
         MenuRoutes,
         PrinterRoutes,

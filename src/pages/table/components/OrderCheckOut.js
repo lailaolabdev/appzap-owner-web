@@ -3,17 +3,10 @@ import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import axios from "axios";
 import { moneyCurrency } from "../../../helpers/index";
-import { COLOR_APP, END_POINT, USER_KEY } from "../../../constants";
-import { getLocalData } from "../../../constants/api";
-import { getHeaders } from "../../../services/auth";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
-// import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import Swal from "sweetalert2";
 import { useStore } from "../../../store";
 import { t } from "i18next";
 
@@ -22,7 +15,6 @@ const OrderCheckOut = ({
   tableData,
   show,
   hide,
-  resetTableOrder,
   onPrintBill,
   onSubmit,
 }) => {
