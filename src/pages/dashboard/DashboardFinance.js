@@ -13,6 +13,7 @@ import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardFinance({ startDate, endDate }) {
   const navigate = useNavigate();
@@ -166,6 +167,7 @@ export default function DashboardFinance({ startDate, endDate }) {
     setDisCountDataKib(_disCountDataKib);
     setDisCountDataPercent(_disCountDataAon);
   }, [data]);
+  const { t } = useTranslation();
 
   const _countOrder = (item) => {
     let _countOrderCancel = 0;
@@ -250,14 +252,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                   %
                 </div>
                 <div>
-                  ຈ່າຍເງິນສົດ :{" "}
+                  {t("payBycash")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
                   ກີບ
                 </div>
                 <div>
-                  ຈ່າຍເງິນໂອນ :{" "}
+                  {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
@@ -316,14 +318,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                   %
                 </div>
                 <div>
-                  ຈ່າຍເງິນສົດ :{" "}
+                  {t("payBycash")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
                   ກີບ
                 </div>
                 <div>
-                  ຈ່າຍເງິນໂອນ :{" "}
+                  {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
@@ -409,7 +411,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   <th>ສວ່ນຫຼຸດ</th>
                   <th>ລາຄາ / ບິນ</th>
                   <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
-                  <th>ສະຖານະຂອງໂຕະ</th>
+                  <th>{t("tableStatus")}</th>
                   <th>ຮູບແບບການຊຳລະ</th>
                   <th>ເວລາ</th>
                 </tr>
@@ -502,9 +504,9 @@ export default function DashboardFinance({ startDate, endDate }) {
                       }}
                     >
                       {item?.paymentMethod === "CASH"
-                        ? "ຈ່າຍເງິນສົດ"
+                        ? t("payBycash")
                         : item?.paymentMethod === "BCEL"
-                        ? "ຈ່າຍເງິນໂອນ"
+                        ? t("transferPayment")
                         : "-"}
                     </td>
                     <td>

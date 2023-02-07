@@ -3,6 +3,8 @@ import { Modal, Alert, Table } from "react-bootstrap";
 import "./Card.css";
 import { BsXCircleFill } from "react-icons/bs";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
+import { useTranslation } from "react-i18next";
+
 export default function TableList() {
   // modalCheckBin
   const [showcheckbin, setShowCheckBin] = useState(false);
@@ -23,6 +25,8 @@ export default function TableList() {
   const [showreturnproduct, setShowReturnProduct] = useState(false);
   const handleCloseReturnProduct = () => setShowReturnProduct(false);
   const handleShowReturnProduct = () => setShowReturnProduct(true);
+  const { t } = useTranslation();
+
 
   const data = [
     {
@@ -273,7 +277,7 @@ export default function TableList() {
                 &ensp; <p>ລະຫັດ : 563258</p>
               </span>
 
-              <span>ເປີດເມື່ອ : 25/2/2022 </span>
+              <span>{t('openTime')} : 25/2/2022 </span>
             </div>
           </Alert>
           <Table striped>

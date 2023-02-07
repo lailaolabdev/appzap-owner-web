@@ -13,9 +13,13 @@ import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
 import { useParams } from "react-router-dom";
 import StarRatings from "react-star-ratings";
+import { useTranslation } from "react-i18next";
+
 
 export default function StoreDetail() {
   const params = useParams();
+  const { t } = useTranslation();
+
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +29,7 @@ export default function StoreDetail() {
   const [numBerMenus, setnumBerMenus] = useState(0);
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
+  
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData();
@@ -223,7 +228,7 @@ export default function StoreDetail() {
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ໂຕະທັງໝົດ</div>
+            <div className="col-5">{t('totalTable')}</div>
             <div className="col-5"> {numBerTable} ໂຕະ</div>
           </div>
           <div style={{ height: 10 }}></div>

@@ -31,6 +31,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
       <Formik
         initialValues={{
           name: "",
+          name_em: "",
           quantity: 1,
           categoryId: "",
           price: "",
@@ -42,6 +43,9 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
           const errors = {};
           if (!values.name) {
             errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+          }
+          if (!values.name_en) {
+            errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
           }
           if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
             errors.price = "ກະລຸນາປ້ອນລາຄາ...";
@@ -85,7 +89,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       gridGap: 10,
                     }}
                   >
-                    <Form.Group>
+                    {/* <Form.Group>
                       <Form.Label>ລຳດັບ</Form.Label>
                       <Form.Control
                         type="number"
@@ -94,7 +98,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         value={values.sort}
                         onChange={handleChange}
                       />
-                    </Form.Group>
+                    </Form.Group> */}
                     <Form.Group>
                       <Form.Label>
                         ຊື່ອາຫານ <span style={{ color: "red" }}>*</span>
@@ -102,6 +106,25 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       <Form.Control
                         type="text"
                         name="name"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                        placeholder="ຊື່ອາຫານ..."
+                        style={{
+                          border:
+                            errors.name && touched.name && errors.name
+                              ? "solid 1px red"
+                              : "",
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>
+                        ຊື່ອາຫານ (en)<span style={{ color: "red" }}>*</span>
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="name_en"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.name}

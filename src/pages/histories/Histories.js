@@ -8,6 +8,7 @@ import { END_POINT } from "../../constants";
 import AnimationLoading from "../../constants/loading";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
+import { t } from "i18next";
 export default function History() {
   const navigate = useNavigate();
   const params = useParams();
@@ -182,7 +183,7 @@ export default function History() {
                         textAlign: "center",
                       }}
                     >
-                      ຍອດລວມເງິນ :{" "}
+                      {t('totalPrice2')} :{" "}
                     </td>
                     <td colSpan={2} style={{ color: "blue" }}>
                       {new Intl.NumberFormat("ja-JP", {

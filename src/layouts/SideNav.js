@@ -15,19 +15,21 @@ import {
   faTachometerAlt,
   faChartBar,
   faAddressCard,
+  faIcicles,
 } from "@fortawesome/free-solid-svg-icons";
 // import { Badge } from "react-bootstrap";
+// import {BiFoodMenu} from "react-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
-// import {BiFoodMenu} from "react-icons";
-import { usePubNub } from "pubnub-react";
+import { useTranslation } from "react-i18next";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
   const UN_SELECTED_TAB_TEXT = "#606060";
+  const { t } = useTranslation();
 
   const {
     openTableData,
@@ -57,6 +59,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
       title: "ສະຖິຕິລວມ",
       key: "report",
       icon: faTachometerAlt,
+      title: t("tableStatus"),
+      key: "tables",
+      icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
     },
@@ -88,47 +93,42 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faCogs,
       hidden: !storeDetail?.hasPOS,
     },
+    {
+      title: "ລາຍການອໍເດີ້",
+      key: "manageorder",
+      typeStore: "",
+      icon: faAddressCard,
+      hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ປ່ຽນຕຣີມ",
+      key: "setting-theme",
+      typeStore: "",
+      icon: faIcicles,
+      // hidden: !storeDetail?.hasPOS,
+    },
   ];
 
   useEffect(() => {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);
-    // initialOrderSocket();
-    // initialTableSocket();
     callingCheckOut();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // useMemo(
-  //   () => async () => {
-  //     let _userData = await getLocalData();
-  //     socket.on(`TABLE:${_userData?.DATA?.storeId}`, (data) => {
-  //       getTableDataStore();
-  //       // getTableOrders(selectedTable);
-  //     });
-  //     // socket.on(`CHECK_OUT_ADMIN:${_userData?.DATA?.storeId}`, (data) => {
-  //     //   getTableDataStore();
-  //     //   Swal.fire({
-  //     //     icon: "success",
-  //     //     title: "ມີການແຈ້ງເກັບເງິນ",
-  //     //     showConfirmButton: false,
-  //     //     timer: 10000,
-  //     //   });
-  //     // });
-  //   },
-  //   []
-  // );
 
-  const pubnub = usePubNub();
-  const [channels] = useState([`TABLE:${storeDetail._id}`]);
-  const handleMessage = () => {
-    // console.log("event", event);
-    getTableDataStore();
-  };
-  useEffect(() => {
-    pubnub.addListener({ message: handleMessage });
-    pubnub.subscribe({ channels });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pubnub, channels]);
+  // const pubnub = usePubNub();
+  //   // console.log("event", event);
+  // const [channels] = useState([
+  //   `TABLE:${storeDetail._id}`,
+  // ]);
+  // const handleMessage = (event) => {
+  //   getTableDataStore();
+  // };
+  // useEffect(() => {
+  //   pubnub.addListener({ message: handleMessage });
+  //   pubnub.subscribe({ channels });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [pubnub, channels]);
   return (
     <SideNav
       style={{

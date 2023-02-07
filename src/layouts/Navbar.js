@@ -10,6 +10,7 @@ import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
+import i18n from "../i18n";
 
 // sound
 import messageSound from "../sound/message.mp3";
@@ -46,6 +47,9 @@ export default function NavBar() {
   // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
   //   setmessageData(data);
   // });
+  const switchLanguage = (language) => {
+    i18n.changeLanguage(language);
+  };
 
   return (
     <div>
@@ -75,6 +79,22 @@ export default function NavBar() {
           </p>
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
+
+          {/* <button onClick={() => switchLanguage("en")}>en</button>
+          <button onClick={() => switchLanguage("la")}>la</button> */}
+          <div style={{
+            marginRight: "30px",
+            backgroundColor: "orange",
+            boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)"
+          }}>
+            <select
+              onChange={(e) => switchLanguage(e.target.value)}
+            >
+              <option value="la">LA</option>
+              <option value="en">EN</option>
+            </select>
+          </div>
+
           {isConnectPrinter ? (
             <div
               style={{
@@ -138,10 +158,10 @@ export default function NavBar() {
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
                     ? (userData?.data?.firstname
-                        ? userData?.data?.firstname
-                        : "") +
-                      " " +
-                      (userData?.data?.lastname ? userData?.data?.lastname : "")
+                      ? userData?.data?.firstname
+                      : "") +
+                    " " +
+                    (userData?.data?.lastname ? userData?.data?.lastname : "")
                     : ""}
                 </Box>
               </Dropdown.Toggle>

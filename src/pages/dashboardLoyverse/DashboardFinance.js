@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
+<<<<<<< HEAD
 import useReactRouter from "use-react-router";
 import { Card, Table } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { Line } from "react-chartjs-2";
 import { moneyCurrency } from "../../helpers";
+=======
+import useReactRouter from "use-react-router"
+import { Card, Table } from 'react-bootstrap'
+import { END_POINT_SEVER } from '../../constants/api'
+import { Line } from 'react-chartjs-2';
+import { _statusCheckBill, moneyCurrency } from '../../helpers';
+>>>>>>> origin/production_v5.4.4
 import {
   Chart as ChartJS,
   LinearScale,

@@ -11,7 +11,8 @@ import { errorAdd } from "../../../helpers/sweetalert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
+import { t } from "i18next";
 
 const UpdateDiscountOrder = ({
   data,
@@ -98,16 +99,9 @@ const UpdateDiscountOrder = ({
         <Modal.Title>ເພີ່ມສ່ວນຫຼຸດ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-          ໂຕະ:{tableData?.tableName}
-        </pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-          ລະຫັດ:{tableData?.code}
-        </pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-          ເປີດເມື່ອ:
-          {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
-        </pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.tableName}</pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>{t('openTime')}:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
