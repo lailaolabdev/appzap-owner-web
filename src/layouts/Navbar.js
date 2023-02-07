@@ -21,6 +21,7 @@ export default function NavBar() {
   // state
   const [userData, setUserData] = useState({});
   const { isConnectPrinter } = useStore();
+  const [switchToDev, setSwitchToDev] = useState(0);
 
   // ref
   const soundPlayer = useRef();
@@ -74,7 +75,16 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p style={{ marginTop: 20, color: "#bfbfbf" }}>
+          <p
+            style={{ marginTop: 20, color: "#bfbfbf" }}
+            onClick={() => {
+              setSwitchToDev((prev) => prev + 1);
+              if (switchToDev >= 5) {
+                window.location.href =
+                  "http://staging.restaurant.appzap.la.s3-website-ap-southeast-1.amazonaws.com/tables";
+              }
+            }}
+          >
             v{packageJson?.version}
           </p>
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
@@ -82,14 +92,14 @@ export default function NavBar() {
 
           {/* <button onClick={() => switchLanguage("en")}>en</button>
           <button onClick={() => switchLanguage("la")}>la</button> */}
-          <div style={{
-            marginRight: "30px",
-            backgroundColor: "orange",
-            boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)"
-          }}>
-            <select
-              onChange={(e) => switchLanguage(e.target.value)}
-            >
+          <div
+            style={{
+              marginRight: "30px",
+              backgroundColor: "orange",
+              boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
+            }}
+          >
+            <select onChange={(e) => switchLanguage(e.target.value)}>
               <option value="la">LA</option>
               <option value="en">EN</option>
             </select>
@@ -158,10 +168,10 @@ export default function NavBar() {
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
                     ? (userData?.data?.firstname
-                      ? userData?.data?.firstname
-                      : "") +
-                    " " +
-                    (userData?.data?.lastname ? userData?.data?.lastname : "")
+                        ? userData?.data?.firstname
+                        : "") +
+                      " " +
+                      (userData?.data?.lastname ? userData?.data?.lastname : "")
                     : ""}
                 </Box>
               </Dropdown.Toggle>
