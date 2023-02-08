@@ -23,9 +23,12 @@ import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
 import Loading from "../../components/Loading";
+import { useTranslation } from "react-i18next";
+
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
+  const { t } = useTranslation();
   const {
     storeDetail,
     newOreservationTransaction,
@@ -142,7 +145,7 @@ export default function ReservationList() {
                   setTabSelect("ALL");
                 }}
               >
-                ລາຍການທັງໝົດ
+                {t('lists')}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "WATTING"}
@@ -151,7 +154,7 @@ export default function ReservationList() {
                   setTabSelect("WATTING");
                 }}
               >
-                ລາຍການທີ່ລໍຖ້າອະນຸມັດ
+                {t('waitingForApprove')}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "STAFF_CONFIRM"}
@@ -160,7 +163,7 @@ export default function ReservationList() {
                   setTabSelect("STAFF_CONFIRM");
                 }}
               >
-                ລາຍການທີ່ອະນຸມັດ
+                {t('approve')}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "SUCCESS"}
@@ -169,7 +172,7 @@ export default function ReservationList() {
                   setTabSelect("SUCCESS");
                 }}
               >
-                ລາຍການທີ່ອະນຸມັດ
+                {t('approve')}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "CANCEL"}
@@ -178,7 +181,7 @@ export default function ReservationList() {
                   setTabSelect("CANCEL");
                 }}
               >
-                ລາຍການທີ່ຍົກເລີກ
+                {t('canceled')}
               </ButtonTab>
             </div>
             <div
@@ -193,13 +196,13 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                ເພີ່ມການຈອງ
+                {t('addBooking')}
               </ButtonPrimary>
             </div>
           </div>
           <div style={{ padding: 20, display: "flex", gap: 10 }}>
             <FormGroup>
-              <Form.Label>ຄົ້ນຫາ</Form.Label>
+              <Form.Label>{t('search')}</Form.Label>
               <InputGroup>
                 <Form.Control
                   placeholder="Example: (ເບີໂທ) (ຊື່ຜູ້ຈອງ)"
@@ -216,12 +219,12 @@ export default function ReservationList() {
                   id="button-addon1"
                   onClick={() => getData()}
                 >
-                  Search
+                  {t('search')}
                 </Button>
               </InputGroup>
             </FormGroup>
             <FormGroup>
-              <Form.Label>ວັນທີຈອງ</Form.Label>
+              <Form.Label>{t('bookingDate')}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -232,7 +235,7 @@ export default function ReservationList() {
               />
             </FormGroup>
             <FormGroup>
-              <Form.Label>ຫາວັນທີ</Form.Label>
+              <Form.Label>{t('toXX')}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -247,7 +250,7 @@ export default function ReservationList() {
               <Form.Control
                 type="button"
                 style={{ maxWidth: 100 }}
-                value="ມື້ນີ້"
+                value={t('today')}
                 onClick={() => {
                   setDateFrom(moment().format("YYYY-MM-DD"));
                   setDateTo(
@@ -279,14 +282,14 @@ export default function ReservationList() {
                   }}
                 >
                   <tr>
-                    <th style={{ color: COLOR_APP }}>ລຳດັບ</th>
-                    <th style={{ color: COLOR_APP }}>ຊື່ຜູ້ຈອງ</th>
-                    <th style={{ color: COLOR_APP }}>ເບີໂທຂອງຜູ້ຈອງ</th>
+                    <th style={{ color: COLOR_APP }}>{t('no')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('bookedBy')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('phoneNumberOfBooked')}</th>
                     <th style={{ color: COLOR_APP }}>
-                      ວັນທີ / ເດືອນ / ປີ - ເວລາ
+                      {t('dateAndTime')}
                     </th>
-                    <th style={{ color: COLOR_APP }}>ສະຖານທີ່(ໂຕະ)</th>
-                    <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
+                    <th style={{ color: COLOR_APP }}>{t('tableStatus2')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('numberOfPeople')}</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Form.Control

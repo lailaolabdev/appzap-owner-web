@@ -667,9 +667,9 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-            {t('totalTable')} : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
-              {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
-              {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
+            {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
+              {_checkStatusCode(tableList)}, {t('totalAvailableTable')} :{" "}
+              {_checkStatusCodeA(tableList)}, {t('totalBillCheck')} :{" "}
               {_checkStatusCodeB(tableList)}
             </div>
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
@@ -761,7 +761,7 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? "ມິແຂກ" : "ວ່າງ"}
+                              {table?.isStaffConfirm ? `${t('unavaliable')}` : `${t('avaliable')}`}
                             </div>
                           </span>
                         </div>

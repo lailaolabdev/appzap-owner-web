@@ -112,7 +112,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("CATEGORY")}
           >
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ຫມວດຂາຍດີ
+            <div style={{ width: 8 }}></div> {t('famousType')}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -173,7 +173,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click7days()}
           >
-            7ວັນລ່າສຸດ
+            {t('last7days')}
           </button>
           <div style={{ width: 10 }}></div>
           <button
@@ -181,7 +181,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click30days()}
           >
-            30ວັນລ່າສຸດ
+            {t('last30days')}
           </button>
         </div>
         <div

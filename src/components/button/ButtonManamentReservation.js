@@ -2,8 +2,10 @@ import { BiCheckDouble } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 import ButtonPrimary from "./ButtonPrimary";
 import { COLOR_APP } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handleEdit }) => {
+  const { t } = useTranslation();
   if (status === "CANCEL") {
     return (
       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -26,7 +28,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <IoClose style={{ width: 20, height: 20 }} />
-            <span>ການຈອງຖືກປະຕິເສດ</span>
+            <span>{t('bookingDeclined')}</span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
@@ -58,7 +60,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <BiCheckDouble style={{ width: 20, height: 20, color: "white" }} />
-            <span style={{ color: "white" }}>ຢືນຢັນການຈອງສຳເລັດແລ້ວ</span>
+            <span style={{ color: "white" }}>{t('successfulBookingConfirm')}</span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
@@ -89,7 +91,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <BiCheckDouble style={{ width: 20, height: 20 }} />
-            <span>ຈອງສຳເລັດແລ້ວ</span>
+            <span>{t('bookingSuccessful')}</span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
@@ -117,7 +119,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>ອະນຸມັດ</span>
+          <span>{t('approveButton')}</span>
         </div>
       </ButtonPrimary>
 
@@ -139,7 +141,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>ບໍ່ອະນຸມັດ</span>
+          <span>{t('cancelButton')}</span>
         </div>
       </ButtonPrimary>
       <ButtonPrimary
@@ -161,7 +163,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>ແກ້ໄຂ</span>
+          <span>{t('edit')}</span>
         </div>
       </ButtonPrimary>
     </div>

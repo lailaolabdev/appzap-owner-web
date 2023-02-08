@@ -10,6 +10,7 @@ import moment from "moment";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import { useTranslation } from "react-i18next";
 
 import {
   getReservations,
@@ -17,6 +18,8 @@ import {
 } from "../../services/reservation";
 
 export default function ReservationDashboard() {
+  //language
+  const { t } = useTranslation();
   // state
   const [isLoading, setIsLoading] = useState(false);
   const [reservationsData, setReservationsData] = useState();
@@ -67,7 +70,7 @@ export default function ReservationDashboard() {
   return (
     <div>
       <div style={{ padding: 10, fontSize: 22, fontWeight: "bold" }}>
-        ລາຍງານການຈອງ
+        {t('bookingReport')}
       </div>
       <div style={{ padding: 10, display: "grid", gridGap: 20 }}>
         <Box
@@ -79,7 +82,7 @@ export default function ReservationDashboard() {
         >
           <StatisticCard
             value="- ກີບ"
-            name="ຈຳນວນເງິນທັງໝົດ"
+            name={t('totalAmount')}
             color="#967E76"
             icon={
               <Box
@@ -93,7 +96,7 @@ export default function ReservationDashboard() {
           />
           <StatisticCard
             value={`- ຄົນ`}
-            name="ຈຳນວນຄົນຈອງທັງໝົດ"
+            name={t('totalNumberOfPeopleBooked')}
             color="#00ABB3"
             icon={
               <Box
@@ -107,7 +110,7 @@ export default function ReservationDashboard() {
           />
           <StatisticCard
             value={`${reservationsCount} ການຈອງ`}
-            name="ຈຳນວນການຈອງທັງໝົດ"
+            name={t('totalNumberOfBooking')}
             color="#E26868"
             icon={
               <Box
@@ -121,7 +124,7 @@ export default function ReservationDashboard() {
           />
           <StatisticCard
             value={`${reservationsCount} ຄິວຈອງ`}
-            name="ຈຳນວນຄິວປະຈຸບັນ"
+            name={t('currentQueueNumber')}
             color="#674747"
             icon={
               <Box
@@ -164,6 +167,7 @@ const StatisticCard = ({
   color = "rgb(251, 110, 59)",
   ...ohter
 }) => {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -239,7 +243,7 @@ const StatisticCard = ({
           <Box sx={{ width: { md: 15, xs: 12 }, height: { md: 15, xs: 12 } }}>
             <FaLink style={{ color: "white", width: "100%", height: "100%" }} />
           </Box>
-          ອັບເດດລາສຸດ {moment().format("DD.MM.yyyy")}
+          {t('lastUpdated')} {moment().format("DD.MM.yyyy")}
         </Box>
         <div>
           <MdBarChart style={{ color: "white", width: 20, height: 20 }} />
