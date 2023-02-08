@@ -81,7 +81,7 @@ export default function ReservationDashboard() {
           }}
         >
           <StatisticCard
-            value="- ກີບ"
+            value={"- " + t('lak')}
             name={t('totalAmount')}
             color="#967E76"
             icon={
@@ -95,7 +95,7 @@ export default function ReservationDashboard() {
             }
           />
           <StatisticCard
-            value={`- ຄົນ`}
+            value={"- " + t('people')}
             name={t('totalNumberOfPeopleBooked')}
             color="#00ABB3"
             icon={
@@ -109,7 +109,7 @@ export default function ReservationDashboard() {
             }
           />
           <StatisticCard
-            value={`${reservationsCount} ການຈອງ`}
+            value={`${reservationsCount} ${t('booking')}`}
             name={t('totalNumberOfBooking')}
             color="#E26868"
             icon={
@@ -123,7 +123,7 @@ export default function ReservationDashboard() {
             }
           />
           <StatisticCard
-            value={`${reservationsCount} ຄິວຈອງ`}
+            value={`${reservationsCount} ${t('bookingQueue')}`}
             name={t('currentQueueNumber')}
             color="#674747"
             icon={

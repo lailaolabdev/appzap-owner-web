@@ -141,5 +141,8 @@
     "tableSetting": "Table manage",
     "activityHistory": "Activity history",
     "stockManage": "Stock manage",
-    "printerSetting": "Printer setting"
+    "printerSetting": "Printer setting",
+    "people": "People",
+    "booking": "Booking",
+    "bookingQueue": "Booking Queue"
 }

@@ -140,5 +140,8 @@
     "tableSetting": "ຕັ້ງຄ່າໂຕະ",
     "activityHistory": "ປະຫັວດການໃຊ້ງານ",
     "stockManage": "ຈັດການສະຕ໊ອກ",
-    "printerSetting": "ຕັ້ງຄ່າປິນເຕີ້"
+    "printerSetting": "ຕັ້ງຄ່າປິນເຕີ້",
+    "people": "ຄົນ",
+    "booking": "ການຈອງ",
+    "bookingQueue": "ຄິວຈອງ"
 }
