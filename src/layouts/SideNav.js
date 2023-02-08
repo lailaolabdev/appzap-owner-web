@@ -17,8 +17,6 @@ import {
   faAddressCard,
   faIcicles,
 } from "@fortawesome/free-solid-svg-icons";
-// import { Badge } from "react-bootstrap";
-// import {BiFoodMenu} from "react-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
@@ -36,7 +34,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     callingCheckOut,
     getTableDataStore,
     getOrderItemsStore,
-    // initialTableSocket,
     storeDetail,
   } = useStore();
 
@@ -60,10 +57,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "report",
       icon: faTachometerAlt,
       title: t("tableStatus"),
-      key: "tables",
-      icon: faHome,
       typeStore: "",
-      hidden: !storeDetail?.hasPOS,
     },
     {
       title: "ຈັດການການຈອງ",
@@ -115,20 +109,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     callingCheckOut();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // const pubnub = usePubNub();
-  //   // console.log("event", event);
-  // const [channels] = useState([
-  //   `TABLE:${storeDetail._id}`,
-  // ]);
-  // const handleMessage = (event) => {
-  //   getTableDataStore();
-  // };
-  // useEffect(() => {
-  //   pubnub.addListener({ message: handleMessage });
-  //   pubnub.subscribe({ channels });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [pubnub, channels]);
   return (
     <SideNav
       style={{
