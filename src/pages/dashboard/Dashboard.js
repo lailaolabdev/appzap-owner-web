@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
@@ -20,8 +20,14 @@ import "./index.css";
 import useQuery from "../../helpers/useQuery";
 import { COLOR_APP } from "../../constants";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
+import { END_POINT_SEVER } from "../../constants/api";
+import { useStore } from "../../store";
 
 export default function Dashboard() {
+  const [currency, setcurrency] = useState()
+  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
+  const { storeDetail } = useStore()
+  // console.log("storeDetail==>", { storeDetail })
   const newDate = new Date();
 
   const [startDate, setStartDate] = useState(
@@ -48,8 +54,47 @@ export default function Dashboard() {
 
   const { t } = useTranslation();
 
+  const getcurrency = async () => {
+    try {
+      let u = await fetch(
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setcurrency(json));
+      // console.log("------------>", u)
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  
+  useEffect(() => {
+    getcurrency()
+  }, [])
+
+  // console.log("=================", currency)
+
   return (
     <div style={{ padding: 10 }}>
+      <div
+        style={{
+          marginRight: "30px",
+          backgroundColor: "orange",
+          boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
+        }}
+      >
+        <select onChange={(e) => setSelectedCurrency(e.target.value)}>
+          <option selected value="LAK">ກີບ</option>
+          {
+            currency?.map((cur, index) => (
+              <option key={cur + index} value={cur?.currencyCode}>{cur?.currencyName}</option>
+            ))
+          }
+        </select>
+      </div>
       <Box
         sx={{
           fontWeight: "bold",
@@ -213,21 +258,23 @@ export default function Dashboard() {
           />
         </div>
       </Box>
-     
+
       {changeUi === "MONEY_CHART" && (
-        <MoneyChart startDate={startDate} endDate={endDate} />
+        <MoneyChart startDate={startDate} endDate={endDate} 
+        selectedCurrency={selectedCurrency} 
+        />
       )}
       {changeUi === "CHECKBILL" && (
-        <DashboardFinance startDate={startDate} endDate={endDate} />
+        <DashboardFinance startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "MENUS" && (
-        <DashboardMenu startDate={startDate} endDate={endDate} />
+        <DashboardMenu startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "CATEGORY" && (
-        <DashboardCategory startDate={startDate} endDate={endDate} />
+        <DashboardCategory startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "STAFF" && (
-        <DashboardUser startDate={startDate} endDate={endDate} />
+        <DashboardUser startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
     </div>
   );

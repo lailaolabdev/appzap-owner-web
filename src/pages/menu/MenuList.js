@@ -64,6 +64,7 @@ export default function MenuList() {
     };
     fetchData();
   }, []);
+  
   const getcategory = async (id) => {
     try {
       await fetch(
@@ -78,6 +79,7 @@ export default function MenuList() {
       console.log(err);
     }
   };
+  
   const getMenu = async (id) => {
     try {
       await fetch(MENUS + `/?isOpened=true&storeId=${id}`, {

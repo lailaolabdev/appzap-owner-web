@@ -30,3 +30,4 @@ export const PRESIGNED_URL = END_POINT_SEVER + "/uploadfile";
 export const TABLES = END_POINT_SEVER + "/v3/tables";
 export const STORE = END_POINT_SEVER + "/v3/store";
 export const STORE_UPDATE = END_POINT_SEVER + "/v3/store/update";
+export const QUERY_LANGUAGE = END_POINT_SEVER + "/v3/currencies";

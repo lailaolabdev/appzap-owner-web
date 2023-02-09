@@ -14,8 +14,8 @@ import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
-
-export default function DashboardFinance({ startDate, endDate }) {
+export default function DashboardFinance({ startDate, endDate, selectedCurrency }) {
+  const [currency, setcurrency] = useState()
   const navigate = useNavigate();
   const { accessToken } = useQuery();
   const params = useParams();
@@ -32,6 +32,7 @@ export default function DashboardFinance({ startDate, endDate }) {
   const [isLoading, setIsLoading] = useState(false);
   const handleClose = () => setShow(false);
   const { storeDetail } = useStore();
+
   const handleEditBill = async () => {
     try {
       const url = END_POINT_SEVER + "/v3/bill-reset";
@@ -53,12 +54,35 @@ export default function DashboardFinance({ startDate, endDate }) {
     setShow(true);
     setDataModale(item);
   };
+
+  console.log("selectedCurrency====>", selectedCurrency)
+
+  const getcurrency = async () => {
+    try {
+      let x = await fetch(
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+        {
+          method: "GET",
+        }
+      )
+        // .then((response) => response.json())
+        // .then((json) => setcurrency(json));
+        console.log("firsttttttttttttttttttttttt", x)
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
+    getcurrency();
     _fetchFinanceData();
   }, []);
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate]);
+    // console.log({ selectedCurrency })
+  }, [endDate, startDate
+    , 
+    selectedCurrency
+  ]);
   const _fetchFinanceData = async () => {
     setIsLoading(true);
     // const url =
@@ -66,12 +90,14 @@ export default function DashboardFinance({ startDate, endDate }) {
     const headers = await getHeaders(accessToken);
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
-        "/v3/bills?storeId=" +
-        params?.storeId +
-        "&startDate=" +
-        startDate +
-        "&endDate=" +
-        endDate,
+      "/v3/bills?storeId=" +
+      params?.storeId +
+      "&currencyType=" +
+      selectedCurrency +
+      "&startDate=" +
+      startDate +
+      "&endDate=" +
+      endDate,
       {
         headers: headers,
       }
@@ -194,6 +220,22 @@ export default function DashboardFinance({ startDate, endDate }) {
   };
   return (
     <div style={{ padding: 0 }}>
+      <div
+        style={{
+          marginRight: "30px",
+          backgroundColor: "orange",
+          boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
+        }}
+      >
+        {/* <select onChange={(e) => setSelectedCurrency(e.target.value)}>
+          <option selected value="">ກີບ</option>
+          {
+            currency?.map((La, index) => (
+              <option value={La?.currencyCode}>{La?.currencyName}</option>
+            ))
+          }
+        </select> */}
+      </div>
       {isLoading && <AnimationLoading />}
       <div className="row">
         <div style={{ width: "100%" }}>
@@ -235,6 +277,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     data?.amount + dataNotCheckBill?.amount
                   )}{" "}
+                  {/* {t(selectedCurrency)} */}
                   {t('lak')}
                 </div>
                 <div>
@@ -267,7 +310,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   {t('lak')}
                 </div>
                 <div>
-                {t('outstandingDebt')} :{" "}
+                  {t('outstandingDebt')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
@@ -305,7 +348,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                   {t('lak')}
                 </div>
                 <div>
-                {t('cashDiscount')} :{" "}
+                  {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountCash
                   )}{" "}
@@ -390,11 +433,11 @@ export default function DashboardFinance({ startDate, endDate }) {
                 ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
                 ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                   ? new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(_countAmount(item?.orderId))
+                    currency: "JPY",
+                  }).format(_countAmount(item?.orderId))
                   : new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(item?.billAmount),
+                    currency: "JPY",
+                  }).format(item?.billAmount),
                 ຈ່າຍເງິນສົດ: item?.payAmount,
                 ຈ່າຍເງິນໂອນ: item?.transferAmount,
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
@@ -442,18 +485,18 @@ export default function DashboardFinance({ startDate, endDate }) {
                     <td>
                       {item?.discountType === "LAK"
                         ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.discount) + t("lak")
+                          currency: "JPY",
+                        }).format(item?.discount) + t("lak")
                         : item?.discount + "%"}
                     </td>
                     <td>
                       {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
+                          currency: "JPY",
+                        }).format(_countAmount(item?.orderId))
                         : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.billAmount)}{" "}
+                          currency: "JPY",
+                        }).format(item?.billAmount)}{" "}
                       {t('lak')}
                     </td>
                     <td>
@@ -488,10 +531,10 @@ export default function DashboardFinance({ startDate, endDate }) {
                           item?.status === "CHECKOUT"
                             ? "green"
                             : item?.status === "CALLTOCHECKOUT"
-                            ? "red"
-                            : item?.status === "ACTIVE"
-                            ? "#00496e"
-                            : "",
+                              ? "red"
+                              : item?.status === "ACTIVE"
+                                ? "#00496e"
+                                : "",
                       }}
                     >
                       {_statusCheckBill(item?.status)}
@@ -507,8 +550,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                       {item?.paymentMethod === "CASH"
                         ? t("payBycash")
                         : item?.paymentMethod === "BCEL"
-                        ? t("transferPayment")
-                        : "-"}
+                          ? t("transferPayment")
+                          : "-"}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -559,14 +602,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                         item?.status === "WAITING"
                           ? "#2d00a8"
                           : item?.status === "DOING"
-                          ? "#c48a02"
-                          : item?.status === "SERVED"
-                          ? "green"
-                          : item?.status === "CART"
-                          ? "#00496e"
-                          : item?.status === "FEEDBACK"
-                          ? "#00496e"
-                          : "#bd0d00",
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                              ? "green"
+                              : item?.status === "CART"
+                                ? "#00496e"
+                                : item?.status === "FEEDBACK"
+                                  ? "#00496e"
+                                  : "#bd0d00",
                     }}
                   >
                     {orderStatus(item?.status)}
