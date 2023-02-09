@@ -388,12 +388,8 @@ export default function DashboardFinance({ startDate, endDate }) {
                 ເລກບິນ: item?.code,
                 ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
                 ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                  ? new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(_countAmount(item?.orderId))
-                  : new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(item?.billAmount),
+                  ? _countAmount(item?.orderId)
+                  : item?.billAmount,
                 ຈ່າຍເງິນສົດ: item?.payAmount,
                 ຈ່າຍເງິນໂອນ: item?.transferAmount,
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
