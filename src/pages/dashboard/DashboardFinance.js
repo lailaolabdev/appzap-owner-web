@@ -277,8 +277,8 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     data?.amount + dataNotCheckBill?.amount
                   )}{" "}
-                  {/* {t(selectedCurrency)} */}
-                  {t('lak')}
+                  {selectedCurrency}
+                  {/* {selectedCurrency} */}
                 </div>
                 <div>
                   {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
@@ -286,7 +286,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataKib
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('percentageDiscount')} :{" "}
@@ -300,21 +300,21 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('outstandingDebt')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
               </div>
             </div>
@@ -345,14 +345,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash + dataCheckBill?.transfer
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountCash
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('percentageDiscount')} :{" "}
@@ -366,14 +366,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
               </div>
             </div>
@@ -404,14 +404,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountCash
                   )}{" "}
-                  {t('lak')}
+                  {selectedCurrency}
                 </div>
                 <div>
                   {t('percentageDiscount')} :{" "}
@@ -497,7 +497,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                         : new Intl.NumberFormat("ja-JP", {
                           currency: "JPY",
                         }).format(item?.billAmount)}{" "}
-                      {t('lak')}
+                      {selectedCurrency}
                     </td>
                     <td>
                       <div

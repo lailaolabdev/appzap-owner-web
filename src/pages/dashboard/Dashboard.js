@@ -70,7 +70,7 @@ export default function Dashboard() {
     }
   };
 
-  
+
   useEffect(() => {
     getcurrency()
   }, [])
@@ -79,22 +79,6 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 10 }}>
-      <div
-        style={{
-          marginRight: "30px",
-          backgroundColor: "orange",
-          boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
-        }}
-      >
-        <select onChange={(e) => setSelectedCurrency(e.target.value)}>
-          <option selected value="LAK">ກີບ</option>
-          {
-            currency?.map((cur, index) => (
-              <option key={cur + index} value={cur?.currencyCode}>{cur?.currencyName}</option>
-            ))
-          }
-        </select>
-      </div>
       <Box
         sx={{
           fontWeight: "bold",
@@ -228,6 +212,18 @@ export default function Dashboard() {
           >
             {t('last30days')}
           </button>
+
+          <div style={{ width: 10 }}></div>
+
+              <select onChange={(e) => setSelectedCurrency(e.target.value)} className="btn btn-outline-info">
+                <option selected value="LAK">ກີບ</option>
+                {
+                  currency?.map((cur, index) => (
+                    <option key={cur + index} value={cur?.currencyCode}>{cur?.currencyName}</option>
+                  ))
+                }
+              </select>
+
         </div>
         <div
           style={{
@@ -260,8 +256,8 @@ export default function Dashboard() {
       </Box>
 
       {changeUi === "MONEY_CHART" && (
-        <MoneyChart startDate={startDate} endDate={endDate} 
-        selectedCurrency={selectedCurrency} 
+        <MoneyChart startDate={startDate} endDate={endDate}
+          selectedCurrency={selectedCurrency}
         />
       )}
       {changeUi === "CHECKBILL" && (
