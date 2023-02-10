@@ -4,11 +4,11 @@ import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { moneyCurrency } from "../../../helpers/index";
+// import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import { useStore } from "../../../store";
-import { t } from "i18next";
+// import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
   data,
@@ -57,7 +57,7 @@ const OrderCheckOut = ({
           ລະຫັດ:{tableData?.code}
         </pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-          {t('openTime')}:
+          ເປີດເມື່ອ:
           {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
         </pre>
         <Table responsive className="staff-table-list borderless table-hover">
@@ -140,8 +140,8 @@ const OrderCheckOut = ({
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               <b>
                 {data && data?.discountType === "LAK"
-                  ? moneyCurrency(total - data?.discount)
-                  : moneyCurrency(total - (total * data?.discount) / 100)}
+                  ? moneyCurrency(total - data?.discount > 0 ? total - data?.discount : 0)
+                  : moneyCurrency(total - (total * data?.discount) / 100 > 0 ? total - (total * data?.discount) / 100 : 0)}
               </b>
             </span>
           </div>

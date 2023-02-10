@@ -811,7 +811,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ລະຫັດເຂົ້າໂຕະ:{" "}
+                          {t('tableNumber2')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -826,7 +826,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ເວລາເປີດໂຕະ:{" "}
+                          {t('timeOfTableOpening')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -841,7 +841,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຜູ້ຮັບຜິດຊອບ:{" "}
+                          {t('respon')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -862,7 +862,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ມີສ່ວນຫຼຸດ:{" "}
+                          {t('discount')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -870,7 +870,7 @@ export default function TableList() {
                             }}
                           >
                             {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
+                            {dataBill?.discountType === "PERCENT" ? "%" : t('lak')}
                           </span>
                         </div>
                       </div>
@@ -889,7 +889,7 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom onClick={() => onPrintForCher()}>
-                          ພິມບິນໄປຄົວ
+                        {t('printBillToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
@@ -898,7 +898,7 @@ export default function TableList() {
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                          ປິດໂຕະ
+                          {t('closeTable')}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
                         <ButtonCustom
@@ -907,7 +907,7 @@ export default function TableList() {
                             setPopup({ discount: true });
                           }}
                         >
-                          ເພີ່ມສ່ວນຫຼຸດ
+                          {t('discount')}
                         </ButtonCustom>
 
                         <ButtonCustom
@@ -925,7 +925,7 @@ export default function TableList() {
                             )
                           }
                         >
-                          + ເພີ່ມອໍເດີ
+                          + {t('addOrder')}
                         </ButtonCustom>
                       </div>
                       <div
@@ -946,17 +946,17 @@ export default function TableList() {
                             handleUpdateOrderStatuscancel("CANCEL")
                           }
                         >
-                          ຍົກເລີກ
+                          {t('cancel')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
                         >
-                          ສົ່ງໄປຄົວ
+                          {t('sendToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
                         >
-                          ເສີບແລ້ວ
+                          {t('served')}
                         </ButtonCustom>
                       </div>
 
@@ -969,12 +969,12 @@ export default function TableList() {
                                 onChange={(e) => checkAllOrders(e)}
                               />
                             </th>
-                            <th>ລຳດັບ</th>
-                            <th>ຊື່ເມນູ</th>
-                            <th>ຈຳນວນ</th>
-                            <th>ສະຖານະ</th>
-                            <th>ຜູ້ສັ່ງ</th>
-                            <th>ເວລາ</th>
+                            <th>{t('no')}</th>
+                            <th>{t('menuname')}</th>
+                            <th>{t('quantity')}</th>
+                            <th>{t('status')}</th>
+                            <th>{t('customer')}</th>
+                            <th>{t('time')}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1032,7 +1032,7 @@ export default function TableList() {
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
-                            ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
+                            {t('TableHasNoOrder')}
                           </div>
                         </div>
                       )}
@@ -1083,8 +1083,7 @@ export default function TableList() {
                     textAlign: "center",
                   }}
                 >
-                  ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
-                  ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
+                  {t('bringThisQRCodeToCustomersOrPressOpenToStartUsing')}
                 </p>
                 <p
                   style={{
@@ -1108,7 +1107,7 @@ export default function TableList() {
                   }}
                   onClick={() => openTable()}
                 >
-                  {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
+                  {!selectedTable?.isOpened ? `${t('open')}` : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
               </div>
             )}
