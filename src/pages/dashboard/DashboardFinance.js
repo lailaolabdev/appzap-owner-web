@@ -55,8 +55,6 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
     setDataModale(item);
   };
 
-  console.log("selectedCurrency====>", selectedCurrency)
-
   const getcurrency = async () => {
     try {
       let x = await fetch(
@@ -65,9 +63,8 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
           method: "GET",
         }
       )
-        // .then((response) => response.json())
-        // .then((json) => setcurrency(json));
-        console.log("firsttttttttttttttttttttttt", x)
+        .then((response) => response.json())
+        .then((json) => setcurrency(json));
     } catch (err) {
       console.log(err);
     }
@@ -79,9 +76,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
   useEffect(() => {
     _fetchFinanceData();
     // console.log({ selectedCurrency })
-  }, [endDate, startDate
-    , 
-    selectedCurrency
+  }, [endDate, startDate, selectedCurrency
   ]);
   const _fetchFinanceData = async () => {
     setIsLoading(true);
