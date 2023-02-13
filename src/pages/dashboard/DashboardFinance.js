@@ -571,7 +571,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
               marginBottom: 10,
             }}
           >
-            <Button onClick={handleEditBill}>{t('billEditing')}</Button>
+            <Button onClick={handleEditBill}>{selectOrder?.status === "ACTIVE" ? t('editingTheBill') : t('billEditing')}</Button>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
