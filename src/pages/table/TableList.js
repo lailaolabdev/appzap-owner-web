@@ -70,6 +70,23 @@ export default function TableList() {
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
+  const [quantity, setQuantity] = useState(false);
+  const [count, setCount] = useState(0);
+
+  const incrementCount = () => {
+    count = count + 1;
+    setCount(count);
+  }
+  const decrementCount = () => {
+    count = count - 1;
+    setCount(count);
+  }
+
+  const handleCloseQuantity = () => setQuantity(false);
+  const handleShowQuantity = (item) => {
+    _orderTableQunatity(item)
+    setQuantity(true)
+  };
 
   const { printerCounter, printers } = useStore();
 
@@ -173,6 +190,28 @@ export default function TableList() {
       headers: headers,
     });
     setDataBill(_resBill?.data);
+  };
+
+  const _orderTableQunatity = async () => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const updateTable = await axios({
+        method: "put",
+        url: END_POINT_SEVER + `/v3/orders/update`,
+        data: {
+          id: quantity?._id,
+        },
+        headers: headers,
+      });
+      // setOpenModalSetting(false);
+    } catch (err) {
+      console.log(err)
+      // errorAdd("ບໍ່ສຳເລັດ");
+    }
   };
 
   const [selectNewTable, setSelectNewTable] = useState();
@@ -667,7 +706,7 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-            {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
+              {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
               {_checkStatusCode(tableList)}, {t('totalAvailableTable')} :{" "}
               {_checkStatusCodeA(tableList)}, {t('totalBillCheck')} :{" "}
               {_checkStatusCodeB(tableList)}
@@ -734,8 +773,8 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                            ? "blink_cardCallCheckOut"
-                            : ""
+                              ? "blink_cardCallCheckOut"
+                              : ""
                         }
                         onClick={() => {
                           onSelectTable(table);
@@ -849,10 +888,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId[0]?.updatedBy?.lastname
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -889,7 +928,7 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom onClick={() => onPrintForCher()}>
-                        {t('printBillToKitchen')}
+                          {t('printBillToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
@@ -980,51 +1019,51 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td>
-                                    <Checkbox
-                                      disabled={orderItem?.status === "CANCEL"}
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) =>
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        })
-                                      }
-                                    />
-                                  </td>
+                              <tr
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+                                <td>
+                                  <Checkbox
+                                    disabled={orderItem?.status === "CANCEL"}
+                                    name="checked"
+                                    checked={orderItem?.isChecked || false}
+                                    onChange={(e) =>
+                                      onSelect({
+                                        ...orderItem,
+                                        isChecked: e.target.checked,
+                                      })
+                                    }
+                                  />
+                                </td>
 
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td onClick={handleShowQuantity}>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1283,6 +1322,86 @@ export default function TableList() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleClose()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => _changeTable()}>
+            ລວມໂຕະ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={quantity} onHide={handleCloseQuantity}>
+        <Modal.Header closeButton>
+          <Modal.Title>XXXX</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>ລຳດັບ</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              type="number"
+              placeholder="ກະລຸນາປ້ອນລຳດັບ"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+          <TableCustom>
+                        <thead>
+                          <tr>
+                            <th>{t('no')}</th>
+                            <th>{t('menuname')}</th>
+                            <th>{t('quantity')}</th>
+                            <th>{t('status')}</th>
+                            <th>{t('customer')}</th>
+                            <th>{t('time')}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {isCheckedOrderItem
+                            ? isCheckedOrderItem?.map((orderItem, index) => (
+                              <tr
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td onClick={handleShowQuantity}>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
+                                          ? ""
+                                          : "red",
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
+                            : ""}
+                        </tbody>
+                      </TableCustom>
+            <td>
+              <button onClick={() => incrementCount()}>+</button>
+              <div>{count}</div>
+              <button onClick={() => decrementCount()}>-</button>
+            </td>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleCloseQuantity()}>
             ຍົກເລີກ
           </Button>
           <Button variant="success" onClick={() => _changeTable()}>

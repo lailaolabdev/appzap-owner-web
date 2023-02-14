@@ -55,6 +55,22 @@ function AddOrder() {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
+  const [count, setCount] = useState(0);
+
+  function handleSetQuantity(int, data) {
+    let dataArray = []
+    for(const i of selectedMenu) {
+
+      let _data={...i}
+      if(data?.id === i?.id) {
+        _data={..._data,quantity:_data?.quantity + int}
+      }
+      if(_data.quantity > 0) {
+        dataArray.push(_data)
+      }
+    }
+    setSelectedMenu(dataArray)
+  }
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
 
@@ -204,9 +220,8 @@ function AddOrder() {
     setIsLoading(true);
     await fetch(
       MENUS +
-        `?storeId=${id}&${
-          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-        }`,
+      `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
+      }`,
       {
         method: "GET",
       }
@@ -508,7 +523,11 @@ function AddOrder() {
                           <tr key={"selectMenu" + index}>
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
-                            <td>{data.quantity}</td>
+                            <td style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                              <button style={{color: "blue", borderRadius: "50%", padding: "0.25em 0.8em"}} onClick={() => handleSetQuantity(-1, data)}>-</button>
+                              {data.quantity}
+                              <button style={{color: "red", borderRadius: "50%", padding: "0.25em 0.8em"}} onClick={() => handleSetQuantity(1, data)}>+</button>
+                            </td>
                             <td>
                               <i
                                 onClick={() => onRemoveFromCart(data.id)}
