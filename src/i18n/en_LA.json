@@ -99,7 +99,6 @@
     "famousMenu":"ເມນູຂາຍດີ",
     "waitstaffReport":"ລາຍງານພະນັກງານ",
     "theLastList":"1ວັນລ່າສຸດ",
-<<<<<<< HEAD
     "last7days":"7ວັນລ່າສຸດ",
     "last30days":"30ວັນລ່າສຸດ",
     "totalCirculation":"ຍອດທັງຫມົດ",
@@ -160,13 +159,10 @@
     "allMenu": "ເມນູທັງໝົດ",
     "table": "ໂຕະ",
     "addOrder": "ເພີ່ມອໍເດີ",
-    "TableHasNoOrder": "ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ"
-=======
-    "totalBalance":"ຍອດທັງໝົດ",
+    "TableHasNoOrder": "ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ",
     "billCompleted":"ຍອດບິນສຳເລັດ",
     "billIsPending":"ຍອດບິນຍັງຄ້າງ",
     "billAmount":"ຈຳນວນບິນ",
-    "cashDiscount":"ສ່ວນຫຼຸດເປັນເງິນ",
     "percenDiscount":"ສ່ວນຫຼຸດເປັນເປີເຊັນ",
     "pending":"ຍັງຄ້າງ",
     "discount":"ສ່ວນຫຼຸດ",
@@ -185,7 +181,6 @@
     "calculateMoneyCompleted":"ຄິດໄລ່ເງິນສຳເລັດ",
     "reason":"ເຫດຜົນ",
     "cancelMealSuccessfully":"ຍົກເລີກອາຫານສຳເລັດ",
-    "detail":"ລາຍລະອຽດ",
     "nameOfManager":"ຊື່ຜູ້ຈັດການ",
     "customerCancel":"ລູກຄ້າຍົກເລີກ",
     "printBillSendKitchenCompleted":"ພິມບິນໄປຄົວສຳເລັດ",
@@ -201,7 +196,6 @@
     "mondayOfFirday":"ວັນຈັນຫາສຸກ",
     "storeOwnerInformation":"ຂໍ້ມູນເຈົ້າຂອງຮ້ານ",
     "address":"ທີ່ຢູ່",
-    "edit":"ແກ້ໄຂ",
     "generalImformation":"ຂໍ້ມູນທົ່ວໄປ",
     "timeToCutBalance":"ເວລາຕັດຍອດ",
     "soundButton":"ສຽງເວລາກົດປຸ່ມ",
@@ -214,10 +208,8 @@
     "staff":"ພະນັກງານ",
     "admin":"ຜູ້ບໍລິຫານ",
     "name":"ຊື່",
-    "allMenu":"ເມນູທັງຫມົດ",
     "allCategory":"ປະເພດເມນູທັງຫມົດ",
     "selectPrinter":"ເລືອກປິ້ນເຕີ",
-    "tableSetting":"ຕັ້ງຄ່າໂຕະ",
     "allTable":"ໂຕະທັງຫມົດ",
     "tableName":"ຊື່ໂຕະ",
     "sortOrder":"ລຳດັບຈັດລຽນ",
@@ -231,7 +223,7 @@
     "category":"ປະເພດ",
     "width":"ລວງກວ້າງ",
     "information":"ຂໍ້ມູນ",
-    "manage":"ຈັດການ",
+    "manageRaw":"ຈັດການ",
     "addPrinter":"ເພີມປີ້ນເຕີ",
     "printOnFrontDESK":"ພິມບິນຫນ້າໂຕະ",
     "printTheHistoryPage":"ພິມບິນໜ້າປະຫວັດ",
@@ -253,5 +245,4 @@
     "overallStatistics":"ສະຖິຕິລວມ",
     "latest7days":"7ວັນລ່າສຸດ",
     "latest30days":"30ວັນລ່າສຸດ"
->>>>>>> origin/production_v5.4.4
 }

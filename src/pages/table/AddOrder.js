@@ -55,7 +55,6 @@ function AddOrder() {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
-  const [count, setCount] = useState(0);
 
   function handleSetQuantity(int, data) {
     let dataArray = []
@@ -524,9 +523,9 @@ function AddOrder() {
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
                             <td style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                              <button style={{color: "blue", borderRadius: "50%", padding: "0.25em 0.8em"}} onClick={() => handleSetQuantity(-1, data)}>-</button>
+                              <button style={{color: "blue", border: "none", width: 25}} onClick={() => handleSetQuantity(-1, data)}>-</button>
                               {data.quantity}
-                              <button style={{color: "red", borderRadius: "50%", padding: "0.25em 0.8em"}} onClick={() => handleSetQuantity(1, data)}>+</button>
+                              <button style={{color: "red", border: "none", width: 25}} onClick={() => handleSetQuantity(1, data)}>+</button>
                             </td>
                             <td>
                               <i
