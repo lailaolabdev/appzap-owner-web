@@ -73,7 +73,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (orderItems, storeId, menuId) => {
+export const updateOrderItem = async (orderItems, storeId, menuId, seletedCancelOrderItem) => {
   try {
     const url = `${END_POINT}/v3/orders/updateMany`;
     const orders = await axios.put(
@@ -82,6 +82,7 @@ export const updateOrderItem = async (orderItems, storeId, menuId) => {
         orders: orderItems,
         storeId: storeId,
         menuId: menuId,
+        remark: seletedCancelOrderItem
       },
       {
         headers: await getHeaders(),

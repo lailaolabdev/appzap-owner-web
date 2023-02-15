@@ -55,12 +55,20 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const handleClose1 = () => setShow1(false);
+  const handleShow1 = (e) => {
+    setShow1(true);
+  }
+  
+  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
+  
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false);
@@ -115,6 +123,8 @@ export default function TableList() {
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
+  const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  console.log("seletedCancelOrderItem===>>>", seletedCancelOrderItem)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int 
@@ -122,7 +132,7 @@ export default function TableList() {
   // }
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int
-    setSeletedOrderItem({...seletedOrderItem, quantity: _data})
+    setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
   }
 
 
@@ -198,7 +208,7 @@ export default function TableList() {
   const _orderTableQunatity = async () => {
     try {
       let headers = await getHeaders();
-    
+
       const updateTable = await axios({
         method: "put",
         url: END_POINT_SEVER + `/v3/orders/update/${seletedOrderItem?._id}`,
@@ -208,11 +218,11 @@ export default function TableList() {
         headers: headers,
       });
       console.log("updateTable===>", updateTable)
-      
-      if (updateTable?.status<300 ) {
+
+      if (updateTable?.status < 300) {
         setQuantity(false)
-      reLoadData();
-      successAdd("ແກ້ໄຂຈຳນວນສຳເລັດ");
+        reLoadData();
+        successAdd("ແກ້ໄຂຈຳນວນສຳເລັດ");
       }
 
     } catch (err) {
@@ -556,7 +566,7 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCEL") return item;
+        if (item?.status === "CANCELED") return item;
         return {
           ...item,
           isChecked: true,
@@ -639,10 +649,13 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
+          // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      handleClose1()
+      reLoadData();
       // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
@@ -988,7 +1001,7 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() =>
-                            handleUpdateOrderStatuscancel("CANCEL")
+                            handleShow1()
                           }
                         >
                           {t('cancel')}
@@ -1032,7 +1045,7 @@ export default function TableList() {
                               >
                                 <td onClick={(e) => e.stopPropagation()}>
                                   <Checkbox
-                                    disabled={orderItem?.status === "CANCEL"}
+                                    disabled={orderItem?.status === "CANCELED"}
                                     name="checked"
                                     checked={orderItem?.isChecked || false}
                                     onChange={(e) => {
@@ -1339,6 +1352,37 @@ export default function TableList() {
         </Modal.Footer>
       </Modal>
 
+      <Modal show={show1} onHide={handleClose1}>
+        <Modal.Header closeButton>
+          <Modal.Title>ເຫດຜົນຍົກເລີກອາຫານ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <select size="8" style={{ overflow: "auto", border: "none", fontSize: "20px" }} className="form-control"
+              onChange={handleSelectedCancelOrder}
+            >
+              {/* value={seletedCancelOrderItem?.remark} */}
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ເສີບອາຫານຜິດໂຕະ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ລູກຄ້າຍົກເລີກ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ຄົວເຮັດອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ພະນັກງານເສີບ ຄີອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານດົນ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານໝົດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>drinkIsGone</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ບໍ່ມີອາຫານໃນໂຕະ</option>
+            </select>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleClose1()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => handleUpdateOrderStatuscancel("CANCELED")}>
+            ບັນທຶກ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <Modal show={quantity} onHide={handleCloseQuantity}>
         <Modal.Header closeButton>
           <Modal.Title>ແກ້ໄຂຈຳນວນ</Modal.Title>
@@ -1438,7 +1482,7 @@ export default function TableList() {
           <Button variant="danger" onClick={() => handleCloseQuantity()}>
             ຍົກເລີກ
           </Button>
-          <Button variant="success" onClick={() => _orderTableQunatity()}>
+          <Button variant="success" onClick={() => { _orderTableQunatity() }}>
             ບັນທຶກ
           </Button>
         </Modal.Footer>
