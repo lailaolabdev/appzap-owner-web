@@ -78,7 +78,7 @@ export default function SettingTheme() {
                 headers: {}
             };
             const resetThemeSetting = await axios(configResetTheme)
-            console.log(resetThemeSetting?.data)
+            console.log("resetThemeSetting===============>", resetThemeSetting)
 
             let _createData = []
             for (var i = 0; i < themeSelected.length; i++) {
@@ -98,7 +98,7 @@ export default function SettingTheme() {
                 data: data
             };
             const createManyTheme = await axios(config)
-            console.log("createManyTheme: ", createManyTheme.data)
+            console.log("createManyTheme", createManyTheme)
 
         } catch (error) {
             console.log(error)
