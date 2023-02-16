@@ -60,6 +60,8 @@ export default function WaitingOrder() {
   }
   const onPrintForCher = async () => {
     const orderSelect = orderItems?.filter((e) => e?.isChecked);
+    console.log("orderItems===>>>", orderItems)
+    console.log("orderSelect===>>>", orderSelect)
     let _index = 0;
     for (const _ref of billForCher80.current) {
       const _printer = printers.find((e) => {

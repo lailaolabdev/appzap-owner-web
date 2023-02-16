@@ -501,8 +501,6 @@ function AddOrder() {
                   >
                     <span>{data?.name}</span>
                     <br />
-                    <p>{console.log("curency===>>>", currency.map((e)=> data?.price / e.sell))}</p>
-                    <p>{console.log("curency.data===>>>", moneyCurrency(data?.price))}</p>
                     <span>{moneyCurrency(data?.price)} LAK {currency.map((e)=> " / " + (data?.price / e.sell).toFixed(2) +" "+e.currencyCode)}</span>
                     <br />
                     <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>

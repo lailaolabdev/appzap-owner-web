@@ -87,6 +87,8 @@ const Order = () => {
   }
   const onPrintForCher = async () => {
     const orderSelect = orderItems?.filter((e) => e?.isChecked);
+    console.log("orderItems===>>>", orderItems)
+    console.log("orderSelect===>>>", orderSelect)
     let _index = 0;
     for (const _ref of billForCher80.current) {
       const _printer = printers.find((e) => {
@@ -135,20 +137,24 @@ const Order = () => {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if(_index === 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if(_index ===0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
       _index++;
     }

@@ -543,8 +543,6 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
-    console.log("dataaaaaaaa>>>>>", data)
-
       const _data = isCheckedOrderItem.map((e) => {
         if (data?._id === e?._id) {
           return data;
@@ -827,7 +825,7 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? `${t('unavaliable')}` : `${t('avaliable')}`}
+                              {table?.isStaffConfirm ? `${t('unavailable')}` : `${t('avaliable')}`}
                             </div>
                           </span>
                         </div>
@@ -1406,7 +1404,7 @@ export default function TableList() {
             <TableCustom>
               <thead>
                 <tr>
-                  <th>ໂຕະ</th>
+                  <th>{t('table')}</th>
                   <th>{t('menuname')}</th>
                   <th>{t('quantity')}</th>
                   <th>{t('status')}</th>
@@ -1416,7 +1414,6 @@ export default function TableList() {
               </thead>
               <tbody>
                 <tr>
-                  <td>1</td>
                   <td>
                     {seletedOrderItem?.tableId?.name}
                   </td>
