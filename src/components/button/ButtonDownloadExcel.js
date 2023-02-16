@@ -1,8 +1,10 @@
 import React from "react";
 import { JsonToExcel } from "react-json-to-excel";
 import { COLOR_APP } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 function ButtonDownloadExcel({ jsonData }) {
+  const { t } = useTranslation();
   //   const [csvData, setCsvData] = useState(null);
 
   const exportToExcel = async () => {
@@ -50,7 +52,7 @@ function ButtonDownloadExcel({ jsonData }) {
         Export CSV
       </div> */}
 
-      <JsonToExcel data={jsonData} fileName="export" />
+      <JsonToExcel data={jsonData} title="Download as Excel" fileName="export" />
     </>
   );
 }

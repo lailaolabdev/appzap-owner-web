@@ -103,7 +103,7 @@ export default function StoreDetail() {
     <div>
       <div className="row" style={{ padding: 40 }}>
         <div className="col-sm-10" style={{ fontWeight: "bold", fontSize: 18 }}>
-          ລາຍລະອຽດ
+          {t('detail')}
         </div>
         <div className="col-sm-2">
           <Button
@@ -113,7 +113,7 @@ export default function StoreDetail() {
             onClick={() => setPopEditStroe(true)}
           >
             <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
-            ແກ້ໄຂ
+            {t('edit')}
           </Button>
         </div>
       </div>
@@ -185,18 +185,18 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            ຂໍ້ມູນເຈົ້າຂອງຮ້ານ
+            {t('restaurantOwnerInformation')}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ຊື່ແລະນາມສະກຸນ</div>
+            <div className="col-5"></div>
             <div className="col-5">
               {dataStore?.adminName ? dataStore?.adminName : "-"}
             </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ທີ່ຢູ່ຮ້ານ</div>
+            <div className="col-5">{t('surnameAndLastName')}</div>
             <div className="col-5">
               {dataStore?.detail ? dataStore?.detail : "-"}
             </div>
@@ -210,7 +210,7 @@ export default function StoreDetail() {
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ເບີໂທ</div>
+            <div className="col-5">{t('phoneNumber')}</div>
             <div className="col-5">
               {dataStore?.phone ? dataStore?.phone : "-"}
             </div>
@@ -224,17 +224,17 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            ຂໍ້ມູນທົ່ວໄປ
+            {t('generalInfo')}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
             <div className="col-5">{t('totalTable')}</div>
-            <div className="col-5"> {numBerTable} ໂຕະ</div>
+            <div className="col-5"> {numBerTable} {t('table')}</div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ເມນູທັງໝົດ</div>
-            <div className="col-5">{numBerMenus ? numBerMenus : "-"} ເມນູ</div>
+            <div className="col-5">{t('allMenu')}</div>
+            <div className="col-5">{numBerMenus ? numBerMenus : "-"} {t('menu')}</div>
           </div>
         </div>
       </div>

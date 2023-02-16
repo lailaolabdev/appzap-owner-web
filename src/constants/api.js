@@ -3,11 +3,11 @@ import { USER_KEY } from "./index";
 // export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
 // export const END_POINT_APP = "https://api.appzap.la"; // /prosdusction
 
-// export const END_POINT_SEVER = "http://localhost:7070"; // /
-// export const END_POINT_APP = "http://localhost:7070"; // /
+export const END_POINT_SEVER = "http://localhost:7070"; // /
+export const END_POINT_APP = "http://localhost:7070"; // /
 
-export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
-export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
+// export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
+// export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
 
 export const getLocalData = async () => {
   const _local = await localStorage.getItem(USER_KEY);
@@ -30,3 +30,4 @@ export const PRESIGNED_URL = END_POINT_SEVER + "/uploadfile";
 export const TABLES = END_POINT_SEVER + "/v3/tables";
 export const STORE = END_POINT_SEVER + "/v3/store";
 export const STORE_UPDATE = END_POINT_SEVER + "/v3/store/update";
+export const QUERY_LANGUAGE = END_POINT_SEVER + "/v3/currencies";

@@ -55,12 +55,20 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const handleClose1 = () => setShow1(false);
+  const handleShow1 = (e) => {
+    setShow1(true);
+  }
+  
+  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
+  
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false);
@@ -70,6 +78,14 @@ export default function TableList() {
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
+  const [quantity, setQuantity] = useState(false);
+
+  const handleCloseQuantity = () => setQuantity(false);
+  const handleShowQuantity = (item) => {
+    // _orderTableQunatity(item)
+    setSeletedOrderItem(item)
+    setQuantity(true)
+  };
 
   const { printerCounter, printers } = useStore();
 
@@ -106,6 +122,20 @@ export default function TableList() {
   }, [reload]);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
+  const [seletedOrderItem, setSeletedOrderItem] = useState();
+  const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  console.log("seletedCancelOrderItem===>>>", seletedCancelOrderItem)
+
+  // function handleSetQuantity(int, seletedOrderItem) {
+  //   let _data = seletedOrderItem?.quantity + int 
+  //   setSeletedOrderItem(_data)
+  // }
+  function handleSetQuantity(int, seletedOrderItem) {
+    let _data = seletedOrderItem?.quantity + int
+    setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+  }
+
+
 
   const canCheckOut = !tableOrderItems.find(
     (e) =>
@@ -173,6 +203,31 @@ export default function TableList() {
       headers: headers,
     });
     setDataBill(_resBill?.data);
+  };
+
+  const _orderTableQunatity = async () => {
+    try {
+      let headers = await getHeaders();
+
+      const updateTable = await axios({
+        method: "put",
+        url: END_POINT_SEVER + `/v3/orders/update/${seletedOrderItem?._id}`,
+        data: {
+          quantity: seletedOrderItem?.quantity,
+        },
+        headers: headers,
+      });
+      console.log("updateTable===>", updateTable)
+
+      if (updateTable?.status < 300) {
+        setQuantity(false)
+        reLoadData();
+        successAdd("ແກ້ໄຂຈຳນວນສຳເລັດ");
+      }
+
+    } catch (err) {
+      errorAdd("ແກ້ໄຂຈຳນວນບໍ່ສຳເລັດ");
+    }
   };
 
   const [selectNewTable, setSelectNewTable] = useState();
@@ -511,7 +566,7 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCEL") return item;
+        if (item?.status === "CANCELED") return item;
         return {
           ...item,
           isChecked: true,
@@ -594,10 +649,13 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
+          // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      handleClose1()
+      reLoadData();
       // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
@@ -667,9 +725,9 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-            {t('totalTable')} : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
-              {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
-              {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
+              {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
+              {_checkStatusCode(tableList)}, {t('totalAvailableTable')} :{" "}
+              {_checkStatusCodeA(tableList)}, {t('totalBillCheck')} :{" "}
               {_checkStatusCodeB(tableList)}
             </div>
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
@@ -734,8 +792,8 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                            ? "blink_cardCallCheckOut"
-                            : ""
+                              ? "blink_cardCallCheckOut"
+                              : ""
                         }
                         onClick={() => {
                           onSelectTable(table);
@@ -761,7 +819,7 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? "ມິແຂກ" : "ວ່າງ"}
+                              {table?.isStaffConfirm ? `${t('unavaliable')}` : `${t('avaliable')}`}
                             </div>
                           </span>
                         </div>
@@ -811,7 +869,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ລະຫັດເຂົ້າໂຕະ:{" "}
+                          {t('tableNumber2')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -826,7 +884,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ເວລາເປີດໂຕະ:{" "}
+                          {t('timeOfTableOpening')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -841,7 +899,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຜູ້ຮັບຜິດຊອບ:{" "}
+                          {t('respon')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -849,10 +907,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId[0]?.updatedBy?.lastname
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -862,7 +920,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ມີສ່ວນຫຼຸດ:{" "}
+                          {t('discount')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -870,7 +928,7 @@ export default function TableList() {
                             }}
                           >
                             {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
+                            {dataBill?.discountType === "PERCENT" ? "%" : t('lak')}
                           </span>
                         </div>
                       </div>
@@ -889,7 +947,7 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom onClick={() => onPrintForCher()}>
-                          ພິມບິນໄປຄົວ
+                          {t('printBillToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
@@ -898,7 +956,7 @@ export default function TableList() {
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                          ປິດໂຕະ
+                          {t('closeTable')}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
                         <ButtonCustom
@@ -907,7 +965,7 @@ export default function TableList() {
                             setPopup({ discount: true });
                           }}
                         >
-                          ເພີ່ມສ່ວນຫຼຸດ
+                          {t('discount')}
                         </ButtonCustom>
 
                         <ButtonCustom
@@ -925,7 +983,7 @@ export default function TableList() {
                             )
                           }
                         >
-                          + ເພີ່ມອໍເດີ
+                          + {t('addOrder')}
                         </ButtonCustom>
                       </div>
                       <div
@@ -943,20 +1001,20 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() =>
-                            handleUpdateOrderStatuscancel("CANCEL")
+                            handleShow1()
                           }
                         >
-                          ຍົກເລີກ
+                          {t('cancel')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
                         >
-                          ສົ່ງໄປຄົວ
+                          {t('sendToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
                         >
-                          ເສີບແລ້ວ
+                          {t('served')}
                         </ButtonCustom>
                       </div>
 
@@ -969,62 +1027,65 @@ export default function TableList() {
                                 onChange={(e) => checkAllOrders(e)}
                               />
                             </th>
-                            <th>ລຳດັບ</th>
-                            <th>ຊື່ເມນູ</th>
-                            <th>ຈຳນວນ</th>
-                            <th>ສະຖານະ</th>
-                            <th>ຜູ້ສັ່ງ</th>
-                            <th>ເວລາ</th>
+                            <th>{t('no')}</th>
+                            <th>{t('menuname')}</th>
+                            <th>{t('quantity')}</th>
+                            <th>{t('status')}</th>
+                            <th>{t('customer')}</th>
+                            <th>{t('time')}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td>
-                                    <Checkbox
-                                      disabled={orderItem?.status === "CANCEL"}
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) =>
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        })
-                                      }
-                                    />
-                                  </td>
+                              <tr
+                                onClick={() => handleShowQuantity(orderItem)}
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+                                <td onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    disabled={orderItem?.status === "CANCELED"}
+                                    name="checked"
+                                    checked={orderItem?.isChecked || false}
+                                    onChange={(e) => {
+                                      // e.stopPropagation()
+                                      onSelect({
+                                        ...orderItem,
+                                        isChecked: e.target.checked,
+                                      })
+                                    }
+                                    }
+                                  />
+                                </td>
 
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1032,7 +1093,7 @@ export default function TableList() {
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
-                            ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
+                            {t('TableHasNoOrder')}
                           </div>
                         </div>
                       )}
@@ -1083,8 +1144,7 @@ export default function TableList() {
                     textAlign: "center",
                   }}
                 >
-                  ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
-                  ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
+                  {t('bringThisQRCodeToCustomersOrPressOpenToStartUsing')}
                 </p>
                 <p
                   style={{
@@ -1108,7 +1168,7 @@ export default function TableList() {
                   }}
                   onClick={() => openTable()}
                 >
-                  {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
+                  {!selectedTable?.isOpened ? `${t('open')}` : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
               </div>
             )}
@@ -1288,6 +1348,142 @@ export default function TableList() {
           </Button>
           <Button variant="success" onClick={() => _changeTable()}>
             ລວມໂຕະ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show1} onHide={handleClose1}>
+        <Modal.Header closeButton>
+          <Modal.Title>ເຫດຜົນຍົກເລີກອາຫານ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <select size="8" style={{ overflow: "auto", border: "none", fontSize: "20px" }} className="form-control"
+              onChange={handleSelectedCancelOrder}
+            >
+              {/* value={seletedCancelOrderItem?.remark} */}
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ເສີບອາຫານຜິດໂຕະ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ລູກຄ້າຍົກເລີກ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ຄົວເຮັດອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ພະນັກງານເສີບ ຄີອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານດົນ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານໝົດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>drinkIsGone</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ບໍ່ມີອາຫານໃນໂຕະ</option>
+            </select>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleClose1()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => handleUpdateOrderStatuscancel("CANCELED")}>
+            ບັນທຶກ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={quantity} onHide={handleCloseQuantity}>
+        <Modal.Header closeButton>
+          <Modal.Title>ແກ້ໄຂຈຳນວນ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <TableCustom>
+              <thead>
+                <tr>
+                  <th>ໂຕະ</th>
+                  <th>{t('menuname')}</th>
+                  <th>{t('quantity')}</th>
+                  <th>{t('status')}</th>
+                  <th>{t('customer')}</th>
+                  <th>{t('time')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    {seletedOrderItem?.tableId?.name}
+                  </td>
+                  <td>{seletedOrderItem?.name}</td>
+                  <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, seletedOrderItem)}>-</button>
+                    {seletedOrderItem?.quantity}
+                    <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, seletedOrderItem)}>+</button>
+                  </td>
+                  <td
+                    style={{
+                      color:
+                        seletedOrderItem?.status === `SERVED`
+                          ? "green"
+                          : seletedOrderItem?.status === "DOING"
+                            ? ""
+                            : "red",
+                    }}
+                  >
+                    {seletedOrderItem?.status
+                      ? orderStatus(seletedOrderItem?.status)
+                      : "-"}
+                  </td>
+                  <td>{seletedOrderItem?.createdBy?.firstname}</td>
+                  <td>
+                    {seletedOrderItem?.createdAt
+                      ? moment(seletedOrderItem?.createdAt).format(
+                        "HH:mm A"
+                      )
+                      : "-"}
+                  </td>
+                </tr>
+                {/* {isCheckedOrderItem
+                  ? isCheckedOrderItem?.map((orderItem, index) => (
+                    <tr
+                      key={"order" + index}
+                      style={{ borderBottom: "1px solid #eee" }}
+                    >
+
+                      <td>{orderItem?.tableId?.name}</td>
+                      <td>{orderItem?.name}</td>
+                      <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, orderItem)}>-</button>
+                        {orderItem?.quantity}
+                        <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, orderItem)}>+</button>
+                      </td>
+                      <td
+                        style={{
+                          color:
+                            orderItem?.status === `SERVED`
+                              ? "green"
+                              : orderItem?.status === "DOING"
+                                ? ""
+                                : "red",
+                        }}
+                      >
+                        {orderItem?.status
+                          ? orderStatus(orderItem?.status)
+                          : "-"}
+                      </td>
+                      <td>{orderItem?.createdBy?.firstname}</td>
+                      <td>
+                        {orderItem?.createdAt
+                          ? moment(orderItem?.createdAt).format(
+                            "HH:mm A"
+                          )
+                          : "-"}
+                      </td>
+                    </tr>
+                  ))
+                  : ""} */}
+              </tbody>
+            </TableCustom>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleCloseQuantity()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => { _orderTableQunatity() }}>
+            ບັນທຶກ
           </Button>
         </Modal.Footer>
       </Modal>

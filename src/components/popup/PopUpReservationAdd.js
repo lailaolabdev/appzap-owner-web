@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { COLOR_APP } from "../../constants";
 import { Form, Modal, Button } from "react-bootstrap";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
+  const { t } = useTranslation();
   const [startTime, setStartTime] = useState(
     moment(value?.startTime).format("HH:mm")
   );
@@ -24,7 +26,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
   }, [value]);
   return (
     <Modal show={open} onHide={handleClose}>
-      <Modal.Header closeButton>ເພີ່ມການຈອງໂຕະ</Modal.Header>
+      <Modal.Header closeButton>{t('addBooking')}</Modal.Header>
       <Formik
         enableReinitialize={true}
         initialValues={{
@@ -93,7 +95,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
           <form onSubmit={handleSubmit}>
             <Modal.Body>
               <Form.Group>
-                <Form.Label>ຊື່ຜູ້ຈອງ</Form.Label>
+                <Form.Label>{t('bookedBy')}</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="ຊື່"
@@ -105,7 +107,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>ເບີໂທລະສັບ</Form.Label>
+                <Form.Label>{t('phoneNumberOfBooked')}</Form.Label>
                 <Form.Control
                   type="text"
                   maxlength="8"
@@ -119,7 +121,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>ຈຳນວນຄົນ</Form.Label>
+                <Form.Label>{t('numberOfPeople')}</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="ຈຳນວນຄົນ"
@@ -133,7 +135,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
               <Form.Group>
                 <div style={{ display: "flex", gap: 10 }}>
                   <div style={{ flexGrow: 1 }}>
-                    <Form.Label>ວັນທີມາ</Form.Label>
+                    <Form.Label>{t('date')}</Form.Label>
                     <Form.Control
                       type="date"
                       value={startDate}
@@ -145,7 +147,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                     />
                   </div>
                   <div style={{ flexGrow: 1 }}>
-                    <Form.Label>ເວລາມາ</Form.Label>
+                    <Form.Label>{t('time')}</Form.Label>
                     <Form.Control
                       type="time"
                       value={startTime}
@@ -159,7 +161,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 </div>
               </Form.Group>
               <Form.Group>
-                <Form.Label>ລູກຄ້າຄອມເມັ້ນ</Form.Label>
+                <Form.Label>{t('comment')}</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="clientComment"
@@ -170,7 +172,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>ໂຕະ (ສະຖານທີ່)</Form.Label>
+                <Form.Label>{t('tableStatus2')}</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="note"

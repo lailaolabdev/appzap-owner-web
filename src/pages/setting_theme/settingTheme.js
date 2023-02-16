@@ -6,10 +6,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { END_POINT_SEVER } from "../../constants/api";
 
 
+
 export default function SettingTheme() {
 
     const [themes, setThemes] = useState([])
     const [themeSelected, setThemeSelected] = useState([])
+    const [backgroundHeaderColor, setBackgroundHeaderColor] = useState({});
+    const [backgroundBodeColor, setBackgroundBodyColor] = useState({});
+    const [backgroundFooterColor, setBackgroundFooterColor] = useState({});
+    const [frontHeaderColor, setFrontHeaderColor] = useState({});
+    const [frontBodyColor, setFrontBodyColor] = useState({});
+    const [frontFooterColor, setFrontFooterColor] = useState({});
 
     useEffect(() => {
         getData();
@@ -99,44 +106,261 @@ export default function SettingTheme() {
     }
 
     return (
-        <div className="allBox">
-            <div class="box1"
+        <div style={{ display: "flex" , flexDirection: "row", gap: 350}}>
+            <div className="allBox">
+                <div class="box1"
+                    style={{
+                        margin: "40px",
+                        padding: "20px",
+                        backgroundColor: "#f5f2f0",
+                        borderRadius: "20px",
+                    }}
+                >
+                    <button onClick={() => onSaveThemeSetting()}>Save</button>
+                    <p>{themes.map((theme, index) => {
+                        return (
+                            <div key={index} style={{ marginTop: 20 }}>
+                                <div><b>{theme?.category ?? "-"}</b></div>
+                                {theme?.categoryData?.map((category, index1) => {
+                                    return (
+                                        <div key={index1}>
+                                            <div><u>{category?.type ?? "-"}</u></div>
+                                            {category?.typeValues?.map((type, index2) => {
+                                                let _checkThem = themeSelected?.filter(_them => _them._id == type?._id)
+                                                return (
+                                                    <div key={index2} onClick={() => onSeleteTheme(type)}>
+                                                        {_checkThem.length > 0 ? <FontAwesomeIcon icon={faCheck} color="green" /> : <FontAwesomeIcon icon={faCheck} color="#c8c9c7" />}{" "}
+                                                        {theme?.category == "COLOR" &&
+                                                            <input type="color" disabled value={type?.value} />}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
+                    })}</p>
+                </div>
+            </div>
+            <div
                 style={{
-                    margin: "20px",
-                    padding: "20px",
-                    backgroundColor: "#f5f2f0",
-                    // width: "600px",
-                    // height: "300px",
-                    borderRadius: "20px"
-                }}
-            >
-                <button onClick={() => onSaveThemeSetting()}>Save</button>
-                <p>{themes.map((theme, index) => {
-                    return (
-                        <div key={index} style={{ marginTop: 20 }}>
-                            <div><b>{theme?.category ?? "-"}</b></div>
-                            {theme?.categoryData?.map((category, index1) => {
-                                return (
-                                    <div key={index1}>
-                                        <div><u>{category?.type ?? "-"}</u></div>
-                                        {category?.typeValues?.map((type, index2) => {
-                                            let _checkThem = themeSelected?.filter(_them => _them._id == type?._id)
-                                            return (
-                                                <div key={index2} onClick={() => onSeleteTheme(type)}>
-                                                    {_checkThem.length > 0 ? <FontAwesomeIcon icon={faCheck} color="green" /> : <FontAwesomeIcon icon={faCheck} color="#c8c9c7" />}{" "}
-                                                    {theme?.category == "COLOR" &&
-                                                        <input type="color" disabled value={type?.value} />}
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                )
-                            })}
+                    backgroundColor: "#FB6E3B",
+                    width: "390px",
+                    height: "840px",
+                    margin: "40px",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    borderWidth: 1,
+                    borderColor: "#000",
+                    borderStyle: "solid"
+                }}>
+                <div style={{
+                    height: "10%",
+                    display: "flex",
+                    flexDirection: "row",
+                    marginTop: "40px",
+                    marginLeft: "15px"
+                }}>
+                    <img src="https://s3.ap-southeast-1.amazonaws.com/policy.appzap.la/4Asset+1%404x.png" width={70} height={70} />
+                    <p style={{ color: "white", marginTop: "20px", marginLeft: "10px" }}><b>Restaurant Name</b></p>
+                </div>
+                <div
+                    style={{
+                        backgroundColor: "#ffffff",
+                        width: "100%",
+                        height: "100%",
+                        borderTopRightRadius: "60px",
+                        borderTopLeftRadius: "60px",
+                        borderBottomLeftRadius: "6px",
+                        borderBottomRightRadius: "6px",
+                        display: "flex",
+                        flexDirection: "column"
+                    }}
+                >
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        textAlign: "center"
+                    }}>
+                        <p style={{ color: "#FB6E3B", marginTop: "15px" }}>{">> ກົດເພື່ອຮັບສ່ວນຫຼຸດ <<"}</p>
+                        <p style={{ color: "#FB6E3B" }}><b>ເມນູພາຍໃນຮ້ານ</b></p>
+                    </div>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginLeft: "15px",
+                        marginRight: "15px"
+                    }}>
+                        <p style={{ color: "#000000" }}><b>ເມນູທີ່ແນະນຳ</b></p>
+                        <p style={{ color: "#0c69f5" }}>{"ທັງໝົດ >>"}</p>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 50 }}>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginLeft: "15px",
+                            marginRight: "15px"
+                        }}>
+                            <div style={{
+                                backgroundColor: "blue",
+                                width: "175px",
+                                height: "200px",
+                                marginRight: "10px",
+                                borderRadius: "5px"
+                            }}>
+                                <img src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/sausages-and-sauerkraut1-1658681202.jpg" width={"175px"} height={"180px"}
+                                    style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px"
+                                    }} />
+                                <div style={{
+                                    backgroundColor: "#f7eee9",
+                                    height: "30px",
+                                    width: "175px",
+                                    paddingLeft: 5,
+                                }}>
+                                    <b>Menu Name</b>
+                                </div>
+                                <div style={{
+                                    backgroundColor: "#FB6E3B",
+                                    height: "30px",
+                                    width: "175px",
+                                    borderBottomRightRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    paddingLeft: 5,
+                                    color: "white"
+                                }}>
+                                    100,000 kip
+                                </div>
+                            </div>
+                            <div style={{
+                                backgroundColor: "blue",
+                                width: "175px",
+                                height: "200px",
+                                marginRight: "10px",
+                                borderRadius: "5px"
+                            }}>
+                                <img src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/sausages-and-sauerkraut1-1658681202.jpg" width={"175px"} height={"180px"}
+                                    style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px"
+                                    }} />
+                                <div style={{
+                                    backgroundColor: "#f7eee9",
+                                    height: "30px",
+                                    width: "175px",
+                                    paddingLeft: 5,
+                                }}>
+                                    <b>Menu Name</b>
+                                </div>
+                                <div style={{
+                                    backgroundColor: "#FB6E3B",
+                                    height: "30px",
+                                    width: "175px",
+                                    borderBottomRightRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    paddingLeft: 5,
+                                    color: "white"
+                                }}>
+                                100,000 kip
+                                </div>
+                            </div>
                         </div>
-                    )
-                })}</p>
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            gap: 50,
+                            padding:10,
+                            boxShadow:"3px 3px 5px rgba(0,0,0,0.1)"
+                        }}>
+                            <div style={{ color: "#FB6E3B" }}>Drink</div>
+                            <div style={{ color: "#FB6E3B" }}>All</div>
+                            <div style={{ color: "#FB6E3B" }}>Food</div>
+                            <div style={{ color: "#FB6E3B" }}>Cafe</div>
+                            <div style={{ color: "#FB6E3B" }}>Beer</div>
+                        </div>
+
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            marginLeft: "15px",
+                            marginRight: "15px",
+                            marginTop:-20
+                        }}>
+                            <div style={{
+                                backgroundColor: "blue",
+                                width: "175px",
+                                marginRight: "10px",
+                                borderRadius: "5px"
+                            }}>
+                                <img src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/sausages-and-sauerkraut1-1658681202.jpg" width={"175px"} height={"180px"}
+                                    style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px"
+                                    }} />
+                                <div style={{
+                                    backgroundColor: "#f7eee9",
+                                    height: "30px",
+                                    width: "175px",
+                                    paddingLeft: 5,
+                                }}>
+                                    <b>Menu Name</b>
+                                </div>
+                                <div style={{
+                                    backgroundColor: "#FB6E3B",
+                                    height: "30px",
+                                    width: "175px",
+                                    borderBottomRightRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    paddingLeft: 5,
+                                    color: "white"
+                                }}>
+                                    100,000 kip
+                                </div>
+                            </div>
+                            <div style={{
+                                backgroundColor: "blue",
+                                width: "175px",
+                                height: "200px",
+                                marginRight: "10px",
+                                borderRadius: "5px"
+                            }}>
+                                <img src="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/sausages-and-sauerkraut1-1658681202.jpg" width={"175px"} height={"180px"}
+                                    style={{
+                                        borderTopRightRadius: "5px",
+                                        borderTopLeftRadius: "5px"
+                                    }} />
+                                <div style={{
+                                    backgroundColor: "#f7eee9",
+                                    height: "30px",
+                                    width: "175px",
+                                    paddingLeft: 5,
+                                }}>
+                                    <b>Menu Name</b>
+                                </div>
+                                <div style={{
+                                    backgroundColor: "#FB6E3B",
+                                    height: "30px",
+                                    width: "175px",
+                                    borderBottomRightRadius: "5px",
+                                    borderBottomLeftRadius: "5px",
+                                    paddingLeft: 5,
+                                    color: "white"
+                                }}>
+                                    100,000 kip
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
     )
 }
 

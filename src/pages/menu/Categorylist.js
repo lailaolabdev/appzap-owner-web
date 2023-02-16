@@ -9,8 +9,10 @@ import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function Categorylist() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const [getTokken, setgetTokken] = useState();
@@ -150,7 +152,7 @@ export default function Categorylist() {
         <Nav variant="tabs" defaultActiveKey="/settingStore/category">
           <Nav.Item>
             <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              ເມນູອາຫານ
+              {t('menu')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -158,7 +160,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              ປະເພດອາຫານ
+              {t('foodType')}
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -170,7 +172,7 @@ export default function Categorylist() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
           >
-            ເພີ່ມປະເພດອາຫານ
+            {t('addFoodType')}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>
@@ -179,10 +181,10 @@ export default function Categorylist() {
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">ຊື່ປະເພດອາຫານ</th>
-                  <th scope="col">ໝາຍເຫດ</th>
-                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">{t('no')}</th>
+                  <th scope="col">{t('foodTypeName')}</th>
+                  <th scope="col">{t('note')}</th>
+                  <th scope="col">{t('manage')}</th>
                 </tr>
               </thead>
               <tbody>

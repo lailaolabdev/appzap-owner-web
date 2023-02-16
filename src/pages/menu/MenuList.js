@@ -50,20 +50,23 @@ export default function MenuList() {
   const [Menus, setMenus] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const _localData = await getLocalData();
-        if (_localData) {
-          setgetTokken(_localData);
-          getcategory(_localData?.DATA?.storeId);
-          getMenu(_localData?.DATA?.storeId);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
+
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const _localData = await getLocalData();
+      if (_localData) {
+        setgetTokken(_localData);
+        getcategory(_localData?.DATA?.storeId);
+        getMenu(_localData?.DATA?.storeId);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const getcategory = async (id) => {
     try {
       await fetch(
@@ -78,6 +81,7 @@ export default function MenuList() {
       console.log(err);
     }
   };
+
   const getMenu = async (id) => {
     try {
       await fetch(MENUS + `/?isOpened=true&storeId=${id}`, {
@@ -119,6 +123,7 @@ export default function MenuList() {
           categoryId: values?.categoryId,
           price: values?.price,
           detail: values?.detail,
+          sort: values?.sort,
           unit: values?.unit,
           isOpened: isOpened,
           images: [...values?.images],
@@ -175,6 +180,7 @@ export default function MenuList() {
   };
   const _updateCategory = async (values) => {
     let header = await getHeaders();
+
     const headers = {
       "Content-Type": "application/json",
       Authorization: header.authorization,
@@ -191,6 +197,7 @@ export default function MenuList() {
           categoryId: values?.categoryId,
           price: values?.price,
           detail: values?.detail,
+          sort: values?.sort,
           unit: values?.unit,
           isOpened: isOpened,
           images: [...values?.images],
@@ -198,10 +205,12 @@ export default function MenuList() {
       },
       headers: headers,
     });
-    if (resData?.data) {
+    console.log({ resData })
+    if (resData?.status === 200) {
       // setMenus(resData?.data);
       handleClose2();
       successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+      fetchData();
     }
   };
   const _updateQtyCategory = async (values) => {
@@ -446,8 +455,8 @@ export default function MenuList() {
                     style={{
                       border:
                         errors.categoryId &&
-                        touched.categoryId &&
-                        errors.categoryId
+                          touched.categoryId &&
+                          errors.categoryId
                           ? "solid 1px red"
                           : "",
                     }}
@@ -568,6 +577,7 @@ export default function MenuList() {
                     border: 0,
                   }}
                   onClick={() => handleSubmit()}
+                // onClick={() => _updateCategory()}
                 >
                   ບັນທືກ
                 </Button>
@@ -608,6 +618,7 @@ export default function MenuList() {
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
+            console.log("=========")
             const getData = async () => {
               await _updateCategory(values);
               const _localData = await getLocalData();
@@ -814,7 +825,7 @@ export default function MenuList() {
                     color: "#ffff",
                     border: 0,
                   }}
-                  onClick={() => handleSubmit()}
+                  onClick={() => _updateCategory(values)}
                 >
                   ບັນທືກ
                 </Button>

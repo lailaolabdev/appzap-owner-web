@@ -10,6 +10,7 @@ import { updateOrderItem } from "../../../services/order";
 import PopupCancle from "../../../components/popup/PopupCancle";
 // import { socket } from "../../../services/socket";
 import { PubNubProvider, usePubNub } from "pubnub-react";
+import { useTranslation } from "react-i18next";
 
 export default function OrderNavbar() {
   const { storeDetail } = useStore();
@@ -24,6 +25,7 @@ export default function OrderNavbar() {
     selectOrderStatus,
     setSelectOrderStatus,
   } = useStore();
+  const { t } = useTranslation();
 
   const [popup, setPopup] = useState({
     cancel: false,
@@ -99,7 +101,8 @@ export default function OrderNavbar() {
               }}
               onClick={() => _order()}
             >
-              ອໍເດີ້ເຂົ້າ
+              {/* ອໍເດີ້ເຂົ້າ */}
+              {t('hasOrder')}
             </div>
 
             <div
@@ -115,7 +118,8 @@ export default function OrderNavbar() {
               }}
               onClick={() => _doing()}
             >
-              ກຳລັງເຮັດ
+              {/* ກຳລັງເຮັດ */}
+              {t('cooking')}
             </div>
 
             <div
@@ -131,7 +135,8 @@ export default function OrderNavbar() {
               }}
               onClick={() => _served()}
             >
-              ເສີບແລ້ວ
+              {/* ເສີບແລ້ວ */}
+              {t('served')}
             </div>
           </div>
           <div
@@ -150,7 +155,8 @@ export default function OrderNavbar() {
                 }}
                 onClick={() => handleUpdateOrderStatus("CANCEL")}
               >
-                ຍົກເລີກ
+                {/* ຍົກເລີກ */}
+                {t('cancel')}
               </button>
             </div>
             <div style={{ width: "10px" }}></div>
@@ -164,7 +170,8 @@ export default function OrderNavbar() {
                 }}
                 onClick={() => handleUpdateOrderStatus("DOING")}
               >
-                ສົ່ງໄປຄົວ
+                {/* ສົ່ງໄປຄົວ */}
+                {t('sendToKitchen')}
               </button>
             </div>
             <div style={{ width: "10px" }}></div>
@@ -178,7 +185,8 @@ export default function OrderNavbar() {
                 }}
                 onClick={() => handleUpdateOrderStatus("SERVED")}
               >
-                ເສີບແລ້ວ
+                {/* ເສີບແລ້ວ */}
+                {t('served')}
               </button>
             </div>
           </div>
