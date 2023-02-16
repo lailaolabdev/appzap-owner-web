@@ -33,7 +33,7 @@ import Loading from "../../components/Loading";
 import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate, useParams } from "react-router-dom";
+import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
@@ -58,13 +58,13 @@ function AddOrder() {
 
   function handleSetQuantity(int, data) {
     let dataArray = []
-    for(const i of selectedMenu) {
+    for (const i of selectedMenu) {
 
-      let _data={...i}
-      if(data?.id === i?.id) {
-        _data={..._data,quantity:_data?.quantity + int}
+      let _data = { ...i }
+      if (data?.id === i?.id) {
+        _data = { ..._data, quantity: _data?.quantity + int }
       }
-      if(_data.quantity > 0) {
+      if (_data.quantity > 0) {
         dataArray.push(_data)
       }
     }
@@ -72,6 +72,7 @@ function AddOrder() {
   }
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
+  const [currency, setCurrency] = useState([])
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -189,6 +190,7 @@ function AddOrder() {
       }
     };
     fetchData();
+    getcurrency();
   }, []);
   useEffect(() => {
     // TODO: check selectTable
@@ -207,6 +209,26 @@ function AddOrder() {
       setBillId(data?.[0]);
     })();
   }, []);
+
+  const getcurrency = async () => {
+    try {
+      console.log("storeDetail?._id", storeDetail?._id)
+      let x = await axios.get(
+        END_POINT_SEVER +
+        `/v3/currencies?storeId=${storeDetail?._id}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+        }
+      );
+      // console.log("first", x.data[0].sell)
+      setCurrency(x.data)
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -479,7 +501,9 @@ function AddOrder() {
                   >
                     <span>{data?.name}</span>
                     <br />
-                    <span>{moneyCurrency(data?.price)}</span>
+                    <p>{console.log("curency===>>>", currency.map((e)=> data?.price / e.sell))}</p>
+                    <p>{console.log("curency.data===>>>", moneyCurrency(data?.price))}</p>
+                    <span>{moneyCurrency(data?.price)} LAK {currency.map((e)=> " / " + (data?.price / e.sell).toFixed(2) +" "+e.currencyCode)}</span>
                     <br />
                     <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
                   </div>
@@ -522,10 +546,10 @@ function AddOrder() {
                           <tr key={"selectMenu" + index}>
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
-                            <td style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                              <button style={{color: "blue", border: "none", width: 25}} onClick={() => handleSetQuantity(-1, data)}>-</button>
+                            <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                              <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, data)}>-</button>
                               {data.quantity}
-                              <button style={{color: "red", border: "none", width: 25}} onClick={() => handleSetQuantity(1, data)}>+</button>
+                              <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, data)}>+</button>
                             </td>
                             <td>
                               <i

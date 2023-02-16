@@ -21,6 +21,8 @@ export const orderStatus = (status) => {
 export const moneyCurrency = (value) => {
   if (value) {
     let currencys = new Intl.NumberFormat("en-CA").format(value);
+    // console.log("currencys===>>>", currencys)
+    // console.log("value===>>>", value)
     return currencys;
   } else {
     return 0;

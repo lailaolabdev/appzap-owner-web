@@ -66,9 +66,9 @@ export default function TableList() {
   const handleShow1 = (e) => {
     setShow1(true);
   }
-  
+
   const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
-  
+
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false);
@@ -124,6 +124,8 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  const [checkedBox, setCheckedBox] = useState(true)
+
   console.log("seletedCancelOrderItem===>>>", seletedCancelOrderItem)
 
   // function handleSetQuantity(int, seletedOrderItem) {
@@ -541,16 +543,8 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
-    if (isCheckedOrderItem?.length === 0) {
-      const _data = tableOrderItems.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
-    } else {
+    console.log("dataaaaaaaa>>>>>", data)
+
       const _data = isCheckedOrderItem.map((e) => {
         if (data?._id === e?._id) {
           return data;
@@ -559,7 +553,20 @@ export default function TableList() {
         }
       });
       setIsCheckedOrderItem(_data);
+
+    const _isChecked = _data.filter((e) => {
+      if (e?.isChecked) {
+        return true
+      }
+      return false
+    });
+
+    if(_isChecked.length === 0) {
+      setCheckedBox(true)
+    }else{
+      setCheckedBox(false)
     }
+   
   };
 
   const checkAllOrders = (item) => {
@@ -627,6 +634,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       // if (previousStatus === DOING_STATUS) getOrderItemsStore(DOING_STATUS);
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -1003,16 +1011,19 @@ export default function TableList() {
                           onClick={() =>
                             handleShow1()
                           }
+                          disabled={checkedBox}
                         >
                           {t('cancel')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
+                          disabled={checkedBox}
                         >
                           {t('sendToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
+                          disabled={checkedBox}
                         >
                           {t('served')}
                         </ButtonCustom>
@@ -1024,7 +1035,10 @@ export default function TableList() {
                             <th>
                               <Checkbox
                                 name="checked"
-                                onChange={(e) => checkAllOrders(e)}
+                                onChange={(e) => {
+                                  checkAllOrders(e);
+                                  setCheckedBox(!e.target.checked);
+                                }}
                               />
                             </th>
                             <th>{t('no')}</th>
