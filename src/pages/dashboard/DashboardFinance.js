@@ -436,7 +436,11 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                 ຈ່າຍເງິນສົດ: item?.payAmount,
                 ຈ່າຍເງິນໂອນ: item?.transferAmount,
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-                ລວມສ່ວນຫຼຸດ: item?.billAmountBefore,
+                ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+                ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+                new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                  data?.amount + dataNotCheckBill?.amount
+                ) : "",
               }))}
             />
           </Box>
