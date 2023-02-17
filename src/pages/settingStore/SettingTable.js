@@ -89,7 +89,7 @@ export default function SettingTable() {
         warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
       } else {
         getTableDataStoreList();
-        successAdd("ການເພີ່ມໂຕະສຳເລັດ");
+        successAdd("ການແກ້ໄຂໂຕະສຳເລັດ");
       }
     } catch (err) {
       errorAdd("ການເພີ່ມໂຕະບໍ່ສຳເລັດ");

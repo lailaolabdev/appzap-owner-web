@@ -126,15 +126,15 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true)
 
-  console.log("seletedCancelOrderItem===>>>", seletedCancelOrderItem)
-
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int 
   //   setSeletedOrderItem(_data)
   // }
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int
-    setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+    if (_data > 0) {
+      setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+    }
   }
 
 
@@ -531,26 +531,28 @@ export default function TableList() {
         }
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
       _index++;
     }
   };
 
   const onSelect = (data) => {
-      const _data = isCheckedOrderItem.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
+    const _data = isCheckedOrderItem.map((e) => {
+      if (data?._id === e?._id) {
+        return data;
+      } else {
+        return e;
+      }
+    });
+    setIsCheckedOrderItem(_data);
 
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
@@ -559,12 +561,12 @@ export default function TableList() {
       return false
     });
 
-    if(_isChecked.length === 0) {
+    if (_isChecked.length === 0) {
       setCheckedBox(true)
-    }else{
+    } else {
       setCheckedBox(false)
     }
-   
+
   };
 
   const checkAllOrders = (item) => {
@@ -604,6 +606,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       // if (previousStatus === SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",

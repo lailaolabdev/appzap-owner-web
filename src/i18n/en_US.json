@@ -160,5 +160,6 @@
     "allMenu": "All menu",
     "table": "Table",
     "addOrder": "Add order",
-    "TableHasNoOrder": "This table has no orders yet"
+    "TableHasNoOrder": "This table has no orders yet",
+    "transfercash": "Tranfer + Cash payment"
 }

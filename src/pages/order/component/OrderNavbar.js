@@ -73,6 +73,7 @@ export default function OrderNavbar() {
         timer: 2000,
       });
     }
+    fetchData();
   };
   return (
     <div>
