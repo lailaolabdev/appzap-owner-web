@@ -3,6 +3,7 @@ import { Button, Modal } from "react-bootstrap";
 import styled from "styled-components";
 import moment from "moment";
 import { COLOR_APP } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 const PopUpReservationDetail = ({
   open,
@@ -13,9 +14,10 @@ const PopUpReservationDetail = ({
   buttonConfirm,
   buttonSuccess,
 }) => {
+  const { t } = useTranslation();
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ລາຍລະອຽດການຈອງ</Modal.Header>
+      <Modal.Header closeButton>{t('bookingDetail')}</Modal.Header>
       <Modal.Body>
         <div
           style={{
@@ -33,7 +35,7 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            ສຳເລັດການຈອງ
+            {t('bookingSuccess')}
           </Button>
           <Button
             onClick={buttonEdit}
@@ -43,7 +45,7 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            ແກ້ໄຂ
+            {t('edit')}
           </Button>
           <Button
             onClick={buttonConfirm}
@@ -53,7 +55,7 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            ຍືນຍັນການຈອງ
+            {t('bookingConfirm')}
           </Button>
           <Button
             onClick={buttonCancel}
@@ -63,19 +65,19 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            ຍົກເລີກ
+            {t('cancel')}
           </Button>
         </div>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ຊື່ຜູ້ຈອງ :</span>
+          <span style={{ textAlign: "right" }}>{t('bookedBy')} :</span>
           <span>{data?.clientNames?.[0]}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ເບີໂທຜູ້ຈອງ :</span>
+          <span style={{ textAlign: "right" }}>{t('phoneNumberOfBooked')} :</span>
           <span>{data?.clientPhone}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ວັນ - ເວລາທີ່ຈອງ :</span>
+          <span style={{ textAlign: "right" }}>{t('date&&timeBooking')} :</span>
           <span style={{ display: "flex", justifyContent: "space-between" }}>
             <span>
               {data?.startTime &&
@@ -88,19 +90,19 @@ const PopUpReservationDetail = ({
           </span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ຈຳນວນຄົນທີ່ຈະມາ :</span>
+          <span style={{ textAlign: "right" }}>{t('numberOfPeopleBooking')} :</span>
           <span>{data?.clientNumber}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ລາຍລະອຽດເພີ່ມເຕີມ :</span>
+          <span style={{ textAlign: "right" }}>{t('moreDetail')} :</span>
           <span>{data?.clientComment}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ສະຖານທີ່ :</span>
+          <span style={{ textAlign: "right" }}>{t('place')} :</span>
           <span>{data?.note}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>ວັນທີສ້າງ ແລະ ອັບເດດ :</span>
+          <span style={{ textAlign: "right" }}>{t('createdAndUpdatedDate')} :</span>
           <span>
             {data?.createdAt &&
               moment

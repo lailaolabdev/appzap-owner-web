@@ -6,16 +6,13 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import * as axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faEyeSlash,
-  faHeadset,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import Lottie from "react-lottie";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
+import { toast } from "react-toastify";
 
 // style
 import "./login.css";
@@ -26,11 +23,10 @@ import AnimationLoading from "../../components/AnimationLoading";
 
 function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
-  console.log(location);
+  // const location = useLocation();
   // const { match } = useReactRouter();
 
-  const { height, width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   const [checkUser, setCheckUser] = useState(false);
   const [popupDate, setPopupData] = useState(null);
@@ -45,11 +41,32 @@ function Login() {
         await localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
-        await navigate(`/settingStore/storeDetail/${user?.data?.data?.storeId}`);
+        await navigate(
+          `/settingStore/storeDetail/${user?.data?.data?.storeId}`
+        );
       } else {
+        //  _orderSound.play();
+        toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+          position: "bottom-left",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         setCheckUser(true);
       }
     } catch (error) {
+      toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+        position: "bottom-left",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       setCheckUser(true);
     }
   };

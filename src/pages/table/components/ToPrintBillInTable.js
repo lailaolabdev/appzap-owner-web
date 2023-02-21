@@ -1,10 +1,8 @@
-import React from 'react';
-import Row from "react-bootstrap/Row";
+import React from "react";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
-import { Image } from 'react-bootstrap';
-import { STORE } from '../../../constants/api'
-import profileImage from "../../../image/profile.png"
+import { Image } from "react-bootstrap";
+import profileImage from "../../../image/profile.png";
 
 /**
  * const
@@ -23,6 +21,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
         let userData = this.props.userData;
         let amount = 0;
         return (
+          <div> <div> <div>
             <div className="center" style={{ width: '100%', fontSize: 42 }}>
                 <div style={{ textAlign: "center", paddingTop: 30 }}>
                     <Col>
@@ -95,6 +94,81 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                     </Col>
                 </div>
             </div>
-        );
-    }
+            <div className="row col-sm-12 text-center">
+              <div className="col-sm-6" style={{ fontWeight: "bold" }}>
+                ຊື່ຜູ້ສັ່ງ : {firstname}
+              </div>
+              <div className="col-sm-6" style={{ fontWeight: "bold" }}>
+                ວັນທີ : {new Date().toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <Col xs={12}>
+            <Table
+              responsive
+              className="table"
+              id="printMe"
+              style={{ fontSize: 42 }}
+            >
+              <thead style={{ backgroundColor: "#F1F1F1" }}>
+                <tr>
+                  <th>ຊື່ຜູ້ສັ່ງ</th>
+                  <th>ຊື່ເມນູ</th>
+                  <th>ຈຳນວນ</th>
+                  <th>ລາຄາ</th>
+                  <th>ລະຫັດ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {newData?.map((item, lindex) => {
+                  amount = amount + item?.price * item?.quantity;
+                  return (
+                    <tr key={"order" + lindex}>
+                      <td>
+                        <b>{item?.orderId?.customer_nickname}</b>
+                      </td>
+                      <td>
+                        <b>{item?.name}</b>
+                      </td>
+                      <td>{item?.quantity}</td>
+                      <td style={{ color: "green" }}>
+                        <b>
+                          {new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(item?.price * item?.quantity)}{" "}
+                          ກີບ
+                        </b>
+                      </td>
+                      <td>{item?.orderId?.table_id}</td>
+                    </tr>
+                  );
+                })}
+                <tr>
+                  <td
+                    colSpan={2}
+                    style={{
+                      color: "red",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    ຍອດລວມເງິນ :{" "}
+                  </td>
+
+                  <td colSpan={2} style={{ color: "blue" }}>
+                    {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                      amount
+                    )}{" "}
+                    .ກີບ
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </div>
+      </div>
+    );
+  }
 }

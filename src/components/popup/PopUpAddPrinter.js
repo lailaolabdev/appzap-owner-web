@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store/useStore";
 
-export default function PopUpAddPrinter({ open, onClose, onSubmit }) {
+export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
   // state
   const { storeDetail } = useStore();
 
@@ -17,6 +17,10 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit }) {
         enableReinitialize={true}
         initialValues={{
           storeId: storeDetail?._id,
+          name: value?.name,
+          width: value?.width || "",
+          type: value?.type || "",
+          ip: value?.ip,
         }}
         validate={(values) => {
           const errors = {};
@@ -77,6 +81,9 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit }) {
                   value={values?.width}
                   isInvalid={errors?.width}
                 >
+                  <option value="" disabled>
+                    -ເລືອກຂະໜາດເຈ້ຍ-
+                  </option>
                   <option value="80mm">80mm</option>
                   <option value="58mm">58mm</option>
                 </Form.Control>
@@ -89,32 +96,44 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit }) {
                 <Form.Control
                   as="select"
                   name="type"
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (e.target.value === "USB") {
+                      setFieldValue("ip", "192.168.1.1");
+                    } else {
+                      setFieldValue("ip", "");
+                    }
+                  }}
                   onBlur={handleBlur}
                   value={values?.type}
                   isInvalid={errors?.type}
                 >
+                  <option value="" disabled>
+                    -ເລືອກປະເພດປິນເຕີ-
+                  </option>
                   <option value="ETHERNET">ETHERNET</option>
                   <option value="BLUETOOTH">BLUETOOTH</option>
-                  <option value="USB" disabled>
-                    USB - (coming soon)
-                  </option>
+                  <option value="USB">USB - (coming soon)</option>
                 </Form.Control>
               </Form.Group>
-              <Form.Group>
-                <Form.Label>
-                  IP or BT <span style={{ color: "red" }}>*</span>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="ip"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values?.ip}
-                  placeholder="192.168.x.x..."
-                  isInvalid={errors?.ip}
-                />
-              </Form.Group>
+              {values?.type !== "USB" ? (
+                <Form.Group>
+                  <Form.Label>
+                    IP or BT <span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="ip"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.ip}
+                    placeholder="192.168.x.x..."
+                    isInvalid={errors?.ip}
+                  />
+                </Form.Group>
+              ) : (
+                ""
+              )}
             </Modal.Body>
             <Modal.Footer>
               <Button

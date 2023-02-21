@@ -26,19 +26,19 @@ export default function Dashboard() {
   );
   const [changeUi, setChangeUi] = useState("CHECKBILL");
 
-  const _click1day = () => {
-    setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
+  // const _click1day = () => {
+  //   setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
+  //   setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
+  // };
 
-  const _click7days = () => {
-    setStartDate(moment(moment(newDate).add(-7, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
-  const _click30days = () => {
-    setStartDate(moment(moment(newDate).add(-30, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
+  // const _click7days = () => {
+  //   setStartDate(moment(moment(newDate).add(-7, "days")).format("YYYY-MM-DD"));
+  //   setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
+  // };
+  // const _click30days = () => {
+  //   setStartDate(moment(moment(newDate).add(-30, "days")).format("YYYY-MM-DD"));
+  //   setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
+  // };
 
   return (
     <div style={{ padding: 20 }}>

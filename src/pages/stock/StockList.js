@@ -65,15 +65,18 @@ export default function MenuList() {
     try {
       const headers = await getHeaders();
       const _localData = await getLocalData();
-      await axios.put(
-        `${END_POINT_SEVER}/v3/stock-export`,
-        {
-          id: stock?._id,
-          data: { quantity: stock.quantity },
-          storeId: _localData?.DATA?.storeId,
-        },
-        { headers }
-      );
+      const _export = await axios
+        .put(
+          `${END_POINT_SEVER}/v3/stock-export`,
+          {
+            id: stock?._id,
+            data: { quantity: stock.quantity },
+            storeId: _localData?.DATA?.storeId,
+          },
+          { headers }
+        )
+        .then((e) => e)
+        .catch((e) => e);
       const data = await axios.delete(
         `${END_POINT_SEVER}/v3/stock/delete/${stock?._id}`,
         {
@@ -239,7 +242,7 @@ export default function MenuList() {
       />
       <PopUpCreateStock
         open={popCreateStock}
-        onClose={()=>setPopCreateStock(false)}
+        onClose={() => setPopCreateStock(false)}
         callback={() => getStock()}
       />
       <PopUpConfirmDeletion

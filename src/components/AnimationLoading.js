@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Spinner from 'react-bootstrap/Spinner'
 import contactAnimationData from '../image/lottieContact.json'
 import Lottie from 'react-lottie';
 

@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Login from "../pages/login/Login";
 import { useRoutes } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 
+// import CheckBill from "../pages/Notification/CheckBill";
 import BillForChef80 from "../components/bill/BillForChef80";
 import BillForCheckOut80 from "../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../components/bill/BillForCheckOut58";
@@ -16,7 +17,7 @@ import HistoryUse from "../pages/historiesUse/HistoryUse";
 import ReservationList from "../pages/reservation/ReservationList";
 import Promotion from "../pages/promotion/Promotion";
 import StoreDetail from "../pages/store/StoreDetail";
-import Order from "../pages/order";
+import WaitingOrder from "../pages/order/WaitingOrder";
 import DoingOrder from "../pages/order/DoingOrder";
 import ServedOrder from "../pages/order/ServedOrder";
 import CanceledOrder from "../pages/order/CanceledOrder";
@@ -112,15 +113,15 @@ function Router() {
           element: <StoreDetail />,
         },
         {
-          path: "/orders/pagenumber/:number/:id",
-          element: <Order />,
+          path: "/orders/waiting",
+          element: <WaitingOrder />,
         },
         {
-          path: "/orders/doing/pagenumber/:number/:id",
+          path: "/orders/doing",
           element: <DoingOrder />,
         },
         {
-          path: "/orders/served/pagenumber/:number/:id",
+          path: "/orders/served",
           element: <ServedOrder />,
         },
         {

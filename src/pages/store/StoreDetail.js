@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Image, Spinner } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import profileImage from "../../image/profile.png";
@@ -39,6 +39,7 @@ export default function StoreDetail() {
       }
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getData = async (storeId) => {
     setIsLoading(true);
@@ -82,7 +83,7 @@ export default function StoreDetail() {
   };
   // lung jak upload leo pic ja ma so u nee
   const _updateIsOpenStore = async (data) => {
-    const res = await axios({
+    await axios({
       method: "PUT",
       url: END_POINT + `/store_update?id=` + params?.id,
       headers: getTokken?.TOKEN,
@@ -102,7 +103,7 @@ export default function StoreDetail() {
     <div>
       <div className="row" style={{ padding: 40 }}>
         <div className="col-sm-10" style={{ fontWeight: "bold", fontSize: 18 }}>
-          ລາຍລະອຽດ
+          {t('detail')}
         </div>
         <div className="col-sm-2">
           <Button
@@ -112,7 +113,7 @@ export default function StoreDetail() {
             onClick={() => setPopEditStroe(true)}
           >
             <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
-            ແກ້ໄຂ
+            {t('edit')}
           </Button>
         </div>
       </div>
@@ -151,7 +152,7 @@ export default function StoreDetail() {
             {" "}
             {dataStore?.name ? dataStore?.name : "-"}
           </div>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <StarRatings
               rating={dataStore?.reviewStar || 0}
               starRatedColor="orange"
@@ -184,18 +185,18 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            ຂໍ້ມູນເຈົ້າຂອງຮ້ານ
+            {t('restaurantOwnerInformation')}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ຊື່ແລະນາມສະກຸນ</div>
+            <div className="col-5"></div>
             <div className="col-5">
               {dataStore?.adminName ? dataStore?.adminName : "-"}
             </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ທີ່ຢູ່ຮ້ານ</div>
+            <div className="col-5">{t('surnameAndLastName')}</div>
             <div className="col-5">
               {dataStore?.detail ? dataStore?.detail : "-"}
             </div>
@@ -209,7 +210,7 @@ export default function StoreDetail() {
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ເບີໂທ</div>
+            <div className="col-5">{t('phoneNumber')}</div>
             <div className="col-5">
               {dataStore?.phone ? dataStore?.phone : "-"}
             </div>
@@ -223,17 +224,17 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            ຂໍ້ມູນທົ່ວໄປ
+            {t('generalInfo')}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
             <div className="col-5">{t('totalTable')}</div>
-            <div className="col-5"> {numBerTable} ໂຕະ</div>
+            <div className="col-5"> {numBerTable} {t('table')}</div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">ເມນູທັງໝົດ</div>
-            <div className="col-5">{numBerMenus ? numBerMenus : "-"} ເມນູ</div>
+            <div className="col-5">{t('allMenu')}</div>
+            <div className="col-5">{numBerMenus ? numBerMenus : "-"} {t('menu')}</div>
           </div>
         </div>
       </div>

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import CustomNav from "./component/CustomNav";
+// import CustomNav from "./component/CustomNav";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import moment from "moment";
+
 /**
  * import function
  */
- import { Checkbox, FormControlLabel } from "@material-ui/core";
 
 import Loading from "../../components/Loading";
 import { getOrders } from "../../services/order";
@@ -46,12 +46,12 @@ const Order = () => {
   return (
     <div>
       {isLoading ? <Loading /> : ""}
-      <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate />
+      {/* <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate /> */}
       <Container fluid className="mt-3">
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
-            {/* <th>
+              {/* <th>
                   <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
                 </th> */}
               <th>ລ/ດ</th>

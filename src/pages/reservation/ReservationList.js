@@ -12,7 +12,7 @@ import {
   addReservation,
   getReservations,
 } from "../../services/reservation";
-import Box from "../../components/Box"
+import Box from "../../components/Box";
 // popup
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import ButtonTab from "../../components/button/ButtonTab";
@@ -22,10 +22,18 @@ import PopUpReservationDetail from "../../components/popup/PopUpReservationDetai
 import { Form, FormGroup, InputGroup, Button } from "react-bootstrap";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
+import Loading from "../../components/Loading";
+import { useTranslation } from "react-i18next";
+
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
-  const { storeDetail } = useStore();
+  const { t } = useTranslation();
+  const {
+    storeDetail,
+    newOreservationTransaction,
+    setNewOreservationTransaction,
+  } = useStore();
   const storeId = storeDetail._id;
 
   //   state
@@ -43,7 +51,7 @@ export default function ReservationList() {
     add: false,
     confirm: false,
     edit: false,
-    success: false
+    success: false,
   });
 
   // functions
@@ -82,7 +90,6 @@ export default function ReservationList() {
       status = tabSelect;
     }
     setIsLoading(true);
-    console.log("status", status);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
     if (search) findBy += `&search=${search}`;
@@ -105,18 +112,16 @@ export default function ReservationList() {
       localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
     }
   }, [tabSelect, dateFrom, dateTo]);
-  useMemo(
-    () =>
-      socket.on(`RESERVATION:${storeDetail._id}`, (data) => {
-        getData();
-        console.log("first");
-      }),
-    []
-  );
+  useEffect(() => {
+    if (newOreservationTransaction) {
+      getData();
+      setNewOreservationTransaction(false);
+    }
+  }, [newOreservationTransaction]);
   return (
     <div>
       {isLoading ? (
-        <AnimationLoading />
+        <Loading />
       ) : (
         <div style={{ paddingLeft: 10 }}>
           <div
@@ -133,49 +138,49 @@ export default function ReservationList() {
               }}
             >
               <ButtonTab
-                active={tabSelect == "ALL"}
+                active={tabSelect === "ALL"}
                 onClick={() => {
                   // getData();
                   setTabSelect("ALL");
                 }}
               >
-                ລາຍການທັງໝົດ
+                {t('lists')}
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "WATTING"}
+                active={tabSelect === "WATTING"}
                 onClick={() => {
                   // getData("WATTING");
                   setTabSelect("WATTING");
                 }}
               >
-                ລາຍການທີ່ລໍຖ້າອະນຸມັດ
+                {t('waitingForApprove')}
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "STAFF_CONFIRM"}
+                active={tabSelect === "STAFF_CONFIRM"}
                 onClick={() => {
                   // getData("STAFF_CONFIRM");
                   setTabSelect("STAFF_CONFIRM");
                 }}
               >
-                ລາຍການທີ່ອະນຸມັດ
+                {t('approve')}
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "SUCCESS"}
+                active={tabSelect === "SUCCESS"}
                 onClick={() => {
                   // getData("SUCCESS");
                   setTabSelect("SUCCESS");
                 }}
               >
-                ລາຍການທີ່ອະນຸມັດ
+                {t('approve')}
               </ButtonTab>
               <ButtonTab
-                active={tabSelect == "CANCEL"}
+                active={tabSelect === "CANCEL"}
                 onClick={() => {
                   // getData("CANCEL");
                   setTabSelect("CANCEL");
                 }}
               >
-                ລາຍການທີ່ຍົກເລີກ
+                {t('canceled')}
               </ButtonTab>
             </div>
             <div
@@ -190,13 +195,13 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                ເພີ່ມການຈອງ
+                {t('addBooking')}
               </ButtonPrimary>
             </div>
           </div>
           <div style={{ padding: 20, display: "flex", gap: 10 }}>
             <FormGroup>
-              <Form.Label>ຄົ້ນຫາ</Form.Label>
+              <Form.Label>{t('search')}</Form.Label>
               <InputGroup>
                 <Form.Control
                   placeholder="Example: (ເບີໂທ) (ຊື່ຜູ້ຈອງ)"
@@ -213,12 +218,12 @@ export default function ReservationList() {
                   id="button-addon1"
                   onClick={() => getData()}
                 >
-                  Search
+                  {t('search')}
                 </Button>
               </InputGroup>
             </FormGroup>
             <FormGroup>
-              <Form.Label>ວັນທີຈອງ</Form.Label>
+              <Form.Label>{t('bookingDate')}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -229,7 +234,7 @@ export default function ReservationList() {
               />
             </FormGroup>
             <FormGroup>
-              <Form.Label>ຫາວັນທີ</Form.Label>
+              <Form.Label>{t('toXX')}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -244,7 +249,7 @@ export default function ReservationList() {
               <Form.Control
                 type="button"
                 style={{ maxWidth: 100 }}
-                value="ມື້ນີ້"
+                value={t('today')}
                 onClick={() => {
                   setDateFrom(moment().format("YYYY-MM-DD"));
                   setDateTo(
@@ -276,14 +281,14 @@ export default function ReservationList() {
                   }}
                 >
                   <tr>
-                    <th style={{ color: COLOR_APP }}>ລຳດັບ</th>
-                    <th style={{ color: COLOR_APP }}>ຊື່ຜູ້ຈອງ</th>
-                    <th style={{ color: COLOR_APP }}>ເບີໂທຂອງຜູ້ຈອງ</th>
+                    <th style={{ color: COLOR_APP }}>{t('no')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('bookedBy')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('phoneNumberOfBooked')}</th>
                     <th style={{ color: COLOR_APP }}>
-                      ວັນທີ / ເດືອນ / ປີ - ເວລາ
+                      {t('dateAndTime')}
                     </th>
-                    <th style={{ color: COLOR_APP }}>ສະຖານທີ່(ໂຕະ)</th>
-                    <th style={{ color: COLOR_APP }}>ຈຳນວນຄົນ</th>
+                    <th style={{ color: COLOR_APP }}>{t('tableStatus2')}</th>
+                    <th style={{ color: COLOR_APP }}>{t('numberOfPeople')}</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Form.Control
@@ -312,7 +317,7 @@ export default function ReservationList() {
                       onClick={(e) => {
                         if (
                           e.target.cellIndex > 5 ||
-                          e.target.cellIndex == undefined
+                          e.target.cellIndex === undefined
                         ) {
                           return;
                         }
@@ -324,9 +329,7 @@ export default function ReservationList() {
                       <td>{item?.clientPhone}</td>
                       <td>
                         {item?.startTime &&
-                          moment
-                            (item?.startTime)
-                            .format("DD/MM/YYYY")}{" "}
+                          moment(item?.startTime).format("DD/MM/YYYY")}{" "}
                         -{" "}
                         {item?.startTime &&
                           moment(item?.startTime).format("LT")}
@@ -343,8 +346,8 @@ export default function ReservationList() {
                             handleReject(item);
                           }}
                           handleEdit={() => {
-                            setSelect(item)
-                            setPopup((prev)=> ({ ...prev, edit: true }));
+                            setSelect(item);
+                            setPopup((prev) => ({ ...prev, edit: true }));
                           }}
                         />
                       </td>
@@ -407,7 +410,7 @@ export default function ReservationList() {
         onClose={() => setPopup((prev) => ({ ...prev, cancel: false }))}
         onSubmit={onSubmitReject}
       />
-            <PopUpConfirm
+      <PopUpConfirm
         text1="ຢືນຢັນການຈອງສຳເລັດແລ້ວ"
         // text2={select?.clientPhone}
         open={popup?.success}
@@ -426,7 +429,7 @@ export default function ReservationList() {
           setPopup((prev) => ({ ...prev, detail: false, edit: true }));
         }}
         buttonSuccess={() => {
-          setPopup((prev) => ({...prev, success: true}));
+          setPopup((prev) => ({ ...prev, success: true }));
         }}
         onClose={() => setPopup((prev) => ({ ...prev, detail: false }))}
         data={select}

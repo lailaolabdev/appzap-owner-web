@@ -22,12 +22,15 @@ export default function History() {
   const [findeByCode, setfindeByCode] = useState();
   useEffect(() => {
     if (startDate || endDate) _searchDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate]);
   useEffect(() => {
     _searchDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [findeByCode]);
   useEffect(() => {
     _searchDate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const _searchDate = async () => {
     setIsLoading(true);

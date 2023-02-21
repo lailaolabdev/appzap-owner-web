@@ -6,7 +6,7 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import { errorAdd } from "../../../helpers/sweetalert";
 
 import _ from "lodash";
 
@@ -24,14 +24,20 @@ export default function CheckOutType({
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState(0);
   const [tab, setTab] = useState("cash");
-  const [forcus, setForcus] = useState("cash");
+  const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
+  const [total, setTotal] = useState();
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
   const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
-
+  useEffect(() => {
+    for (let i = 0; i < dataBill?.orderId.length; i++) {
+      _calculateTotal();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataBill]);
   // function
   const _checkBill = async () => {
     await axios
@@ -45,7 +51,7 @@ export default function CheckOutType({
             payAmount: cash,
             transferAmount: transfer,
             billAmount: totalBill,
-            paymentMethod: "CASH",
+            paymentMethod: forcus,
           },
         },
         {
@@ -74,13 +80,23 @@ export default function CheckOutType({
     onSubmit();
   };
 
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let i = 0; i < dataBill?.orderId.length; i++) {
+      if (dataBill?.orderId[i]?.status === "SERVED") {
+        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
+      }
+    }
+    setTotal(_total);
+  };
+
   // useEffect
   useEffect(() => {
-    // console.log("cash", cash);
-    // console.log("transfer", transfer);
-    // console.log("totalBill", totalBill);
-    // console.log("first", cash - 0 + (transfer - 0) - totalBill);
-    if (cash - 0 + (transfer - 0) - totalBill >= 0) {
+    if (cash - 0 + (transfer - 0) -
+      (dataBill && dataBill?.discountType === "LAK"
+        ? totalBill - dataBill?.discount
+        : totalBill - (total * dataBill?.discount) / 100)
+      >= 0) {
       setCanCheckOut(true);
     } else {
       setCanCheckOut(false);
@@ -126,19 +142,23 @@ export default function CheckOutType({
                   padding: 10,
                 }}
               >
-                {moneyCurrency(totalBill)} ກີບ
+                {/* {moneyCurrency(totalBill)} ກີບ */}
+                {dataBill && dataBill?.discountType === "LAK"
+                  ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                  : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)} ກີບ
               </div>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <ButtonPrimary
                 style={{
                   color: "white",
-                  backgroundColor: tab == "cash" ? COLOR_APP : "#ffac8e",
+                  backgroundColor: tab === "cash" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
                   setTransfer(0);
                   setTab("cash");
+                  setForcus("CASH");
                 }}
               >
                 ເງິນສົດ
@@ -146,12 +166,13 @@ export default function CheckOutType({
               <ButtonPrimary
                 style={{
                   color: "white",
-                  backgroundColor: tab == "transfer" ? COLOR_APP : "#ffac8e",
+                  backgroundColor: tab === "transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
                   setTransfer(totalBill);
                   setTab("transfer");
+                  setForcus("TRANSFER");
                 }}
               >
                 ເງິນໂອນ
@@ -160,19 +181,20 @@ export default function CheckOutType({
                 style={{
                   color: "white",
                   backgroundColor:
-                    tab == "cash_transfer" ? COLOR_APP : "#ffac8e",
+                    tab === "cash_transfer" ? COLOR_APP : "#ffac8e",
                 }}
                 onClick={() => {
                   setCash(0);
                   setTransfer(0);
                   setTab("cash_transfer");
+                  setForcus("TRANSFER_CASH");
                 }}
               >
                 ເງິນສົດ + ເງິນໂອນ
               </ButtonPrimary>
             </div>
             {/* ---------tabs--------- */}
-            <div style={{ display: tab == "cash" ? "block" : "none" }}>
+            <div style={{ display: tab === "cash" ? "block" : "none" }}>
               <div>
                 <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ)</div>
                 <input
@@ -196,12 +218,18 @@ export default function CheckOutType({
                     padding: 10,
                   }}
                 >
-                  {moneyCurrency(cash - totalBill < 0 ? 0 : cash - totalBill)}{" "}
+                  {moneyCurrency(cash - (dataBill && dataBill?.discountType === "LAK"
+                  ? (total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                  : (total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)) < 0 
+                  ? 0 : cash - 
+                  (dataBill && dataBill?.discountType === "LAK"
+                  ? (total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                  : (total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)))}{" "}
                   ກີບ
                 </div>
               </div>
             </div>
-            <div style={{ display: tab == "transfer" ? "block" : "none" }}>
+            <div style={{ display: tab === "transfer" ? "block" : "none" }}>
               <div>
                 <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ)</div>
                 <div
@@ -211,11 +239,14 @@ export default function CheckOutType({
                     padding: 10,
                   }}
                 >
-                  {moneyCurrency(totalBill)} ກີບ
+                  {/* {moneyCurrency(totalBill)} ກີບ */}
+                  {dataBill && dataBill?.discountType === "LAK"
+                    ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                    : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)} ກີບ
                 </div>
               </div>
             </div>
-            <div style={{ display: tab == "cash_transfer" ? "block" : "none" }}>
+            <div style={{ display: tab === "cash_transfer" ? "block" : "none" }}>
               <div>
                 <div>(ເງິນສົດ)</div>
                 <input
@@ -252,9 +283,15 @@ export default function CheckOutType({
                   }}
                 >
                   {moneyCurrency(
-                    cash - 0 + (transfer - 0) - totalBill < 0
+                    cash - 0 + (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                      ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                      : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)) < 0
                       ? 0
-                      : cash - 0 + (transfer - 0) - totalBill
+                      : cash - 0 + (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                      ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
+                      : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0))
                   )}{" "}
                   ກີບ
                 </div>
@@ -368,3 +405,4 @@ const KeyboardComponents = ({ onClickEvent, onDelete }) => {
     </div>
   );
 };
+

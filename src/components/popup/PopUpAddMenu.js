@@ -258,7 +258,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                           style={{ color: "red", cursor: "pointer" }}
                           onClick={() =>
                             setOption((prev) => [
-                              ...prev.filter((e, index) => i != index),
+                              ...prev.filter((e, index) => i !== index),
                             ])
                           }
                         >

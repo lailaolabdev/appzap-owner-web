@@ -2,32 +2,40 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
-import { Button, ToggleButtonGroup, ButtonGroup, ToggleButton} from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 import axios from "axios";
 import { moneyCurrency } from "../../../helpers/index";
-import { COLOR_APP, END_POINT } from "../../../constants";
+import { END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import { errorAdd } from "../../../helpers/sweetalert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCashRegister, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from 'sweetalert2'
 import { t } from "i18next";
 
-const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) => {
+const UpdateDiscountOrder = ({
+  data,
+  tableData,
+  show,
+  hide,
+  resetTableOrder,
+}) => {
   const [NewData, setNewData] = useState();
   const [total, setTotal] = useState();
-  const [discount, setDiscount] = useState(0)
-  const [radioValue, setRadioValue] = useState('1');
+  const [discount, setDiscount] = useState(0);
+  const [radioValue, setRadioValue] = useState("1");
 
   useEffect(() => {
     setNewData(data);
   }, [data]);
-  // console.log("data===>",data)
   useEffect(() => {
-    _calculateTotal()
-    if (NewData && NewData[0]?.orderId?.discount) setDiscount(NewData[0]?.orderId?.discount)
-    if (NewData && NewData[0]?.orderId?.discountType) setRadioValue(NewData[0]?.orderId?.discountType ==="LAK" ? "2":"1")
+    _calculateTotal();
+    if (NewData && NewData[0]?.orderId?.discount)
+      setDiscount(NewData[0]?.orderId?.discount);
+    if (NewData && NewData[0]?.orderId?.discountType)
+      setRadioValue(NewData[0]?.orderId?.discountType === "LAK" ? "2" : "1");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [NewData]);
 
   const _calculateTotal = () => {
@@ -37,42 +45,42 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
         _total += orderItem?.quantity * orderItem?.price;
       }
     }
-    setTotal(_total)
-  }
+    setTotal(_total);
+  };
 
   const radios = [
-    { name: '%', value: '1' },
-    { name: 'ກີບ', value: '2' },
+    { name: "%", value: "1" },
+    { name: "ກີບ", value: "2" },
   ];
 
   const _UpdateDiscount = async () => {
     try {
       let header = await getHeaders();
       const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': header.authorization
-      }
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
       const updateTable = await axios({
-        method: 'put',
+        method: "put",
         url: END_POINT + `/v3/bill-discount`,
         data: {
           id: data[0]?.billId,
           data: {
             discount: discount,
-            discountType: radioValue === "1" ? "PERCENT" : "LAK"
-          }
+            discountType: radioValue === "1" ? "PERCENT" : "LAK",
+          },
         },
-        headers: headers
-      })
+        headers: headers,
+      });
       if (updateTable?.data) {
         Swal.fire({
-          icon: 'success',
+          icon: "success",
           title: "ການເພີ່ມສ່ວນຫຼຸດສໍາເລັດ",
           showConfirmButton: false,
-          timer: 1800
-        })
-        resetTableOrder()
-        hide()
+          timer: 1800,
+        });
+        resetTableOrder();
+        hide();
       }
     } catch (err) {
       errorAdd("ການເພີ່ມສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
@@ -121,12 +129,14 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
                 );
               })}
             <tr>
-              <td colspan="4" style={{ textAlign: "center" }}>ລາຄາລວມ:</td>
+              <td colspan="4" style={{ textAlign: "center" }}>
+                ລາຄາລວມ:
+              </td>
               <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
           </tbody>
         </Table>
-        <hr/>
+        <hr />
         <div
           className="p-2 col-example text-center"
           style={{
@@ -134,7 +144,7 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
             fontSize: 26,
             display: "flex",
             flexDirection: "row",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <div className="p-2 col-example text-center" style={{ fontSize: 26 }}>
@@ -146,7 +156,7 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
                 key={idx}
                 id={`radio-${idx}`}
                 type="radio"
-                variant={radioValue === radio.value ? 'info' : 'outline-info'}
+                variant={radioValue === radio.value ? "info" : "outline-info"}
                 name="radio"
                 value={radio.value}
                 // checked={radioValue === radio.value}
@@ -156,13 +166,15 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
               </Button>
             ))}
           </ButtonGroup>
-          <input type="number"
+          <input
+            type="number"
             defaultValue={discount}
             onChange={(e) => setDiscount(e?.target.value)}
-            style={{ marginLeft: 10 }} />
+            style={{ marginLeft: 10 }}
+          />
           <span style={{ justifyContent: "flex-end", display: "row" }}>
             {" "}
-            <b style={{ marginLeft: 10 }}>{radioValue === "1" ? "%" :"ກີບ"}</b>
+            <b style={{ marginLeft: 10 }}>{radioValue === "1" ? "%" : "ກີບ"}</b>
           </span>
         </div>
       </Modal.Body>
@@ -186,12 +198,20 @@ const UpdateDiscountOrder = ({ data, tableData, show, hide, resetTableOrder }) =
           >
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               {" "}
-              <b> {moneyCurrency(radioValue === "1" ? total-(total * discount)/100 : total - discount)} ກີບ</b>
+              <b>
+                {" "}
+                {moneyCurrency(
+                  radioValue === "1"
+                    ? total - (total * discount) / 100
+                    : total - discount
+                )}{" "}
+                ກີບ
+              </b>
             </span>
           </div>
           <Button
             className="ml-2 pl-4 pr-4"
-            onClick={hide}
+            // onClick={hide}
             style={{
               backgroundColor: "#FB6E3B",
               color: "#ffff",

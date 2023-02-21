@@ -14,9 +14,7 @@ import {
 export class ComponentToPrint extends React.PureComponent {
     render() {
         let userData = this.props.userData;
-        let totalPrice = 0;
         let selectedMenu = this.props.selectedMenu;
-        let tableId = this.props.tableId;
         let code = this.props.code;
         let StatusMoney = this.props.StatusMoney;
         let amount = this.props.amount;

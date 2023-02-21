@@ -27,8 +27,6 @@ import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 
-import { PubNubProvider, usePubNub } from "pubnub-react";
-
 /**
  * const
  **/
@@ -39,10 +37,11 @@ import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
-import _ from "lodash";
+// import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { getCodes } from "../../services/code";
+import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 
 
@@ -56,11 +55,19 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const handleClose1 = () => setShow1(false);
+  const handleShow1 = (e) => {
+    setShow1(true);
+  }
+
+  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -71,14 +78,21 @@ export default function TableList() {
   const [dataBill, setDataBill] = useState();
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
+  const [quantity, setQuantity] = useState(false);
 
-  const { printerCounter, printers, orderSound } = useStore();
+  const handleCloseQuantity = () => setQuantity(false);
+  const handleShowQuantity = (item) => {
+    // _orderTableQunatity(item)
+    setSeletedOrderItem(item)
+    setQuantity(true)
+  };
+
+  const { printerCounter, printers } = useStore();
 
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
     tableList,
-    setTableList,
     selectedTable,
     setSelectedTable,
     openTable,
@@ -86,9 +100,14 @@ export default function TableList() {
     getTableDataStore,
     onSelectTable,
     resetTableOrder,
-    // initialTableSocket,
     storeDetail,
     getTableOrders,
+    newTableTransaction,
+    setNewTableTransaction,
+    newOrderTransaction,
+    setNewOrderTransaction,
+    newOrderUpdateStatusTransaction,
+    setNewOrderUpdateStatusTransaction,
   } = useStore();
 
   const reLoadData = () => {
@@ -98,23 +117,39 @@ export default function TableList() {
     if (reload) {
       getTableOrders(selectedTable);
       setReload(false);
-      orderSound();
+      // orderSound();
     }
   }, [reload]);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
+  const [seletedOrderItem, setSeletedOrderItem] = useState();
+  const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  const [checkedBox, setCheckedBox] = useState(true)
+
+  // function handleSetQuantity(int, seletedOrderItem) {
+  //   let _data = seletedOrderItem?.quantity + int 
+  //   setSeletedOrderItem(_data)
+  // }
+  function handleSetQuantity(int, seletedOrderItem) {
+    let _data = seletedOrderItem?.quantity + int
+    if (_data > 0) {
+      setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+    }
+  }
+
+
 
   const canCheckOut = !tableOrderItems.find(
     (e) =>
       e?.status === "DOING" ||
       e?.status === "WAITING" ||
-      e?.tableOrderItems?.length == 0
+      e?.tableOrderItems?.length === 0
   )?._id;
 
-  useEffect(() => {
-    // initialTableSocket();
-    getTableDataStore();
-  }, []);
+  // useEffect(() => {
+  //   // initialTableSocket();
+  //   getTableDataStore();
+  // }, []);
   /**
    * Modify Order Status
    */
@@ -131,6 +166,7 @@ export default function TableList() {
       if (nData.status === "CANCELED")
         _checkDataStatusCancel.push(nData?.status);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableOrderItems]);
   const _handlecheckout = async () => {
     setCheckoutModal(false);
@@ -169,6 +205,30 @@ export default function TableList() {
       headers: headers,
     });
     setDataBill(_resBill?.data);
+  };
+
+  const _orderTableQunatity = async () => {
+    try {
+      let headers = await getHeaders();
+
+      const updateTable = await axios({
+        method: "put",
+        url: END_POINT_SEVER + `/v3/orders/update/${seletedOrderItem?._id}`,
+        data: {
+          quantity: seletedOrderItem?.quantity,
+        },
+        headers: headers,
+      });
+
+      if (updateTable?.status < 300) {
+        setQuantity(false)
+        reLoadData();
+        successAdd("ແກ້ໄຂຈຳນວນສຳເລັດ");
+      }
+
+    } catch (err) {
+      errorAdd("ແກ້ໄຂຈຳນວນບໍ່ສຳເລັດ");
+    }
   };
 
   const [selectNewTable, setSelectNewTable] = useState();
@@ -324,12 +384,13 @@ export default function TableList() {
 
   const onPrintBill = async () => {
     try {
+      let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
       let dataImageForPrint;
-      if (printerBillData?.width == "80mm") {
+      if (printerBillData?.width === "80mm") {
         dataImageForPrint = await html2canvas(bill80Ref.current, {
           useCORS: true,
           scrollX: 10,
@@ -338,13 +399,22 @@ export default function TableList() {
         });
       }
 
-      if (printerBillData?.width == "58mm") {
+      if (printerBillData?.width === "58mm") {
         dataImageForPrint = await html2canvas(bill58Ref.current, {
           useCORS: true,
           scrollX: 10,
           scrollY: 0,
           scale: 350 / widthBill58,
         });
+      }
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = "http://localhost:9150/ethernet/image";
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = "http://localhost:9150/bluetooth/image";
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = "http://localhost:9150/usb/image";
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
@@ -357,7 +427,7 @@ export default function TableList() {
 
       await axios({
         method: "post",
-        url: "http://localhost:9150/ethernet/image",
+        url: urlForPrinter,
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -399,15 +469,14 @@ export default function TableList() {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
     for (const _ref of billForCher80.current) {
-      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
       const _printer = printers.find((e) => {
-        // console.log(`${e?._id} == ${orderSelect?.[_index]?._id}`)
-        return e?._id == orderSelect?.[_index]?.printer;
+        return e?._id === orderSelect?.[_index]?.printer;
       });
 
       try {
+        let urlForPrinter = "";
         let dataUrl;
-        if (_printer?.width == "80mm") {
+        if (_printer?.width === "80mm") {
           dataUrl = await html2canvas(billForCher80.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -415,7 +484,7 @@ export default function TableList() {
             scale: 530 / widthBill80,
           });
         }
-        if (_printer?.width == "58mm") {
+        if (_printer?.width === "58mm") {
           dataUrl = await html2canvas(billForCher58.current[_index], {
             useCORS: true,
             scrollX: 10,
@@ -423,7 +492,15 @@ export default function TableList() {
             scale: 350 / widthBill58,
           });
         }
-
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = "http://localhost:9150/ethernet/image";
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = "http://localhost:9150/bluetooth/image";
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = "http://localhost:9150/usb/image";
+        }
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
         const _file = await base64ToBlob(dataUrl.toDataURL());
@@ -431,60 +508,69 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
-        bodyFormData.append("beep1", 1);
-        bodyFormData.append("beep2", 9);
+        if (_index === 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
         await axios({
           method: "post",
-          url: "http://localhost:9150/ethernet/image",
+          url: urlForPrinter,
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
       _index++;
     }
   };
 
   const onSelect = (data) => {
-    if (isCheckedOrderItem?.length == 0) {
-      const _data = tableOrderItems.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
+    const _data = isCheckedOrderItem.map((e) => {
+      if (data?._id === e?._id) {
+        return data;
+      } else {
+        return e;
+      }
+    });
+    setIsCheckedOrderItem(_data);
+
+    const _isChecked = _data.filter((e) => {
+      if (e?.isChecked) {
+        return true
+      }
+      return false
+    });
+
+    if (_isChecked.length === 0) {
+      setCheckedBox(true)
     } else {
-      const _data = isCheckedOrderItem.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
+      setCheckedBox(false)
     }
+
   };
 
   const checkAllOrders = (item) => {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCEL") return item;
+        if (item?.status === "CANCELED") return item;
         return {
           ...item,
           isChecked: true,
@@ -498,12 +584,10 @@ export default function TableList() {
         };
       });
     }
-    console.log("first", _newOrderItems);
     setIsCheckedOrderItem(_newOrderItems);
   };
 
   const handleUpdateOrderStatus = async (status) => {
-    console.log("status", status);
     const storeId = storeDetail?._id;
     let menuId;
     let _updateItems = isCheckedOrderItem
@@ -516,26 +600,23 @@ export default function TableList() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
   const handleUpdateOrderStatusgo = async (status) => {
-    // getOrderItemsStore(DOING_STATUS);
     const storeId = storeDetail?._id;
-    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
-        console.log(i?._id);
         return {
           status: status,
           _id: i?._id,
@@ -543,15 +624,14 @@ export default function TableList() {
         };
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == DOING_STATUS) getOrderItemsStore(DOING_STATUS);
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
@@ -567,35 +647,40 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
+          // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
-    if (_resOrderUpdate?.data?.message == "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus == CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem);
+    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+      handleClose1()
+      reLoadData();
+      // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
-  const pubnub = usePubNub();
-  const [channels] = useState([
-    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
-    `ORDER:${storeDetail._id}`,
-  ]);
   const handleMessage = (event) => {
-    console.log("event", event);
     reLoadData();
   };
   useEffect(() => {
-    pubnub.addListener({ message: handleMessage });
-    pubnub.subscribe({ channels });
-  }, [pubnub, channels]);
+    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+      handleMessage();
+      setNewOrderTransaction(false);
+      setNewOrderUpdateStatusTransaction(false);
+    }
+  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
 
+  useEffect(() => {
+    if (newTableTransaction) {
+      getTableDataStore();
+      setNewTableTransaction(false);
+    }
+  }, [newTableTransaction]);
   return (
     <div
       style={{
@@ -624,9 +709,9 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-            {t('totalTable')} : {tableList?.length}, ໂຕະທີ່ເປິດທັງໝົດ :{" "}
-              {_checkStatusCode(tableList)}, ໂຕະທີ່ຫວ່າງທັງໝົດ :{" "}
-              {_checkStatusCodeA(tableList)}, ຕອ້ງການເຊັກບີນທັງໝົດ :{" "}
+              {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
+              {_checkStatusCode(tableList)}, {t('totalAvailableTable')} :{" "}
+              {_checkStatusCodeA(tableList)}, {t('totalBillCheck')} :{" "}
               {_checkStatusCodeB(tableList)}
             </div>
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
@@ -647,11 +732,11 @@ export default function TableList() {
                     <div
                       style={{
                         border:
-                          selectedTable?.tableName == table?.tableName
+                          selectedTable?.tableName === table?.tableName
                             ? "1px solid #404258"
                             : "1px solid #FB6E3B",
                         backgroundColor:
-                          selectedTable?.tableName == table?.tableName
+                          selectedTable?.tableName === table?.tableName
                             ? "#404258"
                             : "#FFF",
                         borderRadius: 8,
@@ -673,10 +758,12 @@ export default function TableList() {
                             ? "rgb(251,110,59)"
                             : "white",
                           background: table?.isStaffConfirm
-                            ? "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                            ? table?.editBill
+                              ? "#bfff00"
+                              : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                             : "white",
                           border:
-                            selectedTable?.tableName == table?.tableName
+                            selectedTable?.tableName === table?.tableName
                               ? "3px solid #404258"
                               : "3px solid  white",
                           display: "flex",
@@ -689,12 +776,11 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                            ? "blink_cardCallCheckOut"
-                            : ""
+                              ? "blink_cardCallCheckOut"
+                              : ""
                         }
                         onClick={() => {
                           onSelectTable(table);
-                          // console.log("selectTableData", table);
                         }}
                       >
                         <div
@@ -716,7 +802,7 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? "ມິແຂກ" : "ວ່າງ"}
+                              {table?.isStaffConfirm ? `${t('unavailable')}` : `${t('avaliable')}`}
                             </div>
                           </span>
                         </div>
@@ -766,7 +852,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ລະຫັດເຂົ້າໂຕະ:{" "}
+                          {t('tableNumber2')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -781,7 +867,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ເວລາເປີດໂຕະ:{" "}
+                          {t('timeOfTableOpening')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -796,7 +882,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຜູ້ຮັບຜິດຊອບ:{" "}
+                          {t('respon')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -804,10 +890,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId[0]?.updatedBy?.lastname
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -817,7 +903,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ມີສ່ວນຫຼຸດ:{" "}
+                          {t('discount')}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -825,7 +911,7 @@ export default function TableList() {
                             }}
                           >
                             {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT" ? "%" : "ກີບ"}
+                            {dataBill?.discountType === "PERCENT" ? "%" : t('lak')}
                           </span>
                         </div>
                       </div>
@@ -844,7 +930,7 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom onClick={() => onPrintForCher()}>
-                          ພິມບິນໄປຄົວ
+                          {t('printBillToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
@@ -853,15 +939,16 @@ export default function TableList() {
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                          ປິດໂຕະ
+                          {t('closeTable')}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
-                            /*_onAddDiscount()*/
+                            // _onAddDiscount();
+                            setPopup({ discount: true });
                           }}
                         >
-                          ເພີ່ມສ່ວນຫຼຸດ
+                          {t('discount')}
                         </ButtonCustom>
 
                         <ButtonCustom
@@ -879,7 +966,7 @@ export default function TableList() {
                             )
                           }
                         >
-                          + ເພີ່ມອໍເດີ
+                          + {t('addOrder')}
                         </ButtonCustom>
                       </div>
                       <div
@@ -897,27 +984,25 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() =>
-                            handleUpdateOrderStatuscancel("CANCEL")
+                            handleShow1()
                           }
+                          disabled={checkedBox}
                         >
-                          ຍົກເລີກ
+                          {t('cancel')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
+                          disabled={checkedBox}
                         >
-                          ສົ່ງໄປຄົວ
+                          {t('sendToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
+                          disabled={checkedBox}
                         >
-                          ເສີບແລ້ວ
+                          {t('served')}
                         </ButtonCustom>
                       </div>
-
-                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => setFeedbackOrderModal(true)}>ສົ່ງຄືນ</Button> */}
-                      {/* <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(CANCEL_STATUS, params?.storeId)}>ຍົກເລີກ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(DOING_STATUS, params?.storeId)}>ສົ່ງໄປຄົວ</Button>
-                    <Button variant="outline-warning" style={{ marginRight: 15, border: "solid 1px #FB6E3B", color: "#FB6E3B", fontWeight: "bold" }} onClick={() => handleUpdateTableOrderStatus(SERVE_STATUS, params?.storeId)}>ເສີບແລ້ວ</Button> */}
 
                       <TableCustom>
                         <thead>
@@ -925,73 +1010,79 @@ export default function TableList() {
                             <th>
                               <Checkbox
                                 name="checked"
-                                onChange={(e) => checkAllOrders(e)}
+                                onChange={(e) => {
+                                  checkAllOrders(e);
+                                  setCheckedBox(!e.target.checked);
+                                }}
                               />
                             </th>
-                            <th>ລຳດັບ</th>
-                            <th>ຊື່ເມນູ</th>
-                            <th>ຈຳນວນ</th>
-                            <th>ສະຖານະ</th>
-                            <th>ຜູ້ສັ່ງ</th>
-                            <th>ເວລາ</th>
+                            <th>{t('no')}</th>
+                            <th>{t('menuname')}</th>
+                            <th>{t('quantity')}</th>
+                            <th>{t('status')}</th>
+                            <th>{t('customer')}</th>
+                            <th>{t('time')}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td>
-                                    <Checkbox
-                                      disabled={orderItem?.status === "CANCEL"}
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) =>
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        })
-                                      }
-                                    />
-                                  </td>
+                              <tr
+                                onClick={() => handleShowQuantity(orderItem)}
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+                                <td onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    disabled={orderItem?.status === "CANCELED"}
+                                    name="checked"
+                                    checked={orderItem?.isChecked || false}
+                                    onChange={(e) => {
+                                      // e.stopPropagation()
+                                      onSelect({
+                                        ...orderItem,
+                                        isChecked: e.target.checked,
+                                      })
+                                    }
+                                    }
+                                  />
+                                </td>
 
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
                             : ""}
                         </tbody>
                       </TableCustom>
-                      {tableOrderItems?.length == 0 && (
+                      {tableOrderItems?.length === 0 && (
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
-                            ໂຕະນີ້ຍັງບໍ່ມີອໍເດີ
+                            {t('TableHasNoOrder')}
                           </div>
                         </div>
                       )}
@@ -1042,8 +1133,7 @@ export default function TableList() {
                     textAlign: "center",
                   }}
                 >
-                  ນໍາເອົາQRcodeນີ້ໄປໃຫ້ລູກຄ້າ ຫລື
-                  ກົດເປີດໂຕະເພື່ອລິເລີ່ມການນໍາໃຊ້ງານ
+                  {t('bringThisQRCodeToCustomersOrPressOpenToStartUsing')}
                 </p>
                 <p
                   style={{
@@ -1067,12 +1157,12 @@ export default function TableList() {
                   }}
                   onClick={() => openTable()}
                 >
-                  {!selectedTable?.isOpened ? "ເປີດໂຕະ" : "ຢືນຢັນເປີດໂຕະ"}
+                  {!selectedTable?.isOpened ? `${t('open')}` : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
               </div>
             )}
 
-            {selectedTable == null && (
+            {selectedTable === null && (
               <div
                 style={{
                   width: "100%",
@@ -1187,6 +1277,18 @@ export default function TableList() {
         func={_handlecheckout}
       />
 
+      <PopUpAddDiscount
+        open={popup?.discount}
+        value={isCheckedOrderItem}
+        dataBill={dataBill}
+        onClose={() => {
+          setPopup();
+        }}
+        onSubmit={async () => {
+          handleMessage();
+          getData();
+        }}
+      />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>ລວມໂຕະ</Modal.Title>
@@ -1204,7 +1306,7 @@ export default function TableList() {
                 value={selectNewTable?._id}
                 onChange={(e) => {
                   const _select = tableList.find(
-                    (item) => e.target.value == item?._id
+                    (item) => e.target.value === item?._id
                   );
                   setSelectNewTable(_select);
                 }}
@@ -1235,6 +1337,141 @@ export default function TableList() {
           </Button>
           <Button variant="success" onClick={() => _changeTable()}>
             ລວມໂຕະ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={show1} onHide={handleClose1}>
+        <Modal.Header closeButton>
+          <Modal.Title>ເຫດຜົນຍົກເລີກອາຫານ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <select size="8" style={{ overflow: "auto", border: "none", fontSize: "20px" }} className="form-control"
+              onChange={handleSelectedCancelOrder}
+            >
+              {/* value={seletedCancelOrderItem?.remark} */}
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ເສີບອາຫານຜິດໂຕະ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ລູກຄ້າຍົກເລີກ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ຄົວເຮັດອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ພະນັກງານເສີບ ຄີອາຫານຜິດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານດົນ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານໝົດ</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>drinkIsGone</option>
+              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ບໍ່ມີອາຫານໃນໂຕະ</option>
+            </select>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleClose1()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => handleUpdateOrderStatuscancel("CANCELED")}>
+            ບັນທຶກ
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={quantity} onHide={handleCloseQuantity}>
+        <Modal.Header closeButton>
+          <Modal.Title>ແກ້ໄຂຈຳນວນ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <TableCustom>
+              <thead>
+                <tr>
+                  <th>{t('table')}</th>
+                  <th>{t('menuname')}</th>
+                  <th>{t('quantity')}</th>
+                  <th>{t('status')}</th>
+                  <th>{t('customer')}</th>
+                  <th>{t('time')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    {seletedOrderItem?.tableId?.name}
+                  </td>
+                  <td>{seletedOrderItem?.name}</td>
+                  <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, seletedOrderItem)}>-</button>
+                    {seletedOrderItem?.quantity}
+                    <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, seletedOrderItem)}>+</button>
+                  </td>
+                  <td
+                    style={{
+                      color:
+                        seletedOrderItem?.status === `SERVED`
+                          ? "green"
+                          : seletedOrderItem?.status === "DOING"
+                            ? ""
+                            : "red",
+                    }}
+                  >
+                    {seletedOrderItem?.status
+                      ? orderStatus(seletedOrderItem?.status)
+                      : "-"}
+                  </td>
+                  <td>{seletedOrderItem?.createdBy?.firstname}</td>
+                  <td>
+                    {seletedOrderItem?.createdAt
+                      ? moment(seletedOrderItem?.createdAt).format(
+                        "HH:mm A"
+                      )
+                      : "-"}
+                  </td>
+                </tr>
+                {/* {isCheckedOrderItem
+                  ? isCheckedOrderItem?.map((orderItem, index) => (
+                    <tr
+                      key={"order" + index}
+                      style={{ borderBottom: "1px solid #eee" }}
+                    >
+
+                      <td>{orderItem?.tableId?.name}</td>
+                      <td>{orderItem?.name}</td>
+                      <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, orderItem)}>-</button>
+                        {orderItem?.quantity}
+                        <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, orderItem)}>+</button>
+                      </td>
+                      <td
+                        style={{
+                          color:
+                            orderItem?.status === `SERVED`
+                              ? "green"
+                              : orderItem?.status === "DOING"
+                                ? ""
+                                : "red",
+                        }}
+                      >
+                        {orderItem?.status
+                          ? orderStatus(orderItem?.status)
+                          : "-"}
+                      </td>
+                      <td>{orderItem?.createdBy?.firstname}</td>
+                      <td>
+                        {orderItem?.createdAt
+                          ? moment(orderItem?.createdAt).format(
+                            "HH:mm A"
+                          )
+                          : "-"}
+                      </td>
+                    </tr>
+                  ))
+                  : ""} */}
+              </tbody>
+            </TableCustom>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => handleCloseQuantity()}>
+            ຍົກເລີກ
+          </Button>
+          <Button variant="success" onClick={() => { _orderTableQunatity() }}>
+            ບັນທຶກ
           </Button>
         </Modal.Footer>
       </Modal>

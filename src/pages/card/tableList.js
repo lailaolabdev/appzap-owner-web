@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Modal, Alert, Table } from "react-bootstrap";
 import "./Card.css";
-import {} from "@fortawesome/free-solid-svg-icons";
 import { BsXCircleFill } from "react-icons/bs";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { useTranslation } from "react-i18next";

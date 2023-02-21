@@ -4,54 +4,137 @@ import axios from "axios";
 import { Table, Modal, Button } from "react-bootstrap";
 import { END_POINT_SEVER } from "../../constants/api";
 import { _statusCheckBill, orderStatus } from "./../../helpers";
-import { TramRounded } from "@material-ui/icons";
 import AnimationLoading from "../../constants/loading";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
+import * as _ from "lodash";
+import { getHeaders } from "../../services/auth";
+import { useStore } from "../../store";
+import useQuery from "../../helpers/useQuery";
+import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
+import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
-
-
-export default function DashboardFinance({ startDate, endDate }) {
+import { stringify } from "query-string";
+export default function DashboardFinance({ startDate, endDate, selectedCurrency }) {
+  const [currency, setcurrency] = useState()
+  const navigate = useNavigate();
+  const { accessToken } = useQuery();
   const params = useParams();
   const [data, setData] = useState();
   const [disCountDataKib, setDisCountDataKib] = useState(0);
   const [disCountDataPercent, setDisCountDataPercent] = useState(0);
   const [dataNotCheckBill, setDataNotCheckBill] = useState({});
   const [dataCheckBill, setDataCheckBill] = useState({});
+  const [selectOrder, setSelectOrder] = useState();
   const [moneyCash, setMoneyCash] = useState(0);
   const [moneyAon, setMoneyAon] = useState(0);
   const [show, setShow] = useState(false);
   const [dataModale, setDataModale] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const handleClose = () => setShow(false);
+  const { storeDetail } = useStore();
+
+  const handleEditBill = async () => {
+    try {
+      const url = END_POINT_SEVER + "/v3/bill-reset";
+      const _body = {
+        id: selectOrder?._id,
+        storeId: storeDetail?._id,
+      };
+      const res = await axios.post(url, _body, {
+        headers: await getHeaders(accessToken),
+      });
+      if (res.status < 300) {
+        navigate("/tables");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleShow = (item) => {
     setShow(true);
     setDataModale(item);
   };
+
+  const getcurrency = async () => {
+    try {
+      let x = await fetch(
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setcurrency(json));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const exportJsonToExcel = () => {
+    let _export = data?.checkOut.map((item, index) => ({
+      ລຳດັບ: index + 1,
+      ເລກບິນ: item?.code,
+      ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+      ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+        ? new Intl.NumberFormat("ja-JP", {
+          currency: "JPY",
+        }).format(_countAmount(item?.orderId))
+        : new Intl.NumberFormat("ja-JP", {
+          currency: "JPY",
+        }).format(item?.billAmount),
+      ຈ່າຍເງິນສົດ: item?.payAmount,
+      ຈ່າຍເງິນໂອນ: item?.transferAmount,
+      ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+      ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+      ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+      new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+        data?.amount + dataNotCheckBill?.amount
+      ) : "",
+    }))
+    return _export
+  }
+
   useEffect(() => {
+    getcurrency();
     _fetchFinanceData();
   }, []);
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate]);
+  }, [endDate, startDate, selectedCurrency
+  ]);
   const _fetchFinanceData = async () => {
-    setIsLoading(TramRounded);
+    setIsLoading(true);
+    // const url =
+    //   "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
+    const headers = await getHeaders(accessToken);
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
-        "/v3/dashboard/" +
-        params?.storeId +
-        "/startTime/" +
-        startDate +
-        "/endTime/" +
-        endDate,
+      "/v3/bills?storeId=" +
+      params?.storeId +
+      "&currencyType=" +
+      selectedCurrency +
+      "&startDate=" +
+      startDate +
+      "&endDate=" +
+      endDate,
       {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
+        headers: headers,
       }
     );
-    setData(getDataDashBoard?.data);
+
+    // const _checkOut = getDataDashBoard.data.filter(
+    //   (e) => e?.isCheckout && e?.status === "CHECKOUT"
+    // );
+    const _checkOut = getDataDashBoard.data;
+    const totalPrice = _.sumBy(_checkOut, function (o) {
+      return o.billAmount;
+    });
+    const _formatJson = {
+      checkOut: _checkOut,
+      amount: totalPrice,
+    };
+    setData(_formatJson);
     setIsLoading(false);
   };
 
@@ -157,6 +240,22 @@ export default function DashboardFinance({ startDate, endDate }) {
   };
   return (
     <div style={{ padding: 0 }}>
+      <div
+        style={{
+          marginRight: "30px",
+          backgroundColor: "orange",
+          boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
+        }}
+      >
+        {/* <select onChange={(e) => setSelectedCurrency(e.target.value)}>
+          <option selected value="">ກີບ</option>
+          {
+            currency?.map((La, index) => (
+              <option value={La?.currencyCode}>{La?.currencyName}</option>
+            ))
+          }
+        </select> */}
+      </div>
       {isLoading && <AnimationLoading />}
       <div className="row">
         <div style={{ width: "100%" }}>
@@ -189,51 +288,53 @@ export default function DashboardFinance({ startDate, endDate }) {
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>ຍອດທັງໝົດ</p>
+                <p style={{ margin: 0, fontSize: 20 }}>{t('totalCirculation')}</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບິນ : {data?.checkOut?.length} ບິນ</div>
+                <div>{t('numberOfBill')} : {data?.checkOut?.length} {t('bill')}</div>
                 <div>
-                  ຍອດທັ້ງໝົດ :{" "}
+                  {t('totalBalance')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     data?.amount + dataNotCheckBill?.amount
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
+                  {/* {selectedCurrency} */}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເງິນ :{" "}
+                  {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
+                  {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataKib
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເປີເຊັນ :{" "}
+                  {t('percentageDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataPercent
                   )}{" "}
                   %
                 </div>
                 <div>
-                  {t('payBycash')} :{" "}
+                  {t("payBycash")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  {t('transferPayment')} :{" "}
+                  {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ຍັງຄ້າງ :{" "}
+                  {t('outstandingDebt')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
               </div>
             </div>
@@ -255,44 +356,44 @@ export default function DashboardFinance({ startDate, endDate }) {
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>ຍອດບິນທີສຳເລັດ</p>
+                <p style={{ margin: 0, fontSize: 20 }}>{t('totalCompeleteBill')}</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບິນ : {dataCheckBill?.total} ບິນ</div>
+                <div>{t('numberOfBill')} : {dataCheckBill?.total} {t('bill')}</div>
                 <div>
-                  ຍອດທັ້ງໝົດ :{" "}
+                  {t('totalBalance')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash + dataCheckBill?.transfer
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເງິນ :{" "}
+                  {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountCash
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເປີເຊັນ :{" "}
+                  {t('percentageDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountPercent
                   )}{" "}
                   %
                 </div>
                 <div>
-                {t('payBycash')} :{" "}
+                  {t("payBycash")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.cash
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  {t('transferPayment')} :{" "}
+                  {t("transferPayment")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.transfer
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
               </div>
             </div>
@@ -314,26 +415,26 @@ export default function DashboardFinance({ startDate, endDate }) {
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>ຍອດບິນທີຍັງຄ້າງ</p>
+                <p style={{ margin: 0, fontSize: 20 }}>{t('outstandingBillAmount')}</p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>ຈຳນວນບິນ : {dataNotCheckBill?.total} ບິນ</div>
+                <div>{t('numberOfBill')} : {dataNotCheckBill?.total} {t('bill')}</div>
                 <div>
-                  ຍອດທັ້ງໝົດ :{" "}
+                  {t('totalBalance')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເງິນ :{" "}
+                  {t('cashDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountCash
                   )}{" "}
-                  ກີບ
+                  {selectedCurrency}
                 </div>
                 <div>
-                  ສ່ວນຫຼຸດເປັນເປີເຊັນ :{" "}
+                  {t('percentageDiscount')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountPercent
                   )}{" "}
@@ -342,27 +443,80 @@ export default function DashboardFinance({ startDate, endDate }) {
               </div>
             </div>
           </Box>
-          <div style={{ height: 10 }}></div>
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
+          >
+            <ButtonDownloadExcel
+              // jsonData={() => {
+              //   let _export = data?.checkOut.map((item, index) => ({
+              //     ລຳດັບ: index + 1,
+              //     ເລກບິນ: item?.code,
+              //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+              //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+              //       ? new Intl.NumberFormat("ja-JP", {
+              //         currency: "JPY",
+              //       }).format(_countAmount(item?.orderId))
+              //       : new Intl.NumberFormat("ja-JP", {
+              //         currency: "JPY",
+              //       }).format(item?.billAmount),
+              //     ຈ່າຍເງິນສົດ: item?.payAmount,
+              //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
+              //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+              //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+              //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+              //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+              //         data?.amount + dataNotCheckBill?.amount
+              //       ) : "",
+              //   }))
+              //   return _export
+              // }}
+
+              jsonData={data?.checkOut.map((item, index) => ({
+                ລຳດັບ: index + 1,
+                ເລກບິນ: item?.code,
+                ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+                ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                  ? new Intl.NumberFormat("ja-JP", {
+                    currency: "JPY",
+                  }).format(_countAmount(item?.orderId))
+                  : new Intl.NumberFormat("ja-JP", {
+                    currency: "JPY",
+                  }).format(item?.billAmount),
+                ຈ່າຍເງິນສົດ: item?.payAmount,
+                ຈ່າຍເງິນໂອນ: item?.transferAmount,
+                ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+                ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+                ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+                new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                  data?.amount + dataNotCheckBill?.amount
+                ) : "",
+              }))}
+              // jsonData={exportJsonToExcel}
+            />
+          </Box>
           <div style={{ padding: 10 }}>
             <Table striped hover size="sm" style={{ fontSize: 15 }}>
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>ໂຕະ</th>
-                  <th>ລະຫັດ</th>
-                  <th>ສວ່ນຫຼຸດ</th>
-                  <th>ລາຄາ / ບິນ</th>
-                  <th>ເສີບແລ້ວ / ຍົກເລີກ</th>
-                  <th>{t('tableStatus')}</th>
-                  <th>ຮູບແບບການຊຳລະ</th>
-                  <th>ເວລາ</th>
+                  <th>{t('no')}</th>
+                  <th>{t('tableNumber')}</th>
+                  <th>{t('tableCode')}</th>
+                  <th>{t('tableDiscount')}</th>
+                  <th>{t('price')} / {t('bill')}</th>
+                  <th>{t('served')} / {t('cancel')}</th>
+                  <th>{t("tableStatus")}</th>
+                  <th>{t("paymentType")}</th>
+                  <th>{t("time")}</th>
                 </tr>
               </thead>
               <tbody>
                 {data?.checkOut?.map((item, index) => (
                   <tr
                     key={"finance-" + index}
-                    onClick={() => handleShow(item?.orderId)}
+                    onClick={() => {
+                      setSelectOrder(item);
+                      handleShow(item?.orderId);
+                    }}
                     style={{
                       backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
                         item?.status
@@ -380,19 +534,19 @@ export default function DashboardFinance({ startDate, endDate }) {
                     <td>
                       {item?.discountType === "LAK"
                         ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.discount) + "ກີບ"
+                          currency: "JPY",
+                        }).format(item?.discount) + t("lak")
                         : item?.discount + "%"}
                     </td>
                     <td>
                       {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
+                          currency: "JPY",
+                        }).format(_countAmount(item?.orderId))
                         : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.billAmount)}{" "}
-                      ກີບ
+                          currency: "JPY",
+                        }).format(item?.billAmount)}{" "}
+                      {selectedCurrency}
                     </td>
                     <td>
                       <div
@@ -426,10 +580,10 @@ export default function DashboardFinance({ startDate, endDate }) {
                           item?.status === "CHECKOUT"
                             ? "green"
                             : item?.status === "CALLTOCHECKOUT"
-                            ? "red"
-                            : item?.status === "ACTIVE"
-                            ? "#00496e"
-                            : "",
+                              ? "red"
+                              : item?.status === "ACTIVE"
+                                ? "#00496e"
+                                : "",
                       }}
                     >
                       {_statusCheckBill(item?.status)}
@@ -439,14 +593,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                         color:
                           item?.paymentMethod === "CASH"
                             ? "#00496e"
-                            : "#fc8626",
+                            : "#0D47A1",
                       }}
                     >
                       {item?.paymentMethod === "CASH"
-                        ? t('payBycash')
-                        : item?.paymentMethod === "BCEL"
-                        ? t('transferPayment')
-                        : "-"}
+                        ? t("payBycash")
+                        : item?.paymentMethod === "TRANSFER"
+                          ? t("transferPayment")
+                          : t("transfercash")}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -459,21 +613,30 @@ export default function DashboardFinance({ startDate, endDate }) {
         </div>
         <div style={{ width: "50%", padding: 20 }}></div>
       </div>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>ລາຍການອາຫານ</Modal.Title>
+          <Modal.Title>{t('menuModal')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 10,
+            }}
+          >
+            <Button onClick={handleEditBill}>{selectOrder?.status === "ACTIVE" ? t('editingTheBill') : t('billEditing')}</Button>
+          </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
               <tr>
-                <th>#</th>
-                <th>ຊື່ເມນູ</th>
-                <th>ຈຳນວນ</th>
-                <th>ສະຖານະຂອງອາຫານ</th>
-                <th>ເສີບ</th>
-                <th>ລາຄາ</th>
-                <th>ເວລາ</th>
+                <th>{t('no')}</th>
+                <th>{t('menuname')}</th>
+                <th>{t('amount')}</th>
+                <th>{t('statusOfFood')}</th>
+                <th>{t('servedBy')}</th>
+                <th>{t('price')}</th>
+                <th>{t('time')}</th>
               </tr>
             </thead>
             <tbody>
@@ -488,14 +651,14 @@ export default function DashboardFinance({ startDate, endDate }) {
                         item?.status === "WAITING"
                           ? "#2d00a8"
                           : item?.status === "DOING"
-                          ? "#c48a02"
-                          : item?.status === "SERVED"
-                          ? "green"
-                          : item?.status === "CART"
-                          ? "#00496e"
-                          : item?.status === "FEEDBACK"
-                          ? "#00496e"
-                          : "#bd0d00",
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                              ? "green"
+                              : item?.status === "CART"
+                                ? "#00496e"
+                                : item?.status === "FEEDBACK"
+                                  ? "#00496e"
+                                  : "#bd0d00",
                     }}
                   >
                     {orderStatus(item?.status)}
@@ -514,7 +677,7 @@ export default function DashboardFinance({ startDate, endDate }) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>
-            ປິດ
+            {t('close')}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -12,59 +12,7 @@ import { successAdd, errorAdd } from "../../../../helpers/sweetalert";
 
 export default function PopUpCreateStock({ onClose, open, callback }) {
   // state
-  const [isOpened, setIsOpened] = useState(true);
   const [Categorys, setCategorys] = useState();
-  const [namePhoto, setNamePhoto] = useState("");
-  const [file, setFile] = useState();
-  const [imageLoading, setImageLoading] = useState("");
-  const handleUpload = async (event) => {
-    // setImageLoading("");
-    try {
-      setFile(event.target.files[0]);
-      let fileData = event.target.files[0];
-      const responseUrl = await axios({
-        method: "post",
-        url: PRESIGNED_URL,
-        data: {
-          name: event.target.files[0].type,
-        },
-      });
-      setNamePhoto(responseUrl.data);
-      let afterUpload = await axios({
-        method: "put",
-        url: responseUrl.data.url,
-        data: fileData,
-        headers: {
-          "Content-Type": " file/*; image/*",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-          "Access-Control-Allow-Headers":
-            "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
-        },
-        onUploadProgress: function (progressEvent) {
-          var percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setImageLoading(percentCompleted);
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const ImageThumb = ({ image }) => {
-    return (
-      <img
-        src={URL.createObjectURL(image)}
-        alt={image.name}
-        style={{
-          borderRadius: "10%",
-          height: 200,
-          width: 200,
-        }}
-      />
-    );
-  };
   const _createStock = async (values) => {
     const _localData = await getLocalData();
     if (_localData) {
@@ -230,9 +178,10 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 <Form.Control
                   as="select"
                   onChange={(e) => {
+                    console.log(e.target.value);
                     setFieldValue("unit", e.target.value);
+                    setFieldValue("otherUnit", e.target.value);
                   }}
-                  value={values.unit}
                   isInvalid={errors.unit}
                 >
                   <option selected={true} disabled={true} value="">

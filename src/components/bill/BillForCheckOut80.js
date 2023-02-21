@@ -1,26 +1,14 @@
 import styled from "styled-components";
-import axios from "axios";
-import { END_POINT_SEVER } from "../../constants/api";
-import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { getHeaders } from "../../services/auth";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
-
-import { useStore } from "../../store";
 
 export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  data,
 }) {
   const [total, setTotal] = useState();
-
-  const { callingCheckOut } = useStore();
-  useEffect(() => {
-    _calculateTotal();
-  }, [dataBill]);
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -30,6 +18,11 @@ export default function BillForCheckOut80({
     setTotal(_total);
   };
 
+  // useEffect
+  useEffect(() => {
+    _calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataBill]);
   return (
     <Container>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
@@ -60,6 +53,7 @@ export default function BillForCheckOut80({
           <img
             src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
             style={{ wifth: "100%", height: "100%" }}
+            alt=""
           />
         </Img>
       </Price>

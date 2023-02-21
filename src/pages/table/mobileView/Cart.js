@@ -7,10 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { getHeaders } from "../../../services/auth";
 import {
-  CATEGORY,
   END_POINT_SEVER,
-  getLocalData,
-  MENUS,
 } from "../../../constants/api";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -82,7 +79,7 @@ function Cart() {
   };
 
   const onSubmit = async (isPrinted) => {
-    if (selectedMenu.length == 0) {
+    if (selectedMenu.length === 0) {
       Swal.fire({
         icon: "warning",
         title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
@@ -92,7 +89,7 @@ function Cart() {
       return;
     }
     let header = await getHeaders();
-    if (selectedMenu.length != 0) {
+    if (selectedMenu.length !== 0) {
       await createOrder(selectedMenu, header, isPrinted);
     }
   };

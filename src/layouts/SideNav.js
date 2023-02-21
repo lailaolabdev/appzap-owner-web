@@ -15,12 +15,11 @@ import {
   faTachometerAlt,
   faChartBar,
   faAddressCard,
-  faIcicles
+  faIcicles,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
-import { usePubNub } from "pubnub-react";
 import { useTranslation } from "react-i18next";
 
 export default function Sidenav({ location, navigate, onToggle }) {
@@ -29,7 +28,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
   );
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
-
 
   const {
     openTableData,
@@ -41,18 +39,25 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const itemList = [
     {
-      title: "ສະຖິຕິລວມ",
-      key: "report",
-      icon: faTachometerAlt,
-      typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-    },
-    {
-      title: t('tableStatus'),
+      title: "ສະຖານະຂອງໂຕະ",
       key: "tables",
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ລາຍການອໍເດີ້",
+      key: "orders/waiting",
+      typeStore: "",
+      icon: faAddressCard,
+      hidden: !storeDetail?.hasPOS,
+    },
+    {
+      title: "ສະຖິຕິລວມ",
+      key: "report",
+      icon: faTachometerAlt,
+      title: t("tableStatus"),
+      typeStore: "",
     },
     {
       title: "ຈັດການການຈອງ",
@@ -102,19 +107,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
     getTableDataStore();
     getOrderItemsStore(WAITING_STATUS);
     callingCheckOut();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const pubnub = usePubNub();
-  const [channels] = useState([
-    `TABLE:${storeDetail._id}`,
-  ]);
-  const handleMessage = (event) => {
-    getTableDataStore();
-  };
-  useEffect(() => {
-    pubnub.addListener({ message: handleMessage });
-    pubnub.subscribe({ channels });
-  }, [pubnub, channels]);
   return (
     <SideNav
       style={{

@@ -16,10 +16,12 @@ export default function DashboardMenu({ startDate, endDate }) {
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // =========>
   useEffect(() => {
     _fetchMenuData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endDate, startDate]);
   // =========>
 

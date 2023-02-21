@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
@@ -17,7 +17,16 @@ import DashboardFinance from "./DashboardFinance";
 import MoneyChart from "./MoneyChart";
 import DashboardUser from "./DashboardUser";
 import "./index.css";
+import useQuery from "../../helpers/useQuery";
+import { COLOR_APP } from "../../constants";
+import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
+import { END_POINT_SEVER } from "../../constants/api";
+import { useStore } from "../../store";
+
 export default function Dashboard() {
+  const [currency, setcurrency] = useState()
+  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
+  const { storeDetail } = useStore()
   const newDate = new Date();
 
   const [startDate, setStartDate] = useState(
@@ -43,6 +52,26 @@ export default function Dashboard() {
   };
 
   const { t } = useTranslation();
+
+  const getcurrency = async () => {
+    try {
+      let u = await fetch(
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setcurrency(json));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+  useEffect(() => {
+    getcurrency()
+  }, [])
 
   return (
     <div style={{ padding: 10 }}>
@@ -108,7 +137,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("CATEGORY")}
           >
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> ຫມວດຂາຍດີ
+            <div style={{ width: 8 }}></div> {t('famousType')}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -169,7 +198,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click7days()}
           >
-            7ວັນລ່າສຸດ
+            {t('last7days')}
           </button>
           <div style={{ width: 10 }}></div>
           <button
@@ -177,8 +206,20 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click30days()}
           >
-            30ວັນລ່າສຸດ
+            {t('last30days')}
           </button>
+
+          <div style={{ width: 10 }}></div>
+
+              <select onChange={(e) => setSelectedCurrency(e.target.value)} className="btn btn-outline-info">
+                <option selected value="LAK">ກີບ</option>
+                {
+                  currency?.map((cur, index) => (
+                    <option key={cur + index} value={cur?.currencyCode}>{cur?.currencyName}</option>
+                  ))
+                }
+              </select>
+
         </div>
         <div
           style={{
@@ -192,31 +233,40 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             style={{ width: "100%" }}
             value={startDate}
-            onChange={(e) => setStartDate(e?.target?.value)}
+            onChange={(e) => {
+              // alert(e?.target?.value);
+              setStartDate(e?.target?.value);
+            }}
           />
           <input
             type="date"
             className="btn btn-outline-info"
             value={endDate}
             style={{ width: "100%" }}
-            onChange={(e) => setEndDate(e?.target?.value)}
+            onChange={(e) => {
+              // alert(e?.target?.value);
+              setEndDate(e?.target?.value);
+            }}
           />
         </div>
       </Box>
+
       {changeUi === "MONEY_CHART" && (
-        <MoneyChart startDate={startDate} endDate={endDate} />
+        <MoneyChart startDate={startDate} endDate={endDate}
+          selectedCurrency={selectedCurrency}
+        />
       )}
       {changeUi === "CHECKBILL" && (
-        <DashboardFinance startDate={startDate} endDate={endDate} />
+        <DashboardFinance startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "MENUS" && (
-        <DashboardMenu startDate={startDate} endDate={endDate} />
+        <DashboardMenu startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "CATEGORY" && (
-        <DashboardCategory startDate={startDate} endDate={endDate} />
+        <DashboardCategory startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
       {changeUi === "STAFF" && (
-        <DashboardUser startDate={startDate} endDate={endDate} />
+        <DashboardUser startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
       )}
     </div>
   );

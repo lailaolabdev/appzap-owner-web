@@ -1,11 +1,13 @@
 import { USER_KEY } from "../constants";
-
-export const getHeaders = async () => {
+import useQuery from "../helpers/useQuery";
+export const getHeaders = async (accessToken) => {
   try {
     const user = await localStorage.getItem(USER_KEY);
     const token = await JSON.parse(user)?.["accessToken"];
     if (token) {
       return { authorization: `AppZap ${token}` };
+    } else if (accessToken) {
+      return { authorization: `AppZap ${accessToken}` };
     } else {
       return null;
     }

@@ -43,6 +43,7 @@ export const usePrintersState = ({ storeDetail }) => {
   useEffect(() => {
     getPrintersState();
     getPrinterCounterState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 
   // stocket
@@ -53,6 +54,7 @@ export const usePrintersState = ({ storeDetail }) => {
     socket.on("disconnect", () => {
       setIsConnectPrinter(socket.connected); // false
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 
   return {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Formik } from "formik";
-import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import axios from "axios";
 import { getHeaders } from "../../../../services/auth";
 import { getLocalData } from "../../../../constants/api";
@@ -19,11 +19,11 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
         initialValues={{}}
         validate={(values) => {
           const errors = {};
-          let _currentQuantity = data?.quantity
-          let _minusQuantity = values?.quantity
+          // let _currentQuantity = data?.quantity;
+          let _minusQuantity = values?.quantity;
 
-          if(_minusQuantity.toString().includes("-")){
-            errors.quantity = "ຈຳນວນທີ່ຕ້ອງການເພີ່ມບໍ່ຖືກຕ້ອງ"
+          if (_minusQuantity.toString().includes("-")) {
+            errors.quantity = "ຈຳນວນທີ່ຕ້ອງການເພີ່ມບໍ່ຖືກຕ້ອງ";
           }
 
           if (!values.quantity) {
@@ -41,7 +41,7 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                 {
                   id: data._id,
                   data: { quantity: values.quantity },
-                  storeId:_localData?.DATA?.storeId
+                  storeId: _localData?.DATA?.storeId,
                 },
                 { headers }
               );

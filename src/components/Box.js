@@ -10,7 +10,7 @@ const Box = styled("div")(({ sx, theme }) => {
   let _sm = {};
   let _xs = {};
   for (const _item in sx) {
-    if (typeof sx[_item] === "object" || sx[_item] != "children") {
+    if (typeof sx[_item] === "object" || sx[_item] !== "children") {
       for (const _i in sx[_item]) {
         if (_i === "xl") {
           _xl[_item] = sx[_item][_i];

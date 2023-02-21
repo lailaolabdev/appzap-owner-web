@@ -1,11 +1,8 @@
-import { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 function useQuery() {
-  // const { useLocation } = useReactRouter();
   const search = useLocation().search;
   if (!search) return {};
-  console.log("search", search);
   let arr = search.split("&");
   arr[0] = arr?.[0].split("?")[1];
   const data = arr.map((Event) => Event.split("="));

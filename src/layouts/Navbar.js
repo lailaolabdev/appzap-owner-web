@@ -4,7 +4,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
-import { USER_KEY, COLOR_APP } from "../constants";
+import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
@@ -21,6 +21,7 @@ export default function NavBar() {
   // state
   const [userData, setUserData] = useState({});
   const { isConnectPrinter } = useStore();
+  const [switchToDev, setSwitchToDev] = useState(0);
 
   // ref
   const soundPlayer = useRef();
@@ -35,6 +36,7 @@ export default function NavBar() {
       }
     };
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const _onLogout = () => {
@@ -43,6 +45,9 @@ export default function NavBar() {
     navigate(`/`);
   };
 
+  // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
+  //   setmessageData(data);
+  // });
   const switchLanguage = (language) => {
     i18n.changeLanguage(language);
   };
@@ -70,7 +75,16 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p style={{ marginTop: 20, color: "#bfbfbf" }}>
+          <p
+            style={{ marginTop: 20, color: "#bfbfbf" }}
+            onClick={() => {
+              setSwitchToDev((prev) => prev + 1);
+              if (switchToDev >= 5) {
+                window.location.href =
+                  "http://staging.restaurant.appzap.la.s3-website-ap-southeast-1.amazonaws.com/tables";
+              }
+            }}
+          >
             v{packageJson?.version}
           </p>
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
@@ -78,14 +92,14 @@ export default function NavBar() {
 
           {/* <button onClick={() => switchLanguage("en")}>en</button>
           <button onClick={() => switchLanguage("la")}>la</button> */}
-          <div style={{
-            marginRight: "30px",
-            backgroundColor: "orange",
-            boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)"
-          }}>
-            <select
-              onChange={(e) => switchLanguage(e.target.value)}
-            >
+          <div
+            style={{
+              marginRight: "30px",
+              backgroundColor: "orange",
+              boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
+            }}
+          >
+            <select onChange={(e) => switchLanguage(e.target.value)}>
               <option value="la">LA</option>
               <option value="en">EN</option>
             </select>
@@ -105,18 +119,24 @@ export default function NavBar() {
               <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
             </div>
           ) : (
-            <div
-              style={{
-                border: "1px solid #E97777",
-                padding: 4,
-                color: "#E97777",
-                backgroundColor: "#ffd8d8",
-                borderRadius: 4,
-                fontSize: 12,
-              }}
+            <a
+              href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
             >
-              <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
-            </div>
+              <div
+                style={{
+                  border: "1px solid #E97777",
+                  padding: 4,
+                  color: "#E97777",
+                  backgroundColor: "#ffd8d8",
+                  borderRadius: 4,
+                  fontSize: 12,
+                }}
+              >
+                <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+              </div>
+            </a>
           )}
 
           <div style={{ width: 10 }} />
@@ -148,10 +168,10 @@ export default function NavBar() {
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
                     ? (userData?.data?.firstname
-                      ? userData?.data?.firstname
-                      : "") +
-                    " " +
-                    (userData?.data?.lastname ? userData?.data?.lastname : "")
+                        ? userData?.data?.firstname
+                        : "") +
+                      " " +
+                      (userData?.data?.lastname ? userData?.data?.lastname : "")
                     : ""}
                 </Box>
               </Dropdown.Toggle>
@@ -171,22 +191,22 @@ export default function NavBar() {
   );
 }
 
-const Language = () => {
-  let _l = ["LA", "EN", "中文"];
-  return (
-    <Box sx={{ display: "flex" }}>
-      {_l.map((e, i) => (
-        <Box
-          sx={{
-            padding: 10,
-            borderLeft: i > 0 ? "1px solid #ccc" : "",
-            color: COLOR_APP,
-          }}
-          key={i}
-        >
-          {e}
-        </Box>
-      ))}
-    </Box>
-  );
-};
+// const Language = () => {
+//   let _l = ["LA", "EN", "中文"];
+//   return (
+//     <Box sx={{ display: "flex" }}>
+//       {_l.map((e, i) => (
+//         <Box
+//           sx={{
+//             padding: 10,
+//             borderLeft: i > 0 ? "1px solid #ccc" : "",
+//             color: COLOR_APP,
+//           }}
+//           key={i}
+//         >
+//           {e}
+//         </Box>
+//       ))}
+//     </Box>
+//   );
+// };

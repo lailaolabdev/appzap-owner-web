@@ -89,9 +89,6 @@ export default function FormAddMenuStock() {
     setIsSubmit(true);
     const headers = await getHeaders();
     const _localData = await getLocalData();
-    console.log("first", [
-      ...menuStocks.map((e) => ({ stockId: e.stockId, amount: 2 })),
-    ]);
     if (headers) {
       const res = await axios.put(
         `${END_POINT_SEVER}/v3/menu-and-menu-stock/update`,
@@ -116,7 +113,6 @@ export default function FormAddMenuStock() {
         );
       }
     }
-    console.log("_localData?.DATA?.storeId", _localData?.DATA?.storeId);
     setIsSubmit(false);
   };
 
@@ -165,98 +161,6 @@ export default function FormAddMenuStock() {
     }
   };
 
-  // const _createMenu = async (values) => {
-  //   const _localData = await getLocalData();
-  //   if (_localData) {
-  //     let header = await getHeaders();
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       Authorization: header.authorization,
-  //     };
-  //     try {
-  //       const resData = await axios({
-  //         method: "POST",
-  //         url: END_POINT_SEVER + "/v3/menu/create",
-  //         data: {
-  //           name: values?.name,
-  //           quantity: values?.quantity,
-  //           categoryId: values?.categoryId,
-  //           price: values?.price,
-  //           detail: values?.detail,
-  //           unit: values?.unit,
-  //           isOpened: values?.isOpened,
-  //           images: [namePhoto?.params?.Key],
-  //           storeId: _localData?.DATA?.storeId,
-  //         },
-  //         headers: headers,
-  //       });
-  //       if (resData?.data) {
-  //         // setMenus(resData?.data);
-  //         // handleClose();
-  //         // successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-  //       }
-  //     } catch (err) {
-  //       //   errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
-  //     }
-  //   }
-  // };
-  // const _createMenuStock = async (values) => {
-  //   const _localData = await getLocalData();
-  //   if (_localData) {
-  //     let header = await getHeaders();
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       Authorization: header.authorization,
-  //     };
-  //     try {
-  //       const resData = await axios({
-  //         method: "PUT",
-  //         url: END_POINT_SEVER + "/v3/menu-and-menu-stock/update",
-  //         data: {
-  //           id: "62bbf9a0dcc3eb00202167b5",
-  //           storeId: "61d8019f9d14fc92d015ee8e",
-  //           data: {
-  //             menuStock: [
-  //               {
-  //                 stockId: "62e7a68569239e002afa6cd5",
-  //                 amount: 2,
-  //               },
-  //             ],
-  //           },
-  //         },
-  //         headers: headers,
-  //       });
-  //       if (resData?.data) {
-  //         // setMenus(resData?.data);
-  //         // handleClose();
-  //         // successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-  //       }
-  //     } catch (err) {
-  //       //   errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
-  //     }
-  //   }
-  // };
-  // const getCategory = async () => {
-  //   try {
-  //     const _localData = await getLocalData();
-  //     if (_localData) {
-  //       setIsLoading(true);
-  //       const data = await axios.get(
-  //         `${END_POINT_SEVER}/v3/categories?storeId=${_localData.DATA?.storeId}&isDeleted=false`
-  //       );
-  //       if (data.status < 300) {
-  //         setLoadStatus("SUCCESS");
-  //         setCategorys(data.data);
-  //       }
-  //       setIsLoading(false);
-  //     }
-  //   } catch (err) {
-  //     setLoadStatus("ERROR!!");
-  //     setIsLoading(false);
-  //     console.log("err:", err);
-  //   }
-  // };
-
   const getStock = async () => {
     try {
       const _localData = await getLocalData();
@@ -289,7 +193,7 @@ export default function FormAddMenuStock() {
           setLoadStatus("SUCCESS");
           setMenuStocks([
             ...data.data.map((e) => {
-              const st = stocks.find((e2) => e2?._id == e.stockId?._id);
+              const st = stocks.find((e2) => e2?._id === e.stockId?._id);
               return {
                 ...e,
                 name: st?.name || "-",
@@ -397,7 +301,6 @@ export default function FormAddMenuStock() {
                           }}
                           onClick={() => {
                             setSelect(data);
-                            console.log(data);
                             setPopAddMenuStocks(true);
                           }}
                         />

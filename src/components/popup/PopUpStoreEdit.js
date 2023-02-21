@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import Upload from "../Upload";
