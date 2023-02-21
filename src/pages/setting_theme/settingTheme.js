@@ -10,6 +10,7 @@ import { END_POINT_SEVER } from "../../constants/api";
 export default function SettingTheme() {
 
     const [themes, setThemes] = useState([])
+    const [storeTheme, setStoreTheme] = useState({})
     const [themeSelected, setThemeSelected] = useState([])
     const [backgroundHeaderColor, setBackgroundHeaderColor] = useState({});
     const [backgroundBodeColor, setBackgroundBodyColor] = useState({});
@@ -20,6 +21,7 @@ export default function SettingTheme() {
 
     useEffect(() => {
         getData();
+        getStoreTheme();
     }, []);
 
     const getData = async () => {
@@ -52,6 +54,29 @@ export default function SettingTheme() {
             console.log(error)
         }
     };
+    const getStoreTheme = async () => {
+        try {
+            var getTheme = {
+                method: 'get',
+                url: `${END_POINT_SEVER}/v3/store-theme?storeId=61d8019f9d14fc92d015ee8e`
+            };
+            let storeTheme = await axios(getTheme)
+            // const _themesData = await storeTheme.json()
+            console.log('storeTheme', storeTheme)
+            setStoreTheme(storeTheme?.data?.storeThemes ?? {})
+
+            // Background Header Color
+            const _backgroundHeaderColor = await storeTheme?.data?.storeThemes?.filter(
+                (storeTheme) => storeTheme?.data?.storeThemes?.groupCategory ==
+                    "COLOR" && storeTheme?.data?.storeThemes?.groupType == "BACKGROUND_HEADER")
+                    console.log("backgroundHeaderColor",backgroundHeaderColor)
+            if (_backgroundHeaderColor.length > 0)
+                setBackgroundHeaderColor(_backgroundHeaderColor[_backgroundHeaderColor.length - 1]);
+                
+        } catch (err) {
+            console.log(err)
+        }
+    }
 
     const onSeleteTheme = async (data) => {
         try {
@@ -78,7 +103,6 @@ export default function SettingTheme() {
                 headers: {}
             };
             const resetThemeSetting = await axios(configResetTheme)
-            console.log("resetThemeSetting===============>", resetThemeSetting)
 
             let _createData = []
             for (var i = 0; i < themeSelected.length; i++) {
@@ -106,7 +130,7 @@ export default function SettingTheme() {
     }
 
     return (
-        <div style={{ display: "flex" , flexDirection: "row", gap: 350}}>
+        <div style={{ display: "flex", flexDirection: "row", gap: 350 }}>
             <div className="allBox">
                 <div class="box1"
                     style={{
@@ -145,7 +169,7 @@ export default function SettingTheme() {
             </div>
             <div
                 style={{
-                    backgroundColor: "#FB6E3B",
+                    backgroundColor: backgroundHeaderColor?.storeTheme ? { backgroundColor: backgroundHeaderColor?.storeTheme?.value } : "#FB6E3B",
                     width: "390px",
                     height: "840px",
                     margin: "40px",
@@ -266,7 +290,7 @@ export default function SettingTheme() {
                                     paddingLeft: 5,
                                     color: "white"
                                 }}>
-                                100,000 kip
+                                    100,000 kip
                                 </div>
                             </div>
                         </div>
@@ -274,8 +298,8 @@ export default function SettingTheme() {
                             display: "flex",
                             flexDirection: "row",
                             gap: 50,
-                            padding:10,
-                            boxShadow:"3px 3px 5px rgba(0,0,0,0.1)"
+                            padding: 10,
+                            boxShadow: "3px 3px 5px rgba(0,0,0,0.1)"
                         }}>
                             <div style={{ color: "#FB6E3B" }}>Drink</div>
                             <div style={{ color: "#FB6E3B" }}>All</div>
@@ -290,7 +314,7 @@ export default function SettingTheme() {
                             justifyContent: "space-between",
                             marginLeft: "15px",
                             marginRight: "15px",
-                            marginTop:-20
+                            marginTop: -20
                         }}>
                             <div style={{
                                 backgroundColor: "blue",

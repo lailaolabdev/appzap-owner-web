@@ -22,11 +22,11 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
 
+
 export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
 
-  const [genderData, setGenderData] = useState("FEMALE");
   const [isOpened, setIsOpened] = useState(true);
 
   const [show, setShow] = useState(false);
@@ -42,8 +42,13 @@ export default function MenuList() {
     setShow4(true);
   };
 
+
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
+
+  const [menuType, setMenuType] = useState("MENU")
+  const [connectMenues, setConnectMenues] = useState([])
+  const [connectMenuId, setConnectMenuId] = useState("")
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
@@ -86,7 +91,10 @@ export default function MenuList() {
         method: "GET",
       })
         .then((response) => response.json())
-        .then((json) => setMenus(json));
+        .then((json) => {
+          console.log(json)
+          setMenus(json)
+        });
     } catch (err) {
       console.log(err);
     }
@@ -113,23 +121,26 @@ export default function MenuList() {
       Authorization: header.authorization,
     };
     try {
+      let createData = {
+        name: values?.name,
+        name_en: values?.name_en,
+        quantity: values?.quantity,
+        categoryId: values?.categoryId,
+        menuOptionId: menuOptions,
+        price: values?.price,
+        detail: values?.detail,
+        unit: values?.unit,
+        isOpened: isOpened,
+        images: [...values?.images],
+        storeId: getTokken?.DATA?.storeId,
+        type: menuType
+      }
+      // if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
+
       const resData = await axios({
         method: "POST",
         url: END_POINT_SEVER + "/v3/menu/create",
-        data: {
-          name: values?.name,
-          name_en: values?.name_en,
-          quantity: values?.quantity,
-          categoryId: values?.categoryId,
-          menuOptionId: menuOptions,
-          price: values?.price,
-          detail: values?.detail,
-          unit: values?.unit,
-          isOpened: isOpened,
-          images: [...values?.images],
-          storeId: getTokken?.DATA?.storeId,
-          type: values?.type
-        },
+        data: createData,
         headers: headers,
       });
       const _localData = await getLocalData();
@@ -138,6 +149,9 @@ export default function MenuList() {
         handleClose();
         setgetTokken(_localData);
         getMenu(_localData?.DATA?.storeId);
+
+        setMenuType("MENU")
+        setConnectMenuId("")
 
         successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
       }
@@ -243,6 +257,24 @@ export default function MenuList() {
       });
   };
 
+  const handleChangeMenuType = async (e) => {
+    setMenuType(e.target.value)
+
+    if (e.target.value == "MENUOPTION") {
+      await fetch(MENUS + `/?isOpened=true&storeId=${getTokken?.DATA?.storeId}&type=MENU`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          setConnectMenues(json)
+        });
+    }
+  }
+
+  const handleChangeConnectMenu = (e) => {
+    setConnectMenuId(e.target.value)
+  }
+
   return (
     <div style={BODY}>
       <div>
@@ -293,7 +325,6 @@ export default function MenuList() {
                   <th scope="col">ຊື່ອາຫານ</th>
                   <th scope="col">ຊື່ອາຫານ (en)</th>
                   <th scope="col">ລາຄາ</th>
-                  <th scope="col">ຊະນິດ</th>
                   <th scope="col">ສະຖານະ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
@@ -338,7 +369,6 @@ export default function MenuList() {
                         <td>{data?.name}</td>
                         <td>{data?.name_en ?? " "}</td>
                         <td>{moneyCurrency(data?.price)}</td>
-                        <td>{data?.menuOptionId.map((option, i) => option?.name + (i + 1 >= data?.menuOptionId.length ? "" : ", "))}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
                           {data?.isOpened ? "ເປີດ" : "ປິດ"}
                         </td>
@@ -496,23 +526,33 @@ export default function MenuList() {
                     })}
                   </Form.Control>
                 </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ປະເພດເມນູ</Form.Label>
+
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>ປະເພດ</Form.Label>
                   <Form.Control
-                    type="text"
-                    name="type"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.type}
-                    placeholder="ປະເພດເມນູ..."
-                    style={{
-                      border:
-                        errors.type && touched.type && errors.type
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                  />
+                    as="select"
+                    name="menuType"
+                    onChange={handleChangeMenuType}
+                    value={menuType}
+                  >
+                    <option value={"MENU"}>ເມນູ</option>
+                    <option value={"MENUOPTION"}>ເມນູຍ່ອຍ</option>
+                  </Form.Control>
                 </Form.Group>
+
+                {menuType == "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="connectMenuId"
+                    onChange={handleChangeConnectMenu}
+                    value={connectMenuId}
+                  >
+                    <option selected={true} disabled={true} value="">ເລືອກເມນູທີ່ເຊື່ອມ</option>
+                    {connectMenues.map((item, index) => <option key={index} value={item?._id}>{item?.name}</option>)}
+                  </Form.Control>
+                </Form.Group>}
+
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ອາຫານ</Form.Label>
                   <Form.Control
@@ -547,68 +587,6 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊະນິດ</Form.Label>
-                  <div
-                    className="col-12"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Form.Control
-                      className="col-5"
-                      name="nameMenuOption"
-                      type="text"
-                      value={nameMenuOption || ""}
-                      placeholder="ຊະນິດ..."
-                      onChange={(e) => {
-                        setNameMenuOption(e?.target?.value);
-                      }}
-                    />
-                    <Form.Control
-                      className="col-5"
-                      type="number"
-                      name="priceMenuOption"
-                      value={priceMenuOption || ""}
-                      placeholder="ລາຄາ..."
-                      onChange={(e) => {
-                        setPriceMenuOption(e?.target?.value);
-                      }}
-                    />
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        let newData = [...menuOptions]
-                        newData.push({ name: nameMenuOption, price: priceMenuOption })
-                        setMenuOptions(newData)
-                        setNameMenuOption();
-                        setPriceMenuOption();
-                      }}
-                    >
-                      ເພີ່ມ
-                    </Button>
-                  </div>
-                </Form.Group>
-                <hr />
-                {menuOptions?.map((item, index) => (
-                  <div key={index}>
-                    <p>
-                      {item?.name} : {moneyCurrency(item?.price)}
-                      <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        style={{ color: "red" }}
-                        onClick={() => {
-                          const filter = menuOptions.filter(data => data != item)
-                          setMenuOptions(filter)
-                        }
-                        }
-                      />
-                    </p>
-                  </div>
-                ))}
-                <hr />
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ລາຄາ</Form.Label>
                   <Form.Control
@@ -766,6 +744,31 @@ export default function MenuList() {
                     })}
                   </Form.Control>
                 </Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>ປະເພດ</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="menuType"
+                    onChange={handleChangeMenuType}
+                    value={menuType}
+                  >
+                    <option value={"MENU"}>ເມນູ</option>
+                    <option value={"MENUOPTION"}>ເມນູຍ່ອຍ</option>
+                  </Form.Control>
+                </Form.Group>
+
+                {menuType == "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="connectMenuId"
+                    onChange={handleChangeConnectMenu}
+                    value={connectMenuId}
+                  >
+                    <option selected={true} disabled={true} value="">ເລືອກເມນູທີ່ເຊື່ອມ</option>
+                    {connectMenues.map((item, index) => <option key={index} value={item?._id}>{item?.name}</option>)}
+                  </Form.Control>
+                </Form.Group>}
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ອາຫານ</Form.Label>
                   <Form.Control
@@ -778,23 +781,6 @@ export default function MenuList() {
                     style={{
                       border:
                         errors.name && touched.name && errors.name
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ປະເພດເມນູ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="type"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.type}
-                    placeholder="ປະເພດເມນູ..."
-                    style={{
-                      border:
-                        errors.type && touched.type && errors.type
                           ? "solid 1px red"
                           : "",
                     }}
@@ -817,68 +803,6 @@ export default function MenuList() {
                     }}
                   />
                 </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊະນິດ</Form.Label>
-                  <div
-                    className="col-12"
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Form.Control
-                      className="col-5"
-                      name="nameMenuOption"
-                      type="text"
-                      value={nameMenuOption || ""}
-                      placeholder="ຊະນິດ..."
-                      onChange={(e) => {
-                        setNameMenuOption(e?.target?.value);
-                      }}
-                    />
-                    <Form.Control
-                      className="col-5"
-                      type="number"
-                      name="priceMenuOption"
-                      value={priceMenuOption || ""}
-                      placeholder="ລາຄາ..."
-                      onChange={(e) => {
-                        setPriceMenuOption(e?.target?.value);
-                      }}
-                    />
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        let newData = [...menuOptions]
-                        newData.push({ name: nameMenuOption, price: priceMenuOption })
-                        setMenuOptions(newData)
-                        setNameMenuOption();
-                        setPriceMenuOption();
-                      }}
-                    >
-                      ເພີ່ມ
-                    </Button>
-                  </div>
-                </Form.Group>
-                <hr />
-                {menuOptions?.map((item, index) => (
-                  <div key={index}>
-                    <p>
-                      {item?.name} : {moneyCurrency(item?.price)}
-                      <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        style={{ color: "red" }}
-                        onClick={() => {
-                          const filter = menuOptions.filter(data => data != item)
-                          setMenuOptions(filter)
-                        }
-                        }
-                      />
-                    </p>
-                  </div>
-                ))}
-                <hr />
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ລາຄາ</Form.Label>
                   <Form.Control
