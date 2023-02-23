@@ -53,6 +53,7 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
+  const [statusValue, setStatusValue] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +88,7 @@ export default function MenuList() {
   };
   const getMenu = async (id) => {
     try {
-      await fetch(MENUS + `/?isOpened=true&storeId=${id}`, {
+      await fetch(MENUS + `/?storeId=${id}`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -110,6 +111,7 @@ export default function MenuList() {
   const [nameMenuOption, setNameMenuOption] = useState();
   const [priceMenuOption, setPriceMenuOption] = useState();
   const [menuOptions, setMenuOptions] = useState([]);
+
 
   // lung jak upload leo pic ja ma so u nee
 
@@ -275,6 +277,38 @@ export default function MenuList() {
     setConnectMenuId(e.target.value)
   }
 
+  const _changeStatusMenu = async (data) => {
+    try {
+      // if (data?.isOpened) {
+      //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
+      //   return;
+      // }
+        const _localData = await getLocalData();
+
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const isOpened = !data?.isOpened ? "true" : "false";
+      let res = await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: data._id,
+          data: {
+            isOpened,
+          },
+        },
+        headers: headers,
+      });
+      getMenu(_localData?.DATA?.storeId);
+      // getMenu();
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
   return (
     <div style={BODY}>
       <div>
@@ -294,6 +328,7 @@ export default function MenuList() {
           </Nav.Item>
         </Nav>
       </div>
+
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 190px" }}>
           <Form.Control
@@ -370,7 +405,17 @@ export default function MenuList() {
                         <td>{data?.name_en ?? " "}</td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
-                          {data?.isOpened ? "ເປີດ" : "ປິດ"}
+                          {/* {data?.isOpened ? "ເປີດ" : "ປິດ"} */}
+                          <label className="switch">
+                            <input
+                              type="checkbox"
+                              checked={
+                                data?.isOpened === true ? true : false
+                              }
+                              onClick={(e) => _changeStatusMenu(data)}
+                            />
+                            <span className="slider round"></span>
+                          </label>
                         </td>
                         <td>
                           <FontAwesomeIcon
