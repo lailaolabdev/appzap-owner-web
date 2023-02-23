@@ -108,8 +108,6 @@ export default function MenuList() {
       `/settingStore/menu/category/limit/40/page/1/${params?.id}`
     );
   };
-  const [nameMenuOption, setNameMenuOption] = useState();
-  const [priceMenuOption, setPriceMenuOption] = useState();
   const [menuOptions, setMenuOptions] = useState([]);
 
 
@@ -137,7 +135,7 @@ export default function MenuList() {
         storeId: getTokken?.DATA?.storeId,
         type: menuType
       }
-      // if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
+      if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
 
       const resData = await axios({
         method: "POST",

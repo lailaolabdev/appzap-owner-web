@@ -4,7 +4,6 @@ import axios from "axios";
 import { Formik } from "formik";
 import { COLOR_APP } from "../../../../constants";
 import {
-  PRESIGNED_URL,
   getLocalData,
   END_POINT_SEVER,
 } from "../../../../constants/api";
