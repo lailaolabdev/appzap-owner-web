@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-<<<<<<< HEAD
-import useReactRouter from "use-react-router";
-import { Card, Table } from "react-bootstrap";
-import { END_POINT_SEVER } from "../../constants/api";
-import { _statusCheckBill } from "../../helpers";
-=======
 import useReactRouter from "use-react-router"
 import { Card, Table } from 'react-bootstrap'
 import { END_POINT_SEVER } from '../../constants/api'
 import { _statusCheckBill } from '../../helpers';
->>>>>>> origin/production_v5.4.4
 import {
   Chart as ChartJS,
   LinearScale,
@@ -21,14 +14,9 @@ import {
   LineElement,
   Legend,
   Tooltip,
-<<<<<<< HEAD
-} from "chart.js";
-import { moneyCurrency } from "../../helpers";
-=======
 } from 'chart.js';
 import { moneyCurrency } from '../../helpers'
 import { t } from 'i18next';
->>>>>>> origin/production_v5.4.4
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -121,26 +109,9 @@ export default function DashboardUser({ startDate, endDate }) {
     <div style={{ padding: 0 }}>
       <div className="row col-sm-12">
         <Card className="col-sm-12" style={{ backgroundColor: "white" }}>
-<<<<<<< HEAD
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: 20,
-            }}
-          >
-            <h4>ລາຍງານພະນັກງານ</h4>
-            <button
-              type="button"
-              style={{ border: "0px solid white", backgroundColor: "white" }}
-            >
-              EXPORT
-            </button>
-=======
           <div style={{ display: "flex", justifyContent: "space-between", padding: 20 }}>
             <h4>{t('waitstaffReport')}</h4>
             <button type="button" style={{ border: "0px solid white", backgroundColor: "white" }}>EXPORT</button>
->>>>>>> origin/production_v5.4.4
           </div>
           <Card.Body>
             <Table hover style={{ fontSize: 15 }}>
