@@ -65,7 +65,6 @@ export default function WaitingOrder() {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
       });
-      console.log("_printer", _printer);
 
       try {
         let urlForPrinter = "";
@@ -138,12 +137,6 @@ export default function WaitingOrder() {
     `ORDER:${storeDetail._id}`,
   ]);
   const handleMessage = (event) => {
-    console.log("selectOrderStatus", selectOrderStatus);
-    console.log("WAITING_STATUS", WAITING_STATUS);
-    console.log(
-      "selectOrderStatus === WAITING_STATUS",
-      selectOrderStatus === WAITING_STATUS
-    );
     if (selectOrderStatus === WAITING_STATUS) {
       getOrderItemsStore(WAITING_STATUS);
     }

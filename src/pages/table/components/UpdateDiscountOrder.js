@@ -29,7 +29,6 @@ const UpdateDiscountOrder = ({
   useEffect(() => {
     setNewData(data);
   }, [data]);
-  // console.log("data===>",data)
   useEffect(() => {
     _calculateTotal();
     if (NewData && NewData[0]?.orderId?.discount)

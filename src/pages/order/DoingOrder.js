@@ -92,7 +92,6 @@ const Order = () => {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
       });
-      console.log("_printer", _printer);
 
       try {
         let urlForPrinter = "";
@@ -135,20 +134,24 @@ const Order = () => {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if(_index === 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if(_index ===0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
       _index++;
     }
@@ -164,7 +167,6 @@ const Order = () => {
     setSelectOrderStatus(DOING_STATUS);
   }, []);
   const handleMessage = (event) => {
-    // console.log("event", event);
     if (selectOrderStatus === DOING_STATUS) {
       getOrderItemsStore(DOING_STATUS);
     }

@@ -11,12 +11,6 @@ export default function SettingTheme() {
 
     const [themes, setThemes] = useState([])
     const [themeSelected, setThemeSelected] = useState([])
-    const [backgroundHeaderColor, setBackgroundHeaderColor] = useState({});
-    const [backgroundBodeColor, setBackgroundBodyColor] = useState({});
-    const [backgroundFooterColor, setBackgroundFooterColor] = useState({});
-    const [frontHeaderColor, setFrontHeaderColor] = useState({});
-    const [frontBodyColor, setFrontBodyColor] = useState({});
-    const [frontFooterColor, setFrontFooterColor] = useState({});
 
     useEffect(() => {
         getData();
@@ -78,7 +72,6 @@ export default function SettingTheme() {
                 headers: {}
             };
             const resetThemeSetting = await axios(configResetTheme)
-            console.log(resetThemeSetting?.data)
 
             let _createData = []
             for (var i = 0; i < themeSelected.length; i++) {
@@ -98,7 +91,7 @@ export default function SettingTheme() {
                 data: data
             };
             const createManyTheme = await axios(config)
-            console.log("createManyTheme: ", createManyTheme.data)
+            console.log("createManyTheme", createManyTheme)
 
         } catch (error) {
             console.log(error)
@@ -106,7 +99,7 @@ export default function SettingTheme() {
     }
 
     return (
-        <div style={{ display: "flex" , flexDirection: "row", gap: 350}}>
+        <div style={{ display: "flex", flexDirection: "row", gap: 350 }}>
             <div className="allBox">
                 <div class="box1"
                     style={{
@@ -145,7 +138,7 @@ export default function SettingTheme() {
             </div>
             <div
                 style={{
-                    backgroundColor: "#FB6E3B",
+                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_HEADER")[0]?.value ?? "#FB6E3B",
                     width: "390px",
                     height: "840px",
                     margin: "40px",
@@ -168,7 +161,7 @@ export default function SettingTheme() {
                 </div>
                 <div
                     style={{
-                        backgroundColor: "#ffffff",
+                        backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_BODY")[0]?.value ?? "#ffffff",
                         width: "100%",
                         height: "100%",
                         borderTopRightRadius: "60px",
@@ -184,8 +177,12 @@ export default function SettingTheme() {
                         flexDirection: "column",
                         textAlign: "center"
                     }}>
-                        <p style={{ color: "#FB6E3B", marginTop: "15px" }}>{">> ກົດເພື່ອຮັບສ່ວນຫຼຸດ <<"}</p>
-                        <p style={{ color: "#FB6E3B" }}><b>ເມນູພາຍໃນຮ້ານ</b></p>
+                        <p style={{
+                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#FB6E3B"
+                        }}>{">> ກົດເພື່ອຮັບສ່ວນຫຼຸດ <<"}</p>
+                        <p style={{
+                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#FB6E3B"
+                        }}><b>ເມນູພາຍໃນຮ້ານ</b></p>
                     </div>
                     <div style={{
                         display: "flex",
@@ -194,7 +191,9 @@ export default function SettingTheme() {
                         marginLeft: "15px",
                         marginRight: "15px"
                     }}>
-                        <p style={{ color: "#000000" }}><b>ເມນູທີ່ແນະນຳ</b></p>
+                        <p style={{
+                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#000000"
+                        }}><b>ເມນູທີ່ແນະນຳ</b></p>
                         <p style={{ color: "#0c69f5" }}>{"ທັງໝົດ >>"}</p>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 50 }}>
@@ -219,6 +218,8 @@ export default function SettingTheme() {
                                     }} />
                                 <div style={{
                                     backgroundColor: "#f7eee9",
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000",
+
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
@@ -226,13 +227,14 @@ export default function SettingTheme() {
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: "#FB6E3B",
+                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: "white"
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+
                                 }}>
                                     100,000 kip
                                 </div>
@@ -254,19 +256,22 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
+
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: "#FB6E3B",
+                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: "white"
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+
                                 }}>
-                                100,000 kip
+                                    100,000 kip
                                 </div>
                             </div>
                         </div>
@@ -274,14 +279,25 @@ export default function SettingTheme() {
                             display: "flex",
                             flexDirection: "row",
                             gap: 50,
-                            padding:10,
-                            boxShadow:"3px 3px 5px rgba(0,0,0,0.1)"
+                            padding: 10,
+                            boxShadow: "3px 3px 5px rgba(0,0,0,0.1)"
                         }}>
-                            <div style={{ color: "#FB6E3B" }}>Drink</div>
-                            <div style={{ color: "#FB6E3B" }}>All</div>
-                            <div style={{ color: "#FB6E3B" }}>Food</div>
-                            <div style={{ color: "#FB6E3B" }}>Cafe</div>
-                            <div style={{ color: "#FB6E3B" }}>Beer</div>
+                            <div style={{
+                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                            }}>Drink</div>
+                            <div style={{
+                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+
+                            }}>All</div>
+                            <div style={{
+                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                            }}>Food</div>
+                            <div style={{
+                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                            }}>Cafe</div>
+                            <div style={{
+                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                            }}>Beer</div>
                         </div>
 
                         <div style={{
@@ -290,7 +306,7 @@ export default function SettingTheme() {
                             justifyContent: "space-between",
                             marginLeft: "15px",
                             marginRight: "15px",
-                            marginTop:-20
+                            marginTop: -20
                         }}>
                             <div style={{
                                 backgroundColor: "blue",
@@ -308,17 +324,19 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
+
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: "#FB6E3B",
+                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: "white"
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                                 }}>
                                     100,000 kip
                                 </div>
@@ -340,17 +358,21 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
+
+
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: "#FB6E3B",
+                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: "white"
+                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+
                                 }}>
                                     100,000 kip
                                 </div>

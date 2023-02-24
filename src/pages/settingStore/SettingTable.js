@@ -25,7 +25,6 @@ export default function SettingTable() {
   const [tableNumber, setTableNumber] = useState();
   const [sortNumber, setSortNumber] = useState(0);
   const [selectTatle, setSelectTatle] = useState();
-  console.log("selectTatle", selectTatle);
   const _createTable = async () => {
     let header = await getHeaders();
     const headers = {
@@ -89,7 +88,7 @@ export default function SettingTable() {
         warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
       } else {
         getTableDataStoreList();
-        successAdd("ການເພີ່ມໂຕະສຳເລັດ");
+        successAdd("ການແກ້ໄຂໂຕະສຳເລັດ");
       }
     } catch (err) {
       errorAdd("ການເພີ່ມໂຕະບໍ່ສຳເລັດ");

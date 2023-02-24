@@ -53,7 +53,6 @@ export default function PopUpAddDiscount({
     });
     setTotal(_sumTotal);
     setDiscount(dataBill?.discount);
-    // console.log("_sumTotal", _sumTotal);
   }, [value, dataBill]);
 
   return (

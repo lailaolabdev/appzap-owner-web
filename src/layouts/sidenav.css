@@ -25,7 +25,7 @@
   bottom: 0;
   left: 0;
   min-height: 100vh !important;
-  z-index: 100;
+  z-index: -1;
   padding: 48px 0 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
 }
@@ -46,4 +46,8 @@
 #page-content-wrapper {
   min-width: 0;
   width: 100%;
+}
+
+.sc-bcXHqe.cgLLtZ {
+  z-index: 2 !important;
 }

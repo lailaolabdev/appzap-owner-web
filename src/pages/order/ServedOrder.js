@@ -46,9 +46,8 @@ const Order = () => {
     <div>
       <OrderNavbar />
       {ordersSev?.length > 0 ? (
-        (console.log("ordersSev"),
-        console.log(ordersSev),
         (
+
           <div>
             {isLoading ? <Loading /> : ""}
             <Container fluid className="mt-3">
@@ -119,7 +118,7 @@ const Order = () => {
               </Table>
             </Container>
           </div>
-        ))
+        )
       ) : (
         <Image src={empty} alt="" width="100%" />
       )}

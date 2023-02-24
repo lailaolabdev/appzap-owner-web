@@ -56,7 +56,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       title: "ສະຖິຕິລວມ",
       key: "report",
       icon: faTachometerAlt,
-      title: t("tableStatus"),
+      title: t("financialStatic"),
       typeStore: "",
     },
     {

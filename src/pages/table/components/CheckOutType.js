@@ -92,10 +92,6 @@ export default function CheckOutType({
 
   // useEffect
   useEffect(() => {
-    // console.log("cash", cash);
-    // console.log("transfer", transfer);
-    // console.log("totalBill", totalBill);
-    // console.log("first", cash - 0 + (transfer - 0) - totalBill);
     if (cash - 0 + (transfer - 0) -
       (dataBill && dataBill?.discountType === "LAK"
         ? totalBill - dataBill?.discount

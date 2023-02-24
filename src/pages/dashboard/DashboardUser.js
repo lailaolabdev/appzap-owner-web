@@ -167,7 +167,6 @@ export default function DashboardUser({ startDate, endDate }) {
                   <th> ລາຍໄດ້ທັ້ງໝົດ : {moneyCurrency(item?.amount)}</th>
                 </tr>
                 {item?.order?.map((itemB, indexB) => {
-                  console.log("itemB", itemB);
                   return (
                     <tr style={{ width: "100%" }} key={indexB}>
                       <td>

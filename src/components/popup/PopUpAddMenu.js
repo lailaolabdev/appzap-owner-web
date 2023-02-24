@@ -20,7 +20,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   const [priceOption, setPriceOption] = useState();
 
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
   return (
@@ -31,13 +31,14 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
       <Formik
         initialValues={{
           name: "",
-          name_em: "",
+          name_en: "",
           quantity: 1,
           categoryId: "",
           price: "",
           detail: "",
           images: [],
           unit: "",
+          menuOptionId: ""
         }}
         validate={(values) => {
           const errors = {};
@@ -56,7 +57,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then((e) => {});
+          onSubmit(values).then((e) => { });
         }}
       >
         {({
@@ -89,16 +90,6 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       gridGap: 10,
                     }}
                   >
-                    {/* <Form.Group>
-                      <Form.Label>ລຳດັບ</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="sort"
-                        placeholder="ລຳດັບ"
-                        value={values.sort}
-                        onChange={handleChange}
-                      />
-                    </Form.Group> */}
                     <Form.Group>
                       <Form.Label>
                         ຊື່ອາຫານ <span style={{ color: "red" }}>*</span>
@@ -127,11 +118,11 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         name="name_en"
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        value={values.name}
+                        value={values.name_en}
                         placeholder="ຊື່ອາຫານ..."
                         style={{
                           border:
-                            errors.name && touched.name && errors.name
+                            errors.name_en && touched.name_en && errors.name_en
                               ? "solid 1px red"
                               : "",
                         }}
@@ -151,8 +142,8 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       style={{
                         border:
                           errors.categoryId &&
-                          touched.categoryId &&
-                          errors.categoryId
+                            touched.categoryId &&
+                            errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
@@ -160,9 +151,6 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       <option selected={true} disabled={true} value="">
                         ເລືອກປະເພດອາຫານ
                       </option>
-                      {/* {Categorys?.map((item, index) => {
-                    return <option value={item?._id}>{item?.name}</option>;
-                  })} */}
                     </Form.Control>
                   </Form.Group>
                 </div>

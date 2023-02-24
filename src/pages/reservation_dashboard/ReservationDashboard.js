@@ -31,7 +31,6 @@ export default function ReservationDashboard() {
     title: `(${e?.clientNumber}ຄົນ)`,
     start: moment(e?.startTime).format(),
   }));
-  console.log("eventReservation", eventReservation);
 
   // func
   const getData = async () => {
@@ -57,7 +56,6 @@ export default function ReservationDashboard() {
     let findBy = "";
     if (find) findBy += find;
     const data = await getReservationsCount(findBy);
-    console.log("data", data);
     setReservationsCount(data?.all_reservations);
     setIsLoading(false);
     return;

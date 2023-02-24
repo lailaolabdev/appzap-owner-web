@@ -14,6 +14,7 @@ import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
+import { stringify } from "query-string";
 export default function DashboardFinance({ startDate, endDate, selectedCurrency }) {
   const [currency, setcurrency] = useState()
   const navigate = useNavigate();
@@ -69,13 +70,37 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
       console.log(err);
     }
   };
+
+  const exportJsonToExcel = () => {
+    let _export = data?.checkOut.map((item, index) => ({
+      ລຳດັບ: index + 1,
+      ເລກບິນ: item?.code,
+      ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+      ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+        ? new Intl.NumberFormat("ja-JP", {
+          currency: "JPY",
+        }).format(_countAmount(item?.orderId))
+        : new Intl.NumberFormat("ja-JP", {
+          currency: "JPY",
+        }).format(item?.billAmount),
+      ຈ່າຍເງິນສົດ: item?.payAmount,
+      ຈ່າຍເງິນໂອນ: item?.transferAmount,
+      ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+      ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+      ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+      new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+        data?.amount + dataNotCheckBill?.amount
+      ) : "",
+    }))
+    return _export
+  }
+
   useEffect(() => {
     getcurrency();
     _fetchFinanceData();
   }, []);
   useEffect(() => {
     _fetchFinanceData();
-    // console.log({ selectedCurrency })
   }, [endDate, startDate, selectedCurrency
   ]);
   const _fetchFinanceData = async () => {
@@ -422,6 +447,30 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
             sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
           >
             <ButtonDownloadExcel
+              // jsonData={() => {
+              //   let _export = data?.checkOut.map((item, index) => ({
+              //     ລຳດັບ: index + 1,
+              //     ເລກບິນ: item?.code,
+              //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+              //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+              //       ? new Intl.NumberFormat("ja-JP", {
+              //         currency: "JPY",
+              //       }).format(_countAmount(item?.orderId))
+              //       : new Intl.NumberFormat("ja-JP", {
+              //         currency: "JPY",
+              //       }).format(item?.billAmount),
+              //     ຈ່າຍເງິນສົດ: item?.payAmount,
+              //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
+              //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+              //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+              //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+              //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+              //         data?.amount + dataNotCheckBill?.amount
+              //       ) : "",
+              //   }))
+              //   return _export
+              // }}
+
               jsonData={data?.checkOut.map((item, index) => ({
                 ລຳດັບ: index + 1,
                 ເລກບິນ: item?.code,
@@ -438,6 +487,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   data?.amount + dataNotCheckBill?.amount
                 ) : "",
               }))}
+              // jsonData={exportJsonToExcel}
             />
           </Box>
           <div style={{ padding: 10 }}>
@@ -539,14 +589,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                         color:
                           item?.paymentMethod === "CASH"
                             ? "#00496e"
-                            : "#fc8626",
+                            : "#0D47A1",
                       }}
                     >
                       {item?.paymentMethod === "CASH"
                         ? t("payBycash")
-                        : item?.paymentMethod === "BCEL"
+                        : item?.paymentMethod === "TRANSFER"
                           ? t("transferPayment")
-                          : "-"}
+                          : t("transfercash")}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}

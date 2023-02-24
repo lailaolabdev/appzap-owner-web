@@ -43,7 +43,6 @@ export default function Upload({
             (progressEvent.loaded * 100) / progressEvent.total
           );
           setImageLoading(percentCompleted);
-          console.log("percentCompleted", percentCompleted);
           if (percentCompleted === 100)
             setTimeout(() => setImageLoading(""), 2000);
         },
@@ -52,7 +51,6 @@ export default function Upload({
       setUrl(url);
       const splitName = url.split("/");
       const name = splitName[splitName.length - 1];
-      console.log({ url, name });
       onChange({ url, name });
       setSelectImage();
     } catch (error) {

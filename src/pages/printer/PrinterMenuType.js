@@ -33,6 +33,7 @@ export default function PrinterMenuType() {
 
   return (
     <>
+    <div style={{textDecoration: "underline", textAlign: "center", color: "blue"}} onClick={() => navigate(-1)}>ກັບຄືນ</div>
       {isMenuCategoryLoadings ? <Loading /> : ""}
       <div style={{ padding: 10 }}>
         <div

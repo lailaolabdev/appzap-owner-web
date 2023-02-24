@@ -3,6 +3,7 @@ import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 import {
   faCertificate,
@@ -27,7 +28,6 @@ export default function Dashboard() {
   const [currency, setcurrency] = useState()
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const { storeDetail } = useStore()
-  // console.log("storeDetail==>", { storeDetail })
   const newDate = new Date();
 
   const [startDate, setStartDate] = useState(
@@ -64,18 +64,16 @@ export default function Dashboard() {
       )
         .then((response) => response.json())
         .then((json) => setcurrency(json));
-      // console.log("------------>", u)
     } catch (err) {
       console.log(err);
     }
   };
 
 
+
   useEffect(() => {
     getcurrency()
   }, [])
-
-  // console.log("=================", currency)
 
   return (
     <div style={{ padding: 10 }}>

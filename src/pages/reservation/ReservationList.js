@@ -90,7 +90,6 @@ export default function ReservationList() {
       status = tabSelect;
     }
     setIsLoading(true);
-    console.log("status", status);
     let findBy = "";
     if (status) findBy += `&status=${status}`;
     if (search) findBy += `&search=${search}`;

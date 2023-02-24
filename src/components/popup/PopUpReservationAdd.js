@@ -18,7 +18,6 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
     setStartDate();
     onClose();
   };
-  // console.log(moment(value?.startTime).format("H:mm"));
   useEffect(() => {
     const _time = moment(value?.startTime).format("HH:mm");
     setStartDate(moment(value?.startTime).format("YYYY-MM-DD"));
@@ -63,16 +62,12 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          console.log("startDate", startDate + " " + startTime);
           const _startTime = moment(
             startDate + " " + startTime,
             "YYYY-MM-DD HH:mm"
           ).format();
           const _value = { ...values, startTime: _startTime };
           onSubmit(_value).then(() => {
-            console.log("test", moment(_startTime).format("YYYY-MM-DD HH:mm"));
-            console.log("HH:mm", moment(_startTime).format("HH:mm"));
-            console.log("YYYY-MM-DD", moment(_startTime).format("YYYY-MM-DD"));
             setStartTime();
             setStartDate();
             setSubmitting(false);

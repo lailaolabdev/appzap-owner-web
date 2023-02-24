@@ -234,26 +234,6 @@ export const useTableState = (storeDetail) => {
     }
   };
 
-  /**
-   * Socket.io
-   * ເອົາໄວເຮັດ Realtime
-   */
-  // useMemo(() => {
-  //   socket.on(`TABLE:${storeDetail._id}`, (data) => {
-  //     getTableDataStore();
-  //     // getTableOrders(selectedTable);
-  //   });
-  //   socket.on(`ORDER:${storeDetail._id}`, (data) => {
-  //     console.log(data);
-  //     alert(JSON.stringify(data));
-  //   });
-  //   socket.on(`ORDER_UPDATE_STATUS:${storeDetail._id}`, (data) => {
-  //     console.log(data);
-  //     alert(JSON.stringify(data));
-  //   });
-  // }, [storeDetail]);
-
-  //
   return {
     isTableOrderLoading,
     orderItemForPrintBill,

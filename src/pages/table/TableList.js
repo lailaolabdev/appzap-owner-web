@@ -66,9 +66,9 @@ export default function TableList() {
   const handleShow1 = (e) => {
     setShow1(true);
   }
-  
+
   const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
-  
+
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false);
@@ -124,7 +124,7 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
-  console.log("seletedCancelOrderItem===>>>", seletedCancelOrderItem)
+  const [checkedBox, setCheckedBox] = useState(true)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int 
@@ -132,7 +132,9 @@ export default function TableList() {
   // }
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int
-    setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+    if (_data > 0) {
+      setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+    }
   }
 
 
@@ -217,7 +219,6 @@ export default function TableList() {
         },
         headers: headers,
       });
-      console.log("updateTable===>", updateTable)
 
       if (updateTable?.status < 300) {
         setQuantity(false)
@@ -468,9 +469,7 @@ export default function TableList() {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
     for (const _ref of billForCher80.current) {
-      // console.log("orderSelect?.[_index]", orderSelect?.[_index]);
       const _printer = printers.find((e) => {
-        // console.log(`${e?._id} === ${orderSelect?.[_index]?._id}`)
         return e?._id === orderSelect?.[_index]?.printer;
       });
 
@@ -529,37 +528,42 @@ export default function TableList() {
         }
       } catch (err) {
         console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       }
       _index++;
     }
   };
 
   const onSelect = (data) => {
-    if (isCheckedOrderItem?.length === 0) {
-      const _data = tableOrderItems.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
+    const _data = isCheckedOrderItem.map((e) => {
+      if (data?._id === e?._id) {
+        return data;
+      } else {
+        return e;
+      }
+    });
+    setIsCheckedOrderItem(_data);
+
+    const _isChecked = _data.filter((e) => {
+      if (e?.isChecked) {
+        return true
+      }
+      return false
+    });
+
+    if (_isChecked.length === 0) {
+      setCheckedBox(true)
     } else {
-      const _data = isCheckedOrderItem.map((e) => {
-        if (data?._id === e?._id) {
-          return data;
-        } else {
-          return e;
-        }
-      });
-      setIsCheckedOrderItem(_data);
+      setCheckedBox(false)
     }
+
   };
 
   const checkAllOrders = (item) => {
@@ -584,7 +588,6 @@ export default function TableList() {
   };
 
   const handleUpdateOrderStatus = async (status) => {
-    console.log("status", status);
     const storeId = storeDetail?._id;
     let menuId;
     let _updateItems = isCheckedOrderItem
@@ -598,26 +601,22 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus === SERVE_STATUS) getOrderItemsStore(SERVE_STATUS);
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
   const handleUpdateOrderStatusgo = async (status) => {
-    // getOrderItemsStore(DOING_STATUS);
     const storeId = storeDetail?._id;
-    // let previousStatus = orderItems[0].status;
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
-        console.log(i?._id);
         return {
           status: status,
           _id: i?._id,
@@ -626,14 +625,13 @@ export default function TableList() {
       });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      // if (previousStatus === DOING_STATUS) getOrderItemsStore(DOING_STATUS);
+      reLoadData();
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
@@ -663,26 +661,12 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
-      // onSelectTable(selectedTable);
     }
   };
 
-  // const pubnub = usePubNub();
-  // const [channels] = useState([
-  //   `ORDER_UPDATE_STATUS:${storeDetail._id}`,
-  //   `ORDER:${storeDetail._id}`,
-  // ]);
   const handleMessage = (event) => {
-    // console.log("event", event);
     reLoadData();
   };
-  // useEffect(() => {
-  //   const run = () => {
-  //     pubnub.addListener({ message: handleMessage });
-  //     pubnub.subscribe({ channels });
-  //   };
-  //   return run();
-  // }, [pubnub,]);
   useEffect(() => {
     if (newOrderTransaction || newOrderUpdateStatusTransaction) {
       handleMessage();
@@ -797,7 +781,6 @@ export default function TableList() {
                         }
                         onClick={() => {
                           onSelectTable(table);
-                          // console.log("selectTableData", table);
                         }}
                       >
                         <div
@@ -819,7 +802,7 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? `${t('unavaliable')}` : `${t('avaliable')}`}
+                              {table?.isStaffConfirm ? `${t('unavailable')}` : `${t('avaliable')}`}
                             </div>
                           </span>
                         </div>
@@ -1003,16 +986,19 @@ export default function TableList() {
                           onClick={() =>
                             handleShow1()
                           }
+                          disabled={checkedBox}
                         >
                           {t('cancel')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
+                          disabled={checkedBox}
                         >
                           {t('sendToKitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
+                          disabled={checkedBox}
                         >
                           {t('served')}
                         </ButtonCustom>
@@ -1024,7 +1010,10 @@ export default function TableList() {
                             <th>
                               <Checkbox
                                 name="checked"
-                                onChange={(e) => checkAllOrders(e)}
+                                onChange={(e) => {
+                                  checkAllOrders(e);
+                                  setCheckedBox(!e.target.checked);
+                                }}
                               />
                             </th>
                             <th>{t('no')}</th>
@@ -1392,7 +1381,7 @@ export default function TableList() {
             <TableCustom>
               <thead>
                 <tr>
-                  <th>ໂຕະ</th>
+                  <th>{t('table')}</th>
                   <th>{t('menuname')}</th>
                   <th>{t('quantity')}</th>
                   <th>{t('status')}</th>
@@ -1402,7 +1391,6 @@ export default function TableList() {
               </thead>
               <tbody>
                 <tr>
-                  <td>1</td>
                   <td>
                     {seletedOrderItem?.tableId?.name}
                   </td>

@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { Button } from "bootstrap";
 import React, { useState, useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 
 export default function PrinterCounter() {
+  let navigate = useNavigate();
   // state
   const [printers, setPrinters] = useState();
   const [selectPrinterCounter, setSelectPrinterCounter] = useState();
@@ -96,7 +98,8 @@ export default function PrinterCounter() {
   }, []);
   return (
     <div>
-      <Form.Group>
+      <div style={{textDecoration: "underline", textAlign: "center", color: "blue"}} onClick={() => navigate(-1)}>ກັບຄືນ</div>
+      <Form.Group style={{padding: "0 5px"}}>
         <Form.Label>
           ພິມບິນໜ້າໂຕະ <span style={{ color: "red" }}>*</span>
         </Form.Label>
@@ -115,7 +118,7 @@ export default function PrinterCounter() {
         </Form.Control>
       </Form.Group>
       <br />
-      <Form.Group>
+      <Form.Group style={{padding: "0 5px"}}>
         <Form.Label>
           ພິມບິນໜ້າປະຫວັດ <span style={{ color: "red" }}>*</span>
         </Form.Label>

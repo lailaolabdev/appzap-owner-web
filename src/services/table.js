@@ -36,7 +36,6 @@ export const getTableWithOrder = async () => {
         let table_id = order.table_id;
         for (let i = 0; i < tableLen; i++) {
           if (table_id === data[i].table_id) {
-            // console.log("arr:", arr);
             arr[table_id] = [table_id, order];
           }
         }
@@ -46,7 +45,6 @@ export const getTableWithOrder = async () => {
       // let code = "";
       let index = 1;
       for (let i = 1; i < arr.length; i++) {
-        // console.log("i", i);
         if (i < 10) {
           index = "0" + index;
         }
@@ -54,13 +52,6 @@ export const getTableWithOrder = async () => {
         index++;
       }
 
-      console.log("arrrrrrrrrrr:", newArr);
-      // const messages = await axios.get(`${END_POINT}/messages?code=${code}`, {
-      //   headers: await getHeaders(),
-      // });
-      // if (messages) {
-      //   newArr.push({ messages: messages?.data });
-      // }
       return newArr;
     } else {
       return null;
