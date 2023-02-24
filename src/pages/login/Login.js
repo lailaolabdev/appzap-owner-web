@@ -240,19 +240,24 @@ function Login() {
                         </span>
                       </div>
                     )}
-                    {/* <div className="text-end" style={{ width: "100%", color: "#4B4A4A", cursor: "pointer" }}><u>ລືມລະຫັດຜ່ານ ?</u></div> */}
                   </div>
-                  <div style={{ height: 45 }} />
-                  {/* <div
+                  <div style={{ height: 15 }} />
+
+                  <div
                     style={{
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "red",
-                      display: checkUser === false ? "none" : "",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      width: "100%",
                     }}
                   >
-                    ຊື່ຜູ້ໃຊ້ລະບົບ ຫຼື ຊື່ຜູ້ໃຊ້ລະບົບ ບໍ່ຖືກຕ້ອງ
-                  </div> */}
+                    <div
+                      style={{ color: COLOR_APP, textDecoration: "underline" }}
+                      onClick={() => navigate("/privacy-policy")}
+                    >
+                      ຍັງບໍ່ມີບັນຊີ
+                    </div>
+                  </div>
+                  <div style={{ height: 30 }} />
                   <Button
                     style={{
                       backgroundColor: "#FB6E3B",
@@ -263,9 +268,10 @@ function Login() {
                     }}
                     onClick={handleSubmit}
                   >
-                    ເຂົ້າສູ່ລະບົບ{" "}
+                    ເຂົ້າສູ່ລະບົບ
                   </Button>
                   <div style={{ height: 50 }} />
+
                   <div
                     style={{
                       display: "flex",
@@ -282,20 +288,6 @@ function Login() {
                     <div style={{ color: "#ccc" }}>v{packetJson?.version}</div>
                   </div>
                   <div style={{ height: 40 }} />
-                  {/* <div
-                    style={{
-                      width: 75,
-                      height: 75,
-                      padding: 15,
-                      backgroundColor: "#fff",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <FontAwesomeIcon
-                      icon={faHeadset}
-                      style={{ color: "#FB6E3B", fontSize: 60 }}
-                    />
-                  </div> */}
                 </div>
               </Form>
             )}

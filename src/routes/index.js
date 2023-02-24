@@ -44,6 +44,7 @@ import SettingTheme from "../pages/setting_theme/settingTheme"
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
+import AuthRoutes from "./Auth.routes";
 
 function Router() {
   return useRoutes([
@@ -238,6 +239,7 @@ function Router() {
         PrinterRoutes,
       ],
     },
+    AuthRoutes,
     {
       path: "/testPrinter",
       element: <DoingOrder />,
