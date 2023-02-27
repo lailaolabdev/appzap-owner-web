@@ -92,22 +92,27 @@ export default function CheckOutType({
 
   // useEffect
   useEffect(() => {
-    if (cash - 0 + (transfer - 0) -
+    if ((cash - 0 + (transfer - 0) -
       (dataBill && dataBill?.discountType === "LAK"
-        ? totalBill - dataBill?.discount
-        : totalBill - (total * dataBill?.discount) / 100)
+        ? totalBill - (dataBill?.discount) > 0 ? totalBill - dataBill?.discount : 0
+        : totalBill - (totalBill * dataBill?.discount / 100) > 0 ? (totalBill * dataBill?.discount / 100) : 0))
       >= 0) {
       setCanCheckOut(true);
     } else {
       setCanCheckOut(false);
     }
   }, [cash, transfer, totalBill]);
+
+  let transferCal = dataBill?.discountType === "LAK"
+  ? totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0
+  : totalBill - totalBill * dataBill?.discount / 100 > 0 ? (totalBill * dataBill?.discount / 100) : 0
+
   return (
     <Modal
       show={open}
       onHide={() => {
         setCash(0);
-        setTransfer(0);
+        // setTransfer(0);
         onClose();
       }}
       keyboard={false}
@@ -170,9 +175,8 @@ export default function CheckOutType({
                 }}
                 onClick={() => {
                   setCash(0);
-                  setTransfer(totalBill);
+                  setTransfer(transferCal);
                   setTab("transfer");
-                  setForcus("TRANSFER");
                 }}
               >
                 ເງິນໂອນ
@@ -219,12 +223,12 @@ export default function CheckOutType({
                   }}
                 >
                   {moneyCurrency(cash - (dataBill && dataBill?.discountType === "LAK"
-                  ? (total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                  : (total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)) < 0 
-                  ? 0 : cash - 
-                  (dataBill && dataBill?.discountType === "LAK"
-                  ? (total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                  : (total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)))}{" "}
+                    ? (totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0)
+                    : (totalBill - (totalBill * dataBill?.discount) / 100 > 0 ? totalBill - (totalBill * dataBill?.discount) / 100 : 0)) <= 0
+                    ? 0 : cash -
+                    (dataBill && dataBill?.discountType === "LAK"
+                      ? (totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0)
+                      : (totalBill - (totalBill * dataBill?.discount) / 100 > 0 ? totalBill - (totalBill * dataBill?.discount) / 100 : 0)))}{" "}
                   ກີບ
                 </div>
               </div>
@@ -241,8 +245,8 @@ export default function CheckOutType({
                 >
                   {/* {moneyCurrency(totalBill)} ກີບ */}
                   {dataBill && dataBill?.discountType === "LAK"
-                    ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                    : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)} ກີບ
+                    ? moneyCurrency(totalBill - (dataBill?.discount) > 0 ? totalBill - dataBill?.discount : 0)
+                    : moneyCurrency(totalBill - (totalBill * dataBill?.discount / 100) > 0 ? totalBill - (totalBill * dataBill?.discount / 100) : 0)} ກີບ
                 </div>
               </div>
             </div>
@@ -285,15 +289,25 @@ export default function CheckOutType({
                   {moneyCurrency(
                     cash - 0 + (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
-                      ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                      : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)) < 0
+                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
+                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0) <= 0
                       ? 0
                       : cash - 0 + (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
-                      ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                      : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0))
+                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
+                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)
                   )}{" "}
                   ກີບ
+
+                  {console.log("cash===>>>", cash - 0 + (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
+                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0) <= 0
+                      ? 0
+                      : cash - 0 + (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
+                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0))}
                 </div>
               </div>
             </div>
