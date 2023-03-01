@@ -252,7 +252,7 @@ function Login() {
                   >
                     <div
                       style={{ color: COLOR_APP, textDecoration: "underline" }}
-                      onClick={() => navigate("/privacy-policy")}
+                      onClick={() => navigate("/auth/signup")}
                     >
                       ຍັງບໍ່ມີບັນຊີ
                     </div>
