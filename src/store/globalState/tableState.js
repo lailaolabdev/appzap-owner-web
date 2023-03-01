@@ -70,21 +70,28 @@ export const useTableState = (storeDetail) => {
    * Get Table Orders
    */
   const getTableOrders = async (table) => {
-    setIsTableOrderLoading(true);
-    const url =
-      END_POINT +
-      `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
-    let res = await fetch(url)
-      .then((response) => response.json())
-      .then((response) => {
-        setTableOrders(response);
+    try {
+      setIsTableOrderLoading(true);
+      const url =
+        END_POINT +
+        `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
+      let res = await axios.get(url);
+      const data = res.data;
+
+      if (res.status < 300) {
+        setTableOrders(data);
         setIsTableOrderLoading(false);
-      })
-      .catch((err) => {
+        return data;
+      } else {
+        setTableOrders([]);
         setIsTableOrderLoading(false);
-      });
-    setIsTableOrderLoading(false);
-    return res;
+        return [];
+      }
+    } catch (err) {
+      console.log(err);
+      setIsTableOrderLoading(false);
+      return [];
+    }
   };
 
   /**
