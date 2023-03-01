@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import Nav from "react-bootstrap/Nav";
-import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
@@ -9,6 +7,9 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
+import { useTranslation } from "react-i18next";
+import { Formik } from "formik";
+import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 
 /**
  * const
@@ -55,6 +56,35 @@ function AddOrder() {
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
+  const [show, setShow] = useState(false);
+  const [menuType, setMenuType] = useState("MENU")
+  const [connectMenues, setConnectMenues] = useState([])
+  const [connectMenuId, setConnectMenuId] = useState("")
+  const [menuOptions, setMenuOptions] = useState([])
+  const [selectedOptions, setselectedOptions] = useState()
+
+  const handleShow = () => {
+    setShow(true);
+  };
+  const handleClose = () => setShow(false);
+
+  const handleChangeMenuType = async (e) => {
+    setMenuType(e.target.value)
+
+    if (e.target.value == "MENUOPTION") {
+      await fetch(MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          setConnectMenues(json)
+        });
+    }
+  }
+
+  const handleChangeConnectMenu = (e) => {
+    setConnectMenuId(e.target.value)
+  }
 
   function handleSetQuantity(int, data) {
     let dataArray = []
@@ -212,7 +242,6 @@ function AddOrder() {
 
   const getcurrency = async () => {
     try {
-      console.log("storeDetail?._id", storeDetail?._id)
       let x = await axios.get(
         END_POINT_SEVER +
         `/v3/currencies?storeId=${storeDetail?._id}`,
@@ -241,7 +270,7 @@ function AddOrder() {
     await fetch(
       MENUS +
       `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-      }`,
+      }&type=MENU`,
       {
         method: "GET",
       }
@@ -258,7 +287,36 @@ function AddOrder() {
       });
   };
 
-  const addToCart = (menu) => {
+  const _checkMenuOption = async (menuId) => {
+    try {
+      var _menuOptions = []
+      await fetch(
+        MENUS +
+        `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          _menuOptions = json;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return _menuOptions
+    } catch (error) {
+      return []
+    }
+  }
+
+  const addToCart = async (menu) => {
+    const _menuOptions = await _checkMenuOption(menu?._id);
+    if (_menuOptions.length >= 1) {
+      setMenuOptions(_menuOptions)
+      handleShow();
+      return;
+    }
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
@@ -409,6 +467,8 @@ function AddOrder() {
     }
   };
 
+  const { t } = useTranslation();
+
   return (
     <div>
       <div
@@ -474,7 +534,10 @@ function AddOrder() {
                         ? "4px solid #FB6E3B"
                         : "4px solid rgba(0,0,0,0)",
                   }}
-                  onClick={() => addToCart(data)}
+                  onClick={() => {
+                    addToCart(data);
+
+                  }}
                 >
                   <img
                     src={
@@ -499,7 +562,7 @@ function AddOrder() {
                   >
                     <span>{data?.name}</span>
                     <br />
-                    <span>{moneyCurrency(data?.price)} LAK {currency.map((e)=> " / " + (data?.price / e.sell).toFixed(2) +" "+e.currencyCode)}</span>
+                    <span>{moneyCurrency(data?.price)} LAK {currency.map((e) => " / " + (data?.price / e.sell).toFixed(2) + " " + e.currencyCode)}</span>
                     <br />
                     <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
                   </div>
@@ -673,6 +736,98 @@ function AddOrder() {
           );
         })}
       </div>
+
+      <Modal
+        show={show}
+        onHide={handleClose}
+        // backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Option ເມນູອາຫານ</Modal.Title>
+        </Modal.Header>
+        <Formik
+          initialValues={{
+            name: menuOptions?.name,
+            name_en: menuOptions?.name_en,
+            images: menuOptions?.images,
+            quantity: menuOptions?.quantity,
+            menuOptionId: menuOptions?.menuOptions,
+            categoryId: menuOptions?.categoryId?._id,
+            price: menuOptions?.price,
+            detail: menuOptions?.detail,
+            unit: menuOptions?.unit,
+            isOpened: menuOptions?.isOpened,
+            type: menuOptions?.type
+          }}
+          validate={(values) => {
+            const errors = {};
+            if (!values.name) {
+              errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            }
+            if (!values.name_en) {
+              errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            }
+            if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
+              errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+            }
+            return errors;
+          }}
+        // onSubmit={(values, { setSubmitting }) => {
+        //   const getData = async () => {
+        //     await _updateCategory(values);
+        //     const _localData = await getLocalData();
+        //     if (_localData) {
+        //       setgetTokken(_localData);
+        //       getMenu(_localData?.DATA?.storeId);
+        //       // getMenu(getTokken?.DATA?.storeId);
+        //     }
+        //   };
+        //   getData();
+        // }}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            /* and other goodies */
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <Modal.Body>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  {menuOptions.map((item) => <button className="form-control mb-2" key="" onClick={() => {
+                    setselectedOptions(item);
+                  }}>{item?.name} ລາຄາ {item?.price} LAK</button>)}
+                  {/* </Form.Control> */}
+                </Form.Group>
+                
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="danger" onClick={handleClose}>
+                  ຍົກເລີກ
+                </Button>
+                <Button
+                  style={{
+                    backgroundColor: "orange",
+                    color: "#ffff",
+                    border: 0,
+                  }}
+                  onClick={() => {
+                    addToCart(selectedOptions);
+                    handleClose();
+                  }}
+                >
+                  ບັນທືກ
+                </Button>
+              </Modal.Footer>
+            </form>
+          )}
+        </Formik>
+      </Modal>
     </div>
   );
 }

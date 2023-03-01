@@ -88,9 +88,9 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
       ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
       ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
       ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-      new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-        data?.amount + dataNotCheckBill?.amount
-      ) : "",
+        new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+          data?.amount + dataNotCheckBill?.amount
+        ) : "",
     }))
     return _export
   }
@@ -295,7 +295,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                 <div>
                   {t('totalBalance')} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    data?.amount + dataNotCheckBill?.amount
+                    // data?.discountType === "LAK" && data?.discount > 0 ? data?.amount - disCountDataKib : data?.amount * (1 + disCountDataPercent / 100)
+
+                  // data?.discount > 0 ? (data?.discountType === "LAK" ? data?.amount - disCountDataKib :
+                  // data?.amount * (1 + disCountDataPercent / 100)
+                  // )
+                  // : data?.amount
+                  data?.amount
+                    // dataNotCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                   {/* {selectedCurrency} */}
@@ -483,11 +490,11 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
                 ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
                 ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-                new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                  data?.amount + dataNotCheckBill?.amount
-                ) : "",
+                  new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    data?.amount + dataNotCheckBill?.amount
+                  ) : "",
               }))}
-              // jsonData={exportJsonToExcel}
+            // jsonData={exportJsonToExcel}
             />
           </Box>
           <div style={{ padding: 10 }}>
