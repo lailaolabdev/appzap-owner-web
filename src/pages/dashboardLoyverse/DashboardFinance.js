@@ -127,7 +127,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 className="grid-item"
                 style={{ borderBottom: "solid 2px green" }}
               >
-                <p>ລ້ວມຍອດທັ້ງໝົດ</p>
+                <p>ລວມຍອດທັງໝົດ</p>
                 <p style={{ color: "green" }}>₭{moneyCurrency(data?.amount)}</p>
               </div>
               <div className="grid-item">
@@ -198,7 +198,7 @@ export default function DashboardFinance({ startDate, endDate }) {
                 <tr style={{ color: "E4E4E4" }}>
                   <th>ວັນທິ</th>
                   <th>ເລກບີນ</th>
-                  <th>ລວມຍອດທັ້ງໝົດ</th>
+                  <th>ລວມຍອດທັງໝົດ</th>
                   <th>ລວມຍອດສົ່ງຄືນ</th>
                   <th>ສ່ວນຫຼຸດ</th>
                 </tr>

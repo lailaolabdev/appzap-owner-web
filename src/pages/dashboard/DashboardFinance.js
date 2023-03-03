@@ -301,8 +301,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   // data?.amount * (1 + disCountDataPercent / 100)
                   // )
                   // : data?.amount
-                  data?.amount
-                    // dataNotCheckBill?.amount
+                  dataCheckBill?.cash + dataCheckBill?.transfer + dataNotCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                   {/* {selectedCurrency} */}
