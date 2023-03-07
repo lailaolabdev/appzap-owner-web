@@ -4,6 +4,7 @@ import _ from "lodash";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { END_POINT_SEVER } from "../../constants/api";
+import { successAdd, errorAdd } from "../../helpers/sweetalert";
 
 
 
@@ -109,7 +110,7 @@ export default function SettingTheme() {
                         borderRadius: "20px",
                     }}
                 >
-                    <button onClick={() => onSaveThemeSetting()}>Save</button>
+                    <button onClick={() => {onSaveThemeSetting(); successAdd('ບັນທຶກສຳເລັດ')}}>Save</button>
                     <p>{themes.map((theme, index) => {
                         return (
                             <div key={index} style={{ marginTop: 20 }}>
