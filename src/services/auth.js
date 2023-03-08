@@ -1,9 +1,11 @@
+import React from "react";
 import { USER_KEY } from "../constants";
-import useQuery from "../helpers/useQuery";
 export const getHeaders = async (accessToken) => {
   try {
     const user = await localStorage.getItem(USER_KEY);
     const token = await JSON.parse(user)?.["accessToken"];
+    console.log("token", token);
+    console.log("user", user);
     if (token) {
       return { authorization: `AppZap ${token}` };
     } else if (accessToken) {

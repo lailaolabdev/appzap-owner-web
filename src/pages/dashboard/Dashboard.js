@@ -25,9 +25,10 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { useStore } from "../../store";
 
 export default function Dashboard() {
-  const [currency, setcurrency] = useState()
+  const { accessToken } = useQuery();
+  const [currency, setcurrency] = useState();
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
-  const { storeDetail } = useStore()
+  const { storeDetail } = useStore();
   const newDate = new Date();
 
   const [startDate, setStartDate] = useState(
@@ -56,24 +57,18 @@ export default function Dashboard() {
 
   const getcurrency = async () => {
     try {
-      let u = await fetch(
-        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => setcurrency(json));
+      let res = await axios.get(
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`
+      );
+      setcurrency(res.data ?? []);
     } catch (err) {
       console.log(err);
     }
   };
 
-
-
   useEffect(() => {
-    getcurrency()
-  }, [])
+    getcurrency();
+  }, []);
 
   return (
     <div style={{ padding: 10 }}>
@@ -105,7 +100,7 @@ export default function Dashboard() {
           >
             {" "}
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t('tableStatus')}
+            <div style={{ width: 8 }}></div> {t("tableStatus")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -122,7 +117,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("MONEY_CHART")}
           >
             <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t('financialStatic')}
+            <div style={{ width: 8 }}></div> {t("financialStatic")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -139,7 +134,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("CATEGORY")}
           >
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t('famousType')}
+            <div style={{ width: 8 }}></div> {t("famousType")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -156,7 +151,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("MENUS")}
           >
             <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t('famousMenu')}
+            <div style={{ width: 8 }}></div> {t("famousMenu")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -173,7 +168,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("STAFF")}
           >
             <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t('waitstaffReport')}
+            <div style={{ width: 8 }}></div> {t("waitstaffReport")}
           </Nav.Link>
         </Nav.Item>
       </Box>
@@ -192,7 +187,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click1day()}
           >
-            {t('theLastList')}
+            {t("theLastList")}
           </button>
           <div style={{ width: 10 }}></div>
           <button
@@ -200,7 +195,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click7days()}
           >
-            {t('last7days')}
+            {t("last7days")}
           </button>
           <div style={{ width: 10 }}></div>
           <button
@@ -208,20 +203,22 @@ export default function Dashboard() {
             className="btn btn-outline-info"
             onClick={() => _click30days()}
           >
-            {t('last30days')}
+            {t("last30days")}
           </button>
 
           <div style={{ width: 10 }}></div>
 
-              <select onChange={(e) => setSelectedCurrency(e.target.value)} className="btn btn-outline-info">
-                <option selected value="LAK">ກີບ</option>
-                {
-                  currency?.map((cur, index) => (
-                    <option key={cur + index} value={cur?.currencyCode}>{cur?.currencyName}</option>
-                  ))
-                }
-              </select>
-
+          <select
+            onChange={(e) => setSelectedCurrency(e.target.value)}
+            className="btn btn-outline-info"
+          >
+            <option value="LAK">ກີບ</option>
+            {currency?.map((cur, index) => (
+              <option key={cur + index} value={cur?.currencyCode}>
+                {cur?.currencyName}
+              </option>
+            ))}
+          </select>
         </div>
         <div
           style={{
@@ -254,21 +251,39 @@ export default function Dashboard() {
       </Box>
 
       {changeUi === "MONEY_CHART" && (
-        <MoneyChart startDate={startDate} endDate={endDate}
+        <MoneyChart
+          startDate={startDate}
+          endDate={endDate}
           selectedCurrency={selectedCurrency}
         />
       )}
       {changeUi === "CHECKBILL" && (
-        <DashboardFinance startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
+        <DashboardFinance
+          startDate={startDate}
+          endDate={endDate}
+          selectedCurrency={selectedCurrency}
+        />
       )}
       {changeUi === "MENUS" && (
-        <DashboardMenu startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
+        <DashboardMenu
+          startDate={startDate}
+          endDate={endDate}
+          selectedCurrency={selectedCurrency}
+        />
       )}
       {changeUi === "CATEGORY" && (
-        <DashboardCategory startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
+        <DashboardCategory
+          startDate={startDate}
+          endDate={endDate}
+          selectedCurrency={selectedCurrency}
+        />
       )}
       {changeUi === "STAFF" && (
-        <DashboardUser startDate={startDate} endDate={endDate} selectedCurrency={selectedCurrency} />
+        <DashboardUser
+          startDate={startDate}
+          endDate={endDate}
+          selectedCurrency={selectedCurrency}
+        />
       )}
     </div>
   );
