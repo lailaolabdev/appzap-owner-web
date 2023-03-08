@@ -74,6 +74,7 @@ export default function Categorylist() {
       data: {
         storeId: getTokken?.DATA?.storeId,
         name: values?.name,
+        name_en: values?.name_en,
         note: values?.note,
       },
       headers: headers,
@@ -100,6 +101,7 @@ export default function Categorylist() {
           id: dataUpdate?._id,
           data: {
             name: values?.name,
+            name_en: values?.name_en,
             note: values?.note,
           },
         },
@@ -219,12 +221,16 @@ export default function Categorylist() {
         <Formik
           initialValues={{
             name: "",
+            name_en: "",
             note: "",
           }}
           validate={(values) => {
             const errors = {};
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+            }
+            if (!values.name_en) {
+              errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
             }
             return errors;
           }}
@@ -260,6 +266,22 @@ export default function Categorylist() {
                 <div style={{ color: "red" }}>
                   {errors.name && touched.name && errors.name}
                 </div>
+
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_en"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_en}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_en && touched.name_en && errors.name_en}
+                </div>
+
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
                   <Form.Control
@@ -295,12 +317,16 @@ export default function Categorylist() {
         <Formik
           initialValues={{
             name: dataUpdate?.name,
+            name_en: dataUpdate?.name_en,
             note: dataUpdate?.note,
           }}
           validate={(values) => {
             const errors = {};
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+            }
+            if (!values.name_en) {
+              errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
             }
             return errors;
           }}
@@ -336,6 +362,22 @@ export default function Categorylist() {
                 <div style={{ color: "red" }}>
                   {errors.name && touched.name && errors.name}
                 </div>
+
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_en"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_en}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_en && touched.name_en && errors.name_en}
+                </div>
+
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
                   <Form.Control
