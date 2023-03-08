@@ -4,12 +4,10 @@ export const getHeaders = async (accessToken) => {
   try {
     const user = await localStorage.getItem(USER_KEY);
     const token = await JSON.parse(user)?.["accessToken"];
-    console.log("token", token);
-    console.log("user", user);
-    if (token) {
-      return { authorization: `AppZap ${token}` };
-    } else if (accessToken) {
+    if (accessToken) {
       return { authorization: `AppZap ${accessToken}` };
+    } else if (token) {
+      return { authorization: `AppZap ${token}` };
     } else {
       return null;
     }
