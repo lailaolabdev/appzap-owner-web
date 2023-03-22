@@ -229,9 +229,9 @@ export default function Categorylist() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
             }
-            if (!values.name_en) {
-              errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
-            }
+            // if (!values.name_en) {
+            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
+            // }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -325,9 +325,9 @@ export default function Categorylist() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
             }
-            if (!values.name_en) {
-              errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
-            }
+            // if (!values.name_en) {
+            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
+            // }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -345,7 +345,7 @@ export default function Categorylist() {
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
+                <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group controlId="exampleForm.ControlInput1">
