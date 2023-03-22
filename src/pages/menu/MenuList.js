@@ -488,9 +488,9 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            if (!values.name_en) {
-              errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            }
+            // if (!values.name_en) {
+            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            // }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
@@ -708,9 +708,9 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            if (!values.name_en) {
-              errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            }
+            // if (!values.name_en) {
+            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            // }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
