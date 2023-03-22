@@ -270,7 +270,7 @@ function AddOrder() {
     await fetch(
       MENUS +
       `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-      }&type=MENU`,
+      }`,
       {
         method: "GET",
       }
@@ -290,20 +290,21 @@ function AddOrder() {
   const _checkMenuOption = async (menuId) => {
     try {
       var _menuOptions = []
-      await fetch(
-        MENUS +
-        `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => {
-          _menuOptions = json;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // await fetch(
+      //   MENUS +
+      //   `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
+      //   {
+      //     method: "GET",
+      //   }
+      // )
+      //   .then((response) => response.json())
+      //   .then((json) => {
+      //     _menuOptions = json;
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+      _menuOptions = _.filter(allSelectedMenu, (e) => e?.menuId?._id === menuId)
       return _menuOptions
     } catch (error) {
       return []
@@ -525,7 +526,9 @@ function AddOrder() {
             {isLoading ? (
               <Loading />
             ) : (
-              afterSearch?.map((data, index) => (
+              afterSearch?.map((data, index) => 
+              {
+                if(data?.type==="MENU") return(
                 <div
                   key={"menu" + index}
                   style={{
@@ -567,7 +570,7 @@ function AddOrder() {
                     <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         </div>
@@ -765,9 +768,9 @@ function AddOrder() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            if (!values.name_en) {
-              errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            }
+            // if (!values.name_en) {
+            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            // }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
