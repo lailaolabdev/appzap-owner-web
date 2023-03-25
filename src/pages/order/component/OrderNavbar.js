@@ -8,8 +8,7 @@ import { useStore } from "../../../store";
 import { WAITING_STATUS } from "../../../constants";
 import { updateOrderItem } from "../../../services/order";
 import PopupCancle from "../../../components/popup/PopupCancle";
-// import { socket } from "../../../services/socket";
-import { PubNubProvider, usePubNub } from "pubnub-react";
+
 import { useTranslation } from "react-i18next";
 
 export default function OrderNavbar() {

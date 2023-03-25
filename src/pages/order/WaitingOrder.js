@@ -6,7 +6,6 @@ import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { usePubNub } from "pubnub-react";
 import styled from "styled-components";
 
 /**
@@ -131,23 +130,11 @@ export default function WaitingOrder() {
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS);
   }, []);
-  const pubnub = usePubNub();
-  const [channels] = useState([
-    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
-    `ORDER:${storeDetail._id}`,
-  ]);
   const handleMessage = (event) => {
     if (selectOrderStatus === WAITING_STATUS) {
       getOrderItemsStore(WAITING_STATUS);
     }
   };
-  useMemo(() => {
-    const run = () => {
-      pubnub.addListener({ message: handleMessage });
-      pubnub.subscribe({ channels });
-    };
-    return run();
-  }, [pubnub, selectOrderStatus]);
 
   useEffect(() => {
     getOrderItemsStore(WAITING_STATUS);

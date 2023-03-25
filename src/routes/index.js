@@ -5,22 +5,14 @@ import { useRoutes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
 // import CheckBill from "../pages/Notification/CheckBill";
-import BillForChef80 from "../components/bill/BillForChef80";
-import BillForCheckOut80 from "../components/bill/BillForCheckOut80";
-import BillForCheckOut58 from "../components/bill/BillForCheckOut58";
-import BillForChef58 from "../components/bill/BillForChef58";
 import Dashboard from "../pages/dashboard/Dashboard";
-// import DashboardLoyverse from "../pages/dashboardLoyverse/Dashboard";
 import MenuListMobile from "../pages/table/mobileView/MenuList";
 import CartListMobile from "../pages/table/mobileView/Cart";
 import HistoryUse from "../pages/historiesUse/HistoryUse";
 import ReservationList from "../pages/reservation/ReservationList";
 import Promotion from "../pages/promotion/Promotion";
 import StoreDetail from "../pages/store/StoreDetail";
-import WaitingOrder from "../pages/order/WaitingOrder";
 import DoingOrder from "../pages/order/DoingOrder";
-import ServedOrder from "../pages/order/ServedOrder";
-import CanceledOrder from "../pages/order/CanceledOrder";
 import Table from "../pages/table/TableList";
 import AddOrder from "../pages/table/AddOrder";
 import Histories from "../pages/histories/Histories";
@@ -40,11 +32,13 @@ import SettingList from "../pages/settingStore/SettingList";
 import SettingTable from "../pages/settingStore/SettingTable";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
-import SettingTheme from "../pages/setting_theme/settingTheme"
+import SettingTheme from "../pages/setting_theme/settingTheme";
+import _404 from "../pages/404";
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
 import AuthRoutes from "./Auth.routes";
+import OrderRoutes from "./Order.routes";
 
 function Router() {
   return useRoutes([
@@ -53,33 +47,8 @@ function Router() {
       element: <Login />,
     },
     {
-      path: "/CheckBillOut/:billId",
-      element: <BillForCheckOut80 />,
-    },
-    {
-      path: "/BillForChef80",
-      element: <BillForChef80 />, //not work
-    },
-    {
-      path: "/BillForChef58",
-      element: <BillForChef58 />, //not work
-    },
-
-    {
       path: "/dashboard/:storeId",
       element: <Dashboard />,
-    },
-    // {
-    //   path: "/dashboard-loyverse/:storeId",
-    //   element: <DashboardLoyverse />,
-    // },
-    {
-      path: "/BillForCheckOut80",
-      element: <BillForCheckOut80 />,
-    },
-    {
-      path: "/BillForCheckOut58",
-      element: <BillForCheckOut58 />,
     },
     {
       path: "/menus/:storeId/:tableId",
@@ -112,22 +81,6 @@ function Router() {
         {
           path: "/settingStore/storeDetail/:id",
           element: <StoreDetail />,
-        },
-        {
-          path: "/orders/waiting",
-          element: <WaitingOrder />,
-        },
-        {
-          path: "/orders/doing",
-          element: <DoingOrder />,
-        },
-        {
-          path: "/orders/served",
-          element: <ServedOrder />,
-        },
-        {
-          path: "/orders/canceled/pagenumber/:number",
-          element: <CanceledOrder />,
         },
         {
           path: "/tables",
@@ -235,6 +188,7 @@ function Router() {
           path: "/setting-theme",
           element: <SettingTheme />,
         },
+        OrderRoutes,
         MenuRoutes,
         PrinterRoutes,
       ],
@@ -246,7 +200,7 @@ function Router() {
     },
     {
       path: "*",
-      element: <h3>404</h3>,
+      element: <_404 />,
     },
   ]);
 }

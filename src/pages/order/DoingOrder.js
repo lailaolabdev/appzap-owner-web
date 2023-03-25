@@ -10,7 +10,6 @@ import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import Swal from "sweetalert2";
-import { usePubNub } from "pubnub-react";
 
 /**
  * import components
@@ -29,7 +28,7 @@ import { SERVE_STATUS, END_POINT, DOING_STATUS } from "../../constants";
 import { useStore } from "../../store";
 import { socket } from "../../services/socket";
 
-const Order = () => {
+const DoingOrder = () => {
   // if (billForCher80.current.length !== arrLength) {
   //   // add or remove refs
   //   billForCher80.current = Array(arrLength)
@@ -157,7 +156,7 @@ const Order = () => {
     }
   };
 
-  const pubnub = usePubNub();
+
   const [channels] = useState([
     `ORDER_UPDATE_STATUS:${storeDetail._id}`,
     `ORDER:${storeDetail._id}`,
@@ -171,13 +170,6 @@ const Order = () => {
       getOrderItemsStore(DOING_STATUS);
     }
   };
-  useMemo(() => {
-    const run = () => {
-      pubnub.addListener({ message: handleMessage });
-      pubnub.subscribe({ channels });
-    };
-    return run();
-  }, [pubnub, selectOrderStatus]);
 
   useEffect(() => {
     if (newOrderTransaction || newOrderUpdateStatusTransaction) {
@@ -358,4 +350,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default DoingOrder;

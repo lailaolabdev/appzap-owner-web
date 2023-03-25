@@ -20,7 +20,7 @@ import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { socket } from "../../services/socket";
 import { useStore } from "../../store";
 
-const Order = () => {
+const ServedOrder = () => {
   /**
    * routes
    */
@@ -126,4 +126,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default ServedOrder;

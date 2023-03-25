@@ -13,7 +13,7 @@ import { getOrders } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
 import { useParams } from "react-router-dom";
-const Order = () => {
+const CanceledOrder = () => {
   /**
    * routes
    */
@@ -87,4 +87,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default CanceledOrder;

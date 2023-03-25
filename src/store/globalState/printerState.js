@@ -7,7 +7,6 @@ const socket = socketio.connect("http://localhost:9150", {
   reconnectionDelayMax: 10000,
   reconnectionAttempts: 25,
 });
-
 export const usePrintersState = ({ storeDetail }) => {
   // state
   const [isPrintersLoading, setPrintersLoading] = useState(false);
@@ -51,9 +50,13 @@ export const usePrintersState = ({ storeDetail }) => {
     socket.on("connect", (e) => {
       setIsConnectPrinter(socket.connected);
     });
+    socket.on("connect_failed", function () {
+      console.log("Connection Failed");
+    });
     socket.on("disconnect", () => {
       setIsConnectPrinter(socket.connected); // false
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeDetail]);
 

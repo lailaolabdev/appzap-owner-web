@@ -88,13 +88,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
     },
     {
-      title: "ລາຍການອໍເດີ້",
-      key: "manageorder",
-      typeStore: "",
-      icon: faAddressCard,
-      hidden: !storeDetail?.hasPOS,
-    },
-    {
       title: "ປ່ຽນຕຣີມ",
       key: "setting-theme",
       typeStore: "",

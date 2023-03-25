@@ -92,20 +92,33 @@ export default function CheckOutType({
 
   // useEffect
   useEffect(() => {
-    if ((cash - 0 + (transfer - 0) -
-      (dataBill && dataBill?.discountType === "LAK"
-        ? totalBill - (dataBill?.discount) > 0 ? totalBill - dataBill?.discount : 0
-        : totalBill - (totalBill * dataBill?.discount / 100) > 0 ? (totalBill * dataBill?.discount / 100) : 0))
-      >= 0) {
+    if (
+      cash -
+        0 +
+        (transfer - 0) -
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? (totalBill * dataBill?.discount) / 100
+          : 0) >=
+      0
+    ) {
       setCanCheckOut(true);
     } else {
       setCanCheckOut(false);
     }
   }, [cash, transfer, totalBill]);
 
-  let transferCal = dataBill?.discountType === "LAK"
-  ? totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0
-  : totalBill - totalBill * dataBill?.discount / 100 > 0 ? (totalBill * dataBill?.discount / 100) : 0
+  let transferCal =
+    dataBill?.discountType === "LAK"
+      ? totalBill - dataBill?.discount > 0
+        ? totalBill - dataBill?.discount
+        : 0
+      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+      ? (totalBill * dataBill?.discount) / 100
+      : 0;
 
   return (
     <Modal
@@ -149,8 +162,17 @@ export default function CheckOutType({
               >
                 {/* {moneyCurrency(totalBill)} ກີບ */}
                 {dataBill && dataBill?.discountType === "LAK"
-                  ? moneyCurrency(total - dataBill?.discount > 0 ? total - dataBill?.discount : 0)
-                  : moneyCurrency(total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)} ກີບ
+                  ? moneyCurrency(
+                      total - dataBill?.discount > 0
+                        ? total - dataBill?.discount
+                        : 0
+                    )
+                  : moneyCurrency(
+                      total - (total * dataBill?.discount) / 100 > 0
+                        ? total - (total * dataBill?.discount) / 100
+                        : 0
+                    )}{" "}
+                ກີບ
               </div>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -222,13 +244,28 @@ export default function CheckOutType({
                     padding: 10,
                   }}
                 >
-                  {moneyCurrency(cash - (dataBill && dataBill?.discountType === "LAK"
-                    ? (totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0)
-                    : (totalBill - (totalBill * dataBill?.discount) / 100 > 0 ? totalBill - (totalBill * dataBill?.discount) / 100 : 0)) <= 0
-                    ? 0 : cash -
-                    (dataBill && dataBill?.discountType === "LAK"
-                      ? (totalBill - dataBill?.discount > 0 ? totalBill - dataBill?.discount : 0)
-                      : (totalBill - (totalBill * dataBill?.discount) / 100 > 0 ? totalBill - (totalBill * dataBill?.discount) / 100 : 0)))}{" "}
+                  {moneyCurrency(
+                    cash -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0) <=
+                      0
+                      ? 0
+                      : cash -
+                          (dataBill && dataBill?.discountType === "LAK"
+                            ? totalBill - dataBill?.discount > 0
+                              ? totalBill - dataBill?.discount
+                              : 0
+                            : totalBill -
+                                (totalBill * dataBill?.discount) / 100 >
+                              0
+                            ? totalBill - (totalBill * dataBill?.discount) / 100
+                            : 0)
+                  )}{" "}
                   ກີບ
                 </div>
               </div>
@@ -245,12 +282,23 @@ export default function CheckOutType({
                 >
                   {/* {moneyCurrency(totalBill)} ກີບ */}
                   {dataBill && dataBill?.discountType === "LAK"
-                    ? moneyCurrency(totalBill - (dataBill?.discount) > 0 ? totalBill - dataBill?.discount : 0)
-                    : moneyCurrency(totalBill - (totalBill * dataBill?.discount / 100) > 0 ? totalBill - (totalBill * dataBill?.discount / 100) : 0)} ກີບ
+                    ? moneyCurrency(
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                      )
+                    : moneyCurrency(
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0
+                      )}{" "}
+                  ກີບ
                 </div>
               </div>
             </div>
-            <div style={{ display: tab === "cash_transfer" ? "block" : "none" }}>
+            <div
+              style={{ display: tab === "cash_transfer" ? "block" : "none" }}
+            >
               <div>
                 <div>(ເງິນສົດ)</div>
                 <input
@@ -287,19 +335,31 @@ export default function CheckOutType({
                   }}
                 >
                   {moneyCurrency(
-                    cash - 0 + (transfer - 0) -
+                    cash -
+                      0 +
+                      (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
-                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
-                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0) <= 0
+                        ? total - dataBill?.discount > 0
+                          ? total - dataBill?.discount
+                          : 0
+                        : total - (total * dataBill?.discount) / 100 > 0
+                        ? total - (total * dataBill?.discount) / 100
+                        : 0) <=
+                      0
                       ? 0
-                      : cash - 0 + (transfer - 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
-                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0)
+                      : cash -
+                          0 +
+                          (transfer - 0) -
+                          (dataBill && dataBill?.discountType === "LAK"
+                            ? total - dataBill?.discount > 0
+                              ? total - dataBill?.discount
+                              : 0
+                            : total - (total * dataBill?.discount) / 100 > 0
+                            ? total - (total * dataBill?.discount) / 100
+                            : 0)
                   )}{" "}
                   ກີບ
-
-                  {console.log("cash===>>>", cash - 0 + (transfer - 0) -
+                  {/* {console.log("cash===>>>", cash - 0 + (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
                         ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
                         : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0) <= 0
@@ -307,7 +367,7 @@ export default function CheckOutType({
                       : cash - 0 + (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
                         ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0
-                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0))}
+                        : total - (total * dataBill?.discount) / 100 > 0 ? total - (total * dataBill?.discount) / 100 : 0))} */}
                 </div>
               </div>
             </div>
@@ -419,4 +479,3 @@ const KeyboardComponents = ({ onClickEvent, onDelete }) => {
     </div>
   );
 };
-
