@@ -29,13 +29,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
 
-  const {
-    openTableData,
-    callingCheckOut,
-    getTableDataStore,
-    getOrderItemsStore,
-    storeDetail,
-  } = useStore();
+  const { openTableData, getTableDataStore, storeDetail } = useStore();
 
   const itemList = [
     {
@@ -47,16 +41,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: "ລາຍການອໍເດີ້",
-      key: "orders/waiting",
+      key: "orders",
       typeStore: "",
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
     },
     {
-      title: "ສະຖິຕິລວມ",
+      title: t("financialStatic"),
       key: "report",
       icon: faTachometerAlt,
-      title: t("financialStatic"),
       typeStore: "",
     },
     {
@@ -96,12 +89,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
   ];
 
-  useEffect(() => {
-    getTableDataStore();
-    getOrderItemsStore(WAITING_STATUS);
-    callingCheckOut();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <SideNav
       style={{
@@ -119,9 +106,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "report") {
           selected = selected + "/" + storeDetail?._id;
         }
-        if (selected === "orders") {
-          selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
-        }
+        // if (selected === "orders") {
+        //   selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
+        // }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }

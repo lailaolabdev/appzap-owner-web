@@ -13,7 +13,7 @@ import { getOrders } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
 import { useParams } from "react-router-dom";
-const CanceledOrder = () => {
+const CanceledOrderTab = () => {
   /**
    * routes
    */
@@ -33,15 +33,6 @@ const CanceledOrder = () => {
   /**
    * use effect
    */
-  React.useEffect(() => {
-    const fetchOrder = async () => {
-      await setIsLoading(true);
-      const res = await getOrders(ACTIVE_STATUS, CANCEL_STATUS);
-      await setOrders(res);
-      await setIsLoading(false);
-    };
-    fetchOrder();
-  }, []);
 
   return (
     <div>
@@ -87,4 +78,4 @@ const CanceledOrder = () => {
   );
 };
 
-export default CanceledOrder;
+export default CanceledOrderTab;

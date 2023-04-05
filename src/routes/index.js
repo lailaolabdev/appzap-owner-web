@@ -12,7 +12,7 @@ import HistoryUse from "../pages/historiesUse/HistoryUse";
 import ReservationList from "../pages/reservation/ReservationList";
 import Promotion from "../pages/promotion/Promotion";
 import StoreDetail from "../pages/store/StoreDetail";
-import DoingOrder from "../pages/order/DoingOrder";
+import DoingOrder from "../pages/order/DoingOrderTab";
 import Table from "../pages/table/TableList";
 import AddOrder from "../pages/table/AddOrder";
 import Histories from "../pages/histories/Histories";

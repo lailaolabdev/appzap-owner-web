@@ -7,9 +7,8 @@ import { updateOrderItem } from "../../services/order";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
-  const [orderLoading, setOrderLoading] = useState(true);
+  const [orderLoading, setOrderLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
-  const [waitingOrderItems, setWaitingOrderItems] = useState([]);
   const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] =
     useState([]);
   const [callCheckBill, setCallCheckBill] = useState([]);
@@ -41,10 +40,15 @@ export const useOrderState = () => {
       .then((response) => response.json())
       .then((json) => {
         setCallCheckBill(json);
+        setOrderLoading(false);
       });
+    setOrderLoading(false);
   };
 
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
+    console.log("getOrderItemsStore runnnnn");
+
+    setOrderItems([]);
     let time = "";
     if (status === "SERVED") {
       time = `&startDate=${moment(moment())
@@ -66,11 +70,12 @@ export const useOrderState = () => {
       .then((json) => {
         setOrderLoading(false);
         setOrderItems(json);
-        if (status === WAITING_STATUS) setWaitingOrderItems(json);
       });
+    setOrderLoading(false);
   };
 
   const handleUpdateOrderStatus = async (status, storeId) => {
+    console.log("handleUpdateOrderStatus runnnnn");
     let previousStatus = orderItems[0].status;
     let _updateItems = orderItems
       .filter((item) => item.isChecked)
@@ -117,6 +122,7 @@ export const useOrderState = () => {
    * ເລືອກທຸກອໍເດີ
    */
   const checkAllOrders = (item) => {
+    console.log("checkAllOrders runnnnn");
     let _orderItems = [...orderItems];
     let _newOrderItems;
     if (item?.target?.checked) {
@@ -143,7 +149,6 @@ export const useOrderState = () => {
     orderLoading,
     userData,
     orderItems,
-    waitingOrderItems,
     callingCheckOut,
     getOrderItemsStore,
     handleUpdateOrderStatus,

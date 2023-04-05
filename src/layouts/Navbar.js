@@ -44,10 +44,6 @@ export default function NavBar() {
     sessionStorage.clear();
     navigate(`/`);
   };
-
-  // socket.on(`MESSAGE_STORE:${userData?.data?.storeId}`, (data) => {
-  //   setmessageData(data);
-  // });
   const switchLanguage = (language) => {
     i18n.changeLanguage(language);
   };
@@ -104,57 +100,43 @@ export default function NavBar() {
               <option value="en">EN</option>
             </select>
           </div>
-
-          {isConnectPrinter ? (
-            <div
-              style={{
-                border: "1px solid #68B984",
-                padding: 4,
-                color: "#68B984",
-                backgroundColor: "#CFFDE1",
-                borderRadius: 4,
-                fontSize: 12,
-              }}
-            >
-              <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
-            </div>
-          ) : (
-            <a
-              href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
-              target="_blank"
-              rel="noreferrer"
-            >
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            {isConnectPrinter ? (
               <div
                 style={{
-                  border: "1px solid #E97777",
+                  border: "1px solid #68B984",
                   padding: 4,
-                  color: "#E97777",
-                  backgroundColor: "#ffd8d8",
+                  color: "#68B984",
+                  backgroundColor: "#CFFDE1",
                   borderRadius: 4,
                   fontSize: 12,
                 }}
               >
-                <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+                <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
               </div>
-            </a>
-          )}
+            ) : (
+              <a
+                href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div
+                  style={{
+                    border: "1px solid #E97777",
+                    padding: 4,
+                    color: "#E97777",
+                    backgroundColor: "#ffd8d8",
+                    borderRadius: 4,
+                    fontSize: 12,
+                  }}
+                >
+                  <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+                </div>
+              </a>
+            )}
+          </Box>
 
           <div style={{ width: 10 }} />
-          {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Language />
-          </Box> */}
-          <div style={{ width: 10 }} />
-          {/* <Image
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqimBa5dxfPceCwDPT8DBZeD-X7tjbzxU6nDbP8fCt2pXuxlJHeAD93uZJjiVOkiW5G4Q&usqp=CAU"
-            width={35}
-            height={35}
-            roundedCircle
-            onClick={() => navigate("/messagerList")}
-            style={{ cursor: "pointer" }}
-            // onClick={handleShow}
-          />
-          <Badge variant="danger">{messageData ?? 0}</Badge>
-          <div style={{ marginLeft: 30 }}></div> */}
           <Form inline>
             <Dropdown>
               <Dropdown.Toggle

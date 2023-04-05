@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Image } from "react-bootstrap";
 import moment from "moment";
-import OrderNavbar from "./component/OrderNavbar";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as _ from "lodash";
 import empty from "../../image/empty.png";
@@ -14,7 +13,7 @@ import Swal from "sweetalert2";
 /**
  * import components
  */
-import UpdateModal from "./component/UpdateModal";
+
 import BillForChef58 from "../../components/bill/BillForChef58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 // import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
@@ -28,7 +27,7 @@ import { SERVE_STATUS, END_POINT, DOING_STATUS } from "../../constants";
 import { useStore } from "../../store";
 import { socket } from "../../services/socket";
 
-const DoingOrder = () => {
+const DoingOrderTab = () => {
   // if (billForCher80.current.length !== arrLength) {
   //   // add or remove refs
   //   billForCher80.current = Array(arrLength)
@@ -55,7 +54,6 @@ const DoingOrder = () => {
     handleUpdateOrderStatus,
   } = useStore();
 
-  const [updateModal, setUpdateModal] = useState(false);
   const [dataBill, setDataBill] = useState();
   const [selectedMenu, setSelectedMenu] = useState([]);
   const {
@@ -133,7 +131,7 @@ const DoingOrder = () => {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        if(_index === 0) {
+        if (_index === 0) {
           await Swal.fire({
             icon: "success",
             title: "ປິ້ນສຳເລັດ",
@@ -143,7 +141,7 @@ const DoingOrder = () => {
         }
       } catch (err) {
         console.log(err);
-        if(_index ===0) {
+        if (_index === 0) {
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -156,32 +154,9 @@ const DoingOrder = () => {
     }
   };
 
-
-  const [channels] = useState([
-    `ORDER_UPDATE_STATUS:${storeDetail._id}`,
-    `ORDER:${storeDetail._id}`,
-  ]);
-  useEffect(() => {
-    getOrderItemsStore(DOING_STATUS);
-    setSelectOrderStatus(DOING_STATUS);
-  }, []);
-  const handleMessage = (event) => {
-    if (selectOrderStatus === DOING_STATUS) {
-      getOrderItemsStore(DOING_STATUS);
-    }
-  };
-
-  useEffect(() => {
-    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-      handleMessage();
-      setNewOrderTransaction(false);
-      setNewOrderUpdateStatusTransaction(false);
-    }
-  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
-
   return (
     <div>
-      <OrderNavbar />
+      {/* <OrderNavbar /> */}
       {orderItems?.length > 0 ? (
         <div>
           <div
@@ -337,11 +312,6 @@ const DoingOrder = () => {
                 })}
             </div>
           </Container>
-          <UpdateModal
-            show={updateModal}
-            hide={() => setUpdateModal(false)}
-            // handleUpdate={_handleUpdate}
-          />
         </div>
       ) : (
         <Image src={empty} alt="" width="100%" />
@@ -350,4 +320,4 @@ const DoingOrder = () => {
   );
 };
 
-export default DoingOrder;
+export default DoingOrderTab;

@@ -20,8 +20,6 @@ const OrderCheckOut = ({
 }) => {
   const [total, setTotal] = useState();
 
-  // const { callingCheckOut } = useStore();
-
   useEffect(() => {
     for (let i = 0; i < data?.orderId.length; i++) {
       _calculateTotal();
@@ -140,8 +138,14 @@ const OrderCheckOut = ({
             <span style={{ justifyContent: "flex-end", display: "row" }}>
               <b>
                 {data && data?.discountType === "LAK"
-                  ? moneyCurrency(total - data?.discount > 0 ? total - data?.discount : 0)
-                  : moneyCurrency(total - (total * data?.discount) / 100 > 0 ? total - (total * data?.discount) / 100 : 0)}
+                  ? moneyCurrency(
+                      total - data?.discount > 0 ? total - data?.discount : 0
+                    )
+                  : moneyCurrency(
+                      total - (total * data?.discount) / 100 > 0
+                        ? total - (total * data?.discount) / 100
+                        : 0
+                    )}
               </b>
             </span>
           </div>

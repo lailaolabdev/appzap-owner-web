@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import socketio from "socket.io-client";
-import { END_POINT_SOCKET } from "../../constants";
+import { END_POINT_SOCKET } from "../../constants/api";
 const socket = socketio.connect(END_POINT_SOCKET, {
   reconnection: true,
   reconnectionDelay: 5000,

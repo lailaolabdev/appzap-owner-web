@@ -1,17 +1,18 @@
 import { USER_KEY } from "./index";
 
-export const END_POINT_SEVER = "https://api.appzap.la"; // /prosdusction
-export const END_POINT_APP = "https://api.appzap.la"; // /prosdusction
+// TODO: check domain name and set end point
+const production_domain = "restaurant.appzap.la"; // Production
+const now_domain = window.location.hostname;
+const dev = "https://dev-api.appzap.la";
+const production = "https://api.appzap.la"; // Production
+const production_socket = "https://app-api-alb.appzap.la"; // Production
+const dev_socket = "http://3.0.147.125:7070";
+const isProduction = production_domain == now_domain;
+export const END_POINT_SEVER = isProduction ? production : dev;
+export const END_POINT_APP = isProduction ? production : dev;
+export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
 
-// export const END_POINT_SEVER = "https://app-api.appzap.la/app"; // /prosdusction
-// export const END_POINT_APP = "https://app-api.appzap.la/app"; // /prosdusction
-
-
-// export const END_POINT_SEVER = "http://localhost:7070"; // /
-// export const END_POINT_APP = "http://localhost:7070"; // /
-
-// export const END_POINT_SEVER = "https://dev-api.appzap.la"; // staging
-// export const END_POINT_APP = "https://dev-api.appzap.la"; // staging
+// ------------------------------------------
 
 export const getLocalData = async () => {
   const _local = await localStorage.getItem(USER_KEY);
