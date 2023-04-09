@@ -113,26 +113,11 @@ export default function WaitingOrderTab() {
     }
   };
 
-
   return (
     <RootStyle>
       <div>
         <div>
           <ReactAudioPlayer src={Notification} ref={soundPlayer} />
-        </div>
-        <div>
-          <button
-            style={{
-              backgroundColor: "#FB6E3B",
-              color: "#fff",
-              border: "1px solid #FB6E3B",
-              height: "40px",
-              margin: "10px",
-            }}
-            onClick={() => onPrintForCher()}
-          >
-            ພິມບິນໄປຄົວ
-          </button>
         </div>
         <TableCustom responsive>
           <thead style={{ backgroundColor: "#F1F1F1" }}>

@@ -183,7 +183,7 @@ const DoingOrderTab = () => {
             <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
           </div> */}
           </div>
-          <div>
+          {/* <div>
             <button
               style={{
                 backgroundColor: "#FB6E3B",
@@ -196,7 +196,7 @@ const DoingOrderTab = () => {
             >
               ພິມບິນໄປຄົວ
             </button>
-          </div>
+          </div> */}
           <Container fluid className="mt-3">
             <Table
               responsive

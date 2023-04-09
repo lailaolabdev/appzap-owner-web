@@ -46,7 +46,7 @@ export const useOrderState = () => {
   };
 
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
-    console.log("getOrderItemsStore runnnnn");
+    // console.log("getOrderItemsStore runnnnn");
 
     setOrderItems([]);
     let time = "";
