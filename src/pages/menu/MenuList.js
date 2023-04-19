@@ -124,6 +124,8 @@ export default function MenuList() {
       let createData = {
         name: values?.name,
         name_en: values?.name_en,
+        name_en: values?.name_cn,
+        name_kr: values?.name_kr,
         quantity: values?.quantity,
         categoryId: values?.categoryId,
         menuOptionId: menuOptions,
@@ -215,6 +217,8 @@ export default function MenuList() {
         data: {
           name: values?.name,
           name_en: values?.name_en,
+          name_cn: values?.name_cn,
+          name_kr: values?.name_kr,
           quantity: values?.quantity,
           categoryId: values?.categoryId,
           menuOptionId: menuOptions,
@@ -473,6 +477,8 @@ export default function MenuList() {
           initialValues={{
             name: "",
             name_en: "",
+            name_cn:"",
+            name_kr:"",
             quantity: 1,
             menuOptionId: [],
             categoryId: "",
@@ -631,6 +637,40 @@ export default function MenuList() {
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_cn"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_cn}
+                    placeholder="ຊື່ອາຫານ..."
+                    style={{
+                      border:
+                        errors.name_cn && touched.name_cn && errors.name_cn
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_kr"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_kr}
+                    placeholder="ຊື່ອາຫານ..."
+                    style={{
+                      border:
+                        errors.name_kr && touched.name_kr && errors.name_kr
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ລາຄາ</Form.Label>
                   <Form.Control
                     type="number"
@@ -692,6 +732,8 @@ export default function MenuList() {
           initialValues={{
             name: dataUpdate?.name,
             name_en: dataUpdate?.name_en,
+            name_cn: dataUpdate?.name_cn,
+            name_kr: dataUpdate?.name_kr,
             images: dataUpdate?.images,
             quantity: dataUpdate?.quantity,
             sort: dataUpdate?.sort,
@@ -841,6 +883,40 @@ export default function MenuList() {
                     style={{
                       border:
                         errors.name_en && touched.name_en && errors.name_en
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_cn"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.name_cn}
+                    placeholder="ຊື່ອາຫານ..."
+                    style={{
+                      border:
+                        errors.name_cn && touched.name_cn && errors.name_cn
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_kr"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.name_kr}
+                    placeholder="ຊື່ອາຫານ..."
+                    style={{
+                      border:
+                        errors.name_kr && touched.name_kr && errors.name_kr
                           ? "solid 1px red"
                           : "",
                     }}

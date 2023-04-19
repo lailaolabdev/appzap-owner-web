@@ -32,6 +32,8 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
         initialValues={{
           name: "",
           name_en: "",
+          name_cn:"",
+          name_kr:"",
           quantity: 1,
           categoryId: "",
           price: "",
@@ -44,9 +46,6 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
           const errors = {};
           if (!values.name) {
             errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-          }
-          if (!values.name_en) {
-            errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
           }
           if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
             errors.price = "ກະລຸນາປ້ອນລາຄາ...";
@@ -111,7 +110,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                     </Form.Group>
                     <Form.Group>
                       <Form.Label>
-                        ຊື່ອາຫານ (en)<span style={{ color: "red" }}>*</span>
+                        ຊື່ອາຫານ (en)
                       </Form.Label>
                       <Form.Control
                         type="text"
@@ -123,6 +122,44 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         style={{
                           border:
                             errors.name_en && touched.name_en && errors.name_en
+                              ? "solid 1px red"
+                              : "",
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>
+                        ຊື່ອາຫານ (cn)
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="name_cn"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name_cn}
+                        placeholder="ຊື່ອາຫານ..."
+                        style={{
+                          border:
+                            errors.name_cn && touched.name_cn && errors.name_cn
+                              ? "solid 1px red"
+                              : "",
+                        }}
+                      />
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label>
+                        ຊື່ອາຫານ (kr)
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="name_kr"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name_kr}
+                        placeholder="ຊື່ອາຫານ..."
+                        style={{
+                          border:
+                            errors.name_kr && touched.name_kr && errors.name_kr
                               ? "solid 1px red"
                               : "",
                         }}
