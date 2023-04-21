@@ -360,7 +360,6 @@ export default function MenuList() {
                   <th scope="col">ຊື່ປະເພດອາຫານ</th>
                   <th scope="col">ປະເພດເມນູ</th>
                   <th scope="col">ຊື່ອາຫານ</th>
-                  <th scope="col">ຊື່ອາຫານ (en)</th>
                   <th scope="col">ລາຄາ</th>
                   <th scope="col">ສະຖານະ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
@@ -403,11 +402,10 @@ export default function MenuList() {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>{data?.name}</td>
-                        <td>{data?.name_en ?? " "}</td>
+                        <td>{data?.name ?? "-"}
+                        <p>{data?.name_en ?? "-"}</p><p>{data?.name_cn ?? "-"}</p><p>{data?.name_kr ?? "-"}</p></td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
-                          {/* {data?.isOpened ? "ເປີດ" : "ປິດ"} */}
                           <label className="switch">
                             <input
                               type="checkbox"
