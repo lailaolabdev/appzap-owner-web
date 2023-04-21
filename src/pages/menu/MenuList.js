@@ -124,7 +124,7 @@ export default function MenuList() {
       let createData = {
         name: values?.name,
         name_en: values?.name_en,
-        name_en: values?.name_cn,
+        name_cn: values?.name_cn,
         name_kr: values?.name_kr,
         quantity: values?.quantity,
         categoryId: values?.categoryId,
@@ -138,7 +138,6 @@ export default function MenuList() {
         type: menuType
       }
       if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
-
       const resData = await axios({
         method: "POST",
         url: END_POINT_SEVER + "/v3/menu/create",
@@ -285,7 +284,7 @@ export default function MenuList() {
       //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
       //   return;
       // }
-        const _localData = await getLocalData();
+      const _localData = await getLocalData();
 
       let header = await getHeaders();
       const headers = {
@@ -403,7 +402,7 @@ export default function MenuList() {
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
                         <td>{data?.name ?? "-"}
-                        <p>{data?.name_en ?? "-"}</p><p>{data?.name_cn ?? "-"}</p><p>{data?.name_kr ?? "-"}</p></td>
+                          <p>{data?.name_en ?? "-"}</p><p>{data?.name_cn ?? "-"}</p><p>{data?.name_kr ?? "-"}</p></td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
                           <label className="switch">
@@ -475,8 +474,8 @@ export default function MenuList() {
           initialValues={{
             name: "",
             name_en: "",
-            name_cn:"",
-            name_kr:"",
+            name_cn: "",
+            name_kr: "",
             quantity: 1,
             menuOptionId: [],
             categoryId: "",
@@ -658,11 +657,11 @@ export default function MenuList() {
                     name="name_kr"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    value={values.name_kr}
+                    value={values?.name_kr}
                     placeholder="ຊື່ອາຫານ..."
                     style={{
                       border:
-                        errors.name_kr && touched.name_kr && errors.name_kr
+                        errors?.name_kr && touched?.name_kr && errors?.name_kr
                           ? "solid 1px red"
                           : "",
                     }}
