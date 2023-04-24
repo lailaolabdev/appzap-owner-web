@@ -5,7 +5,7 @@ const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
 const dev = "https://dev-api.appzap.la";
 // const dev = "http://localhost:7070";
-const production = "https://api.appzap.la"; // Production
+const production = "https://app-api.appzap.la/app"; // Production
 const production_socket = "https://app-api-alb.appzap.la"; // Production
 const dev_socket = "http://3.0.147.125:7070";
 const isProduction = production_domain == now_domain;
