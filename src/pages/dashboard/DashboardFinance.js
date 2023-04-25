@@ -15,8 +15,12 @@ import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
 import { stringify } from "query-string";
-export default function DashboardFinance({ startDate, endDate, selectedCurrency }) {
-  const [currency, setcurrency] = useState()
+export default function DashboardFinance({
+  startDate,
+  endDate,
+  selectedCurrency,
+}) {
+  const [currency, setcurrency] = useState();
   const navigate = useNavigate();
   const { accessToken } = useQuery();
   const params = useParams();
@@ -78,22 +82,24 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
       ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
       ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
         ? new Intl.NumberFormat("ja-JP", {
-          currency: "JPY",
-        }).format(_countAmount(item?.orderId))
+            currency: "JPY",
+          }).format(_countAmount(item?.orderId))
         : new Intl.NumberFormat("ja-JP", {
-          currency: "JPY",
-        }).format(item?.billAmount),
+            currency: "JPY",
+          }).format(item?.billAmount),
       ຈ່າຍເງິນສົດ: item?.payAmount,
       ຈ່າຍເງິນໂອນ: item?.transferAmount,
       ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
       ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-      ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-        new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-          data?.amount + dataNotCheckBill?.amount
-        ) : "",
-    }))
-    return _export
-  }
+      ຍອດລວມທັງໝົດ:
+        data?.checkOut?.length === index + 1
+          ? new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+              data?.amount + dataNotCheckBill?.amount
+            )
+          : "",
+    }));
+    return _export;
+  };
 
   useEffect(() => {
     getcurrency();
@@ -101,8 +107,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
   }, []);
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate, selectedCurrency
-  ]);
+  }, [endDate, startDate, selectedCurrency]);
   const _fetchFinanceData = async () => {
     setIsLoading(true);
     // const url =
@@ -110,14 +115,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
     const headers = await getHeaders(accessToken);
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
-      "/v3/bills?storeId=" +
-      params?.storeId +
-      "&currencyType=" +
-      selectedCurrency +
-      "&startDate=" +
-      startDate +
-      "&endDate=" +
-      endDate,
+        "/v3/bills?storeId=" +
+        params?.storeId +
+        "&currencyType=" +
+        selectedCurrency +
+        "&startDate=" +
+        startDate +
+        "&endDate=" +
+        endDate,
       {
         headers: headers,
       }
@@ -173,28 +178,37 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
             _checkBill.discountCash += data?.checkOut[i]?.discount;
           if (data?.checkOut[i]?.discountType !== "LAK")
             _checkBill.discountPercent += data?.checkOut[i]?.discount;
-          _checkBill.amount += _countAmount(data?.checkOut[i]?.orderId);
-          if (data?.checkOut[i]?.paymentMethod === "CASH")
+          _checkBill.amount += data?.checkOut[i]?.billAmount;
+          if (data?.checkOut[i]?.paymentMethod === "CASH") {
             _checkBill.cash += data?.checkOut[i]?.billAmount;
-          if (data?.checkOut[i]?.paymentMethod !== "CASH") {
-            if (
-              data?.checkOut[i]?.transferAmount > data?.checkOut[i]?.billAmount
-            ) {
-              _checkBill.cash +=
-                data?.checkOut[i]?.billAmount -
-                data?.checkOut[i]?.transferAmount;
-            } else if (
-              data?.checkOut[i]?.transferAmount + data?.checkOut[i]?.payAmount >
-              data?.checkOut[i]?.billAmount
-            ) {
-              _checkBill.cash +=
-                data?.checkOut[i]?.billAmount -
-                data?.checkOut[i]?.transferAmount;
-            } else {
-              _checkBill.cash += data?.checkOut[i]?.payAmount;
-            }
-            _checkBill.transfer += data?.checkOut[i]?.transferAmount;
           }
+          if (data?.checkOut[i]?.paymentMethod === "TRANSFER") {
+            _checkBill.transfer += data?.checkOut[i]?.billAmount;
+          }
+          if (data?.checkOut[i]?.paymentMethod === "TRANSFER_CASH") {
+            _checkBill.transfer +=
+              data?.checkOut[i]?.billAmount - data?.checkOut[i]?.payAmount;
+            _checkBill.cash += data?.checkOut[i]?.payAmount;
+          }
+          // if (data?.checkOut[i]?.paymentMethod !== "CASH") {
+          //   if (
+          //     data?.checkOut[i]?.transferAmount > data?.checkOut[i]?.billAmount
+          //   ) {
+          //     _checkBill.cash +=
+          //       data?.checkOut[i]?.billAmount -
+          //       data?.checkOut[i]?.transferAmount;
+          //   } else if (
+          //     data?.checkOut[i]?.transferAmount + data?.checkOut[i]?.payAmount >
+          //     data?.checkOut[i]?.billAmount
+          //   ) {
+          //     _checkBill.cash +=
+          //       data?.checkOut[i]?.billAmount -
+          //       data?.checkOut[i]?.transferAmount;
+          //   } else {
+          //     _checkBill.cash += data?.checkOut[i]?.payAmount;
+          //   }
+          //   _checkBill.transfer += data?.checkOut[i]?.transferAmount;
+          // }
         }
         if (data?.checkOut[i]?.discountType === "LAK")
           _disCountDataKib += data?.checkOut[i]?.discount;
@@ -288,34 +302,38 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>{t('totalCirculation')}</p>
+                <p style={{ margin: 0, fontSize: 20 }}>
+                  {t("totalCirculation")}
+                </p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>{t('numberOfBill')} : {data?.checkOut?.length} {t('bill')}</div>
                 <div>
-                  {t('totalBalance')} :{" "}
+                  {t("numberOfBill")} : {data?.checkOut?.length} {t("bill")}
+                </div>
+                <div>
+                  {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     // data?.discountType === "LAK" && data?.discount > 0 ? data?.amount - disCountDataKib : data?.amount * (1 + disCountDataPercent / 100)
 
-                  // data?.discount > 0 ? (data?.discountType === "LAK" ? data?.amount - disCountDataKib :
-                  // data?.amount * (1 + disCountDataPercent / 100)
-                  // )
-                  // : data?.amount
-                  dataCheckBill?.cash + dataCheckBill?.transfer + dataNotCheckBill?.amount
+                    // data?.discount > 0 ? (data?.discountType === "LAK" ? data?.amount - disCountDataKib :
+                    // data?.amount * (1 + disCountDataPercent / 100)
+                    // )
+                    // : data?.amount
+                    dataCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                   {/* {selectedCurrency} */}
                 </div>
                 <div>
                   {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
-                  {t('cashDiscount')} :{" "}
+                  {t("cashDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataKib
                   )}{" "}
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('percentageDiscount')} :{" "}
+                  {t("percentageDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataPercent
                   )}{" "}
@@ -336,7 +354,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('outstandingDebt')} :{" "}
+                  {t("outstandingDebt")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
@@ -362,26 +380,30 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>{t('totalCompeleteBill')}</p>
+                <p style={{ margin: 0, fontSize: 20 }}>
+                  {t("totalCompeleteBill")}
+                </p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>{t('numberOfBill')} : {dataCheckBill?.total} {t('bill')}</div>
                 <div>
-                  {t('totalBalance')} :{" "}
+                  {t("numberOfBill")} : {dataCheckBill?.total} {t("bill")}
+                </div>
+                <div>
+                  {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.cash + dataCheckBill?.transfer
+                    dataCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('cashDiscount')} :{" "}
+                  {t("cashDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountCash
                   )}{" "}
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('percentageDiscount')} :{" "}
+                  {t("percentageDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountPercent
                   )}{" "}
@@ -421,26 +443,30 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>{t('outstandingBillAmount')}</p>
+                <p style={{ margin: 0, fontSize: 20 }}>
+                  {t("outstandingBillAmount")}
+                </p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>{t('numberOfBill')} : {dataNotCheckBill?.total} {t('bill')}</div>
                 <div>
-                  {t('totalBalance')} :{" "}
+                  {t("numberOfBill")} : {dataNotCheckBill?.total} {t("bill")}
+                </div>
+                <div>
+                  {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('cashDiscount')} :{" "}
+                  {t("cashDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountCash
                   )}{" "}
                   {selectedCurrency}
                 </div>
                 <div>
-                  {t('percentageDiscount')} :{" "}
+                  {t("percentageDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountPercent
                   )}{" "}
@@ -488,24 +514,30 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                 ຈ່າຍເງິນໂອນ: item?.transferAmount,
                 ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
                 ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-                ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-                  new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    data?.amount + dataNotCheckBill?.amount
-                  ) : "",
+                ຍອດລວມທັງໝົດ:
+                  data?.checkOut?.length === index + 1
+                    ? new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(data?.amount + dataNotCheckBill?.amount)
+                    : "",
               }))}
-            // jsonData={exportJsonToExcel}
+              // jsonData={exportJsonToExcel}
             />
           </Box>
           <div style={{ padding: 10 }}>
             <Table striped hover size="sm" style={{ fontSize: 15 }}>
               <thead>
                 <tr>
-                  <th>{t('no')}</th>
-                  <th>{t('tableNumber')}</th>
-                  <th>{t('tableCode')}</th>
-                  <th>{t('tableDiscount')}</th>
-                  <th>{t('price')} / {t('bill')}</th>
-                  <th>{t('served')} / {t('cancel')}</th>
+                  <th>{t("no")}</th>
+                  <th>{t("tableNumber")}</th>
+                  <th>{t("tableCode")}</th>
+                  <th>{t("tableDiscount")}</th>
+                  <th>
+                    {t("price")} / {t("bill")}
+                  </th>
+                  <th>
+                    {t("served")} / {t("cancel")}
+                  </th>
                   <th>{t("tableStatus")}</th>
                   <th>{t("paymentType")}</th>
                   <th>{t("time")}</th>
@@ -536,18 +568,18 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                     <td>
                       {item?.discountType === "LAK"
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.discount) + t("lak")
+                            currency: "JPY",
+                          }).format(item?.discount) + t("lak")
                         : item?.discount + "%"}
                     </td>
                     <td>
                       {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                         : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.billAmount)}{" "}
+                            currency: "JPY",
+                          }).format(item?.billAmount)}{" "}
                       {selectedCurrency}
                     </td>
                     <td>
@@ -582,10 +614,10 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                           item?.status === "CHECKOUT"
                             ? "green"
                             : item?.status === "CALLTOCHECKOUT"
-                              ? "red"
-                              : item?.status === "ACTIVE"
-                                ? "#00496e"
-                                : "",
+                            ? "red"
+                            : item?.status === "ACTIVE"
+                            ? "#00496e"
+                            : "",
                       }}
                     >
                       {_statusCheckBill(item?.status)}
@@ -601,8 +633,8 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                       {item?.paymentMethod === "CASH"
                         ? t("payBycash")
                         : item?.paymentMethod === "TRANSFER"
-                          ? t("transferPayment")
-                          : t("transfercash")}
+                        ? t("transferPayment")
+                        : t("transfercash")}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -617,7 +649,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
       </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{t('menuModal')}</Modal.Title>
+          <Modal.Title>{t("menuModal")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div
@@ -627,18 +659,22 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
               marginBottom: 10,
             }}
           >
-            <Button onClick={handleEditBill}>{selectOrder?.status === "ACTIVE" ? t('editingTheBill') : t('billEditing')}</Button>
+            <Button onClick={handleEditBill}>
+              {selectOrder?.status === "ACTIVE"
+                ? t("editingTheBill")
+                : t("billEditing")}
+            </Button>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
               <tr>
-                <th>{t('no')}</th>
-                <th>{t('menuname')}</th>
-                <th>{t('amount')}</th>
-                <th>{t('statusOfFood')}</th>
-                <th>{t('servedBy')}</th>
-                <th>{t('price')}</th>
-                <th>{t('time')}</th>
+                <th>{t("no")}</th>
+                <th>{t("menuname")}</th>
+                <th>{t("amount")}</th>
+                <th>{t("statusOfFood")}</th>
+                <th>{t("servedBy")}</th>
+                <th>{t("price")}</th>
+                <th>{t("time")}</th>
               </tr>
             </thead>
             <tbody>
@@ -653,14 +689,14 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
                         item?.status === "WAITING"
                           ? "#2d00a8"
                           : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                              ? "green"
-                              : item?.status === "CART"
-                                ? "#00496e"
-                                : item?.status === "FEEDBACK"
-                                  ? "#00496e"
-                                  : "#bd0d00",
+                          ? "#c48a02"
+                          : item?.status === "SERVED"
+                          ? "green"
+                          : item?.status === "CART"
+                          ? "#00496e"
+                          : item?.status === "FEEDBACK"
+                          ? "#00496e"
+                          : "#bd0d00",
                     }}
                   >
                     {orderStatus(item?.status)}
@@ -679,7 +715,7 @@ export default function DashboardFinance({ startDate, endDate, selectedCurrency 
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>
-            {t('close')}
+            {t("close")}
           </Button>
         </Modal.Footer>
       </Modal>
