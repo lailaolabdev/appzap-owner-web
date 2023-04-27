@@ -171,6 +171,7 @@ export default function DashboardFinance({
           if (data?.checkOut[i]?.discountType !== "LAK")
             _notCheckBill.discountPercent += data?.checkOut[i]?.discount;
           _notCheckBill.amount += _countAmount(data?.checkOut[i]?.orderId);
+         
         }
         if (["CHECKOUT"].includes(data?.checkOut[i]?.status)) {
           _checkBill.total += 1;
@@ -319,7 +320,7 @@ export default function DashboardFinance({
                     // data?.amount * (1 + disCountDataPercent / 100)
                     // )
                     // : data?.amount
-                    dataCheckBill?.amount
+                    dataCheckBill?.amount + dataNotCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
                   {/* {selectedCurrency} */}

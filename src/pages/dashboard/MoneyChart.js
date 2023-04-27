@@ -73,15 +73,19 @@ export default function MoneyChart({ startDate, endDate }) {
   };
   const convertPieData = () => {
     let _labels = data?.map(
-      (d) =>
-        moment(d?.createdAt).format("DD/MM/yyyy") +
+      (d) =>{
+        //alert(d?.money_transfer + "ເງິນໂອນ"); 
+        //alert(d?.billAmount + "ເງິນທັງໝົດ"); 
+       return moment(d?.createdAt).format("DD/MM/yyyy") +
         ": " +
         moneyCurrency(d?.billAmount) +
         " ກີບ" +
         " | cach:" +
         moneyCurrency(d?.billAmount - d?.money_transfer) +
         " | transfer:" +
-        moneyCurrency(d?.money_transfer)
+        moneyCurrency(d?.money_transfer) 
+      }
+      
     );
     let _data = data?.map((d) => d?.billAmount);
 

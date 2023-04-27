@@ -199,6 +199,7 @@ export default function CheckOutType({
                   setCash(0);
                   setTransfer(transferCal);
                   setTab("transfer");
+                  setForcus("TRANSFER");
                 }}
               >
                 ເງິນໂອນ
