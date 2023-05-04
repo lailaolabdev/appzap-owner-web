@@ -4,7 +4,7 @@ import _ from "lodash";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { END_POINT_SEVER } from "../../constants/api";
-import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import { successAdd } from "../../helpers/sweetalert";
 
 
 
@@ -110,7 +110,7 @@ export default function SettingTheme() {
                         borderRadius: "20px",
                     }}
                 >
-                    <button onClick={() => {onSaveThemeSetting(); successAdd('ບັນທຶກສຳເລັດ')}}>Save</button>
+                    <button onClick={() => { onSaveThemeSetting(); successAdd('ບັນທຶກສຳເລັດ') }}>Save</button>
                     <p>{themes.map((theme, index) => {
                         return (
                             <div key={index} style={{ marginTop: 20 }}>
@@ -118,17 +118,18 @@ export default function SettingTheme() {
                                 {theme?.categoryData?.map((category, index1) => {
                                     return (
                                         <div key={index1}>
-                                            <div><u>{category?.type ?? "-"}</u></div>
-                                            {category?.typeValues?.map((type, index2) => {
-                                                let _checkThem = themeSelected?.filter(_them => _them._id == type?._id)
-                                                return (
-                                                    <div key={index2} onClick={() => onSeleteTheme(type)}>
-                                                        {_checkThem.length > 0 ? <FontAwesomeIcon icon={faCheck} color="green" /> : <FontAwesomeIcon icon={faCheck} color="#c8c9c7" />}{" "}
-                                                        {theme?.category == "COLOR" &&
-                                                            <input type="color" disabled value={type?.value} />}
-                                                    </div>
-                                                )
-                                            })}
+                                            <div style={{padding: "10px 0px 10px 0px"}}><u>{category?.type ?? "-"}</u></div>
+                                            {
+                                                category?.typeValues?.map((type, index2) => {
+                                                    let _checkThem = themeSelected?.filter(_them => _them._id == type?._id)
+                                                    return (
+                                                        <div key={index2} onClick={() => onSeleteTheme(type)}>
+                                                            {_checkThem.length > 0 ? <FontAwesomeIcon icon={faCheck} color="green" /> : <FontAwesomeIcon icon={faCheck} color="#c8c9c7" />}{" "}
+                                                            {theme?.category == "COLOR" &&
+                                                                <input type="color" disabled value={type?.value} />}
+                                                        </div>
+                                                    )
+                                                })}
                                         </div>
                                     )
                                 })}

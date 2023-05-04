@@ -75,6 +75,8 @@ export default function Categorylist() {
         storeId: getTokken?.DATA?.storeId,
         name: values?.name,
         name_en: values?.name_en,
+        name_cn: values?.name_cn,
+        name_kr: values?.name_kr,
         note: values?.note,
       },
       headers: headers,
@@ -102,6 +104,8 @@ export default function Categorylist() {
           data: {
             name: values?.name,
             name_en: values?.name_en,
+            name_cn: values?.name_cn,
+            name_kr: values?.name_kr,
             note: values?.note,
           },
         },
@@ -185,7 +189,10 @@ export default function Categorylist() {
                 <tr>
                   <th scope="col">{t('no')}</th>
                   <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('note')}</th>
+                  <th scope="col">{t('foodTypeName')}</th>
+                  <th scope="col">{t('foodTypeName')}</th>
+                  <th scope="col">{t('foodTypeName')}</th>
+                  {/* <th scope="col">{t('note')}</th> */}
                   <th scope="col">{t('manage')}</th>
                 </tr>
               </thead>
@@ -195,8 +202,11 @@ export default function Categorylist() {
                     return (
                       <tr>
                         <td>{index + 1}</td>
-                        <td>{data?.name}</td>
-                        <td>{data?.note}</td>
+                        <td>{data?.name ?? ""}</td>
+                        <td>{data?.name_en ?? ""}</td>
+                        <td>{data?.name_cn ?? ""}</td>
+                        <td>{data?.name_kr ?? ""}</td>
+                        {/* <td>{data?.note}</td> */}
                         <td>
                           <FontAwesomeIcon
                             icon={faEdit}
@@ -222,6 +232,8 @@ export default function Categorylist() {
           initialValues={{
             name: "",
             name_en: "",
+            name_cn: "",
+            name_kr: "",
             note: "",
           }}
           validate={(values) => {
@@ -229,9 +241,6 @@ export default function Categorylist() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
             }
-            // if (!values.name_en) {
-            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
-            // }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -281,6 +290,34 @@ export default function Categorylist() {
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
                 </div>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_cn"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_cn}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_cn && touched.name_cn && errors.name_cn}
+                </div>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_kr"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_kr}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_kr && touched.name_kr && errors.name_kr}
+                </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
@@ -318,6 +355,8 @@ export default function Categorylist() {
           initialValues={{
             name: dataUpdate?.name,
             name_en: dataUpdate?.name_en,
+            name_cn: dataUpdate?.name_cn,
+            name_kr: dataUpdate?.name_kr,
             note: dataUpdate?.note,
           }}
           validate={(values) => {
@@ -325,9 +364,6 @@ export default function Categorylist() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
             }
-            // if (!values.name_en) {
-            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານພາສາອັງກິດ...";
-            // }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -376,6 +412,34 @@ export default function Categorylist() {
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
+                </div>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_cn"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_cn}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_cn && touched.name_cn && errors.name_cn}
+                </div>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name_kr"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name_kr}
+                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                  />
+                </Form.Group>
+                <div style={{ color: "red" }}>
+                  {errors.name_kr && touched.name_kr && errors.name_kr}
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
