@@ -1,21 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import _ from "lodash";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faCheck } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
-
+import ColorPicker, { useColorPicker } from 'react-best-gradient-color-picker';
+import { Modal, Button } from "react-bootstrap";
 
 
 export default function SettingTheme() {
 
+    const [selectColor, setSelectColor] = useState('')
+
     const [themes, setThemes] = useState([])
-    const [themeSelected, setThemeSelected] = useState([])
+    const [background, setBackground] = useState({
+        backgroundCommon: '',
+        backgroundPrimary: '',
+        backgroundSecondary: '',
+        colorPrimary: '',
+        colorSecondary: '',
+        colorDisabled: ''
+    });
+
+    const [ id, setId]  = useState(null);
+
+    const [themeData, setThemeData] = useState(null)
+
+    const [themeSelected, setThemeSelected] = useState({})
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
-        getData();
+        getThemeData()
     }, []);
+
+
+    const getThemeData = async () => {
+        try {
+            const localStore = localStorage.getItem("storeDetail")
+            if (!localStore) return
+            const storeData = await JSON.parse(localStore)
+            const id = storeData._id
+            await axios.get(`http://localhost:7070/v3/theme/${id}`)
+                .then((data) => {
+                     setId(data.data.theme._id);
+                     setThemeData(data.data.theme)  
+            })
+     } catch (error) {
+        console.log(error);
+     }
+    }
+
+    console.log('2345',themeData);
 
     const getData = async () => {
         try {
@@ -24,6 +63,7 @@ export default function SettingTheme() {
                 url: `${END_POINT_SEVER}/v3/theme`,
             };
             let themeData = await axios(config)
+            // console.log(themeData);
             if (themeData?.data?.themes) {
                 let groupCategory = await _.groupBy(themeData?.data?.themes, 'category');
                 let _themeData = []
@@ -41,6 +81,7 @@ export default function SettingTheme() {
                         categoryData: _typeData
                     })
                 }
+                // console.log('theme data ', _themeData);
                 setThemes(_themeData)
             }
         } catch (error) {
@@ -48,51 +89,53 @@ export default function SettingTheme() {
         }
     };
 
-    const onSeleteTheme = async (data) => {
-        try {
-            let _themeSelected = [...themeSelected]
-            _.remove(_themeSelected, function (them) {
-                return them.category == data.category && them.type == data.type;
-            })
-            if (_themeSelected.length > 0) setThemeSelected([..._themeSelected, data])
-            else setThemeSelected([data])
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     const onSaveThemeSetting = async () => {
         try {
-            const localStore = localStorage.getItem("storeDetail")
-            if (!localStore) return
-            const storeData = await JSON.parse(localStore)
-
-            var configResetTheme = {
-                method: 'delete',
-                url: `${END_POINT_SEVER}/v3/store-theme/delete-many/${storeData._id}`,
-                headers: {}
-            };
-            const resetThemeSetting = await axios(configResetTheme)
-
-            let _createData = []
-            for (var i = 0; i < themeSelected.length; i++) {
-                _createData.push({
-                    storeId: storeData._id,
-                    themeId: themeSelected[i]._id
-                })
+            const themes = {
+                backgroundCommon: background.backgroundCommon,
+                backgroundPrimary: background.backgroundPrimary,
+                backgroundSecondary: background.backgroundSecondary,
+                colorPrimary: background.colorPrimary,
+                colorSecondary: background.colorSecondary,
+                colorDisabled: background.colorDisabled,
             }
+            //  console.log(id);
+           
+            await axios.put(`http://localhost:7070/v3/theme/${id}`, { ...themes })
+                .then((data) => {
+                    successAdd('ບັນທຶກສຳເລັດ')
+                })
+            // console.log(theme);
+            // const localStore = localStorage.getItem("storeDetail")
+            // if (!localStore) return
+            // const storeData = await JSON.parse(localStore)
 
-            var data = JSON.stringify(_createData);
-            var config = {
-                method: 'post',
-                url: `${END_POINT_SEVER}/v3/store-theme/create-many`,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                data: data
-            };
-            const createManyTheme = await axios(config)
-            console.log("createManyTheme", createManyTheme)
+            // var configResetTheme = {
+            //     method: 'delete',
+            //     url: `${END_POINT_SEVER}/v3/store-theme/delete-many/${storeData._id}`,
+            //     headers: {}
+            // };
+            // const resetThemeSetting = await axios(configResetTheme)
+
+            // let _createData = []
+            // for (var i = 0; i < themeSelected.length; i++) {
+            //     _createData.push({
+            //         storeId: storeData._id,
+            //         themeId: themeSelected[i]._id
+            //     })
+            // }
+
+            // var data = JSON.stringify(_createData);
+            // var config = {
+            //     method: 'post',
+            //     url: `${END_POINT_SEVER}/v3/store-theme/create-many`,
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     data: data
+            // };
+            // const createManyTheme = await axios(config)
+            // console.log("createManyTheme", createManyTheme)
 
         } catch (error) {
             console.log(error)
@@ -110,36 +153,78 @@ export default function SettingTheme() {
                         borderRadius: "20px",
                     }}
                 >
-                    <button onClick={() => {onSaveThemeSetting(); successAdd('ບັນທຶກສຳເລັດ')}}>Save</button>
-                    <p>{themes.map((theme, index) => {
-                        return (
-                            <div key={index} style={{ marginTop: 20 }}>
-                                <div><b>{theme?.category ?? "-"}</b></div>
-                                {theme?.categoryData?.map((category, index1) => {
-                                    return (
-                                        <div key={index1}>
-                                            <div><u>{category?.type ?? "-"}</u></div>
-                                            {category?.typeValues?.map((type, index2) => {
-                                                let _checkThem = themeSelected?.filter(_them => _them._id == type?._id)
-                                                return (
-                                                    <div key={index2} onClick={() => onSeleteTheme(type)}>
-                                                        {_checkThem.length > 0 ? <FontAwesomeIcon icon={faCheck} color="green" /> : <FontAwesomeIcon icon={faCheck} color="#c8c9c7" />}{" "}
-                                                        {theme?.category == "COLOR" &&
-                                                            <input type="color" disabled value={type?.value} />}
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
-                                    )
-                                })}
+                    <button className="btn btn-primary d-flex justify-content-end" onClick={() => { onSaveThemeSetting(); }}>Save</button>
+                    <div>
+                        <div>
+                            <p className="font-weight-bold">Background Color</p>
+                            <div>
+                                <div>
+                                    <p style={{ margin: '0px', padding: '0px', borderBottom: '1px solid black' }}>Choose Common Background</p>
+                                </div>
+                                <button class="btn small btn-primary m-2 x-small " onClick={() => { setSelectColor('backgroundCommon'); handleShow() }}>
+                                    Common
+                                </button>
                             </div>
-                        )
-                    })}</p>
+                            <div>
+                                <div>
+                                    <p style={{ margin: '0px', padding: '0px', borderBottom: '1px solid black' }}>Choose Primary Background</p>
+                                </div>
+                                <button class="btn small btn-primary m-2" onClick={() => { setSelectColor('backgroundPrimary'); handleShow() }}>
+                                    Primary
+                                </button>
+
+                            </div>
+
+                        </div>
+                        <div>
+                            <div>
+                                <p style={{ margin: '0px', padding: '0px', borderBottom: '1px solid black' }}>Choose Secondary Background</p>
+                            </div>
+                            <button className="btn btn-primary m-2" onClick={() => { setSelectColor('backgroundSecondary'); handleShow() }}>
+                                Secondary
+                            </button>
+                        </div>
+                        <div>
+                            <p style={{ fontWeight: 'bold' }}>Color Font</p>
+                            <div>
+                                <div>
+                                    <p
+                                        style={{
+                                            margin: '0px',
+                                            padding: '0px',
+                                            borderBottom: '1px solid black'
+                                        }}>Choose Font Color</p>
+                                </div>
+                                <button className="btn btn-primary" onClick={() => { setSelectColor('colorPrimary'); handleShow() }}>Primary</button>
+
+                            </div>
+                            <div>
+                                <div>
+                                    <p
+                                        style={{
+                                            margin: '0px',
+                                            padding: '0px',
+                                            borderBottom: '1px solid black'
+                                        }}>Choose Font Color</p>
+                                </div>
+                                <button className="btn btn-secondary" onClick={() => { setSelectColor('colorSecondary'); handleShow() }}>Secondary</button>
+                            </div>
+                            <div>
+                                <div>
+                                    <p style={{ margin: '0px', padding: '0px', borderBottom: '1px solid black' }}>Choose Font Color</p>
+                                </div>
+                                <button className="btn btn-sm"
+                                    style={{ color: "white", backgroundColor: background.colorDisabled == '' ? '#000' : background.colorDisabled }}
+                                    onClick={() => { setSelectColor('colorDisabled'); handleShow() }}>Disabled</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div
                 style={{
-                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_HEADER")[0]?.value ?? "#FB6E3B",
+                    background: background.backgroundCommon == '' ? '#FB6E3B' : background.backgroundCommon,
                     width: "390px",
                     height: "840px",
                     margin: "40px",
@@ -162,7 +247,7 @@ export default function SettingTheme() {
                 </div>
                 <div
                     style={{
-                        backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_BODY")[0]?.value ?? "#ffffff",
+                        background: background.backgroundPrimary == '' ? '#ffffff' : background.backgroundPrimary,
                         width: "100%",
                         height: "100%",
                         borderTopRightRadius: "60px",
@@ -179,10 +264,10 @@ export default function SettingTheme() {
                         textAlign: "center"
                     }}>
                         <p style={{
-                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#FB6E3B"
+                            color: background.colorPrimary == '' ? '#FB6E3B' : background.colorPrimary
                         }}>{">> ກົດເພື່ອຮັບສ່ວນຫຼຸດ <<"}</p>
                         <p style={{
-                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#FB6E3B"
+                            color: background.colorPrimary == '' ? '#FB6E3B' : background.colorPrimary
                         }}><b>ເມນູພາຍໃນຮ້ານ</b></p>
                     </div>
                     <div style={{
@@ -193,7 +278,7 @@ export default function SettingTheme() {
                         marginRight: "15px"
                     }}>
                         <p style={{
-                            color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_HEADER")[0]?.value ?? "#000000"
+                            color: background.colorPrimary == '' ? '#FB6E3B' : background.colorPrimary
                         }}><b>ເມນູທີ່ແນະນຳ</b></p>
                         <p style={{ color: "#0c69f5" }}>{"ທັງໝົດ >>"}</p>
                     </div>
@@ -219,8 +304,7 @@ export default function SettingTheme() {
                                     }} />
                                 <div style={{
                                     backgroundColor: "#f7eee9",
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000",
-
+                                    color: background.colorSecondary == '' ? '#FB6E3B' : background.colorSecondary,
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
@@ -228,13 +312,13 @@ export default function SettingTheme() {
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
+                                    background: background.backgroundSecondary == '' ? '#FB6E3B' : background.backgroundSecondary,
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                    color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
 
                                 }}>
                                     100,000 kip
@@ -257,19 +341,22 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
+                                    color: background.colorSecondary == '' ? '#000000' : background.colorSecondary,
+                                    // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
 
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
+                                    background: background.backgroundSecondary == '' ? '#FB6E3B' : background.backgroundSecondary,
+                                    // backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                    color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+                                    // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
 
                                 }}>
                                     100,000 kip
@@ -284,20 +371,27 @@ export default function SettingTheme() {
                             boxShadow: "3px 3px 5px rgba(0,0,0,0.1)"
                         }}>
                             <div style={{
-                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+                                // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                             }}>Drink</div>
                             <div style={{
-                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
-
+                                color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+                                // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                             }}>All</div>
                             <div style={{
-                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+
+                                // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                             }}>Food</div>
                             <div style={{
-                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+
+                                // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                             }}>Cafe</div>
                             <div style={{
-                                color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+
+                                // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                             }}>Beer</div>
                         </div>
 
@@ -325,19 +419,23 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
+                                    color: background.colorSecondary == '' ? '#000000' : background.colorSecondary,
+                                    // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
 
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
+                                    background: background.backgroundSecondary == '' ? '#FB6E3B' : background.backgroundSecondary,
+                                    // backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                    color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+
+                                    // color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
                                 }}>
                                     100,000 kip
                                 </div>
@@ -359,20 +457,19 @@ export default function SettingTheme() {
                                     height: "30px",
                                     width: "175px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_BODY")[0]?.value ?? "#000000"
-
-
+                                    color: background.colorSecondary == '' ? '#000000' : background.colorSecondary,
                                 }}>
                                     <b>Menu Name</b>
                                 </div>
                                 <div style={{
-                                    backgroundColor: themeSelected.filter(data => data.category == "COLOR" && data.type == "BACKGROUND_FOOTER")[0]?.value ?? "#FB6E3B",
+                                    background: background.backgroundSecondary == '' ? '#FB6E3B' : background.backgroundSecondary,
                                     height: "30px",
                                     width: "175px",
                                     borderBottomRightRadius: "5px",
                                     borderBottomLeftRadius: "5px",
                                     paddingLeft: 5,
-                                    color: themeSelected.filter(data => data.category == "COLOR" && data.type == "FONT_FOOTER")[0]?.value ?? "#000000"
+                                    color: background.colorDisabled == '' ? '#000000' : background.colorDisabled,
+
 
                                 }}>
                                     100,000 kip
@@ -382,6 +479,26 @@ export default function SettingTheme() {
                     </div>
                 </div>
             </div>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ColorPicker
+                        value={background?.[selectColor]}
+                        onChange={(value) => {
+                            setBackground(prev => ({ ...prev, [selectColor]: value }))
+                        }} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleClose}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
 
     )
