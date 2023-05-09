@@ -1,0 +1,9 @@
+{
+    "backgroundCommon":"linear-gradient(to right, #FFA940,  #FB723B)",
+    "backgroundPrimary":"linear-gradient(to right, #FFA940,  #FB723B)",
+    "backgroundSecondary":"linear-gradient(to right, #FFA940,  #FB723B)",
+    "colorPrimary":"#111",
+    "colorSecondary":"#fff",
+    "colorDisabled":"#dfa"
+
+}
