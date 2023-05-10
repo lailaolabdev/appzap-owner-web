@@ -98,6 +98,7 @@ export default function Categorylist() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      console.log("============>",values)
       const resData = await axios.put(
         END_POINT_SEVER + `/v3/category/update`,
         {
@@ -116,7 +117,8 @@ export default function Categorylist() {
         }
       );
       if (resData?.data) {
-        setCategorys(resData?.data);
+        // setCategorys(resData?.data);
+        getData(getTokken?.DATA?.storeId)
         setShow2(false);
         successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
       }
@@ -143,6 +145,7 @@ export default function Categorylist() {
       method: "get",
       url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
+    console.log("-----",_resCategory?.data)
     setCategorys(_resCategory?.data);
     setIsLoading(false);
   };
@@ -270,7 +273,7 @@ export default function Categorylist() {
                     type="number"
                     name="sort"
                     placeholder="ລຳດັບ"
-                    value={values.sort}
+                    value={values?.sort}
                     onChange={handleChange}
                   />
                 </Form.Group>

@@ -93,7 +93,6 @@ export default function MenuList() {
       })
         .then((response) => response.json())
         .then((json) => {
-          console.log(json)
           setMenus(json)
         });
     } catch (err) {
@@ -135,7 +134,8 @@ export default function MenuList() {
         isOpened: isOpened,
         images: [...values?.images],
         storeId: getTokken?.DATA?.storeId,
-        type: menuType
+        type: menuType,
+        sort: values?.sort
       }
       if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
       const resData = await axios({
@@ -226,7 +226,8 @@ export default function MenuList() {
           unit: values?.unit,
           isOpened: isOpened,
           images: [...values?.images],
-          type: values?.type
+          type: values?.type,
+          sort: values?.sort
         },
       },
       headers: headers,
@@ -485,7 +486,8 @@ export default function MenuList() {
             images: [],
             unit: "",
             isOpened: true,
-            type: ""
+            type: "",
+            sort: 0,
           }}
           validate={(values) => {
             const errors = {};
@@ -745,9 +747,6 @@ export default function MenuList() {
             if (!values.name) {
               errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             }
-            // if (!values.name_en) {
-            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            // }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
               errors.price = "ກະລຸນາປ້ອນລາຄາ...";
             }
@@ -760,7 +759,6 @@ export default function MenuList() {
               if (_localData) {
                 setgetTokken(_localData);
                 getMenu(_localData?.DATA?.storeId);
-                // getMenu(getTokken?.DATA?.storeId);
               }
             };
             getData();
