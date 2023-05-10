@@ -78,6 +78,7 @@ export default function Categorylist() {
         name_cn: values?.name_cn,
         name_kr: values?.name_kr,
         note: values?.note,
+        sort: values?.sort,
       },
       headers: headers,
     })
@@ -107,6 +108,7 @@ export default function Categorylist() {
             name_cn: values?.name_cn,
             name_kr: values?.name_kr,
             note: values?.note,
+            sort: values?.sort,
           },
         },
         {
@@ -235,6 +237,7 @@ export default function Categorylist() {
             name_cn: "",
             name_kr: "",
             note: "",
+            sort: ""
           }}
           validate={(values) => {
             const errors = {};
@@ -261,6 +264,16 @@ export default function Categorylist() {
                 <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
               </Modal.Header>
               <Modal.Body>
+                <Form.Group>
+                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="sort"
+                    placeholder="ລຳດັບ"
+                    value={values.sort}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຊື່ປະເພດອາຫານ</Form.Label>
                   <Form.Control
@@ -358,6 +371,7 @@ export default function Categorylist() {
             name_cn: dataUpdate?.name_cn,
             name_kr: dataUpdate?.name_kr,
             note: dataUpdate?.note,
+            sort: dataUpdate?.sort,
           }}
           validate={(values) => {
             const errors = {};
@@ -384,6 +398,16 @@ export default function Categorylist() {
                 <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
               </Modal.Header>
               <Modal.Body>
+                <Form.Group>
+                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="sort"
+                    placeholder="ລຳດັບ"
+                    value={values.sort}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ປະເພດອາຫານ</Form.Label>
                   <Form.Control
