@@ -873,7 +873,7 @@ export default function TableList() {
                               fontWeight: "bold",
                               color: COLOR_APP,
                             }}
-                          >
+                        >
                             {moment(selectedTable?.createdAt).format("HH:mm A")}
                           </span>
                         </div>
