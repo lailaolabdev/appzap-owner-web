@@ -119,13 +119,13 @@ export default function SettingTheme() {
                         borderRadius: "20px",
                     }}
                 >
-                    <button className="btn btn-primary d-flex justify-content-end" onClick={() => { onSaveThemeSetting(); }}>Save</button>
+                    <button className="btn btn-primary d-flex justify-content-end" onClick={() => { onSaveThemeSetting(); }}>ບັນທຶກ</button>
                     <div>
                         <div>
-                            <p className="font-weight-bold" style={{ borderBottom: '1px solid black'}}>Background Color</p>
+                            <p className="font-weight-bold" style={{ borderBottom: '1px solid black'}}>ເລືອກສີພື້ນຫຼັງ</p>
                             <div>
                                 <div>
-                                    <p style={{ margin: '0px', padding: '0px' }}>Choose Common Background</p>
+                                    <p style={{ margin: '0px', padding: '0px' }}>ເລືອກສີພື້ນຫຼັງ Common</p>
                                 </div>
                                 <button class="btn btn-sm m-1"
                                     style={{
@@ -138,7 +138,7 @@ export default function SettingTheme() {
                             </div>
                             <div>
                                 <div>
-                                    <p style={{ margin: '0px', padding: '0px' }}>Choose Primary Background</p>
+                                    <p style={{ margin: '0px', padding: '0px' }}>ເລືອກສີພື້ນຫຼັງ primary</p>
                                 </div>
                                 <button
                                     style={{border:'1px solid black', color: "white", background: background.backgroundPrimary == '' ?  themeData.backgroundPrimary : background.backgroundPrimary}}
@@ -151,7 +151,7 @@ export default function SettingTheme() {
                         </div>
                         <div>
                             <div>
-                                <p style={{ margin: '0px', padding: '0px' }}>Choose Secondary Background</p>
+                                <p style={{ margin: '0px', padding: '0px' }}>ເລືອກສີພື້ນຫຼັງ Secondary</p>
                             </div>
                             <button
                                     style={{border:'1px solid black', color: "white", background: background.backgroundSecondary == '' ?  themeData.backgroundSecondary : background.backgroundSecondary}}
@@ -160,14 +160,14 @@ export default function SettingTheme() {
                             </button>
                         </div>
                         <div>
-                            <p style={{ fontWeight: 'bold',borderBottom: '1px solid black' }}>Color Font</p>
+                            <p style={{ fontWeight: 'bold',borderBottom: '1px solid black' }}>ເລືອກສີຕົວໜັງສື</p>
                             <div>
                                 <div>
                                     <p
                                         style={{
                                             margin: '0px',
                                             padding: '0px',
-                                        }}>Choose Font Color</p>
+                                        }}>ເລືອກສີຕົວໜັງສື primary</p>
                                 </div>
                                 <button
                                     style={{border:'1px solid black', color: "white", background: background.colorPrimary == '' ?  themeData.colorPrimary : background.colorPrimary}}
@@ -180,7 +180,7 @@ export default function SettingTheme() {
                                         style={{
                                             margin: '0px',
                                             padding: '0px'
-                                        }}>Choose Font Color</p>
+                                        }}>ເລືອກສີຕົວໜັງສື secondary</p>
                                 </div>
                                 <button
                                     style={{border:'1px solid black', color: "white", background: background.colorSecondary == '' ?  themeData.colorSecondary : background.colorSecondary}}
@@ -188,18 +188,18 @@ export default function SettingTheme() {
                             </div>
                             <div>
                                 <div>
-                                    <p style={{ margin: '0px', padding: '0px'}}>Choose Font Color</p>
+                                    <p style={{ margin: '0px', padding: '0px'}}>ເລືອກສີຕົວໜັງສື disabled</p>
                                 </div>
                                 <button className="btn btn-sm m-1"
                                     style={{ border: '1px solid black',color: "white", backgroundColor: background.colorDisabled == '' ? themeData.colorDisabled : background.colorDisabled }}
                                     onClick={() => { setSelectColor('colorDisabled'); handleShow() }}>Disabled</button>
                             </div>
                             <div>
-                                <p className="font-weight-bold m-0 p-0" style={{ borderBottom: '1px solid black'}}>Box Shadow Color</p>
+                                <p className="font-weight-bold m-0 p-0" style={{ borderBottom: '1px solid black'}}>ເລືອກສີ Box Shadow</p>
                                 <div>
                                 <div>
 
-                                    <p style={{ margin:'0px', padding: '0px', }}>Choose boxShadow Color</p>
+                                    <p style={{ margin:'0px', padding: '0px', }}>ເລືອກສີ boxShadow</p>
                                 </div>
                                     <button
                                         className="btn btn-sm m-1"
