@@ -1240,7 +1240,6 @@ export default function TableList() {
         tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
-        //onSubmit={() => {}}
       />
 
       <OrderCheckOut
