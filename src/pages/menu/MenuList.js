@@ -23,15 +23,18 @@ import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
 
 
+
 export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
 
   const [isOpened, setIsOpened] = useState(true);
 
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
 
   const [getIdMenu, setGetIdMenu] = useState();
   const [qtyMenu, setQtyMenu] = useState(0);
@@ -53,7 +56,6 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
-  const [statusValue, setStatusValue] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,8 +65,6 @@ export default function MenuList() {
           setgetTokken(_localData);
           getcategory(_localData?.DATA?.storeId);
           getMenu(_localData?.DATA?.storeId);
-
-
         }
       } catch (err) {
         console.log(err);
@@ -72,6 +72,16 @@ export default function MenuList() {
     };
     fetchData();
   }, []);
+
+  const onSearchByCategory = async (categoryId) => {
+    try {
+      const _localData = await getLocalData();
+      getMenu(_localData?.DATA?.storeId, categoryId);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const getcategory = async (id) => {
     try {
       await fetch(
@@ -86,9 +96,9 @@ export default function MenuList() {
       console.log(err);
     }
   };
-  const getMenu = async (id) => {
+  const getMenu = async (id, categoryId) => {
     try {
-      await fetch(MENUS + `/?storeId=${id}`, {
+      await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId != "All") ? `&categoryId=${categoryId}` : ""}`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -99,6 +109,7 @@ export default function MenuList() {
       console.log(err);
     }
   };
+
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
@@ -108,8 +119,6 @@ export default function MenuList() {
     );
   };
   const [menuOptions, setMenuOptions] = useState([]);
-
-
   // lung jak upload leo pic ja ma so u nee
 
   // ======> create menu
@@ -281,10 +290,6 @@ export default function MenuList() {
 
   const _changeStatusMenu = async (data) => {
     try {
-      // if (data?.isOpened) {
-      //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
-      //   return;
-      // }
       const _localData = await getLocalData();
 
       let header = await getHeaders();
@@ -332,15 +337,35 @@ export default function MenuList() {
       </div>
 
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 190px" }}>
-          <Form.Control
-            type="text"
-            placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
-            value={filterName}
-            onChange={(e) => {
-              setFilterName(e.target.value);
-            }}
-          />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px 190px", gridGap: 20 }}>
+          <div>
+            <label>ເລືອກປະເພດ</label>
+            <select
+              className="form-control"
+              onChange={(e) => onSearchByCategory(e.target.value)}
+            >
+              <option value="All">ທັງໝົດ</option>
+              {Categorys &&
+                Categorys?.map((data, index) => {
+                  return (
+                    <option key={"category" + index} value={data?._id}>
+                      {data?.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+          <div>
+            <label>ຄົ້ນຫາ</label>
+            <Form.Control
+              type="text"
+              placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
+              value={filterName}
+              onChange={(e) => {
+                setFilterName(e.target.value);
+              }}
+            />
+          </div>
           <div />
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
@@ -402,8 +427,7 @@ export default function MenuList() {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>{data?.name ?? "-"}
-                          <p>{data?.name_en ?? "-"}</p><p>{data?.name_cn ?? "-"}</p><p>{data?.name_kr ?? "-"}</p></td>
+                        <td>{data?.name ?? "-"}</td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
                           <label className="switch">
@@ -444,7 +468,7 @@ export default function MenuList() {
                                 `/settingStore/menu/menu-stock/${data?._id}`
                               )
                             }
-                            
+
                           />
                         </td>
                       </tr>

@@ -728,7 +728,7 @@ export default function TableList() {
                 }}
               >
                 {tableList &&
-                  tableList.map((table, index) => (
+                  tableList?.map((table, index) => (
                     <div
                       style={{
                         border:
