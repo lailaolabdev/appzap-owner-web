@@ -728,7 +728,7 @@ export default function TableList() {
                 }}
               >
                 {tableList &&
-                  tableList.map((table, index) => (
+                  tableList?.map((table, index) => (
                     <div
                       style={{
                         border:
@@ -1306,7 +1306,7 @@ export default function TableList() {
                 aria-label="Default select example"
                 value={selectNewTable?._id}
                 onChange={(e) => {
-                  const _select = tableList.find(
+                  const _select = tableList?.find(
                     (item) => e.target.value === item?._id
                   );
                   setSelectNewTable(_select);
