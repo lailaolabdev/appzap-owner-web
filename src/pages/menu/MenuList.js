@@ -7,7 +7,7 @@ import {
   faEdit,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { Button, Modal, Form, Nav, Image, Spinner } from "react-bootstrap";
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import {
   MENUS,
@@ -52,6 +52,8 @@ export default function MenuList() {
   const [menuType, setMenuType] = useState("MENU")
   const [connectMenues, setConnectMenues] = useState([])
   const [connectMenuId, setConnectMenuId] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isLoading, setIsLoading] = useState(false)
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
@@ -75,6 +77,8 @@ export default function MenuList() {
 
   const onSearchByCategory = async (categoryId) => {
     try {
+      setSelectedCategory(categoryId)
+
       const _localData = await getLocalData();
       getMenu(_localData?.DATA?.storeId, categoryId);
     } catch (error) {
@@ -98,6 +102,7 @@ export default function MenuList() {
   };
   const getMenu = async (id, categoryId) => {
     try {
+      setIsLoading(true)
       await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId != "All") ? `&categoryId=${categoryId}` : ""}`, {
         method: "GET",
       })
@@ -105,8 +110,10 @@ export default function MenuList() {
         .then((json) => {
           setMenus(json)
         });
+      setIsLoading(false)
     } catch (err) {
       console.log(err);
+      setIsLoading(false)
     }
   };
 
@@ -342,6 +349,7 @@ export default function MenuList() {
             <label>ເລືອກປະເພດ</label>
             <select
               className="form-control"
+              value={selectedCategory}
               onChange={(e) => onSearchByCategory(e.target.value)}
             >
               <option value="All">ທັງໝົດ</option>
@@ -381,6 +389,7 @@ export default function MenuList() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">ລຳດັບສະແດງ</th>
                   <th scope="col">ຮູບພາບ</th>
                   <th scope="col">ຊື່ປະເພດອາຫານ</th>
                   <th scope="col">ປະເພດເມນູ</th>
@@ -391,11 +400,12 @@ export default function MenuList() {
                 </tr>
               </thead>
               <tbody>
-                {Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
+                {isLoading ? <Spinner animation="border" variant="warning" /> : Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
                   (data, index) => {
                     return (
                       <tr>
                         <td>{index + 1}</td>
+                        <td>{data?.sort ?? 0}</td>
                         <td>
                           {data?.images.length > 0 ? (
                             <center>
@@ -782,7 +792,7 @@ export default function MenuList() {
               const _localData = await getLocalData();
               if (_localData) {
                 setgetTokken(_localData);
-                getMenu(_localData?.DATA?.storeId);
+                getMenu(_localData?.DATA?.storeId, selectedCategory);
               }
             };
             getData();
