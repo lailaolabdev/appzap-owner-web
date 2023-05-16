@@ -437,7 +437,7 @@ export default function MenuList() {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>{data?.name ?? ""}<p>{data?.name_en ?? ""}</p><p>{data?.name_cn ?? ""}</p><p>{data?.name_kr ?? ""}</p></td>
+                        <td>{data?.name ?? ""}<br/>{data?.name_en ?? ""}<br/>{data?.name_cn ?? ""}<br/>{data?.name_kr ?? ""}</td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
                           <label className="switch">
