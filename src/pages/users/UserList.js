@@ -115,7 +115,7 @@ export default function UserList() {
           );
           setImageLoading(percentCompleted);
         },
-      });
+      })
     } catch (error) {
       console.log(error);
     }
