@@ -22,14 +22,14 @@ import {
 import AnimationLoading from "../../constants/loading";
 // import profileImage from "../../image/profile.png";
 // import { STATUS_USERS } from "../../helpers";
-import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import { successAdd, errorAdd, successDelete } from "../../helpers/sweetalert";
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default function UserList() {
-  const params = useParams();
-  const navigate = useNavigate();
+  // const params = useParams();
+  // const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [promotion, setPromotion] = useState(null);
   const [show, setShow] = useState(false);
@@ -58,7 +58,7 @@ export default function UserList() {
     setImageLoading("");
     try {
       setFile(event.target.files[0]);
-      // let fileData = event.target.files[0];
+      let fileData = event.target.files[0];
       const responseUrl = await axios({
         method: "post",
         url: PRESIGNED_URL,
@@ -67,24 +67,25 @@ export default function UserList() {
         },
       });
       setNamePhoto(responseUrl.data);
-      // await axios({
-      //   method: "put",
-      //   url: responseUrl.data.url,
-      //   data: fileData,
-      //   headers: {
-      //     "Content-Type": " file/*; image/*",
-      //     "Access-Control-Allow-Origin": "*",
-      //     "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-      //     "Access-Control-Allow-Headers":
-      //       "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
-      //   },
-      //   onUploadProgress: function (progressEvent) {
-      //     var percentCompleted = Math.round(
-      //       (progressEvent.loaded * 100) / progressEvent.total
-      //     );
-      //     setImageLoading(percentCompleted);
-      //   },
-      // });
+      // console.log(responseUrl.data);
+      await axios({
+        method: "put",
+        url: responseUrl.data.url,
+        data: fileData,
+        headers: {
+          "Content-Type": " file/*; image/*",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+          "Access-Control-Allow-Headers":
+            "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
+        },
+        onUploadProgress: function (progressEvent) {
+          var percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setImageLoading(percentCompleted);
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -107,6 +108,7 @@ export default function UserList() {
   const _selectPromotion = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('@userKey'))
+      setIsLoading(true);
         await axios({
         method: "get",
         url: 'http://localhost:7070/v3/promotion/getManyPromo',
@@ -116,6 +118,7 @@ export default function UserList() {
         },
       }).then((res) => {
         setPromotion(res.data);
+        setIsLoading(false)
       })
     } catch (error) {
       console.log(error);
@@ -134,8 +137,9 @@ export default function UserList() {
       promoName, 
       quantity, 
       status,
-      image:namePhoto?.url
+      image:namePhoto?.params?.Key
       }
+      // console.log(promotion);
       await axios({
           method: "post",
           url: 'http://localhost:7070/v3/promotion/create',
@@ -145,7 +149,7 @@ export default function UserList() {
           },
         })
         .then((res) => {
-        // console.log('data',res.data);
+        console.log('data',res.data);
         successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
         handleClose();
         setTimeout(() => {
@@ -173,14 +177,14 @@ export default function UserList() {
       const token = JSON.parse(localStorage.getItem('@userKey'))
       axios({
         method: "delete",
-        url: 'http://localhost:7070/v3/promotion/delete',
-        data: {_id: dateDelete.id},
+        url: `http://localhost:7070/v3/promotion/delete/${dateDelete.id}`,
+        // data: {_id: dateDelete.id},
       headers: {
         "Authorization": `AppZap ${token.accessToken}`
         },
       })
         .then((data) => {
-          successAdd('ລືບຂໍ້ມູນສຳເລັດ')
+          successDelete('ລືບຂໍ້ມູນສຳເລັດ')
           handleClose3();
           setTimeout(() => {
             window.location.reload();
@@ -205,28 +209,26 @@ export default function UserList() {
   const handleShow2 = async (item) => {
     setName(item.promoName);
     setStatu(item.status);
-    setImages(item.images);
+    setImages(item.image);
     setQuantitries(item.quantity)
     setCount(item.count);
     setProId(item._id)
     setShow2(true);
   };
-
-  const _updatePromotion = async (item) => {
+  const _updatePromotion = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('@userKey'))
-
       const promotion = {
         name:name,
         qty: quantitries,
         state: statu,
-        counts: count,
-        _id:proId
+        counts: count, 
+        images:namePhoto?.params?.Key
       }
-      // console.log(promotion);
+
       await axios({
         method: "put",
-        url: 'http://localhost:7070/v3/promotion/update',
+        url: `http://localhost:7070/v3/promotion/update/${proId}`,
         data: { ...promotion },
         headers: {
           "Authorization": `AppZap ${token.accessToken}`
@@ -528,7 +530,7 @@ export default function UserList() {
                       ) : (
                         <center>
                         <Image
-                          src={URL_PHOTO_AW3 + images?.image}
+                          src={URL_PHOTO_AW3 + images}
                           alt=""
                           width="150"
                           height="150"
