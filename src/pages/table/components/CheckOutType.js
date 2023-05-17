@@ -16,7 +16,7 @@ import { useStore } from "../../../store";
 export default function CheckOutType({
   open,
   onClose,
-  onSubmit,
+  // onSubmit,
   dataBill,
   tableData,
 }) {
@@ -77,7 +77,7 @@ export default function CheckOutType({
   };
   const handleSubmit = () => {
     _checkBill();
-    onSubmit();
+    // onSubmit();
   };
 
   const _calculateTotal = () => {

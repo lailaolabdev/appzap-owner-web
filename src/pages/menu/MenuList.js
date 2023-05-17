@@ -7,7 +7,7 @@ import {
   faEdit,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav, Image, Row, Col } from "react-bootstrap";
+import { Button, Modal, Form, Nav, Image, Row, Col, Spinner } from "react-bootstrap";
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import {
   MENUS,
@@ -23,15 +23,18 @@ import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
 
 
+
 export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
 
   const [isOpened, setIsOpened] = useState(true);
 
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
 
   const [getIdMenu, setGetIdMenu] = useState();
   const [qtyMenu, setQtyMenu] = useState(0);
@@ -49,13 +52,17 @@ export default function MenuList() {
   const [menuType, setMenuType] = useState("MENU")
   const [connectMenues, setConnectMenues] = useState([])
   const [connectMenuId, setConnectMenuId] = useState("")
+<<<<<<< src/pages/menu/MenuList.js
   const [dataMenuOption, setDataMenuOption] = useState([])
   const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([])
+=======
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [isLoading, setIsLoading] = useState(false)
+>>>>>>> src/pages/menu/MenuList.js
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
-  const [statusValue, setStatusValue] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,8 +72,6 @@ export default function MenuList() {
           setgetTokken(_localData);
           getcategory(_localData?.DATA?.storeId);
           getMenu(_localData?.DATA?.storeId);
-
-
         }
       } catch (err) {
         console.log(err);
@@ -74,6 +79,18 @@ export default function MenuList() {
     };
     fetchData();
   }, []);
+
+  const onSearchByCategory = async (categoryId) => {
+    try {
+      setSelectedCategory(categoryId)
+
+      const _localData = await getLocalData();
+      getMenu(_localData?.DATA?.storeId, categoryId);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const getcategory = async (id) => {
     try {
       await fetch(
@@ -88,19 +105,23 @@ export default function MenuList() {
       console.log(err);
     }
   };
-  const getMenu = async (id) => {
+  const getMenu = async (id, categoryId) => {
     try {
-      await fetch(MENUS + `/?storeId=${id}`, {
+      setIsLoading(true)
+      await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId != "All") ? `&categoryId=${categoryId}` : ""}`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((json) => {
           setMenus(json)
         });
+      setIsLoading(false)
     } catch (err) {
       console.log(err);
+      setIsLoading(false)
     }
   };
+
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
@@ -158,8 +179,6 @@ export default function MenuList() {
   }
 
   const [menuOptions, setMenuOptions] = useState([]);
-
-
   // lung jak upload leo pic ja ma so u nee
 
   // ======> create menu
@@ -335,10 +354,6 @@ export default function MenuList() {
 
   const _changeStatusMenu = async (data) => {
     try {
-      // if (data?.isOpened) {
-      //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
-      //   return;
-      // }
       const _localData = await getLocalData();
 
       let header = await getHeaders();
@@ -386,15 +401,36 @@ export default function MenuList() {
       </div>
 
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 190px" }}>
-          <Form.Control
-            type="text"
-            placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
-            value={filterName}
-            onChange={(e) => {
-              setFilterName(e.target.value);
-            }}
-          />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px 190px", gridGap: 20 }}>
+          <div>
+            <label>ເລືອກປະເພດ</label>
+            <select
+              className="form-control"
+              value={selectedCategory}
+              onChange={(e) => onSearchByCategory(e.target.value)}
+            >
+              <option value="All">ທັງໝົດ</option>
+              {Categorys &&
+                Categorys?.map((data, index) => {
+                  return (
+                    <option key={"category" + index} value={data?._id}>
+                      {data?.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+          <div>
+            <label>ຄົ້ນຫາ</label>
+            <Form.Control
+              type="text"
+              placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
+              value={filterName}
+              onChange={(e) => {
+                setFilterName(e.target.value);
+              }}
+            />
+          </div>
           <div />
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
@@ -410,6 +446,7 @@ export default function MenuList() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">ລຳດັບສະແດງ</th>
                   <th scope="col">ຮູບພາບ</th>
                   <th scope="col">ຊື່ປະເພດອາຫານ</th>
                   <th scope="col">ປະເພດເມນູ</th>
@@ -420,11 +457,12 @@ export default function MenuList() {
                 </tr>
               </thead>
               <tbody>
-                {Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
+                {isLoading ? <Spinner animation="border" variant="warning" /> : Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
                   (data, index) => {
                     return (
                       <tr>
                         <td>{index + 1}</td>
+                        <td>{data?.sort ?? 0}</td>
                         <td>
                           {data?.images.length > 0 ? (
                             <center>
@@ -456,8 +494,7 @@ export default function MenuList() {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>{data?.name ?? "-"}
-                          <p>{data?.name_en ?? "-"}</p><p>{data?.name_cn ?? "-"}</p><p>{data?.name_kr ?? "-"}</p></td>
+                        <td>{data?.name ?? ""}<br/>{data?.name_en ?? ""}<br/>{data?.name_cn ?? ""}<br/>{data?.name_kr ?? ""}</td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td style={{ color: data?.isOpened ? "green" : "red" }}>
                           <label className="switch">
@@ -498,7 +535,7 @@ export default function MenuList() {
                                 `/settingStore/menu/menu-stock/${data?._id}`
                               )
                             }
-                            
+
                           />
                         </td>
                       </tr>
@@ -922,7 +959,7 @@ export default function MenuList() {
               const _localData = await getLocalData();
               if (_localData) {
                 setgetTokken(_localData);
-                getMenu(_localData?.DATA?.storeId);
+                getMenu(_localData?.DATA?.storeId, selectedCategory);
               }
             };
             getData();

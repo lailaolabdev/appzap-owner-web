@@ -43,7 +43,7 @@ export const HEADER = {
 };
 export const BODY = {
   width: "100%",
-  minHeight: "200vh",
+  minHeight: "100vh",
   backgroundColor: "white",
   // marginRight: 32,
   // marginLeft: 32,
