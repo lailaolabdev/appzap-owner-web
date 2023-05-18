@@ -217,14 +217,22 @@ export default function MenuList() {
       const _localData = await getLocalData();
       if (resData?.data) {
         setMenus(resData?.data);
-        handleClose();
+        // handleClose();
+        handleShow();
         setgetTokken(_localData);
         getMenu(_localData?.DATA?.storeId);
-
         setMenuType("MENU")
         setConnectMenuId("")
-
         successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+        values.name = ""
+        values.name_en = ""
+        values.name_cn = ""
+        values.name_kr = ""
+        values.quantity = ""
+        values.categoryId = ""
+        values.price = ""
+        values.detail = ""
+        values.unit = ""
       }
     } catch (err) {
       errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");

@@ -33,6 +33,7 @@ import SettingTable from "../pages/settingStore/SettingTable";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 import SettingTheme from "../pages/setting_theme/settingTheme";
+import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
 
 import MenuRoutes from "./Menu.routes";
@@ -143,6 +144,10 @@ function Router() {
         {
           path: "/settingStore/stock/limit/:limit/page/:page/:id",
           element: <StockList />,
+        },
+        {
+          path: "/settingStore/settingPromotion/:id",
+          element: <SettingPromotion />,
         },
         {
           path: "/settingStore/stock/category/limit/:limit/page/:page/:id",
