@@ -1,0 +1,7 @@
+{
+  "name": "admin.selfordering",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

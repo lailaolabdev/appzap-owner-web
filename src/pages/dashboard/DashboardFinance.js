@@ -325,21 +325,13 @@ export default function DashboardFinance({
                   {selectedCurrency}
                   {/* {selectedCurrency} */}
                 </div>
-                <div>
-                  {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
-                  {t("cashDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    disCountDataKib
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
+                {/* <div>
                   {t("percentageDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataPercent
                   )}{" "}
                   %
-                </div>
+                </div> */}
                 <div>
                   {t("payBycash")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
@@ -353,6 +345,19 @@ export default function DashboardFinance({
                     dataCheckBill?.transfer
                   )}{" "}
                   {selectedCurrency}
+                </div>
+                <div>
+                  {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
+                  {t("cashDiscount")} :{" "}
+                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    disCountDataKib
+                  )}{" "}
+                  {selectedCurrency}
+                  <span className="mx-1"></span>
+                (  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    disCountDataPercent
+                  )}{" "}
+                  %)
                 </div>
                 <div>
                   {t("outstandingDebt")} :{" "}
@@ -385,30 +390,16 @@ export default function DashboardFinance({
                   {t("totalCompeleteBill")}
                 </p>
               </div>
-              <div style={{ padding: 15 }}>
-                <div>
+              <div style={{ padding: 15, }}>
+                <div style={{color:'#454545' }}>
                   {t("numberOfBill")} : {dataCheckBill?.total} {t("bill")}
                 </div>
-                <div>
+                <div style={{color:'#454545'}}>
                   {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.amount
                   )}{" "}
                   {selectedCurrency}
-                </div>
-                <div>
-                  {t("cashDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.discountCash
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("percentageDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.discountPercent
-                  )}{" "}
-                  %
                 </div>
                 <div>
                   {t("payBycash")} :{" "}
@@ -423,6 +414,18 @@ export default function DashboardFinance({
                     dataCheckBill?.transfer
                   )}{" "}
                   {selectedCurrency}
+                </div>
+                <div>
+                  {t("cashDiscount")} :{" "}
+                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    dataCheckBill?.discountCash
+                  )}{" "}
+                  {selectedCurrency}
+                  <span className="mx-1"></span>
+                 ( {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    dataCheckBill?.discountPercent
+                  )}{" "}
+                  %)
                 </div>
               </div>
             </div>
@@ -449,10 +452,10 @@ export default function DashboardFinance({
                 </p>
               </div>
               <div style={{ padding: 15 }}>
-                <div>
+                <div style={{color:'#454545'}}>
                   {t("numberOfBill")} : {dataNotCheckBill?.total} {t("bill")}
                 </div>
-                <div>
+                <div style={{color:'#454545'}}>
                   {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
@@ -465,14 +468,20 @@ export default function DashboardFinance({
                     dataNotCheckBill?.discountCash
                   )}{" "}
                   {selectedCurrency}
+                  <span className="mx-1"></span>
+
+                  ( {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                    dataNotCheckBill?.discountPercent
+                  )}{" "}
+                  % )
                 </div>
-                <div>
+                {/* <div>
                   {t("percentageDiscount")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountPercent
                   )}{" "}
                   %
-                </div>
+                </div> */}
               </div>
             </div>
           </Box>
