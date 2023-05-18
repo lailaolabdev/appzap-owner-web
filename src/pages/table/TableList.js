@@ -324,7 +324,6 @@ export default function TableList() {
       if (updateTable.status < 300) {
         setSelectedTable();
         getTableDataStore();
-        // setTableList(updateTable?.data);
         successAdd("ການປິດໂຕະສຳເລັດ");
       }
     } catch (err) {
@@ -751,9 +750,6 @@ export default function TableList() {
                           height: "100%",
                           border: "none",
                           borderRadius: 8,
-                          // backgroundColor: table?.isStaffConfirm
-                          //   ? "#FB6E3B"
-                          //   : "white",
                           background: table?.isStaffConfirm
                             ? "rgb(251,110,59)"
                             : "white",

@@ -52,13 +52,10 @@ export default function MenuList() {
   const [menuType, setMenuType] = useState("MENU")
   const [connectMenues, setConnectMenues] = useState([])
   const [connectMenuId, setConnectMenuId] = useState("")
-<<<<<<< src/pages/menu/MenuList.js
   const [dataMenuOption, setDataMenuOption] = useState([])
   const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([])
-=======
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(false)
->>>>>>> src/pages/menu/MenuList.js
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
