@@ -169,7 +169,12 @@ function Cart() {
             border: "solid 2px #FB6E3B",
             color: "#FFFFFF",
           }}
-          onClick={() => onSubmit(false)}
+          onClick={() => {
+            console.log("Herere");
+            onSubmit(false);
+           
+          }
+          }
         >
           ສັ່ງອາຫານ
         </button>

@@ -24,6 +24,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
     setStartTime(_time === "0:00" ? "12:00" : _time);
   }, [value]);
   return (
+    //Found them here
     <Modal show={open} onHide={handleClose}>
       <Modal.Header closeButton>{t('addBooking')}</Modal.Header>
       <Formik

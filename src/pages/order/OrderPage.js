@@ -155,11 +155,12 @@ export default function OrderPage() {
         }}
       >
         <div>
-          <Button onClick={() => onPrintForCher()}>ພິມບິນໄປຄົວ</Button>
+          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => onPrintForCher()}>ພິມບິນໄປຄົວ</Button>
         </div>
         <div style={{ width: "50px" }}></div>
         <div>
-          <Button
+          <Button 
+          style={{color:"white", backgroundColor:"#FB6E3B"}}
             onClick={() => {
               handleUpdateOrderStatus("CANCEL");
             }}
@@ -171,14 +172,14 @@ export default function OrderPage() {
         <div style={{ width: "10px" }}></div>
 
         <div>
-          <Button onClick={() => handleUpdateOrderStatus("DOING")}>
+          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => handleUpdateOrderStatus("DOING")}>
             {/* ສົ່ງໄປຄົວ */}
             {t("sendToKitchen")}
           </Button>
         </div>
         <div style={{ width: "10px" }}></div>
         <div>
-          <Button onClick={() => handleUpdateOrderStatus("SERVED")}>
+          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => handleUpdateOrderStatus("SERVED")}>
             {/* ເສີບແລ້ວ */}
             {t("served")}
           </Button>
@@ -197,6 +198,7 @@ export default function OrderPage() {
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
           }}
+          className="myClass"
         >
           <Tab eventKey={WAITING_STATUS} title={`${t("hasOrder")}`}>
             <Tool />
