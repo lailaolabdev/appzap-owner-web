@@ -17,6 +17,8 @@ export default function Categorylist() {
   const params = useParams();
   const [getTokken, setgetTokken] = useState();
 
+  const [CATEGORY, setCATEGORY] = useState();
+
   // create
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -157,6 +159,61 @@ export default function Categorylist() {
       `/settingStore/menu/category/limit/40/page/1/${params?.id}`
     );
   };
+
+
+
+////New Section Here
+
+  const getCate = async (id) => {
+    try {
+      await fetch(CATEGORY + `/?storeId=${id}`, {
+        method: "GET",
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          console.log(json)
+          setCATEGORY(json)
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const _changeStatusCate = async (data) => {
+    try {
+      // if (data?.isOpened) {
+      //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
+      //   return;
+      // }
+      const _localData = await getLocalData();
+
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const isShowCategory = !data?.isShowCategory ? true : false;
+      let res = await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/category/update/`,
+        data: {
+          id: data._id,
+          data: {
+            isShowCategory,
+          },
+        },
+        headers: headers,
+      });
+      getData(_localData?.DATA?.storeId);
+      // getMenu();
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+  //New Section End Here
+
+
+
   return (
     <div style={BODY}>
       <div>
@@ -199,6 +256,7 @@ export default function Categorylist() {
                   <th scope="col">{t('foodTypeName')}</th>
                   {/* <th scope="col">{t('note')}</th> */}
                   <th scope="col">{t('manage')}</th>
+                  <th scope="col">{t('status')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -223,6 +281,19 @@ export default function Categorylist() {
                             style={{ marginLeft: 20, color: "red" }}
                             onClick={() => handleShow3(data?._id, data?.name)}
                           />
+                        </td>
+                        {/*adamHere*/}
+                        <td style={{ color: data?.isShowCategory ? "green" : "red" }}>
+                          <label className="switch">
+                            <input
+                              type="checkbox"
+                              checked={
+                                data?.isShowCategory === true ? true : false
+                              }
+                              onClick={(e) => _changeStatusCate(data)}
+                            />
+                            <span className="slider round"></span>
+                          </label>
                         </td>
                       </tr>
                     );
