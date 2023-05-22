@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styled from 'styled-components';
 import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
@@ -38,6 +39,8 @@ export default function Dashboard() {
     moment(moment(newDate)).format("YYYY-MM-DD")
   );
   const [changeUi, setChangeUi] = useState("CHECKBILL");
+  const [changeText, setChangeText] = useState('CLICK1');
+
 
   const _click1day = () => {
     setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
@@ -90,6 +93,7 @@ export default function Dashboard() {
             eventKey="/home"
             style={{
               color: "#FB6E3B",
+              backgroundColor: changeUi === "CHECKBILL" ?'#FFDBD0' : '',
               border: "none",
               height: 60,
               display: "flex",
@@ -98,7 +102,6 @@ export default function Dashboard() {
             }}
             onClick={() => setChangeUi("CHECKBILL")}
           >
-            {" "}
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
             <div style={{ width: 8 }}></div> {t("tableStatus")}
           </Nav.Link>
@@ -108,6 +111,7 @@ export default function Dashboard() {
             eventKey="/finance"
             style={{
               color: "#FB6E3B",
+              backgroundColor: changeUi === "MONEY_CHART" ?'#FFDBD0' : '',
               border: "none",
               height: 60,
               display: "flex",
@@ -125,6 +129,7 @@ export default function Dashboard() {
             eventKey="/best-category"
             style={{
               color: "#FB6E3B",
+              backgroundColor: changeUi === "CATEGORY" ?'#FFDBD0' : '',
               border: "none",
               height: 60,
               display: "flex",
@@ -142,6 +147,7 @@ export default function Dashboard() {
             eventKey="/best-menu"
             style={{
               color: "#FB6E3B",
+              backgroundColor: changeUi === "MENUS" ?'#FFDBD0' : '',
               border: "none",
               height: 60,
               display: "flex",
@@ -159,6 +165,7 @@ export default function Dashboard() {
             eventKey="/staff-history"
             style={{
               color: "#FB6E3B",
+              backgroundColor: changeUi === "STAFF" ?'#FFDBD0' : '',
               border: "none",
               height: 60,
               display: "flex",
@@ -184,41 +191,61 @@ export default function Dashboard() {
         <div style={{ display: "flex" }}>
           <button
             type="button"
-            className="btn btn-outline-info"
-            onClick={() => _click1day()}
+            className="text-name"
+            style={{
+              backgroundColor:changeText == 'CLICK1' ? '#fb6e3b' : '#D9D9D9',
+              color: changeText == 'CLICK1'? '#ffffff' : '#686868',
+              border: 'none',
+              width: 125,
+              height:48
+            }}
+            onClick={() => { _click1day(''); setChangeText('CLICK1')}}
           >
             {t("theLastList")}
           </button>
           <div style={{ width: 10 }}></div>
           <button
             type="button"
-            className="btn btn-outline-info"
-            onClick={() => _click7days()}
+            className="text-name"
+            style={{
+              backgroundColor: changeText == 'CLICK7' ? '#fb6e3b' : '#D9D9D9',
+              color: changeText == 'CLICK7' ? '#ffffff' : '#686868',
+              border: 'none',
+              width: 125,
+              height:48
+            }}
+            onClick={() => { _click7days(); setChangeText('CLICK7')}}
           >
             {t("last7days")}
           </button>
           <div style={{ width: 10 }}></div>
           <button
             type="button"
-            className="btn btn-outline-info"
-            onClick={() => _click30days()}
+            className="text-name"
+            style={{
+              backgroundColor:changeText == 'CLICK30' ? '#fb6e3b' : '#D9D9D9',
+              color: changeText == 'CLICK30' ? '#ffffff' : '#686868',
+              border: 'none',
+              width: 125,
+              height:48
+            }}
+            onClick={() => { _click30days(); setChangeText('CLICK30')}}
           >
             {t("last30days")}
           </button>
 
           <div style={{ width: 10 }}></div>
-
           <select
             onChange={(e) => setSelectedCurrency(e.target.value)}
             className="btn btn-outline-info"
           >
-            <option value="LAK">ກີບ</option>
+            <option value="LAK" className="option" >ກີບ</option>
             {currency?.map((cur, index) => (
               <option key={cur + index} value={cur?.currencyCode}>
                 {cur?.currencyName}
               </option>
             ))}
-          </select>
+            </select>
         </div>
         <div
           style={{
@@ -229,21 +256,29 @@ export default function Dashboard() {
         >
           <input
             type="date"
-            className="btn btn-outline-info"
-            style={{ width: "100%" }}
+            className="px-2"
+            style={{
+              color: "#003049",
+              border: '2px solid #fb6e3b',
+              borderRadius: '5px',
+              fontWeight:'bold'
+            }}
             value={startDate}
             onChange={(e) => {
-              // alert(e?.target?.value);
               setStartDate(e?.target?.value);
             }}
           />
           <input
             type="date"
-            className="btn btn-outline-info"
+            className="px-2"
+            style={{
+              color: "#003049",
+              border: '2px solid #fb6e3b',
+              borderRadius: '5px',
+              fontWeight:'bold'
+            }}
             value={endDate}
-            style={{ width: "100%" }}
             onChange={(e) => {
-              // alert(e?.target?.value);
               setEndDate(e?.target?.value);
             }}
           />
@@ -288,3 +323,13 @@ export default function Dashboard() {
     </div>
   );
 }
+
+
+
+const Option = styled.option`
+  cursor: pointer;
+  padding: 10px;
+  &:hover {
+    background-color: #ffffff!important;
+  }
+`;
