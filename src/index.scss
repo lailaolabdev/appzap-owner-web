@@ -1,0 +1,25 @@
+// css for menu setting
+.menuSttingShow{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px;
+    // border-bottom: 1px solid lightgray;
+    // border-bottom-style: dotted;
+
+    label{
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.menuSetting{
+    border: 1px solid #fb6e3b;
+    outline: none;
+    background-color: #fff;
+    border-radius: 3px;
+    width: 80px;
+    padding: 5px 0px 5px 0px;
+    border-style: dotted;
+}
