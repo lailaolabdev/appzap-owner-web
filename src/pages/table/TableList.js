@@ -126,8 +126,6 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true)
 
-  console.log("checkedBox:::",checkedBox)
-  console.log("isCheckedOrderItem:::",isCheckedOrderItem)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int 
