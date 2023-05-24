@@ -363,7 +363,7 @@ export default function MenuList() {
     setConnectMenuId(e.target.value)
   }
 
-  const _onOpenMenu = async (id, isOpened, index) => {
+  const _onOpenMenu = async (id, isOpenMenuCustomerWeb, index) => {
     try {
       let header = await getHeaders();
       const headers = {
@@ -377,14 +377,14 @@ export default function MenuList() {
         data: {
           id: id,
           data: {
-            isOpened: isOpened === true ? false : true,
+            isShowCustomerWeb: isOpenMenuCustomerWeb === "true" ? "false" : "true",
           },
         },
         headers: headers,
       });
 
       let _newData = [...Menus];
-      _newData[index].isOpened = !_newData[index].isOpened;
+      _newData[index].isShowCustomerWeb = isOpenMenuCustomerWeb === "true" ? "false" : "true";
       setMenus(_newData)
       let data = _newData[index]
       setDetailMenu({data,index}) 
@@ -1343,7 +1343,7 @@ export default function MenuList() {
           setShowSetting(false);
           setDetailMenu();
         }}
-        _handOpenMenu={(id, isOpened, index)=> _onOpenMenu(id, isOpened, index)}
+        _handOpenMenu={(id, isOpenMenuCustomerWeb, index)=> _onOpenMenu(id, isOpenMenuCustomerWeb, index)}
         _handOpenMenuCounterApp = {(id, isShowCounterApp, index)=> _onOpenMenuCounter(id, isShowCounterApp, index)}
       
       />

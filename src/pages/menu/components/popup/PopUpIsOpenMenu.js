@@ -19,12 +19,12 @@ function PopUpIsOpenMenu({
                 </Modal.Header>
                 <Modal.Body>
                     <div className='menuSttingShow'>
-                        <label>ເປີດສະແດງເມນູ</label>
+                        <label>ເປີດສະແດງລູກຄ້າ(ເວບ)</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
-                                checked={detailMenu?.data?.isOpened}
-                                onClick={() => _handOpenMenu(detailMenu?.data?._id,detailMenu?.data?.isOpened,detailMenu?.index  )}
+                                checked={detailMenu?.data?.isShowCustomerWeb === "true"}
+                                onClick={() => _handOpenMenu(detailMenu?.data?._id,detailMenu?.data?.isShowCustomerWeb,detailMenu?.index  )}
                             />
                             <span className="slider round"></span>
                         </label>
