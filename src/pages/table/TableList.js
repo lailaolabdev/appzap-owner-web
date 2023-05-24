@@ -126,6 +126,9 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true)
 
+  console.log("checkedBox:::",checkedBox)
+  console.log("isCheckedOrderItem:::",isCheckedOrderItem)
+
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int 
   //   setSeletedOrderItem(_data)
@@ -601,6 +604,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
+      setCheckedBox(!checkedBox)
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -625,6 +629,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
+      setCheckedBox(!checkedBox)
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -653,6 +658,7 @@ export default function TableList() {
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       handleClose1()
       reLoadData();
+      setCheckedBox(!checkedBox)
       // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
@@ -864,6 +870,7 @@ export default function TableList() {
                           }}
                         >
                           {t('timeOfTableOpening')}:{" "}
+                          
                           <span
                             style={{
                               fontWeight: "bold",
@@ -977,6 +984,7 @@ export default function TableList() {
                           padding: "0 10px",
                           marginBottom: 10,
                         }}
+                        hidden={checkedBox}
                       >
                         <ButtonCustom
                           onClick={() =>

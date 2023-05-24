@@ -50,6 +50,7 @@ export default function MenuList() {
 
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All")
 
   const [menuType, setMenuType] = useState("MENU")
   const [connectMenues, setConnectMenues] = useState([])
@@ -83,16 +84,36 @@ export default function MenuList() {
     fetchData();
   }, []);
 
-  const onSearchByCategory = async (categoryId) => {
-    try {
-      setSelectedCategory(categoryId)
 
-      const _localData = await getLocalData();
-      getMenu(_localData?.DATA?.storeId, categoryId);
-    } catch (error) {
-      console.log(error)
+
+  useEffect(() => {
+    if (filterName || filterCategory) {
+      const fetchFilter = async () => {
+        try {
+        const _localData = await getLocalData();
+
+          setIsLoading(true)
+          await fetch(MENUS + `/?storeId=${_localData?.DATA?.storeId}${(filterCategory && filterCategory != "All") ? `&categoryId=${filterCategory}` : ""}${(filterName && filterName!="") ? `&name=${filterName}` : ""}`, {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((json) => {
+              console.log("json fileter:::::", json)
+              setMenus(json)
+            });
+          setIsLoading(false)
+        } catch (err) {
+          console.log(err);
+          setIsLoading(false)
+        }
+      }
+    fetchFilter();
+
     }
-  }
+
+
+  }, [filterName,filterCategory])
+
 
   const getcategory = async (id) => {
     try {
@@ -108,6 +129,8 @@ export default function MenuList() {
       console.log(err);
     }
   };
+
+
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true)
@@ -384,10 +407,11 @@ export default function MenuList() {
       });
 
       let _newData = [...Menus];
+
       _newData[index].isShowCustomerWeb = isOpenMenuCustomerWeb === "true" ? "false" : "true";
       setMenus(_newData)
       let data = _newData[index]
-      setDetailMenu({data,index}) 
+      setDetailMenu({ data, index })
 
     } catch (err) {
       console.log("err:", err);
@@ -415,20 +439,15 @@ export default function MenuList() {
       });
 
       let _newData = [...Menus];
-      _newData[index].isShowCounterApp = isShowCounterApp=== "true" ? "false" : "true";
+      _newData[index].isShowCounterApp = isShowCounterApp === "true" ? "false" : "true";
       setMenus(_newData)
       let data = _newData[index]
-      setDetailMenu({data,index}) 
+      setDetailMenu({ data, index })
 
     } catch (err) {
       console.log("err:", err);
     }
   };
-
-
-
-
-
 
   return (
     <div style={BODY}>
@@ -450,14 +469,14 @@ export default function MenuList() {
         </Nav>
       </div>
 
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8, minHeight:"90vh" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px 190px", gridGap: 20 }}>
           <div>
             <label>ເລືອກປະເພດ</label>
             <select
               className="form-control"
-              value={selectedCategory}
-              onChange={(e) => onSearchByCategory(e.target.value)}
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
             >
               <option value="All">ທັງໝົດ</option>
               {Categorys &&
@@ -507,10 +526,14 @@ export default function MenuList() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? <Spinner animation="border" variant="warning" /> : Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
+                {isLoading ? 
+                <td colSpan={9}>
+                   <Spinner animation="border" variant="warning" />
+                </td>
+                : Menus?.map(
                   (data, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{data?.sort ?? 0}</td>
                         <td>
@@ -547,7 +570,7 @@ export default function MenuList() {
                         <td>{data?.name ?? ""}<br />{data?.name_en ?? ""}<br />{data?.name_cn ?? ""}<br />{data?.name_kr ?? ""}</td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td>
-                          <button type='button' className="menuSetting" onClick={() => { setShowSetting(true); setDetailMenu({data,index}) }}>ກຳນົດ</button>
+                          <button type='button' className="menuSetting" onClick={() => { setShowSetting(true); setDetailMenu({ data, index }) }}>ກຳນົດ</button>
                         </td>
 
                         <td>
@@ -1339,13 +1362,13 @@ export default function MenuList() {
       <PopUpIsOpenMenu
         showSetting={showSetting}
         detailMenu={detailMenu}
-        handleClose={() => {
-          setShowSetting(false);
-          setDetailMenu();
+        handleClose={async () => {
+          await setShowSetting(false);
+          await setDetailMenu();
         }}
-        _handOpenMenu={(id, isOpenMenuCustomerWeb, index)=> _onOpenMenu(id, isOpenMenuCustomerWeb, index)}
-        _handOpenMenuCounterApp = {(id, isShowCounterApp, index)=> _onOpenMenuCounter(id, isShowCounterApp, index)}
-      
+        _handOpenMenu={(id, isOpenMenuCustomerWeb, index) => _onOpenMenu(id, isOpenMenuCustomerWeb, index)}
+        _handOpenMenuCounterApp={(id, isShowCounterApp, index) => _onOpenMenuCounter(id, isShowCounterApp, index)}
+
       />
 
 

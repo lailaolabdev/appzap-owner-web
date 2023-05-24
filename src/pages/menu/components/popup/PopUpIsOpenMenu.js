@@ -11,6 +11,11 @@ function PopUpIsOpenMenu({
     _handOpenMenuCounterApp
 
 }) {
+
+
+    console.log("detailMenu:::",detailMenu)
+
+
     return (
         <div>
             <Modal show={showSetting} onHide={handleClose}>
