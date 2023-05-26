@@ -307,7 +307,6 @@ export default function MenuList() {
     setDataUpdateMenuOption(item?.menuOption)
     setShow2(true);
   };
-  console.log(dataUpdateMenuOption)
   const _updateCategory = async (values) => {
     let header = await getHeaders();
     const headers = {
@@ -418,6 +417,69 @@ export default function MenuList() {
     }
   };
 
+  const _onOpenMenuCustomerApp = async (id, isOpenMenuCustomerApp, index) => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+
+      await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: id,
+          data: {
+            isShowCustomerApp: isOpenMenuCustomerApp === "true" ? "false" : "true",
+          },
+        },
+        headers: headers,
+      });
+
+      let _newData = [...Menus];
+
+      _newData[index].isShowCustomerApp = isOpenMenuCustomerApp === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
+  const _onOpenMenuStaff = async (id, isOpenMenuStaff, index) => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+
+      await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: id,
+          data: {
+            isShowStaff: isOpenMenuStaff === "true" ? "false" : "true",
+          },
+        },
+        headers: headers,
+      });
+
+      let _newData = [...Menus];
+
+      _newData[index].isShowStaff = isOpenMenuStaff === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
 
   const _onOpenMenuCounter = async (id, isShowCounterApp, index) => {
     try {
@@ -1368,7 +1430,8 @@ export default function MenuList() {
         }}
         _handOpenMenu={(id, isOpenMenuCustomerWeb, index) => _onOpenMenu(id, isOpenMenuCustomerWeb, index)}
         _handOpenMenuCounterApp={(id, isShowCounterApp, index) => _onOpenMenuCounter(id, isShowCounterApp, index)}
-
+        _handOpenMenuCustomerApp={(id, isOpenMenuCustomerApp, index) => _onOpenMenuCustomerApp(id, isOpenMenuCustomerApp, index)}
+        _handOpenMenuShowStaff={(id, isOpenMenuStaff, index) => _onOpenMenuStaff(id, isOpenMenuStaff, index)}
       />
 
 
