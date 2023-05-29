@@ -7,9 +7,10 @@ import { USER_KEY } from "../constants";
 
 function PrivateRoute({ component: Component, headerTitle, ...rest }) {
   const isAuthenticated = useAuth();
-  const { setStoreDetail } = useStore();
+  const { setStoreDetail, profile } = useStore();
   useEffect(() => {
     const userData = JSON.parse(window.localStorage.getItem(USER_KEY));
+    // const userData = profile;
     (async () => {
       const data = await getStore(userData?.data?.storeId);
       setStoreDetail(data?.data);

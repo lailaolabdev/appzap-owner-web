@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Modal, Carousel } from "react-bootstrap";
+import { Form, Button, Carousel } from "react-bootstrap";
 import packetJson from "../../../package.json";
 
 import { Formik } from "formik";
@@ -7,8 +7,7 @@ import * as Yup from "yup";
 import * as axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate, useLocation } from "react-router-dom";
-import Lottie from "react-lottie";
+import { useNavigate } from "react-router-dom";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
@@ -18,32 +17,26 @@ import { toast } from "react-toastify";
 import "./login.css";
 
 import { USER_KEY, END_POINT, COLOR_APP } from "../../constants";
-import useWindowDimensions from "../../helpers/useWindowDimensions";
-import AnimationLoading from "../../components/AnimationLoading";
+import role from "../../helpers/role";
 
 function Login() {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const { match } = useReactRouter();
 
-  const { width } = useWindowDimensions();
-
-  const [checkUser, setCheckUser] = useState(false);
-  const [popupDate, setPopupData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
-  const { setStoreDetail } = useStore();
+  const { setStoreDetail,setProfile } = useStore();
 
   const _login = async ({ values }) => {
+    setIsLoading(true);
     try {
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
-      if (user?.data?.data?.role === "APPZAP_ADMIN") {
-        await localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
+      const { defaultPath } = role(user?.data?.data?.role, user?.data?.data);
+      if (defaultPath) {
+        localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
+        setProfile(user?.data);
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
-        await navigate(
-          `/settingStore/storeDetail/${user?.data?.data?.storeId}`
-        );
+        navigate(defaultPath);
       } else {
         //  _orderSound.play();
         toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
@@ -55,7 +48,6 @@ function Login() {
           draggable: true,
           progress: undefined,
         });
-        setCheckUser(true);
       }
     } catch (error) {
       toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
@@ -67,8 +59,8 @@ function Login() {
         draggable: true,
         progress: undefined,
       });
-      setCheckUser(true);
     }
+    setIsLoading(true);
   };
 
   let _imgaeSlide = ["/images/slide/pro1.png", "/images/slide/pro2.png"];
@@ -267,6 +259,7 @@ function Login() {
                       fontSize: 18,
                     }}
                     onClick={handleSubmit}
+                    disabled={isLoading}
                   >
                     ເຂົ້າສູ່ລະບົບ
                   </Button>
@@ -328,62 +321,6 @@ function Login() {
           </div>
         </Box>
       </Box>
-
-      {/* Config Modal */}
-      <Modal show={isLoading} keyboard={false} size="lg">
-        {" "}
-        <div className="text-center" style={{ padding: 30 }}>
-          <p style={{ fontSize: 30 }}>ກໍາລັງເຂົ້າສູ່ລະບົບ</p>
-        </div>
-        <AnimationLoading />
-      </Modal>
-      {popupDate && (
-        <Modal
-          show={popupDate?.isPublished}
-          size="xl"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            {width > 700 ? (
-              <h3>{popupDate?.title ?? ""}</h3>
-            ) : (
-              <h5>{popupDate?.title ?? ""}</h5>
-            )}
-          </Modal.Header>
-          <Modal.Body
-            style={{
-              padding: 24,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            {width > 700 ? (
-              <h5 style={{ textAlign: "center" }}>{popupDate?.detail ?? ""}</h5>
-            ) : (
-              <h6 style={{ textAlign: "center" }}>{popupDate?.detail ?? ""}</h6>
-            )}
-            <br />
-            {popupDate?.animation && (
-              <Lottie
-                options={{ loop: true, path: popupDate?.animation }}
-                width={width > 700 ? 400 : width * 0.8}
-              />
-            )}
-          </Modal.Body>
-        </Modal>
-      )}
     </div>
   );
 }

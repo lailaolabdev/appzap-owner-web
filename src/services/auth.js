@@ -1,8 +1,11 @@
 import React from "react";
 import { USER_KEY } from "../constants";
+import { useStore } from "../store";
 export const getHeaders = async (accessToken) => {
+  // const { profile } = useStore();
   try {
     const user = await localStorage.getItem(USER_KEY);
+    // const user = profile;
     const token = await JSON.parse(user)?.["accessToken"];
     if (accessToken) {
       return { authorization: `AppZap ${accessToken}` };

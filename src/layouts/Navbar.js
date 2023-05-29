@@ -20,7 +20,7 @@ export default function NavBar() {
 
   // state
   const [userData, setUserData] = useState({});
-  const { isConnectPrinter } = useStore();
+  const { isConnectPrinter,profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
 
   // ref

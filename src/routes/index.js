@@ -178,7 +178,7 @@ function Router() {
           element: <ReservationList />,
         },
         {
-          path: "/reservation-dashboard",
+          path: "/reservationDashboard",
           element: <ReservationDashboard />,
         },
         {
@@ -190,7 +190,7 @@ function Router() {
           element: <DoingOrder />,
         },
         {
-          path: "/setting-theme",
+          path: "/settingTheme",
           element: <SettingTheme />,
         },
         OrderRoutes,
