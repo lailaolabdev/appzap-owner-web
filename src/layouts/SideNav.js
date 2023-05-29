@@ -100,12 +100,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
   ];
 
   const listForRole = itemList.filter((e) => {
-    try {
-      console.log("profile?.data", profile?.data);
-      const verify = role(profile?.data?.role, profile?.data);
-      console.log("verify", verify);
-      return verify?.[e?.system] ?? false;
-    } catch (err) {}
+    const verify = role(profile?.data?.role, profile?.data);
+    return verify?.[e?.system] ?? false;
   });
 
   return (
