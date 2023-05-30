@@ -50,7 +50,7 @@ export const useOrderState = () => {
 
     setOrderItems([]);
     let time = "";
-    if (status === "SERVED") {
+    if (status === "SERVED" ||status === "CANCELED") {
       time = `&startDate=${moment(moment())
         .add(-1, "days")
         .format("MM-DD-YYYY")}&endDate=${moment().format("MM-DD-YYYY")}`;

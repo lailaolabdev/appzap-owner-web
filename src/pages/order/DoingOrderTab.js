@@ -275,42 +275,6 @@ const DoingOrderTab = () => {
                   ))}
               </tbody>
             </Table>
-            {orderItems
-              ?.filter((e) => e?.isChecked)
-              .map((val, i) => {
-                return (
-                  <div
-                    style={{ width: "80mm", padding: 10 }}
-                    ref={(el) => (billForCher80.current[i] = el)}
-                  >
-                    <BillForChef80
-                      storeDetail={storeDetail}
-                      selectedTable={selectedTable}
-                      dataBill={dataBill}
-                      val={val}
-                    />
-                  </div>
-                );
-              })}
-            <div>
-              {orderItems
-                ?.filter((e) => e?.isChecked)
-                .map((val, i) => {
-                  return (
-                    <div
-                      style={{ width: "80mm", padding: 10 }}
-                      ref={(el) => (billForCher58.current[i] = el)}
-                    >
-                      <BillForChef58
-                        storeDetail={storeDetail}
-                        selectedTable={selectedTable}
-                        dataBill={dataBill}
-                        val={val}
-                      />
-                    </div>
-                  );
-                })}
-            </div>
           </Container>
         </div>
       ) : (

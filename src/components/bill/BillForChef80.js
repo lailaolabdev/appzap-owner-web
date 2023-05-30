@@ -72,7 +72,7 @@ export default function BillForChef58({ selectedTable, dataBill, val }) {
                     fontSize: 14,
                   }}
                 >
-                  {val?.createdBy?.name}
+                  {val?.createdBy?.firstname}
                 </div>
                 <div
                   style={{
