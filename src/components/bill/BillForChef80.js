@@ -3,7 +3,7 @@ import styled from "styled-components";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
-export default function BillForChef80({ selectedTable, dataBill, val }) {
+export default function BillForChef58({ selectedTable, dataBill, val }) {
   return (
     <div style={{ background: "#fff" }}>
       <Container>
