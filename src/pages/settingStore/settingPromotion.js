@@ -1,47 +1,32 @@
 import React, { useEffect, useState } from "react";
-// import { Formik } from "formik";
 import axios from "axios";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button, Form, Image } from "react-bootstrap";
 import {
   BODY,
   COLOR_APP,
   COLOR_APP_CANCEL,
-  END_POINT,
   URL_PHOTO_AW3,
 } from "../../constants";
-import {
-  USERS,
-  USERS_UPDATE,
-  USERS_CREATE,
-  USERS_DELETE,
-  PRESIGNED_URL,
-  getLocalData,
-} from "../../constants/api";
+import {PRESIGNED_URL} from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
-// import profileImage from "../../image/profile.png";
-// import { STATUS_USERS } from "../../helpers";
+import { END_POINT_SEVER } from "../../constants/api";
+
 import { successAdd, errorAdd, successDelete } from "../../helpers/sweetalert";
-import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default function UserList() {
-  // const params = useParams();
-  // const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [promotion, setPromotion] = useState(null);
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  // const [getTokken, setgetTokken] = useState();
 
   // data
 
   const [promoName, setPromoName] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(0);
   const [status, setStatus] = useState('true');
   
   // upload photo
@@ -114,7 +99,7 @@ export default function UserList() {
       setIsLoading(true);
         await axios({
         method: "get",
-        url: `http://localhost:7070/v3/promotion/getManyPromo/${store._id}`,
+        url: `${END_POINT_SEVER}/v3/promotion/getManyPromo/${store._id}`,
         data: {...promotion},
       headers: {
         "Authorization": `AppZap ${token.accessToken}`
@@ -137,26 +122,24 @@ export default function UserList() {
     const promotion = {
       storeId:storeId._id,
       promoName, 
-      quantity, 
+      qty:parseInt(quantity), 
       status,
       image:namePhoto?.params?.Key
       }
-      // console.log(promotion);
       await axios({
           method: "post",
-          url: 'http://localhost:7070/v3/promotion/create',
+          url: `${END_POINT_SEVER}/v3/promotion/create`,
           data: {...promotion},
         headers: {
           "Authorization": `AppZap ${token.accessToken}`
           },
         })
         .then((res) => {
-        console.log('data',res.data);
+          setPromoName('')
+          setQuantity(0)
         successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
         handleClose();
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
+        _selectPromotion()
       })
 
     } catch (error) {
@@ -179,8 +162,7 @@ export default function UserList() {
       const token = JSON.parse(localStorage.getItem('@userKey'))
       axios({
         method: "delete",
-        url: `http://localhost:7070/v3/promotion/delete/${dateDelete.id}`,
-        // data: {_id: dateDelete.id},
+        url: `${END_POINT_SEVER}/v3/promotion/delete/${dateDelete.id}`,
       headers: {
         "Authorization": `AppZap ${token.accessToken}`
         },
@@ -188,9 +170,7 @@ export default function UserList() {
         .then((data) => {
           successDelete('ລືບຂໍ້ມູນສຳເລັດ')
           handleClose3();
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+          _selectPromotion()
         }).catch(() => {
         errorAdd('ລືບຂໍ້ມູນບໍ່ສຳເລັດ')
       })
@@ -230,7 +210,7 @@ export default function UserList() {
 
       await axios({
         method: "put",
-        url: `http://localhost:7070/v3/promotion/update/${proId}`,
+        url: `${END_POINT_SEVER}/v3/promotion/update/${proId}`,
         data: { ...promotion },
         headers: {
           "Authorization": `AppZap ${token.accessToken}`
@@ -238,10 +218,8 @@ export default function UserList() {
       })
         .then((res) => {
           successAdd("ແກ້ໃຂຂໍ້ມູນສຳເລັດ");
-          handleClose();
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+          setShow2(false)
+          _selectPromotion()
         })
         .catch(() => { 
           errorAdd('ແກ້ໃຂຂໍ້ມູນບໍ່ສຳເລັດ')
@@ -455,7 +433,7 @@ export default function UserList() {
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ຈຳນວນ</Form.Label>
                   <Form.Control
-                    type="text"
+                    type="number"
                     name="quantity"
                     value={quantity}
                     onChange={e=> setQuantity(e.target.value)}
@@ -628,10 +606,10 @@ export default function UserList() {
 
       {/* ===== delete */}
       <Modal show={show3} onHide={handleClose3}>
-        <Modal.Header closeButton></Modal.Header>
+        {/* <Modal.Header closeButton></Modal.Header> */}
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ </div>
+            <div style={{fontSize:"30px"}}>ທ່ານຕ້ອງການລົບຂໍ້ມູນ ແທ້ ຫຼື ບໍ່ ? </div>
             <div style={{ color: "red" }}>{dateDelete?.name}</div>
           </div>
         </Modal.Body>

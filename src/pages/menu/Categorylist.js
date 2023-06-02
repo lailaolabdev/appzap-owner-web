@@ -37,6 +37,8 @@ export default function Categorylist() {
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
 
+  console.log("Categorys::",Categorys)
+
   const handleShow2 = async (item) => {
     setdataUpdate(item);
     setShow2(true);
@@ -53,8 +55,8 @@ export default function Categorylist() {
         // CATEGORY + `/${dateDelete?.id}`
         END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`
         , {
-        headers: headers,
-      });
+          headers: headers,
+        });
       if (_resData?.data) {
         setCategorys(_resData?.data);
         handleClose3();
@@ -100,7 +102,7 @@ export default function Categorylist() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      console.log("============>",values)
+      console.log("============>", values)
       const resData = await axios.put(
         END_POINT_SEVER + `/v3/category/update`,
         {
@@ -147,7 +149,7 @@ export default function Categorylist() {
       method: "get",
       url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
-    console.log("-----",_resCategory?.data)
+    console.log("-----", _resCategory?.data)
     setCategorys(_resCategory?.data);
     setIsLoading(false);
   };
@@ -162,7 +164,7 @@ export default function Categorylist() {
 
 
 
-////New Section Here
+  ////New Section Here
 
   const getCate = async (id) => {
     try {
@@ -179,33 +181,31 @@ export default function Categorylist() {
     }
   };
 
-  const _changeStatusCate = async (data) => {
+  const _changeStatusCate = async (id, isShowCategory, index) => {
     try {
-      // if (data?.isOpened) {
-      //   errorAdd("ບໍ່ສາມາດປິດໄດ້");
-      //   return;
-      // }
-      const _localData = await getLocalData();
-
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      const isShowCategory = !data?.isShowCategory ? true : false;
-      let res = await axios({
+  
+      await axios({
         method: "PUT",
         url: END_POINT_SEVER + `/v3/category/update/`,
         data: {
-          id: data._id,
+          id: id,
           data: {
-            isShowCategory,
+            isShowCategory: !isShowCategory
           },
         },
         headers: headers,
       });
-      getData(_localData?.DATA?.storeId);
-      // getMenu();
+
+      let _newData = [...Categorys];
+
+      _newData[index].isShowCategory = !isShowCategory;
+      setCategorys(_newData)
+
     } catch (err) {
       console.log("err:", err);
     }
@@ -287,10 +287,8 @@ export default function Categorylist() {
                           <label className="switch">
                             <input
                               type="checkbox"
-                              checked={
-                                data?.isShowCategory === true ? true : false
-                              }
-                              onClick={(e) => _changeStatusCate(data)}
+                              checked={data?.isShowCategory}
+                              onClick={() => _changeStatusCate(data?._id, data?.isShowCategory, index)}
                             />
                             <span className="slider round"></span>
                           </label>
