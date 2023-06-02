@@ -21,12 +21,15 @@ import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
+import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 
 
 
 export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
+
+  const [showSetting, setShowSetting] = useState(false)
 
   const [isOpened, setIsOpened] = useState(true);
 
@@ -45,9 +48,9 @@ export default function MenuList() {
     setShow4(true);
   };
 
-
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("All")
 
   const [menuType, setMenuType] = useState("MENU")
   const [connectMenues, setConnectMenues] = useState([])
@@ -57,10 +60,14 @@ export default function MenuList() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(false)
 
+  //update show menu
+  const [detailMenu, setDetailMenu] = useState()
+
+
+
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -77,16 +84,36 @@ export default function MenuList() {
     fetchData();
   }, []);
 
-  const onSearchByCategory = async (categoryId) => {
-    try {
-      setSelectedCategory(categoryId)
 
-      const _localData = await getLocalData();
-      getMenu(_localData?.DATA?.storeId, categoryId);
-    } catch (error) {
-      console.log(error)
+
+  useEffect(() => {
+    if (filterName || filterCategory) {
+      const fetchFilter = async () => {
+        try {
+        const _localData = await getLocalData();
+
+          setIsLoading(true)
+          await fetch(MENUS + `/?storeId=${_localData?.DATA?.storeId}${(filterCategory && filterCategory != "All") ? `&categoryId=${filterCategory}` : ""}${(filterName && filterName!="") ? `&name=${filterName}` : ""}`, {
+            method: "GET",
+          })
+            .then((response) => response.json())
+            .then((json) => {
+              console.log("json fileter:::::", json)
+              setMenus(json)
+            });
+          setIsLoading(false)
+        } catch (err) {
+          console.log(err);
+          setIsLoading(false)
+        }
+      }
+    fetchFilter();
+
     }
-  }
+
+
+  }, [filterName,filterCategory])
+
 
   const getcategory = async (id) => {
     try {
@@ -102,6 +129,8 @@ export default function MenuList() {
       console.log(err);
     }
   };
+
+
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true)
@@ -278,7 +307,6 @@ export default function MenuList() {
     setDataUpdateMenuOption(item?.menuOption)
     setShow2(true);
   };
-  console.log(dataUpdateMenuOption)
   const _updateCategory = async (values) => {
     let header = await getHeaders();
     const headers = {
@@ -357,29 +385,127 @@ export default function MenuList() {
     setConnectMenuId(e.target.value)
   }
 
-  const _changeStatusMenu = async (data) => {
+  const _onOpenMenu = async (id, isOpenMenuCustomerWeb, index) => {
     try {
-      const _localData = await getLocalData();
-
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      const isOpened = !data?.isOpened ? "true" : "false";
-      let res = await axios({
+
+      await axios({
         method: "PUT",
         url: END_POINT_SEVER + `/v3/menu/update/`,
         data: {
-          id: data._id,
+          id: id,
           data: {
-            isOpened,
+            isShowCustomerWeb: isOpenMenuCustomerWeb === "true" ? "false" : "true",
           },
         },
         headers: headers,
       });
-      getMenu(_localData?.DATA?.storeId);
-      // getMenu();
+
+      let _newData = [...Menus];
+
+      _newData[index].isShowCustomerWeb = isOpenMenuCustomerWeb === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
+  const _onOpenMenuCustomerApp = async (id, isOpenMenuCustomerApp, index) => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+
+      await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: id,
+          data: {
+            isShowCustomerApp: isOpenMenuCustomerApp === "true" ? "false" : "true",
+          },
+        },
+        headers: headers,
+      });
+
+      let _newData = [...Menus];
+
+      _newData[index].isShowCustomerApp = isOpenMenuCustomerApp === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
+  const _onOpenMenuStaff = async (id, isOpenMenuStaff, index) => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+
+      await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: id,
+          data: {
+            isShowStaff: isOpenMenuStaff === "true" ? "false" : "true",
+          },
+        },
+        headers: headers,
+      });
+
+      let _newData = [...Menus];
+
+      _newData[index].isShowStaff = isOpenMenuStaff === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
+  const _onOpenMenuCounter = async (id, isShowCounterApp, index) => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      await axios({
+        method: "PUT",
+        url: END_POINT_SEVER + `/v3/menu/update/`,
+        data: {
+          id: id,
+          data: {
+            isShowCounterApp: isShowCounterApp === "true" ? "false" : "true",
+          },
+        },
+        headers: headers,
+      });
+
+      let _newData = [...Menus];
+      _newData[index].isShowCounterApp = isShowCounterApp === "true" ? "false" : "true";
+      setMenus(_newData)
+      let data = _newData[index]
+      setDetailMenu({ data, index })
+
     } catch (err) {
       console.log("err:", err);
     }
@@ -405,14 +531,14 @@ export default function MenuList() {
         </Nav>
       </div>
 
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8, minHeight:"90vh" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 90px 190px", gridGap: 20 }}>
           <div>
             <label>ເລືອກປະເພດ</label>
             <select
               className="form-control"
-              value={selectedCategory}
-              onChange={(e) => onSearchByCategory(e.target.value)}
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
             >
               <option value="All">ທັງໝົດ</option>
               {Categorys &&
@@ -457,15 +583,19 @@ export default function MenuList() {
                   <th scope="col">ປະເພດເມນູ</th>
                   <th scope="col">ຊື່ອາຫານ</th>
                   <th scope="col">ລາຄາ</th>
-                  <th scope="col">ສະຖານະ</th>
+                  <th scope="col">ກຳນົດສະຖານະການສະແດງ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? <Spinner animation="border" variant="warning" /> : Menus?.filter((e) => e?.name?.startsWith(filterName)).map(
+                {isLoading ? 
+                <td colSpan={9}>
+                   <Spinner animation="border" variant="warning" />
+                </td>
+                : Menus?.map(
                   (data, index) => {
                     return (
-                      <tr>
+                      <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{data?.sort ?? 0}</td>
                         <td>
@@ -499,20 +629,12 @@ export default function MenuList() {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>{data?.name ?? ""}<br/>{data?.name_en ?? ""}<br/>{data?.name_cn ?? ""}<br/>{data?.name_kr ?? ""}</td>
+                        <td>{data?.name ?? ""}<br />{data?.name_en ?? ""}<br />{data?.name_cn ?? ""}<br />{data?.name_kr ?? ""}</td>
                         <td>{moneyCurrency(data?.price)}</td>
-                        <td style={{ color: data?.isOpened ? "green" : "red" }}>
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={
-                                data?.isOpened === true ? true : false
-                              }
-                              onClick={(e) => _changeStatusMenu(data)}
-                            />
-                            <span className="slider round"></span>
-                          </label>
+                        <td>
+                          <button type='button' className="menuSetting" onClick={() => { setShowSetting(true); setDetailMenu({ data, index }) }}>ກຳນົດ</button>
                         </td>
+
                         <td>
                           <FontAwesomeIcon
                             icon={faEdit}
@@ -597,10 +719,10 @@ export default function MenuList() {
               errors.categoryId = "ກະລຸນາປ້ອນ...";
             }
             for (let i = 0; i < dataMenuOption.length; i++) {
-              if(dataMenuOption[i]?.name === "") {
+              if (dataMenuOption[i]?.name === "") {
                 errors.menuOptionName = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
               }
-              if(!dataMenuOption[i]?.price) {
+              if (!dataMenuOption[i]?.price) {
                 errors.menuOptionPrice = "ກະລຸນາປ້ອນລາຄາ...";
               }
             }
@@ -783,112 +905,112 @@ export default function MenuList() {
                     </Form.Group>
                   </Col>
                 </Row>
-              <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ລາຄາ</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="price"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.price}
-                  placeholder="ລາຄາ..."
-                  style={{
-                    border:
-                      errors.price && touched.price && errors.price
-                        ? "solid 1px red"
-                        : "",
-                  }}
-                />
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
-                {dataMenuOption?.length > 0 && dataMenuOption?.map((item, index) => (
-                  <div key={index}>
-                    <div className="pl-4 row">
-                      <Col xs={11}>
-                        <Row>
-                          <Col>
-                            <Form.Group controlId="exampleForm.ControlInput1">
-                              <Form.Label>ຊື່ອາຫານ</Form.Label>
-                              <Form.Control
-                                type="text"
-                                name="name"
-                                onChange={(e) => _handleChangeMenuOption(index, "name", e.target.value)}
-                                value={item?.name}
-                                placeholder="ຊື່ອາຫານ..."
-                                isInvalid={!item?.name}
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col>
-                            <Form.Group controlId="exampleForm.ControlInput1">
-                              <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
-                              <Form.Control
-                                type="text"
-                                name="name_en"
-                                onChange={(e) => _handleChangeMenuOption(index, "name_en", e.target.value)}
-                                value={item?.name_en}
-                                placeholder="ຊື່ອາຫານ..."
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Form.Group controlId="exampleForm.ControlInput1">
-                              <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
-                              <Form.Control
-                                type="text"
-                                name="name_cn"
-                                onChange={(e) => _handleChangeMenuOption(index, "name_cn", e.target.value)}
-                                value={item?.name_cn}
-                                placeholder="ຊື່ອາຫານ..."
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col>
-                            <Form.Group controlId="exampleForm.ControlInput1">
-                              <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
-                              <Form.Control
-                                type="text"
-                                name="name_kr"
-                                onChange={(e) => _handleChangeMenuOption(index, "name_kr", e.target.value)}
-                                value={item?.name_kr}
-                                placeholder="ຊື່ອາຫານ..."
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs={6}>
-                            <Form.Group controlId="exampleForm.ControlInput1">
-                              <Form.Label>ລາຄາ</Form.Label>
-                              <Form.Control
-                                type="number"
-                                name="price"
-                                onChange={(e) => _handleChangeMenuOption(index, "price", e.target.value)}
-                                value={item?.price}
-                                placeholder="ລາຄາ..."
-                                min="0"
-                                isInvalid={!item?.price ? "required" : ""}
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Row>
-                      </Col>
-                      <Col className="d-flex align-items-center justify-content-center">
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          style={{ color: "red", cursor: 'pointer' }}
-                          onClick={() => _removeItem(index)}
-                        />
-                      </Col>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ລາຄາ</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.price}
+                    placeholder="ລາຄາ..."
+                    style={{
+                      border:
+                        errors.price && touched.price && errors.price
+                          ? "solid 1px red"
+                          : "",
+                    }}
+                  />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
+                  {dataMenuOption?.length > 0 && dataMenuOption?.map((item, index) => (
+                    <div key={index}>
+                      <div className="pl-4 row">
+                        <Col xs={11}>
+                          <Row>
+                            <Col>
+                              <Form.Group controlId="exampleForm.ControlInput1">
+                                <Form.Label>ຊື່ອາຫານ</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="name"
+                                  onChange={(e) => _handleChangeMenuOption(index, "name", e.target.value)}
+                                  value={item?.name}
+                                  placeholder="ຊື່ອາຫານ..."
+                                  isInvalid={!item?.name}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col>
+                              <Form.Group controlId="exampleForm.ControlInput1">
+                                <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="name_en"
+                                  onChange={(e) => _handleChangeMenuOption(index, "name_en", e.target.value)}
+                                  value={item?.name_en}
+                                  placeholder="ຊື່ອາຫານ..."
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col>
+                              <Form.Group controlId="exampleForm.ControlInput1">
+                                <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="name_cn"
+                                  onChange={(e) => _handleChangeMenuOption(index, "name_cn", e.target.value)}
+                                  value={item?.name_cn}
+                                  placeholder="ຊື່ອາຫານ..."
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col>
+                              <Form.Group controlId="exampleForm.ControlInput1">
+                                <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="name_kr"
+                                  onChange={(e) => _handleChangeMenuOption(index, "name_kr", e.target.value)}
+                                  value={item?.name_kr}
+                                  placeholder="ຊື່ອາຫານ..."
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col xs={6}>
+                              <Form.Group controlId="exampleForm.ControlInput1">
+                                <Form.Label>ລາຄາ</Form.Label>
+                                <Form.Control
+                                  type="number"
+                                  name="price"
+                                  onChange={(e) => _handleChangeMenuOption(index, "price", e.target.value)}
+                                  value={item?.price}
+                                  placeholder="ລາຄາ..."
+                                  min="0"
+                                  isInvalid={!item?.price ? "required" : ""}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col className="d-flex align-items-center justify-content-center">
+                          <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            style={{ color: "red", cursor: 'pointer' }}
+                            onClick={() => _removeItem(index)}
+                          />
+                        </Col>
+                      </div>
+                      <hr />
                     </div>
-                    <hr />
-                  </div>
-                ))}
-                <div><Button style={{backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
-              </Form.Group>
+                  ))}
+                  <div><Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
+                </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
                   <Form.Control
@@ -1237,7 +1359,7 @@ export default function MenuList() {
                       <hr />
                     </div>
                   ))}
-                  <div><Button style={{backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addUpdateMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
+                  <div><Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addUpdateMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
                   <Form.Label>ໝາຍເຫດ</Form.Label>
@@ -1298,6 +1420,24 @@ export default function MenuList() {
         </Modal.Footer>
       </Modal>
       {/* <<<<<<<<<<<<<< popup <<<<<<<<<<<<<< */}
+
+      <PopUpIsOpenMenu
+        showSetting={showSetting}
+        detailMenu={detailMenu}
+        handleClose={async () => {
+          await setShowSetting(false);
+          await setDetailMenu();
+        }}
+        _handOpenMenu={(id, isOpenMenuCustomerWeb, index) => _onOpenMenu(id, isOpenMenuCustomerWeb, index)}
+        _handOpenMenuCounterApp={(id, isShowCounterApp, index) => _onOpenMenuCounter(id, isShowCounterApp, index)}
+        _handOpenMenuCustomerApp={(id, isOpenMenuCustomerApp, index) => _onOpenMenuCustomerApp(id, isOpenMenuCustomerApp, index)}
+        _handOpenMenuShowStaff={(id, isOpenMenuStaff, index) => _onOpenMenuStaff(id, isOpenMenuStaff, index)}
+      />
+
+
+
+
+
     </div>
   );
 }

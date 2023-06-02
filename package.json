@@ -66,6 +66,7 @@
     "react-toastify": "^9.1.1",
     "react-uuid": "^2.0.0",
     "rsuite-daterangepicker": "3.0.5",
+    "sass": "^1.62.1",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.2.0",
     "sweetalert2": "10.16.6",
