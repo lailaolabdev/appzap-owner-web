@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import { Table, Button, Image } from "react-bootstrap";
 import moment from "moment";
@@ -8,6 +8,7 @@ import empty from "../../image/empty.png";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
+import styled from "styled-components";
 import Swal from "sweetalert2";
 
 /**
@@ -52,107 +53,11 @@ const DoingOrderTab = () => {
     handleCheckbox,
     checkAllOrders,
     handleUpdateOrderStatus,
-  } = useStore();
-
-  const [dataBill, setDataBill] = useState();
-  const [selectedMenu, setSelectedMenu] = useState([]);
-  const {
-    storeDetaile,
-    printers,
-    selectedTable,
-    selectOrderStatus,
-    setSelectOrderStatus,
     newOrderTransaction,
-    newOrderUpdateStatusTransaction,
-    setNewOrderTransaction,
-    setNewOrderUpdateStatusTransaction,
+    getOrderWaitingAndDoingByStore,
   } = useStore();
-  const arrLength = selectedMenu?.length;
-  const billForCher80 = useRef([]);
-  const billForCher58 = useRef([]);
-  if (billForCher80.current.length !== arrLength) {
-    // add or remove refs
-    billForCher80.current = Array(arrLength)
-      .fill()
-      .map((_, i) => billForCher80.current[i]);
-  }
-  if (billForCher58.current.length !== arrLength) {
-    // add or remove refs
-    billForCher58.current = Array(arrLength)
-      .fill()
-      .map((_, i) => billForCher58?.current[i]);
-  }
-  const onPrintForCher = async () => {
-    const orderSelect = orderItems?.filter((e) => e?.isChecked);
-    let _index = 0;
-    for (const _ref of billForCher80.current) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
 
-      try {
-        let urlForPrinter = "";
-        let dataUrl;
-        if (_printer?.width === "80mm") {
-          dataUrl = await html2canvas(billForCher80?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = "http://localhost:9150/ethernet/image";
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = "http://localhost:9150/bluetooth/image";
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = "http://localhost:9150/usb/image";
-        }
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "success",
-            title: "ປິ້ນສຳເລັດ",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
-      } catch (err) {
-        console.log(err);
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "error",
-            title: "ປິ້ນບໍ່ສຳເລັດ",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
-      }
-      _index++;
-    }
-  };
+ 
 
   return (
     <div>
@@ -198,11 +103,11 @@ const DoingOrderTab = () => {
             </button>
           </div> */}
           <Container fluid className="mt-3">
-            <Table
+            <TableCustom
               responsive
               className="staff-table-list borderless table-hover"
             >
-              <thead style={{ backgroundColor: "#F1F1F1" }}>
+              <thead>
                 <tr>
                   <th>
                     <FormControlLabel
@@ -220,7 +125,7 @@ const DoingOrderTab = () => {
                   <th>ຊື່ເມນູ</th>
                   <th>ຈຳນວນ</th>
                   <th>ຈາກໂຕະ</th>
-                  <th>ລະຫັດໂຕະ</th>
+                  {/* <th>ລະຫັດໂຕະ</th> */}
                   <th>ສະຖານະ</th>
                   <th>ເວລາ</th>
                   <th>ຄອມເມັ້ນ</th>
@@ -252,9 +157,9 @@ const DoingOrderTab = () => {
                           {order?.tableId?.name ?? "-"}
                         </p>
                       </td>
-                      <td>
+                      {/* <td>
                         <p style={{ margin: 0 }}>{order?.code ?? "-"}</p>
-                      </td>
+                      </td> */}
                       <td>
                         <p style={{ margin: 0 }}>
                           {order?.status ? orderStatus(order?.status) : "-"}
@@ -274,43 +179,7 @@ const DoingOrderTab = () => {
                     </tr>
                   ))}
               </tbody>
-            </Table>
-            {orderItems
-              ?.filter((e) => e?.isChecked)
-              .map((val, i) => {
-                return (
-                  <div
-                    style={{ width: "80mm", padding: 10 }}
-                    ref={(el) => (billForCher80.current[i] = el)}
-                  >
-                    <BillForChef80
-                      storeDetail={storeDetail}
-                      selectedTable={selectedTable}
-                      dataBill={dataBill}
-                      val={val}
-                    />
-                  </div>
-                );
-              })}
-            <div>
-              {orderItems
-                ?.filter((e) => e?.isChecked)
-                .map((val, i) => {
-                  return (
-                    <div
-                      style={{ width: "80mm", padding: 10 }}
-                      ref={(el) => (billForCher58.current[i] = el)}
-                    >
-                      <BillForChef58
-                        storeDetail={storeDetail}
-                        selectedTable={selectedTable}
-                        dataBill={dataBill}
-                        val={val}
-                      />
-                    </div>
-                  );
-                })}
-            </div>
+            </TableCustom>
           </Container>
         </div>
       ) : (
@@ -321,3 +190,25 @@ const DoingOrderTab = () => {
 };
 
 export default DoingOrderTab;
+
+const TableCustom = styled("table")({
+  width: "100%",
+  fontSize: 18,
+  ["th,td"]: {
+    padding: 0,
+  },
+  ["th:first-child"]: {
+    maxWidth: 40,
+    width: 40,
+  },
+  ["td:first-child"]: {
+    maxWidth: 40,
+    width: 40,
+  },
+  ["tr:nth-child(2n+0)"]: {
+    backgroundColor: "#ffe9d8",
+  },
+  thead: {
+    backgroundColor: "#ffd6b8",
+  },
+});

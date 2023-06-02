@@ -57,11 +57,12 @@ function AddOrder() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
-  const [menuType, setMenuType] = useState("MENU")
-  const [connectMenues, setConnectMenues] = useState([])
-  const [connectMenuId, setConnectMenuId] = useState("")
-  const [menuOptions, setMenuOptions] = useState([])
-  const [selectedOptions, setselectedOptions] = useState()
+  const [menuType, setMenuType] = useState("MENU");
+  const [connectMenues, setConnectMenues] = useState([]);
+  const [connectMenuId, setConnectMenuId] = useState("");
+  const [menuOptions, setMenuOptions] = useState([]);
+  const [selectedOptions, setselectedOptions] = useState();
+  const { profile } = useStore();
 
   const handleShow = () => {
     setShow(true);
@@ -69,40 +70,42 @@ function AddOrder() {
   const handleClose = () => setShow(false);
 
   const handleChangeMenuType = async (e) => {
-    setMenuType(e.target.value)
+    setMenuType(e.target.value);
 
     if (e.target.value == "MENUOPTION") {
-      await fetch(MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`, {
-        method: "GET",
-      })
+      await fetch(
+        MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`,
+        {
+          method: "GET",
+        }
+      )
         .then((response) => response.json())
         .then((json) => {
-          setConnectMenues(json)
+          setConnectMenues(json);
         });
     }
-  }
+  };
 
   const handleChangeConnectMenu = (e) => {
-    setConnectMenuId(e.target.value)
-  }
+    setConnectMenuId(e.target.value);
+  };
 
   function handleSetQuantity(int, data) {
-    let dataArray = []
+    let dataArray = [];
     for (const i of selectedMenu) {
-
-      let _data = { ...i }
+      let _data = { ...i };
       if (data?.id === i?.id) {
-        _data = { ..._data, quantity: _data?.quantity + int }
+        _data = { ..._data, quantity: _data?.quantity + int };
       }
       if (_data.quantity > 0) {
-        dataArray.push(_data)
+        dataArray.push(_data);
       }
     }
-    setSelectedMenu(dataArray)
+    setSelectedMenu(dataArray);
   }
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
-  const [currency, setCurrency] = useState([])
+  const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -209,6 +212,7 @@ function AddOrder() {
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
+    // const ADMIN = profile;
     const _localJson = JSON.parse(ADMIN);
     setUserData(_localJson);
 
@@ -243,8 +247,7 @@ function AddOrder() {
   const getcurrency = async () => {
     try {
       let x = await axios.get(
-        END_POINT_SEVER +
-        `/v3/currencies?storeId=${storeDetail?._id}`,
+        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
         {
           headers: {
             Accept: "application/json",
@@ -252,7 +255,7 @@ function AddOrder() {
           },
         }
       );
-      setCurrency(x.data)
+      setCurrency(x.data);
     } catch (err) {
       console.log(err);
     }
@@ -269,8 +272,9 @@ function AddOrder() {
     setIsLoading(true);
     await fetch(
       MENUS +
-      `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-      }`,
+        `?storeId=${id}&${
+          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
+        }`,
       {
         method: "GET",
       }
@@ -289,7 +293,7 @@ function AddOrder() {
 
   const _checkMenuOption = async (menuId) => {
     try {
-      var _menuOptions = []
+      var _menuOptions = [];
       // await fetch(
       //   MENUS +
       //   `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
@@ -304,17 +308,20 @@ function AddOrder() {
       //   .catch((err) => {
       //     console.log(err);
       //   });
-      _menuOptions = _.filter(allSelectedMenu, (e) => e?.menuId?._id === menuId)
-      return _menuOptions
+      _menuOptions = _.filter(
+        allSelectedMenu,
+        (e) => e?.menuId?._id === menuId
+      );
+      return _menuOptions;
     } catch (error) {
-      return []
+      return [];
     }
-  }
+  };
 
   const addToCart = async (menu) => {
     const _menuOptions = await _checkMenuOption(menu?._id);
     if (_menuOptions.length >= 1) {
-      setMenuOptions(_menuOptions)
+      setMenuOptions(_menuOptions);
       handleShow();
       return;
     }
@@ -526,51 +533,60 @@ function AddOrder() {
             {isLoading ? (
               <Loading />
             ) : (
-              afterSearch?.map((data, index) => 
-              {
-                if(data?.type==="MENU") return(
-                <div
-                  key={"menu" + index}
-                  style={{
-                    border:
-                      data._id === selectedItem?._id
-                        ? "4px solid #FB6E3B"
-                        : "4px solid rgba(0,0,0,0)",
-                  }}
-                  onClick={() => {
-                    addToCart(data);
-
-                  }}
-                >
-                  <img
-                    src={
-                      data?.images[0]
-                        ? URL_PHOTO_AW3 + data?.images[0]
-                        : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                    }
-                    style={{
-                      width: "100%",
-                      height: 200,
-                      borderRadius: 5,
-                    }}
-                  />
-                  <div
-                    style={{
-                      backgroundColor: "#000",
-                      color: "#FFF",
-                      position: "relative",
-                      opacity: 0.5,
-                      padding: 10,
-                    }}
-                  >
-                    <span>{data?.name}</span>
-                    <br />
-                    <span>{moneyCurrency(data?.price)} LAK {currency.map((e) => " / " + (data?.price / e.sell).toFixed(2) + " " + e.currencyCode)}</span>
-                    <br />
-                    <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
-                  </div>
-                </div>
-              )})
+              afterSearch?.map((data, index) => {
+                if (data?.type === "MENU")
+                  return (
+                    <div
+                      key={"menu" + index}
+                      style={{
+                        border:
+                          data._id === selectedItem?._id
+                            ? "4px solid #FB6E3B"
+                            : "4px solid rgba(0,0,0,0)",
+                      }}
+                      onClick={() => {
+                        addToCart(data);
+                      }}
+                    >
+                      <img
+                        src={
+                          data?.images[0]
+                            ? URL_PHOTO_AW3 + data?.images[0]
+                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                        }
+                        style={{
+                          width: "100%",
+                          height: 200,
+                          borderRadius: 5,
+                        }}
+                      />
+                      <div
+                        style={{
+                          backgroundColor: "#000",
+                          color: "#FFF",
+                          position: "relative",
+                          opacity: 0.5,
+                          padding: 10,
+                        }}
+                      >
+                        <span>{data?.name}</span>
+                        <br />
+                        <span>
+                          {moneyCurrency(data?.price)} LAK{" "}
+                          {currency.map(
+                            (e) =>
+                              " / " +
+                              (data?.price / e.sell).toFixed(2) +
+                              " " +
+                              e.currencyCode
+                          )}
+                        </span>
+                        <br />
+                        <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
+                      </div>
+                    </div>
+                  );
+              })
             )}
           </div>
         </div>
@@ -608,10 +624,34 @@ function AddOrder() {
                           <tr key={"selectMenu" + index}>
                             <td>{index + 1}</td>
                             <td>{data.name}</td>
-                            <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                              <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, data)}>-</button>
+                            <td
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <button
+                                style={{
+                                  color: "blue",
+                                  border: "none",
+                                  width: 25,
+                                }}
+                                onClick={() => handleSetQuantity(-1, data)}
+                              >
+                                -
+                              </button>
                               {data.quantity}
-                              <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, data)}>+</button>
+                              <button
+                                style={{
+                                  color: "red",
+                                  border: "none",
+                                  width: 25,
+                                }}
+                                onClick={() => handleSetQuantity(1, data)}
+                              >
+                                +
+                              </button>
                             </td>
                             <td>
                               <i
@@ -761,7 +801,7 @@ function AddOrder() {
             detail: menuOptions?.detail,
             unit: menuOptions?.unit,
             isOpened: menuOptions?.isOpened,
-            type: menuOptions?.type
+            type: menuOptions?.type,
           }}
           validate={(values) => {
             const errors = {};
@@ -776,18 +816,18 @@ function AddOrder() {
             }
             return errors;
           }}
-        // onSubmit={(values, { setSubmitting }) => {
-        //   const getData = async () => {
-        //     await _updateCategory(values);
-        //     const _localData = await getLocalData();
-        //     if (_localData) {
-        //       setgetTokken(_localData);
-        //       getMenu(_localData?.DATA?.storeId);
-        //       // getMenu(getTokken?.DATA?.storeId);
-        //     }
-        //   };
-        //   getData();
-        // }}
+          // onSubmit={(values, { setSubmitting }) => {
+          //   const getData = async () => {
+          //     await _updateCategory(values);
+          //     const _localData = await getLocalData();
+          //     if (_localData) {
+          //       setgetTokken(_localData);
+          //       getMenu(_localData?.DATA?.storeId);
+          //       // getMenu(getTokken?.DATA?.storeId);
+          //     }
+          //   };
+          //   getData();
+          // }}
         >
           {({
             values,
@@ -802,12 +842,19 @@ function AddOrder() {
             <form onSubmit={handleSubmit}>
               <Modal.Body>
                 <Form.Group controlId="exampleForm.ControlSelect1">
-                  {menuOptions.map((item) => <button className="form-control mb-2" key="" onClick={() => {
-                    setselectedOptions(item);
-                  }}>{item?.name} ລາຄາ {item?.price} LAK</button>)}
+                  {menuOptions.map((item) => (
+                    <button
+                      className="form-control mb-2"
+                      key=""
+                      onClick={() => {
+                        setselectedOptions(item);
+                      }}
+                    >
+                      {item?.name} ລາຄາ {item?.price} LAK
+                    </button>
+                  ))}
                   {/* </Form.Control> */}
                 </Form.Group>
-                
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose}>

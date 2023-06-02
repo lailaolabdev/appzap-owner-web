@@ -21,6 +21,7 @@ import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
+import role from "../helpers/role";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
@@ -28,9 +29,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
   );
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
+  const { profile } = useStore();
 
   const { openTableData, getTableDataStore, storeDetail } = useStore();
-
+  const { user } = useStore();
   const itemList = [
     {
       title: "ສະຖານະຂອງໂຕະ",
@@ -38,6 +40,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
     },
     {
       title: "ລາຍການອໍເດີ້",
@@ -45,12 +48,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
+      system: "orderManagement",
     },
     {
       title: t("financialStatic"),
       key: "report",
       icon: faTachometerAlt,
       typeStore: "",
+      system: "reportManagement",
     },
     {
       title: "ຈັດການການຈອງ",
@@ -58,13 +63,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faList,
       typeStore: "",
       hidden: !storeDetail?.hasReservation,
+      system: "reservationManagement",
     },
     {
       title: "ລາຍງານການຈອງ",
-      key: "reservation-dashboard",
+      key: "reservationDashboard",
       icon: faChartBar,
       typeStore: "",
       hidden: !storeDetail?.hasReservation,
+      system: "reservationManagement",
     },
     {
       title: "ຈັດການເມນູອາຫານ",
@@ -72,22 +79,30 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBoxOpen,
       hidden: !storeDetail?.hasSmartMenu,
+      system: "menuManagement",
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-      key: `settingStore/${storeDetail?._id}`,
+      key: "settingStore",
       typeStore: "",
       icon: faCogs,
       hidden: !storeDetail?.hasPOS,
+      system: "settingManagement",
     },
     {
       title: "ປ່ຽນຕຣີມ",
-      key: "setting-theme",
+      key: "settingTheme",
       typeStore: "",
       icon: faIcicles,
       // hidden: !storeDetail?.hasPOS,
+      system: "themeManagement",
     },
   ];
+
+  const listForRole = itemList.filter((e) => {
+    const verify = role(profile?.data?.role, profile?.data);
+    return verify?.[e?.system] ?? false;
+  });
 
   return (
     <SideNav
@@ -120,6 +135,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
           selected =
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
+        if (selected === "settingStore") {
+          selected = selected + `/${storeDetail?._id}`;
+        }
         const to = "/" + selected;
 
         if (location.pathname !== to) {
@@ -132,7 +150,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     >
       <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        {itemList
+        {listForRole
           .filter((e) => !e?.hidden)
           .map((e) => (
             <NavItem

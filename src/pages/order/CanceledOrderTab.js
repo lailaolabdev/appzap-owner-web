@@ -13,6 +13,7 @@ import { getOrders } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
 import { useParams } from "react-router-dom";
+import { useStore } from "../../store";
 const CanceledOrderTab = () => {
   /**
    * routes
@@ -24,6 +25,7 @@ const CanceledOrderTab = () => {
   //   handleCheckbox,
   //   checkAllOrders,
   // } = useStore();
+  const { orderItems } = useStore();
 
   /**
    * states
@@ -54,8 +56,8 @@ const CanceledOrderTab = () => {
             </tr>
           </thead>
           <tbody>
-            {orders &&
-              orders?.map((order, index) => (
+            {orderItems &&
+              orderItems?.map((order, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{order?.menu?.name ?? "-"}</td>

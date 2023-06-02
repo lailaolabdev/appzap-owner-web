@@ -115,7 +115,7 @@ export default function UserList() {
           );
           setImageLoading(percentCompleted);
         },
-      })
+      });
     } catch (error) {
       console.log(error);
     }
@@ -520,6 +520,8 @@ export default function UserList() {
                   >
                     <option value="APPZAP_STAFF">ພະນັກງານ</option>
                     <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
+                    <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
+                    <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
                   </Form.Control>
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
@@ -740,6 +742,8 @@ export default function UserList() {
                   >
                     <option value="APPZAP_STAFF">ພະນັກງານ</option>
                     <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
+                    <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
+                    <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
                   </Form.Control>
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">

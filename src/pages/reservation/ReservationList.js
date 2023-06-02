@@ -25,7 +25,6 @@ import { useStore } from "../../store";
 import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
 
-
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
   const { t } = useTranslation();
@@ -33,6 +32,7 @@ export default function ReservationList() {
     storeDetail,
     newOreservationTransaction,
     setNewOreservationTransaction,
+    setProfile,
   } = useStore();
   const storeId = storeDetail._id;
 
@@ -110,6 +110,7 @@ export default function ReservationList() {
     const token = queryData?.find((e) => e[0] === "token")[1];
     if (token) {
       localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
+      // setProfile({ accessToken: token });
     }
   }, [tabSelect, dateFrom, dateTo]);
   useEffect(() => {
@@ -144,7 +145,7 @@ export default function ReservationList() {
                   setTabSelect("ALL");
                 }}
               >
-                {t('lists')}
+                {t("lists")}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "WATTING"}
@@ -153,7 +154,7 @@ export default function ReservationList() {
                   setTabSelect("WATTING");
                 }}
               >
-                {t('waitingForApprove')}
+                {t("waitingForApprove")}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "STAFF_CONFIRM"}
@@ -162,7 +163,7 @@ export default function ReservationList() {
                   setTabSelect("STAFF_CONFIRM");
                 }}
               >
-                {t('approve')}
+                {t("approve")}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "SUCCESS"}
@@ -171,7 +172,7 @@ export default function ReservationList() {
                   setTabSelect("SUCCESS");
                 }}
               >
-                {t('approve')}
+                {t("approve")}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "CANCEL"}
@@ -180,7 +181,7 @@ export default function ReservationList() {
                   setTabSelect("CANCEL");
                 }}
               >
-                {t('canceled')}
+                {t("canceled")}
               </ButtonTab>
             </div>
             <div
@@ -195,13 +196,13 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                {t('addBooking')}
+                {t("addBooking")}
               </ButtonPrimary>
             </div>
           </div>
           <div style={{ padding: 20, display: "flex", gap: 10 }}>
             <FormGroup>
-              <Form.Label>{t('search')}</Form.Label>
+              <Form.Label>{t("search")}</Form.Label>
               <InputGroup>
                 <Form.Control
                   placeholder="Example: (ເບີໂທ) (ຊື່ຜູ້ຈອງ)"
@@ -218,12 +219,12 @@ export default function ReservationList() {
                   id="button-addon1"
                   onClick={() => getData()}
                 >
-                  {t('search')}
+                  {t("search")}
                 </Button>
               </InputGroup>
             </FormGroup>
             <FormGroup>
-              <Form.Label>{t('bookingDate')}</Form.Label>
+              <Form.Label>{t("bookingDate")}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -234,7 +235,7 @@ export default function ReservationList() {
               />
             </FormGroup>
             <FormGroup>
-              <Form.Label>{t('toXX')}</Form.Label>
+              <Form.Label>{t("toXX")}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -249,7 +250,7 @@ export default function ReservationList() {
               <Form.Control
                 type="button"
                 style={{ maxWidth: 100 }}
-                value={t('today')}
+                value={t("today")}
                 onClick={() => {
                   setDateFrom(moment().format("YYYY-MM-DD"));
                   setDateTo(
@@ -281,14 +282,14 @@ export default function ReservationList() {
                   }}
                 >
                   <tr>
-                    <th style={{ color: COLOR_APP }}>{t('no')}</th>
-                    <th style={{ color: COLOR_APP }}>{t('bookedBy')}</th>
-                    <th style={{ color: COLOR_APP }}>{t('phoneNumberOfBooked')}</th>
+                    <th style={{ color: COLOR_APP }}>{t("no")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("bookedBy")}</th>
                     <th style={{ color: COLOR_APP }}>
-                      {t('dateAndTime')}
+                      {t("phoneNumberOfBooked")}
                     </th>
-                    <th style={{ color: COLOR_APP }}>{t('tableStatus2')}</th>
-                    <th style={{ color: COLOR_APP }}>{t('numberOfPeople')}</th>
+                    <th style={{ color: COLOR_APP }}>{t("dateAndTime")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("tableStatus2")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("numberOfPeople")}</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Form.Control

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Image } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
@@ -34,6 +34,7 @@ export default function WaitingOrderTab() {
     setNewOrderUpdateStatusTransaction,
     newOrderTransaction,
     newOrderUpdateStatusTransaction,
+    getOrderWaitingAndDoingByStore,
   } = useStore();
   /**
    * Initial Component
@@ -43,76 +44,6 @@ export default function WaitingOrderTab() {
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
 
-  const onPrintForCher = async () => {
-    const orderSelect = orderItems?.filter((e) => e?.isChecked);
-    let _index = 0;
-    for (const _ref of billForCher80.current) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
-
-      try {
-        let urlForPrinter = "";
-        let dataUrl;
-        if (_printer?.width === "80mm") {
-          dataUrl = await html2canvas(billForCher80?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = "http://localhost:9150/ethernet/image";
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = "http://localhost:9150/bluetooth/image";
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = "http://localhost:9150/usb/image";
-        }
-
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      } catch (err) {
-        console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-      _index++;
-    }
-  };
-
   return (
     <RootStyle>
       <div>
@@ -120,7 +51,7 @@ export default function WaitingOrderTab() {
           <ReactAudioPlayer src={Notification} ref={soundPlayer} />
         </div>
         <TableCustom responsive>
-          <thead style={{ backgroundColor: "#F1F1F1" }}>
+          <thead>
             <tr>
               <th>
                 <FormControlLabel
@@ -157,7 +88,9 @@ export default function WaitingOrderTab() {
                       />
                     </td>
                     <td>{index + 1} </td>
-                    <td>{order?.name ?? "-"} </td>
+                    <td style={{ fontWeight: "bold" }}>
+                      {order?.name ?? "-"}{" "}
+                    </td>
                     <td>{order?.quantity ?? "-"} </td>
                     <td>{order?.tableId?.name ?? "-"}</td>
                     <td>{order?.code ?? "-"} </td>
@@ -176,57 +109,6 @@ export default function WaitingOrderTab() {
               })}
           </tbody>
         </TableCustom>
-        {orderItems?.length == 0 && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              src={empty}
-              alt=""
-              style={{ maxWidth: "600px", width: "100%" }}
-            />
-          </div>
-        )}
-        {orderItems
-          ?.filter((e) => e?.isChecked)
-          .map((val, i) => {
-            return (
-              <div
-                style={{ width: "80mm", padding: 10 }}
-                ref={(el) => (billForCher80.current[i] = el)}
-              >
-                <BillForChef80
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  // dataBill={dataBill}
-                  val={val}
-                />
-              </div>
-            );
-          })}
-        <div>
-          {orderItems
-            ?.filter((e) => e?.isChecked)
-            .map((val, i) => {
-              return (
-                <div
-                  style={{ width: "80mm", padding: 10 }}
-                  ref={(el) => (billForCher58.current[i] = el)}
-                >
-                  <BillForChef58
-                    storeDetail={storeDetail}
-                    selectedTable={selectedTable}
-                    // dataBill={dataBill}
-                    val={val}
-                  />
-                </div>
-              );
-            })}
-        </div>
       </div>
     </RootStyle>
   );
@@ -238,7 +120,7 @@ const RootStyle = styled("div")({
 
 const TableCustom = styled("table")({
   width: "100%",
-  fontSize: 12,
+  fontSize: 18,
   ["th,td"]: {
     padding: 0,
   },
@@ -250,7 +132,10 @@ const TableCustom = styled("table")({
     maxWidth: 40,
     width: 40,
   },
+  ["tr:nth-child(2n+0)"]: {
+    backgroundColor: "#ffe9d8",
+  },
   thead: {
-    backgroundColor: "#e9e9e9",
+    backgroundColor: "#ffd6b8",
   },
 });

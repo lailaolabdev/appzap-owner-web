@@ -27,7 +27,7 @@ const ServedOrderTab = () => {
   return (
     <div>
       {/* <OrderNavbar /> */}
-      {ordersSev?.length > 0 ? (
+      {orderItems?.length > 0 ? (
         <div>
           {isLoading ? <Loading /> : ""}
           <Container fluid className="mt-3">

@@ -1,11 +1,22 @@
 /** @format */
-.btn-outline-info, .btn-outline-info:hover, .btn-outline-info:active, .btn-outline-info:visited {
-  border: 1px solid #FB6E3B !important;
-  color: #FB6E3B !important;
+.btn-outline-info,
+.btn-outline-info:hover,
+.btn-outline-info:active,
+.btn-outline-info:visited {
+  border: 1px solid #fb6e3b !important;
+  color: #fb6e3b !important;
+  background-color: white !important;
 }
 
-.btn-outline-info:hover{
+.btn-outline-info:hover {
   border: 1px solid #fff !important;
-  background-color: #FB6E3B !important;
+  background-color: #fb6e3b !important;
   color: #fff !important;
+}
+/* Dashboard */
+
+.text-name:hover{
+  color: #ffffff !important;
+  background-color: #fb6e3b !important;
+  border:none !important;
 }

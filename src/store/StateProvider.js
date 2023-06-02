@@ -8,6 +8,7 @@ import { useReservationState } from "./globalState/reservationState";
 import { usePrintersState } from "./globalState/printerState";
 import { useSoundState } from "./globalState/soundState";
 import { useSocketState } from "./globalState/socketState";
+import { UserState } from "./globalState/userState";
 
 export const StateProvider = ({ children }) => {
   const storeDetail = useStoreDetailState();
@@ -18,6 +19,7 @@ export const StateProvider = ({ children }) => {
   const printer = usePrintersState(storeDetail);
   const sound = useSoundState();
   const socket = useSocketState({ ...storeDetail, ...sound });
+  const user = UserState();
   let store = Object.assign(
     order,
     table,
@@ -26,7 +28,8 @@ export const StateProvider = ({ children }) => {
     reservation,
     printer,
     sound,
-    socket
+    socket,
+    user
   );
   return <Context.Provider value={store}>{children}</Context.Provider>;
 };

@@ -42,7 +42,7 @@ export default function UserList() {
 
   const [promoName, setPromoName] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('true');
   
   // upload photo
   const [namePhoto, setNamePhoto] = useState("");
@@ -107,11 +107,14 @@ export default function UserList() {
   // select promotion 
   const _selectPromotion = async () => {
     try {
+      const storeDetail = localStorage.getItem("storeDetail")
+      const store = JSON.parse(storeDetail);
       const token = JSON.parse(localStorage.getItem('@userKey'))
+      console.log(store._id);
       setIsLoading(true);
         await axios({
         method: "get",
-        url: 'http://localhost:7070/v3/promotion/getManyPromo',
+        url: `http://localhost:7070/v3/promotion/getManyPromo/${store._id}`,
         data: {...promotion},
       headers: {
         "Authorization": `AppZap ${token.accessToken}`
@@ -129,8 +132,7 @@ export default function UserList() {
     try {
       const store = localStorage.getItem('storeDetail')
       const token = JSON.parse(localStorage.getItem('@userKey'))
-      const storeId = JSON.parse(store);
-    // console.log(storeId._id);
+      const storeId = JSON.parse(store)
 
     const promotion = {
       storeId:storeId._id,

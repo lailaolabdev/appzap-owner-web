@@ -40,6 +40,7 @@ import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
 import AuthRoutes from "./Auth.routes";
 import OrderRoutes from "./Order.routes";
+import DesignRoutes from "./Design.routes";
 
 function Router() {
   return useRoutes([
@@ -178,7 +179,7 @@ function Router() {
           element: <ReservationList />,
         },
         {
-          path: "/reservation-dashboard",
+          path: "/reservationDashboard",
           element: <ReservationDashboard />,
         },
         {
@@ -190,12 +191,13 @@ function Router() {
           element: <DoingOrder />,
         },
         {
-          path: "/setting-theme",
+          path: "/settingTheme",
           element: <SettingTheme />,
         },
         OrderRoutes,
         MenuRoutes,
         PrinterRoutes,
+        DesignRoutes,
       ],
     },
     AuthRoutes,
