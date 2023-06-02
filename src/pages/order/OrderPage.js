@@ -39,6 +39,11 @@ export default function OrderPage() {
     getOrderItemsStore,
     selectOrderStatus,
     setSelectOrderStatus,
+    newOrderTransaction,
+    setNewOrderTransaction,
+    getOrderWaitingAndDoingByStore,
+    orderDoing,
+    orderWaiting,
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -142,9 +147,17 @@ export default function OrderPage() {
     }
   };
   // useEffect
+
   useEffect(() => {
-    // console.log("domain", domain);
+    setSelectOrderStatus(WAITING_STATUS);
+    setNewOrderTransaction(true);
   }, []);
+
+  useEffect(() => {
+    getOrderItemsStore(selectOrderStatus);
+    getOrderWaitingAndDoingByStore();
+    setNewOrderTransaction(false);
+  }, [newOrderTransaction, selectOrderStatus]);
 
   const Tool = () => {
     return (
@@ -155,14 +168,20 @@ export default function OrderPage() {
         }}
       >
         <div>
-          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => onPrintForCher()}>ພິມບິນໄປຄົວ</Button>
+          <Button
+            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            onClick={() => onPrintForCher()}
+          >
+            ພິມບິນໄປຄົວ
+          </Button>
         </div>
         <div style={{ width: "50px" }}></div>
         <div>
-          <Button 
-          style={{color:"white", backgroundColor:"#FB6E3B"}}
-            onClick={() => {
-              handleUpdateOrderStatus("CANCEL");
+          <Button
+            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            onClick={async () => {
+              await handleUpdateOrderStatus("CANCEL");
+              getOrderWaitingAndDoingByStore();
             }}
           >
             {/* ຍົກເລີກ */}
@@ -172,14 +191,26 @@ export default function OrderPage() {
         <div style={{ width: "10px" }}></div>
 
         <div>
-          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => handleUpdateOrderStatus("DOING")}>
+          <Button
+            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            onClick={async () => {
+              await handleUpdateOrderStatus("DOING");
+              getOrderWaitingAndDoingByStore();
+            }}
+          >
             {/* ສົ່ງໄປຄົວ */}
             {t("sendToKitchen")}
           </Button>
         </div>
         <div style={{ width: "10px" }}></div>
         <div>
-          <Button style={{color:"white", backgroundColor:"#FB6E3B"}} onClick={() => handleUpdateOrderStatus("SERVED")}>
+          <Button
+            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            onClick={async () => {
+              await handleUpdateOrderStatus("SERVED");
+              getOrderWaitingAndDoingByStore();
+            }}
+          >
             {/* ເສີບແລ້ວ */}
             {t("served")}
           </Button>
@@ -197,14 +228,21 @@ export default function OrderPage() {
           onSelect={(select) => {
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
+            getOrderWaitingAndDoingByStore();
           }}
           className="myClass"
         >
-          <Tab eventKey={WAITING_STATUS} title={`${t("hasOrder")}`}>
+          <Tab
+            eventKey={WAITING_STATUS}
+            title={`${t("hasOrder")}(${orderWaiting?.length})`}
+          >
             <Tool />
             <WaitingOrderTab />
           </Tab>
-          <Tab eventKey={DOING_STATUS} title={`${t("cooking")}`}>
+          <Tab
+            eventKey={DOING_STATUS}
+            title={`${t("cooking")}(${orderDoing?.length})`}
+          >
             <Tool />
             <DoingOrderTab />
           </Tab>

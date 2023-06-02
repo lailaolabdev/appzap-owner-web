@@ -55,7 +55,7 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
         return;
       }
       setRunNT(true);
-    }, 10000);
+    }, 15000);
     return () => {
       clearInterval(startInternal);
     };

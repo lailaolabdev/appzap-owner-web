@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { END_POINT, WAITING_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import { updateOrderItem } from "../../services/order";
+import axios from "axios";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
@@ -14,6 +15,10 @@ export const useOrderState = () => {
   const [callCheckBill, setCallCheckBill] = useState([]);
   const soundPlayer = useRef();
   const [selectOrderStatus, setSelectOrderStatus] = useState(""); //waiting,doing,served
+
+  const [orderServed, setOrderServed] = useState([]);
+  const [orderDoing, setOrderDoing] = useState([]);
+  const [orderWaiting, setOrderWaiting] = useState([]);
 
   const initialOrderSocket = useMemo(
     () => async () => {
@@ -28,54 +33,79 @@ export const useOrderState = () => {
   );
 
   const callingCheckOut = async () => {
-    await setOrderLoading(true);
-    let _userData = await getLocalData();
-    await fetch(
-      END_POINT +
-        `/v3/bills?status=CALL_TO_CHECKOUT&storeId=${_userData?.DATA?.storeId}`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setCallCheckBill(json);
-        setOrderLoading(false);
-      });
-    setOrderLoading(false);
+    try {
+      await setOrderLoading(true);
+      let _userData = await getLocalData();
+      await fetch(
+        END_POINT +
+          `/v3/bills?status=CALL_TO_CHECKOUT&storeId=${_userData?.DATA?.storeId}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          setCallCheckBill(json);
+          setOrderLoading(false);
+        });
+      setOrderLoading(false);
+    } catch (err) {
+      setOrderLoading(false);
+    }
+  };
+  const getOrderWaitingAndDoingByStore = async (skip = 0, limit = 200) => {
+    try {
+      let _userData = await getLocalData();
+
+      const orderDoing = await axios.get(
+        END_POINT +
+          `/v3/orders?status=DOING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
+      );
+      const orderWaiting = await axios.get(
+        END_POINT +
+          `/v3/orders?status=WAITING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
+      );
+      console.log("orderDoing?.data", orderDoing?.data);
+      setOrderDoing(orderDoing?.data);
+      setOrderWaiting(orderWaiting?.data);
+    } catch (err) {
+      
+    }
   };
 
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
     // console.log("getOrderItemsStore runnnnn");
-
-    setOrderItems([]);
-    let time = "";
-    if (status === "SERVED" ||status === "CANCELED") {
-      time = `&startDate=${moment(moment())
-        .add(-1, "days")
-        .format("MM-DD-YYYY")}&endDate=${moment().format("MM-DD-YYYY")}`;
-    }
-
-    await setOrderLoading(true);
-    let _userData = await getLocalData();
-    await fetch(
-      END_POINT +
-        `/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}` +
-        time,
-      {
-        method: "GET",
+    try {
+      setOrderItems([]);
+      let time = "";
+      if (status === "SERVED" || status === "CANCELED") {
+        time = `&startDate=${moment(moment())
+          .add(-1, "days")
+          .format("MM-DD-YYYY")}&endDate=${moment().format("MM-DD-YYYY")}`;
       }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setOrderLoading(false);
-        setOrderItems(json);
-      });
-    setOrderLoading(false);
+
+      await setOrderLoading(true);
+      let _userData = await getLocalData();
+      await fetch(
+        END_POINT +
+          `/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}` +
+          time,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          setOrderLoading(false);
+          setOrderItems(json);
+        });
+      setOrderLoading(false);
+    } catch (err) {
+      setOrderLoading(false);
+    }
   };
 
   const handleUpdateOrderStatus = async (status, storeId) => {
-    console.log("handleUpdateOrderStatus runnnnn");
     let previousStatus = orderItems[0].status;
     let _updateItems = orderItems
       .filter((item) => item.isChecked)
@@ -157,5 +187,10 @@ export const useOrderState = () => {
     initialOrderSocket,
     selectOrderStatus,
     setSelectOrderStatus,
+    getOrderWaitingAndDoingByStore,
+    orderDoing,
+    setOrderDoing,
+    orderWaiting,
+    setOrderWaiting,
   };
 };
