@@ -68,9 +68,7 @@ export const useOrderState = () => {
       console.log("orderDoing?.data", orderDoing?.data);
       setOrderDoing(orderDoing?.data);
       setOrderWaiting(orderWaiting?.data);
-    } catch (err) {
-      
-    }
+    } catch (err) {}
   };
 
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
@@ -81,7 +79,9 @@ export const useOrderState = () => {
       if (status === "SERVED" || status === "CANCELED") {
         time = `&startDate=${moment(moment())
           .add(-1, "days")
-          .format("MM-DD-YYYY")}&endDate=${moment().format("MM-DD-YYYY")}`;
+          .format("MM-DD-YYYY")}&endDate=${moment(moment())
+          .add(+1, "days")
+          .format("MM-DD-YYYY")}`;
       }
 
       await setOrderLoading(true);
