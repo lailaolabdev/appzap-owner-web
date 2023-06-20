@@ -7,12 +7,17 @@ const dev = "https://dev-api.appzap.la"; // dev endpoint
 // const dev = "https://api.appzap.la"; //locals
 // const production = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
-const production_socket = "https://app-api-alb.appzap.la"; // Production
-const dev_socket = "http://3.0.147.125:7070";
+const production_socket = "ws://socket.appzap.la:8888"; // Production
+const dev_socket = "ws://socket2.appzap.la:8888";
+const production_web_client = "https://client.appzap.la/store/";
+const dev_web_client = "http://18.141.158.70:3000/store/";
 const isProduction = production_domain == now_domain;
 export const END_POINT_SEVER = isProduction ? production : dev;
 export const END_POINT_APP = isProduction ? production : dev;
 export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
+export const END_POINT_WEB_CLIENT = isProduction
+  ? production_web_client
+  : dev_web_client;
 
 // ------------------------------------------
 

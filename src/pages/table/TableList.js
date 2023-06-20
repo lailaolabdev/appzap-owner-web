@@ -32,7 +32,7 @@ import CheckOutType from "./components/CheckOutType";
  **/
 import { COLOR_APP } from "../../constants/index";
 import { useStore } from "../../store";
-import { END_POINT_SEVER } from "../../constants/api";
+import { END_POINT_SEVER, END_POINT_WEB_CLIENT } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
@@ -44,14 +44,12 @@ import { getCodes } from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 
-
 export default function TableList() {
   const navigate = useNavigate();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
-
 
   // state
   const [show, setShow] = useState(false);
@@ -65,9 +63,10 @@ export default function TableList() {
   const handleClose1 = () => setShow1(false);
   const handleShow1 = (e) => {
     setShow1(true);
-  }
+  };
 
-  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value)
+  const handleSelectedCancelOrder = (e) =>
+    setSeletedCancelOrderItem(e.target.value);
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -83,8 +82,8 @@ export default function TableList() {
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
     // _orderTableQunatity(item)
-    setSeletedOrderItem(item)
-    setQuantity(true)
+    setSeletedOrderItem(item);
+    setQuantity(true);
   };
 
   const { printerCounter, printers } = useStore();
@@ -124,21 +123,18 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
-  const [checkedBox, setCheckedBox] = useState(true)
-
+  const [checkedBox, setCheckedBox] = useState(true);
 
   // function handleSetQuantity(int, seletedOrderItem) {
-  //   let _data = seletedOrderItem?.quantity + int 
+  //   let _data = seletedOrderItem?.quantity + int
   //   setSeletedOrderItem(_data)
   // }
   function handleSetQuantity(int, seletedOrderItem) {
-    let _data = seletedOrderItem?.quantity + int
+    let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
-      setSeletedOrderItem({ ...seletedOrderItem, quantity: _data })
+      setSeletedOrderItem({ ...seletedOrderItem, quantity: _data });
     }
   }
-
-
 
   const canCheckOut = !tableOrderItems.find(
     (e) =>
@@ -222,11 +218,10 @@ export default function TableList() {
       });
 
       if (updateTable?.status < 300) {
-        setQuantity(false)
+        setQuantity(false);
         reLoadData();
         successAdd("ແກ້ໄຂຈຳນວນສຳເລັດ");
       }
-
     } catch (err) {
       errorAdd("ແກ້ໄຂຈຳນວນບໍ່ສຳເລັດ");
     }
@@ -553,17 +548,16 @@ export default function TableList() {
 
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
-        return true
+        return true;
       }
-      return false
+      return false;
     });
 
     if (_isChecked.length === 0) {
-      setCheckedBox(true)
+      setCheckedBox(true);
     } else {
-      setCheckedBox(false)
+      setCheckedBox(false);
     }
-
   };
 
   const checkAllOrders = (item) => {
@@ -602,7 +596,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
-      setCheckedBox(!checkedBox)
+      setCheckedBox(!checkedBox);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -627,7 +621,7 @@ export default function TableList() {
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
-      setCheckedBox(!checkedBox)
+      setCheckedBox(!checkedBox);
       Swal.fire({
         icon: "success",
         title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
@@ -652,11 +646,16 @@ export default function TableList() {
           // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem);
+    let _resOrderUpdate = await updateOrderItem(
+      _updateItems,
+      storeId,
+      menuId,
+      seletedCancelOrderItem
+    );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      handleClose1()
+      handleClose1();
       reLoadData();
-      setCheckedBox(!checkedBox)
+      setCheckedBox(!checkedBox);
       // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
@@ -712,10 +711,10 @@ export default function TableList() {
             }}
           >
             <div style={{ backgroundColor: "#ff926a", padding: "10px" }}>
-              {t('totalTable')} : {tableList?.length}, {t('totalUnavailableTable')} :{" "}
-              {_checkStatusCode(tableList)}, {t('totalAvailableTable')} :{" "}
-              {_checkStatusCodeA(tableList)}, {t('totalBillCheck')} :{" "}
-              {_checkStatusCodeB(tableList)}
+              {t("totalTable")} : {tableList?.length},{" "}
+              {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
+              {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
+              {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div>
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
@@ -776,8 +775,8 @@ export default function TableList() {
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : table.statusBill === "CALL_TO_CHECKOUT"
-                              ? "blink_cardCallCheckOut"
-                              : ""
+                            ? "blink_cardCallCheckOut"
+                            : ""
                         }
                         onClick={() => {
                           onSelectTable(table);
@@ -802,7 +801,9 @@ export default function TableList() {
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>
-                              {table?.isStaffConfirm ? `${t('unavailable')}` : `${t('avaliable')}`}
+                              {table?.isStaffConfirm
+                                ? `${t("unavailable")}`
+                                : `${t("avaliable")}`}
                             </div>
                           </span>
                         </div>
@@ -852,7 +853,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t('tableNumber2')}:{" "}
+                          {t("tableNumber2")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -867,14 +868,13 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t('timeOfTableOpening')}:{" "}
-                          
+                          {t("timeOfTableOpening")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
                               color: COLOR_APP,
                             }}
-                        >
+                          >
                             {moment(selectedTable?.createdAt).format("HH:mm A")}
                           </span>
                         </div>
@@ -883,7 +883,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t('respon')}:{" "}
+                          {t("respon")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -891,10 +891,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                            dataBill?.orderId[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -904,7 +904,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t('discount')}:{" "}
+                          {t("discount")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -912,7 +912,9 @@ export default function TableList() {
                             }}
                           >
                             {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT" ? "%" : t('lak')}
+                            {dataBill?.discountType === "PERCENT"
+                              ? "%"
+                              : t("lak")}
                           </span>
                         </div>
                       </div>
@@ -931,7 +933,7 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom onClick={() => onPrintForCher()}>
-                          {t('printBillToKitchen')}
+                          {t("printBillToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
@@ -940,7 +942,7 @@ export default function TableList() {
                               icon={faWindowClose}
                               style={{ color: "#fff", marginRight: 10 }}
                             /> */}
-                          {t('closeTable')}
+                          {t("closeTable")}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>ລວມໂຕະ</ButtonCustom>
                         <ButtonCustom
@@ -949,7 +951,7 @@ export default function TableList() {
                             setPopup({ discount: true });
                           }}
                         >
-                          {t('discount')}
+                          {t("discount")}
                         </ButtonCustom>
 
                         <ButtonCustom
@@ -967,7 +969,7 @@ export default function TableList() {
                             )
                           }
                         >
-                          + {t('addOrder')}
+                          + {t("addOrder")}
                         </ButtonCustom>
                       </div>
                       <div
@@ -985,24 +987,22 @@ export default function TableList() {
                         hidden={checkedBox}
                       >
                         <ButtonCustom
-                          onClick={() =>
-                            handleShow1()
-                          }
+                          onClick={() => handleShow1()}
                           disabled={checkedBox}
                         >
-                          {t('cancel')}
+                          {t("cancel")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
                           disabled={checkedBox}
                         >
-                          {t('sendToKitchen')}
+                          {t("sendToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
                           disabled={checkedBox}
                         >
-                          {t('served')}
+                          {t("served")}
                         </ButtonCustom>
                       </div>
 
@@ -1018,65 +1018,66 @@ export default function TableList() {
                                 }}
                               />
                             </th>
-                            <th>{t('no')}</th>
-                            <th>{t('menuname')}</th>
-                            <th>{t('quantity')}</th>
-                            <th>{t('status')}</th>
-                            <th>{t('customer')}</th>
-                            <th>{t('time')}</th>
+                            <th>{t("no")}</th>
+                            <th>{t("menuname")}</th>
+                            <th>{t("quantity")}</th>
+                            <th>{t("status")}</th>
+                            <th>{t("customer")}</th>
+                            <th>{t("time")}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                              <tr
-                                onClick={() => handleShowQuantity(orderItem)}
-                                key={"order" + index}
-                                style={{ borderBottom: "1px solid #eee" }}
-                              >
-                                <td onClick={(e) => e.stopPropagation()}>
-                                  <Checkbox
-                                    disabled={orderItem?.status === "CANCELED"}
-                                    name="checked"
-                                    checked={orderItem?.isChecked || false}
-                                    onChange={(e) => {
-                                      // e.stopPropagation()
-                                      onSelect({
-                                        ...orderItem,
-                                        isChecked: e.target.checked,
-                                      })
-                                    }
-                                    }
-                                  />
-                                </td>
+                                <tr
+                                  onClick={() => handleShowQuantity(orderItem)}
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        // e.stopPropagation()
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
 
-                                <td>{index + 1}</td>
-                                <td>{orderItem?.name}</td>
-                                <td>{orderItem?.quantity}</td>
-                                <td
-                                  style={{
-                                    color:
-                                      orderItem?.status === `SERVED`
-                                        ? "green"
-                                        : orderItem?.status === "DOING"
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                  }}
-                                >
-                                  {orderItem?.status
-                                    ? orderStatus(orderItem?.status)
-                                    : "-"}
-                                </td>
-                                <td>{orderItem?.createdBy?.firstname}</td>
-                                <td>
-                                  {orderItem?.createdAt
-                                    ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
-                                    )
-                                    : "-"}
-                                </td>
-                              </tr>
-                            ))
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1084,7 +1085,7 @@ export default function TableList() {
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
-                            {t('TableHasNoOrder')}
+                            {t("TableHasNoOrder")}
                           </div>
                         </div>
                       )}
@@ -1121,7 +1122,7 @@ export default function TableList() {
                 </div>
                 <QRCode
                   value={
-                    "https://client.appzap.la/store/" +
+                    END_POINT_WEB_CLIENT +
                     selectedTable?.storeId +
                     "?tableId=" +
                     selectedTable?.tableId
@@ -1135,7 +1136,7 @@ export default function TableList() {
                     textAlign: "center",
                   }}
                 >
-                  {t('bringThisQRCodeToCustomersOrPressOpenToStartUsing')}
+                  {t("bringThisQRCodeToCustomersOrPressOpenToStartUsing")}
                 </p>
                 <p
                   style={{
@@ -1159,7 +1160,7 @@ export default function TableList() {
                   }}
                   onClick={() => openTable()}
                 >
-                  {!selectedTable?.isOpened ? `${t('open')}` : "ຢືນຢັນເປີດໂຕະ"}
+                  {!selectedTable?.isOpened ? `${t("open")}` : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
               </div>
             )}
@@ -1349,18 +1350,53 @@ export default function TableList() {
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <select size="8" style={{ overflow: "auto", border: "none", fontSize: "20px" }} className="form-control"
+            <select
+              size="8"
+              style={{ overflow: "auto", border: "none", fontSize: "20px" }}
+              className="form-control"
               onChange={handleSelectedCancelOrder}
             >
               {/* value={seletedCancelOrderItem?.remark} */}
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ເສີບອາຫານຜິດໂຕະ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ລູກຄ້າຍົກເລີກ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ຄົວເຮັດອາຫານຜິດ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ພະນັກງານເສີບ ຄີອາຫານຜິດ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານດົນ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ອາຫານໝົດ</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>drinkIsGone</option>
-              <option style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}>ບໍ່ມີອາຫານໃນໂຕະ</option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ເສີບອາຫານຜິດໂຕະ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ລູກຄ້າຍົກເລີກ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ຄົວເຮັດອາຫານຜິດ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ພະນັກງານເສີບ ຄີອາຫານຜິດ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ອາຫານດົນ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ອາຫານໝົດ
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                drinkIsGone
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                ບໍ່ມີອາຫານໃນໂຕະ
+              </option>
             </select>
           </Form.Group>
         </Modal.Body>
@@ -1368,7 +1404,10 @@ export default function TableList() {
           <Button variant="danger" onClick={() => handleClose1()}>
             ຍົກເລີກ
           </Button>
-          <Button variant="success" onClick={() => handleUpdateOrderStatuscancel("CANCELED")}>
+          <Button
+            variant="success"
+            onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
+          >
             ບັນທຶກ
           </Button>
         </Modal.Footer>
@@ -1383,24 +1422,38 @@ export default function TableList() {
             <TableCustom>
               <thead>
                 <tr>
-                  <th>{t('table')}</th>
-                  <th>{t('menuname')}</th>
-                  <th>{t('quantity')}</th>
-                  <th>{t('status')}</th>
-                  <th>{t('customer')}</th>
-                  <th>{t('time')}</th>
+                  <th>{t("table")}</th>
+                  <th>{t("menuname")}</th>
+                  <th>{t("quantity")}</th>
+                  <th>{t("status")}</th>
+                  <th>{t("customer")}</th>
+                  <th>{t("time")}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>
-                    {seletedOrderItem?.tableId?.name}
-                  </td>
+                  <td>{seletedOrderItem?.tableId?.name}</td>
                   <td>{seletedOrderItem?.name}</td>
-                  <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, seletedOrderItem)}>-</button>
+                  <td
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <button
+                      style={{ color: "blue", border: "none", width: 25 }}
+                      onClick={() => handleSetQuantity(-1, seletedOrderItem)}
+                    >
+                      -
+                    </button>
                     {seletedOrderItem?.quantity}
-                    <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, seletedOrderItem)}>+</button>
+                    <button
+                      style={{ color: "red", border: "none", width: 25 }}
+                      onClick={() => handleSetQuantity(1, seletedOrderItem)}
+                    >
+                      +
+                    </button>
                   </td>
                   <td
                     style={{
@@ -1408,8 +1461,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                            ? ""
-                            : "red",
+                          ? ""
+                          : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -1419,9 +1472,7 @@ export default function TableList() {
                   <td>{seletedOrderItem?.createdBy?.firstname}</td>
                   <td>
                     {seletedOrderItem?.createdAt
-                      ? moment(seletedOrderItem?.createdAt).format(
-                        "HH:mm A"
-                      )
+                      ? moment(seletedOrderItem?.createdAt).format("HH:mm A")
                       : "-"}
                   </td>
                 </tr>
@@ -1472,7 +1523,12 @@ export default function TableList() {
           <Button variant="danger" onClick={() => handleCloseQuantity()}>
             ຍົກເລີກ
           </Button>
-          <Button variant="success" onClick={() => { _orderTableQunatity() }}>
+          <Button
+            variant="success"
+            onClick={() => {
+              _orderTableQunatity();
+            }}
+          >
             ບັນທຶກ
           </Button>
         </Modal.Footer>
