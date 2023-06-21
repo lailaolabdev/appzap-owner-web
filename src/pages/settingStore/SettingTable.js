@@ -6,13 +6,21 @@ import { END_POINT } from "../../constants";
 import { Modal, Button, Form } from "react-bootstrap";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrashAlt,
+  faEdit,
+  faQrcode,
+} from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { useParams } from "react-router-dom";
+import { QrReader } from "react-qr-reader";
+import { END_POINT_WEB_CLIENT } from "../../constants/api";
+import ButtonPrimary from "../../components/button/ButtonPrimary";
 
 export default function SettingTable() {
+  const [data, setData] = useState("No result");
   const params = useParams();
   const { tableListCheck, setTableListCheck, getTableDataStoreList } =
     useStore();
@@ -59,6 +67,7 @@ export default function SettingTable() {
     }
   };
   const [show4, setShow4] = useState(false);
+  const [popup, setPopup] = useState({ qr: false });
 
   const _updateTable = async () => {
     let header = await getHeaders();
@@ -134,6 +143,7 @@ export default function SettingTable() {
   const handleShow4 = (item) => {
     console.log(item);
     setSelectTatle({
+      ...item,
       id: item?.tableId,
       name: item?.tableName || "",
       sort: item?.sort || 0,
@@ -164,8 +174,8 @@ export default function SettingTable() {
     }
   };
   return (
-    <div style={{ padding: 15 }} className="col-sm-12">
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+    <div style={{ padding: 10 }} className="col-sm-12">
+      <div style={{ backgroundColor: "#FAF9F7", padding: 10, borderRadius: 8 }}>
         <div className="col-sm-12 text-right">
           <button
             className="col-sm-2"
@@ -181,63 +191,99 @@ export default function SettingTable() {
           </button>
         </div>
         <div style={{ height: 20 }}></div>
-        <div>
-          <div className="col-sm-12">
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">ລະຫັດ</th>
-                  <th scope="col">ລະຫັດໂຕະ</th>
-                  <th scope="col">ການເປີດ/ປິດ</th>
-                  <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th>
-                  <th scope="col">ຈັດການ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tableListCheck?.map((table, index) => {
-                  return (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{table?.tableName}</td>
-                      <td>{table?.code}</td>
-                      <td>
-                        <label className="switch">
-                          <input
-                            type="checkbox"
-                            checked={
-                              table?.status === true ? true : false
-                            }
-                            onClick={(e) => _changeStatusTable(table)}
-                          />
-                          <span className="slider round"></span>
-                        </label>
-                      </td>
-                      <td
+        <div style={{ width: "100%", overflow: "auto" }}>
+          <table style={{ width: "100%" }}>
+            <thead>
+              <tr>
+                {/* <th scope="col">#</th> */}
+                <th scope="col">ລະຫັດ</th>
+                {/* <th scope="col">ການເປີດ/ປິດ</th> */}
+                {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
+                <th scope="col" style={{ textAlign: "right" }}>
+                  ຈັດການ
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableListCheck?.map((table, index) => {
+                return (
+                  <tr>
+                    {/* <td>{index + 1}</td> */}
+                    <td>
+                      {table?.tableName}
+                      {/* {table?.isOpened ? (
+                        ""
+                      ) : (
+                        <span style={{ color: "red" }}> - (ປິດ)</span>
+                      )} */}
+                    </td>
+                    {/* <td>
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          checked={table?.status === true ? true : false}
+                          onClick={(e) => _changeStatusTable(table)}
+                        />
+                        <span className="slider round"></span>
+                      </label>
+                    </td> */}
+                    {/* <td
+                      style={{
+                        color: table?.isOpened === true ? "green" : "red",
+                      }}
+                    >
+                      {table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີ"}
+                    </td> */}
+                    <td>
+                      <div
                         style={{
-                          color: table?.isOpened === true ? "green" : "red",
+                          display: "flex",
+                          gap: 10,
+                          justifyContent: "flex-end",
                         }}
                       >
-                        {table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີ"}
-                      </td>
-                      <td>
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          style={{ marginLeft: 20, color: "red" }}
+                        <ButtonPrimary
                           onClick={() => handleShow3(table)}
-                        />
-                        <FontAwesomeIcon
-                          icon={faEdit}
-                          style={{ marginLeft: 20, color: "red" }}
+                          disabled={table?.isOpened}
+                        >
+                          <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            style={{
+                              color: "white",
+                            }}
+                          />
+                        </ButtonPrimary>
+                        <ButtonPrimary
                           onClick={() => handleShow4(table)}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                          disabled={table?.isOpened}
+                        >
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            style={{
+                              color: "white",
+                            }}
+                          />
+                        </ButtonPrimary>
+                        <ButtonPrimary
+                          onClick={() => {
+                            setSelectTatle(table);
+                            setPopup({ qr: true });
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faQrcode}
+                            style={{
+                              color: "white",
+                            }}
+                          />
+                        </ButtonPrimary>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
       <Modal show={show} onHide={handleClose}>
@@ -306,6 +352,18 @@ export default function SettingTable() {
               }
             />
           </Form.Group>
+          <div>ເປີດໃຊ້ງານ</div>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={selectTatle?.status === true ? true : false}
+              onClick={(e) => {
+                _changeStatusTable(selectTatle);
+                setShow4(false);
+              }}
+            />
+            <span className="slider round"></span>
+          </label>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow4(false)}>
@@ -326,6 +384,37 @@ export default function SettingTable() {
         onSubmit={_confirmeDelete}
         text={dateDelete?.code}
       />
+      {/* ===== qr ===== */}
+
+      <Modal show={popup?.qr} onHide={() => setPopup()}>
+        <Modal.Header closeButton>
+          <Modal.Title>QR </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <QrReader
+            onResult={(result, error) => {
+              if (!!result) {
+                axios
+                  .put(result?.text, {
+                    type: "LINK",
+                    "details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
+                  })
+                  .then(() => {
+                    setPopup();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
+
+              if (!!error) {
+                console.info(error);
+              }
+            }}
+            style={{ width: "100%" }}
+          />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

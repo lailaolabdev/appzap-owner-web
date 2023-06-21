@@ -29,7 +29,6 @@ import StockList from "../pages/stock/StockList";
 import StockCategory from "../pages/stock/Categorylist";
 import StockHistory from "../pages/stock/HistoryList";
 import SettingList from "../pages/settingStore/SettingList";
-import SettingTable from "../pages/settingStore/SettingTable";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
 import SettingTheme from "../pages/setting_theme/settingTheme";
@@ -41,6 +40,7 @@ import PrinterRoutes from "./Printer.routes";
 import AuthRoutes from "./Auth.routes";
 import OrderRoutes from "./Order.routes";
 import DesignRoutes from "./Design.routes";
+import TableRoutes from "./Table.routes";
 
 function Router() {
   return useRoutes([
@@ -163,10 +163,6 @@ function Router() {
           element: <SettingList />,
         },
         {
-          path: "/settingStore/settingTable/:id",
-          element: <SettingTable />,
-        },
-        {
           path: "/messagerList",
           element: <MessagerList />,
         },
@@ -198,6 +194,7 @@ function Router() {
         MenuRoutes,
         PrinterRoutes,
         DesignRoutes,
+        TableRoutes,
       ],
     },
     AuthRoutes,
