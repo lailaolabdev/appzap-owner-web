@@ -393,6 +393,7 @@ export default function SettingTable() {
         <Modal.Body>
           <QrReader
             onResult={(result, error) => {
+              console.log(result)
               if (!!result) {
                 axios
                   .put(result?.text, {
@@ -407,9 +408,12 @@ export default function SettingTable() {
                   });
               }
 
-              if (!!error) {
-                console.info(error);
-              }
+              // if (!!error) {
+              //   console.info(error);
+              // }
+            }}
+            constraints={{
+              facingMode: "environment",
             }}
             style={{ width: "100%" }}
           />

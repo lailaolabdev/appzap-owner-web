@@ -16,6 +16,7 @@ import {
   faChartBar,
   faAddressCard,
   faIcicles,
+  faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -78,6 +79,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
+      hidden: !storeDetail?.hasSmartMenu,
+      system: "menuManagement",
+    },
+    {
+      title: "ລາຍງານ (ໃໝ່)",
+      key: "reportmenu",
+      typeStore: "",
+      icon: faChartLine,
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
