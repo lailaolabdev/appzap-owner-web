@@ -310,8 +310,8 @@ export default function TableList() {
         data: {
           id: dataSettingModal?._id,
           data: {
-            isOpened: "false",
-            isStaffConfirm: "false",
+            isOpened: false,
+            isStaffConfirm: false,
           },
         },
         headers: headers,
