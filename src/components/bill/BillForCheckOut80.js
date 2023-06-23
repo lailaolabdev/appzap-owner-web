@@ -9,11 +9,25 @@ export default function BillForCheckOut80({
   dataBill,
 }) {
   const [total, setTotal] = useState();
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState();
 
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
       _total += _data?.quantity * _data?.price;
+    }
+    if (dataBill?.discount > 0) {
+      if (
+        dataBill?.discountType == "LAK" ||
+        dataBill?.discountType == "MONEY"
+      ) {
+        setTotalAfterDiscount(_total + dataBill?.discount);
+      } else {
+        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+        setTotalAfterDiscount(_total - ddiscount);
+      }
+    } else {
+      setTotalAfterDiscount(_total);
     }
     setTotal(_total);
   };
@@ -49,13 +63,6 @@ export default function BillForCheckOut80({
           </div>
         </div>
         <div style={{ flexGrow: 1 }}></div>
-        <Img>
-          <img
-            src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
-            style={{ wifth: "100%", height: "100%" }}
-            alt=""
-          />
-        </Img>
       </Price>
       <Name style={{ marginBottom: 10 }}>
         <div style={{ textAlign: "left" }}>ລາຍການ</div>
@@ -93,13 +100,20 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
-          <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
+          <div>
+            ສ່ວນຫຼຸດ:
+            {dataBill?.discount}{" "}
+            {dataBill?.discountType == "MONEY" ||
+            dataBill?.discountType == "LAK"
+              ? "ກີບ"
+              : "%"}
+          </div>
         </div>
       </Price>
       <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
+        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount)} ກີບ</h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
@@ -108,6 +122,21 @@ export default function BillForCheckOut80({
           <div>ເງີນທອນ 0</div>
         </div>
       </Price>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          padding: 10,
+        }}
+      >
+        <Img>
+          <img
+            src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
+            style={{ wifth: "100%", height: "100%" }}
+            alt=""
+          />
+        </Img>
+      </div>
     </Container>
   );
 }
@@ -125,9 +154,10 @@ const Container = styled.div`
   /* maxwidth: 80mm; */
 `;
 const Img = styled.div`
-  width: 90px;
-  height: 90px;
+  width: 200px;
+  height: 200px;
   font-size: 14px;
+  border: 2px dotted #000;
 `;
 const Order = styled.div`
   display: flex;

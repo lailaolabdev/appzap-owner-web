@@ -14,10 +14,10 @@ export default function ReportMenuPage() {
   return (
     <div
       style={{
-        padding: 10,
+        padding: 20,
         display: "flex",
         flexDirection: "column",
-        gap: 10,
+        gap: 20,
       }}
     >
       {/* <ReportChart1 /> */}

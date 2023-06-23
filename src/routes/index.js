@@ -42,6 +42,7 @@ import OrderRoutes from "./Order.routes";
 import DesignRoutes from "./Design.routes";
 import TableRoutes from "./Table.routes";
 import ReportRoutes from "./Report.routes";
+import DashboardRoutes from "./Dashboard.routes";
 
 function Router() {
   return useRoutes([
@@ -197,6 +198,7 @@ function Router() {
         DesignRoutes,
         TableRoutes,
         ReportRoutes,
+        DashboardRoutes,
       ],
     },
     AuthRoutes,
