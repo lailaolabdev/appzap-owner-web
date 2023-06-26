@@ -44,6 +44,12 @@ import TableRoutes from "./Table.routes";
 import ReportRoutes from "./Report.routes";
 import DashboardRoutes from "./Dashboard.routes";
 
+
+//expend
+import ExpendsRoutes from "./Expend.routes"
+import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
+import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
+
 function Router() {
   return useRoutes([
     {
@@ -192,6 +198,15 @@ function Router() {
           path: "/settingTheme",
           element: <SettingTheme />,
         },
+        {
+          path: "add-expend",
+          element: <AddIncomeAndExpend />,
+        },
+        {
+          path: "edit-expend/:id",
+          element: <EditIncomeAndExpend />,
+        },
+
         OrderRoutes,
         MenuRoutes,
         PrinterRoutes,
@@ -199,6 +214,7 @@ function Router() {
         TableRoutes,
         ReportRoutes,
         DashboardRoutes,
+        ExpendsRoutes
       ],
     },
     AuthRoutes,

@@ -27,3 +27,22 @@ export const logout = async () => {
     console.log("logout error: ", error);
   }
 };
+
+
+export const getHeadersAccount = async (accessToken) => {
+  // const { profile } = useStore();
+  try {
+    const user = await localStorage.getItem(USER_KEY);
+    // const user = profile;
+    const token = await JSON.parse(user)?.["accessToken"];
+    if (accessToken) {
+      return { authorization: `${accessToken}` };
+    } else if (token) {
+      return { authorization: `${token}` };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("get token error: ", error);
+  }
+};

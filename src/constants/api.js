@@ -19,6 +19,9 @@ export const END_POINT_WEB_CLIENT = isProduction
   ? production_web_client
   : dev_web_client;
 
+export const END_POINT_SERVER_BUNSI = 'http://localhost:8080';
+
+
 // ------------------------------------------
 
 export const getLocalData = async () => {

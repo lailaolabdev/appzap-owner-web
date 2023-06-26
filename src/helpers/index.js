@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
+import moment from "moment"
 //
 export const orderStatus = (status) => {
   switch (status) {
@@ -122,4 +123,26 @@ export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
       resolve(canvas.toDataURL());
     };
   });
+};
+
+
+export const convertPayment = (status) => {
+  switch (status) {
+    case "COD":
+      return "ເງິນສົດ";
+    case "TRANSFER":
+      return "ເງິນໂອນ";
+    case "OTHER":
+      return `ອື່ນໆ`;
+    default:
+      return "ອື່ນໆ";
+  }
+};
+
+// ກຳນົດ ວັນທີປັດຈຸບັນ(ພາສາລາວ)
+export const formatDate = (dateTime) => {
+  moment.locale("lo");
+  let resp = moment(dateTime).format("DD-MM-YYYY");
+  if (dateTime) return resp;
+  else return "";
 };

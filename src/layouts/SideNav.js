@@ -17,6 +17,7 @@ import {
   faAddressCard,
   faIcicles,
   faChartLine,
+  faBook,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -65,6 +66,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       hidden: !storeDetail?.hasReservation,
       system: "reservationManagement",
+    },   
+    {
+      title: "ຈັດການລາຍຈ່າຍ",
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      hidden: !storeDetail?.hasPOS,
+      system: "expendsManagement",
     },
     {
       title: "ລາຍງານການຈອງ",
