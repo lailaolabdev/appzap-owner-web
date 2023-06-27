@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NumericFormat } from "react-number-format";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Formik } from "formik";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * component
@@ -12,7 +12,6 @@ import { TitleComponent, ButtonComponent } from "../../../components";
 import {
   successAdd,
   errorAdd,
-  successDelete,
 } from "../../../helpers/sweetalert";
 /**
  * function
@@ -26,20 +25,15 @@ import { getHeadersAccount } from "../../../services/auth";
 import {
   END_POINT_SERVER_BUNSI,
   getLocalData,
-  END_POINT_SEVER,
   PRESIGNED_URL,
 } from "../../../constants/api";
-import { URL_PHOTO_AW3 } from "../../../constants";
+
 /**
  * css
  */
 import {
-  Breadcrumb,
-  Stack,
-  Table,
   Row,
   Col,
-  Container,
   Form,
   ProgressBar,
   Spinner,
@@ -47,50 +41,51 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
-  faEdit,
-  faPlusCircle,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 
-// import { faClose, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function AddIncomeAndExpend() {
+  const navigate = useNavigate()
+
   const [imageLoadingMany, setImageLoadingMany] = useState(0);
   const [imgArr, setImgArr] = useState([]);
+
 
   const createExpend = async (data, setSubmitting) => {
     try {
       const _localData = await getLocalData();
+
       let header = await getHeadersAccount();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
 
-      await axios({
-        method: "POST",
-        url: END_POINT_SERVER_BUNSI + "/api/v1/expend",
-        data: {
-          ...data,
-          accountId: _localData?.DATA?.storeId,
-          platform: "APPZAPP",
-          typeStatus: "EXPEND",
-          expendImages:imgArr
-        },
-        headers: headers,
-      })
-        .then((response) => {
-          //   onClose();
-          console.log("response::", response);
-          successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-          setSubmitting(false);
-          setImgArr([])
-          //   callback(response);
-        })
-        .catch(function (error) {
-          errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
-          setSubmitting(false);
-        });
+       await axios({
+         method: "POST",
+         url: END_POINT_SERVER_BUNSI + "/api/v1/expend",
+         data: {
+           ...data,
+           accountId: _localData?.DATA?.storeId,
+           platform: "APPZAPP",
+           typeStatus: "EXPEND",
+           expendImages:imgArr,
+           createdBy: _localData?.DATA?._id,
+           createdByName:_localData?.DATA?.firstname,
+         },
+         headers: headers,
+       })
+         .then(async(response) => {
+           await  successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+           await setSubmitting(false);
+           await setImgArr([])
+           await navigate('/expends')
+         })
+         .catch(function (error) {
+           errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+           setSubmitting(false);
+         });
     } catch (err) {
       console.log("err::::", err);
     }
@@ -151,14 +146,8 @@ export default function AddIncomeAndExpend() {
     }
   return (
     <div style={{ padding: 20 }}>
-      {/* <Breadcrumb>
-        <Breadcrumb.Item href="#">ລົງບັນຊີຮັບ-ຈ່າຍ</Breadcrumb.Item>
-        <Breadcrumb.Item active>ລາຍລະອຽດ</Breadcrumb.Item>
-      </Breadcrumb> */}
-
+  
       <TitleComponent fontSize={"20px"} title="ລົງບັນຊີລາຍຈ່າຍປະຈຳວັນ" />
-
-      {/* <Container style={{ width: 800 }}> */}
       <Formik
         initialValues={{
           dateExpend: moment().format("YYYY-MM-DD"),
@@ -346,7 +335,7 @@ export default function AddIncomeAndExpend() {
                         onChange={handleChange}
                       >
                         <option value="">ເລືອກຮູບແບບຈ່າຍ</option>
-                        <option value="COD">ເງິນສົດ</option>
+                        <option value="CASH">ເງິນສົດ</option>
                         <option value="TRANSFER">ເງິນໂອນ</option>
                         <option value="OTHER">ອື່ນໆ</option>
                       </Form.Control>
@@ -452,6 +441,7 @@ export default function AddIncomeAndExpend() {
                   <ButtonComponent
                     title={"ປິດອອກ"}
                     width="150px"
+                    handleClick={() => navigate('/expends')}
                     colorbg={"lightgray"}
                     hoverbg={"gray"}
                   />
@@ -471,7 +461,6 @@ export default function AddIncomeAndExpend() {
           </form>
         )}
       </Formik>
-      {/* </Container> */}
     </div>
   );
 }

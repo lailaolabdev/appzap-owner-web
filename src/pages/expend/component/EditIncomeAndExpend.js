@@ -5,7 +5,6 @@ import { NumericFormat } from "react-number-format";
 import axios from "axios";
 import { Formik } from "formik";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * component
@@ -14,7 +13,6 @@ import { TitleComponent, ButtonComponent } from "../../../components";
 import {
   successAdd,
   errorAdd,
-  successDelete,
 } from "../../../helpers/sweetalert";
 /**
  * function
@@ -28,33 +26,22 @@ import { getHeadersAccount } from "../../../services/auth";
 import {
   END_POINT_SERVER_BUNSI,
   getLocalData,
-  END_POINT_SEVER,
   PRESIGNED_URL,
 } from "../../../constants/api";
-import { URL_PHOTO_AW3 } from "../../../constants";
 /**
  * css
  */
 import {
-  Breadcrumb,
-  Stack,
-  Table,
   Row,
   Col,
-  Container,
   Form,
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import {
-  faEdit,
-  faPlusCircle,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import {faTrash} from "@fortawesome/free-solid-svg-icons";
 
-// import { faClose, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function EditIncomeAndExpend() {
   const navigate = useNavigate()
@@ -81,7 +68,6 @@ export default function EditIncomeAndExpend() {
   const fetchExpend = async (id) => {
     try {
       setIsLoading(true);
-      const _localData = await getLocalData();
       let header = await getHeadersAccount();
       const headers = {
         "Content-Type": "application/json",
@@ -92,7 +78,6 @@ export default function EditIncomeAndExpend() {
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend/${id}`,
         headers: headers,
       }).then((res) => {
-        console.log("res:::", res);
         setExpendData(res.data);
         setIsLoading(false);
       });
@@ -121,17 +106,17 @@ export default function EditIncomeAndExpend() {
           accountId: _localData?.DATA?.storeId,
           platform: "APPZAPP",
           typeStatus: "EXPEND",
-          expendImages:imgArr
+          expendImages:imgArr,
+          updatedBy: _localData?.DATA?._id,
+          updatedByName:_localData?.DATA?.firstname,
         },
         headers: headers,
       })
-        .then(async(response) => {
-          //   onClose();
+        .then(async() => {
          await successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
          await  setSubmitting(false);
          await setImgArr([])
          await navigate('/expends')
-          //   callback(response);
         })
         .catch(function (error) {
           errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
@@ -195,15 +180,15 @@ export default function EditIncomeAndExpend() {
     }
   return (
     <div style={{ padding: 20 }}>
-      {/* <Breadcrumb>
-        <Breadcrumb.Item href="#">ລົງບັນຊີຮັບ-ຈ່າຍ</Breadcrumb.Item>
-        <Breadcrumb.Item active>ລາຍລະອຽດ</Breadcrumb.Item>
-      </Breadcrumb> */}
 
       <TitleComponent fontSize={"20px"} title="ແກ້ໄຂໍ້ມູນລາຍຈ່າຍ" />
-
-      {/* <Container style={{ width: 800 }}> */}
-      {expendData && (
+      {isLoading ? (
+        <div>
+          <center>
+            <Spinner animation="border" variant="warning" />
+          </center>
+        </div>
+      ) : expendData && (
       <Formik
         initialValues={{
           dateExpend: moment(expendData?.dateExpend).format("YYYY-MM-DD") ?? moment().format("YYYY-MM-DD"),
@@ -391,7 +376,7 @@ export default function EditIncomeAndExpend() {
                         onChange={handleChange}
                       >
                         <option value="">ເລືອກຮູບແບບຈ່າຍ</option>
-                        <option value="COD">ເງິນສົດ</option>
+                        <option value="CASH">ເງິນສົດ</option>
                         <option value="TRANSFER">ເງິນໂອນ</option>
                         <option value="OTHER">ອື່ນໆ</option>
                       </Form.Control>
@@ -498,6 +483,7 @@ export default function EditIncomeAndExpend() {
                     title={"ປິດອອກ"}
                     width="150px"
                     colorbg={"lightgray"}
+                    handleClick={() => navigate('/expends')}
                     hoverbg={"gray"}
                   />
                   <ButtonComponent
@@ -517,7 +503,6 @@ export default function EditIncomeAndExpend() {
         )}
       </Formik>
       )}
-      {/* </Container> */}
     </div>
   );
 }

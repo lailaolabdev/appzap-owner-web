@@ -10,11 +10,11 @@ export default function PopUpConfirmDeletion({
 }) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   return (
-    <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton></Modal.Header>
+    <Modal show={open}>
+      {/* <Modal.Header closeButton></Modal.Header> */}
       <Modal.Body>
-        <div style={{ textAlign: "center" }}>
-          <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
+        <div style={{ textAlign: "center", minHeight:"20vh", display:'flex', justifyContent:"center", alignItems:"center", flexDirection:"column",gap:10 }}>
+          <div style={{fontSize:"20px",fontWeight:600}}>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
           <div style={{ color: "red" }}>{text && text}</div>
         </div>
       </Modal.Body>

@@ -128,7 +128,7 @@ export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
 
 export const convertPayment = (status) => {
   switch (status) {
-    case "COD":
+    case "CASH":
       return "ເງິນສົດ";
     case "TRANSFER":
       return "ເງິນໂອນ";

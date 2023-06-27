@@ -49,6 +49,7 @@ import DashboardRoutes from "./Dashboard.routes";
 import ExpendsRoutes from "./Expend.routes"
 import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
 import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
+import DetailExpend from "../pages/expend/component/DetailExpend";
 
 function Router() {
   return useRoutes([
@@ -205,6 +206,10 @@ function Router() {
         {
           path: "edit-expend/:id",
           element: <EditIncomeAndExpend />,
+        },
+        {
+          path: "detail-expend/:id",
+          element: <DetailExpend />,
         },
 
         OrderRoutes,

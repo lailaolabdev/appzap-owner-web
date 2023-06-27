@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 /**
  * component
@@ -9,46 +9,78 @@ import React from "react";
 
 import { Container, Row, Col, Form } from "react-bootstrap";
 
-export default function Filter() {
+export default function Filter({filterByYear, setFilterByYear,filterByMonth, setFilterByMonth, dateStart,
+  setDateStart,
+  dateEnd,
+  setDateEnd}) {
+  const [years, setYears] = useState([]);
+ 
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+
+    const yearArray = Array.from({ length: 10 }, (_, index) => 2023 + index);
+    setYears(yearArray);
+    setFilterByYear(currentYear)
+    setFilterByMonth(currentMonth)
+  }, []);
 
   return (
     <div>
       <Container fluid className="mt-3 p-0">
-        <Row className='p-0'>
+        <Row>
           <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3" controlId="formPlaintextEmail">
-              <Form.Label>ປະເພດຮັບ-ຈ່າຍ</Form.Label>
-              <Form.Control type="text" placeholder="ຄົ້ນຫາຕາມເລກບິນ" />
-            </Form.Group>
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3" controlId="formPlaintextEmail">
-              <Form.Label>ເລກບິນ</Form.Label>
-              <Form.Control type="text" placeholder="ຄົ້ນຫາຕາມເລກບິນ" />
-            </Form.Group>
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3" controlId="formPlaintextEmail">
-              <Form.Label>ບັນຊີທຸລະກຳ</Form.Label>
-              <Form.Control type="text" placeholder="ຄົ້ນຫາຕາມເລກບິນ" />
-            </Form.Group>
-          </Col>
-       </Row>  
-       <Row>
-         
-          <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3" controlId="formPlaintextEmail">
+            <Form.Group className="mb-3">
               <Form.Label>ວັນທີເລີ່ມຕົ້ນ</Form.Label>
-              <Form.Control type="date" placeholder="ຄົ້ນຫາຕາມເລກບິນ" />
+              <Form.Control type="date" value={dateStart} onChange={(e)=> setDateStart(e?.target?.value)} />
             </Form.Group>
           </Col>
           <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3" controlId="formPlaintextEmail">
+            <Form.Group className="mb-3">
               <Form.Label>ວັນທີສຸດທ້າຍ</Form.Label>
-              <Form.Control type="date" placeholder="ຄົ້ນຫາຕາມເລກບິນ" />
+              <Form.Control type="date" value={dateEnd} onChange={(e)=> setDateEnd(e?.target?.value)} />
             </Form.Group>
           </Col>
+        </Row>
 
+        <Row>
+          <Col
+            xs={12}
+            sm={3}
+            md={2}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            ສະແດງຕາມປີ
+          </Col>
+          <Col xs={12} sm={9} md={10} className="showFromMonth">
+            {years.map((item, index) => (
+              <div key={index} onClick={()=> setFilterByYear(item)} className={item === filterByYear ? 'active' : ""}>{item}</div>
+            ))}
+          </Col>
+        </Row>
+
+        <Row>
+          <Col
+            xs={12}
+            sm={3}
+            md={2}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            ສະແດງຕາມເດືອນ
+          </Col>
+          <Col xs={12} sm={9} md={10} className="showFromMonth">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, index) => (
+              <div key={index} onClick={()=> setFilterByMonth(item)} className={item === filterByMonth ? 'active' : ""}>{item}</div>
+            ))}
+          </Col>
         </Row>
       </Container>
     </div>

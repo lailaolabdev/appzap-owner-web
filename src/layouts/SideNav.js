@@ -60,6 +60,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "reportManagement",
     },
     {
+      title: "ຈັດການລາຍຈ່າຍ",
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "menuManagement",
+    },
+    {
       title: "ຈັດການການຈອງ",
       key: "reservations",
       icon: faList,
@@ -67,14 +74,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasReservation,
       system: "reservationManagement",
     },   
-    {
-      title: "ຈັດການລາຍຈ່າຍ",
-      key: "expends",
-      icon: faBook,
-      typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-      system: "expendsManagement",
-    },
+  
     {
       title: "ລາຍງານການຈອງ",
       key: "reservationDashboard",
