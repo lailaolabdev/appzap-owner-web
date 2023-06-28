@@ -91,6 +91,7 @@ export default function EditIncomeAndExpend() {
 
   const createExpend = async (data, setSubmitting) => {
     try {
+      setIsLoading(true);
       const _localData = await getLocalData();
       let header = await getHeadersAccount();
       const headers = {
@@ -113,13 +114,15 @@ export default function EditIncomeAndExpend() {
         headers: headers,
       })
         .then(async() => {
+         await setIsLoading(false);
          await successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
          await  setSubmitting(false);
          await setImgArr([])
-         await navigate('/expends')
+         await navigate('/expends/limit/40/skip/1')
         })
         .catch(function (error) {
           errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+          setIsLoading(false)
           setSubmitting(false);
         });
     } catch (err) {
@@ -199,7 +202,7 @@ export default function EditIncomeAndExpend() {
           priceCNY: expendData?.priceCNY ?? "",
           paidBy:expendData?.paidBy ?? "",
           paidTo:expendData?.paidTo ?? "",
-          payment: expendData?.payment ?? "",
+          payment: expendData?.payment ?? "CASH",
           note: expendData?.note ?? "",
         }}
         validate={(values) => {
@@ -245,65 +248,7 @@ export default function EditIncomeAndExpend() {
         }) => (
           <form onSubmit={handleSubmit}>
             <Row>
-            <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label xs={12} sm="6">
-                    ອັບໂຫລດຮູບໃບບິນ
-                  </Form.Label>
-
-                  <Row>
-                    <Col xs="12" sm="3" md="6">
-                      <label style={{ width: "100%" }}>
-                        <div className="box-upload-img">
-                          {imageLoadingMany > 0 ? (
-                            <Spinner animation="border" variant="secondary" />
-                          ) : (
-                            <>
-                              + <br /> ຄລິກເພື່ອອັບໂຫລດ
-                            </>
-                          )}
-                        </div>
-                        <input
-                          type="file"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleUploadMany(e)}
-                          accept=".png, .jpeg, .jpg, .mp4"
-                        />
-                        {imageLoadingMany > 0 ? (
-                          <ProgressBar
-                            variant="success"
-                            style={{ height: 5 }}
-                            now={imageLoadingMany}
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </label>
-                    </Col>
-                    {imgArr.length > 0
-                      ? imgArr.map((item, index) => (
-                          <Col xs="12" sm="3" md="6" key={index}>
-                            <div className="show-img-upload">
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                className="delete-img"
-                                onClick={()=> _onDeleteImg(item)}
-                              />
-                              <img
-                                src={
-                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                                  item
-                                }
-                                alt={item}
-                              />
-                            </div>
-                          </Col>
-                        ))
-                      : ""}
-                  </Row>
-                </Form.Group>
-              </Col>
-              <Col xs={12} sm={12} md={6}>
+              <Col xs={12} sm={12} md={12}>
                 <Form.Group>
                   <Form.Label>
                     ວັນທີຈ່າຍ <span style={{ color: "red" }}>*</span>
@@ -314,6 +259,7 @@ export default function EditIncomeAndExpend() {
                     name="dateExpend"
                     isInvalid={!!errors.dateExpend}
                     value={values.dateExpend}
+                    style={{width:300}}
                   />
                 </Form.Group>
 
@@ -336,12 +282,12 @@ export default function EditIncomeAndExpend() {
                   <Col xs={12} sm={4} md={4}>
                     <Form.Group>
                       <Form.Label>
-                        ຜູ້ຈ່າຍ <span style={{ color: "red" }}>*</span>
+                        ຜູ້ຈ່າຍ 
                       </Form.Label>
                       <Form.Control
                         type="text"
                         name="paidBy"
-                        isInvalid={!!errors.paidBy}
+                        // isInvalid={!!errors.paidBy}
                         onChange={handleChange}
                         value={values.paidBy}
                         placeholder="ປ້ອນຊື່ຜູ້ຈ່າຍ..."
@@ -351,12 +297,12 @@ export default function EditIncomeAndExpend() {
                   <Col xs={12} sm={4} md={4}>
                     <Form.Group>
                       <Form.Label>
-                        ຜູ້ຮັບ <span style={{ color: "red" }}>*</span>
+                        ຜູ້ຮັບ 
                       </Form.Label>
                       <Form.Control
                         type="text"
                         name="paidTo"
-                        isInvalid={!!errors.paidTo}
+                        // isInvalid={!!errors.paidTo}
                         onChange={handleChange}
                         value={values.paidTo}
                         placeholder="ປ້ອນຊື່ຜູ້ຮັບ...."
@@ -470,8 +416,70 @@ export default function EditIncomeAndExpend() {
                     value={values.note}
                   />
                 </Form.Group>
+              </Col>
+          
 
-                <div
+              <Col xs={12} md={12}>
+                <Form.Group>
+                  <Form.Label xs={12} sm="6">
+                    ອັບໂຫລດຮູບໃບບິນ
+                  </Form.Label>
+
+                  <Row>
+                    <Col xs="12" sm="3" md="3">
+                      <label style={{ width: "100%" }}>
+                        <div className="box-upload-img">
+                          {imageLoadingMany > 0 ? (
+                            <Spinner animation="border" variant="secondary" />
+                          ) : (
+                            <>
+                              + <br /> ຄລິກເພື່ອອັບໂຫລດ
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          style={{ display: "none" }}
+                          onChange={(e) => handleUploadMany(e)}
+                          accept=".png, .jpeg, .jpg, .mp4"
+                        />
+                        {imageLoadingMany > 0 ? (
+                          <ProgressBar
+                            variant="success"
+                            style={{ height: 5 }}
+                            now={imageLoadingMany}
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </label>
+                    </Col>
+                    {imgArr.length > 0
+                      ? imgArr.map((item, index) => (
+                          <Col xs="12" sm="3" md="3" key={index}>
+                            <div className="show-img-upload">
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="delete-img"
+                                onClick={()=> _onDeleteImg(item)}
+                              />
+                              <img
+                                src={
+                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                                  item
+                                }
+                                alt={item}
+                              />
+                            </div>
+                          </Col>
+                        ))
+                      : ""}
+                  </Row>
+                </Form.Group>
+              </Col>
+
+              <Col xs={12} md={12}>
+              <div
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -483,7 +491,7 @@ export default function EditIncomeAndExpend() {
                     title={"ປິດອອກ"}
                     width="150px"
                     colorbg={"lightgray"}
-                    handleClick={() => navigate('/expends')}
+                    handleClick={() => navigate('/expends/limit/40/skip/1')}
                     hoverbg={"gray"}
                   />
                   <ButtonComponent
@@ -491,13 +499,14 @@ export default function EditIncomeAndExpend() {
                     title={"ບັນທຶກ"}
                     width="150px"
                     handleClick={() => handleSubmit()}
-                    colorbg={"darkorange"}
+                    colorbg={"#fb6e3b"}
                     hoverbg={"orange"}
                     disabled={isSubmitting}
                   />
                 </div>
-              </Col>
-          
+                </Col>
+
+
             </Row>
           </form>
         )}

@@ -19,8 +19,8 @@ export const END_POINT_WEB_CLIENT = isProduction
   ? production_web_client
   : dev_web_client;
 
-// export const END_POINT_SERVER_BUNSI = 'http://localhost:8080';
-export const END_POINT_SERVER_BUNSI = 'https://t62lljhsyi.execute-api.ap-southeast-1.amazonaws.com/';
+// export const END_POINT_SERVER_BUNSI = 'http://localhost:7070';
+export const END_POINT_SERVER_BUNSI = 'https://accounting.lailaolab.la/';
 
 
 // ------------------------------------------

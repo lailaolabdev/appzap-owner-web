@@ -50,10 +50,12 @@ export default function AddIncomeAndExpend() {
 
   const [imageLoadingMany, setImageLoadingMany] = useState(0);
   const [imgArr, setImgArr] = useState([]);
+  const [isLoading, setIsLoading] = useState(false)
 
 
   const createExpend = async (data, setSubmitting) => {
     try {
+      setIsLoading(true)
       const _localData = await getLocalData();
 
       let header = await getHeadersAccount();
@@ -77,13 +79,15 @@ export default function AddIncomeAndExpend() {
          headers: headers,
        })
          .then(async(response) => {
+           await setIsLoading(false)
            await  successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
            await setSubmitting(false);
            await setImgArr([])
-           await navigate('/expends')
+           await navigate('/expends/limit/40/skip/1')
          })
          .catch(function (error) {
            errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+           setIsLoading(false)
            setSubmitting(false);
          });
     } catch (err) {
@@ -148,6 +152,15 @@ export default function AddIncomeAndExpend() {
     <div style={{ padding: 20 }}>
   
       <TitleComponent fontSize={"20px"} title="ລົງບັນຊີລາຍຈ່າຍປະຈຳວັນ" />
+
+      {isLoading ? (
+        <div>
+          <center>
+            <Spinner animation="border" variant="warning" />
+          </center>
+        </div>
+      )  : (
+
       <Formik
         initialValues={{
           dateExpend: moment().format("YYYY-MM-DD"),
@@ -158,15 +171,15 @@ export default function AddIncomeAndExpend() {
           priceCNY: 0,
           paidBy: "",
           paidTo: "",
-          payment: "",
+          payment: "CASH",
           note: "",
         }}
         validate={(values) => {
           const errors = {};
           if (!values.dateExpend) errors.dateExpend = "-";
           if (!values.detail) errors.detail = "-";
-          if (!values.paidBy) errors.paidBy = "-";
-          if (!values.paidTo) errors.paidTo = "-";
+          // if (!values.paidBy) errors.paidBy = "-";
+          // if (!values.paidTo) errors.paidTo = "-";
           if (!values.payment) errors.payment = "-";
 
           return errors;
@@ -204,65 +217,8 @@ export default function AddIncomeAndExpend() {
         }) => (
           <form onSubmit={handleSubmit}>
             <Row>
-            <Col xs={12} md={6}>
-                <Form.Group>
-                  <Form.Label xs={12} sm="6">
-                    ອັບໂຫລດຮູບໃບບິນ
-                  </Form.Label>
 
-                  <Row>
-                    <Col xs="12" sm="3" md="6">
-                      <label style={{ width: "100%" }}>
-                        <div className="box-upload-img">
-                          {imageLoadingMany > 0 ? (
-                            <Spinner animation="border" variant="secondary" />
-                          ) : (
-                            <>
-                              + <br /> ຄລິກເພື່ອອັບໂຫລດ
-                            </>
-                          )}
-                        </div>
-                        <input
-                          type="file"
-                          style={{ display: "none" }}
-                          onChange={(e) => handleUploadMany(e)}
-                          accept=".png, .jpeg, .jpg, .mp4"
-                        />
-                        {imageLoadingMany > 0 ? (
-                          <ProgressBar
-                            variant="success"
-                            style={{ height: 5 }}
-                            now={imageLoadingMany}
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </label>
-                    </Col>
-                    {imgArr.length > 0
-                      ? imgArr.map((item, index) => (
-                          <Col xs="12" sm="3" md="6" key={index}>
-                            <div className="show-img-upload">
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                className="delete-img"
-                                onClick={()=> _onDeleteImg(item)}
-                              />
-                              <img
-                                src={
-                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                                  item
-                                }
-                                alt={item}
-                              />
-                            </div>
-                          </Col>
-                        ))
-                      : ""}
-                  </Row>
-                </Form.Group>
-              </Col>
-              <Col xs={12} sm={12} md={6}>
+              <Col xs={12} sm={12} md={12}>
                 <Form.Group>
                   <Form.Label>
                     ວັນທີຈ່າຍ <span style={{ color: "red" }}>*</span>
@@ -273,6 +229,7 @@ export default function AddIncomeAndExpend() {
                     name="dateExpend"
                     isInvalid={!!errors.dateExpend}
                     value={values.dateExpend}
+                    style={{width:300}}
                   />
                 </Form.Group>
 
@@ -295,12 +252,12 @@ export default function AddIncomeAndExpend() {
                   <Col xs={12} sm={4} md={4}>
                     <Form.Group>
                       <Form.Label>
-                        ຜູ້ຈ່າຍ <span style={{ color: "red" }}>*</span>
+                        ຜູ້ຈ່າຍ 
                       </Form.Label>
                       <Form.Control
                         type="text"
                         name="paidBy"
-                        isInvalid={!!errors.paidBy}
+                        // isInvalid={!!errors.paidBy}
                         onChange={handleChange}
                         value={values.paidBy}
                         placeholder="ປ້ອນຊື່ຜູ້ຈ່າຍ..."
@@ -310,12 +267,12 @@ export default function AddIncomeAndExpend() {
                   <Col xs={12} sm={4} md={4}>
                     <Form.Group>
                       <Form.Label>
-                        ຜູ້ຮັບ <span style={{ color: "red" }}>*</span>
+                        ຜູ້ຮັບ 
                       </Form.Label>
                       <Form.Control
                         type="text"
                         name="paidTo"
-                        isInvalid={!!errors.paidTo}
+                        // isInvalid={!!errors.paidTo}
                         onChange={handleChange}
                         value={values.paidTo}
                         placeholder="ປ້ອນຊື່ຜູ້ຮັບ...."
@@ -429,8 +386,70 @@ export default function AddIncomeAndExpend() {
                     value={values.note}
                   />
                 </Form.Group>
+              </Col>
+          
+  
+              <Col xs={12} md={12}>
+                <Form.Group>
+                  <Form.Label xs={12} sm="3">
+                    ອັບໂຫລດຮູບໃບບິນ
+                  </Form.Label>
 
-                <div
+                  <Row>
+                    <Col xs="12" sm="3" md="3">
+                      <label style={{ width: "100%" }}>
+                        <div className="box-upload-img">
+                          {imageLoadingMany > 0 ? (
+                            <Spinner animation="border" variant="secondary" />
+                          ) : (
+                            <>
+                              + <br /> ຄລິກເພື່ອອັບໂຫລດ
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          style={{ display: "none" }}
+                          onChange={(e) => handleUploadMany(e)}
+                          accept=".png, .jpeg, .jpg, .mp4"
+                        />
+                        {imageLoadingMany > 0 ? (
+                          <ProgressBar
+                            variant="success"
+                            style={{ height: 5 }}
+                            now={imageLoadingMany}
+                          />
+                        ) : (
+                          ""
+                        )}
+                      </label>
+                    </Col>
+                    {imgArr.length > 0
+                      ? imgArr.map((item, index) => (
+                          <Col xs="12" sm="3" md="3" key={index}>
+                            <div className="show-img-upload">
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="delete-img"
+                                onClick={()=> _onDeleteImg(item)}
+                              />
+                              <img
+                                src={
+                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                                  item
+                                }
+                                alt={item}
+                              />
+                            </div>
+                          </Col>
+                        ))
+                      : ""}
+                  </Row>
+                </Form.Group>
+              </Col>
+
+              <Col xs={12} md={12}>
+              <div
                   style={{
                     display: "flex",
                     justifyContent: "center",
@@ -441,7 +460,7 @@ export default function AddIncomeAndExpend() {
                   <ButtonComponent
                     title={"ປິດອອກ"}
                     width="150px"
-                    handleClick={() => navigate('/expends')}
+                    handleClick={() => navigate('/expends/limit/40/skip/1')}
                     colorbg={"lightgray"}
                     hoverbg={"gray"}
                   />
@@ -450,17 +469,19 @@ export default function AddIncomeAndExpend() {
                     title={"ບັນທຶກ"}
                     width="150px"
                     handleClick={() => handleSubmit()}
-                    colorbg={"darkorange"}
+                    colorbg={"#fb6e3b"}
                     hoverbg={"orange"}
                     disabled={isSubmitting}
                   />
                 </div>
-              </Col>
-          
+                </Col>
             </Row>
           </form>
         )}
       </Formik>
+      )}
+  
+  
     </div>
   );
 }

@@ -157,6 +157,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
           selected =
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
+        if (selected === "expends") {
+          selected =
+            selected + "/limit/" + 40 + "/skip/" + 1 ;
+        }
         if (selected === "category") {
           selected =
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;

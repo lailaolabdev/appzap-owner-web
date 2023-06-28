@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
 import { Modal, Button } from 'react-bootstrap';
 
@@ -59,8 +59,8 @@ function PopUpIsOpenMenu({
                         <label className="switch">
                             <input
                                 type="checkbox"
-                                checked={detailMenu?.data?.isShowStaff === "true"}
-                                onClick={() => _handOpenMenuShowStaff(detailMenu?.data?._id, detailMenu?.data?.isShowStaff, detailMenu?.index)}
+                                checked={detailMenu?.data?.isShowStaffApp === "true"}
+                                onClick={() => _handOpenMenuShowStaff(detailMenu?.data?._id, detailMenu?.data?.isShowStaffApp, detailMenu?.index)}
                             />
                             <span className="slider round"></span>
                         </label>

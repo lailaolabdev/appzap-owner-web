@@ -10,7 +10,7 @@ font-weight:bold;
 
 export default function TitleComponent({icon, title,fontSize,textColor}) {
   return (
-    <Title fontSize={fontSize ?? "25px"} textColor={textColor ?? "orange"}>
+    <Title fontSize={fontSize ?? "25px"} textColor={textColor ?? "#fb6e3b"}>
       {icon && <FontAwesomeIcon className='icon' icon={icon} />}
       {title && title}
     </Title>

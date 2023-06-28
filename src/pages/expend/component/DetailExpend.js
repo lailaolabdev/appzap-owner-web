@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { NumericFormat } from "react-number-format";
 import axios from "axios";
-import { Formik } from "formik";
-import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * component
@@ -16,7 +12,6 @@ import PopUpConfirmDeletion from "../../../components/popup/PopUpConfirmDeletion
 import {
   successAdd,
   errorAdd,
-  successDelete,
 } from "../../../helpers/sweetalert";
 /**
  * function
@@ -28,19 +23,16 @@ import { moneyCurrency, convertPayment, formatDate } from "../../../helpers";
 /**
  * api
  */
-import { END_POINT_SERVER_BUNSI, getLocalData } from "../../../constants/api";
+import { END_POINT_SERVER_BUNSI } from "../../../constants/api";
 /**
  * css
  */
 import { Row, Col, Form, Spinner } from "react-bootstrap";
 
 import {
-  faArrowLeft,
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-
-// import { faClose, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function DetailExpend() {
   const navigate = useNavigate();
@@ -58,7 +50,6 @@ export default function DetailExpend() {
   const fetchExpend = async (id) => {
     try {
       setIsLoading(true);
-      const _localData = await getLocalData();
       let header = await getHeadersAccount();
       const headers = {
         "Content-Type": "application/json",
@@ -83,7 +74,6 @@ export default function DetailExpend() {
     try {
       await setIsLoading(true);
       await setShowConfirmDelete(false);
-      const _localData = await getLocalData();
       let header = await getHeadersAccount();
       const headers = {
         "Content-Type": "application/json",
@@ -93,9 +83,9 @@ export default function DetailExpend() {
         method: "delete",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend/${id}`,
         headers: headers,
-      }).then(async (res) => {
+      }).then(async () => {
         await successAdd("ລຶບສຳເລັດ");
-        await navigate("/expends");
+        await navigate("/expends/limit/40/skip/1");
         await setIsLoading(false);
       });
     } catch (err) {
@@ -106,11 +96,6 @@ export default function DetailExpend() {
 
   return (
     <div style={{ padding: 20 }}>
-      {/* <Breadcrumb>
-        <Breadcrumb.Item href="#">ລົງບັນຊີຮັບ-ຈ່າຍ</Breadcrumb.Item>
-        <Breadcrumb.Item active>ລາຍລະອຽດ</Breadcrumb.Item>
-      </Breadcrumb> */}
-
       <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດລາຍຈ່າຍ" />
 
       {isLoading ? (
@@ -122,42 +107,7 @@ export default function DetailExpend() {
       ) : (
         expendData && (
           <Row>
-            <Col xs={12} md={6}>
-              <Form.Group>
-                <Form.Label style={{ color: "gray" }}>
-                  ອັບໂຫລດຮູບໃບບິນ
-                </Form.Label>
-                <Row>
-                  {expendData?.expendImages.length > 0 ? (
-                    expendData?.expendImages.map((item, index) => (
-                      <Col xs="12" sm="3" md="6" key={index}>
-                        <div className="show-img-upload mb-2">
-                          <img
-                            src={
-                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                              item
-                            }
-                            alt={item}
-                          />
-                        </div>
-                      </Col>
-                    ))
-                  ) : (
-                    <div
-                      style={{
-                        fontWeight: 400,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      ບໍ່ມີຮູບບິນ
-                    </div>
-                  )}
-                </Row>
-              </Form.Group>
-            </Col>
+          
             <Col xs={12} sm={12} md={6}>
               <Form.Group>
                 <Form.Label style={{ color: "gray" }}>ວັນທີຈ່າຍ</Form.Label>
@@ -316,6 +266,52 @@ export default function DetailExpend() {
                 />
               </div>
             </Col>
+
+            <Col xs={12} md={6}>
+              <Form.Group>
+                <Form.Label style={{ color: "gray" }}>
+                  ອັບໂຫລດຮູບໃບບິນ
+                </Form.Label>
+                <Row>
+                  {expendData?.expendImages.length > 0 ? (
+                    expendData?.expendImages.map((item, index) => (
+                      <Col xs="12" sm="3" md="6" key={index}>
+                          <a href={
+                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                              item
+                            }>
+                        <div className="show-img-upload mb-2">
+                        
+                          <img
+                            src={
+                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                              item
+                            }
+                            alt={item}
+                          />
+                         
+                        </div>
+                        </a>
+                      </Col>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        fontWeight: 400,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      ບໍ່ມີຮູບບິນ
+                    </div>
+                  )}
+                </Row>
+              </Form.Group>
+            </Col>
+
+
           </Row>
         )
       )}

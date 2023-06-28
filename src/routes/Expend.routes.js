@@ -5,7 +5,7 @@ import ExpendList from "../pages/expend/ExpendList";
 
 // eslint-disable-next-line
 export default {
-    path: "/expends",
+    path: "/expends/limit/:limit/skip/:skip",
     element: <ExpendList />,
   };
 

@@ -93,12 +93,11 @@ export default function MenuList() {
         const _localData = await getLocalData();
 
           setIsLoading(true)
-          await fetch(MENUS + `/?storeId=${_localData?.DATA?.storeId}${(filterCategory && filterCategory != "All") ? `&categoryId=${filterCategory}` : ""}${(filterName && filterName!="") ? `&name=${filterName}` : ""}`, {
+          await fetch(MENUS + `/?storeId=${_localData?.DATA?.storeId}${(filterCategory && filterCategory !== "All") ? `&categoryId=${filterCategory}` : ""}${(filterName && filterName!=="") ? `&name=${filterName}` : ""}`, {
             method: "GET",
           })
             .then((response) => response.json())
             .then((json) => {
-              console.log("json fileter:::::", json)
               setMenus(json)
             });
           setIsLoading(false)
@@ -134,7 +133,7 @@ export default function MenuList() {
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true)
-      await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId != "All") ? `&categoryId=${categoryId}` : ""}`, {
+      await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId !== "All") ? `&categoryId=${categoryId}` : ""}`, {
         method: "GET",
       })
         .then((response) => response.json())
@@ -233,7 +232,7 @@ export default function MenuList() {
         sort: values?.sort,
         menuOption: dataMenuOption
       }
-      if (connectMenuId && connectMenuId != "" && menuType == "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
+      if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
       const resData = await axios({
         method: "POST",
         url: END_POINT_SEVER + "/v3/menu/create",
@@ -344,7 +343,7 @@ export default function MenuList() {
     }
   };
   const _updateQtyCategory = async (values) => {
-    const resData = await axios({
+    await axios({
       method: "PUT",
       url: END_POINT_SEVER + "/v3/menu-stock/update",
       data: {
@@ -354,7 +353,7 @@ export default function MenuList() {
         },
       },
     })
-      .then(async function (response) {
+      .then(async function () {
         handleClose4();
         successAdd("ການເພີ່ມຈຳນວນສຳເລັດ");
         handleClose();
@@ -370,7 +369,7 @@ export default function MenuList() {
   const handleChangeMenuType = async (e) => {
     setMenuType(e.target.value)
 
-    if (e.target.value == "MENUOPTION") {
+    if (e.target.value === "MENUOPTION") {
       await fetch(MENUS + `/?isOpened=true&storeId=${getTokken?.DATA?.storeId}&type=MENU`, {
         method: "GET",
       })
@@ -463,7 +462,7 @@ export default function MenuList() {
         data: {
           id: id,
           data: {
-            isShowStaff: isOpenMenuStaff === "true" ? "false" : "true",
+            isShowStaffApp: isOpenMenuStaff === "true" ? "false" : "true",
           },
         },
         headers: headers,
@@ -471,7 +470,7 @@ export default function MenuList() {
 
       let _newData = [...Menus];
 
-      _newData[index].isShowStaff = isOpenMenuStaff === "true" ? "false" : "true";
+      _newData[index].isShowStaffApp = isOpenMenuStaff === "true" ? "false" : "true";
       setMenus(_newData)
       let data = _newData[index]
       setDetailMenu({ data, index })
@@ -812,7 +811,7 @@ export default function MenuList() {
                   </Form.Control>
                 </Form.Group>
 
-                {menuType == "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
+                {menuType === "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
                   <Form.Control
                     as="select"
@@ -1163,7 +1162,7 @@ export default function MenuList() {
                   </Form.Control>
                 </Form.Group>
 
-                {menuType == "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
+                {menuType === "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
                   <Form.Control
                     as="select"

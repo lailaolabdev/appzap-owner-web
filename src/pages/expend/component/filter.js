@@ -7,12 +7,9 @@ import React, { useState, useEffect } from "react";
  * css
  */
 
-import { Container, Row, Col, Form } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 
-export default function Filter({filterByYear, setFilterByYear,filterByMonth, setFilterByMonth, dateStart,
-  setDateStart,
-  dateEnd,
-  setDateEnd}) {
+export default function Filter({filterByYear, setFilterByYear,filterByMonth, setFilterByMonth}) {
   const [years, setYears] = useState([]);
  
   useEffect(() => {
@@ -28,21 +25,6 @@ export default function Filter({filterByYear, setFilterByYear,filterByMonth, set
   return (
     <div>
       <Container fluid className="mt-3 p-0">
-        <Row>
-          <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label>ວັນທີເລີ່ມຕົ້ນ</Form.Label>
-              <Form.Control type="date" value={dateStart} onChange={(e)=> setDateStart(e?.target?.value)} />
-            </Form.Group>
-          </Col>
-          <Col xs={12} sm={6} md={3}>
-            <Form.Group className="mb-3">
-              <Form.Label>ວັນທີສຸດທ້າຍ</Form.Label>
-              <Form.Control type="date" value={dateEnd} onChange={(e)=> setDateEnd(e?.target?.value)} />
-            </Form.Group>
-          </Col>
-        </Row>
-
         <Row>
           <Col
             xs={12}
