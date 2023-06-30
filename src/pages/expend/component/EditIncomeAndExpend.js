@@ -194,8 +194,6 @@ export default function EditIncomeAndExpend() {
               const errors = {};
               if (!values.dateExpend) errors.dateExpend = "-";
               if (!values.detail) errors.detail = "-";
-              if (!values.paidBy) errors.paidBy = "-";
-              if (!values.paidTo) errors.paidTo = "-";
               if (!values.payment) errors.payment = "-";
 
               return errors;

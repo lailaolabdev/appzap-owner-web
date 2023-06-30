@@ -109,7 +109,7 @@ export default function DetailExpend() {
 
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດລາຍຈ່າຍ" />
+      <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດ" />
 
       {isLoading ? (
         <div>
