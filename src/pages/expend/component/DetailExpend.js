@@ -282,9 +282,6 @@ export default function DetailExpend() {
 
             <Col xs={12} md={6}>
               <Form.Group>
-                <Form.Label style={{ color: "gray" }}>
-                  ອັບໂຫລດຮູບໃບບິນ
-                </Form.Label>
                 <Row>
                   {expendData?.expendImages.length > 0 ? (
                     expendData?.expendImages.map((item, index) => (
@@ -309,19 +306,7 @@ export default function DetailExpend() {
                         </a>
                       </Col>
                     ))
-                  ) : (
-                    <div
-                      style={{
-                        fontWeight: 400,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      ບໍ່ມີຮູບບິນ
-                    </div>
-                  )}
+                  ) : ''}
                 </Row>
               </Form.Group>
             </Col>
