@@ -82,22 +82,32 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
-    {
-      title: "ລາຍງານ (ໃໝ່)",
-      key: "reportmenu",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasSmartMenu,
-      system: "reportManagement",
-    },
-    {
-      title: "Dashboard (ໃໝ່)",
-      key: "dashboardmenu",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasSmartMenu,
-      system: "reportManagement",
-    },
+    // {
+    //   title: "ລາຍງານ (ໃໝ່)",
+    //   key: "reportmenu",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasSmartMenu,
+    //   system: "reportManagement",
+    // },
+    // {
+    //   title: "Dashboard (ໃໝ່)",
+    //   key: "dashboardmenu",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasSmartMenu,
+    //   system: "reportManagement",
+    //   children: [
+    //     {
+    //       title: "Dashboard (ໃໝ່)",
+    //       key: "dashboardmenu",
+    //       typeStore: "",
+    //       icon: faChartLine,
+    //       hidden: !storeDetail?.hasSmartMenu,
+    //       system: "reportManagement",
+    //     },
+    //   ],
+    // },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: "settingStore",
@@ -191,6 +201,27 @@ export default function Sidenav({ location, navigate, onToggle }) {
               >
                 {e?.title}
               </NavText>
+              {e?.children?.map((element, index) => {
+                return (
+                  <NavItem
+                    eventKey={element?.key}
+                    style={{
+                      backgroundColor: selected === element?.key ? "#ffff" : "",
+                    }}
+                  >
+                    <NavText
+                      style={{
+                        color:
+                          selected === element?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                      }}
+                    >
+                      {element?.title}
+                    </NavText>
+                  </NavItem>
+                );
+              })}
             </NavItem>
           ))}
       </SideNav.Nav>

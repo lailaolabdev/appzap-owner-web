@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Card, Button, Form, ButtonGroup } from "react-bootstrap";
+import { Card, Button, Form, ButtonGroup, Breadcrumb } from "react-bootstrap";
 import ReactApexChart from "react-apexcharts";
 import dayjs from "dayjs";
 import { COLOR_APP } from "../../constants";
@@ -12,27 +12,35 @@ import ReportChartDay from "../../components/report_chart/ReportChartDay";
 
 export default function ReportMenuPage() {
   return (
-    <div
-      style={{
-        padding: 20,
-        display: "flex",
-        flexDirection: "column",
-        gap: 20,
-      }}
-    >
-      {/* <ReportChart1 /> */}
-      <ReportCard
-        title={"ລາຍເດືອນ (Compare across Months)"}
-        chart={<ReportChartMonth />}
-      />
-      <ReportCard
-        title={"ລາຍອາທິດ (Compare across Weeks)"}
-        chart={<ReportChartWeek />}
-      />
-      <ReportCard
-        title={"ລາຍວັນ (Compare across Days)"}
-        chart={<ReportChartDay />}
-      />
+    <div style={{ padding: 20 }}>
+      <Breadcrumb>
+        <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
+        <Breadcrumb.Item href="https://getbootstrap.com/docs/4.0/components/breadcrumb/">
+          Library
+        </Breadcrumb.Item>
+        <Breadcrumb.Item active>Data</Breadcrumb.Item>
+      </Breadcrumb>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
+        }}
+      >
+        {/* <ReportChart1 /> */}
+        <ReportCard
+          title={"ລາຍເດືອນ (Compare across Months)"}
+          chart={<ReportChartMonth />}
+        />
+        <ReportCard
+          title={"ລາຍອາທິດ (Compare across Weeks)"}
+          chart={<ReportChartWeek />}
+        />
+        <ReportCard
+          title={"ລາຍວັນ (Compare across Days)"}
+          chart={<ReportChartDay />}
+        />
+      </div>
     </div>
   );
 }
