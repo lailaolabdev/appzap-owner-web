@@ -19,8 +19,8 @@ export const END_POINT_WEB_CLIENT = isProduction
   ? production_web_client
   : dev_web_client;
 
-export const END_POINT_SERVER_BUNSI = 'http://localhost:7070';
-// export const END_POINT_SERVER_BUNSI = 'https://accounting.lailaolab.la/';
+// export const END_POINT_SERVER_BUNSI = 'http://localhost:7070';
+export const END_POINT_SERVER_BUNSI = 'https://accounting.lailaolab.la/';
 
 
 // ------------------------------------------
