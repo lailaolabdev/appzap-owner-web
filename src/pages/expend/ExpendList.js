@@ -101,7 +101,7 @@ export default function ExpendList() {
             "&date_lt=" +
             moment(moment(filter?.dateEnd).add(1, "days")).format("YYYY/MM/DD")
           : ""
-      }${filter?.filterByPayment === 'ALL' ? "" : "&payment="+filter?.filterByPayment}&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
+      }${filter?.filterByPayment === 'ALL' || filter?.filterByPayment === undefined  ? "" : "&payment="+filter?.filterByPayment}&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
 
       let header = await getHeadersAccount();
       const headers = {
@@ -134,6 +134,7 @@ export default function ExpendList() {
   //_confirmeDelete
   const _confirmeDelete = async () => {
     try {
+      await setFilterByPayment('ALL')
       await setIsLoading(true);
       await setShowConfirmDelete(false);
       const _localData = await getLocalData();
@@ -146,7 +147,7 @@ export default function ExpendList() {
         method: "delete",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend/${expendDetail?._id}`,
         headers: headers,
-      }).then(async (res) => {
+      }).then(async () => {
         await setExpendDetail();
         await successAdd("ລຶບສຳເລັດ");
         await fetchExpend();
