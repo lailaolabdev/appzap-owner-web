@@ -149,6 +149,6 @@ export const formatDate = (dateTime) => {
 
 export const formatDateTime = (dateTime) => {
   moment.locale("lo");
-  let resp = moment(dateTime).format("DD MMMM YYYY, HH:mm:ss");
+  let resp = moment(dateTime).format("DD-MM-YYYY, HH:mm:ss");
   return resp;
 };

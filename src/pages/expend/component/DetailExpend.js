@@ -9,16 +9,18 @@ import axios from "axios";
 import { TitleComponent, ButtonComponent } from "../../../components";
 import PopUpConfirmDeletion from "../../../components/popup/PopUpConfirmDeletion";
 
-import {
-  successAdd,
-  errorAdd,
-} from "../../../helpers/sweetalert";
+import { successAdd, errorAdd } from "../../../helpers/sweetalert";
 /**
  * function
  */
 
 import { getHeadersAccount } from "../../../services/auth";
-import { moneyCurrency, convertPayment, formatDate,formatDateTime } from "../../../helpers";
+import {
+  moneyCurrency,
+  convertPayment,
+  formatDate,
+  formatDateTime,
+} from "../../../helpers";
 
 /**
  * api
@@ -120,7 +122,6 @@ export default function DetailExpend() {
       ) : (
         expendData && (
           <Row>
-          
             <Col xs={12} sm={12} md={6}>
               <Form.Group>
                 <Form.Label style={{ color: "gray" }}>ວັນທີຈ່າຍ</Form.Label>
@@ -214,13 +215,17 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ວັນທີສ້າງ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDateTime(expendData?.createdAt)}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {formatDateTime(expendData?.createdAt)}
+                    </p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ຜູ້ສ້າງ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{expendData?.createdByName}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {expendData?.createdByName}
+                    </p>
                   </Form.Group>
                 </Col>
               </Row>
@@ -228,19 +233,23 @@ export default function DetailExpend() {
               <Row>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ວັນທີແກ້ໄຂ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDateTime(expendData?.updatedAt)}</p>
+                    <Form.Label style={{ color: "gray" }}>
+                      ວັນທີແກ້ໄຂ
+                    </Form.Label>
+                    <p style={{ fontWeight: 400 }}>
+                      {formatDateTime(expendData?.updatedAt)}
+                    </p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ຜູ້ແກ້ໄຂ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{expendData?.updatedByName}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {expendData?.updatedByName}
+                    </p>
                   </Form.Group>
                 </Col>
               </Row>
-
-
 
               <div
                 style={{
@@ -250,14 +259,14 @@ export default function DetailExpend() {
                   marginTop: "2rem",
                 }}
               >
-                 <ButtonComponent
+                <ButtonComponent
                   title={"ກັບຄືນ"}
                   width="150px"
                   icon={faArrowLeft}
                   colorbg={"lightgray"}
                   handleClick={() => navigate(`/expends/limit/40/skip/1`)}
                   hoverbg={"gray"}
-                /> 
+                />
                 <ButtonComponent
                   type="button"
                   title={"ແກ້ໄຂ"}
@@ -282,36 +291,41 @@ export default function DetailExpend() {
 
             <Col xs={12} md={6}>
               <Form.Group>
+                {expendData?.expendImages.length > 0 ? (
+                  <Form.Label style={{ color: "gray" }}>
+                    ອັບໂຫລດຮູບໃບບິນ
+                  </Form.Label>
+                ) : (
+                  ""
+                )}
+
                 <Row>
-                  {expendData?.expendImages.length > 0 ? (
-                    expendData?.expendImages.map((item, index) => (
-                      <Col xs="12" sm="3" md="6" key={index}>
-                          <a href={
+                  {expendData?.expendImages.length > 0
+                    ? expendData?.expendImages.map((item, index) => (
+                        <Col xs="12" sm="3" md="6" key={index}>
+                          <a
+                            href={
                               "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
                               item
                             }
                             target="_blank"
-                            >
-                        <div className="show-img-upload mb-2">
-                        
-                          <img
-                            src={
-                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                              item
-                            }
-                            alt={item}
-                          />
-                         
-                        </div>
-                        </a>
-                      </Col>
-                    ))
-                  ) : ''}
+                          >
+                            <div className="show-img-upload mb-2">
+                              <img
+                                src={
+                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                                  item
+                                }
+                                alt={item}
+                              />
+                            </div>
+                          </a>
+                        </Col>
+                      ))
+                    : ""}
                 </Row>
               </Form.Group>
             </Col>
-
-
           </Row>
         )
       )}

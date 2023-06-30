@@ -166,7 +166,7 @@ export default function EditIncomeAndExpend() {
   };
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ແກ້ໄຂໍ້ມູນລາຍຈ່າຍ" />
+      <TitleComponent fontSize={"20px"} title="ແກ້ໄຂມູນ" />
       {isLoading ? (
         <div>
           <center>
