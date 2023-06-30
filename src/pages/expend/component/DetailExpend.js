@@ -18,7 +18,7 @@ import {
  */
 
 import { getHeadersAccount } from "../../../services/auth";
-import { moneyCurrency, convertPayment, formatDate } from "../../../helpers";
+import { moneyCurrency, convertPayment, formatDate,formatDateTime } from "../../../helpers";
 
 /**
  * api
@@ -30,6 +30,7 @@ import { END_POINT_SERVER_BUNSI } from "../../../constants/api";
 import { Row, Col, Form, Spinner } from "react-bootstrap";
 
 import {
+  faArrowLeft,
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -93,6 +94,18 @@ export default function DetailExpend() {
       console.log("err:::", err);
     }
   };
+
+  function limitText(text, limit) {
+    if (!text) {
+      return ""; // Return an empty string if the text is undefined or null
+    }
+    if (text.length <= limit) {
+      return text; // Return the original text if it's within the limit
+    } else {
+      // If the text is longer than the limit, truncate it and append '...'
+      return text.slice(0, limit) + "...";
+    }
+  }
 
   return (
     <div style={{ padding: 20 }}>
@@ -201,7 +214,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ວັນທີສ້າງ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDate(expendData?.createdAt)}</p>
+                    <p style={{ fontWeight: 400 }}>{formatDateTime(expendData?.createdAt)}</p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
@@ -216,7 +229,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ວັນທີແກ້ໄຂ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDate(expendData?.updatedAt)}</p>
+                    <p style={{ fontWeight: 400 }}>{formatDateTime(expendData?.updatedAt)}</p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
@@ -237,14 +250,14 @@ export default function DetailExpend() {
                   marginTop: "2rem",
                 }}
               >
-                {/* <ButtonComponent
+                 <ButtonComponent
                   title={"ກັບຄືນ"}
                   width="150px"
                   icon={faArrowLeft}
                   colorbg={"lightgray"}
-                  handleClick={() => navigate(`/expends`)}
+                  handleClick={() => navigate(`/expends/limit/40/skip/1`)}
                   hoverbg={"gray"}
-                /> */}
+                /> 
                 <ButtonComponent
                   type="button"
                   title={"ແກ້ໄຂ"}
@@ -279,7 +292,9 @@ export default function DetailExpend() {
                           <a href={
                               "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
                               item
-                            }>
+                            }
+                            target="_blank"
+                            >
                         <div className="show-img-upload mb-2">
                         
                           <img
@@ -319,6 +334,7 @@ export default function DetailExpend() {
 
       <PopUpConfirmDeletion
         open={shoConfirmDelete}
+        text={limitText(expendData?.detail, 50)}
         onClose={() => setShowConfirmDelete(false)}
         onSubmit={_confirmeDelete}
       />
