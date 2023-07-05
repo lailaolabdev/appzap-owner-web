@@ -152,7 +152,7 @@ export default function ExpendList() {
       }).then(async () => {
         await setExpendDetail();
         await successAdd("ລຶບສຳເລັດ");
-        await fetchExpend();
+        await fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
         await setIsLoading(false);
       });
     } catch (err) {
