@@ -13,13 +13,13 @@ export default function Filter({filterByYear, setFilterByYear,filterByMonth, set
   const [years, setYears] = useState([]);
  
   useEffect(() => {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1;
+    // const currentYear = new Date().getFullYear();
+    // const currentMonth = new Date().getMonth() + 1;
 
     const yearArray = Array.from({ length: 10 }, (_, index) => 2023 + index);
     setYears(yearArray);
-    setFilterByYear(currentYear)
-    setFilterByMonth(currentMonth)
+    // setFilterByYear(currentYear)
+    // setFilterByMonth(currentMonth)
   }, []);
 
   return (

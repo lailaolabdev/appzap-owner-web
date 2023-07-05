@@ -264,7 +264,7 @@ export default function DetailExpend() {
                   width="150px"
                   icon={faArrowLeft}
                   colorbg={"lightgray"}
-                  handleClick={() => navigate(`/expends/limit/40/skip/1`)}
+                  handleClick={() => navigate(`/expends/limit/40/skip/1`,{replace:true})}
                   hoverbg={"gray"}
                 />
                 <ButtonComponent

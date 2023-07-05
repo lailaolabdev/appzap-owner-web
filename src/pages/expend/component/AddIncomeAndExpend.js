@@ -451,7 +451,7 @@ export default function AddIncomeAndExpend() {
                     <ButtonComponent
                       title={"ປິດອອກ"}
                       width="150px"
-                      handleClick={() => navigate("/expends/limit/40/skip/1")}
+                      handleClick={() => navigate("/expends/limit/40/skip/1",{replace:true})}
                       colorbg={"lightgray"}
                       hoverbg={"gray"}
                     />

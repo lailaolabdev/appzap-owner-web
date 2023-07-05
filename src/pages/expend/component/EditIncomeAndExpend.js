@@ -166,7 +166,7 @@ export default function EditIncomeAndExpend() {
   };
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ແກ້ໄຂມູນ" />
+      <TitleComponent fontSize={"20px"} title="ແກ້ໄຂຂໍ້ມູນ" />
       {isLoading ? (
         <div>
           <center>
@@ -489,7 +489,7 @@ export default function EditIncomeAndExpend() {
                         title={"ປິດອອກ"}
                         width="150px"
                         colorbg={"lightgray"}
-                        handleClick={() => navigate("/expends/limit/40/skip/1")}
+                        handleClick={() => navigate("/expends/limit/40/skip/1",{replace:true})}
                         hoverbg={"gray"}
                       />
                       <ButtonComponent
