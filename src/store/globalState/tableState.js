@@ -51,9 +51,9 @@ export const useTableState = (storeDetail) => {
     },
     []
   );
-  useEffect(() => {
-    getTableDataStore();
-  }, []);
+  // useEffect(() => {
+  //   getTableDataStore();
+  // }, []);
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();
