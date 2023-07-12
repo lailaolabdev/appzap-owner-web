@@ -9,16 +9,18 @@ import axios from "axios";
 import { TitleComponent, ButtonComponent } from "../../../components";
 import PopUpConfirmDeletion from "../../../components/popup/PopUpConfirmDeletion";
 
-import {
-  successAdd,
-  errorAdd,
-} from "../../../helpers/sweetalert";
+import { successAdd, errorAdd } from "../../../helpers/sweetalert";
 /**
  * function
  */
 
 import { getHeadersAccount } from "../../../services/auth";
-import { moneyCurrency, convertPayment, formatDate } from "../../../helpers";
+import {
+  moneyCurrency,
+  convertPayment,
+  formatDate,
+  formatDateTime,
+} from "../../../helpers";
 
 /**
  * api
@@ -30,6 +32,7 @@ import { END_POINT_SERVER_BUNSI } from "../../../constants/api";
 import { Row, Col, Form, Spinner } from "react-bootstrap";
 
 import {
+  faArrowLeft,
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -94,9 +97,21 @@ export default function DetailExpend() {
     }
   };
 
+  function limitText(text, limit) {
+    if (!text) {
+      return ""; // Return an empty string if the text is undefined or null
+    }
+    if (text.length <= limit) {
+      return text; // Return the original text if it's within the limit
+    } else {
+      // If the text is longer than the limit, truncate it and append '...'
+      return text.slice(0, limit) + "...";
+    }
+  }
+
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດລາຍຈ່າຍ" />
+      <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດ" />
 
       {isLoading ? (
         <div>
@@ -107,7 +122,6 @@ export default function DetailExpend() {
       ) : (
         expendData && (
           <Row>
-          
             <Col xs={12} sm={12} md={6}>
               <Form.Group>
                 <Form.Label style={{ color: "gray" }}>ວັນທີຈ່າຍ</Form.Label>
@@ -201,13 +215,17 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ວັນທີສ້າງ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDate(expendData?.createdAt)}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {formatDateTime(expendData?.createdAt)}
+                    </p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ຜູ້ສ້າງ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{expendData?.createdByName}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {expendData?.createdByName}
+                    </p>
                   </Form.Group>
                 </Col>
               </Row>
@@ -215,19 +233,23 @@ export default function DetailExpend() {
               <Row>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ວັນທີແກ້ໄຂ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{formatDate(expendData?.updatedAt)}</p>
+                    <Form.Label style={{ color: "gray" }}>
+                      ວັນທີແກ້ໄຂ
+                    </Form.Label>
+                    <p style={{ fontWeight: 400 }}>
+                      {formatDateTime(expendData?.updatedAt)}
+                    </p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>ຜູ້ແກ້ໄຂ</Form.Label>
-                    <p style={{ fontWeight: 400 }}>{expendData?.updatedByName}</p>
+                    <p style={{ fontWeight: 400 }}>
+                      {expendData?.updatedByName}
+                    </p>
                   </Form.Group>
                 </Col>
               </Row>
-
-
 
               <div
                 style={{
@@ -237,14 +259,14 @@ export default function DetailExpend() {
                   marginTop: "2rem",
                 }}
               >
-                {/* <ButtonComponent
+                <ButtonComponent
                   title={"ກັບຄືນ"}
                   width="150px"
                   icon={faArrowLeft}
                   colorbg={"lightgray"}
-                  handleClick={() => navigate(`/expends`)}
+                  handleClick={() => navigate(`/expends/limit/40/skip/1`,{replace:true})}
                   hoverbg={"gray"}
-                /> */}
+                />
                 <ButtonComponent
                   type="button"
                   title={"ແກ້ໄຂ"}
@@ -269,49 +291,41 @@ export default function DetailExpend() {
 
             <Col xs={12} md={6}>
               <Form.Group>
-                <Form.Label style={{ color: "gray" }}>
-                  ອັບໂຫລດຮູບໃບບິນ
-                </Form.Label>
+                {expendData?.expendImages.length > 0 ? (
+                  <Form.Label style={{ color: "gray" }}>
+                    ອັບໂຫລດຮູບໃບບິນ
+                  </Form.Label>
+                ) : (
+                  ""
+                )}
+
                 <Row>
-                  {expendData?.expendImages.length > 0 ? (
-                    expendData?.expendImages.map((item, index) => (
-                      <Col xs="12" sm="3" md="6" key={index}>
-                          <a href={
-                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                              item
-                            }>
-                        <div className="show-img-upload mb-2">
-                        
-                          <img
-                            src={
+                  {expendData?.expendImages.length > 0
+                    ? expendData?.expendImages.map((item, index) => (
+                        <Col xs="12" sm="3" md="6" key={index}>
+                          <a
+                            href={
                               "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
                               item
                             }
-                            alt={item}
-                          />
-                         
-                        </div>
-                        </a>
-                      </Col>
-                    ))
-                  ) : (
-                    <div
-                      style={{
-                        fontWeight: 400,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                      }}
-                    >
-                      ບໍ່ມີຮູບບິນ
-                    </div>
-                  )}
+                            target="_blank"
+                          >
+                            <div className="show-img-upload mb-2">
+                              <img
+                                src={
+                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                                  item
+                                }
+                                alt={item}
+                              />
+                            </div>
+                          </a>
+                        </Col>
+                      ))
+                    : ""}
                 </Row>
               </Form.Group>
             </Col>
-
-
           </Row>
         )
       )}
@@ -319,6 +333,7 @@ export default function DetailExpend() {
 
       <PopUpConfirmDeletion
         open={shoConfirmDelete}
+        text={limitText(expendData?.detail, 50)}
         onClose={() => setShowConfirmDelete(false)}
         onSubmit={_confirmeDelete}
       />

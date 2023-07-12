@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import moment from "moment";
 /**
@@ -42,7 +42,8 @@ export default function ExpendList() {
   const location = useLocation();
   const { _limit, _skip, Pagination_component } = PaginationComponent();
   const parsed = queryString?.parse(location?.state);
-
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
   //useState
   const [isLoading, setIsLoading] = useState(false);
   const [expendData, setExpendData] = useState(null);
@@ -50,14 +51,14 @@ export default function ExpendList() {
   const [expendDetail, setExpendDetail] = useState();
   const [shoConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  const [totalReport, setTotalReport] = useState()
+  const [totalReport, setTotalReport] = useState();
 
   //filter
   const [filterByYear, setFilterByYear] = useState(
-    !parsed?.filterByYear ? "" : parsed?.filterByYear
+    !parsed?.filterByYear ? currentYear : parsed?.filterByYear
   );
   const [filterByMonth, setFilterByMonth] = useState(
-    !parsed?.filterByMonth ? "" : parsed?.filterByMonth
+    !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
   const [dateStart, setDateStart] = useState(
     !parsed?.dateStart ? "" : parsed?.dateStart
@@ -65,39 +66,42 @@ export default function ExpendList() {
   const [dateEnd, setDateEnd] = useState(
     !parsed?.dateEnd ? "" : parsed?.dateEnd
   );
+  const [filterByPayment, setFilterByPayment] = useState(
+    !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
+  );
 
   //useEffect()
-  useEffect(() => {
-    fetchExpend();
-  }, []);
+  // useEffect(() => {
+  //   fetchExpend();
+  // }, []);
 
-    useEffect(() => {
-      let filter ={
-        filterByYear:filterByYear,
-        filterByMonth:filterByMonth,
-        dateStart:dateStart,
-        dateEnd:dateEnd
-      }
-      fetchExpend(filter);
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filterByYear,filterByMonth,dateStart,dateEnd, parame?.skip,]);
+  useEffect(() => {
+    let filter = {
+      filterByYear: filterByYear,
+      filterByMonth: filterByMonth,
+      dateStart: dateStart,
+      dateEnd: dateEnd,
+      filterByPayment:filterByPayment,
+    };
+
+    console.log("parame?.skip:::", parame?.skip)
+
+    fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment,parame?.skip]);
 
   //function()
-  const fetchExpend = async (filter) => {
+  const fetchExpend = async (filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment) => {
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
+      let findby = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
+      if(filterByYear) findby +=  `&year=${filterByYear}`
+      if(filterByMonth) findby +=  `&month=${filterByMonth}`
+      if(dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
+      if(filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
-      let _filter = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP${
-        filter?.filterByMonth ? "&month=" + filter?.filterByMonth : ""
-      }${filter?.filterByYear ? "&year=" + filter?.filterByYear : ""}${
-        filter?.dateStart && filter?.dateEnd
-          ? "&date_gte=" +
-            filter?.dateStart +
-            "&date_lt=" +
-            moment(moment(filter?.dateEnd).add(1, "days")).format("YYYY/MM/DD")
-          : ""
-      }&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
+      console.log("findby::",findby)
 
       let header = await getHeadersAccount();
       const headers = {
@@ -106,24 +110,24 @@ export default function ExpendList() {
       };
       await axios({
         method: "get",
-        url: `${END_POINT_SERVER_BUNSI}/api/v1/expends?${_filter}`,
+        url: `${END_POINT_SERVER_BUNSI}/api/v1/expends?${findby}`,
         headers: headers,
       }).then((res) => {
         setExpendData(res.data);
+      }).finally(()=>{
         setIsLoading(false);
       });
 
       await axios({
         method: "get",
-        url: `${END_POINT_SERVER_BUNSI}/api/v1/expend-report?${_filter}`,
+        url: `${END_POINT_SERVER_BUNSI}/api/v1/expend-report?${findby}`,
         headers: headers,
       }).then((res) => {
-        console.log("resresresresresres:::",res)
         setTotalReport(res?.data?.data);
         setIsLoading(false);
-      });
-
-
+      }).finally(()=>{
+        setIsLoading(false);
+      });;
     } catch (err) {
       console.log("err:::", err);
     }
@@ -132,6 +136,7 @@ export default function ExpendList() {
   //_confirmeDelete
   const _confirmeDelete = async () => {
     try {
+      await setFilterByPayment('ALL')
       await setIsLoading(true);
       await setShowConfirmDelete(false);
       const _localData = await getLocalData();
@@ -144,10 +149,10 @@ export default function ExpendList() {
         method: "delete",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend/${expendDetail?._id}`,
         headers: headers,
-      }).then(async (res) => {
+      }).then(async () => {
         await setExpendDetail();
         await successAdd("ລຶບສຳເລັດ");
-        await fetchExpend();
+        await fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
         await setIsLoading(false);
       });
     } catch (err) {
@@ -203,6 +208,17 @@ export default function ExpendList() {
             onChange={(e) => setDateEnd(e?.target?.value)}
             style={{ width: 250 }}
           />
+          <Form.Control
+            as="select"
+            name="payment"
+            value={filterByPayment}
+            onChange={(e)=> setFilterByPayment(e?.target?.value)}
+            style={{ width: 250 }}
+          >
+            <option value="ALL">ສະແດງທັງໝົດຮູບແບບ</option>
+            <option value="CASH">ເງິນສົດ</option>
+            <option value="TRANSFER">ເງິນໂອນ</option>
+          </Form.Control>
         </div>
       </div>
       <Filter
@@ -227,19 +243,27 @@ export default function ExpendList() {
         <div className="p-2">ທັງໝົດ {expendData?.total} ລາຍການ</div>
         <div className="p-2">
           ລວມກີບ:{" "}
-          <span style={{ fontWeight: 900 }}>{moneyCurrency(totalReport?.priceLAK)}</span>
+          <span style={{ fontWeight: 900 }}>
+            {moneyCurrency(totalReport?.priceLAK)}
+          </span>
         </div>
         <div className="p-2">
           ລວມບາດ:{" "}
-          <span style={{ fontWeight: 900 }}>{moneyCurrency(totalReport?.priceTHB)}</span>
+          <span style={{ fontWeight: 900 }}>
+            {moneyCurrency(totalReport?.priceTHB)}
+          </span>
         </div>
         <div className="p-2">
           ລວມຢວນ:{" "}
-          <span style={{ fontWeight: 900 }}>{moneyCurrency(totalReport?.priceCNY)}</span>
+          <span style={{ fontWeight: 900 }}>
+            {moneyCurrency(totalReport?.priceCNY)}
+          </span>
         </div>
         <div className="p-2">
           ລວມໂດລາ:{" "}
-          <span style={{ fontWeight: 900 }}>{moneyCurrency(totalReport?.priceUSD)}</span>
+          <span style={{ fontWeight: 900 }}>
+            {moneyCurrency(totalReport?.priceUSD)}
+          </span>
         </div>
         <div className="p-2">
           <ButtonComponent
@@ -344,7 +368,7 @@ export default function ExpendList() {
       {Pagination_component(
         expendData?.total,
         "/expends",
-        `filterByYear=${filterByYear}&&filterByMonth=${filterByMonth}&&dateStart=${dateStart}&&dateEnd=${dateEnd}`
+        `filterByYear=${filterByYear}&&filterByMonth=${filterByMonth}&&dateStart=${dateStart}&&dateEnd=${dateEnd}&&filterByPayment=${filterByPayment}`
       )}
 
       <PopUpConfirmDeletion
