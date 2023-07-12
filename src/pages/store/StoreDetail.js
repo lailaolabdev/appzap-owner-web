@@ -81,6 +81,7 @@ export default function StoreDetail() {
       return;
     }
   };
+  
   // lung jak upload leo pic ja ma so u nee
   const _updateIsOpenStore = async (data) => {
     await axios({

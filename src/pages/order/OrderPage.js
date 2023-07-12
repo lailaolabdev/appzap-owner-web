@@ -176,7 +176,7 @@ export default function OrderPage() {
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
-              await handleUpdateOrderStatus("CANCEL");
+              await handleUpdateOrderStatus("CANCELED");
               getOrderWaitingAndDoingByStore();
             }}
           >

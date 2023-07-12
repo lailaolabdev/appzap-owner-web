@@ -241,13 +241,13 @@ export default function TableList() {
       return;
     }
     try {
-      const _billsNew = await getBills(`?code=${selectNewTable?.code}`);
+      const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
       const _billIdNew = _billsNew?.[0]?.["_id"];
 
-      const _billsOld = await getBills(`?code=${selectedTable?.code}`);
+      const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
 
-      const _codesNew = await getCodes(`?code=${selectNewTable?.code}`);
+      const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
 
       let header = await getHeaders();
