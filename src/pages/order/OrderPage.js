@@ -1,7 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-// import OrderNavbar from "./component/OrderNavbar";
-
 import { useTranslation } from "react-i18next";
 import { Button, Tabs, Tab } from "react-bootstrap";
 import Swal from "sweetalert2";
@@ -12,12 +10,7 @@ import { base64ToBlob } from "../../helpers";
 import axios from "axios";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import BillForChef80 from "../../components/bill/BillForChef80";
-import {
-  DOING_STATUS,
-  WAITING_STATUS,
-  SERVE_STATUS,
-  CANCEL_STATUS,
-} from "../../constants";
+import { DOING_STATUS, WAITING_STATUS, SERVE_STATUS, CANCEL_STATUS} from "../../constants";
 
 // Tab
 import WaitingOrderTab from "./WaitingOrderTab";
@@ -30,20 +23,14 @@ export default function OrderPage() {
   const { t } = useTranslation(); // translate
   const { storeDetail } = useStore();
   const { printers, selectedTable } = useStore();
+  const [countError, setCountError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
-  const {
-    orderItems,
-    setOrderItems,
-    orderLoading,
-    getOrderItemsStore,
-    selectOrderStatus,
-    setSelectOrderStatus,
-    newOrderTransaction,
-    setNewOrderTransaction,
-    getOrderWaitingAndDoingByStore,
-    orderDoing,
-    orderWaiting,
+
+  const { orderItems, setOrderItems, orderLoading, getOrderItemsStore,
+    selectOrderStatus, setSelectOrderStatus, newOrderTransaction, setNewOrderTransaction, 
+    getOrderWaitingAndDoingByStore, orderDoing, orderWaiting,
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -128,6 +115,7 @@ export default function OrderPage() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
+        
         await Swal.fire({
           icon: "success",
           title: "ປິ້ນສຳເລັດ",
@@ -135,15 +123,23 @@ export default function OrderPage() {
           timer: 1500,
         });
       } catch (err) {
-        console.log(err);
-        await Swal.fire({
-          icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        if(err){
+        setCountError("ERR")
+        setIsLoading(true)
+        console.log("err::::", err);
+        }
       }
       _index++;
+    }
+    if(countError == "ERR"){
+      console.log("AAAAA") 
+      setIsLoading(false)
+      Swal.fire({
+        icon: "error",
+        title: "ປິ້ນບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
   // useEffect
@@ -220,7 +216,7 @@ export default function OrderPage() {
   };
   return (
     <RootStyle>
-      {orderLoading && <Loading />}
+      {orderLoading || isLoading &&  <Loading />}
       <div style={{ backgroundColor: "white" }}>
         <Tabs
           defaultActiveKey={WAITING_STATUS}
