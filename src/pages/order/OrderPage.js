@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-// import OrderNavbar from "./component/OrderNavbar";
-
 import { useTranslation } from "react-i18next";
 import { Button, Tabs, Tab } from "react-bootstrap";
 import Swal from "sweetalert2";
@@ -25,7 +23,7 @@ export default function OrderPage() {
   const { t } = useTranslation(); // translate
   const { storeDetail } = useStore();
   const { printers, selectedTable } = useStore();
-  const [countError, setCountError] = useState(0)
+  const [countError, setCountError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -117,33 +115,32 @@ export default function OrderPage() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        setCountError(1)
-        setIsLoading(true)
+        
+        await Swal.fire({
+          icon: "success",
+          title: "ປິ້ນສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       } catch (err) {
-        setCountError(2)
+        if(err){
+        setCountError("ERR")
         setIsLoading(true)
+        console.log("err::::", err);
+        }
       }
       _index++;
     }
-    if(countError === 1){
+    if(countError == "ERR"){
+      console.log("AAAAA") 
       setIsLoading(false)
-      await Swal.fire({
+      Swal.fire({
         icon: "error",
         title: "ປິ້ນບໍ່ສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
     }
-    if(countError === 2){
-      setIsLoading(false)
-      await Swal.fire({
-        icon: "success",
-        title: "ປິ້ນສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    }
-  
   };
   // useEffect
 
