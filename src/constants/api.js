@@ -7,8 +7,8 @@ const dev = "https://dev-api.appzap.la"; // dev endpoint
 // const dev = "https://api.appzap.la"; //locals
 // const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
-const production_socket = "https://app-api-alb.appzap.la"; // Production
-const dev_socket = "ws://socket2.appzap.la:8888";
+const production_socket = "https://api.appzap.la:8888"; // Production
+const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
 const dev_web_client = "http://18.141.158.70:3000/store/";
 const isProduction = production_domain == now_domain;

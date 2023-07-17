@@ -107,6 +107,7 @@ export default function TableList() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
+    getTableDataStoreList,
   } = useStore();
 
   const reLoadData = () => {
@@ -143,28 +144,30 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  // useEffect(() => {
-  //   // initialTableSocket();
-  //   getTableDataStore();
-  // }, []);
+  useEffect(() => {
+    // initialTableSocket();
+    // getTableDataStoreList();
+    getTableDataStore();
+  }, []);
+
   /**
    * Modify Order Status
    */
   useEffect(() => {
     setIsCheckedOrderItem([...tableOrderItems]);
   }, [selectedTable, tableOrderItems]);
-  useEffect(() => {
-    if (!tableOrderItems) return;
-    let _tableOrderItems = [...tableOrderItems];
-    let _checkDataStatus = [];
-    let _checkDataStatusCancel = [];
-    _tableOrderItems.map((nData) => {
-      if (nData.status === "SERVED") _checkDataStatus.push(nData?.status);
-      if (nData.status === "CANCELED")
-        _checkDataStatusCancel.push(nData?.status);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableOrderItems]);
+  // useEffect(() => {
+  //   if (!tableOrderItems) return;
+  //   let _tableOrderItems = [...tableOrderItems];
+  //   let _checkDataStatus = [];
+  //   let _checkDataStatusCancel = [];
+  //   _tableOrderItems.map((nData) => {
+  //     if (nData.status === "SERVED") _checkDataStatus.push(nData?.status);
+  //     if (nData.status === "CANCELED")
+  //       _checkDataStatusCancel.push(nData?.status);
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [tableOrderItems]);
   const _handlecheckout = async () => {
     setCheckoutModal(false);
     navigate(
@@ -955,7 +958,7 @@ export default function TableList() {
                         </ButtonCustom>
 
                         <ButtonCustom
-                          disabled={!canCheckOut}
+                          // disabled={!canCheckOut}
                           onClick={() => _onCheckOut()}
                         >
                           Checkout

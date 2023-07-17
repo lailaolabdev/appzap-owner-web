@@ -46,6 +46,17 @@ export const getMenuReport = async (storeId, findBy) => {
   }
 };
 
+export const getCategoryReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/category-report/${storeId}${findBy}`;
+    const res = await axios.post(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getMoneyReport = async (storeId, findBy) => {
   try {
     const _header = await getHeaders();

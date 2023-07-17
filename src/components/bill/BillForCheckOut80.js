@@ -8,9 +8,20 @@ export default function BillForCheckOut80({
   selectedTable,
   dataBill,
 }) {
+  // state
   const [total, setTotal] = useState();
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
 
+  // useEffect
+  useEffect(() => {
+    _calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataBill]);
+  useEffect(() => {
+    _calculateTotal();
+  }, []);
+
+  // function
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
@@ -31,12 +42,6 @@ export default function BillForCheckOut80({
     }
     setTotal(_total);
   };
-
-  // useEffect
-  useEffect(() => {
-    _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill]);
   return (
     <Container>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>

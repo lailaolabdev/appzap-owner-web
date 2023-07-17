@@ -10,6 +10,7 @@ import { AiFillPrinter } from "react-icons/ai";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import {
+  getCategoryReport,
   getMenuReport,
   getMoneyReport,
   getPromotionReport,
@@ -28,9 +29,10 @@ export default function DashboardPage() {
   const [salesInformationReport, setSalesInformationReport] = useState();
   const [userReport, setUserReport] = useState();
   const [menuReport, setMenuReport] = useState();
+  const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
-  const [startDate, setStartDate] = useState("2023-01-01");
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
@@ -47,7 +49,8 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
-  }, [endDate, startDate,endTime,startTime]);
+    getCategoryReportData();
+  }, [endDate, startDate, endTime, startTime]);
 
   // function
   const getReportData = async () => {
@@ -70,6 +73,11 @@ export default function DashboardPage() {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getMenuReport(storeDetail?._id, findBy);
     setMenuReport(data);
+  };
+  const getCategoryReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getCategoryReport(storeDetail?._id, findBy);
+    setCategoryReport(data);
   };
   const getMoneyReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -100,15 +108,21 @@ export default function DashboardPage() {
             onClick={() => setPopup({ popupfiltter: true })}
           >
             <BsFillCalendarWeekFill />
-            <div>{startDate} {startTime}</div> ~ <div>{endDate} {endTime}</div>
+            <div>
+              {startDate} {startTime}
+            </div>{" "}
+            ~{" "}
+            <div>
+              {endDate} {endTime}
+            </div>
           </Button>
-          <Button
+          {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ PopupDaySplitView: true })}
           >
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
-          </Button>
+          </Button> */}
           <div style={{ flex: 1 }} />
           <Button
             variant="outline-primary"
@@ -128,6 +142,7 @@ export default function DashboardPage() {
             display: "grid",
             gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
             gap: 20,
+            gridTemplateRows: "masonry",
           }}
         >
           <Card border="primary" style={{ margin: 0 }}>
@@ -283,8 +298,10 @@ export default function DashboardPage() {
                 ].map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
-                    <td>{e?.qty}</td>
-                    <td style={{ textAlign: "right" }}>{e?.amount}</td>
+                    <td>{moneyCurrency(e?.qty)}</td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.amount)}₭
+                    </td>
                   </tr>
                 ))}
               </table>
@@ -331,6 +348,80 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
+              ຂໍ້ມູນການຂາຍແຕ່ລະມື້
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>ວັນທີ່</th>
+                  <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
+                  <th style={{ textAlign: "center" }}>ຍອດບິນ</th>
+                  <th style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ</th>
+                  <th style={{ textAlign: "center" }}>ຍອດກ່ອນ</th>
+                  <th style={{ textAlign: "right" }}>ຍອດລວມ</th>
+                </tr>
+                {reportData.map((e) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{e?.date}</td>
+                    <td>{e?.order}</td>
+                    <td>{e?.bill}</td>
+                    <td>{moneyCurrency(e?.discount)}₭</td>
+                    <td>{moneyCurrency(e?.billBefore)}₭</td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.billAmount)}₭
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ປະເພດເມນູ
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>ປະເພດເມນູ</th>
+                  <th style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</th>
+                  <th style={{ textAlign: "center" }}>ຍົກເລີກ</th>
+                  <th style={{ textAlign: "right" }}>ຍອດຂາຍ</th>
+                </tr>
+                {categoryReport
+                  ?.sort((x, y) => {
+                    return y.served - x.served;
+                  })
+                  ?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.canceled || 0}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.totalSaleAmount)}₭
+                      </td>
+                    </tr>
+                  ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
               ຂໍ້ມູນເມນູ
             </Card.Header>
             <Card.Body>
@@ -363,11 +454,11 @@ export default function DashboardPage() {
         </Box>
       </Box>
       {/* popup */}
-      <PopupDaySplitView
+      {/* <PopupDaySplitView
         open={popup?.PopupDaySplitView}
         onClose={() => setPopup()}
         reportData={reportData}
-      />
+      /> */}
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}

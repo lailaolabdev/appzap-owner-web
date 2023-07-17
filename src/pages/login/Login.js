@@ -24,7 +24,7 @@ function Login() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
-  const { setStoreDetail,setProfile } = useStore();
+  const { setStoreDetail, setProfile } = useStore();
 
   const _login = async ({ values }) => {
     setIsLoading(true);
@@ -39,26 +39,26 @@ function Login() {
         navigate(defaultPath);
       } else {
         //  _orderSound.play();
-        toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
-          position: "bottom-left",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+        //   position: "bottom-left",
+        //   autoClose: 1000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        // });
       }
     } catch (error) {
-      toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
-        position: "bottom-left",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
+      //   position: "bottom-left",
+      //   autoClose: 1000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   pauseOnHover: true,
+      //   draggable: true,
+      //   progress: undefined,
+      // });
     }
     setIsLoading(true);
   };
@@ -259,7 +259,7 @@ function Login() {
                       fontSize: 18,
                     }}
                     onClick={handleSubmit}
-                    disabled={isLoading}
+                    // disabled={isLoading}
                   >
                     ເຂົ້າສູ່ລະບົບ
                   </Button>
