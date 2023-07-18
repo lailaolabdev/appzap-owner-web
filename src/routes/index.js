@@ -44,12 +44,12 @@ import TableRoutes from "./Table.routes";
 import ReportRoutes from "./Report.routes";
 import DashboardRoutes from "./Dashboard.routes";
 
-
 //expend
-import ExpendsRoutes from "./Expend.routes"
+import ExpendsRoutes from "./Expend.routes";
 import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
 import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
 import DetailExpend from "../pages/expend/component/DetailExpend";
+import ComponentRoutes from "./Component.routes";
 
 function Router() {
   return useRoutes([
@@ -219,9 +219,10 @@ function Router() {
         TableRoutes,
         ReportRoutes,
         DashboardRoutes,
-        ExpendsRoutes
+        ExpendsRoutes,
       ],
     },
+    ComponentRoutes,
     AuthRoutes,
     {
       path: "/testPrinter",

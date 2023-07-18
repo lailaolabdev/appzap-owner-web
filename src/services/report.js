@@ -78,3 +78,23 @@ export const getPromotionReport = async (storeId, findBy) => {
     return error;
   }
 };
+export const getBillReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/bill-report/${storeId}${findBy}`;
+    const res = await axios.post(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getActiveBillReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/active-bill-report/${storeId}${findBy}`;
+    const res = await axios.post(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

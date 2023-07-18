@@ -22,6 +22,10 @@ import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import moment from "moment";
+import PopUpPrintReport from "../../components/popup/PopUpPrintReport";
+import PopUpPrintComponent from "../../components/popup/PopUpPrintComponent";
+import BillForReport80 from "../../components/bill/BillForReport80";
+import { base64ToBlob } from "../../helpers";
 
 export default function DashboardPage() {
   // state
@@ -94,11 +98,8 @@ export default function DashboardPage() {
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item href="#">Home</Breadcrumb.Item>
-          <Breadcrumb.Item href="https://getbootstrap.com/docs/4.0/components/breadcrumb/">
-            Library
-          </Breadcrumb.Item>
-          <Breadcrumb.Item active>Data</Breadcrumb.Item>
+          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
+          <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
         </Breadcrumb>
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <Button
@@ -127,6 +128,7 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ printReport: true })}
           >
             <AiFillPrinter /> PRINT
           </Button>
@@ -233,8 +235,8 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ສ່ວນຫຼຸດທັງໝົດ</div>
-                <div>{promotionReport?.[0]?.count}</div>
+                <div>ຈຳນວນບິນສ່ວນຫຼຸດ</div>
+                <div>{promotionReport?.[0]?.count || 0}</div>
               </div>
               <div
                 style={{
@@ -245,8 +247,8 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ຈຳນວນບິນສ່ວນຫຼຸດ</div>
-                <div>{promotionReport?.[0]?.totalSaleAmount}</div>
+                <div>ສ່ວນຫຼຸດທັງໝົດ</div>
+                <div>{promotionReport?.[0]?.totalSaleAmount || 0}₭</div>
               </div>
             </Card.Body>
           </Card>
@@ -287,13 +289,13 @@ export default function DashboardPage() {
                   {
                     method: "ລວມບິນທັງໝົດ",
                     qty:
-                      moneyReport?.cash?.count +
-                      moneyReport?.transferCash?.count +
+                      (moneyReport?.cash?.count || 0) +
+                      (moneyReport?.transferCash?.count || 0) +
                       moneyReport?.transfer?.count,
                     amount:
-                      moneyReport?.cash?.totalBill +
-                      moneyReport?.transferCash?.totalBill +
-                      moneyReport?.transfer?.totalBill,
+                      (moneyReport?.cash?.totalBill || 0) +
+                      (moneyReport?.transferCash?.totalBill || 0) +
+                      (moneyReport?.transfer?.totalBill || 0),
                   },
                 ].map((e) => (
                   <tr>
@@ -454,11 +456,10 @@ export default function DashboardPage() {
         </Box>
       </Box>
       {/* popup */}
-      {/* <PopupDaySplitView
-        open={popup?.PopupDaySplitView}
-        onClose={() => setPopup()}
-        reportData={reportData}
-      /> */}
+      <PopUpPrintComponent open={popup?.printReportSale} onClose={() => setPopup()} >
+        <BillForReport80/>
+      </PopUpPrintComponent>
+      <PopUpPrintReport open={popup?.printReport} setPopup={setPopup} onClose={() => setPopup()}/>
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}
