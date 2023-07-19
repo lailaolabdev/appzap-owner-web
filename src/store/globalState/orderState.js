@@ -98,6 +98,9 @@ export const useOrderState = () => {
         .then((json) => {
           setOrderLoading(false);
           setOrderItems(json);
+        })
+        .catch((err) => {
+          setOrderLoading(false);
         });
       setOrderLoading(false);
     } catch (err) {

@@ -21,19 +21,21 @@ const OrderCheckOut = ({
   const [total, setTotal] = useState();
 
   useEffect(() => {
-    for (let i = 0; i < data?.orderId.length; i++) {
+    // for (let i = 0; i < data?.orderId.length; i++) {
       _calculateTotal();
-    }
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [data, data?.orderId?.length]);
 
   const _calculateTotal = () => {
+    setTotal();
     let _total = 0;
     for (let i = 0; i < data?.orderId.length; i++) {
       if (data?.orderId[i]?.status === "SERVED") {
         _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
       }
     }
+    // alert(_total);
     setTotal(_total);
   };
 

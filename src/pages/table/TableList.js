@@ -190,21 +190,26 @@ export default function TableList() {
   }, [tableOrderItems]);
 
   const getData = async (code) => {
-    let header = await getHeaders();
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: header.authorization,
-    };
-    let findby = "?";
-    findby += `code=${code}`;
-    const _bills = await getBills(findby);
-    const _billId = _bills?.[0]?.["_id"];
-    const _resBill = await axios({
-      method: "get",
-      url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
-      headers: headers,
-    });
-    setDataBill(_resBill?.data);
+    try {
+      setDataBill();
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      let findby = "?";
+      findby += `code=${code}`;
+      const _bills = await getBills(findby);
+      const _billId = _bills?.[0]?.["_id"];
+      const _resBill = await axios({
+        method: "get",
+        url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
+        headers: headers,
+      });
+      setDataBill(_resBill?.data);
+    } catch (err) {
+      setDataBill();
+    }
   };
 
   const _orderTableQunatity = async () => {

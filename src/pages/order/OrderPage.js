@@ -10,7 +10,12 @@ import { base64ToBlob } from "../../helpers";
 import axios from "axios";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import BillForChef80 from "../../components/bill/BillForChef80";
-import { DOING_STATUS, WAITING_STATUS, SERVE_STATUS, CANCEL_STATUS} from "../../constants";
+import {
+  DOING_STATUS,
+  WAITING_STATUS,
+  SERVE_STATUS,
+  CANCEL_STATUS,
+} from "../../constants";
 
 // Tab
 import WaitingOrderTab from "./WaitingOrderTab";
@@ -23,123 +28,140 @@ export default function OrderPage() {
   const { t } = useTranslation(); // translate
   const { storeDetail } = useStore();
   const { printers, selectedTable } = useStore();
-  const [countError, setCountError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [countError, setCountError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
 
-  const { orderItems, setOrderItems, orderLoading, getOrderItemsStore,
-    selectOrderStatus, setSelectOrderStatus, newOrderTransaction, setNewOrderTransaction, 
-    getOrderWaitingAndDoingByStore, orderDoing, orderWaiting,
+  const {
+    orderItems,
+    setOrderItems,
+    orderLoading,
+    getOrderItemsStore,
+    selectOrderStatus,
+    setSelectOrderStatus,
+    newOrderTransaction,
+    setNewOrderTransaction,
+    getOrderWaitingAndDoingByStore,
+    orderDoing,
+    orderWaiting,
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
-    let previousStatus = orderItems[0].status;
-    let menuId;
-    let _updateItems = orderItems
-      .filter((item) => item.isChecked)
-      .map((i) => {
-        return {
-          status: status,
-          _id: i?._id,
-          menuId: i?.menuId,
-        };
-      });
-    let _resOrderUpdate = await updateOrderItem(
-      _updateItems,
-      storeDetail?._id,
-      menuId
-    );
-    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      // let _newOrderItem = orderItems.filter((item) => !item.isChecked);
-      Swal.fire({
-        icon: "success",
-        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-    }
-    getOrderItemsStore(selectOrderStatus);
-    // fetchData();
-    return;
+    try {
+      let previousStatus = orderItems[0].status;
+      let menuId;
+      let _updateItems = orderItems
+        .filter((item) => item.isChecked)
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
+      let _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeDetail?._id,
+        menuId
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        // let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+        Swal.fire({
+          icon: "success",
+          title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
+      getOrderItemsStore(selectOrderStatus);
+      // fetchData();
+      return;
+    } catch (err) {}
   };
 
   const onPrintForCher = async () => {
-    const orderSelect = orderItems?.filter((e) => e?.isChecked);
-    let _index = 0;
-    for (const _ref of billForCher80.current) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
-
-      try {
-        let urlForPrinter = "";
-        let dataUrl;
-        if (_printer?.width === "80mm") {
-          dataUrl = await html2canvas(billForCher80?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          });
-        }
-
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = "http://localhost:9150/ethernet/image";
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = "http://localhost:9150/bluetooth/image";
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = "http://localhost:9150/usb/image";
-        }
-
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
+    try {
+      setCountError("");
+      const orderSelect = orderItems?.filter((e) => e?.isChecked);
+      let _index = 0;
+      for (const _ref of billForCher80.current) {
+        const _printer = printers.find((e) => {
+          return e?._id === orderSelect?.[_index]?.printer;
         });
-        
-        await Swal.fire({
-          icon: "success",
-          title: "ປິ້ນສຳເລັດ",
+
+        try {
+          let urlForPrinter = "";
+          let dataUrl;
+          if (_printer?.width === "80mm") {
+            dataUrl = await html2canvas(billForCher80?.current[_index], {
+              useCORS: true,
+              scrollX: 10,
+              scrollY: 0,
+            });
+          }
+          if (_printer?.width === "58mm") {
+            dataUrl = await html2canvas(billForCher58?.current[_index], {
+              useCORS: true,
+              scrollX: 10,
+              scrollY: 0,
+            });
+          }
+
+          if (_printer?.type === "ETHERNET") {
+            urlForPrinter = "http://localhost:9150/ethernet/image";
+          }
+          if (_printer?.type === "BLUETOOTH") {
+            urlForPrinter = "http://localhost:9150/bluetooth/image";
+          }
+          if (_printer?.type === "USB") {
+            urlForPrinter = "http://localhost:9150/usb/image";
+          }
+
+          const _file = await base64ToBlob(dataUrl.toDataURL());
+          var bodyFormData = new FormData();
+          bodyFormData.append("ip", _printer?.ip);
+          if (_index === 0) {
+            bodyFormData.append("beep1", 1);
+            bodyFormData.append("beep2", 9);
+          }
+          bodyFormData.append("port", "9100");
+          bodyFormData.append("image", _file);
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          if (_index === 0) {
+            await Swal.fire({
+              icon: "success",
+              title: "ປິ້ນສຳເລັດ",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        } catch (err) {
+          if (err) {
+            setCountError("ERR");
+            setIsLoading(false);
+            console.log("err::::", err);
+          }
+        }
+        _index++;
+      }
+      if (countError == "ERR") {
+        setIsLoading(false);
+        Swal.fire({
+          icon: "error",
+          title: "ປິ້ນບໍ່ສຳເລັດ",
           showConfirmButton: false,
           timer: 1500,
         });
-      } catch (err) {
-        if(err){
-        setCountError("ERR")
-        setIsLoading(true)
-        console.log("err::::", err);
-        }
       }
-      _index++;
-    }
-    if(countError == "ERR"){
-      console.log("AAAAA") 
-      setIsLoading(false)
-      Swal.fire({
-        icon: "error",
-        title: "ປິ້ນບໍ່ສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+    } catch (err) {
+      setIsLoading(false);
     }
   };
   // useEffect
@@ -216,7 +238,7 @@ export default function OrderPage() {
   };
   return (
     <RootStyle>
-      {orderLoading || isLoading &&  <Loading />}
+      {orderLoading || (isLoading && <Loading />)}
       <div style={{ backgroundColor: "white" }}>
         <Tabs
           defaultActiveKey={WAITING_STATUS}
