@@ -78,6 +78,8 @@ export default function TableList() {
   const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
   const [quantity, setQuantity] = useState(false);
+  const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
+  const [total, setTotal] = useState(0);
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -691,6 +693,33 @@ export default function TableList() {
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
+
+  // useEffect
+  useEffect(() => {
+    _calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataBill]);
+  // function
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let _data of dataBill?.orderId || []) {
+      _total += _data?.quantity * _data?.price;
+    }
+    if (dataBill?.discount > 0) {
+      if (
+        dataBill?.discountType == "LAK" ||
+        dataBill?.discountType == "MONEY"
+      ) {
+        setTotalAfterDiscount(_total - dataBill?.discount);
+      } else {
+        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+        setTotalAfterDiscount(_total - ddiscount);
+      }
+    } else {
+      setTotalAfterDiscount(_total);
+    }
+    setTotal(_total);
+  };
   return (
     <div
       style={{
@@ -925,6 +954,61 @@ export default function TableList() {
                               : t("lak")}
                           </span>
                         </div>
+
+                        <div
+                          style={{
+                            fontSize: 16,
+                          }}
+                        >
+                          ຍອດບິນ:{" "}
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              color: COLOR_APP,
+                            }}
+                          >
+                            {moneyCurrency(total)} ກີບ
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                          }}
+                        >
+                          ຍອດທີຕ້ອງຊຳລະ:{" "}
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              color: COLOR_APP,
+                            }}
+                          >
+                            {moneyCurrency(totalAfterDiscount)} ກີບ
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 16,
+                            color: "red",
+                            display: isCheckedOrderItem?.filter(
+                              (e) =>
+                                e?.status != "SERVED" &&
+                                e?.status != "CANCELED" &&
+                                e?.status != "FEEDBACK"
+                            )?.length
+                              ? "block"
+                              : "none",
+                          }}
+                        >
+                          {
+                            isCheckedOrderItem?.filter(
+                              (e) =>
+                                e?.status != "SERVED" &&
+                                e?.status != "CANCELED" &&
+                                e?.status != "FEEDBACK"
+                            )?.length
+                          }{" "}
+                          ອໍເດີຍັງບໍ່ທັນເສີບ !
+                        </div>
                       </div>
                       <div
                         style={{
@@ -963,7 +1047,7 @@ export default function TableList() {
                         </ButtonCustom>
 
                         <ButtonCustom
-                          // disabled={!canCheckOut}
+                          disabled={!canCheckOut}
                           onClick={() => _onCheckOut()}
                         >
                           Checkout

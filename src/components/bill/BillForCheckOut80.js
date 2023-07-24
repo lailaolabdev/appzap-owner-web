@@ -32,7 +32,7 @@ export default function BillForCheckOut80({
         dataBill?.discountType == "LAK" ||
         dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(_total + dataBill?.discount);
+        setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
         const ddiscount = parseInt((_total * dataBill?.discount) / 100);
         setTotalAfterDiscount(_total - ddiscount);

@@ -20,6 +20,7 @@ const Root = styled("div")({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  boxSizing: "border-box"
 });
 const Container = styled("div")({
   backgroundColor: "#FFA07A",

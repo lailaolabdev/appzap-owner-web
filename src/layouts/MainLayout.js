@@ -15,9 +15,8 @@ export default function MainLayout({ children }) {
   return (
     <Box
       sx={{
-        marginLeft: { md: 65 },
+        paddingLeft: { md: 65 },
         width: "100%",
-        overflowX: "hidden",
       }}
     >
       <Box
@@ -44,10 +43,6 @@ export default function MainLayout({ children }) {
       <div
         style={{
           paddingTop: 65,
-          minHeight: "100vh",
-          overflowX: "hidden",
-          overflowY: "auth",
-          width: "100%",
         }}
       >
         <Outlet />
