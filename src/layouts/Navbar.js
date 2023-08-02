@@ -20,8 +20,11 @@ export default function NavBar() {
 
   // state
   const [userData, setUserData] = useState({});
-  const { isConnectPrinter,profile } = useStore();
+  const { isConnectPrinter, profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
+
+  // provider
+  const { setStoreDetail, setProfile } = useStore();
 
   // ref
   const soundPlayer = useRef();
@@ -40,8 +43,10 @@ export default function NavBar() {
   }, []);
 
   const _onLogout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
+    setProfile({});
+    setStoreDetail({});
+    // localStorage.clear();
+    // sessionStorage.clear();
     navigate(`/`);
   };
   const switchLanguage = (language) => {

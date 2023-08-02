@@ -7,7 +7,7 @@ const socket = socketio.connect(END_POINT_SOCKET, {
   reconnectionDelayMax: 10000,
   reconnectionAttempts: 25,
 });
-export const useSocketState = ({ storeDetail, orderSound }) => {
+export const useSocketState = ({ storeDetail, setRunSound }) => {
   const [socketConneted, setSocketConneted] = useState(false);
   const [newTableTransaction, setNewTableTransaction] = useState(false);
   const [newOrderTransaction, setNewOrderTransaction] = useState(false);
@@ -24,15 +24,15 @@ export const useSocketState = ({ storeDetail, orderSound }) => {
       setNewTableTransaction(true);
     });
     socket.on(`ORDER:${storeDetail?._id}`, () => {
-      orderSound();
+      setRunSound({ orderSound: true });
       setNewOrderTransaction(true);
     });
     socket.on(`ORDER_UPDATE_STATUS:${storeDetail?._id}`, () => {
-      orderSound();
+      setRunSound({ orderSound: true });
       setNewOrderUpdateStatusTransaction(true);
     });
     socket.on(`RESERVATION:${storeDetail._id}`, () => {
-      orderSound();
+      setRunSound({ orderSound: true });
       setNewOreservationTransaction(true);
     });
     socket.on("disconnect", () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
-import { Button, Tabs, Tab } from "react-bootstrap";
+import { Button, Tabs, Tab, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useStore } from "../../store";
 import { updateOrderItem } from "../../services/order";
@@ -79,34 +79,48 @@ export default function OrderPage() {
       return;
     } catch (err) {}
   };
-
+  const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
+    setOnPrinting(true);
     try {
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
-      for (const _ref of billForCher80.current) {
+      const printDate = [...billForCher80.current].filter((e) => e != null);
+      console.log(billForCher80.current);
+      console.log(printDate.length);
+      let dataUrls = [];
+      for (const _ref of printDate) {
+        const dataUrl = await html2canvas(_ref, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+        });
+        dataUrls.push(dataUrl);
+      }
+
+      for (const _ref of printDate) {
         const _printer = printers.find((e) => {
           return e?._id === orderSelect?.[_index]?.printer;
         });
 
         try {
           let urlForPrinter = "";
-          let dataUrl;
-          if (_printer?.width === "80mm") {
-            dataUrl = await html2canvas(billForCher80?.current[_index], {
-              useCORS: true,
-              scrollX: 10,
-              scrollY: 0,
-            });
-          }
-          if (_printer?.width === "58mm") {
-            dataUrl = await html2canvas(billForCher58?.current[_index], {
-              useCORS: true,
-              scrollX: 10,
-              scrollY: 0,
-            });
-          }
+          let dataUrl = dataUrls[_index];
+          // if (_printer?.width === "80mm") {
+          //   dataUrl = await html2canvas(printDate[_index], {
+          //     useCORS: true,
+          //     scrollX: 10,
+          //     scrollY: 0,
+          //   });
+          // }
+          // if (_printer?.width === "58mm") {
+          //   dataUrl = await html2canvas(printDate[_index], {
+          //     useCORS: true,
+          //     scrollX: 10,
+          //     scrollY: 0,
+          //   });
+          // }
 
           if (_printer?.type === "ETHERNET") {
             urlForPrinter = "http://localhost:9150/ethernet/image";
@@ -117,8 +131,7 @@ export default function OrderPage() {
           if (_printer?.type === "USB") {
             urlForPrinter = "http://localhost:9150/usb/image";
           }
-
-          const _file = await base64ToBlob(dataUrl.toDataURL());
+          const _file = await base64ToBlob(await dataUrl.toDataURL());
           var bodyFormData = new FormData();
           bodyFormData.append("ip", _printer?.ip);
           if (_index === 0) {
@@ -151,6 +164,7 @@ export default function OrderPage() {
         }
         _index++;
       }
+      setOnPrinting(false);
       if (countError == "ERR") {
         setIsLoading(false);
         Swal.fire({
@@ -162,6 +176,7 @@ export default function OrderPage() {
       }
     } catch (err) {
       setIsLoading(false);
+      setOnPrinting(false);
     }
   };
   // useEffect
@@ -189,7 +204,9 @@ export default function OrderPage() {
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={() => onPrintForCher()}
+            disabled={onPrinting}
           >
+            {onPrinting && <Spinner animation="border" size="sm" />}
             ພິມບິນໄປຄົວ
           </Button>
         </div>

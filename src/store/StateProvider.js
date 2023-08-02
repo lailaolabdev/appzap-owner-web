@@ -4,6 +4,7 @@ import { useTableState } from "./globalState/tableState";
 import { useOrderState } from "./globalState/orderState";
 import { useStoreDetailState } from "./globalState/storeState";
 import { useMenuCategoryState } from "./globalState/menuCategoryState";
+import { useMenuState } from "./globalState/menuState";
 import { useReservationState } from "./globalState/reservationState";
 import { usePrintersState } from "./globalState/printerState";
 import { useSoundState } from "./globalState/soundState";
@@ -20,16 +21,18 @@ export const StateProvider = ({ children }) => {
   const sound = useSoundState();
   const socket = useSocketState({ ...storeDetail, ...sound });
   const user = UserState();
+  const menu = useMenuState(storeDetail);
   let store = Object.assign(
     order,
     table,
     storeDetail,
     menuCategory,
+    menu,
     reservation,
     printer,
     sound,
     socket,
-    user
+    user,
   );
   return <Context.Provider value={store}>{children}</Context.Provider>;
 };

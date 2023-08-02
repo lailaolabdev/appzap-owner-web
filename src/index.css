@@ -20,8 +20,9 @@ div {
 }
 
 body {
+  max-height:100dvh;
+  overflow: hidden;
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 /* Card */

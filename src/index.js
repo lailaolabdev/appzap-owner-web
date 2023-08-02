@@ -3,7 +3,8 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import "./i18n";
 import { BrowserRouter } from "react-router-dom";
-// import "react-toastify/dist/ReactToastify.css";
+// import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import "./index.scss";
 import 'react-time-picker/dist/TimePicker.css';
@@ -14,3 +15,4 @@ ReactDOM.render(
   </BrowserRouter>,
   document.querySelector("#root")
 );
+// serviceWorkerRegistration.unregister();

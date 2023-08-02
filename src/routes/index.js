@@ -43,13 +43,16 @@ import DesignRoutes from "./Design.routes";
 import TableRoutes from "./Table.routes";
 import ReportRoutes from "./Report.routes";
 import DashboardRoutes from "./Dashboard.routes";
+import StaffRoutes from "./Staff.routes";
+import AudioRoutes from "./Audio.routes";
+import ComponentRoutes from "./Component.routes";
+import AddOrderRoutes from "./AddOrder.routes";
+import ExpendsRoutes from "./Expend.routes";
 
 //expend
-import ExpendsRoutes from "./Expend.routes";
 import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
 import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
 import DetailExpend from "../pages/expend/component/DetailExpend";
-import ComponentRoutes from "./Component.routes";
 
 function Router() {
   return useRoutes([
@@ -219,6 +222,9 @@ function Router() {
         DashboardRoutes,
         ExpendsRoutes,
         MenuRoutes,
+        StaffRoutes,
+        AddOrderRoutes,
+        AudioRoutes,
       ],
     },
     ComponentRoutes,

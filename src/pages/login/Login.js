@@ -32,7 +32,7 @@ function Login() {
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
       const { defaultPath } = role(user?.data?.data?.role, user?.data?.data);
       if (defaultPath) {
-        localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
+        // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);

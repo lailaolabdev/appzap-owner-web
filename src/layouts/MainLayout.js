@@ -43,6 +43,10 @@ export default function MainLayout({ children }) {
       <div
         style={{
           paddingTop: 65,
+          height: "100dvh",
+          maxHeight: "100dvh",
+          overflow: "auto",
+          
         }}
       >
         <Outlet />

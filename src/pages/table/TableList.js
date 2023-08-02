@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
-import { Modal, Form, Container, Button } from "react-bootstrap";
+import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 
 import moment from "moment";
@@ -57,6 +57,7 @@ export default function TableList() {
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
+  const [mobileMode, setMobileMode] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -89,7 +90,7 @@ export default function TableList() {
   };
 
   const { printerCounter, printers } = useStore();
-
+  // provider
   const {
     isTableOrderLoading,
     orderItemForPrintBill,
@@ -110,6 +111,7 @@ export default function TableList() {
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
     getTableDataStoreList,
+    setPrintNowList,
   } = useStore();
 
   const reLoadData = () => {
@@ -436,6 +438,7 @@ export default function TableList() {
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
@@ -470,33 +473,46 @@ export default function TableList() {
       .fill()
       .map((_, i) => billForCher58.current[i]);
   }
+  const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
+    setOnPrinting(true);
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
-    for (const _ref of billForCher80.current) {
+    const printDate = [...billForCher80.current];
+    let dataUrls = [];
+    for (const _ref of printDate) {
+      const dataUrl = await html2canvas(_ref, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      dataUrls.push(dataUrl);
+    }
+    for (const _ref of printDate) {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
       });
 
       try {
         let urlForPrinter = "";
-        let dataUrl;
-        if (_printer?.width === "80mm") {
-          dataUrl = await html2canvas(billForCher80.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            scale: 530 / widthBill80,
-          });
-        }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            scale: 350 / widthBill58,
-          });
-        }
+        let dataUrl = dataUrls[_index];
+        // if (_printer?.width === "80mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 530 / widthBill80,
+        //   });
+        // }
+        // if (_printer?.width === "58mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 350 / widthBill58,
+        //   });
+        // }
         if (_printer?.type === "ETHERNET") {
           urlForPrinter = "http://localhost:9150/ethernet/image";
         }
@@ -544,6 +560,7 @@ export default function TableList() {
       }
       _index++;
     }
+    setOnPrinting(false);
   };
 
   const onSelect = (data) => {
@@ -784,67 +801,145 @@ export default function TableList() {
                       }}
                       key={"table" + index}
                     >
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          border: "none",
-                          borderRadius: 8,
-                          background: table?.isStaffConfirm
-                            ? "rgb(251,110,59)"
-                            : "white",
-                          background: table?.isStaffConfirm
-                            ? table?.editBill
-                              ? "#bfff00"
-                              : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                            : "white",
-                          border:
-                            selectedTable?.tableName === table?.tableName
-                              ? "3px solid #404258"
-                              : "3px solid  white",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          textAlign: "center",
-                          padding: 10,
-                        }}
-                        className={
-                          table?.isOpened && !table?.isStaffConfirm
-                            ? "blink_card"
-                            : table.statusBill === "CALL_TO_CHECKOUT"
-                            ? "blink_cardCallCheckOut"
-                            : ""
-                        }
-                        onClick={() => {
-                          onSelectTable(table);
+                      <Box
+                        sx={{
+                          display: { md: "block", xs: "none" },
                         }}
                       >
                         <div
                           style={{
-                            position: "absolute",
-                            float: "right",
-                            right: 10,
-                            top: 10,
+                            width: "100%",
+                            height: "100%",
+                            border: "none",
+                            borderRadius: 8,
+                            background: table?.isStaffConfirm
+                              ? "rgb(251,110,59)"
+                              : "white",
+                            background: table?.isStaffConfirm
+                              ? table?.editBill
+                                ? "#bfff00"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                              : "white",
+                            border:
+                              selectedTable?.tableName === table?.tableName
+                                ? "3px solid #404258"
+                                : "3px solid  white",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            textAlign: "center",
+                            padding: 10,
                           }}
-                        ></div>
-                        <div>
-                          <span
+                          className={
+                            table?.isOpened && !table?.isStaffConfirm
+                              ? "blink_card"
+                              : table.statusBill === "CALL_TO_CHECKOUT"
+                              ? "blink_cardCallCheckOut"
+                              : ""
+                          }
+                          onClick={() => {
+                            onSelectTable(table);
+                          }}
+                        >
+                          <div
                             style={{
-                              fontSize: 16,
-                              color: table?.staffConfirm ? "white" : "#616161",
-                              fontWeight: "bold",
+                              position: "absolute",
+                              float: "right",
+                              right: 10,
+                              top: 10,
                             }}
-                          >
-                            <div>{table?.tableName}</div>
-                            <div>{table?.code}</div>
-                            <div>
-                              {table?.isStaffConfirm
-                                ? `${t("unavailable")}`
-                                : `${t("avaliable")}`}
-                            </div>
-                          </span>
+                          ></div>
+                          <div>
+                            <span
+                              style={{
+                                fontSize: 16,
+                                color: table?.staffConfirm
+                                  ? "white"
+                                  : "#616161",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              <div>{table?.tableName}</div>
+                              <div>{table?.code}</div>
+                              <div>
+                                {table?.isStaffConfirm
+                                  ? `${t("unavailable")}`
+                                  : `${t("avaliable")}`}
+                              </div>
+                            </span>
+                          </div>
                         </div>
-                      </div>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: { md: "none", xs: "block" },
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            border: "none",
+                            borderRadius: 8,
+                            background: table?.isStaffConfirm
+                              ? "rgb(251,110,59)"
+                              : "white",
+                            background: table?.isStaffConfirm
+                              ? table?.editBill
+                                ? "#bfff00"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                              : "white",
+                            border:
+                              selectedTable?.tableName === table?.tableName
+                                ? "3px solid #404258"
+                                : "3px solid  white",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            textAlign: "center",
+                            padding: 10,
+                          }}
+                          className={
+                            table?.isOpened && !table?.isStaffConfirm
+                              ? "blink_card"
+                              : table.statusBill === "CALL_TO_CHECKOUT"
+                              ? "blink_cardCallCheckOut"
+                              : ""
+                          }
+                          onClick={() => {
+                            onSelectTable(table);
+                            navigate(`/staff/tableDetail/${table?._id}`);
+                          }}
+                        >
+                          <div
+                            style={{
+                              position: "absolute",
+                              float: "right",
+                              right: 10,
+                              top: 10,
+                            }}
+                          ></div>
+                          <div>
+                            <span
+                              style={{
+                                fontSize: 16,
+                                color: table?.staffConfirm
+                                  ? "white"
+                                  : "#616161",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              <div>{table?.tableName}</div>
+                              <div>{table?.code}</div>
+                              <div>
+                                {table?.isStaffConfirm
+                                  ? `${t("unavailable")}`
+                                  : `${t("avaliable")}`}
+                              </div>
+                            </span>
+                          </div>
+                        </div>
+                      </Box>
                     </div>
                   ))}
               </Box>
@@ -1024,7 +1119,13 @@ export default function TableList() {
                           paddingRight: 10,
                         }}
                       >
-                        <ButtonCustom onClick={() => onPrintForCher()}>
+                        <ButtonCustom
+                          onClick={() => onPrintForCher()}
+                          disabled={onPrinting}
+                        >
+                          {onPrinting && (
+                            <Spinner animation="border" size="sm" />
+                          )}
                           {t("printBillToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom

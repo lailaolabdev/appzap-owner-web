@@ -1,6 +1,8 @@
 import React from "react";
 import { USER_KEY } from "../constants";
 import { useStore } from "../store";
+import axios from "axios";
+import { END_POINT_APP } from "../constants/api";
 export const getHeaders = async (accessToken) => {
   // const { profile } = useStore();
   try {
@@ -28,7 +30,6 @@ export const logout = async () => {
   }
 };
 
-
 export const getHeadersAccount = async (accessToken) => {
   // const { profile } = useStore();
   try {
@@ -44,5 +45,19 @@ export const getHeadersAccount = async (accessToken) => {
     }
   } catch (error) {
     console.log("get token error: ", error);
+  }
+};
+
+export const tokenSelfOrderingPost = async (billId) => {
+  // const { profile } = useStore();
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/staff/token-bill/${billId}`;
+    const res = await axios.post(url, null, { headers: _header });
+
+    return res.data;
+  } catch (error) {
+    console.log("get token error: ", error);
+    return error;
   }
 };
