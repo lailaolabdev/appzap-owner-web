@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import StaffTableDetail from "../pages/staff/StaffTableDetail";
+import StaffCartPage from "../pages/cart/StaffCartPage";
 
 // eslint-disable-next-line
 export default {
@@ -13,7 +14,7 @@ export default {
     },
     {
       path: "cart/:codeId",
-      element: <StaffTableDetail />,
+      element: <StaffCartPage />,
     },
   ],
 };

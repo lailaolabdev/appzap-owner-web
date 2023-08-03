@@ -53,6 +53,7 @@ import ExpendsRoutes from "./Expend.routes";
 import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
 import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
 import DetailExpend from "../pages/expend/component/DetailExpend";
+import ConfigRoutes from "./Config.routes";
 
 function Router() {
   return useRoutes([
@@ -225,6 +226,7 @@ function Router() {
         StaffRoutes,
         AddOrderRoutes,
         AudioRoutes,
+        ConfigRoutes,
       ],
     },
     ComponentRoutes,

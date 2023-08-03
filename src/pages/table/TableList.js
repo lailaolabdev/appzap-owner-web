@@ -43,6 +43,7 @@ import styled from "styled-components";
 import { getCodes } from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
+import PopupOpenTable from "../../components/popup/PopupOpenTable";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -908,7 +909,11 @@ export default function TableList() {
                           }
                           onClick={() => {
                             onSelectTable(table);
-                            navigate(`/staff/tableDetail/${table?._id}`);
+                            if (table?.isOpened) {
+                              navigate(`/staff/tableDetail/${table?._id}`);
+                            } else {
+                              setPopup({ openTable: true });
+                            }
                           }}
                         >
                           <div
@@ -1471,6 +1476,20 @@ export default function TableList() {
         hide={() => setCheckoutModal(false)}
         tableId={selectedTable?.code}
         func={_handlecheckout}
+      />
+      <PopupOpenTable
+        open={popup?.openTable}
+        code={selectedTable}
+        onClose={() => {
+          setPopup();
+        }}
+        onSubmit={async () => {
+          openTable().then(() => {
+            navigate(`/staff/tableDetail/${selectedTable?._id}`);
+            setPopup();
+          });
+          // getData();
+        }}
       />
 
       <PopUpAddDiscount

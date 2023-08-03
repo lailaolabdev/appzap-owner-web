@@ -23,6 +23,8 @@ export default function BillForChef58({ selectedTable, dataBill, val }) {
                 color: "#fff",
                 fontWeight: "bold",
                 fontSize: 20,
+                lineHeight: "100%",
+                padding: 5,
               }}
             >
               {val?.tableId?.name || selectedTable?.name}
@@ -44,10 +46,28 @@ export default function BillForChef58({ selectedTable, dataBill, val }) {
                 color: "#000",
                 fontWeight: "bold",
                 fontSize: 20,
+                lineHeight: "100%",
+                wordWrap: "break-word",
                 textAlign: "left",
+                padding: 5,
               }}
             >
               {val?.name} ({val?.quantity})
+            </td>
+          </tr>
+          <tr>
+            <td
+              colspan={2}
+              style={{
+                color: "#000",
+                fontSize: 18,
+                lineHeight: "100%",
+                wordWrap: "break-word",
+                textAlign: "left",
+                padding: 5,
+              }}
+            >
+              {val?.note}
             </td>
           </tr>
           <tr>

@@ -9,7 +9,8 @@ import {
   faBoxes,
   faPrint,
   faFolderOpen,
-  faVolumeUp
+  faVolumeUp,
+  faStore
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -76,6 +77,12 @@ export default function SettingList() {
       title: "ຈັດການສຽງ",
       icon: <FontAwesomeIcon icon={faVolumeUp} />,
       path: `/audio`,
+    },
+    {
+      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
+      title: "POS Config",
+      icon: <FontAwesomeIcon icon={faStore} />,
+      path: `/config`,
     },
   ];
 

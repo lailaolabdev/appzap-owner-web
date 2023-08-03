@@ -7,13 +7,13 @@ import { GoDash } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { MdOutlineClose } from "react-icons/md";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers";
 
 export default function AddOrderPage() {
   const navigate = useNavigate();
-  const {codeId}=useParams()
+  const { codeId } = useParams();
   // state
   const [selectCategory, setSelectCategory] = useState();
   const [selectMenu, setSelectMenu] = useState();
@@ -213,8 +213,9 @@ export default function AddOrderPage() {
     </div>
   );
 }
-const NavContainer = ({ onBack, codeData, setQrToken, setPopup }) => {
+const NavContainer = ({ onBack, codeData, setPopup }) => {
   const { menuCategorys, menus, staffCart } = useStore();
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -265,6 +266,7 @@ const NavContainer = ({ onBack, codeData, setQrToken, setPopup }) => {
               right: "-20%",
               fontWeight: "bold",
             }}
+            onClick={() => navigate(`/staff/cart/${codeData?._id}`)}
           >
             {staffCart?.length}
           </div>
