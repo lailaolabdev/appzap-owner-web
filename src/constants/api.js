@@ -3,8 +3,8 @@ import { USER_KEY } from "./index";
 // TODO: check domain name and set end point
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
-// const dev = "https://dev-api.appzap.la"; // dev endpoint
-const dev = "https://api.appzap.la"; //locals
+const dev = "https://dev-api.appzap.la"; // dev endpoint
+// const dev = "https://api.appzap.la"; //locals
 // const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
 const production_socket = "https://api.appzap.la:8888"; // Production

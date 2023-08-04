@@ -26,14 +26,7 @@ function StaffCartPage() {
       });
     }
     const dataBody = {
-      orders: [
-        {
-          id: "61de624b45a3a2002b61a7c2",
-          name: "ເອາະໄກ່",
-          quantity: 1,
-          note: "",
-        },
-      ],
+      orders: orders,
       billId: "64c9db5b968013001f917208",
       storeId: "61d8019f9d14fc92d015ee8e",
     };
@@ -68,7 +61,7 @@ function StaffCartPage() {
           gap: 10,
         }}
       >
-        {[...new Array(100)].map((e) => (
+        {staffCart?.map((e) => (
           <dev
             style={{
               // border: "1px solid #909090",
@@ -114,7 +107,9 @@ function StaffCartPage() {
           justifyContent: "center",
         }}
       >
-        <Button style={{ width: "100%" }}>ຍືນຍັນ</Button>
+        <Button style={{ width: "100%" }} onClick={() => createOrderByStaff()}>
+          ຍືນຍັນ
+        </Button>
       </div>
     </div>
   );

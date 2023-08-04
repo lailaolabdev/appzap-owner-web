@@ -1,0 +1,28 @@
+import { END_POINT_APP } from "../constants/api";
+import axios from "axios";
+import { getHeaders } from "./auth";
+
+export const getSetting = async (storeId) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/setting-store/${storeId}`;
+    const res = await axios.get(url, null, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const updateSetting = async (settingId, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/setting/update`;
+    const res = await axios.put(
+      url,
+      { id: settingId, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

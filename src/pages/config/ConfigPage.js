@@ -10,16 +10,31 @@ import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import { BsExclamationDiamondFill } from "react-icons/bs";
+import { getSetting, updateSetting } from "../../services/setting";
 
 export default function ConfigPage() {
   // state
+  const [setting, setSetting] = useState();
+  const [switchState, setSwitchState] = useState({});
 
   // provider
-  const { audioSetting, setAudioSetting } = useStore();
+  const { audioSetting, setAudioSetting, storeDetail } = useStore();
 
   // useEffect
+  useEffect(() => {
+    getSettingData();
+  }, []);
 
   // function
+  const getSettingData = async () => {
+    const data = await getSetting(storeDetail?._id);
+    setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
+    setSetting(data);
+    console.log(data?.smartMenu);
+  };
+  const changeSwitchData = async (dataUpdate) => {
+    const data = await updateSetting(setting?._id, dataUpdate);
+  };
   const TooltipFunc = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
       <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
@@ -56,22 +71,24 @@ export default function ConfigPage() {
               {[
                 {
                   title: "ເປີດໃຊ້ງານ SMART MENU & SELF ORDERING",
-                  key: "order",
+                  key: "open",
                   tooltip: "ເປີດ/ປິດ ເພື່ອໃຊ້ງານສະມາດເມນູແລະເຊວອໍເດີຣິງ",
+                  disabled: true,
+                  default: true,
                 },
                 {
                   title: "ເປີດໂຕະກ່ອນຈຶ່ງສາມາດສັ່ງອາຫານ",
-                  key: "order",
+                  key: "shouldOpenTableForSelfOrdering",
                   tooltip: "",
                 },
                 {
                   title: "ເປີດໂຕະອັດຕະໂນມັດ",
-                  key: "order",
+                  key: "autoOpenTable",
                   tooltip: "",
                 },
                 {
                   title: "QR ໜ້າໂຕະສາມາດສະແກນເພື່ອສັ່ງອາຫານໄດ້ທຸກຄົນ",
-                  key: "order",
+                  key: "tableQrEveryoneCanSelfOrdering",
                   tooltip: "",
                 },
               ].map((item, index) => (
@@ -98,18 +115,24 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {switchState?.[item?.key] || item?.default
+                        ? "ເປີດ"
+                        : "ປິດ"}
                     </Form.Label>
                     <Form.Check
+                      disabled={item?.disabled}
                       type="switch"
-                      checked={audioSetting?.[item?.key]}
+                      checked={switchState?.[item?.key] || item?.default}
                       id={"switch-audio-" + item?.key}
-                      onChange={(e) =>
-                        setAudioSetting((prev) => ({
-                          ...prev,
-                          [item?.key]: e.target.checked,
-                        }))
-                      }
+                      onChange={(e) => {
+                        changeSwitchData({
+                          [`smartMenu.${item?.key}`]: e.target.checked,
+                        })
+                          .then((e) => {
+                            getSettingData();
+                          })
+                          .catch((er) => console.log(er));
+                      }}
                     />
                   </div>
                 </div>
@@ -126,21 +149,13 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              SELF ORDERING
+              ສະບົບສາງ ແລະ ສະຕ໊ອກ
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານ SELF ORDERING",
-                  key: "order",
-                },
-                {
-                  title: "ສະແກນຄິວ QR ສັ່ງໄດ້ເລີຍ",
-                  key: "message",
-                },
-                {
-                  title: "ລະຫັດ 3 ໂຕເພື່ອສັງ",
-                  key: "message",
+                  title: "ເປີດໃຊ້ງານ ລະບົບສາງ",
+                  key: "98",
                 },
               ].map((item, index) => (
                 <div
@@ -196,8 +211,9 @@ export default function ConfigPage() {
             <Card.Body>
               {[
                 {
-                  title: "ສຽງເພງ",
-                  key: "music",
+                  title: "ເປີດໃຊ້ງານການຈອງ",
+                  key: "fer",
+                  disabled: true,
                 },
               ].map((item, index) => (
                 <div
@@ -223,6 +239,7 @@ export default function ConfigPage() {
                       {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
                     </Form.Label>
                     <Form.Check
+                      disabled={item?.disabled}
                       type="switch"
                       checked={audioSetting?.[item?.key]}
                       id={"switch-audio-" + item?.key}
