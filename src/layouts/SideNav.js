@@ -91,14 +91,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
-    // {
-    //   title: "ລາຍງານ (ໃໝ່)",
-    //   key: "reportmenu",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasSmartMenu,
-    //   system: "reportManagement",
-    // },
+    {
+      title: "ລາຍງານ (ໃໝ່)",
+      key: "new-report",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasSmartMenu,
+      system: "reportManagement",
+    },
     // {
     //   title: "Dashboard (ໃໝ່)",
     //   key: "dashboardmenu",

@@ -74,6 +74,7 @@ export const useTableState = (storeDetail) => {
    */
   const getTableOrders = async (table) => {
     try {
+      setTableOrders([]);
       setIsTableOrderLoading(true);
       const url =
         END_POINT +

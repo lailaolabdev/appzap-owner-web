@@ -156,7 +156,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍ</div>
-            <div style={{ fontWeight: "bold" }}>ເລີ່ມ: {startDate} 00:00:00</div>
+            <div style={{ fontWeight: "bold" }}>
+              ເລີ່ມ: {startDate} 00:00:00
+            </div>
             <div style={{ fontWeight: "bold" }}>ຫາ: {startDate} 23:59:59</div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {[
@@ -192,11 +194,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 name: "ບິນຄ້າງ:",
                 value: reportBill["ບິນຄ້າງ"],
               },
-              {
-                name: "ເງິນຄ້າງ:",
-                value: reportBill["ເງິນຄ້າງ"],
-                type: "ກີບ",
-              },
+              // {
+              //   name: "ເງິນຄ້າງ:",
+              //   value: reportBill["ເງິນຄ້າງ"],
+              //   type: "ກີບ",
+              // },
             ].map((e) => (
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ textAlign: "left", fontWeight: "bold" }}>
@@ -224,15 +226,16 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       {e?.code || "%NULL%"}
                     </td>
                     <td style={{ textAlign: "center" }}>
-                      {e?.orders?.length || 0}
+                      {e?.orderId?.length || 0}
                     </td>
 
                     <td style={{ textAlign: "center" }}>
-                      {moneyCurrency(e?.discount) || moneyCurrency(0)}{" "}
-                      {e?.discountType == "PERCENT" ? "%" : ""}
+                      {e?.discount != 0
+                        ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
+                        : 0}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount) || moneyCurrency(9000000)}
+                      {moneyCurrency(e?.billAmount) || moneyCurrency(0)}
                     </td>
                   </tr>
                 ))}

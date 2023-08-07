@@ -29,7 +29,10 @@ export default function AddOrderPage() {
         flexDirection: "column",
       }}
     >
-      <NavContainer onBack={() => navigate(`/staff/tableDetail/${codeId}`)} />
+      <NavContainer
+        codeId={codeId}
+        onBack={() => navigate(`/staff/tableDetail/${codeId}`)}
+      />
 
       <div style={{ display: "flex", overflow: "auto" }}>
         <div
@@ -115,12 +118,12 @@ export default function AddOrderPage() {
                     whiteSpace: "nowrap",
                   }}
                   onClick={() => {
-                    setSelectMenu(e);
+                    setSelectMenu({ ...e, quantity: 1 });
                   }}
                 >
                   <div
                     style={{
-                      backgroundColor: COLOR_APP,
+                      backgroundColor: "rgb(246 180 156)",
                       width: "100%",
                       height: 70,
                     }}
@@ -169,6 +172,10 @@ export default function AddOrderPage() {
             <Form.Control
               type="text"
               placeholder="ບອກພໍຄົວ Ex:ບໍ່ເພັດ, ອື່ນ..."
+              value={selectMenu?.note}
+              onChange={(e) =>
+                setSelectMenu((prev) => ({ ...prev, note: e.target.value }))
+              }
             />
           </div>
           <div
@@ -190,11 +197,26 @@ export default function AddOrderPage() {
                 alignItems: "center",
               }}
             >
-              <Button>
+              <Button
+                onClick={() =>
+                  setSelectMenu((e) => {
+                    if (e.quantity - 1 <= 0) {
+                      return undefined;
+                    }
+                    return { ...e, quantity: e.quantity - 1 };
+                  })
+                }
+              >
                 <GoDash />
               </Button>
-              <div>1</div>
-              <Button>
+              <div>{selectMenu.quantity}</div>
+              <Button
+                onClick={() =>
+                  setSelectMenu((e) => {
+                    return { ...e, quantity: e.quantity + 1 };
+                  })
+                }
+              >
                 <FiPlus />
               </Button>
             </div>
@@ -213,7 +235,7 @@ export default function AddOrderPage() {
     </div>
   );
 }
-const NavContainer = ({ onBack, codeData, setPopup }) => {
+const NavContainer = ({ onBack, codeId, setPopup }) => {
   const { menuCategorys, menus, staffCart } = useStore();
   const navigate = useNavigate();
   return (
@@ -250,6 +272,7 @@ const NavContainer = ({ onBack, codeData, setPopup }) => {
           color: "#909090",
           position: "relative",
         }}
+        onClick={() => navigate(`/staff/cart/${codeId}`, { replace: true })}
         //   onClick={getQrTokenForSelfOrdering}
       >
         <FaShoppingCart style={{ fontSize: "22px" }} />
@@ -266,7 +289,6 @@ const NavContainer = ({ onBack, codeData, setPopup }) => {
               right: "-20%",
               fontWeight: "bold",
             }}
-            onClick={() => navigate(`/staff/cart/${codeData?._id}`)}
           >
             {staffCart?.length}
           </div>

@@ -80,16 +80,19 @@ export default function ConfigPage() {
                   title: "ເປີດໂຕະກ່ອນຈຶ່ງສາມາດສັ່ງອາຫານ",
                   key: "shouldOpenTableForSelfOrdering",
                   tooltip: "",
+                  disabled: true,
                 },
                 {
                   title: "ເປີດໂຕະອັດຕະໂນມັດ",
                   key: "autoOpenTable",
                   tooltip: "",
+                  disabled: true,
                 },
                 {
                   title: "QR ໜ້າໂຕະສາມາດສະແກນເພື່ອສັ່ງອາຫານໄດ້ທຸກຄົນ",
                   key: "tableQrEveryoneCanSelfOrdering",
                   tooltip: "",
+                  disabled: true,
                 },
               ].map((item, index) => (
                 <div
@@ -155,7 +158,9 @@ export default function ConfigPage() {
               {[
                 {
                   title: "ເປີດໃຊ້ງານ ລະບົບສາງ",
-                  key: "98",
+                  key: "sang",
+                  default: false,
+                  disabled: true,
                 },
               ].map((item, index) => (
                 <div
@@ -178,11 +183,14 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {audioSetting?.[item?.key] || item?.default
+                        ? "ເປີດ"
+                        : "ປິດ"}
                     </Form.Label>
                     <Form.Check
+                      disabled={item?.disabled}
                       type="switch"
-                      checked={audioSetting?.[item?.key]}
+                      checked={audioSetting?.[item?.key] || item?.default}
                       id={"switch-audio-" + item?.key}
                       onChange={(e) =>
                         setAudioSetting((prev) => ({

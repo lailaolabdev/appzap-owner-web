@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { Form, Badge } from "react-bootstrap";
+import { Form, Spinner } from "react-bootstrap";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 import Swal from "sweetalert2";
 
@@ -13,18 +13,26 @@ import { tokenSelfOrderingPost } from "../../services/auth";
 import StatusComponent from "../../components/StatusComponent";
 import PopUpStaffUpdateOrder from "../../components/popup/PopUpStaffUpdateOrder";
 import { updateOrderItem } from "../../services/order";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 export default function StaffTableDetail() {
   const navigate = useNavigate();
+  const { codeId } = useParams();
 
   // useState
   const [selectOrders, setSelectOrders] = useState({});
   const [popup, setPopup] = useState({});
   const [qrToken, setQrToken] = useState("");
   const [disabledUpdateOrder, setDisabledUpdateOrder] = useState(false);
+  const [tableDetail, setTableDetail] = useState();
 
   // provider
-  const { selectedTable, tableOrders, setReload } = useStore();
+  const {
+    selectedTable,
+    tableOrders,
+    getTableOrders,
+    setReload,
+    isTableOrderLoading,
+  } = useStore();
   // useEffect
 
   useEffect(() => {
@@ -35,6 +43,10 @@ export default function StaffTableDetail() {
       setDisabledUpdateOrder(false);
     }
   }, [selectOrders]);
+
+  useEffect(() => {
+    getTableOrders(selectedTable);
+  }, []);
 
   // function
   const updateOrderToServedByStaff = async () => {
@@ -50,7 +62,7 @@ export default function StaffTableDetail() {
     });
     let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      setReload(true);
+      getTableOrders(selectedTable);
       setPopup();
       setSelectOrders({});
       Swal.fire({
@@ -72,7 +84,7 @@ export default function StaffTableDetail() {
         }}
       >
         <NavContainer
-          onBack={() => navigate("/tables")}
+          onBack={() => navigate("/tables", { replace: true })}
           codeData={selectedTable}
           setQrToken={setQrToken}
           setPopup={setPopup}
@@ -160,6 +172,7 @@ const NavContainer = ({ onBack, codeData, setQrToken, setPopup }) => {
 };
 
 const ListOrder = ({ tableOrders, selectOrders, setSelectOrders }) => {
+  const { isTableOrderLoading } = useStore();
   const checkDisabledOrder = (status) => {
     switch (status) {
       case "WAITING":
@@ -178,42 +191,52 @@ const ListOrder = ({ tableOrders, selectOrders, setSelectOrders }) => {
   };
   return (
     <div style={{ padding: 10, paddingBottom: 50 }}>
-      {tableOrders.map((e, i) => {
-        const disabled = checkDisabledOrder(e?.status);
-        return (
-          <label
-            for={`check:${e?._id}`}
-            style={{
-              // border: "1px solid #909090",
-              padding: 10,
-              borderRadius: 8,
-              width: "100%",
-              display: "flex",
-              gap: 10,
-              boxShadow: "2px 2px 8px -1px rgba(0,0,0,0.2)",
-              backgroundColor: selectOrders?.[e?._id] ? COLOR_APP : "#fff",
-            }}
-          >
-            <input
-              name="group1"
-              type="checkbox"
-              disabled={disabled}
-              checked={selectOrders?.[e?._id]}
-              id={`check:${e?._id}`}
-              onChange={(f) => {
-                if (checkDisabledOrder(e?.status)) return; //disabled
-                setSelectOrders((prev) => {
-                  return { ...prev, [e?._id]: f.target.checked };
-                });
+      {isTableOrderLoading ? (
+        <div style={{ display: "flex", padding: 10, justifyContent: "center" }}>
+          <Spinner
+            animation="border"
+            variant="danger"
+            style={{ width: 30, height: 30 }}
+          />
+        </div>
+      ) : (
+        tableOrders.map((e, i) => {
+          const disabled = checkDisabledOrder(e?.status);
+          return (
+            <label
+              for={`check:${e?._id}`}
+              style={{
+                // border: "1px solid #909090",
+                padding: 10,
+                borderRadius: 8,
+                width: "100%",
+                display: "flex",
+                gap: 10,
+                boxShadow: "2px 2px 8px -1px rgba(0,0,0,0.2)",
+                backgroundColor: selectOrders?.[e?._id] ? COLOR_APP : "#fff",
               }}
-            />
-            <div>{e?.name}</div>
-            <div style={{ flex: 1 }} />
-            <div style={{ fontWeight: "bold" }}>({e?.quantity})</div>
-            <StatusComponent status={e?.status} />
-          </label>
-        );
-      })}
+            >
+              <input
+                name="group1"
+                type="checkbox"
+                disabled={disabled}
+                checked={selectOrders?.[e?._id]}
+                id={`check:${e?._id}`}
+                onChange={(f) => {
+                  if (checkDisabledOrder(e?.status)) return; //disabled
+                  setSelectOrders((prev) => {
+                    return { ...prev, [e?._id]: f.target.checked };
+                  });
+                }}
+              />
+              <div>{e?.name}</div>
+              <div style={{ flex: 1 }} />
+              <div style={{ fontWeight: "bold" }}>({e?.quantity})</div>
+              <StatusComponent status={e?.status} />
+            </label>
+          );
+        })
+      )}
     </div>
   );
 };

@@ -10,3 +10,12 @@ export const getCodes = async (findBy) => {
     return error;
   }
 };
+export const getCode = async (codeId) => {
+  try {
+    const url = `${END_POINT_APP}/v3/code/${codeId}`;
+    const res = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};

@@ -8,27 +8,52 @@ import axios from "axios";
 import { END_POINT_APP } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
+import { getCode } from "../../services/code";
+import Spinner from "react-bootstrap/Spinner";
+import PopUpSignalDisconnect from "../../components/popup/PopUpSignalDisconnect";
 function StaffCartPage() {
   const navigate = useNavigate();
   const { codeId } = useParams();
 
+  // state
+  const [isLoading, setIsLoading] = useState(true);
+  const [codeData, setCodeData] = useState();
+  const [popup, setPopup] = useState();
+
   // provider
   const { menuCategorys, menus, staffCart, setStaffCart } = useStore();
+  // useEffect
+  useEffect(() => {
+    FetchCodeData();
+  }, [codeId]);
   // function
+  const FetchCodeData = async () => {
+    setCodeData();
+    setIsLoading(true);
+    let _code = await getCode(codeId);
+    if (_code?.error) {
+      setPopup({ PopUpSignalDisconnect: true });
+    } else {
+      setPopup();
+      setCodeData(_code);
+    }
+    setIsLoading(false);
+  };
   const createOrderByStaff = async () => {
+    setIsLoading(true);
     let orders = [];
     for (const item of staffCart) {
       orders.push({
         id: item?._id,
         name: item?.name,
         quantity: item?.quantity,
-        note: item?.quantity,
+        note: item?.note,
       });
     }
     const dataBody = {
       orders: orders,
-      billId: "64c9db5b968013001f917208",
-      storeId: "61d8019f9d14fc92d015ee8e",
+      billId: codeData?.billId,
+      storeId: codeData?.storeId,
     };
     const url = `${END_POINT_APP}/v3/staff/bill/create`;
     await axios
@@ -36,82 +61,142 @@ function StaffCartPage() {
         headers: await getHeaders(),
       })
       .then(() => {
+        setStaffCart([]);
         navigate(`/staff/tableDetail/${codeId}`);
       });
+    setIsLoading(false);
   };
 
-  useEffect(() => {}, [codeId]);
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        maxHeight: "100%",
-        flexDirection: "column",
-      }}
-    >
-      <NavContainer onBack={() => navigate(`/staff/cart/${codeId}`)} />
+    <>
       <div
         style={{
-          overflowY: "scroll",
-          padding: 10,
-          flex: 1,
           display: "flex",
+          height: "100%",
+          maxHeight: "100%",
           flexDirection: "column",
-          gap: 10,
         }}
       >
-        {staffCart?.map((e) => (
-          <dev
-            style={{
-              // border: "1px solid #909090",
-              padding: 10,
-              borderRadius: 8,
-              width: "100%",
-              display: "flex",
-              gap: 10,
-              boxShadow: "2px 2px 8px -1px rgba(0,0,0,0.2)",
-              backgroundColor: "#fff",
-            }}
-          >
-            <div>pakerpakerpakerpa kerpakerpaker</div>
-            <div style={{ flex: 1 }} />
-            <div style={{ fontWeight: "bold" }}>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button>
-                  <GoDash />
-                </Button>
-                <div>1</div>
-                <Button>
-                  <FiPlus />
-                </Button>
+        <NavContainer
+          onBack={() => {
+            navigate(`/add-order/${codeId}`, { replace: true });
+          }}
+        />
+        <div
+          style={{
+            overflowY: "scroll",
+            padding: 10,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          {staffCart?.map((e, index) => (
+            <dev
+              style={{
+                // border: "1px solid #909090",
+                padding: 10,
+                borderRadius: 8,
+                width: "100%",
+                display: "flex",
+                gap: 10,
+                boxShadow: "2px 2px 8px -1px rgba(0,0,0,0.2)",
+                backgroundColor: "#fff",
+              }}
+            >
+              <div>
+                {e?.name}
+                {e?.note ? (
+                  <>
+                    <br />({e?.note})
+                  </>
+                ) : (
+                  ""
+                )}
+                <br />
+                {e?.price}
               </div>
-            </div>
-          </dev>
-        ))}
+              <div style={{ flex: 1 }} />
+              <div style={{ fontWeight: "bold" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Button
+                    disabled={isLoading}
+                    onClick={() =>
+                      setStaffCart((items) =>
+                        items
+                          .map((e, i) => {
+                            if (i == index) {
+                              return { ...e, quantity: e.quantity - 1 };
+                            }
+                            return e;
+                          })
+                          .filter((e) => e.quantity > 0)
+                      )
+                    }
+                  >
+                    <GoDash />
+                  </Button>
+                  <div>{e?.quantity}</div>
+                  <Button
+                    disabled={isLoading}
+                    onClick={() =>
+                      setStaffCart((items) =>
+                        items
+                          .map((e, i) => {
+                            if (i == index) {
+                              return { ...e, quantity: e.quantity + 1 };
+                            }
+                            return e;
+                          })
+                          .filter((e) => e.quantity > 0)
+                      )
+                    }
+                  >
+                    <FiPlus />
+                  </Button>
+                </div>
+              </div>
+            </dev>
+          ))}
+        </div>
+        <div
+          style={{
+            padding: 10,
+            display: "flex",
+            gridGap: 10,
+            gap: 10,
+            paddingBottom: 30,
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            style={{ width: "100%" }}
+            onClick={() => createOrderByStaff()}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Spinner animation="border" variant="white" size="sm" />
+            ) : (
+              ""
+            )}
+            ຍືນຍັນ
+          </Button>
+        </div>
       </div>
-      <div
-        style={{
-          padding: 10,
-          display: "flex",
-          gridGap: 10,
-          gap: 10,
-          paddingBottom: 30,
-          justifyContent: "center",
-        }}
-      >
-        <Button style={{ width: "100%" }} onClick={() => createOrderByStaff()}>
-          ຍືນຍັນ
-        </Button>
-      </div>
-    </div>
+      {/* popup */}
+      <PopUpSignalDisconnect
+        open={popup?.PopUpSignalDisconnect}
+        onSubmit={FetchCodeData}
+      />
+    </>
   );
 }
 

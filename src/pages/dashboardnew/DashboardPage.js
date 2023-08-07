@@ -167,18 +167,18 @@ export default function DashboardPage() {
                   )}₭`,
                 },
 
-                {
-                  title: "ລາຍຈ່າຍທັງໝົດ",
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["totalCost"]
-                  )}₭`,
-                },
-                {
-                  title: "ກຳໄລ",
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfit"]
-                  )}₭`,
-                },
+                // {
+                //   title: "ລາຍຈ່າຍທັງໝົດ",
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["totalCost"]
+                //   )}₭`,
+                // },
+                // {
+                //   title: "ກຳໄລ",
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["grossProfit"]
+                //   )}₭`,
+                // },
                 {
                   title: "ຈຳນວນທຸລະກຳການຂາຍ",
                   amount: `${moneyCurrency(
@@ -191,12 +191,12 @@ export default function DashboardPage() {
                     salesInformationReport?.["averageSales_Transaction"]
                   )}₭`,
                 },
-                {
-                  title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["unpaidTransaction"]
-                  )}₭`,
-                },
+                // {
+                //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["unpaidTransaction"]
+                //   )}₭`,
+                // },
               ].map((e) => (
                 <div
                   style={{
@@ -403,10 +403,8 @@ export default function DashboardPage() {
                   ?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {e?.canceled || 0}
-                      </td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(e?.totalSaleAmount)}₭
                       </td>
@@ -456,10 +454,17 @@ export default function DashboardPage() {
         </Box>
       </Box>
       {/* popup */}
-      <PopUpPrintComponent open={popup?.printReportSale} onClose={() => setPopup()} >
-        <BillForReport80/>
+      <PopUpPrintComponent
+        open={popup?.printReportSale}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
       </PopUpPrintComponent>
-      <PopUpPrintReport open={popup?.printReport} setPopup={setPopup} onClose={() => setPopup()}/>
+      <PopUpPrintReport
+        open={popup?.printReport}
+        setPopup={setPopup}
+        onClose={() => setPopup()}
+      />
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}

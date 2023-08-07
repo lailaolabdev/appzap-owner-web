@@ -10,6 +10,7 @@ export default function PopUpStaffUpdateOrder({
   onClose,
   onSubmit,
 }) {
+  const [disabledButton, setDisabledButton] = useState(false);
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>ອັບເດດອໍເດີໂຕະ {tableName}</Modal.Header>
@@ -28,7 +29,17 @@ export default function PopUpStaffUpdateOrder({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onSubmit}>ຍືນຍັນການອັບເດດ</Button>
+        <Button
+          onClick={() => {
+            setDisabledButton(true);
+            onSubmit().then(() => {
+              setDisabledButton(false);
+            });
+          }}
+          disabled={disabledButton}
+        >
+          ຍືນຍັນການອັບເດດ
+        </Button>
       </Modal.Footer>
     </Modal>
   );
