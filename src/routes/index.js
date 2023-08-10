@@ -23,6 +23,8 @@ import Qrcode from "../pages/qrcode/Qrcode";
 import Users from "../pages/users/UserList";
 import Category from "../pages/menu/Categorylist";
 import MenuList from "../pages/menu/MenuList";
+import FoodList from "../pages/FoodSetting/FoodList";
+import FoodTypeList from "../pages/FoodSetting/FoodTypeList";
 import FormAddMenu from "../pages/menu/form/FormAddMenu";
 import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
@@ -142,6 +144,14 @@ function Router() {
         {
           path: "/settingStore/menu/limit/:limit/page/:page/:id",
           element: <MenuList />,
+        },
+        {
+          path: "/food-setting/limit/:limit/page/:page",
+          element: <FoodList />,
+        },
+        {
+          path: "/food-setting/food-type/limit/:limit/page/:page",
+          element: <FoodTypeList />,
         },
         {
           path: "/settingStore/menu/add",
