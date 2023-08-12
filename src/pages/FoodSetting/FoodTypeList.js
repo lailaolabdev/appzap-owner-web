@@ -1,29 +1,36 @@
+//React and Third-Party Libraries
 import React, { useState, useEffect } from "react";
-import { Formik } from "formik";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav } from "react-bootstrap";
-import { BODY, COLOR_APP } from "../../constants";
-import { getLocalData, END_POINT_SEVER } from "../../constants/api";
-import { successAdd, errorAdd } from "../../helpers/sweetalert";
-import { getHeaders } from "../../services/auth";
+import { Formik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
+
+// Local Imports
+import Box from "../../components/Box";
+import { useStore } from "../../store";
+import { getLocalData, END_POINT_SEVER } from "../../constants/api";
+import { BODY, COLOR_APP } from "../../constants";
+import { successAdd, errorAdd } from "../../helpers/sweetalert";
+import { getHeaders } from "../../services/auth";
+
+// Styles and Resources
 
 export default function FoodTypeList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
+  // State
   const [getTokken, setgetTokken] = useState();
-
+  const { storeDetail } = useStore();
   const [CATEGORY, setCATEGORY] = useState();
 
-  // create
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  // modal delete
+  //--> modal delete
   const [show3, setShow3] = useState(false);
   const handleClose3 = () => setShow3(false);
   const [dateDelete, setdateDelete] = useState("");
@@ -31,14 +38,13 @@ export default function FoodTypeList() {
     setdateDelete({ name, id });
     setShow3(true);
   };
-  // update
+  //--> update
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
 
-  console.log("Categorys::",Categorys)
-
+  // Function
   const handleShow2 = async (item) => {
     setdataUpdate(item);
     setShow2(true);
@@ -153,17 +159,18 @@ export default function FoodTypeList() {
     setIsLoading(false);
   };
   const _menuList = () => {
-    navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
+    navigate(`/food-setting/limit/40/page/1/`);
   };
   const _category = () => {
     navigate(
-      `/settingStore/menu/category/limit/40/page/1/${params?.id}`
+      `/food-setting/food-type/limit/40/page/1`
     );
   };
-
-
-
-  ////New Section Here
+  const _setting= () => {
+    navigate(
+      `/settingStore/${storeDetail?._id}`
+    );
+  };
 
   const getCate = async (id) => {
     try {
@@ -187,7 +194,7 @@ export default function FoodTypeList() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-  
+
       await axios({
         method: "PUT",
         url: END_POINT_SEVER + `/v3/category/update/`,
@@ -215,367 +222,372 @@ export default function FoodTypeList() {
 
   return (
     <div style={BODY}>
-      <div>
-        <Nav variant="tabs" defaultActiveKey="/settingStore/category">
-          <Nav.Item>
-            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-            ເມນູອາຫານ
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/category"
-              onClick={() => _category()}
-            >
-              {t('foodType')}
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div className="col-sm-12 text-right">
-          <Button
-            className="col-sm-2"
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={handleShow}
-          >
-            {t('addFoodType')}
-          </Button>{" "}
-        </div>
-        <div style={{ height: 20 }}></div>
+      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+      <Breadcrumb>
+      <Breadcrumb.Item onClick={() => _setting()}>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
+        <Breadcrumb.Item active>ປະເພດອາຫານ</Breadcrumb.Item>
+      </Breadcrumb>
         <div>
-          <div className="col-sm-12">
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th scope="col">{t('no')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  {/* <th scope="col">{t('note')}</th> */}
-                  <th scope="col">{t('manage')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Categorys &&
-                  Categorys.map((data, index) => {
-                    return (
-                      <tr>
-                        <td>{index + 1}</td>
-                        <td style={{textAlign: "start"}}>{data?.name ?? ""}</td>
-                        <td style={{textAlign: "start"}}>{data?.name_en ?? ""}</td>
-                        <td style={{textAlign: "start"}}>{data?.name_cn ?? ""}</td>
-                        <td style={{textAlign: "start"}}>{data?.name_kr ?? ""}</td>
-                        {/* <td>{data?.note}</td> */}
-                        <td style={{textAlign: "start"}}>
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            style={{ color: COLOR_APP }}
-                            onClick={() => handleShow2(data)}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{ marginLeft: 20, color: "red" }}
-                            onClick={() => handleShow3(data?._id, data?.name)}
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+          <Nav variant="tabs" defaultActiveKey="/settingStore/category">
+            <Nav.Item>
+              <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
+                ເມນູອາຫານ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category"
+                onClick={() => _category()}
+              >
+                {t('foodType')}
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </div>
+        <div style={{ padding: 20, borderRadius: 8 }}>
+          <div className="col-sm-12 text-right">
+            <Button
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={handleShow}
+            >
+             + {t('addFoodType')}
+            </Button>{" "}
+          </div>
+          <div style={{ height: 20 }}></div>
+          <div>
+            <div className="col-sm-12">
+              <table className="table table-hover">
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">{t('no')}</th>
+                    <th scope="col">{t('foodTypeNameLO')}</th>
+                    <th scope="col">{t('foodTypeNameEN')}</th>
+                    <th scope="col">{t('foodTypeNameCN')}</th>
+                    <th scope="col">{t('foodTypeNameKR')}</th>
+                    {/* <th scope="col">{t('note')}</th> */}
+                    <th scope="col">{t('manage')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Categorys &&
+                    Categorys.map((data, index) => {
+                      return (
+                        <tr>
+                          <td style={{ textAlign: "start" }}>{index + 1}</td>
+                          <td style={{ textAlign: "start" }}>{data?.name ?? ""}</td>
+                          <td style={{ textAlign: "start" }}>{data?.name_en ?? ""}</td>
+                          <td style={{ textAlign: "start" }}>{data?.name_cn ?? ""}</td>
+                          <td style={{ textAlign: "start" }}>{data?.name_kr ?? ""}</td>
+                          {/* <td>{data?.note}</td> */}
+                          <td style={{ textAlign: "start" }}>
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              style={{ color: COLOR_APP }}
+                              onClick={() => handleShow2(data)}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              style={{ marginLeft: 20, color: "red" }}
+                              onClick={() => handleShow3(data?._id, data?.name)}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-      <Modal show={show} onHide={handleClose}>
-        <Formik
-          initialValues={{
-            name: "",
-            name_en: "",
-            name_cn: "",
-            name_kr: "",
-            note: "",
-            sort: ""
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            _createCategory(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Header closeButton>
-                <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form.Group>
-                  <Form.Label>ລຳດັບ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="sort"
-                    placeholder="ລຳດັບ"
-                    value={values?.sort}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name}
-                    placeholder="ຊື່ປະເພດອາຫານ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name && touched.name && errors.name}
-                </div>
-
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_en"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_en}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_en && touched.name_en && errors.name_en}
-                </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_cn"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_cn}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_cn && touched.name_cn && errors.name_cn}
-                </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_kr"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_kr}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_kr && touched.name_kr && errors.name_kr}
-                </div>
-
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ໝາຍເຫດ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="note"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.note}
-                    placeholder="ໝາຍເຫດ..."
-                  />
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="danger" onClick={handleClose}>
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                    border: 0,
-                  }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
-      <Modal show={show2} onHide={handleClose2}>
-        <Formik
-          initialValues={{
-            name: dataUpdate?.name,
-            name_en: dataUpdate?.name_en,
-            name_cn: dataUpdate?.name_cn,
-            name_kr: dataUpdate?.name_kr,
-            note: dataUpdate?.note,
-            sort: dataUpdate?.sort,
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            _updateCategory(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Header closeButton>
-                <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form.Group>
-                  <Form.Label>ລຳດັບ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="sort"
-                    placeholder="ລຳດັບ"
-                    value={values.sort}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ປະເພດອາຫານ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name}
-                    placeholder="ຊື່ປະເພດອາຫານ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name && touched.name && errors.name}
-                </div>
-
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_en"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_en}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_en && touched.name_en && errors.name_en}
-                </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_cn"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_cn}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_cn && touched.name_cn && errors.name_cn}
-                </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name_kr"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name_kr}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
-                  />
-                </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name_kr && touched.name_kr && errors.name_kr}
-                </div>
-
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ໝາຍເຫດ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="note"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.note}
-                    placeholder="ໝາຍເຫດ..."
-                  />
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="danger" onClick={handleClose2}>
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                    border: 0,
-                  }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
-      <Modal show={show3} onHide={handleClose3}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
-            <div style={{ color: "red" }}>{dateDelete?.name}</div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose3}>
-            ຍົກເລີກ
-          </Button>
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _confirmeDelete()}
+        <Modal show={show} onHide={handleClose}>
+          <Formik
+            initialValues={{
+              name: "",
+              name_en: "",
+              name_cn: "",
+              name_kr: "",
+              note: "",
+              sort: ""
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.name) {
+                errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+              }
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              _createCategory(values);
+            }}
           >
-            ຢືນຢັນການລົບ
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Header closeButton>
+                  <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form.Group>
+                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="sort"
+                      placeholder="ລຳດັບ"
+                      value={values?.sort}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name}
+                      placeholder="ຊື່ປະເພດອາຫານ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name && touched.name && errors.name}
+                  </div>
+
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_en"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_en}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_en && touched.name_en && errors.name_en}
+                  </div>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_cn"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_cn}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_cn && touched.name_cn && errors.name_cn}
+                  </div>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_kr"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_kr}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_kr && touched.name_kr && errors.name_kr}
+                  </div>
+
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="note"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.note}
+                      placeholder="ໝາຍເຫດ..."
+                    />
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger" onClick={handleClose}>
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor: COLOR_APP,
+                      color: "#ffff",
+                      border: 0,
+                    }}
+                    onClick={() => handleSubmit()}
+                  >
+                    ບັນທືກ
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
+        <Modal show={show2} onHide={handleClose2}>
+          <Formik
+            initialValues={{
+              name: dataUpdate?.name,
+              name_en: dataUpdate?.name_en,
+              name_cn: dataUpdate?.name_cn,
+              name_kr: dataUpdate?.name_kr,
+              note: dataUpdate?.note,
+              sort: dataUpdate?.sort,
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.name) {
+                errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+              }
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              _updateCategory(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Header closeButton>
+                  <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form.Group>
+                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="sort"
+                      placeholder="ລຳດັບ"
+                      value={values.sort}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ປະເພດອາຫານ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name}
+                      placeholder="ຊື່ປະເພດອາຫານ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name && touched.name && errors.name}
+                  </div>
+
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_en"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_en}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_en && touched.name_en && errors.name_en}
+                  </div>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_cn"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_cn}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_cn && touched.name_cn && errors.name_cn}
+                  </div>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="name_kr"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.name_kr}
+                      placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                    />
+                  </Form.Group>
+                  <div style={{ color: "red" }}>
+                    {errors.name_kr && touched.name_kr && errors.name_kr}
+                  </div>
+
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="note"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.note}
+                      placeholder="ໝາຍເຫດ..."
+                    />
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="danger" onClick={handleClose2}>
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    style={{
+                      backgroundColor: COLOR_APP,
+                      color: "#ffff",
+                      border: 0,
+                    }}
+                    onClick={() => handleSubmit()}
+                  >
+                    ບັນທືກ
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
+        <Modal show={show3} onHide={handleClose3}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <div style={{ textAlign: "center" }}>
+              <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
+              <div style={{ color: "red" }}>{dateDelete?.name}</div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose3}>
+              ຍົກເລີກ
+            </Button>
+            <Button
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={() => _confirmeDelete()}
+            >
+              ຢືນຢັນການລົບ
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Box>
     </div>
   );
 }

@@ -100,6 +100,8 @@ export default function Upload({
             borderRadius: "10%",
             cursor: "pointer",
             display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
           }}
         >
           {src ? (

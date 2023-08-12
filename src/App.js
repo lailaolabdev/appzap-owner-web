@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import ReactGA from 'react-ga';
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
 import { StateProvider } from "./store";
@@ -13,6 +14,12 @@ const theme = {
 };
 
 function App() {
+
+  useEffect(() => {
+    ReactGA.initialize('G-LLZP539QT0');
+    ReactGA.pageview(window.location.pathname + window.location.search);
+  }, [])
+
   return (
     <StateProvider>
       <ThemeProvider theme={theme}>
