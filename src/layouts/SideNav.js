@@ -17,6 +17,7 @@ import {
   faAddressCard,
   faIcicles,
   faChartLine,
+  faUser,
   faBook,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
@@ -73,8 +74,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       hidden: !storeDetail?.hasReservation,
       system: "reservationManagement",
-    },   
-  
+    },
+
     {
       title: "ລາຍງານການຈອງ",
       key: "reservationDashboard",
@@ -82,6 +83,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       hidden: !storeDetail?.hasReservation,
       system: "reservationManagement",
+    },
+    {
+      title: "ລູກຄ້າສັ່ງເອງ",
+      key: "self-ordering-order",
+      typeStore: "",
+      icon: faUser,
+      system: "orderManagement",
     },
     {
       title: "ຈັດການເມນູອາຫານ",
@@ -168,8 +176,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "expends") {
-          selected =
-            selected + "/limit/" + 40 + "/skip/" + 1 ;
+          selected = selected + "/limit/" + 40 + "/skip/" + 1;
         }
         if (selected === "category") {
           selected =

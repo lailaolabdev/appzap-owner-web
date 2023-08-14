@@ -54,6 +54,7 @@ import AddIncomeAndExpend from "../pages/expend/component/AddIncomeAndExpend";
 import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
 import DetailExpend from "../pages/expend/component/DetailExpend";
 import ConfigRoutes from "./Config.routes";
+import SelfOrderingOrderRoutes from "./SelfOrderingOrder.routes";
 
 function Router() {
   return useRoutes([
@@ -227,6 +228,7 @@ function Router() {
         AddOrderRoutes,
         AudioRoutes,
         ConfigRoutes,
+        SelfOrderingOrderRoutes,
       ],
     },
     ComponentRoutes,

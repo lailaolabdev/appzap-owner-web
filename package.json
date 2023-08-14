@@ -61,6 +61,7 @@
     "react-json-to-csv": "^1.2.0",
     "react-json-to-excel": "^1.0.7",
     "react-lottie": "1.2.3",
+    "react-masonry-css": "^1.0.16",
     "react-number-format": "^5.2.2",
     "react-paginate": "^8.2.0",
     "react-qr-reader": "^3.0.0-beta-1",

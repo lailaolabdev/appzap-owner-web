@@ -20,7 +20,7 @@ div {
 }
 
 body {
-  max-height:100dvh;
+  max-height: 100dvh;
   overflow: hidden;
   max-width: 100%;
 }
@@ -29,9 +29,9 @@ body {
 .card {
   border: 0.1re#FFF #c0c0c0 solid;
   background-color: #f8f8f8;
-  margin: 0.3rem;
-  margin-left: 15px;
-  box-shadow: 0.25rem 0rem 0.25rem darkgray;
+  /* margin: 0.3rem; */
+  /* margin-left: 15px; */
+  /* box-shadow: 0.25rem 0rem 0.25rem darkgray; */
   /* display: row; */
 }
 
@@ -149,3 +149,5 @@ td {
 .nav-link {
   color: #fb6e3b;
 }
+
+

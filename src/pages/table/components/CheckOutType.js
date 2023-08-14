@@ -92,27 +92,72 @@ export default function CheckOutType({
 
   // useEffect
   useEffect(() => {
-    if (
-      cash -
-        0 +
-        (transfer - 0) -
-        (dataBill && dataBill?.discountType === "LAK"
-          ? totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? (totalBill * dataBill?.discount) / 100
-          : 0) >=
-      0
-    ) {
+    if (forcus == "CASH") {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (cash >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      } else {
+        if (cash >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
+      }
+    } else if (forcus == "TRANSFER") {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
+        } else {
+          setTransfer(totalBill - dataBill?.discount);
+        }
+      } else {
+        setTransfer(totalBill);
+      }
       setCanCheckOut(true);
-    } else {
-      setCanCheckOut(false);
+    } else if (forcus == "TRANSFER_CASH") {
+      console.log(cash + transfer);
+      console.log(transfer);
+      console.log(cash);
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (
+            cash + transfer >=
+            totalBill - (totalBill * dataBill?.discount) / 100
+          ) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (cash + transfer >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      } else {
+        if (cash + transfer >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
+      }
     }
-  }, [cash, transfer, totalBill]);
+  }, [cash, transfer, totalBill, forcus]);
 
   let transferCal =
-    dataBill?.discountType === "LAK"
+    dataBill?.discountType === "PERCENT"
       ? totalBill - dataBill?.discount > 0
         ? totalBill - dataBill?.discount
         : 0
@@ -235,7 +280,7 @@ export default function CheckOutType({
                   }}
                   forcus={true}
                   value={cash}
-                  onChange={(e) => setCash(e.target.value)}
+                  onChange={(e) => setCash(parseInt(e.target.value))}
                 />
                 <div>ຈຳນວນທີ່ຕ້ອງທອນ</div>
                 <div
@@ -312,7 +357,7 @@ export default function CheckOutType({
                     width: "100%",
                   }}
                   value={cash}
-                  onChange={(e) => setCash(e.target.value)}
+                  onChange={(e) => setCash(parseInt(e.target.value))}
                 />
                 <div>(ເງິນໂອນ)</div>
                 <input
@@ -325,7 +370,7 @@ export default function CheckOutType({
                     width: "100%",
                   }}
                   value={transfer}
-                  onChange={(e) => setTransfer(e.target.value)}
+                  onChange={(e) => setTransfer(parseInt(e.target.value))}
                 />
                 <div>ຈຳນວນທີ່ຕ້ອງທອນ</div>
                 <div
