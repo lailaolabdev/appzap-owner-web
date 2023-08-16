@@ -151,3 +151,25 @@ $input-border-color: #fb6e3b !default;
   outline-style: none;
   outline-color: none;
 }
+
+blockquote {
+  background: rgba(251, 110, 59, 0.2);
+  border-left: 4px solid #fb6e3b;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+  .blockquote-footer{
+    font-size: 12px;
+  }
+  p {
+    display: inline;
+    font-size: 12px;
+  }
+}
+blockquote:before {
+  color: #fb6e3b;
+  content: open-quote;
+  font-size: 2em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
