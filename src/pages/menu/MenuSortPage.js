@@ -35,7 +35,7 @@ export default function MenuSortPage() {
         <Breadcrumb.Item>ຈັດການເມນູ</Breadcrumb.Item>
         <Breadcrumb.Item active>ຈັດລຽງເມນູ</Breadcrumb.Item>
       </Breadcrumb>
-      {/* <GridContextProvider onChange={onChange}>
+      <GridContextProvider onChange={onChange}>
         <GridDropZone
           id="items"
           boxesPerRow={4}
@@ -58,7 +58,7 @@ export default function MenuSortPage() {
             </GridItem>
           ))}
         </GridDropZone>
-      </GridContextProvider> */}
+      </GridContextProvider>
     </Box>
   );
 }

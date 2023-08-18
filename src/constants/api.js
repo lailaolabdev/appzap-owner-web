@@ -3,9 +3,10 @@ import { USER_KEY } from "./index";
 // TODO: check domain name and set end point
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
-// const dev = "https://dev-api.appzap.la"; // dev endpoint
-const dev = "https://api.appzap.la"; //locals
-// const dev = "http://192.168.1.14:7070"; //locals
+const dev = "https://dev-api.appzap.la"; // dev endpoint
+// const dev = "https://api.appzap.la"; //locals
+// const dev = "http://192.168.1.11:7070"; //locals
+// const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
@@ -20,8 +21,7 @@ export const END_POINT_WEB_CLIENT = isProduction
   : dev_web_client;
 
 // export const END_POINT_SERVER_BUNSI = 'http://localhost:7070';
-export const END_POINT_SERVER_BUNSI = 'https://accounting.lailaolab.la/';
-
+export const END_POINT_SERVER_BUNSI = "https://accounting.lailaolab.la/";
 
 // ------------------------------------------
 
