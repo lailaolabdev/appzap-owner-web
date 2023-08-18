@@ -16,7 +16,9 @@ const theme = {
 function App() {
 
   useEffect(() => {
-    ReactGA.initialize('G-LLZP539QT0');
+    console.log("GOOGLE ANALYTICS STARTED")
+    // ReactGA.initialize('G-LLZP539QT0', { debug: false })
+    ReactGA.initialize('G-B6GKR3MCEE', { debug: false })
     ReactGA.pageview(window.location.pathname + window.location.search);
   }, [])
 
