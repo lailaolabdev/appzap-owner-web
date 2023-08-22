@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.4.52",
+  "version": "5.4.53",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -69,6 +69,7 @@
     "react-router-dom": "^6.4.3",
     "react-scripts": "^5.0.0",
     "react-select": "^3.1.0",
+    "react-serialize": "^0.2.1",
     "react-star-ratings": "^2.3.0",
     "react-time-picker": "^6.2.0",
     "react-to-print": "^2.12.4",

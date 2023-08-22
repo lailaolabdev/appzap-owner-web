@@ -97,7 +97,23 @@ export const useOrderState = () => {
         .then((response) => response.json())
         .then((json) => {
           setOrderLoading(false);
-          setOrderItems(json);
+          const data = json.map((e) => {
+            const findData = orderItemForPrintBillSelect.find((item) => {
+              if (item?._id == e?._id) {
+                if (item?.isChecked) {
+                  return true;
+                }
+              }
+              return false;
+            });
+            console.log("findData", findData);
+            if (!findData) {
+              return e;
+            } else {
+              return { ...e, isChecked: true };
+            }
+          });
+          setOrderItems(data);
         })
         .catch((err) => {
           setOrderLoading(false);
@@ -173,6 +189,7 @@ export const useOrderState = () => {
         };
       });
     }
+    setorderItemForPrintBillSelect(_newOrderItems);
     setOrderItems(_newOrderItems);
   };
   return {
@@ -191,6 +208,7 @@ export const useOrderState = () => {
     selectOrderStatus,
     setSelectOrderStatus,
     getOrderWaitingAndDoingByStore,
+    setorderItemForPrintBillSelect,
     orderDoing,
     setOrderDoing,
     orderWaiting,
