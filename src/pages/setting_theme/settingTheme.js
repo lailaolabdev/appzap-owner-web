@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "../../components/Box";
 import {
   Breadcrumb,
@@ -8,15 +8,46 @@ import {
   ButtonGroup,
   Form,
 } from "react-bootstrap";
+import IFrame from "../../components/IFrame";
+
 import { COLOR_APP } from "../../constants";
 import { AiOutlineFontSize } from "react-icons/ai";
 import { IoMdColorPalette } from "react-icons/io";
 import { BsFlagFill } from "react-icons/bs";
 import { CgToolbarBottom } from "react-icons/cg";
-import { MdMenuBook } from "react-icons/md";
+import { MdMenuBook, MdOutlineTabletAndroid } from "react-icons/md";
 import { IoMdAdd } from "react-icons/io";
+import { FaMobileAlt } from "react-icons/fa";
+import { IoDesktopOutline } from "react-icons/io5";
+import { TfiLayoutGrid4Alt } from "react-icons/tfi";
+import { GoContainer } from "react-icons/go";
 
-export default function settingTheme() {
+import defualtPreset from "./presets/defualtPreset";
+import compileJson from "../../helpers/compileJson";
+import deCompileJson from "../../helpers/deCompileJson";
+import { useStore } from "../../store/useStore";
+export default function SettingTheme() {
+  // state
+  const [size, setSize] = useState({
+    width: 600,
+    height: 600,
+  });
+  const [keys, setKeys] = useState(0);
+  const [ui, setUi] = useState({ type: "div", props: { children: [] } });
+
+  // provider
+  const { menus } = useStore();
+  // useEffect
+  useEffect(() => {
+    const test = compileJson(defualtPreset);
+
+
+    setUi(deCompileJson(test, { menus }));
+  }, [menus]);
+  // function
+  const testFunc = () => {
+    alert("test Funn");
+  };
   return (
     <Box
       sx={{
@@ -88,16 +119,12 @@ export default function settingTheme() {
           </ListGroup>
           <Card.Body>
             <blockquote className="blockquote mb-0">
-              <p> ຕັ້ງຄ່າຂໍ້ມູນຕາມຫົວຂໍ້ທີເລືອກ</p>
+              <p>ເຄື່ອງມືສຳຫຼັບການຕັ້ງຄ່າຕີມສະມາດເມນູ</p>
               <footer className="blockquote-footer">
-                Someone famous in <cite title="Source Title">Source Title</cite>
+                ສາມາດອອກແບບຕາມຄວາມຕ້ອງການຂອງຮ້ານ
               </footer>
-              <footer className="blockquote-footer">
-                Someone famous in <cite title="Source Title">Source Title</cite>
-              </footer>
-              <footer className="blockquote-footer">
-                Someone famous in <cite title="Source Title">Source Title</cite>
-              </footer>
+              <footer className="blockquote-footer">ປັບປຽນໄດ້ໃນທັນທີ</footer>
+              <footer className="blockquote-footer">ມີຕີມໃຫ້ເລືອກຫຼາຍ</footer>
             </blockquote>
           </Card.Body>
           <Card.Footer>
@@ -140,12 +167,30 @@ export default function settingTheme() {
                   }}
                 />
               </Card.Header>
-              <Card.Body></Card.Body>
+              <Card.Body style={{ padding: 0 }}>
+                <IFrame
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                  keyCount={keys}
+                  ui={ui}
+                ></IFrame>
+              </Card.Body>
             </Card>
             <ButtonGroup style={{ position: "absolute", right: 0, top: 0 }}>
-              <Button variant="primary">Desktop</Button>
-              <Button variant="primary">Tablet</Button>
-              <Button variant="primary">Mobile</Button>
+              <Button variant="outline-primary">
+                <IoDesktopOutline />
+              </Button>
+              <Button variant="outline-primary">
+                <MdOutlineTabletAndroid />
+              </Button>
+              <Button variant="outline-primary">
+                <FaMobileAlt />
+              </Button>
             </ButtonGroup>
           </div>
           <Card border="primary" style={{ margin: 0 }}>
@@ -202,22 +247,17 @@ export default function settingTheme() {
         {/* right tool */}
         {/* <div> */}
         <Card border="primary" style={{ margin: 0 }}>
-          <Card.Header
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              borderColor: COLOR_APP,
-              color: COLOR_APP,
-            }}
-          >
-            setting
-          </Card.Header>
           <Card.Body>
             <div>
               <Form.Control />
             </div>
             <div
-              style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3,1fr)",
+                gap: 10,
+                padding: "10px 0",
+              }}
             >
               <div
                 style={{
@@ -231,7 +271,7 @@ export default function settingTheme() {
                   fontWeight: "bold",
                 }}
               >
-                Max
+                <TfiLayoutGrid4Alt />
               </div>
               <div
                 style={{
@@ -245,7 +285,7 @@ export default function settingTheme() {
                   fontWeight: "bold",
                 }}
               >
-                Max
+                <GoContainer />
               </div>
               <div
                 style={{

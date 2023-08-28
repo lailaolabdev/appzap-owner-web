@@ -45,6 +45,7 @@ export default function OrderPage() {
     getOrderWaitingAndDoingByStore,
     orderDoing,
     orderWaiting,
+    setorderItemForPrintBillSelect
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -182,15 +183,37 @@ export default function OrderPage() {
   // useEffect
 
   useEffect(() => {
-    setSelectOrderStatus(WAITING_STATUS);
-    setNewOrderTransaction(true);
+    if (!onPrinting) {
+      setSelectOrderStatus(WAITING_STATUS);
+      setNewOrderTransaction(true);
+    }
   }, []);
 
   useEffect(() => {
-    getOrderItemsStore(selectOrderStatus);
-    getOrderWaitingAndDoingByStore();
-    setNewOrderTransaction(false);
+    if (!onPrinting) {
+      getOrderItemsStore(selectOrderStatus);
+      getOrderWaitingAndDoingByStore();
+      setNewOrderTransaction(false);
+    }
   }, [newOrderTransaction, selectOrderStatus]);
+
+  useEffect(() => {
+    if (!onPrinting) {
+      if (newOrderTransaction) {
+        getOrderItemsStore(selectOrderStatus);
+        getOrderWaitingAndDoingByStore();
+        setNewOrderTransaction(false);
+      }
+    }
+  }, [onPrinting]);
+  // function
+  async function waitForPrinting() {
+    // alert("gogo");
+    while (onPrinting) {
+      // alert("wait ");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
 
   const Tool = () => {
     return (
@@ -261,6 +284,7 @@ export default function OrderPage() {
           defaultActiveKey={WAITING_STATUS}
           id="OrderTabs"
           onSelect={(select) => {
+            setorderItemForPrintBillSelect([])
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
             getOrderWaitingAndDoingByStore();
@@ -296,13 +320,13 @@ export default function OrderPage() {
           </Tab> */}
         </Tabs>
       </div>
-      <div>
+      <div style={{ padding: "20px" }}>
         {orderItems
           ?.filter((e) => e?.isChecked)
           .map((val, i) => {
             return (
               <div
-                style={{ width: "80mm", padding: 10 }}
+                style={{ display: "inline-block", margin: 10 }}
                 ref={(el) => (billForCher80.current[i] = el)}
               >
                 <BillForChef80
@@ -315,13 +339,13 @@ export default function OrderPage() {
             );
           })}
       </div>
-      <div>
+      {/* <div>
         {orderItems
           ?.filter((e) => e?.isChecked)
           .map((val, i) => {
             return (
               <div
-                style={{ width: "80mm", padding: 10 }}
+                style={{ display: "inline-block" }}
                 ref={(el) => (billForCher58.current[i] = el)}
               >
                 <BillForChef58
@@ -333,7 +357,7 @@ export default function OrderPage() {
               </div>
             );
           })}
-      </div>
+      </div> */}
     </RootStyle>
   );
 }
@@ -342,4 +366,5 @@ const RootStyle = styled("div")({
   backgroundColor: "#f9f9f9",
   minHeight: "calc(100vh - 64px)",
   padding: 10,
+  width: "100%",
 });

@@ -698,12 +698,23 @@ export default function TableList() {
     reLoadData();
   };
   useEffect(() => {
-    if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-      handleMessage();
-      setNewOrderTransaction(false);
-      setNewOrderUpdateStatusTransaction(false);
+    if (!onPrinting) {
+      if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+        handleMessage();
+        setNewOrderTransaction(false);
+        setNewOrderUpdateStatusTransaction(false);
+      }
     }
   }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
+  useEffect(() => {
+    if (!onPrinting) {
+      if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+        handleMessage();
+        setNewOrderTransaction(false);
+        setNewOrderUpdateStatusTransaction(false);
+      }
+    }
+  }, [onPrinting]);
 
   useEffect(() => {
     if (newTableTransaction) {

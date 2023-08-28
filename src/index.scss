@@ -157,7 +157,7 @@ blockquote {
   border-left: 4px solid #fb6e3b;
   padding: 0.5em 10px;
   quotes: "\201C""\201D""\2018""\2019";
-  .blockquote-footer{
+  .blockquote-footer {
     font-size: 12px;
   }
   p {
@@ -172,4 +172,16 @@ blockquote:before {
   line-height: 0.1em;
   margin-right: 0.25em;
   vertical-align: -0.4em;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+iframe {
+  height: 100%;
+  width: 100%;
+  border: none;
+  overflow: hidden;
 }
