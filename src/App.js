@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import ReactGA from 'react-ga';
+import React, { useMemo} from "react";
+import ReactGA from 'react-ga4';
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
 import { StateProvider } from "./store";
@@ -14,13 +14,11 @@ const theme = {
 };
 
 function App() {
-
-  useEffect(() => {
+  useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED")
-    // ReactGA.initialize('G-LLZP539QT0', { debug: false })
-    ReactGA.initialize('G-B6GKR3MCEE', { debug: false })
-    ReactGA.pageview(window.location.pathname + window.location.search);
-  }, [])
+    const TRACKING_ID = 'G-LLZP539QT0';
+    ReactGA.initialize(TRACKING_ID, { debug: true })
+}, [])
 
   return (
     <StateProvider>

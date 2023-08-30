@@ -559,14 +559,14 @@ export default function MenuList() {
                   }}
                 />
               </Col>
-              <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
+              {/* <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
                 <Button
                   style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
                   onClick={handleShowCaution}
                 >
                   + ເພີ່ມເມນູຈຳນວນຫຼາຍ
                 </Button>
-              </Col>
+              </Col> */}
               <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
                 <Button
                   style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
@@ -683,7 +683,7 @@ export default function MenuList() {
           open={show3}
           text={dateDelete?.name}
           onClose={handleClose3}
-          onSubmit={handleCloseAddMenus}
+          onSubmit={_confirmeDelete}
         />
 
         <PopUpCaution
@@ -691,11 +691,11 @@ export default function MenuList() {
           onClose={handleCloseCaution}
           setShowAddMenus={setShowAddMenus}
         />
-        <PopUpAddMenus
+        {/* <PopUpAddMenus
           open={showAddMenus}
           onClose={handleCloseAddMenus}
           onSubmit={_confirmeDelete}
-        />
+        /> */}
 
         {/* add menu */}
         <Modal
