@@ -699,22 +699,24 @@ export default function TableList() {
   };
   useEffect(() => {
     if (!onPrinting) {
-      if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-        handleMessage();
-        setNewOrderTransaction(false);
-        setNewOrderUpdateStatusTransaction(false);
+      if (!reload) {
+        if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+          handleMessage();
+          setNewOrderTransaction(false);
+          setNewOrderUpdateStatusTransaction(false);
+        }
       }
     }
-  }, [newOrderTransaction, newOrderUpdateStatusTransaction]);
-  useEffect(() => {
-    if (!onPrinting) {
-      if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-        handleMessage();
-        setNewOrderTransaction(false);
-        setNewOrderUpdateStatusTransaction(false);
-      }
-    }
-  }, [onPrinting]);
+  }, [newOrderTransaction, onPrinting, newOrderUpdateStatusTransaction]);
+  // useEffect(() => {
+  //   if (!onPrinting) {
+  //     if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+  //       handleMessage();
+  //       setNewOrderTransaction(false);
+  //       setNewOrderUpdateStatusTransaction(false);
+  //     }
+  //   }
+  // }, [onPrinting]);
 
   useEffect(() => {
     if (newTableTransaction) {
