@@ -26,6 +26,7 @@ import defualtPreset from "./presets/defualtPreset";
 import compileJson from "../../helpers/compileJson";
 import deCompileJson from "../../helpers/deCompileJson";
 import { useStore } from "../../store/useStore";
+import MenuItemThemeTool from "./customs/MenuItemThemeTool";
 export default function SettingTheme() {
   // state
   const [size, setSize] = useState({
@@ -41,13 +42,9 @@ export default function SettingTheme() {
   useEffect(() => {
     const test = compileJson(defualtPreset);
 
-
     setUi(deCompileJson(test, { menus }));
   }, [menus]);
   // function
-  const testFunc = () => {
-    alert("test Funn");
-  };
   return (
     <Box
       sx={{
@@ -195,7 +192,7 @@ export default function SettingTheme() {
           </div>
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Body>
-              <div style={{ display: "flex", gap: 10 }}>
+              {/* <div style={{ display: "flex", gap: 10 }}>
                 <div
                   style={{
                     border: `2px dotted ${COLOR_APP}`,
@@ -240,15 +237,23 @@ export default function SettingTheme() {
                 >
                   Max
                 </div>
-              </div>
+              </div> */}
             </Card.Body>
           </Card>
         </div>
         {/* right tool */}
         {/* <div> */}
         <Card border="primary" style={{ margin: 0 }}>
+          <Card.Header
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+            }}
+          >
+            ເຄື່ອງມື
+          </Card.Header>
           <Card.Body>
-            <div>
+            {/* <div>
               <Form.Control />
             </div>
             <div
@@ -301,7 +306,8 @@ export default function SettingTheme() {
               >
                 Max
               </div>
-            </div>
+            </div> */}
+            <MenuItemThemeTool />
           </Card.Body>
         </Card>
         {/* </div> */}

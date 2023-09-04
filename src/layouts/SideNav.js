@@ -133,14 +133,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    // {
-    //   title: "ປ່ຽນຕຣີມ",
-    //   key: "settingTheme",
-    //   typeStore: "",
-    //   icon: faIcicles,
-    //   // hidden: !storeDetail?.hasPOS,
-    //   system: "themeManagement",
-    // },
+    {
+      title: "ປ່ຽນຕຣີມ",
+      key: "settingTheme",
+      typeStore: "",
+      icon: faIcicles,
+      // hidden: !storeDetail?.hasPOS,
+      system: "themeManagement",
+    },
   ];
 
   const listForRole = itemList.filter((e) => {

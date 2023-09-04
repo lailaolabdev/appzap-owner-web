@@ -44,7 +44,7 @@ const menu = {
                   height: 20,
                   backgroundColor: "#ffffff",
                 },
-                children: "[[item.menu]]",
+                children: " som",
               },
             },
           ],
