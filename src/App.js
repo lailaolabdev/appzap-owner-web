@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo} from "react";
+import ReactGA from 'react-ga4';
 import Routes from "./routes";
 import { ThemeProvider } from "styled-components";
 import { StateProvider } from "./store";
@@ -13,6 +14,12 @@ const theme = {
 };
 
 function App() {
+  useMemo(() => {
+    console.log("GOOGLE ANALYTICS STARTED")
+    const TRACKING_ID = 'G-LLZP539QT0';
+    ReactGA.initialize(TRACKING_ID, { debug: true })
+}, [])
+
   return (
     <StateProvider>
       <ThemeProvider theme={theme}>

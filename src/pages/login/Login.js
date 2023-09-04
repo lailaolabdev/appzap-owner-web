@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Carousel } from "react-bootstrap";
 import packetJson from "../../../package.json";
+import ReactGA from 'react-ga4';
 
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -36,6 +37,7 @@ function Login() {
         setProfile(user?.data);
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
+        ReactGA.send({ hitType: "pageview",  title: `${data?.name}` });
         navigate(defaultPath);
       } else {
         //  _orderSound.play();

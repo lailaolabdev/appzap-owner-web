@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.4.53",
+  "version": "5.4.58",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -56,6 +56,9 @@
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.2",
     "react-fontawesome": "^1.7.1",
+    "react-ga": "^3.3.1",
+    "react-ga4": "^2.1.0",
+    "react-gesture-responder": "^2.1.0",
     "react-grid-dnd": "^2.1.2",
     "react-i18next": "^12.1.4",
     "react-icons": "^4.6.0",
