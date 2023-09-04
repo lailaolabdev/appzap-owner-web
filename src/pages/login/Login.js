@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Form, Button, Carousel } from "react-bootstrap";
 import packetJson from "../../../package.json";
 import ReactGA from 'react-ga4';
@@ -27,6 +27,12 @@ function Login() {
   const [isPasswordType, setIsPasswordType] = useState(true);
   const { setStoreDetail, setProfile } = useStore();
 
+  useMemo(() => {
+    console.log("GOOGLE ANALYTICS STARTED")
+    const TRACKING_ID = 'G-LLZP539QT0';
+    ReactGA.initialize(TRACKING_ID, { debug: true })
+}, [])
+
   const _login = async ({ values }) => {
     setIsLoading(true);
     try {
@@ -37,6 +43,8 @@ function Login() {
         setProfile(user?.data);
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
+          document.title = data?.name;
+       
         ReactGA.send({ hitType: "pageview",  title: `${data?.name}` });
         navigate(defaultPath);
       } else {
