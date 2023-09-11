@@ -104,8 +104,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "new-report",
       typeStore: "",
       icon: faChartLine,
-      hidden: !storeDetail?.hasSmartMenu,
-      system: "reportManagement",
+      hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
     },
     // {
     //   title: "Dashboard (ໃໝ່)",
@@ -133,14 +133,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    {
-      title: "ປ່ຽນຕຣີມ",
-      key: "settingTheme",
-      typeStore: "",
-      icon: faIcicles,
-      // hidden: !storeDetail?.hasPOS,
-      system: "themeManagement",
-    },
+    // {
+    //   title: "ປ່ຽນຕຣີມ",
+    //   key: "settingTheme",
+    //   typeStore: "",
+    //   icon: faIcicles,
+    //   // hidden: !storeDetail?.hasPOS,
+    //   system: "themeManagement",
+    // },
   ];
 
   const listForRole = itemList.filter((e) => {
