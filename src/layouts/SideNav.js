@@ -67,14 +67,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       system: "reportManagement",
     },
-    // {
-    //   title: "ຈັດການການຈອງ",
-    //   key: "reservations",
-    //   icon: faList,
-    //   typeStore: "",
-    //   hidden: !storeDetail?.hasReservation,
-    //   system: "reservationManagement",
-    // },
+    {
+      title: "ຈັດການການຈອງ",
+      key: "reservations",
+      icon: faList,
+      typeStore: "",
+      hidden: !storeDetail?.hasReservation,
+      system: "reservationManagement",
+    },
 
     // {
     //   title: "ລາຍງານການຈອງ",
@@ -133,14 +133,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    // {
-    //   title: "ປ່ຽນຕຣີມ",
-    //   key: "settingTheme",
-    //   typeStore: "",
-    //   icon: faIcicles,
-    //   // hidden: !storeDetail?.hasPOS,
-    //   system: "themeManagement",
-    // },
+    {
+      title: "ປ່ຽນຕຣີມ",
+      key: "settingTheme",
+      typeStore: "",
+      icon: faIcicles,
+      // hidden: !storeDetail?.hasPOS,
+      system: "themeManagement",
+    },
   ];
 
   const listForRole = itemList.filter((e) => {

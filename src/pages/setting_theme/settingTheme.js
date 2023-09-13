@@ -23,27 +23,18 @@ import { TfiLayoutGrid4Alt } from "react-icons/tfi";
 import { GoContainer } from "react-icons/go";
 
 import defualtPreset from "./presets/defualtPreset";
+import homePage from "./presets/homePage";
 import compileJson from "../../helpers/compileJson";
 import deCompileJson from "../../helpers/deCompileJson";
 import { useStore } from "../../store/useStore";
 import MenuItemThemeTool from "./customs/MenuItemThemeTool";
+import SelfOrderingPage from "./ThemeIframe";
 export default function SettingTheme() {
   // state
-  const [size, setSize] = useState({
-    width: 600,
-    height: 600,
-  });
-  const [keys, setKeys] = useState(0);
-  const [ui, setUi] = useState({ type: "div", props: { children: [] } });
 
   // provider
-  const { menus } = useStore();
+  const { storeDetail } = useStore();
   // useEffect
-  useEffect(() => {
-    const test = compileJson(defualtPreset);
-
-    setUi(deCompileJson(test, { menus }));
-  }, [menus]);
   // function
   return (
     <Box
@@ -140,7 +131,10 @@ export default function SettingTheme() {
               position: "relative",
             }}
           >
-            <Card border="primary" style={{ width: 320, height: 500 }}>
+            <Card
+              border="primary"
+              style={{ width: 320, height: 500, overflow: "hidden" }}
+            >
               <Card.Header
                 style={{
                   backgroundColor: COLOR_APP,
@@ -165,7 +159,12 @@ export default function SettingTheme() {
                 />
               </Card.Header>
               <Card.Body style={{ padding: 0 }}>
-                <IFrame
+                <SelfOrderingPage
+                  storeDetail={storeDetail}
+                  environment="https://api.appzap.la"
+                  token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRhYmxlSWQiOiI2MzYzM2UyOTZhZGE4ODAwMWZjN2Q0YzIiLCJjb2RlSWQiOiI2NDc2MGQ1MzFlOWNmYjAwMmI1MzQ4ZjMiLCJjb2RlIjoiRlI0QUZFIiwic3RvcmVJZCI6IjYzMjE4Y2NjNzgzZDM5MDAxZmQwODJiNSIsImJpbGxJZCI6IjY0ZmVmNjVlMjQ3NTJkMDAyYWEzZmE4NyJ9LCJpYXQiOjE2OTQ0MzA4MTR9.K543KxoW3n_AWVa9kLWDSs9IPTI2c0ZF9o8UGoNFdhM"
+                />
+                {/* <IFrame
                   style={{
                     width: "100%",
                     height: "100%",
@@ -175,7 +174,7 @@ export default function SettingTheme() {
                   }}
                   keyCount={keys}
                   ui={ui}
-                ></IFrame>
+                ></IFrame> */}
               </Card.Body>
             </Card>
             <ButtonGroup style={{ position: "absolute", right: 0, top: 0 }}>
