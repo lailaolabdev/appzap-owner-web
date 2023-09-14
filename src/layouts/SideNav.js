@@ -107,24 +107,24 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "tableManagement",
     },
-    {
-      title: "Dashboard (ໃໝ່)",
-      key: "dashboardmenu",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasSmartMenu,
-      system: "reportManagement",
-      children: [
-        {
-          title: "Dashboard (ໃໝ່)",
-          key: "dashboardmenu",
-          typeStore: "",
-          icon: faChartLine,
-          hidden: !storeDetail?.hasSmartMenu,
-          system: "reportManagement",
-        },
-      ],
-    },
+    // {
+    //   title: "Dashboard (ໃໝ່)",
+    //   key: "dashboardmenu",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasSmartMenu,
+    //   system: "reportManagement",
+    //   children: [
+    //     {
+    //       title: "Dashboard (ໃໝ່)",
+    //       key: "dashboardmenu",
+    //       typeStore: "",
+    //       icon: faChartLine,
+    //       hidden: !storeDetail?.hasSmartMenu,
+    //       system: "reportManagement",
+    //     },
+    //   ],
+    // },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: "settingStore",
@@ -133,14 +133,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    {
-      title: "ປ່ຽນຕຣີມ",
-      key: "settingTheme",
-      typeStore: "",
-      icon: faIcicles,
-      // hidden: !storeDetail?.hasPOS,
-      system: "themeManagement",
-    },
+    // {
+    //   title: "ປ່ຽນຕຣີມ",
+    //   key: "settingTheme",
+    //   typeStore: "",
+    //   icon: faIcicles,
+    //   // hidden: !storeDetail?.hasPOS,
+    //   system: "themeManagement",
+    // },
   ];
 
   const listForRole = itemList.filter((e) => {
