@@ -22,15 +22,16 @@ import { IoDesktopOutline } from "react-icons/io5";
 import { TfiLayoutGrid4Alt } from "react-icons/tfi";
 import { GoContainer } from "react-icons/go";
 
-import defualtPreset from "./presets/defualtPreset";
 import homePage from "./presets/homePage";
 import compileJson from "../../helpers/compileJson";
 import deCompileJson from "../../helpers/deCompileJson";
 import { useStore } from "../../store/useStore";
-import MenuItemThemeTool from "./customs/MenuItemThemeTool";
+import MenuItemThemeTool from "./tools/MenuItemThemeTool";
 import SelfOrderingPage from "./ThemeIframe";
+import ColorTool from "./tools/ColorTool";
 export default function SettingTheme() {
   // state
+  const [selectTool, setSelectTool] = useState();
 
   // provider
   const { storeDetail } = useStore();
@@ -52,7 +53,7 @@ export default function SettingTheme() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "320px 1fr 320px",
+          gridTemplateColumns: selectTool ? "320px 1fr 320px" : "320px 1fr",
           gridTemplateRows: "100%",
           flex: 1,
           gap: 10,
@@ -78,6 +79,7 @@ export default function SettingTheme() {
               {
                 icon: <IoMdColorPalette />,
                 title: "ສີ",
+                onClick: () => setSelectTool("COLOR"),
               },
               {
                 icon: <BsFlagFill />,
@@ -99,6 +101,7 @@ export default function SettingTheme() {
                   gap: 10,
                   alignItems: "center",
                 }}
+                onClick={item.onClick}
               >
                 {item?.icon}
                 <div>{item?.title}</div>
@@ -242,7 +245,10 @@ export default function SettingTheme() {
         </div>
         {/* right tool */}
         {/* <div> */}
-        <Card border="primary" style={{ margin: 0 }}>
+        <Card
+          border="primary"
+          style={{ margin: 0, display: selectTool ? "block" : "none" }}
+        >
           <Card.Header
             style={{
               fontSize: 18,
@@ -306,7 +312,8 @@ export default function SettingTheme() {
                 Max
               </div>
             </div> */}
-            <MenuItemThemeTool />
+            {/* <MenuItemThemeTool /> */}
+            <ColorTool open />
           </Card.Body>
         </Card>
         {/* </div> */}

@@ -672,6 +672,7 @@ export default function FoodList() {
           </Modal.Header>
           <Formik
             initialValues={{
+              recommended:false,
               name: "",
               name_en: "",
               name_cn: "",
@@ -743,6 +744,18 @@ export default function FoodList() {
                     />
                     <label for="isOpened">
                       {values?.isOpened ? "ເປີດ" : "ປິດ"}
+                    </label>
+                  </div>
+                   <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                    <label>ເມນູແນະນຳ</label>
+                    <input
+                      type="checkbox"
+                      id="recommended"
+                      checked={values?.recommended}
+                      onChange={() => setFieldValue("recommended", !values.recommended)}
+                    />
+                    <label for="recommended">
+                      {values?.recommended ? "ເປີດ" : "ປິດ"}
                     </label>
                   </div>
                   <Form.Group>
@@ -1037,6 +1050,7 @@ export default function FoodList() {
           </Modal.Header>
           <Formik
             initialValues={{
+              recommended:dataUpdate?.recommended,
               name: dataUpdate?.name,
               name_en: dataUpdate?.name_en,
               name_cn: dataUpdate?.name_cn,
@@ -1105,6 +1119,18 @@ export default function FoodList() {
                     />
                     <label for="isOpened">
                       {values?.isOpened ? "ເປີດ" : "ປິດ"}
+                    </label>
+                  </div>
+                  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                    <label>ເມນູແນະນຳ</label>
+                    <input
+                      type="checkbox"
+                      id="recommended"
+                      checked={values?.recommended}
+                      onChange={() => setFieldValue("recommended", !values.recommended)}
+                    />
+                    <label for="recommended">
+                      {values?.recommended ? "ເປີດ" : "ປິດ"}
                     </label>
                   </div>
                   <Form.Group>

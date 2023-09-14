@@ -12,7 +12,7 @@ export default {
   children: [
     {
       path: "",
-      element: <DashboardPage />,
+      element: <ReportMenuPage />,
     },
   ],
 };
