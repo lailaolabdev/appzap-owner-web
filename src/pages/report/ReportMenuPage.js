@@ -14,9 +14,82 @@ import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndD
 import { getDashboardBillMonth } from "../../services/dashboard";
 import moment from "moment";
 import { useStore } from "../../store";
+import {
+  getReports,
+  getSalesInformationReport,
+  getUserReport,
+  getMenuReport,
+  getCategoryReport,
+  getMoneyReport,
+  getPromotionReport,
+} from "../../services/report";
 
 export default function ReportMenuPage() {
+  // state
+  const [reportData, setReportData] = useState([]);
+  const [salesInformationReport, setSalesInformationReport] = useState();
+  const [userReport, setUserReport] = useState();
+  const [menuReport, setMenuReport] = useState();
+  const [categoryReport, setCategoryReport] = useState();
+  const [moneyReport, setMoneyReport] = useState();
+  const [promotionReport, setPromotionReport] = useState();
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
+
+  // provider
+  const { storeDetail } = useStore();
+
+  // useEffect
+  useEffect(() => {
+    getReportData();
+    getSalesInformationReportData();
+    getUserReportData();
+    getMenuReportData();
+    getMoneyReportData();
+    getPromotionReportData();
+    getCategoryReportData();
+  }, [endDate, startDate, endTime, startTime]);
+
+  // function
+  const getReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportData(data);
+  };
+  const getSalesInformationReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getSalesInformationReport(storeDetail?._id, findBy);
+    setSalesInformationReport(data);
+  };
+  const getUserReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getUserReport(storeDetail?._id, findBy);
+    setUserReport(data);
+  };
+
+  const getMenuReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getMenuReport(storeDetail?._id, findBy);
+    setMenuReport(data);
+  };
+  const getCategoryReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getCategoryReport(storeDetail?._id, findBy);
+    setCategoryReport(data);
+  };
+  const getMoneyReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getMoneyReport(storeDetail?._id, findBy);
+    setMoneyReport(data);
+  };
+  const getPromotionReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getPromotionReport(storeDetail?._id, findBy);
+    setPromotionReport(data);
+  };
 
   return (
     <div style={{ padding: 20 }}>
@@ -106,129 +179,105 @@ function ReportCard({ title, chart }) {
   );
 }
 
-function DashboardBillMonthCard({ title, chart }) {
+function DashboardBillMonthCard({ title }) {
   //state
-  const [popup, setPopup] = useState();
   const [series, setSeries] = useState([]);
-  const [date1, setDate1] = useState();
-  const [date2, setDate2] = useState();
   const [month1, setMonth1] = useState();
   const [month2, setMonth2] = useState();
-  const [categories, setCategories] = useState([...new Array(31)]);
-  const [state, setState] = useState({
-    series: [
-      {
-        name: "Net Profit",
-        data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
-      },
-      {
-        name: "Revenue",
-        data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
-      },
-      {
-        name: "Free Cash Flow",
-        data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
-      },
-    ],
-    options: {
-      chart: {
-        type: "bar",
-        height: 350,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: "55%",
-          endingShape: "rounded",
-        },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        show: true,
-        width: 2,
-        colors: ["transparent"],
-      },
-      colors: [
-        COLOR_APP,
-        "#00ABB3",
-        "#CDC2AE",
-        "#EA906C",
-        "#00DFA2",
-        "#F266AB",
-        "#025464",
-        "#99627A",
-      ],
-      xaxis: {
-        categories: [
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-        ],
-      },
-      yaxis: {
-        title: {
-          text: "$ (thousands)",
-        },
-      },
-      fill: {
-        opacity: 1,
-      },
-      tooltip: {
-        y: {
-          formatter: function (val) {
-            return "$ " + val + " thousands";
-          },
-        },
-      },
-    },
-  });
-  const [startDate1, setStartDate1] = useState(moment().format("YYYY-MM-DD")); //1
-  const [endDate1, setEndDate1] = useState(moment().format("YYYY-MM-DD")); //1
-  const [startTime1, setStartTime1] = useState("00:00:00"); //1
-  const [endTime1, setEndTime1] = useState("23:59:59"); //1
 
-  const [startDate2, setStartDate2] = useState(moment().format("YYYY-MM-DD")); //2
-  const [endDate2, setEndDate2] = useState(moment().format("YYYY-MM-DD")); //2
-  const [startTime2, setStartTime2] = useState("00:00:00"); //2
-  const [endTime2, setEndTime2] = useState("23:59:59"); //2
+  const [reportDataMonth1, setReportDataMonth1] = useState([]);
+  const [reportDataMonth2, setReportDataMonth2] = useState([]);
 
   // provider
   const { storeDetail } = useStore();
 
   // useEffect
   useEffect(() => {
-    setSeries([date1, date2]);
-  }, []);
-  useEffect(() => {
-    getDashboardData1();
+    if (month1) {
+      getReportDataMonth1();
+    }
   }, [month1]);
   useEffect(() => {
-    setStartDate2();
-    getDashboardData2();
+    if (month2) {
+      getReportDataMonth2();
+    }
   }, [month2]);
 
+  useEffect(() => {
+    let _series = [];
+    if (reportDataMonth1) {
+      let _month1 = {
+        name: month1,
+        data: [...new Array(31)].map((e, i) => {
+          const data = reportDataMonth1.find((item) => {
+            if (
+              parseInt(moment(item?.date, "YYYY-MM-DD").format("DD")) ==
+              i + 1
+            ) {
+              return true;
+            }
+            return false;
+          });
+          console.log("first", data);
+          if (data) {
+            return data?.billAmount;
+          } else {
+            return null;
+          }
+        }),
+      };
+      _series.push(_month1);
+    }
+    if (reportDataMonth2) {
+      let _month2 = {
+        name: month2,
+        data: [...new Array(31)].map((e, i) => {
+          const data = reportDataMonth2.find((item) => {
+            if (parseInt(moment(item?.date).format("DD")) == i + 1) {
+              return true;
+            }
+            return false;
+          });
+          if (data) {
+            return data?.billAmount;
+          } else {
+            return null;
+          }
+        }),
+      };
+      _series.push(_month2);
+    }
+
+    setSeries(_series);
+  }, [reportDataMonth1, reportDataMonth2]);
+
   // function
-  const getDashboardData1 = async () => {
-    const startDate = moment(month1).format("YYYY-MM-DD");
-    const endDate = moment(month1).endOf("month").format("YYYY-MM-DD");
-    const startTime = "00:00:00";
-    const endTime = "23:59:59";
+  const getReportDataMonth1 = async () => {
+    const startDate = moment(month1, "YYYY-MM")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endDate = moment(month1, "YYYY-MM")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    const endTime = "00:00:00";
+    const startTime = "23:59:59";
+
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getDashboardBillMonth(storeDetail?._id, findBy);
-    setDate1(data);
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportDataMonth1(data);
   };
-  const getDashboardData2 = async () => {
-    const findBy = `?startDate=${startDate2}&endDate=${endDate2}&endTime=${endTime2}&startTime=${startTime2}`;
-    const data = await getDashboardBillMonth(storeDetail?._id, findBy);
-    setDate2(data);
+  const getReportDataMonth2 = async () => {
+    const startDate = moment(month2, "YYYY-MM")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endDate = moment(month2, "YYYY-MM")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    const endTime = "00:00:00";
+    const startTime = "23:59:59";
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportDataMonth2(data);
   };
 
   return (
@@ -266,8 +315,8 @@ function DashboardBillMonthCard({ title, chart }) {
               style={{ borderRadius: 0 }}
               value={month1}
               onChange={(e) => {
-                alert(e.target.value);
-                alert(moment(e.target.value).format("YYYY-MM-DD"));
+                console.log(e.target.value);
+                setMonth1(e.target.value);
               }}
             />
             <Button variant="outline-primary">{">>"}</Button>
@@ -290,7 +339,9 @@ function DashboardBillMonthCard({ title, chart }) {
             <BsArrowCounterclockwise />
           </Button>
         </div>
-        <div>{chart}</div>
+        <div>
+          <ReportChartMonth series={series} />
+        </div>
       </Card.Body>
     </Card>
   );
