@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Card, Button, Form, ButtonGroup, Breadcrumb } from "react-bootstrap";
+import * as _ from "lodash";
 import ReactApexChart from "react-apexcharts";
 import dayjs from "dayjs";
 import { COLOR_APP } from "../../constants";
@@ -9,6 +10,7 @@ import { BsArrowCounterclockwise, BsInfoCircle } from "react-icons/bs";
 import ReportChartMonth from "../../components/report_chart/ReportChartMonth";
 import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
 import ReportChartDay from "../../components/report_chart/ReportChartDay";
+import ReportChartDayOfWeek from "../../components/report_chart/ReportChartDayOfWeek";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import { getDashboardBillMonth } from "../../services/dashboard";
@@ -23,6 +25,8 @@ import {
   getMoneyReport,
   getPromotionReport,
 } from "../../services/report";
+import "moment/locale/lo";
+import PopupSelectMenuForDashboard from "../../components/popup/PopupSelectMenuForDashboard";
 
 export default function ReportMenuPage() {
   // state
@@ -108,10 +112,8 @@ export default function ReportMenuPage() {
         }}
       >
         {/* <ReportChart1 /> */}
-        <DashboardBillMonthCard
-          title={"ລາຍເດືອນ (Compare across Months)"}
-          chart={<ReportChartMonth />}
-        />
+        <DashboardBillMonthCard title={"ລາຍເດືອນ (Compare across Months)"} />
+        <DashboardBillWeekCard title={"ລາຍເດືອນ (Compare across Months)"} />
         <ReportCard
           title={"ລາຍອາທິດ (Compare across Weeks)"}
           chart={<ReportChartWeek />}
@@ -122,6 +124,7 @@ export default function ReportMenuPage() {
         />
       </div>
       <PopUpSetStartAndEndDate />
+      <PopupSelectMenuForDashboard open />
     </div>
   );
 }
@@ -341,6 +344,182 @@ function DashboardBillMonthCard({ title }) {
         </div>
         <div>
           <ReportChartMonth series={series} />
+        </div>
+      </Card.Body>
+    </Card>
+  );
+}
+
+function DashboardBillWeekCard({ title }) {
+  //state
+  const [series, setSeries] = useState([]);
+  const [month1, setMonth1] = useState();
+  const [month2, setMonth2] = useState();
+
+  const [reportDataMonth1, setReportDataMonth1] = useState([]);
+  const [reportDataMonth2, setReportDataMonth2] = useState([]);
+
+  // provider
+  const { storeDetail } = useStore();
+
+  // useEffect
+  useEffect(() => {
+    if (month1) {
+      getReportDataMonth1();
+    }
+  }, [month1]);
+  useEffect(() => {
+    if (month2) {
+      getReportDataMonth2();
+    }
+  }, [month2]);
+
+  useEffect(() => {
+    let _series = [];
+    if (reportDataMonth1) {
+      let _month1 = {
+        name: month1,
+        data: ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"].map(
+          (e, i) => {
+            const data = reportDataMonth1.filter((item) => {
+              console.log(moment(item?.date, "YYYY-MM-DD").format("dddd"));
+              if (moment(item?.date, "YYYY-MM-DD").format("dddd") == e) {
+                return true;
+              }
+              return false;
+            });
+            const _sum = _.sumBy(data, function (o) {
+              return o.billAmount;
+            });
+            if (_sum) {
+              return _sum;
+            } else {
+              return null;
+            }
+          }
+        ),
+      };
+      _series.push(_month1);
+    }
+    if (reportDataMonth2) {
+      let _month2 = {
+        name: month2,
+        data: ["ຈັນ", "ອັງຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ອາທິດ"].map(
+          (e, i) => {
+            const data = reportDataMonth2.filter((item) => {
+              console.log(moment(item?.date, "YYYY-MM-DD").format("dddd"));
+              if (moment(item?.date, "YYYY-MM-DD").format("dddd") == e) {
+                return true;
+              }
+              return false;
+            });
+            const _sum = _.sumBy(data, function (o) {
+              return o.billAmount;
+            });
+            if (_sum) {
+              return _sum;
+            } else {
+              return null;
+            }
+          }
+        ),
+      };
+      _series.push(_month2);
+    }
+
+    setSeries(_series);
+  }, [reportDataMonth1, reportDataMonth2]);
+
+  // function
+  const getReportDataMonth1 = async () => {
+    const startDate = moment(month1, "YYYY-MM")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endDate = moment(month1, "YYYY-MM")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    const endTime = "00:00:00";
+    const startTime = "23:59:59";
+
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportDataMonth1(data);
+  };
+  const getReportDataMonth2 = async () => {
+    const startDate = moment(month2, "YYYY-MM")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endDate = moment(month2, "YYYY-MM")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    const endTime = "00:00:00";
+    const startTime = "23:59:59";
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportDataMonth2(data);
+  };
+
+  return (
+    <Card border="primary" style={{ margin: 0 }}>
+      <Card.Header
+        style={{
+          backgroundColor: COLOR_APP,
+          color: "#fff",
+          fontSize: 18,
+          fontWeight: "bold",
+        }}
+      >
+        {title} <BsInfoCircle />
+      </Card.Header>
+      <Card.Body>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 10,
+            padding: 10,
+          }}
+        >
+          <ButtonDropdown variant="outline-primary">
+            <option>ຍອດຈຳນວນ</option>
+            <option>ຍອດເງິນ</option>
+          </ButtonDropdown>
+          <Button variant="outline-primary">ເລືອກສິນຄ້າ 1 ລາຍການ</Button>
+          <ButtonGroup aria-label="Basic example">
+            <Button variant="outline-primary">{"<<"}</Button>
+            <Form.Control
+              type="month"
+              variant="outline-primary"
+              style={{ borderRadius: 0 }}
+              value={month1}
+              onChange={(e) => {
+                console.log(e.target.value);
+                setMonth1(e.target.value);
+              }}
+            />
+            <Button variant="outline-primary">{">>"}</Button>
+          </ButtonGroup>
+          <div>ປຽບທຽບກັບ</div>
+          <ButtonGroup aria-label="Basic example">
+            <Button variant="outline-primary">{"<<"}</Button>
+            <Form.Control
+              type="month"
+              variant="outline-primary"
+              style={{ borderRadius: 0 }}
+              value={month2}
+              onChange={(e) => {
+                setMonth2(e.target.value);
+              }}
+            />
+            <Button variant="outline-primary">{">>"}</Button>
+          </ButtonGroup>
+          <Button variant="outline-primary">
+            <BsArrowCounterclockwise />
+          </Button>
+        </div>
+        <div>
+          <ReportChartDayOfWeek series={series} />
         </div>
       </Card.Body>
     </Card>
