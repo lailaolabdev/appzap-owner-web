@@ -8,7 +8,7 @@ import { Button, Modal, Form, Nav, Image, Row, Col, Spinner, Breadcrumb } from "
 
 // Local Imports
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER, } from "../../constants/api";
+import { MENUS, getLocalData, END_POINT_SEVER, master_menu_api_dev} from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
@@ -83,9 +83,7 @@ export default function FoodList() {
           const _localData = await getLocalData();
 
           setIsLoading(true)
-          await fetch(MENUS + `/?storeId=${_localData?.DATA?.storeId}${(filterCategory && filterCategory !== "All") ? `&categoryId=${filterCategory}` : ""}${(filterName && filterName !== "") ? `&name=${filterName}` : ""}`, {
-            method: "GET",
-          })
+          await fetch(master_menu_api_dev + `/api/menus`, {method: "GET"})
             .then((response) => response.json())
             .then((json) => {
               setMenus(json)
@@ -124,11 +122,13 @@ export default function FoodList() {
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true)
-      await fetch(MENUS + `/?storeId=${id}${(categoryId && categoryId !== "All") ? `&categoryId=${categoryId}` : ""}`, {
+      await fetch(
+         + `/api/menus`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((json) => {
+          console.log('json: ', json);
           setMenus(json)
         });
       setIsLoading(false)
@@ -368,131 +368,6 @@ export default function FoodList() {
     setConnectMenuId(e.target.value)
   }
 
-  const _onOpenMenu = async (id, isOpenMenuCustomerWeb, index) => {
-    try {
-      let header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-
-      await axios({
-        method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
-        data: {
-          id: id,
-          data: {
-            isShowCustomerWeb: isOpenMenuCustomerWeb === "true" ? "false" : "true",
-          },
-        },
-        headers: headers,
-      });
-
-      let _newData = [...Menus];
-
-      _newData[index].isShowCustomerWeb = isOpenMenuCustomerWeb === "true" ? "false" : "true";
-      setMenus(_newData)
-      let data = _newData[index]
-      setDetailMenu({ data, index })
-
-    } catch (err) {
-      console.log("err:", err);
-    }
-  };
-
-  const _onOpenMenuCustomerApp = async (id, isOpenMenuCustomerApp, index) => {
-    try {
-      let header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-
-      await axios({
-        method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
-        data: {
-          id: id,
-          data: {
-            isShowCustomerApp: isOpenMenuCustomerApp === "true" ? "false" : "true",
-          },
-        },
-        headers: headers,
-      });
-
-      let _newData = [...Menus];
-
-      _newData[index].isShowCustomerApp = isOpenMenuCustomerApp === "true" ? "false" : "true";
-      setMenus(_newData)
-      let data = _newData[index]
-      setDetailMenu({ data, index })
-
-    } catch (err) {
-      console.log("err:", err);
-    }
-  };
-
-  const _onOpenMenuStaff = async (id, isOpenMenuStaff, index) => {
-    try {
-      let header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-
-      await axios({
-        method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
-        data: {
-          id: id,
-          data: {
-            isShowStaffApp: isOpenMenuStaff === "true" ? "false" : "true",
-          },
-        },
-        headers: headers,
-      });
-
-      let _newData = [...Menus];
-
-      _newData[index].isShowStaffApp = isOpenMenuStaff === "true" ? "false" : "true";
-      setMenus(_newData)
-      let data = _newData[index]
-      setDetailMenu({ data, index })
-
-    } catch (err) {
-      console.log("err:", err);
-    }
-  };
-
-  const _onOpenMenuCounter = async (id, isShowCounterApp, index) => {
-    try {
-      let header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-      await axios({
-        method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
-        data: {
-          id: id,
-          data: {
-            isShowCounterApp: isShowCounterApp === "true" ? "false" : "true",
-          },
-        },
-        headers: headers,
-      });
-
-      let _newData = [...Menus];
-      _newData[index].isShowCounterApp = isShowCounterApp === "true" ? "false" : "true";
-      setMenus(_newData)
-      let data = _newData[index]
-      setDetailMenu({ data, index })
-
-    } catch (err) {
-      console.log("err:", err);
-    }
-  };
 
   const _menuList = () => {
     navigate(`/food-setting/limit/40/page/1`);
@@ -598,33 +473,7 @@ export default function FoodList() {
                             <td>{index + 1}</td>
                             <td>{data?.sort ?? 0}</td>
                             <td>
-                              {data?.images.length > 0 ? (
-                                <center>
-                                  <Image
-                                    src={URL_PHOTO_AW3 + data?.images[0]}
-                                    width="150"
-                                    height="150"
-                                    style={{
-                                      height: 50,
-                                      width: 50,
-                                      borderRadius: "50%",
-                                    }}
-                                  />
-                                </center>
-                              ) : (
-                                <center>
-                                  <Image
-                                    src={profileImage}
-                                    width="150"
-                                    height="150"
-                                    style={{
-                                      height: 50,
-                                      width: 50,
-                                      borderRadius: "50%",
-                                    }}
-                                  />
-                                </center>
-                              )}
+                             
                             </td>
                             <td>{data?.categoryId?.name}</td>
                             <td style={{ textAlign: "start" }}>{data?.name ?? ""}<br />{data?.name_en ?? ""}<br />{data?.name_cn ?? ""}<br />{data?.name_kr ?? ""}</td>

@@ -15,7 +15,7 @@ import {
   Breadcrumb,
 } from "react-bootstrap";
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER } from "../../constants/api";
+import { MENUS, getLocalData, END_POINT_SEVER, master_menu_api_dev } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
@@ -85,6 +85,7 @@ export default function MenuList() {
       }
     };
     fetchData();
+    getCategory();
   }, []);
 
   useEffect(() => {
@@ -528,6 +529,23 @@ export default function MenuList() {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
 
+  const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
+
+const getCategory = async () => {
+  try {
+    await fetch(
+      master_menu_api_dev + `/api/restaurant-categories`,
+      {
+        method: "GET",
+      }
+    )
+      .then((response) => response.json())
+      .then((json) => setCategoriesRestaurant(json));
+  } catch (err) {
+    console.log(err);
+  }
+};
+
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -588,14 +606,14 @@ export default function MenuList() {
                   }}
                 />
               </Col>
-              {/* <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
+              <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
                 <Button
                   style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
                   onClick={handleShowCaution}
                 >
                   + ເພີ່ມເມນູຈຳນວນຫຼາຍ
                 </Button>
-              </Col> */}
+              </Col>
               <Col
                 md="2"
                 style={{
@@ -747,11 +765,12 @@ export default function MenuList() {
           onClose={handleCloseCaution}
           setShowAddMenus={setShowAddMenus}
         />
-        {/* <PopUpAddMenus
+        <PopUpAddMenus
           open={showAddMenus}
           onClose={handleCloseAddMenus}
-          onSubmit={_confirmeDelete}
-        /> */}
+          categoriesRestaurant={categoriesRestaurant}
+          // onSubmit={_confirmeDelete}
+        />
 
         {/* add menu */}
         <Modal show={show} onHide={handleClose} keyboard={false}>

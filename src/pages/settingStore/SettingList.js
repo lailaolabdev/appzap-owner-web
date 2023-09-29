@@ -84,12 +84,12 @@ export default function SettingList() {
       icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faStore} />,
       path: `/config`,
     },
-    // {
-    //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
-    //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",
-    //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
-    //   path: `/food-setting/limit/40/page/1`,
-    // },
+    {
+      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
+      title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",
+      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
+      path: `/food-setting/limit/40/page/1`,
+    },
   ];
 
   return (
