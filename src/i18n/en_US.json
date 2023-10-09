@@ -161,5 +161,7 @@
     "table": "Table",
     "addOrder": "Add order",
     "TableHasNoOrder": "This table has no orders yet",
-    "transfercash": "Tranfer + Cash payment"
+    "transfercash": "Tranfer + Cash payment",
+    "soundManage": "Sound Manage",
+    "currencyManage": "Currency Rate Manage"
 }

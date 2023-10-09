@@ -46,4 +46,8 @@ export const PRESIGNED_URL = END_POINT_SEVER + "/uploadfile";
 export const TABLES = END_POINT_SEVER + "/v3/tables";
 export const STORE = END_POINT_SEVER + "/v3/store";
 export const STORE_UPDATE = END_POINT_SEVER + "/v3/store/update";
-export const QUERY_LANGUAGE = END_POINT_SEVER + "/v3/currencies";
+
+export const QUERY_CURRENCIES = END_POINT_SEVER + "/v3/currencies";
+export const CREATE_CURRENCY = END_POINT_SEVER + "/v3/currency/create";
+export const UPDATE_CURRENCY = END_POINT_SEVER + "/v3/currency/update";
+export const DELETE_CURRENCY = END_POINT_SEVER + "/v3/currency/delete";
