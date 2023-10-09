@@ -113,7 +113,7 @@ export default function ReportMenuPage() {
       >
         {/* <ReportChart1 /> */}
         <DashboardBillMonthCard title={"ລາຍເດືອນ (Compare across Months)"} />
-        <DashboardBillWeekCard title={"ລາຍເດືອນ (Compare across Months)"} />
+        <DashboardBillWeekCard title={"ລາຍອາທິດ (Compare across Weeks)"} />
         <ReportCard
           title={"ລາຍອາທິດ (Compare across Weeks)"}
           chart={<ReportChartWeek />}
@@ -124,7 +124,7 @@ export default function ReportMenuPage() {
         />
       </div>
       <PopUpSetStartAndEndDate />
-      <PopupSelectMenuForDashboard open />
+      {/* <PopupSelectMenuForDashboard open /> */}
     </div>
   );
 }
