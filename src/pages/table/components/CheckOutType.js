@@ -12,6 +12,8 @@ import _ from "lodash";
 
 import ButtonPrimary from "../../../components/button/ButtonPrimary";
 import { useStore } from "../../../store";
+import { getCurrencys } from "../../../services/currency";
+import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
 
 export default function CheckOutType({
   open,
@@ -27,11 +29,34 @@ export default function CheckOutType({
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
+  const [selectCurrency, setSelectCurrency] = useState("LAK");
+  const [rateCurrency, setRateCurrency] = useState(0);
+  const [cashCurrency, setCashCurrency] = useState();
+
+  const [currencyList, setCurrencyList] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
   const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
+  useEffect(() => {
+    if (selectCurrency != "LAK") {
+      const _currencyData = currencyList.find(
+        (e) => e.currencyCode == selectCurrency
+      );
+      setRateCurrency(_currencyData?.buy || 1);
+    } else {
+      setRateCurrency(1);
+    }
+  }, [selectCurrency, rateCurrency, selectCurrency]);
+  useEffect(() => {
+    if (selectCurrency != "LAK") {
+      const amount = cashCurrency * rateCurrency;
+      setCash(amount);
+    } else {
+      setCashCurrency();
+    }
+  }, [cashCurrency]);
   useEffect(() => {
     for (let i = 0; i < dataBill?.orderId.length; i++) {
       _calculateTotal();
@@ -39,6 +64,21 @@ export default function CheckOutType({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
   // function
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status == 200) {
+          setCurrencyList(data?.data);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
   const _checkBill = async () => {
     await axios
       .put(
@@ -91,6 +131,9 @@ export default function CheckOutType({
   };
 
   // useEffect
+  useEffect(() => {
+    getDataCurrency();
+  }, []);
   useEffect(() => {
     if (forcus == "CASH") {
       if (dataBill?.discount) {
@@ -268,28 +311,68 @@ export default function CheckOutType({
             {/* ---------tabs--------- */}
             <div style={{ display: tab === "cash" ? "block" : "none" }}>
               <div>
-                <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ)</div>
+                <div>
+                  ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ) (Rate: {rateCurrency})
+                </div>
+                <div>
+                  ລາຄາ{" "}
+                  {moneyCurrency(
+                    (dataBill && dataBill?.discountType === "LAK"
+                      ? total - dataBill?.discount > 0
+                        ? total - dataBill?.discount
+                        : 0
+                      : total - (total * dataBill?.discount) / 100 > 0
+                      ? total - (total * dataBill?.discount) / 100
+                      : 0) / rateCurrency
+                  )}{" "}
+                  {selectCurrency}
+                </div>
                 <div style={{ display: "flex" }}>
-                  <input
-                    type="number"
-                    style={{
-                      backgroundColor: "#ccc",
-                      padding: "flex",
-                      padding: 10,
-                      border: "none",
-                      width: "100%",
+                  {selectCurrency == "LAK" ? (
+                    <input
+                      type="number"
+                      style={{
+                        backgroundColor: "#ccc",
+                        padding: "flex",
+                        padding: 10,
+                        border: "none",
+                        width: "100%",
+                      }}
+                      forcus={true}
+                      value={cash}
+                      onChange={(e) => setCash(parseInt(e.target.value))}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      style={{
+                        backgroundColor: "#ccc",
+                        padding: "flex",
+                        padding: 10,
+                        border: "none",
+                        width: "100%",
+                      }}
+                      forcus={true}
+                      value={cashCurrency}
+                      onChange={(e) =>
+                        setCashCurrency(parseInt(e.target.value))
+                      }
+                    />
+                  )}
+
+                  <Form.Control
+                    as="select"
+                    name="width"
+                    style={{ width: 80 }}
+                    value={selectCurrency}
+                    onChange={(e) => {
+                      setSelectCurrency(e?.target?.value);
                     }}
-                    forcus={true}
-                    value={cash}
-                    onChange={(e) => setCash(parseInt(e.target.value))}
-                  />
-                  
-                  <Form.Control as="select" name="width" style={{ width: 80 }}>
-                    <option value="80mm">sdfdfdf</option>
-                    <option value="80mm">sdfdfdf</option>
-                    <option value="80mm">sdfdfdf</option>
-                    <option value="80mm">sdfdfdf</option>
-                    <option value="80mm">sdfdfdf</option>
+                  >
+                    <option value="LAK">LAK</option>
+                    {currencyList?.map((e) => (
+                      <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                    ))}
                   </Form.Control>
                 </div>
                 <div>ຈຳນວນທີ່ຕ້ອງທອນ</div>
@@ -328,7 +411,9 @@ export default function CheckOutType({
             </div>
             <div style={{ display: tab === "transfer" ? "block" : "none" }}>
               <div>
-                <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ)</div>
+                <div>
+                  ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ) (Rate: {rateCurrency})
+                </div>
                 <div
                   style={{
                     backgroundColor: "#ccc",
