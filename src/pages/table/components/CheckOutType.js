@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -269,19 +269,29 @@ export default function CheckOutType({
             <div style={{ display: tab === "cash" ? "block" : "none" }}>
               <div>
                 <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ)</div>
-                <input
-                  type="number"
-                  style={{
-                    backgroundColor: "#ccc",
-                    padding: "flex",
-                    padding: 10,
-                    border: "none",
-                    width: "100%",
-                  }}
-                  forcus={true}
-                  value={cash}
-                  onChange={(e) => setCash(parseInt(e.target.value))}
-                />
+                <div style={{ display: "flex" }}>
+                  <input
+                    type="number"
+                    style={{
+                      backgroundColor: "#ccc",
+                      padding: "flex",
+                      padding: 10,
+                      border: "none",
+                      width: "100%",
+                    }}
+                    forcus={true}
+                    value={cash}
+                    onChange={(e) => setCash(parseInt(e.target.value))}
+                  />
+                  
+                  <Form.Control as="select" name="width" style={{ width: 80 }}>
+                    <option value="80mm">sdfdfdf</option>
+                    <option value="80mm">sdfdfdf</option>
+                    <option value="80mm">sdfdfdf</option>
+                    <option value="80mm">sdfdfdf</option>
+                    <option value="80mm">sdfdfdf</option>
+                  </Form.Control>
+                </div>
                 <div>ຈຳນວນທີ່ຕ້ອງທອນ</div>
                 <div
                   style={{
