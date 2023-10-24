@@ -10,7 +10,8 @@ import {
   faPrint,
   faFolderOpen,
   faVolumeUp,
-  faStore
+  faStore,
+  faDollarSign
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -74,7 +75,7 @@ export default function SettingList() {
     },
     {
       id: "a2233469-a0b3-4247-9247-6282e2bafc1b",
-      title: "ຈັດການສຽງ",
+      title: t("soundManage"),
       icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faVolumeUp} />,
       path: `/audio`,
     },
@@ -83,6 +84,12 @@ export default function SettingList() {
       title: "POS Config",
       icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faStore} />,
       path: `/config`,
+    },
+    {
+      id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
+      title: t("currencyManage"),
+      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faDollarSign} />,
+      path: `/settingStore/currency/${params?.id}`,
     },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",

@@ -3,6 +3,8 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
+import { QUERY_CURRENCIES, getLocalData } from "../../constants/api";
+import Axios from "axios";
 
 export default function BillForCheckOut58({
   storeDetail,
@@ -10,6 +12,7 @@ export default function BillForCheckOut58({
   dataBill,
 }) {
   const [total, setTotal] = useState();
+  const [currencyData, setCurrencyData] = useState([]);
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -21,9 +24,28 @@ export default function BillForCheckOut58({
 
   // useEffect
   useEffect(() => {
+    getDataCurrency()
+  }, []);
+  useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
+
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await Axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status == 200) {
+          setCurrencyData(data?.data?.data);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
 
   return (
     <Container>
@@ -95,6 +117,9 @@ export default function BillForCheckOut58({
         <div style={{ flexGrow: 1 }}></div>
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          {currencyData?.map((item, index) => (
+            <div key={index}>ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}</div>
+          ))}
           <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
         </div>
       </Price>
