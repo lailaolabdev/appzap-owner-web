@@ -7,6 +7,7 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
+import { BiSolidPrinter } from "react-icons/bi";
 
 import _ from "lodash";
 
@@ -16,11 +17,13 @@ import { getCurrencys } from "../../../services/currency";
 import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
 
 export default function CheckOutType({
+  onPrintBill,
   open,
   onClose,
   // onSubmit,
   dataBill,
   tableData,
+  setDataBill,
 }) {
   // state
   const [cash, setCash] = useState();
@@ -40,6 +43,37 @@ export default function CheckOutType({
   // val
   const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
   useEffect(() => {
+    let moneyReceived = "";
+    let moneyChange = "";
+    moneyReceived = `${moneyCurrency(cash + transfer)} ${selectCurrency}`;
+    moneyChange = moneyCurrency(
+      cash -
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0) <=
+        0
+        ? 0
+        : cash -
+            (dataBill && dataBill?.discountType === "LAK"
+              ? totalBill - dataBill?.discount > 0
+                ? totalBill - dataBill?.discount
+                : 0
+              : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+              ? totalBill - (totalBill * dataBill?.discount) / 100
+              : 0)
+    );
+
+    setDataBill((prev) => ({
+      ...prev,
+      moneyReceived: moneyReceived,
+      moneyChange: moneyChange,
+    }));
+  }, [cash, transfer, selectCurrency]);
+  useEffect(() => {
     if (selectCurrency != "LAK") {
       const _currencyData = currencyList.find(
         (e) => e.currencyCode == selectCurrency
@@ -48,15 +82,20 @@ export default function CheckOutType({
     } else {
       setRateCurrency(1);
     }
-  }, [selectCurrency, rateCurrency, selectCurrency]);
+  }, [selectCurrency, selectCurrency]);
+  useEffect(() => {
+    const amount = cashCurrency * rateCurrency;
+    setCash(amount);
+  }, [rateCurrency]);
   useEffect(() => {
     if (selectCurrency != "LAK") {
       const amount = cashCurrency * rateCurrency;
       setCash(amount);
     } else {
-      setCashCurrency();
+      const amount = cash / rateCurrency;
+      setCashCurrency(amount);
     }
-  }, [cashCurrency]);
+  }, [cashCurrency, cash]);
   useEffect(() => {
     for (let i = 0; i < dataBill?.orderId.length; i++) {
       _calculateTotal();
@@ -72,7 +111,7 @@ export default function CheckOutType({
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
         if (data?.status == 200) {
-          setCurrencyList(data?.data);
+          setCurrencyList(data?.data?.data);
         }
       }
     } catch (err) {
@@ -285,6 +324,8 @@ export default function CheckOutType({
                 }}
                 onClick={() => {
                   setCash(0);
+                  setSelectCurrency("LAK");
+                  setRateCurrency(0);
                   setTransfer(transferCal);
                   setTab("transfer");
                   setForcus("TRANSFER");
@@ -300,6 +341,8 @@ export default function CheckOutType({
                 }}
                 onClick={() => {
                   setCash(0);
+                  setSelectCurrency("LAK");
+                  setRateCurrency(0);
                   setTransfer(0);
                   setTab("cash_transfer");
                   setForcus("TRANSFER_CASH");
@@ -338,6 +381,9 @@ export default function CheckOutType({
                         border: "none",
                         width: "100%",
                       }}
+                      onWheel={(e) => {
+                        e.preventDefault();
+                      }}
                       forcus={true}
                       value={cash}
                       onChange={(e) => setCash(parseInt(e.target.value))}
@@ -352,6 +398,9 @@ export default function CheckOutType({
                         border: "none",
                         width: "100%",
                       }}
+                      onWheel={(e) => {
+                        e.preventDefault();
+                      }}
                       forcus={true}
                       value={cashCurrency}
                       onChange={(e) =>
@@ -359,11 +408,10 @@ export default function CheckOutType({
                       }
                     />
                   )}
-
                   <Form.Control
                     as="select"
                     name="width"
-                    style={{ width: 80 }}
+                    style={{ width: 80, borderRadius: 0, height: 54 }}
                     value={selectCurrency}
                     onChange={(e) => {
                       setSelectCurrency(e?.target?.value);
@@ -530,6 +578,20 @@ export default function CheckOutType({
         </Box>
       </Modal.Body>
       <Modal.Footer>
+        <div style={{ flex: 1 }}></div>
+        <ButtonPrimary
+          style={{ color: "white" }}
+          onClick={() => {
+            onPrintBill().then(() => {
+              handleSubmit();
+            });
+          }}
+          disabled={!canCheckOut}
+        >
+          <BiSolidPrinter />
+          ພິມບິນ ແລະ ໄລເງິນ
+        </ButtonPrimary>
+        <div style={{ width: "20%" }}></div>
         <ButtonPrimary
           style={{ color: "white" }}
           onClick={handleSubmit}

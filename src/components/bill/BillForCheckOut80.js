@@ -22,7 +22,7 @@ export default function BillForCheckOut80({
   }, [dataBill]);
   useEffect(() => {
     _calculateTotal();
-    getDataCurrency()
+    getDataCurrency();
   }, []);
 
   // function
@@ -127,7 +127,9 @@ export default function BillForCheckOut80({
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
           {currencyData?.map((item, index) => (
-            <div key={index}>ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}</div>
+            <div key={index}>
+              ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
+            </div>
           ))}
           <div>
             ສ່ວນຫຼຸດ:
@@ -147,8 +149,8 @@ export default function BillForCheckOut80({
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>ຮັບເງີນມາ 0</div>
-          <div>ເງີນທອນ 0</div>
+          <div>ຮັບເງີນມາ {dataBill?.moneyReceived || 0}</div>
+          <div>ເງີນທອນ {dataBill?.moneyChange || 0}</div>
         </div>
       </Price>
       <div

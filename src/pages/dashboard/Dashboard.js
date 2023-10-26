@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styled from 'styled-components';
+import styled from "styled-components";
 import moment from "moment";
 import { Nav } from "react-bootstrap";
 import Box from "../../components/Box";
@@ -27,7 +27,7 @@ import { useStore } from "../../store";
 
 export default function Dashboard() {
   const { accessToken } = useQuery();
-  const [currency, setcurrency] = useState();
+  const [currency, setcurrency] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const { storeDetail } = useStore();
   const newDate = new Date();
@@ -39,8 +39,7 @@ export default function Dashboard() {
     moment(moment(newDate)).format("YYYY-MM-DD")
   );
   const [changeUi, setChangeUi] = useState("CHECKBILL");
-  const [changeText, setChangeText] = useState('CLICK1');
-
+  const [changeText, setChangeText] = useState("CLICK1");
 
   const _click1day = () => {
     setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
@@ -59,14 +58,14 @@ export default function Dashboard() {
   const { t } = useTranslation();
 
   const getcurrency = async () => {
-    try {
-      let res = await axios.get(
-        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`
-      );
-      setcurrency(res.data ?? []);
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   let res = await axios.get(
+    //     END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`
+    //   );
+    //   setcurrency(res.data ?? []);
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   useEffect(() => {
@@ -93,7 +92,7 @@ export default function Dashboard() {
             eventKey="/home"
             style={{
               color: "#FB6E3B",
-              backgroundColor: changeUi === "CHECKBILL" ?'#FFDBD0' : '',
+              backgroundColor: changeUi === "CHECKBILL" ? "#FFDBD0" : "",
               border: "none",
               height: 60,
               display: "flex",
@@ -111,7 +110,7 @@ export default function Dashboard() {
             eventKey="/finance"
             style={{
               color: "#FB6E3B",
-              backgroundColor: changeUi === "MONEY_CHART" ?'#FFDBD0' : '',
+              backgroundColor: changeUi === "MONEY_CHART" ? "#FFDBD0" : "",
               border: "none",
               height: 60,
               display: "flex",
@@ -129,7 +128,7 @@ export default function Dashboard() {
             eventKey="/best-category"
             style={{
               color: "#FB6E3B",
-              backgroundColor: changeUi === "CATEGORY" ?'#FFDBD0' : '',
+              backgroundColor: changeUi === "CATEGORY" ? "#FFDBD0" : "",
               border: "none",
               height: 60,
               display: "flex",
@@ -147,7 +146,7 @@ export default function Dashboard() {
             eventKey="/best-menu"
             style={{
               color: "#FB6E3B",
-              backgroundColor: changeUi === "MENUS" ?'#FFDBD0' : '',
+              backgroundColor: changeUi === "MENUS" ? "#FFDBD0" : "",
               border: "none",
               height: 60,
               display: "flex",
@@ -165,7 +164,7 @@ export default function Dashboard() {
             eventKey="/staff-history"
             style={{
               color: "#FB6E3B",
-              backgroundColor: changeUi === "STAFF" ?'#FFDBD0' : '',
+              backgroundColor: changeUi === "STAFF" ? "#FFDBD0" : "",
               border: "none",
               height: 60,
               display: "flex",
@@ -193,13 +192,16 @@ export default function Dashboard() {
             type="button"
             className="text-name"
             style={{
-              backgroundColor:changeText == 'CLICK1' ? '#fb6e3b' : '#D9D9D9',
-              color: changeText == 'CLICK1'? '#ffffff' : '#686868',
-              border: 'none',
+              backgroundColor: changeText == "CLICK1" ? "#fb6e3b" : "#D9D9D9",
+              color: changeText == "CLICK1" ? "#ffffff" : "#686868",
+              border: "none",
               width: 125,
-              height:48
+              height: 48,
             }}
-            onClick={() => { _click1day(''); setChangeText('CLICK1')}}
+            onClick={() => {
+              _click1day("");
+              setChangeText("CLICK1");
+            }}
           >
             {t("theLastList")}
           </button>
@@ -208,13 +210,16 @@ export default function Dashboard() {
             type="button"
             className="text-name"
             style={{
-              backgroundColor: changeText == 'CLICK7' ? '#fb6e3b' : '#D9D9D9',
-              color: changeText == 'CLICK7' ? '#ffffff' : '#686868',
-              border: 'none',
+              backgroundColor: changeText == "CLICK7" ? "#fb6e3b" : "#D9D9D9",
+              color: changeText == "CLICK7" ? "#ffffff" : "#686868",
+              border: "none",
               width: 125,
-              height:48
+              height: 48,
             }}
-            onClick={() => { _click7days(); setChangeText('CLICK7')}}
+            onClick={() => {
+              _click7days();
+              setChangeText("CLICK7");
+            }}
           >
             {t("last7days")}
           </button>
@@ -223,13 +228,16 @@ export default function Dashboard() {
             type="button"
             className="text-name"
             style={{
-              backgroundColor:changeText == 'CLICK30' ? '#fb6e3b' : '#D9D9D9',
-              color: changeText == 'CLICK30' ? '#ffffff' : '#686868',
-              border: 'none',
+              backgroundColor: changeText == "CLICK30" ? "#fb6e3b" : "#D9D9D9",
+              color: changeText == "CLICK30" ? "#ffffff" : "#686868",
+              border: "none",
               width: 125,
-              height:48
+              height: 48,
             }}
-            onClick={() => { _click30days(); setChangeText('CLICK30')}}
+            onClick={() => {
+              _click30days();
+              setChangeText("CLICK30");
+            }}
           >
             {t("last30days")}
           </button>
@@ -239,13 +247,15 @@ export default function Dashboard() {
             onChange={(e) => setSelectedCurrency(e.target.value)}
             className="btn btn-outline-info"
           >
-            <option value="LAK" className="option" >ກີບ</option>
+            <option value="LAK" className="option">
+              ກີບ
+            </option>
             {currency?.map((cur, index) => (
               <option key={cur + index} value={cur?.currencyCode}>
                 {cur?.currencyName}
               </option>
             ))}
-            </select>
+          </select>
         </div>
         <div
           style={{
@@ -259,9 +269,9 @@ export default function Dashboard() {
             className="px-2"
             style={{
               color: "#003049",
-              border: '2px solid #fb6e3b',
-              borderRadius: '5px',
-              fontWeight:'bold'
+              border: "2px solid #fb6e3b",
+              borderRadius: "5px",
+              fontWeight: "bold",
             }}
             value={startDate}
             onChange={(e) => {
@@ -273,9 +283,9 @@ export default function Dashboard() {
             className="px-2"
             style={{
               color: "#003049",
-              border: '2px solid #fb6e3b',
-              borderRadius: '5px',
-              fontWeight:'bold'
+              border: "2px solid #fb6e3b",
+              borderRadius: "5px",
+              fontWeight: "bold",
             }}
             value={endDate}
             onChange={(e) => {
@@ -324,12 +334,10 @@ export default function Dashboard() {
   );
 }
 
-
-
 const Option = styled.option`
   cursor: pointer;
   padding: 10px;
   &:hover {
-    background-color: #ffffff!important;
+    background-color: #ffffff !important;
   }
 `;

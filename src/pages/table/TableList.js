@@ -447,13 +447,14 @@ export default function TableList() {
         timer: 1500,
       });
     } catch (err) {
-      console.log(err);
+      console.log("err printer",err);
       await Swal.fire({
         icon: "error",
         title: "ປິນບໍ່ສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
+      return err
     }
   };
 
@@ -1450,10 +1451,12 @@ export default function TableList() {
       </div>
 
       <CheckOutType
+        onPrintBill={onPrintBill}
         dataBill={dataBill}
         tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
+        setDataBill={setDataBill}
       />
 
       <OrderCheckOut
