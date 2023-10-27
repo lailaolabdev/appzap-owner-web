@@ -447,14 +447,14 @@ export default function TableList() {
         timer: 1500,
       });
     } catch (err) {
-      console.log("err printer",err);
+      console.log("err printer", err);
       await Swal.fire({
         icon: "error",
         title: "ປິນບໍ່ສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
-      return err
+      return err;
     }
   };
 
@@ -1041,8 +1041,8 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {dataBill?.orderId[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId[0]?.updatedBy?.lastname
+                            {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
+                            dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
                                 " " +
                                 dataBill?.orderId[0]?.updatedBy?.lastname

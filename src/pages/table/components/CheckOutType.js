@@ -45,8 +45,12 @@ export default function CheckOutType({
   useEffect(() => {
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${moneyCurrency(cash + transfer)} ${selectCurrency}`;
-    moneyChange = moneyCurrency(
+    moneyReceived = `${
+      selectCurrency == "LAK"
+        ? moneyCurrency(cash + transfer)
+        : moneyCurrency(cashCurrency)
+    } ${selectCurrency}`;
+    moneyChange = `${moneyCurrency(
       cash -
         (dataBill && dataBill?.discountType === "LAK"
           ? totalBill - dataBill?.discount > 0
@@ -65,7 +69,7 @@ export default function CheckOutType({
               : totalBill - (totalBill * dataBill?.discount) / 100 > 0
               ? totalBill - (totalBill * dataBill?.discount) / 100
               : 0)
-    );
+    )} ກີບ`;
 
     setDataBill((prev) => ({
       ...prev,
@@ -97,7 +101,7 @@ export default function CheckOutType({
     }
   }, [cashCurrency, cash]);
   useEffect(() => {
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
+    for (let i = 0; i < dataBill?.orderId?.length; i++) {
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

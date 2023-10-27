@@ -11,28 +11,30 @@ import moment from "moment";
 // import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
-  data,
-  tableData,
-  show,
+  data = { orderId: [] },
+  tableData = {},
+  show = false,
   hide,
-  onPrintBill,
-  onSubmit,
+  onPrintBill = () => {},
+  onSubmit = () => {},
 }) => {
   const [total, setTotal] = useState();
 
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
-      _calculateTotal();
+    _calculateTotal();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, data?.orderId?.length]);
+  }, [data, data?.orderId]);
 
   const _calculateTotal = () => {
     setTotal();
     let _total = 0;
-    for (let i = 0; i < data?.orderId.length; i++) {
-      if (data?.orderId[i]?.status === "SERVED") {
-        _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+    if (data?.orderId) {
+      for (let i = 0; i < data?.orderId?.length; i++) {
+        if (data?.orderId[i]?.status === "SERVED") {
+          _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+        }
       }
     }
     // alert(_total);
