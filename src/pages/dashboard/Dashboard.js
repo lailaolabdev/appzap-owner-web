@@ -73,7 +73,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div style={{ padding: 10 }}>
+    <div style={{ padding: 10, overflow: "auto" }}>
       <Box
         sx={{
           fontWeight: "bold",

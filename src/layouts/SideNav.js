@@ -112,18 +112,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "dashboardmenu",
       typeStore: "",
       icon: faChartLine,
-      hidden: !storeDetail?.hasSmartMenu,
+      hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
-      children: [
-        {
-          title: "Dashboard (ໃໝ່)",
-          key: "dashboardmenu",
-          typeStore: "",
-          icon: faChartLine,
-          hidden: !storeDetail?.hasSmartMenu,
-          system: "reportManagement",
-        },
-      ],
     },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
@@ -132,14 +122,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faCogs,
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
-    },
-    {
-      title: "ປ່ຽນຕຣີມ",
-      key: "settingTheme",
-      typeStore: "",
-      icon: faIcicles,
-      // hidden: !storeDetail?.hasPOS,
-      system: "themeManagement",
     },
   ];
 

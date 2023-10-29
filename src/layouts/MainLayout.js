@@ -46,6 +46,7 @@ export default function MainLayout({ children }) {
           height: "100dvh",
           maxHeight: "100dvh",
           overflow: "auto",
+          overflowY: "scroll",
           position: "relative",
         }}
       >

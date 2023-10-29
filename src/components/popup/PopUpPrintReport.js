@@ -38,7 +38,7 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
           >
             <span>ປະຫວັດບິນ</span>
           </Button>
-          <Button style={{ height: 100, padding: 20 }} disabled>
+          <Button style={{ height: 100, padding: 20 }} onClick={() => setPopup({ printReportStaffSale: true })}>
             <span>ປະຫວັດພະນັກງານ</span>
           </Button>
           <Button style={{ height: 100, padding: 20 }} disabled>

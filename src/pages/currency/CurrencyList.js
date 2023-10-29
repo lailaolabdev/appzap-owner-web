@@ -3,12 +3,24 @@ import AnimationLoading from "../../constants/loading";
 import { BODY, COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Card, Table } from "react-bootstrap";
 import { Formik } from "formik";
-import { CREATE_CURRENCY, DELETE_CURRENCY, END_POINT_SEVER, QUERY_CURRENCIES, UPDATE_CURRENCY, getLocalData } from "../../constants/api";
+import {
+  CREATE_CURRENCY,
+  DELETE_CURRENCY,
+  END_POINT_SEVER,
+  QUERY_CURRENCIES,
+  UPDATE_CURRENCY,
+  getLocalData,
+} from "../../constants/api";
 import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { moneyCurrency } from "../../helpers";
+import { Breadcrumb, Nav, Tab, Tabs } from "react-bootstrap";
+import Box from "../../components/Box";
+import { MdAssignmentAdd } from "react-icons/md";
+import { BsCurrencyExchange } from "react-icons/bs";
+import Loading from "../../components/Loading";
 
 export default function CurrencyList() {
   const [getTokken, setgetTokken] = useState();
@@ -24,15 +36,15 @@ export default function CurrencyList() {
   const handleCloseAdd = () => setShowAdd(false);
 
   const handleShowEdit = (data) => {
-    setDataUpdate(data)
-    setShowEdit(true)
-  }
+    setDataUpdate(data);
+    setShowEdit(true);
+  };
   const handleCloseEdit = () => setShowEdit(false);
 
   const handleShowDelete = (data) => {
-    setDataDelete(data)
-    setShowDelete(true)
-  }
+    setDataDelete(data);
+    setShowDelete(true);
+  };
   const handleCloseDelete = () => setShowDelete(false);
 
   useEffect(() => {
@@ -43,7 +55,7 @@ export default function CurrencyList() {
       }
     };
     fetchData();
-    getDataCurrency()
+    getDataCurrency();
   }, []);
 
   const getDataCurrency = async () => {
@@ -70,7 +82,7 @@ export default function CurrencyList() {
       method: "POST",
       url: CREATE_CURRENCY,
       headers: getTokken?.TOKEN,
-      data: values
+      data: values,
     })
       .then(async function (response) {
         if (response?.status === 200) {
@@ -90,7 +102,7 @@ export default function CurrencyList() {
       method: "PUT",
       url: `${UPDATE_CURRENCY}/${dataUpdate?._id}`,
       headers: getTokken?.TOKEN,
-      data: values
+      data: values,
     })
       .then(async function (response) {
         if (response?.status === 200) {
@@ -124,339 +136,443 @@ export default function CurrencyList() {
   };
 
   return (
-    <div>
-      {isLoading ? <AnimationLoading /> : 
-        <div>
-          <div style={BODY}>
-            <div className="row" style={{ padding: 30 }}>
-              <div className="col-md-12" style={{ fontSize: "20px" }}>
-                ຈຳນວນເລດເງິນ
-              </div>
-            </div>
-            <div style={{ paddingBottom: 20 }}>
-              <div className="col-md-12">
-                <button
-                  type="button"
-                  className="btn btn-app col-2 "
-                  style={{
-                    float: "right",
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                  }}
-                  onClick={handleShowAdd}
-                >
-                  {" "}
-                  ເພີ່ມ{" "}
-                </button>
-              </div>
-            </div>
-
-            <div style={{ height: 40 }}></div>
-            <div>
-              <div className="col-sm-12">
-                <table className="table table-hover">
-                  <thead className="thead-light">
-                    <tr>
-                      <th>#</th>
-                      <th>ຊື່ສະກຸນເງິນ</th>
-                      <th>ຕົວຫຍໍ້ສະກຸນເງິນ</th>
-                      <th>ເລດເງິນ</th>
-                      <th>ຈັດການຂໍ້ມູນ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currencyData?.map((data, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="text-left">
-                            {index + 1}
-                          </td>
-                          <td className="text-left">{data?.currencyName}</td>
-                          <td className="text-left">{data?.currencyCode}</td>
-                          <td className="text-left">{moneyCurrency(data?.sell)}</td>
-                          <td className="text-left">
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              style={{ color: COLOR_APP }}
-                              onClick={() => handleShowEdit(data)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              style={{ marginLeft: 20, color: "red" }}
-                              onClick={() =>
-                                handleShowDelete(data)
-                              }
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-
-      {/* create */}
-      <Modal
-        show={showAdd}
-        onHide={handleCloseAdd}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ເພີ່ມເລດເງິນ</Modal.Title>
-        </Modal.Header>
-        <Formik
-          enableReinitialize
-          initialValues={{
-            currencyName: "",
-            currencyCode: "",
-            buy: "",
-            sell: "",
-            storeId: getTokken?.DATA?.storeId ?? "",
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.currencyName) {
-              errors.currencyName = "ກະລຸນາປ້ອນ!";
-            }
-            if (!values.currencyCode) {
-              errors.currencyCode = "ກະລຸນາປ້ອນ!";
-            }
-            if (!values.sell) {
-              errors.sell = "ກະລຸນາປ້ອນ!";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            _create(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            setFieldValue,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="currencyName"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.currencyName}
-                    placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                    isInvalid={!!errors.currencyName}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.currencyName}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="currencyCode"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.currencyCode}
-                    isInvalid={!!errors.currencyCode}
-                    placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.currencyCode}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ເລດເງິນ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="sell"
-                    // onChange={handleChange}
-                    onChange={e => {
-                      handleChange(e)
-                      setFieldValue('buy', parseFloat(e.target.value))
-                    }}
-                    onBlur={handleBlur}
-                    value={values.sell}
-                    isInvalid={!!errors.sell}
-                    placeholder="ປ້ອນເລດເງິນ..."
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.sell}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleCloseAdd}
-                >
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
-      
-      {/* update */}
-      <Modal
-        show={showEdit}
-        onHide={handleCloseEdit}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ແກ້ໄຂເລດເງິນ</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{
-            currencyName: dataUpdate?.currencyName,
-            currencyCode: dataUpdate?.currencyCode,
-            buy: dataUpdate?.buy,
-            sell: dataUpdate?.sell,
-            storeId: dataUpdate?.storeId,
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.currencyName) {
-              errors.currencyName = "ກະລຸນາປ້ອນ!";
-            }
-            if (!values.currencyCode) {
-              errors.currencyCode = "ກະລຸນາປ້ອນ!";
-            }
-            if (!values.sell) {
-              errors.sell = "ກະລຸນາປ້ອນ!";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            console.log("values", values)
-            _update(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            setFieldValue,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="currencyName"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.currencyName}
-                    placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                    isInvalid={!!errors.currencyName}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.currencyName}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="currencyCode"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.currencyCode}
-                    isInvalid={!!errors.currencyCode}
-                    placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.currencyCode}
-                  </Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ເລດເງິນ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="sell"
-                    // onChange={handleChange}
-                    onChange={e => {
-                      handleChange(e)
-                      setFieldValue('buy', parseFloat(e.target.value))
-                    }}
-                    onBlur={handleBlur}
-                    value={values.sell}
-                    isInvalid={!!errors.sell}
-                    placeholder="ປ້ອນເລດເງິນ..."
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    {errors.sell}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleCloseEdit}
-                >
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
-
-      {/* delete */}
-      <Modal show={showDelete} onHide={handleCloseDelete}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບສະກຸນເງິນ</div>
-            <div style={{ color: "red" }}>{`${dataDelete?.currencyName} (${dataDelete?.currencyCode})`}</div>
-            <div>ແທ້ບໍ່ ?</div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDelete}>
-            ຍົກເລີກ
-          </Button>
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _confirmeDelete()}
+    <>
+      {isLoading ? <Loading /> : ""}
+      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+        <Breadcrumb>
+          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
+          <Breadcrumb.Item active>ຈັດການເລດເງິນ</Breadcrumb.Item>
+        </Breadcrumb>
+        <Tabs defaultActiveKey="currency-list">
+          {/* <Nav
+            variant="tabs"
+            defaultActiveKey="currency-list"
+            // onSelect={() => {}}
+            style={{ marginBottom: 20 }}
           >
-            ຢືນຢັນການລົບ
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+            <Nav.Item>
+              <Nav.Link eventKey="currency-list">ສະກຸນເງິນທັງໝົດ</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="currency-history">ປະຫວັດການເລດເງິນ</Nav.Link>
+            </Nav.Item>
+          </Nav> */}
+          <Tab
+            eventKey="currency-list"
+            title="ສະກຸນເງິນທັງໝົດ"
+            style={{ paddingTop: 20 }}
+          >
+            <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                <BsCurrencyExchange /> ສະກຸນເງິນຫຼັກ
+              </Card.Header>
+              <Card.Body>
+                <table style={{ width: "100%" }}>
+                  <tr>
+                    <th>ຊື່ສະກຸນເງິນຫຼັກ</th>
+                    <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th>
+                    <th>ເລດເງິນ</th>
+                    <th>ຈັດການຂໍ້ມູນ</th>
+                  </tr>
+                  <tr>
+                    <td className="text-left">ກີບ</td>
+                    <td className="text-left">LAK</td>
+                    <td className="text-left">1</td>
+                    <td className="text-left">
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        style={{ color: COLOR_APP }}
+                      />
+                    </td>
+                  </tr>
+                </table>
+              </Card.Body>
+            </Card>
+            <Card border="primary" style={{ margin: 0 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: 10,
+                }}
+              >
+                <span>
+                  <BsCurrencyExchange /> ສະກຸນເງິນ
+                </span>
+                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
+                  <MdAssignmentAdd /> ເພີ່ມສະກຸນເງິນ
+                </Button>
+              </Card.Header>
+              <Card.Body>
+                <table style={{ width: "100%" }}>
+                  <tr>
+                    <th>#</th>
+                    <th>ຊື່ສະກຸນເງິນ</th>
+                    <th>ຕົວຫຍໍ້ສະກຸນເງິນ</th>
+                    <th>ເລດເງິນ</th>
+                    <th>ຈັດການຂໍ້ມູນ</th>
+                    {/* <th style={{ textAlign: "left" }}>ວັນທີ່</th>
+                        <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
+                        <th style={{ textAlign: "center" }}>ຍອດບິນ</th>
+                        <th style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ</th>
+                        <th style={{ textAlign: "center" }}>ຍອດກ່ອນ</th>
+                        <th style={{ textAlign: "right" }}>ຍອດລວມ</th> */}
+                  </tr>
+                  {currencyData?.map((data, index) => (
+                    <tr key={index}>
+                      <td className="text-left">{index + 1}</td>
+                      <td className="text-left">{data?.currencyName}</td>
+                      <td className="text-left">{data?.currencyCode}</td>
+                      <td className="text-left">{moneyCurrency(data?.sell)}</td>
+                      <td className="text-left">
+                        <FontAwesomeIcon
+                          icon={faEdit}
+                          style={{ color: COLOR_APP }}
+                          onClick={() => handleShowEdit(data)}
+                        />
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          style={{ marginLeft: 20, color: "red" }}
+                          onClick={() => handleShowDelete(data)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+              </Card.Body>
+            </Card>
+          </Tab>
+          <Tab
+            eventKey="currency-history"
+            title="ປະຫວັດການເລດເງິນ"
+            style={{ paddingTop: 20 }}
+          >
+            <Card
+              border="secondary"
+              bg="light"
+              style={{ margin: 0, marginBottom: 20 }}
+            >
+              {" "}
+              <Card.Header
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                <BsCurrencyExchange /> ປະຫວັດສະກຸນເງິນ
+              </Card.Header>
+              <Card.Body>
+                <table style={{ width: "100%" }}>
+                  <tr>
+                    <th>#</th>
+                    <th>ຊື່ສະກຸນເງິນຫຼັກ</th>
+                    <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th>
+                    <th>ເລດເງິນ</th>
+                    <th>ຜູ້ແກ້ໄຂ</th>
+                    <th>ເວລາແກ້ໄຂ</th>
+                  </tr>
+
+                  <tr>
+                    <td className="text-left">#</td>
+                    <td className="text-left">ກີບ</td>
+                    <td className="text-left">LAK</td>
+                    <td className="text-left">1</td>
+                    <td className="text-left">ຟໂ</td>
+                    <td className="text-left">90908348</td>
+                  </tr>
+                  <tr>
+                    <td className="text-left">#</td>
+                    <td className="text-left">ກີບ</td>
+                    <td className="text-left">LAK</td>
+                    <td className="text-left">1</td>
+                    <td className="text-left">ຟໂ</td>
+                    <td className="text-left">90908348</td>
+                  </tr>
+                </table>
+              </Card.Body>
+            </Card>
+          </Tab>
+        </Tabs>
+
+        {/* create */}
+        <Modal
+          show={showAdd}
+          onHide={handleCloseAdd}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>ເພີ່ມເລດເງິນ</Modal.Title>
+          </Modal.Header>
+          <Formik
+            enableReinitialize
+            initialValues={{
+              currencyName: "",
+              currencyCode: "",
+              buy: "",
+              sell: "",
+              storeId: getTokken?.DATA?.storeId ?? "",
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.currencyName) {
+                errors.currencyName = "ກະລຸນາປ້ອນ!";
+              }
+              if (!values.currencyCode) {
+                errors.currencyCode = "ກະລຸນາປ້ອນ!";
+              }
+              if (!values.sell) {
+                errors.sell = "ກະລຸນາປ້ອນ!";
+              }
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              _create(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              setFieldValue,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              /* and other goodies */
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Body>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="currencyName"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.currencyName}
+                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
+                      isInvalid={!!errors.currencyName}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.currencyName}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="currencyCode"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.currencyCode}
+                      isInvalid={!!errors.currencyCode}
+                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.currencyCode}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ເລດເງິນ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="sell"
+                      // onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("buy", parseFloat(e.target.value));
+                      }}
+                      onBlur={handleBlur}
+                      value={values.sell}
+                      isInvalid={!!errors.sell}
+                      placeholder="ປ້ອນເລດເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.sell}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    style={{
+                      backgroundColor: COLOR_APP_CANCEL,
+                      color: "#ffff",
+                    }}
+                    onClick={handleCloseAdd}
+                  >
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
+                    onClick={() => handleSubmit()}
+                  >
+                    ບັນທືກ
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
+
+        {/* update */}
+        <Modal
+          show={showEdit}
+          onHide={handleCloseEdit}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>ແກ້ໄຂເລດເງິນ</Modal.Title>
+          </Modal.Header>
+          <Formik
+            initialValues={{
+              currencyName: dataUpdate?.currencyName,
+              currencyCode: dataUpdate?.currencyCode,
+              buy: dataUpdate?.buy,
+              sell: dataUpdate?.sell,
+              storeId: dataUpdate?.storeId,
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.currencyName) {
+                errors.currencyName = "ກະລຸນາປ້ອນ!";
+              }
+              if (!values.currencyCode) {
+                errors.currencyCode = "ກະລຸນາປ້ອນ!";
+              }
+              if (!values.sell) {
+                errors.sell = "ກະລຸນາປ້ອນ!";
+              }
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              console.log("values", values);
+              _update(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              setFieldValue,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              /* and other goodies */
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Body>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="currencyName"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.currencyName}
+                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
+                      isInvalid={!!errors.currencyName}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.currencyName}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="currencyCode"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.currencyCode}
+                      isInvalid={!!errors.currencyCode}
+                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.currencyCode}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ເລດເງິນ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="sell"
+                      // onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("buy", parseFloat(e.target.value));
+                      }}
+                      onBlur={handleBlur}
+                      value={values.sell}
+                      isInvalid={!!errors.sell}
+                      placeholder="ປ້ອນເລດເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.sell}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    style={{
+                      backgroundColor: COLOR_APP_CANCEL,
+                      color: "#ffff",
+                    }}
+                    onClick={handleCloseEdit}
+                  >
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
+                    onClick={() => handleSubmit()}
+                  >
+                    ບັນທືກ
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
+
+        {/* delete */}
+        <Modal show={showDelete} onHide={handleCloseDelete}>
+          <Modal.Header closeButton></Modal.Header>
+          <Modal.Body>
+            <div style={{ textAlign: "center" }}>
+              <div>ທ່ານຕ້ອງການລົບສະກຸນເງິນ</div>
+              <div
+                style={{ color: "red" }}
+              >{`${dataDelete?.currencyName} (${dataDelete?.currencyCode})`}</div>
+              <div>ແທ້ບໍ່ ?</div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDelete}>
+              ຍົກເລີກ
+            </Button>
+            <Button
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={() => _confirmeDelete()}
+            >
+              ຢືນຢັນການລົບ
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Box>
+    </>
   );
 }

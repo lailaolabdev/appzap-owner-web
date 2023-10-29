@@ -16,7 +16,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
   // state
   const [selectPrinter, setSelectPrinter] = useState();
-  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DDD"));
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [bills, setBill] = useState();
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
@@ -50,8 +50,21 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       urlForPrinter = "http://localhost:9150/usb/image";
 
+      const myPrinter = JSON.parse(selectPrinter);
+
+      if (myPrinter?.type === "ETHERNET") {
+        urlForPrinter = "http://localhost:9150/ethernet/image";
+      }
+      if (myPrinter?.type === "BLUETOOTH") {
+        urlForPrinter = "http://localhost:9150/bluetooth/image";
+      }
+      if (myPrinter?.type === "USB") {
+        urlForPrinter = "http://localhost:9150/usb/image";
+      }
+
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
+      bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -252,7 +265,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
             {printers?.map((e) => (
-              <option value="80mm">{e?.name}</option>
+              <option value={JSON.stringify(e)}>{e?.name}</option>
             ))}
           </Form.Control>
           <Button
