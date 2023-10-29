@@ -10,6 +10,7 @@ import {
   DELETE_CURRENCY,
   END_POINT_SEVER,
   QUERY_CURRENCIES,
+  QUERY_CURRENCY_HISTORY,
   UPDATE_CURRENCY,
   getLocalData,
 } from "../../constants/api";
@@ -21,11 +22,13 @@ import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
 import { BsCurrencyExchange } from "react-icons/bs";
 import Loading from "../../components/Loading";
+import moment from "moment";
 
 export default function CurrencyList() {
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [currencyData, setCurrencyData] = useState([]);
+  const [currencyHistoryData, setCurrencyHistoryData] = useState([]);
   const [dataUpdate, setDataUpdate] = useState({});
   const [dataDelete, setDataDelete] = useState({});
   const [showAdd, setShowAdd] = useState(false);
@@ -54,6 +57,7 @@ export default function CurrencyList() {
         setgetTokken(_localData);
       }
     };
+    getDataCurrencyHistory();
     fetchData();
     getDataCurrency();
   }, []);
@@ -76,6 +80,25 @@ export default function CurrencyList() {
       console.log("err:", err);
     }
   };
+  const getDataCurrencyHistory = async () => {
+    try {
+      // alert("jojo");
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        setIsLoading(true);
+        const data = await Axios.get(
+          `${QUERY_CURRENCY_HISTORY}?storeId=${DATA?.storeId}&p=createdBy`
+        );
+        if (data?.status == 200) {
+          setCurrencyHistoryData(data?.data);
+        }
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
 
   const _create = async (values) => {
     await Axios({
@@ -89,6 +112,7 @@ export default function CurrencyList() {
           successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
           handleCloseAdd();
           getDataCurrency();
+          getDataCurrencyHistory();
         }
       })
       .catch(function (error) {
@@ -109,6 +133,7 @@ export default function CurrencyList() {
           successAdd("ແກ້ໄຂຂໍ້ມູນສຳເລັດ");
           handleCloseEdit();
           getDataCurrency();
+          getDataCurrencyHistory();
         }
       })
       .catch(function (error) {
@@ -283,23 +308,18 @@ export default function CurrencyList() {
                     <th>ຜູ້ແກ້ໄຂ</th>
                     <th>ເວລາແກ້ໄຂ</th>
                   </tr>
-
-                  <tr>
-                    <td className="text-left">#</td>
-                    <td className="text-left">ກີບ</td>
-                    <td className="text-left">LAK</td>
-                    <td className="text-left">1</td>
-                    <td className="text-left">ຟໂ</td>
-                    <td className="text-left">90908348</td>
-                  </tr>
-                  <tr>
-                    <td className="text-left">#</td>
-                    <td className="text-left">ກີບ</td>
-                    <td className="text-left">LAK</td>
-                    <td className="text-left">1</td>
-                    <td className="text-left">ຟໂ</td>
-                    <td className="text-left">90908348</td>
-                  </tr>
+                  {currencyHistoryData?.map((e, i) => (
+                    <tr>
+                      <td className="text-left">{i + 1}</td>
+                      <td className="text-left">{e?.currencyName}</td>
+                      <td className="text-left">{e?.currencyCode}</td>
+                      <td className="text-left">{e?.buy}</td>
+                      <td className="text-left">{e?.createdBy?.userId}</td>
+                      <td className="text-left">
+                        {moment(e?.createdAt).format("DD/MM/YYYY LT")}
+                      </td>
+                    </tr>
+                  ))}
                 </table>
               </Card.Body>
             </Card>
