@@ -12,7 +12,7 @@ export default function PrinterCounter() {
   let navigate = useNavigate();
   // state
   const [printers, setPrinters] = useState();
-  const [selectPrinterCounter, setSelectPrinterCounter] = useState();
+  const [selectPrinterCounter, setSelectPrinterCounter] = useState("");
   const [printsData, setPrintsData] = useState();
 
   const { storeDetail, getPrinterCounterState } = useStore();
@@ -29,7 +29,25 @@ export default function PrinterCounter() {
       let findby = "?";
       findby += `storeId=${storeDetail?._id}`;
       const data = await Axios.get(`${END_POINT_SEVER}/v3/settings${findby}`);
-      setSelectPrinterCounter(data?.data?.[0]);
+      let _setting = {};
+      if (data?.data) {
+        _setting = { ...data?.data?.[0] };
+      }
+
+      console.log("_setting", _setting);
+      if (!_setting?.printer) {
+        _setting = { ..._setting, printer: "6540c7782fe98cf0bff87433" };
+      }
+      if (!_setting?.prints) {
+        _setting = {
+          ..._setting,
+          prints: JSON.stringify({
+            BILL: "653897d424752d002a311260",
+            BILL_HISTORY: "653897d424752d002a311260",
+          }),
+        };
+      }
+      setSelectPrinterCounter(_setting);
     } catch (err) {
       console.log(err);
     }
@@ -98,8 +116,17 @@ export default function PrinterCounter() {
   }, []);
   return (
     <div>
-      <div style={{textDecoration: "underline", textAlign: "center", color: "blue"}} onClick={() => navigate(-1)}>ກັບຄືນ</div>
-      <Form.Group style={{padding: "0 5px"}}>
+      <div
+        style={{
+          textDecoration: "underline",
+          textAlign: "center",
+          color: "blue",
+        }}
+        onClick={() => navigate(-1)}
+      >
+        ກັບຄືນ
+      </div>
+      <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
           ພິມບິນໜ້າໂຕະ <span style={{ color: "red" }}>*</span>
         </Form.Label>
@@ -118,7 +145,7 @@ export default function PrinterCounter() {
         </Form.Control>
       </Form.Group>
       <br />
-      <Form.Group style={{padding: "0 5px"}}>
+      <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
           ພິມບິນໜ້າປະຫວັດ <span style={{ color: "red" }}>*</span>
         </Form.Label>

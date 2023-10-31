@@ -75,7 +75,7 @@ export default function DashboardFinance({
     }
   };
 
-  const exportJsonToExcel = () => {
+  const exportJsonToExceltyty = () => {
     let _export = data?.checkOut.map((item, index) => ({
       ລຳດັບ: index + 1,
       ເລກບິນ: item?.code,
@@ -117,8 +117,8 @@ export default function DashboardFinance({
       END_POINT_SEVER +
         "/v3/bills?storeId=" +
         params?.storeId +
-        "&currencyType=" +
-        selectedCurrency +
+        // "&currencyType=" +
+        // selectedCurrency +
         "&startDate=" +
         startDate +
         "&endDate=" +
