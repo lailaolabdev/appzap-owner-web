@@ -26,6 +26,7 @@ import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
+import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 
 /**
  * const
@@ -82,6 +83,7 @@ export default function TableList() {
   const [quantity, setQuantity] = useState(false);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [total, setTotal] = useState(0);
+  const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -113,6 +115,7 @@ export default function TableList() {
     setNewOrderUpdateStatusTransaction,
     getTableDataStoreList,
     setPrintNowList,
+    openTableAndReturnTokenOfBill,
   } = useStore();
 
   const reLoadData = () => {
@@ -383,6 +386,8 @@ export default function TableList() {
   const [widthBill80, setWidthBill80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
 
+  let qrSmartOrder80Ref = useRef(null);
+
   let bill80Ref = useRef(null);
   let bill58Ref = useRef(null);
   useLayoutEffect(() => {
@@ -455,6 +460,100 @@ export default function TableList() {
         timer: 1500,
       });
       return err;
+    }
+  };
+  async function delay(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+  useEffect(() => {
+    if (tokenForSmartOrder) {
+      onPrintQR(tokenForSmartOrder);
+    }
+  }, [tokenForSmartOrder]);
+  const onPrintQR = async (tokenQR) => {
+    try {
+      if (!tokenQR) {
+        return;
+      }
+      // alert(tokenQR);
+      // setTokenForSmartOrder(tokenQR, (ee) => {
+      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
+      // });
+      // if (!tokenForSmartOrder) {
+      //   setTokenForSmartOrder(tokenQR);
+      //   await delay(1000);
+      //   return;
+      // }
+      // if (!tokenForSmartOrder) {
+      //   return;
+      // }
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      let dataImageForPrint;
+      if (printerBillData?.width === "80mm") {
+        dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (printerBillData?.width === "58mm") {
+        dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 350 / widthBill58,
+        });
+      }
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = "http://localhost:9150/ethernet/image";
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = "http://localhost:9150/bluetooth/image";
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = "http://localhost:9150/usb/image";
+      }
+
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+
+      await axios({
+        method: "post",
+        url: urlForPrinter,
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setTokenForSmartOrder(null);
+      await Swal.fire({
+        icon: "success",
+        title: "ປິນສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      alert("token", tokenForSmartOrder);
+      setTokenForSmartOrder(null);
+    } catch (err) {
+      setTokenForSmartOrder(null);
+      console.log(err);
+      await Swal.fire({
+        icon: "error",
+        title: "ປິນບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -1374,6 +1473,27 @@ export default function TableList() {
                 >
                   {!selectedTable?.isOpened ? `${t("open")}` : "ຢືນຢັນເປີດໂຕະ"}
                 </Button>
+                <br />
+                <Button
+                  variant="light"
+                  className="hover-me"
+                  style={{
+                    backgroundColor: "#FB6E3B",
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    fontSize: 20,
+                    padding: 20,
+                    display: !selectedTable?.isOpened ? "block" : "none",
+                  }}
+                  onClick={() => {
+                    openTableAndReturnTokenOfBill().then((e) => {
+                      setTokenForSmartOrder(e);
+                      // onPrintQR(e);
+                    });
+                  }}
+                >
+                  ເປີດໂຕະພ້ອມ ປິນ QR
+                </Button>
               </div>
             )}
 
@@ -1404,6 +1524,13 @@ export default function TableList() {
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+        />
+      </div>
+      <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
+        <BillQRSmartOrdering80
+          storeId={storeDetail?._id}
+          TokenOfBill={tokenForSmartOrder}
+          tableName={selectedTable?.tableName}
         />
       </div>
       <div style={{ width: "58mm", padding: 10 }} ref={bill58Ref}>
