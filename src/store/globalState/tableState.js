@@ -200,7 +200,6 @@ export const useTableState = (storeDetail) => {
           timer: 1800,
         });
         if (resData.status < 300) {
-          alert("not err", data?.data?.token);
           return data?.data?.token;
         } else {
           throw new Error("can not qr token");

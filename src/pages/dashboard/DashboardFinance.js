@@ -35,11 +35,14 @@ export default function DashboardFinance({
   const [show, setShow] = useState(false);
   const [dataModale, setDataModale] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [disabledEditBill, setDisabledEditBill] = useState(false);
   const handleClose = () => setShow(false);
   const { storeDetail } = useStore();
 
   const handleEditBill = async () => {
     try {
+      setDisabledEditBill(true);
+      if (disabledEditBill) return;
       const url = END_POINT_SEVER + "/v3/bill-reset";
       const _body = {
         id: selectOrder?._id,
@@ -171,7 +174,6 @@ export default function DashboardFinance({
           if (data?.checkOut[i]?.discountType !== "LAK")
             _notCheckBill.discountPercent += data?.checkOut[i]?.discount;
           _notCheckBill.amount += _countAmount(data?.checkOut[i]?.orderId);
-         
         }
         if (["CHECKOUT"].includes(data?.checkOut[i]?.status)) {
           _checkBill.total += 1;
@@ -353,8 +355,8 @@ export default function DashboardFinance({
                     disCountDataKib
                   )}{" "}
                   {selectedCurrency}
-                  <span className="mx-1"></span>
-                (  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                  <span className="mx-1"></span>({" "}
+                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     disCountDataPercent
                   )}{" "}
                   %)
@@ -390,11 +392,11 @@ export default function DashboardFinance({
                   {t("totalCompeleteBill")}
                 </p>
               </div>
-              <div style={{ padding: 15, }}>
-                <div style={{color:'#454545' }}>
+              <div style={{ padding: 15 }}>
+                <div style={{ color: "#454545" }}>
                   {t("numberOfBill")} : {dataCheckBill?.total} {t("bill")}
                 </div>
-                <div style={{color:'#454545'}}>
+                <div style={{ color: "#454545" }}>
                   {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.amount
@@ -421,8 +423,8 @@ export default function DashboardFinance({
                     dataCheckBill?.discountCash
                   )}{" "}
                   {selectedCurrency}
-                  <span className="mx-1"></span>
-                 ( {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                  <span className="mx-1"></span>({" "}
+                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataCheckBill?.discountPercent
                   )}{" "}
                   %)
@@ -452,10 +454,10 @@ export default function DashboardFinance({
                 </p>
               </div>
               <div style={{ padding: 15 }}>
-                <div style={{color:'#454545'}}>
+                <div style={{ color: "#454545" }}>
                   {t("numberOfBill")} : {dataNotCheckBill?.total} {t("bill")}
                 </div>
-                <div style={{color:'#454545'}}>
+                <div style={{ color: "#454545" }}>
                   {t("totalBalance")} :{" "}
                   {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.amount
@@ -468,9 +470,8 @@ export default function DashboardFinance({
                     dataNotCheckBill?.discountCash
                   )}{" "}
                   {selectedCurrency}
-                  <span className="mx-1"></span>
-
-                  ( {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                  <span className="mx-1"></span>({" "}
+                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                     dataNotCheckBill?.discountPercent
                   )}{" "}
                   % )
@@ -669,7 +670,7 @@ export default function DashboardFinance({
               marginBottom: 10,
             }}
           >
-            <Button onClick={handleEditBill}>
+            <Button disabled={disabledEditBill} onClick={handleEditBill}>
               {selectOrder?.status === "ACTIVE"
                 ? t("editingTheBill")
                 : t("billEditing")}

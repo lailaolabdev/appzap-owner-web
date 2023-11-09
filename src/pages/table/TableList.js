@@ -543,7 +543,6 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1500,
       });
-      alert("token", tokenForSmartOrder);
       setTokenForSmartOrder(null);
     } catch (err) {
       setTokenForSmartOrder(null);
