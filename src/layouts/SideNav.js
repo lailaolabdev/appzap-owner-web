@@ -19,6 +19,7 @@ import {
   faChartLine,
   faUser,
   faBook,
+  faMusic,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -167,6 +168,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "settingStore") {
           selected = selected + `/${storeDetail?._id}`;
         }
+        if (selected === "songlist") {
+          window
+            .open(
+              "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
+                `${storeDetail?._id}`,
+              "_blank"
+            )
+            .focus();
+          return;
+        }
         const to = "/" + selected;
 
         if (location.pathname !== to) {
@@ -226,6 +237,28 @@ export default function Sidenav({ location, navigate, onToggle }) {
               })}
             </NavItem>
           ))}
+        {role(profile?.data?.role, profile?.data)?.["tableManagement"] ? (
+          <NavItem eventKey="songlist">
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={faMusic}
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ລູກຄ້າຂໍເພງ
+            </NavText>
+          </NavItem>
+        ) : (
+          ""
+        )}
       </SideNav.Nav>
     </SideNav>
   );
