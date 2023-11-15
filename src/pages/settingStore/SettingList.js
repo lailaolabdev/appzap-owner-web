@@ -11,7 +11,8 @@ import {
   faFolderOpen,
   faVolumeUp,
   faStore,
-  faDollarSign
+  faDollarSign,
+  faImages
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -91,6 +92,12 @@ export default function SettingList() {
       icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faDollarSign} />,
       path: `/settingStore/currency/${params?.id}`,
     },
+    // {
+    //   id: "f962968d-1bed-48da-9049-92551dcd7101",
+    //   title: "Banner",
+    //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faImages} />,
+    //   path: `/settingStore/banner`,
+    // },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",

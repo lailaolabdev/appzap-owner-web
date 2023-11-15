@@ -58,6 +58,7 @@ import DetailExpend from "../pages/expend/component/DetailExpend";
 import ConfigRoutes from "./Config.routes";
 import SelfOrderingOrderRoutes from "./SelfOrderingOrder.routes";
 import CurrencyList from "../pages/currency/CurrencyList";
+import BannerList from "../pages/banner/BannerList";
 
 function Router() {
   return useRoutes([
@@ -100,6 +101,10 @@ function Router() {
         {
           path: "/settingStore/storeDetail/:id",
           element: <StoreDetail />,
+        },
+        {
+          path: "/settingStore/banner",
+          element: <BannerList />,
         },
         {
           path: "/tables",

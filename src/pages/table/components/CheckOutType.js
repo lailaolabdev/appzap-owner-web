@@ -570,12 +570,19 @@ export default function CheckOutType({
           <div style={{ padding: 20 }}>
             <KeyboardComponents
               onClickEvent={(e) => {
-                setCash((prev) => (prev ? prev + e : e));
+                setCash((prev) => {
+                  let _number = prev ? `${prev}` + e : e;
+                  return parseInt(_number);
+                });
+                console.log(parseInt(cash ? cash + e : e));
               }}
               onDelete={() =>
-                setCash((prev) =>
-                  prev?.length > 0 ? prev.substring(0, prev.length - 1) : ""
-                )
+                setCash((prev) => {
+                  let _prev = prev + "";
+                  let _number =
+                    _prev?.length > 0 ? _prev.substring(0, _prev.length - 1) : "";
+                  return parseInt(_number);
+                })
               }
             />
           </div>
