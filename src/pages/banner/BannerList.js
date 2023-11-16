@@ -20,22 +20,22 @@ import { moneyCurrency } from "../../helpers";
 import { Breadcrumb, Nav, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
-import { BsImages } from "react-icons/bs";
+import { BsCheckLg, BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import moment from "moment";
 import ImageSlider from "../../components/ImageSlider";
 import { getBanners } from "../../services/banner";
 import Upload from "../../components/Upload";
 
-const images = [
-  "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-  "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-  "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-  "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-  // 'url-to-second-image.jpg',
-  // 'url-to-third-image.jpg',
-  // Add more image URLs here
-];
+// const images = [
+//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
+//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
+//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
+//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
+//   // 'url-to-second-image.jpg',
+//   // 'url-to-third-image.jpg',
+//   // Add more image URLs here
+// ];
 
 export default function BannerList() {
   const [getTokken, setgetTokken] = useState();
@@ -47,6 +47,7 @@ export default function BannerList() {
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [images, setImages] = useState([]);
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
@@ -82,6 +83,13 @@ export default function BannerList() {
         const data = await getBanners("?storeId=" + DATA?.storeId);
 
         setBannerData(data);
+        const _images = data.map(
+          (e) =>
+            "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/" +
+            e?.image
+        );
+        setImages(_images);
+        console.log(_images)
 
         setIsLoading(false);
       }
@@ -136,7 +144,7 @@ export default function BannerList() {
   const _confirmeDelete = async () => {
     await Axios({
       method: "DELETE",
-      url: `${END_POINT_SEVER}/v4/banner/update${dataDelete?._id}`,
+      url: `${END_POINT_SEVER}/v4/banner/delete/${dataDelete?._id}`,
       headers: getTokken?.TOKEN,
     })
       .then(async function (response) {
