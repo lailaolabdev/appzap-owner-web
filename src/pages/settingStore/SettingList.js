@@ -12,7 +12,7 @@ import {
   faVolumeUp,
   faStore,
   faDollarSign,
-  faImages
+  faImages,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -28,76 +28,84 @@ export default function SettingList() {
     {
       id: "479af7e5-1947-426d-b511-d95f0155f70f",
       title: t("restuarentSetting"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faCogs} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faCogs} />,
       path: `/settingStore/storeDetail/${params?.id}`,
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
       title: t("employeeManage"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUsers} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/settingStore/users/limit/40/page/1/${params?.id}`,
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
       title: t("Promotion"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faFolderOpen} />,
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faFolderOpen} />
+      ),
       // path: `/settingStore/users/limit/40/page/1/${params?.id}`,
       path: `/settingStore/settingPromotion/${params?.id}`,
     },
     {
       id: "ab2dd4fe-617d-48f7-afa6-645fa3b8e04e",
       title: t("menuManage"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUtensils} />
+      ),
       path: `/settingStore/menu/limit/40/page/1/${params?.id}`,
     },
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",
       title: t("tableSetting"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faTable} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTable} />,
       path: `/settingStore/settingTable/${params?.id}`,
     },
     {
       id: "1cb62d9b-01bd-419b-a60e-9b5b43133d7a",
       title: t("activityHistory"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faHistory} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faHistory} />,
       path: `/historyUse/${params?.id}`,
     },
     {
       id: "42e27d60-6f12-446a-aa8f-ae6307b8ab34",
       title: t("stockManage"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faBoxes} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",
       title: t("printerSetting"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faPrint} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faPrint} />,
       path: `/printer`,
     },
     {
       id: "a2233469-a0b3-4247-9247-6282e2bafc1b",
       title: t("soundManage"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faVolumeUp} />,
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
+      ),
       path: `/audio`,
     },
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
       title: "POS Config",
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faStore} />,
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faStore} />,
       path: `/config`,
     },
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
       title: t("currencyManage"),
-      icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faDollarSign} />,
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
+      ),
       path: `/settingStore/currency/${params?.id}`,
     },
-    // {
-    //   id: "f962968d-1bed-48da-9049-92551dcd7101",
-    //   title: "Banner",
-    //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faImages} />,
-    //   path: `/settingStore/banner`,
-    // },
+    {
+      id: "f962968d-1bed-48da-9049-92551dcd7101",
+      title: "Banner",
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
+      path: `/settingStore/banner`,
+    },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",

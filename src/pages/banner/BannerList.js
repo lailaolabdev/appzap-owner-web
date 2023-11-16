@@ -24,6 +24,8 @@ import { BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import moment from "moment";
 import ImageSlider from "../../components/ImageSlider";
+import { getBanners } from "../../services/banner";
+import Upload from "../../components/Upload";
 
 const images = [
   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
@@ -38,7 +40,7 @@ const images = [
 export default function BannerList() {
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [currencyData, setCurrencyData] = useState([]);
+  const [bannerData, setBannerData] = useState([]);
   const [currencyHistoryData, setCurrencyHistoryData] = useState([]);
   const [dataUpdate, setDataUpdate] = useState({});
   const [dataDelete, setDataDelete] = useState({});
@@ -68,41 +70,19 @@ export default function BannerList() {
         setgetTokken(_localData);
       }
     };
-    getDataCurrencyHistory();
     fetchData();
-    getDataCurrency();
+    getDataBanner();
   }, []);
 
-  const getDataCurrency = async () => {
+  const getDataBanner = async () => {
     try {
       const { DATA } = await getLocalData();
       if (DATA) {
         setIsLoading(true);
-        const data = await Axios.get(
-          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
-        );
-        if (data?.status == 200) {
-          setCurrencyData(data?.data?.data);
-        }
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setIsLoading(false);
-      console.log("err:", err);
-    }
-  };
-  const getDataCurrencyHistory = async () => {
-    try {
-      // alert("jojo");
-      const { DATA } = await getLocalData();
-      if (DATA) {
-        setIsLoading(true);
-        const data = await Axios.get(
-          `${QUERY_CURRENCY_HISTORY}?storeId=${DATA?.storeId}&p=createdBy`
-        );
-        if (data?.status == 200) {
-          setCurrencyHistoryData(data?.data);
-        }
+        const data = await getBanners("?storeId=" + DATA?.storeId);
+
+        setBannerData(data);
+
         setIsLoading(false);
       }
     } catch (err) {
@@ -112,9 +92,11 @@ export default function BannerList() {
   };
 
   const _create = async (values) => {
+    alert("sdfdf");
+    console.log("values", values);
     await Axios({
       method: "POST",
-      url: CREATE_CURRENCY,
+      url: END_POINT_SEVER + "/v4/banner/create",
       headers: getTokken?.TOKEN,
       data: values,
     })
@@ -122,8 +104,7 @@ export default function BannerList() {
         if (response?.status === 200) {
           successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
           handleCloseAdd();
-          getDataCurrency();
-          getDataCurrencyHistory();
+          getDataBanner();
         }
       })
       .catch(function (error) {
@@ -143,8 +124,7 @@ export default function BannerList() {
         if (response?.status === 200) {
           successAdd("ແກ້ໄຂຂໍ້ມູນສຳເລັດ");
           handleCloseEdit();
-          getDataCurrency();
-          getDataCurrencyHistory();
+          getDataBanner();
         }
       })
       .catch(function (error) {
@@ -156,14 +136,14 @@ export default function BannerList() {
   const _confirmeDelete = async () => {
     await Axios({
       method: "DELETE",
-      url: `${DELETE_CURRENCY}/${dataDelete?._id}`,
+      url: `${END_POINT_SEVER}/v4/banner/update${dataDelete?._id}`,
       headers: getTokken?.TOKEN,
     })
       .then(async function (response) {
         if (response?.status === 200) {
           successAdd("ລົບຂໍ້ມູນສຳເລັດ");
           handleCloseDelete();
-          getDataCurrency();
+          getDataBanner();
         }
       })
       .catch(function (error) {
@@ -304,9 +284,8 @@ export default function BannerList() {
                     <th>ຊື່ແບນນີ້</th>
                     <th>ສະຖານະ</th>
                     <th>ຈັດການຂໍ້ມູນ</th>
-            
                   </tr>
-                  {currencyData?.map((data, index) => (
+                  {bannerData?.map((data, index) => (
                     <tr key={index}>
                       <td className="text-left">{index + 1}</td>
                       <td className="text-left">
@@ -316,16 +295,29 @@ export default function BannerList() {
                             height: 100,
                             border: "1px solid #ccc",
                           }}
-                        ></div>
+                        >
+                          <img
+                            src={
+                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/" +
+                              data?.image
+                            }
+                            alt=""
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
                       </td>
-                      <td className="text-left">ທົດສອບ</td>
+                      <td className="text-left">{data?.name}</td>
                       <td className="text-left">ເປີດ</td>
                       <td className="text-left">
-                        <FontAwesomeIcon
+                        {/* <FontAwesomeIcon
                           icon={faEdit}
                           style={{ color: COLOR_APP }}
                           onClick={() => handleShowEdit(data)}
-                        />
+                        /> */}
                         <FontAwesomeIcon
                           icon={faTrashAlt}
                           style={{ marginLeft: 20, color: "red" }}
@@ -394,28 +386,21 @@ export default function BannerList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>ເພີ່ມເລດເງິນ</Modal.Title>
+            <Modal.Title>ເພີ່ມແບນເນີ</Modal.Title>
           </Modal.Header>
           <Formik
             enableReinitialize
             initialValues={{
-              currencyName: "",
-              currencyCode: "",
-              buy: "",
-              sell: "",
+              name: "",
+              image: "",
               storeId: getTokken?.DATA?.storeId ?? "",
             }}
             validate={(values) => {
               const errors = {};
-              if (!values.currencyName) {
-                errors.currencyName = "ກະລຸນາປ້ອນ!";
+              if (!values.name) {
+                errors.name = "ກະລຸນາປ້ອນ!";
               }
-              if (!values.currencyCode) {
-                errors.currencyCode = "ກະລຸນາປ້ອນ!";
-              }
-              if (!values.sell) {
-                errors.sell = "ກະລຸນາປ້ອນ!";
-              }
+
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -435,53 +420,26 @@ export default function BannerList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
+                  <Upload
+                    src={values.src}
+                    onChange={(e) => {
+                      setFieldValue("image", e?.name);
+                      setFieldValue("src", e?.url);
+                    }}
+                  />
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
+                    <Form.Label>ຊື່ແບນເນີ</Form.Label>
                     <Form.Control
                       type="text"
-                      name="currencyName"
+                      name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.currencyName}
+                      value={values.name}
                       placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                      isInvalid={!!errors.currencyName}
+                      isInvalid={!!errors.name}
                     />
                     <Form.Control.Feedback type="invalid">
-                      {errors.currencyName}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="currencyCode"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyCode}
-                      isInvalid={!!errors.currencyCode}
-                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyCode}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເລດເງິນ</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="sell"
-                      // onChange={handleChange}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue("buy", parseFloat(e.target.value));
-                      }}
-                      onBlur={handleBlur}
-                      value={values.sell}
-                      isInvalid={!!errors.sell}
-                      placeholder="ປ້ອນເລດເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.sell}
+                      {errors.name}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Modal.Body>
@@ -633,10 +591,8 @@ export default function BannerList() {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <div style={{ textAlign: "center" }}>
-              <div>ທ່ານຕ້ອງການລົບສະກຸນເງິນ</div>
-              <div
-                style={{ color: "red" }}
-              >{`${dataDelete?.currencyName} (${dataDelete?.currencyCode})`}</div>
+              <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ</div>
+              <div style={{ color: "red" }}>{`${dataDelete?.name}`}</div>
               <div>ແທ້ບໍ່ ?</div>
             </div>
           </Modal.Body>
