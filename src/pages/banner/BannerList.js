@@ -1,62 +1,36 @@
 import React, { useEffect, useState } from "react";
-import AnimationLoading from "../../constants/loading";
-import { BODY, COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
+import { COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Form, Modal, Card, Table } from "react-bootstrap";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { Button, Form, Modal, Card } from "react-bootstrap";
 import { Formik } from "formik";
 import {
-  CREATE_CURRENCY,
-  DELETE_CURRENCY,
   END_POINT_SEVER,
-  QUERY_CURRENCIES,
-  QUERY_CURRENCY_HISTORY,
-  UPDATE_CURRENCY,
   getLocalData,
 } from "../../constants/api";
 import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
-import { moneyCurrency } from "../../helpers";
-import { Breadcrumb, Nav, Tab, Tabs } from "react-bootstrap";
+import { Breadcrumb,  Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
-import { BsCheckLg, BsImages } from "react-icons/bs";
+import { BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
-import moment from "moment";
 import ImageSlider from "../../components/ImageSlider";
 import { getBanners } from "../../services/banner";
 import Upload from "../../components/Upload";
-
-// const images = [
-//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-//   "https://www.industrialempathy.com/img/remote/ZiClJf-1920w.jpg",
-//   // 'url-to-second-image.jpg',
-//   // 'url-to-third-image.jpg',
-//   // Add more image URLs here
-// ];
 
 export default function BannerList() {
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [bannerData, setBannerData] = useState([]);
-  const [currencyHistoryData, setCurrencyHistoryData] = useState([]);
-  const [dataUpdate, setDataUpdate] = useState({});
   const [dataDelete, setDataDelete] = useState({});
   const [showAdd, setShowAdd] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [images, setImages] = useState([]);
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
 
-  const handleShowEdit = (data) => {
-    setDataUpdate(data);
-    setShowEdit(true);
-  };
-  const handleCloseEdit = () => setShowEdit(false);
 
   const handleShowDelete = (data) => {
     setDataDelete(data);
@@ -121,26 +95,6 @@ export default function BannerList() {
       });
   };
 
-  const _update = async (values) => {
-    await Axios({
-      method: "PUT",
-      url: `${UPDATE_CURRENCY}/${dataUpdate?._id}`,
-      headers: getTokken?.TOKEN,
-      data: values,
-    })
-      .then(async function (response) {
-        if (response?.status === 200) {
-          successAdd("ແກ້ໄຂຂໍ້ມູນສຳເລັດ");
-          handleCloseEdit();
-          getDataBanner();
-        }
-      })
-      .catch(function (error) {
-        console.log("error", error);
-        errorAdd("ແກ້ຂໍ້ມູນບໍ່ສຳເລັດ ກະລຸນາກວດຄືນຂໍ້ມູນ ແລ້ວລອງໃໝ່ອີກຄັ້ງ!");
-      });
-  };
-
   const _confirmeDelete = async () => {
     await Axios({
       method: "DELETE",
@@ -168,19 +122,6 @@ export default function BannerList() {
           <Breadcrumb.Item active>ຈັດການແບນເນີ</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
-          {/* <Nav
-            variant="tabs"
-            defaultActiveKey="currency-list"
-            // onSelect={() => {}}
-            style={{ marginBottom: 20 }}
-          >
-            <Nav.Item>
-              <Nav.Link eventKey="currency-list">ສະກຸນເງິນທັງໝົດ</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="currency-history">ປະຫວັດການເລດເງິນ</Nav.Link>
-            </Nav.Item>
-          </Nav> */}
           <Tab
             eventKey="currency-list"
             title="ລາຍການແບນເນີ"
@@ -344,45 +285,7 @@ export default function BannerList() {
             title="ປະຫວັດການແບນເນີ"
             style={{ paddingTop: 20 }}
           >
-            <Card
-              border="secondary"
-              bg="light"
-              style={{ margin: 0, marginBottom: 20 }}
-            >
-              {" "}
-              <Card.Header
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                <BsImages /> ປະຫວັດການແບນເນີ
-              </Card.Header>
-              <Card.Body>
-                <table style={{ width: "100%" }}>
-                  <tr>
-                    <th>#</th>
-                    <th>ຊື່ສະກຸນເງິນຫຼັກ</th>
-                    <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th>
-                    <th>ເລດເງິນ</th>
-                    <th>ຜູ້ແກ້ໄຂ</th>
-                    <th>ເວລາແກ້ໄຂ</th>
-                  </tr>
-                  {currencyHistoryData?.map((e, i) => (
-                    <tr>
-                      <td className="text-left">{i + 1}</td>
-                      <td className="text-left">{e?.currencyName}</td>
-                      <td className="text-left">{e?.currencyCode}</td>
-                      <td className="text-left">{e?.buy}</td>
-                      <td className="text-left">{e?.createdBy?.userId}</td>
-                      <td className="text-left">
-                        {moment(e?.createdAt).format("DD/MM/YYYY LT")}
-                      </td>
-                    </tr>
-                  ))}
-                </table>
-              </Card.Body>
-            </Card>
+            
           </Tab>
         </Tabs>
 
@@ -458,127 +361,6 @@ export default function BannerList() {
                       color: "#ffff",
                     }}
                     onClick={handleCloseAdd}
-                  >
-                    ຍົກເລີກ
-                  </Button>
-                  <Button
-                    style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                    onClick={() => handleSubmit()}
-                  >
-                    ບັນທືກ
-                  </Button>
-                </Modal.Footer>
-              </form>
-            )}
-          </Formik>
-        </Modal>
-
-        {/* update */}
-        <Modal
-          show={showEdit}
-          onHide={handleCloseEdit}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>ແກ້ໄຂເລດເງິນ</Modal.Title>
-          </Modal.Header>
-          <Formik
-            initialValues={{
-              currencyName: dataUpdate?.currencyName,
-              currencyCode: dataUpdate?.currencyCode,
-              buy: dataUpdate?.buy,
-              sell: dataUpdate?.sell,
-              storeId: dataUpdate?.storeId,
-            }}
-            validate={(values) => {
-              const errors = {};
-              if (!values.currencyName) {
-                errors.currencyName = "ກະລຸນາປ້ອນ!";
-              }
-              if (!values.currencyCode) {
-                errors.currencyCode = "ກະລຸນາປ້ອນ!";
-              }
-              if (!values.sell) {
-                errors.sell = "ກະລຸນາປ້ອນ!";
-              }
-              return errors;
-            }}
-            onSubmit={(values, { setSubmitting }) => {
-              console.log("values", values);
-              _update(values);
-            }}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              setFieldValue,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              isSubmitting,
-              /* and other goodies */
-            }) => (
-              <form onSubmit={handleSubmit}>
-                <Modal.Body>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="currencyName"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyName}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                      isInvalid={!!errors.currencyName}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyName}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="currencyCode"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyCode}
-                      isInvalid={!!errors.currencyCode}
-                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyCode}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເລດເງິນ</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="sell"
-                      // onChange={handleChange}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue("buy", parseFloat(e.target.value));
-                      }}
-                      onBlur={handleBlur}
-                      value={values.sell}
-                      isInvalid={!!errors.sell}
-                      placeholder="ປ້ອນເລດເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.sell}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button
-                    style={{
-                      backgroundColor: COLOR_APP_CANCEL,
-                      color: "#ffff",
-                    }}
-                    onClick={handleCloseEdit}
                   >
                     ຍົກເລີກ
                   </Button>
