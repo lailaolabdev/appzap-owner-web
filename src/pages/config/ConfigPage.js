@@ -21,7 +21,7 @@ export default function ConfigPage() {
   const [setting, setSetting] = useState();
   const [switchState, setSwitchState] = useState({});
   const [tax, setTax] = useState(0);
-  const [popup,setPopup]=useState()
+  const [popup, setPopup] = useState();
 
   // provider
   const { audioSetting, setAudioSetting, storeDetail } = useStore();
@@ -29,15 +29,19 @@ export default function ConfigPage() {
   // useEffect
   useEffect(() => {
     getSettingData();
-    getDataTax()
+    getDataTax();
   }, []);
 
   // function
-  const handleChangeTax =async(newTax)=>{
-    const { DATA } = await getLocalData()
-    const _res =await Axios.put(END_POINT_SEVER+"/v4/tax/update/"+DATA.storeId,{newTax:parseInt(newTax)})
-    getDataTax()
-   }
+  const handleChangeTax = async (newTax) => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.put(
+      END_POINT_SEVER + "/v4/tax/update/" + DATA.storeId,
+      { newTax: parseInt(newTax) }
+    );
+    getDataTax();
+    setPopup();
+  };
   const getDataTax = async () => {
     const { DATA } = await getLocalData();
     const _res = await Axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
@@ -103,7 +107,9 @@ export default function ConfigPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <Button onClick={()=>setPopup({PopUpEditTax:true})}>ແກ້ໄຂ</Button>
+                  <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                    ແກ້ໄຂ
+                  </Button>
                 </div>
               </div>
             </Card.Body>
@@ -319,7 +325,12 @@ export default function ConfigPage() {
         </Box>
       </Box>
       {/* popup */}
-      <PopUpEditTax open={popup?.PopUpEditTax} onClose={()=>setPopup()} prevTax={tax} onSubmit={handleChangeTax}/>
+      <PopUpEditTax
+        open={popup?.PopUpEditTax}
+        onClose={() => setPopup()}
+        prevTax={tax}
+        onSubmit={handleChangeTax}
+      />
     </>
   );
 }

@@ -74,7 +74,6 @@ export default function BannerList() {
   };
 
   const _create = async (values) => {
-    alert("sdfdf");
     console.log("values", values);
     await Axios({
       method: "POST",
