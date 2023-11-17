@@ -24,6 +24,7 @@ export default function CheckOutType({
   dataBill,
   tableData,
   setDataBill,
+  taxPercent = 0,
 }) {
   // state
   const [cash, setCash] = useState();
@@ -41,7 +42,14 @@ export default function CheckOutType({
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
-  const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
+
+  const totalBillDefualt = _.sumBy(
+    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    (e) => e?.price * e?.quantity
+  );
+  const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  const totalBill = totalBillDefualt + taxAmount;
+
   useEffect(() => {
     let moneyReceived = "";
     let moneyChange = "";
@@ -135,6 +143,8 @@ export default function CheckOutType({
             transferAmount: transfer,
             billAmount: totalBill,
             paymentMethod: forcus,
+            taxAmount: taxAmount,
+            taxPercent: taxPercent,
           },
         },
         {
@@ -294,13 +304,13 @@ export default function CheckOutType({
                 {/* {moneyCurrency(totalBill)} ກີບ */}
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      total - dataBill?.discount > 0
-                        ? total - dataBill?.discount
+                      totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
                         : 0
                     )
                   : moneyCurrency(
-                      total - (total * dataBill?.discount) / 100 > 0
-                        ? total - (total * dataBill?.discount) / 100
+                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0
                     )}{" "}
                 ກີບ
@@ -365,11 +375,11 @@ export default function CheckOutType({
                   ລາຄາ{" "}
                   {moneyCurrency(
                     (dataBill && dataBill?.discountType === "LAK"
-                      ? total - dataBill?.discount > 0
-                        ? total - dataBill?.discount
+                      ? totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
                         : 0
-                      : total - (total * dataBill?.discount) / 100 > 0
-                      ? total - (total * dataBill?.discount) / 100
+                      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
                       : 0) / rateCurrency
                   )}{" "}
                   {selectCurrency}
@@ -532,11 +542,11 @@ export default function CheckOutType({
                       0 +
                       (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
-                        ? total - dataBill?.discount > 0
-                          ? total - dataBill?.discount
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
                           : 0
-                        : total - (total * dataBill?.discount) / 100 > 0
-                        ? total - (total * dataBill?.discount) / 100
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0) <=
                       0
                       ? 0
@@ -544,11 +554,13 @@ export default function CheckOutType({
                           0 +
                           (transfer - 0) -
                           (dataBill && dataBill?.discountType === "LAK"
-                            ? total - dataBill?.discount > 0
-                              ? total - dataBill?.discount
+                            ? totalBill - dataBill?.discount > 0
+                              ? totalBill - dataBill?.discount
                               : 0
-                            : total - (total * dataBill?.discount) / 100 > 0
-                            ? total - (total * dataBill?.discount) / 100
+                            : totalBill -
+                                (totalBill * dataBill?.discount) / 100 >
+                              0
+                            ? totalBill - (totalBill * dataBill?.discount) / 100
                             : 0)
                   )}{" "}
                   ກີບ
@@ -580,7 +592,9 @@ export default function CheckOutType({
                 setCash((prev) => {
                   let _prev = prev + "";
                   let _number =
-                    _prev?.length > 0 ? _prev.substring(0, _prev.length - 1) : "";
+                    _prev?.length > 0
+                      ? _prev.substring(0, _prev.length - 1)
+                      : "";
                   return parseInt(_number);
                 })
               }

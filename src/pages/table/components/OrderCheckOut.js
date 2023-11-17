@@ -15,6 +15,7 @@ const OrderCheckOut = ({
   tableData = {},
   show = false,
   hide,
+  taxPercent = 0,
   onPrintBill = () => {},
   onSubmit = () => {},
 }) => {
@@ -104,6 +105,14 @@ const OrderCheckOut = ({
               </td>
               <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
+            <tr>
+              <td colspan="4" style={{ textAlign: "center" }}>
+                ລາຄາລວມ + ພາສີ {taxPercent}%:
+              </td>
+              <td colspan="1">
+                {moneyCurrency(total * (taxPercent * 0.01 + 1))} ກີບ
+              </td>
+            </tr>
           </tbody>
         </Table>
       </Modal.Body>
@@ -143,11 +152,18 @@ const OrderCheckOut = ({
               <b>
                 {data && data?.discountType === "LAK"
                   ? moneyCurrency(
-                      total - data?.discount > 0 ? total - data?.discount : 0
+                      total * (taxPercent * 0.01 + 1) - data?.discount > 0
+                        ? total * (taxPercent * 0.01 + 1) - data?.discount
+                        : 0
                     )
                   : moneyCurrency(
-                      total - (total * data?.discount) / 100 > 0
-                        ? total - (total * data?.discount) / 100
+                      total * (taxPercent * 0.01 + 1) -
+                        (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                          100 >
+                        0
+                        ? total * (taxPercent * 0.01 + 1) -
+                            (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                              100
                         : 0
                     )}
               </b>

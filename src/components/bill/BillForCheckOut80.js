@@ -9,9 +9,11 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
+  taxPercent = 0,
 }) {
   // state
   const [total, setTotal] = useState();
+  const [taxAmount, setTaxAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
 
@@ -19,7 +21,8 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill]);
+  }, [dataBill, taxPercent]);
+
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
@@ -45,6 +48,7 @@ export default function BillForCheckOut80({
       setTotalAfterDiscount(_total);
     }
     setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
   };
 
   const getDataCurrency = async () => {
@@ -126,9 +130,13 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>
+            ລວມ + ພາສີ {taxPercent}%: {moneyCurrency(total + taxAmount)} ກີບ
+          </div>
           {currencyData?.map((item, index) => (
             <div key={index}>
-              ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
+              ລວມ + ພາສີ {taxPercent}% ({item?.currencyCode}):{" "}
+              {moneyCurrency((total + taxAmount) / item?.sell)}
             </div>
           ))}
           <div>
@@ -144,7 +152,9 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount)} ກີບ</h6>
+        <h6>
+          ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} ກີບ
+        </h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>

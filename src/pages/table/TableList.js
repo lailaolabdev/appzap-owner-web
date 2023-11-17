@@ -33,7 +33,11 @@ import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
  **/
 import { COLOR_APP } from "../../constants/index";
 import { useStore } from "../../store";
-import { END_POINT_SEVER, END_POINT_WEB_CLIENT } from "../../constants/api";
+import {
+  END_POINT_SEVER,
+  END_POINT_WEB_CLIENT,
+  getLocalData,
+} from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
@@ -133,11 +137,22 @@ export default function TableList() {
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true);
+  const [taxPercent, setTaxPercent] = useState(0);
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
   //   setSeletedOrderItem(_data)
   // }
+  useEffect(() => {
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
+  }, []);
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
@@ -1523,6 +1538,7 @@ export default function TableList() {
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+          taxPercent={taxPercent}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -1583,6 +1599,7 @@ export default function TableList() {
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
+        taxPercent={taxPercent}
       />
 
       <OrderCheckOut
@@ -1592,6 +1609,7 @@ export default function TableList() {
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
+        taxPercent={taxPercent}
         onSubmit={() => {
           setMenuItemDetailModal(false);
           setPopup({ CheckOutType: true });
