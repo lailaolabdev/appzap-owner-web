@@ -247,7 +247,7 @@ function AddOrder() {
   // const getcurrency = async () => {
   //   try {
   //     let x = await axios.get(
-  //       END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+  //       END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
   //       {
   //         headers: {
   //           Accept: "application/json",

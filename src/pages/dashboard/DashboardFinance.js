@@ -66,7 +66,7 @@ export default function DashboardFinance({
   const getcurrency = async () => {
     try {
       let x = await fetch(
-        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
+        END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
         {
           method: "GET",
         }
