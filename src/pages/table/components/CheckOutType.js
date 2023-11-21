@@ -15,6 +15,7 @@ import ButtonPrimary from "../../../components/button/ButtonPrimary";
 import { useStore } from "../../../store";
 import { getCurrencys } from "../../../services/currency";
 import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
+import { formatDate } from "@fullcalendar/core";
 
 export default function CheckOutType({
   onPrintBill,
@@ -27,6 +28,8 @@ export default function CheckOutType({
   taxPercent = 0,
 }) {
   // state
+  const [selectData, setSelectData] = useState([]);
+  const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState(0);
   const [tab, setTab] = useState("cash");
@@ -53,11 +56,10 @@ export default function CheckOutType({
   useEffect(() => {
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${
-      selectCurrency == "LAK"
-        ? moneyCurrency(cash + transfer)
-        : moneyCurrency(cashCurrency)
-    } ${selectCurrency}`;
+    moneyReceived = `${selectCurrency == "LAK"
+      ? moneyCurrency(cash + transfer)
+      : moneyCurrency(cashCurrency)
+      } ${selectCurrency}`;
     moneyChange = `${moneyCurrency(
       cash -
         (dataBill && dataBill?.discountType === "LAK"
@@ -65,18 +67,18 @@ export default function CheckOutType({
             ? totalBill - dataBill?.discount
             : 0
           : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0) <=
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0) <=
         0
         ? 0
         : cash -
-            (dataBill && dataBill?.discountType === "LAK"
-              ? totalBill - dataBill?.discount > 0
-                ? totalBill - dataBill?.discount
-                : 0
-              : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-              ? totalBill - (totalBill * dataBill?.discount) / 100
-              : 0)
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0)
     )} ກີບ`;
 
     setDataBill((prev) => ({
@@ -145,6 +147,9 @@ export default function CheckOutType({
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
+            customerId: selectDataOpption?._id,
+            userNanme: selectDataOpption?.username,
+            phone: selectDataOpption?.phone,
           },
         },
         {
@@ -258,8 +263,36 @@ export default function CheckOutType({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
+
+  /**
+   * 
+   * @param {*} phone 
+   */
+  let _filterCustomer = async (phone) => {
+    try {
+      let _getData = await axios.get(`https://app-api.appzap.la/crm/api/crm/customers?=${phone}`);
+      if (_getData?.data) {
+        setSelectData(_getData?.data)
+      }
+    } catch (error) {
+      console.log("🚀 ~ file: CheckOutType.js:268 ~ let_filterCustomer= ~ error:", error)
+    }
+  }
+
+  let _createUser = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      const url = `http://appzap-crm-web.s3-website-ap-southeast-1.amazonaws.com/store/crm_customers/create/${DATA?.storeId}?should_close_after_save=true`;
+      // Open a new tab
+      window.open(url, '_blank');
+
+    } catch (error) {
+      console.log("🚀 ~ file: CheckOutType.js:268 ~ let_filterCustomer= ~ error:", error)
+    }
+  }
+  console.log("🚀 ~ file: CheckOutType.js:33 ~ selectDataOpption:", selectDataOpption)
 
   return (
     <Modal
@@ -293,6 +326,34 @@ export default function CheckOutType({
             }}
           >
             <div>
+              <div style={{ justifyContent: "space-around", display: "flex" }}>
+                {!selectDataOpption?._id ?
+                  <input className="col-6" type="number" onChange={(e) => _filterCustomer(e?.target?.value)}></input>
+                  :
+                  <div className="col-6" onClick={() => {
+                    setSelectData([])
+                    setSelectDataOpption()
+                  }} style={{ cursor: "pointer", padding: 10, border: "solid 1px red", borderRadius: 10 }}>{selectDataOpption?.username}: ( {selectDataOpption?.phone} )</div>
+                }
+                <button type="button" className="btn btn-secondary col-5" onClick={() => _createUser()}>ສ້າງ User</button>
+              </div>
+
+              <div className="col-6" style={{ marginLeft: 15 }}>
+                <div style={{
+                  display: selectData?.customers?.length > 0 && !selectDataOpption?._id ? "" : "none",
+                  backgroundColor: "#E4E4E4",
+                  position: "absolute",
+                  overflowY: "scroll", // Add this style to enable vertical scrolling
+                  maxHeight: "500px",  // Set a maximum height for the dropdown
+                }} className="col-10">
+                  {selectData?.customers?.map((option, index) => (
+                    <option key={index} value={option} onClick={() => setSelectDataOpption(option)}>
+                      {option?.username} : ( {option?.phone} )
+                    </option>
+                  ))}
+                </div>
+              </div>
+              <div style={{ height: 20 }}></div>
               <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ</div>
               <div
                 style={{
@@ -304,15 +365,15 @@ export default function CheckOutType({
                 {/* {moneyCurrency(totalBill)} ກີບ */}
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
-                    )
+                    totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                  )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0
+                  )}{" "}
                 ກີບ
               </div>
             </div>
@@ -379,8 +440,8 @@ export default function CheckOutType({
                         ? totalBill - dataBill?.discount
                         : 0
                       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) / rateCurrency
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0) / rateCurrency
                   )}{" "}
                   {selectCurrency}
                 </div>
@@ -452,20 +513,20 @@ export default function CheckOutType({
                           ? totalBill - dataBill?.discount
                           : 0
                         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0) <=
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0) <=
                       0
                       ? 0
                       : cash -
-                          (dataBill && dataBill?.discountType === "LAK"
-                            ? totalBill - dataBill?.discount > 0
-                              ? totalBill - dataBill?.discount
-                              : 0
-                            : totalBill -
-                                (totalBill * dataBill?.discount) / 100 >
-                              0
-                            ? totalBill - (totalBill * dataBill?.discount) / 100
-                            : 0)
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill -
+                          (totalBill * dataBill?.discount) / 100 >
+                          0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0)
                   )}{" "}
                   ກີບ
                 </div>
@@ -486,15 +547,15 @@ export default function CheckOutType({
                   {/* {moneyCurrency(totalBill)} ກີບ */}
                   {dataBill && dataBill?.discountType === "LAK"
                     ? moneyCurrency(
-                        totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                      )
+                      totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
+                        : 0
+                    )
                     : moneyCurrency(
-                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                          ? totalBill - (totalBill * dataBill?.discount) / 100
-                          : 0
-                      )}{" "}
+                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0
+                    )}{" "}
                   ກີບ
                 </div>
               </div>
@@ -546,22 +607,22 @@ export default function CheckOutType({
                           ? totalBill - dataBill?.discount
                           : 0
                         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0) <=
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0) <=
                       0
                       ? 0
                       : cash -
-                          0 +
-                          (transfer - 0) -
-                          (dataBill && dataBill?.discountType === "LAK"
-                            ? totalBill - dataBill?.discount > 0
-                              ? totalBill - dataBill?.discount
-                              : 0
-                            : totalBill -
-                                (totalBill * dataBill?.discount) / 100 >
-                              0
-                            ? totalBill - (totalBill * dataBill?.discount) / 100
-                            : 0)
+                      0 +
+                      (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill -
+                          (totalBill * dataBill?.discount) / 100 >
+                          0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0)
                   )}{" "}
                   ກີບ
                   {/* {console.log("cash===>>>", cash - 0 + (transfer - 0) -

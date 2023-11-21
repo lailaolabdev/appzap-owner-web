@@ -20,6 +20,7 @@ import {
   faUser,
   faBook,
   faMusic,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -172,7 +173,17 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                `${storeDetail?._id}`,
+              `${storeDetail?._id}`,
+              "_blank"
+            )
+            .focus();
+          return;
+        }
+        if (selected === "customerList") {
+          window
+            .open(
+              "http://appzap-crm-web.s3-website-ap-southeast-1.amazonaws.com/store/crm_customers/" +
+              `${storeDetail?._id}`,
               "_blank"
             )
             .focus();
@@ -259,6 +270,24 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )}
+        <NavItem eventKey="customerList">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faUsers}
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ສະມາຊີກ
+          </NavText>
+        </NavItem>
       </SideNav.Nav>
     </SideNav>
   );
