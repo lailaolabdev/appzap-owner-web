@@ -272,7 +272,8 @@ export default function CheckOutType({
    */
   let _filterCustomer = async (phone) => {
     try {
-      let _getData = await axios.get(`https://app-api.appzap.la/crm/api/crm/customers?=${phone}`);
+      const { DATA } = await getLocalData();
+      let _getData = await axios.get(`https://app-api.appzap.la/crm/api/crm/customers?phone=${phone}&resId=${DATA?.storeId}`);
       if (_getData?.data) {
         setSelectData(_getData?.data)
       }
