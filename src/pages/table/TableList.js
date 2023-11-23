@@ -138,6 +138,7 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
+  const [dataCustomer, setDataCustomer] = useState();
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int

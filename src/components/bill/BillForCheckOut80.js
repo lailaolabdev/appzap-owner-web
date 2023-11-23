@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
-import { QUERY_CURRENCIES, getLocalData } from "../../constants/api";
+import { QUERY_CURRENCIES, getLocalData, getLocalDataCustomer } from "../../constants/api";
 import Axios from "axios";
 
 export default function BillForCheckOut80({
@@ -21,6 +21,8 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill?.dataCustomer)
+
   }, [dataBill, taxPercent]);
 
   useEffect(() => {
@@ -125,9 +127,9 @@ export default function BillForCheckOut80({
           );
         })}
       </Order>
-      <hr style={{ border: "1px solid #000" }} />
-      <Price>
-        <div style={{ flexGrow: 1 }}></div>
+      <div style={{height:10}}></div>
+      <hr style={{ border: "1px solid #000",margin:0 }} />
+      <div style={{fontSize:14}}>
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
           <div>
@@ -143,15 +145,18 @@ export default function BillForCheckOut80({
             ສ່ວນຫຼຸດ:
             {dataBill?.discount}{" "}
             {dataBill?.discountType == "MONEY" ||
-            dataBill?.discountType == "LAK"
+              dataBill?.discountType == "LAK"
               ? "ກີບ"
               : "%"}
           </div>
+          <div>
+            ລູກຄ້າ : {dataBill?.dataCustomer?.username} ( {dataBill?.dataCustomer?.phone} )
+          </div>
         </div>
-      </Price>
-      <hr style={{ border: "1px solid #000" }} />
+      </div>
+      <hr style={{ border: "1px solid #000",margin:0 }} />
+      <div style={{height:10}}></div>
       <Price>
-        <div style={{ flexGrow: 1 }}></div>
         <h6>
           ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} ກີບ
         </h6>

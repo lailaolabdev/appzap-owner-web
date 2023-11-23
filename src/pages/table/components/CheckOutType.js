@@ -293,7 +293,16 @@ export default function CheckOutType({
       console.log("🚀 ~ file: CheckOutType.js:268 ~ let_filterCustomer= ~ error:", error)
     }
   }
-  console.log("🚀 ~ file: CheckOutType.js:33 ~ selectDataOpption:", selectDataOpption)
+
+  let _selectDataOption = (option) => {
+    setSelectDataOpption(option)
+    setDataBill((prev) => ({
+      ...prev,
+      dataCustomer:option
+    })
+    )
+    // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
+  }
 
   return (
     <Modal
@@ -347,9 +356,9 @@ export default function CheckOutType({
                   overflowY: "scroll", // Add this style to enable vertical scrolling
                   maxHeight: "500px",  // Set a maximum height for the dropdown
                 }} className="col-10">
-                  {selectData?.customers?.map((option, index) => (
-                    <option key={index} value={option} onClick={() => setSelectDataOpption(option)}>
-                      {option?.username} : ( {option?.phone} )
+                  {selectData?.customers?.map((data, index) => (
+                    <option key={index} value={data} onClick={() => _selectDataOption(data)}>
+                      {data?.username} : ( {data?.phone} )
                     </option>
                   ))}
                 </div>

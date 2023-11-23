@@ -4,7 +4,7 @@ import { USER_KEY } from "./index";
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
 const dev = "https://api.appzap.la:17070"; // dev endpoint
-// const dev = "https://api.appzap.la"; //locals
+// const dev = "https://api.appzap.la"; //local
 // const dev = "http://192.168.1.11:7070"; //locals
 // const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
@@ -31,6 +31,12 @@ export const getLocalData = async () => {
   const DATA = _localJson2?.data;
   const TOKEN = { authorization: "AppZap " + _localJson2?.accessToken };
   return { TOKEN, DATA };
+};
+export const getLocalDataCustomer = async () => {
+  const _local = await localStorage.getItem("DATA_CUSTOMER");
+  const _localJson2 = await JSON.parse(_local);
+  const DATA = _localJson2;
+  return {  DATA };
 };
 
 // =====>>>>
