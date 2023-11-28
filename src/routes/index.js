@@ -33,7 +33,7 @@ import StockHistory from "../pages/stock/HistoryList";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
-import SettingTheme from "../pages/setting_theme/SettingTheme";
+// import SettingTheme from "../pages/setting_theme/SettingTheme";
 import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
 
@@ -210,10 +210,10 @@ function Router() {
           path: "/manageorder",
           element: <DoingOrder />,
         },
-        {
-          path: "/settingTheme",
-          element: <SettingTheme />,
-        },
+        // {
+        //   path: "/settingTheme",
+        //   element: <SettingTheme />,
+        // },
         {
           path: "add-expend",
           element: <AddIncomeAndExpend />,
