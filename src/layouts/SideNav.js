@@ -182,7 +182,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "customerList") {
           window
             .open(
-              "http://appzap-crm-web.s3-website-ap-southeast-1.amazonaws.com/store/crm_customers/" +
+              "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
               `${storeDetail?._id}`,
               "_blank"
             )

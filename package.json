@@ -95,7 +95,7 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "winBuild": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
-    "build:deploy": "GENERATE_SOURCEMAP=false react-scripts build && aws s3 sync ./build s3://restaurant.appzap.la",
+    "build:prod": "GENERATE_SOURCEMAP=false react-scripts build && aws s3 sync ./build s3://restaurant.appzap.la",
     "build:staging": "GENERATE_SOURCEMAP=false react-scripts build && aws s3 sync ./build s3://staging.restaurant.appzap.la",
     "test": "react-scripts test",
     "lint": "eslint . --max-warnings=0",
