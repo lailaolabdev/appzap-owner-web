@@ -75,6 +75,7 @@ export const useTableState = (storeDetail) => {
   const getTableOrders = async (table) => {
     try {
       setTableOrders([]);
+      if (!table?.billId) return;
       setIsTableOrderLoading(true);
       const url =
         END_POINT +
@@ -153,6 +154,56 @@ export const useTableState = (storeDetail) => {
           showConfirmButton: false,
           timer: 1800,
         });
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+  const openTableAndReturnTokenOfBill = async () => {
+    try {
+      let findby = "?";
+      findby += "storeId=" + selectedTable?.storeId;
+      findby += "&code=" + selectedTable?.code;
+      findby += "&tableId=" + selectedTable?.tableId;
+
+      const codesData = await getCodes(findby);
+      const code = codesData[0];
+
+      let resData = await axios.put(
+        END_POINT + `/v3/code/update`,
+        {
+          id: code?._id,
+          data: {
+            isOpened: true,
+            isStaffConfirm: true,
+            createdAt: new Date(),
+          },
+        },
+        {
+          headers: await getHeaders(),
+        }
+      );
+      if (resData.status < 300) {
+        const data = await axios.post(
+          `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
+        );
+        await getTableDataStore();
+        onSelectTable({
+          ...selectedTable,
+          isOpened: true,
+          isStaffConfirm: true,
+        });
+        Swal.fire({
+          icon: "success",
+          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        if (resData.status < 300) {
+          return data?.data?.token;
+        } else {
+          throw new Error("can not qr token");
+        }
       }
     } catch (err) {
       console.log("err", err);
@@ -271,5 +322,6 @@ export const useTableState = (storeDetail) => {
     resetTableOrder,
     selectTable2,
     setSelectTable2,
+    openTableAndReturnTokenOfBill,
   };
 };

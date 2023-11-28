@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { converMoney } from "../../helpers/converMoney";
 
-const ReportChartMonth = ({ series }) => {
+const ReportChartDayOfWeek = ({ series }) => {
   // state
   const [state, setState] = useState({
     series: [
@@ -49,7 +49,7 @@ const ReportChartMonth = ({ series }) => {
         "#99627A",
       ],
       xaxis: {
-        categories: [...new Array(31)].map((e, i) => i + 1),
+        categories: ["ຈັນ", "ຄານ", "ພຸດ", "ພະຫັດ", "ສຸກ", "ເສົາ", "ທິດ"],
       },
       yaxis: {
         title: {
@@ -93,4 +93,4 @@ const ReportChartMonth = ({ series }) => {
   );
 };
 
-export default ReportChartMonth;
+export default ReportChartDayOfWeek;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -7,38 +7,131 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
+import { BiSolidPrinter } from "react-icons/bi";
 
 import _ from "lodash";
 
 import ButtonPrimary from "../../../components/button/ButtonPrimary";
 import { useStore } from "../../../store";
+import { getCurrencys } from "../../../services/currency";
+import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
+import { formatDate } from "@fullcalendar/core";
 
 export default function CheckOutType({
+  onPrintBill,
   open,
   onClose,
   // onSubmit,
   dataBill,
   tableData,
+  setDataBill,
+  taxPercent = 0,
 }) {
   // state
+  const [selectData, setSelectData] = useState([]);
+  const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState(0);
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
+  const [selectCurrency, setSelectCurrency] = useState("LAK");
+  const [rateCurrency, setRateCurrency] = useState(0);
+  const [cashCurrency, setCashCurrency] = useState();
+
+  const [currencyList, setCurrencyList] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
-  const totalBill = _.sumBy(dataBill?.orderId, (e) => e?.price * e?.quantity);
+
+  const totalBillDefualt = _.sumBy(
+    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    (e) => e?.price * e?.quantity
+  );
+  const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  const totalBill = totalBillDefualt + taxAmount;
+
   useEffect(() => {
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
+    let moneyReceived = "";
+    let moneyChange = "";
+    moneyReceived = `${selectCurrency == "LAK"
+      ? moneyCurrency(cash + transfer)
+      : moneyCurrency(cashCurrency)
+      } ${selectCurrency}`;
+    moneyChange = `${moneyCurrency(
+      cash -
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0) <=
+        0
+        ? 0
+        : cash -
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0)
+    )} ກີບ`;
+
+    setDataBill((prev) => ({
+      ...prev,
+      moneyReceived: moneyReceived,
+      moneyChange: moneyChange,
+    }));
+  }, [cash, transfer, selectCurrency]);
+  useEffect(() => {
+    if (selectCurrency != "LAK") {
+      const _currencyData = currencyList.find(
+        (e) => e.currencyCode == selectCurrency
+      );
+      setRateCurrency(_currencyData?.buy || 1);
+    } else {
+      setRateCurrency(1);
+    }
+  }, [selectCurrency, selectCurrency]);
+  useEffect(() => {
+    const amount = cashCurrency * rateCurrency;
+    setCash(amount);
+  }, [rateCurrency]);
+  useEffect(() => {
+    if (selectCurrency != "LAK") {
+      const amount = cashCurrency * rateCurrency;
+      setCash(amount);
+    } else {
+      const amount = cash / rateCurrency;
+      setCashCurrency(amount);
+    }
+  }, [cashCurrency, cash]);
+  useEffect(() => {
+    for (let i = 0; i < dataBill?.orderId?.length; i++) {
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
   // function
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status == 200) {
+          setCurrencyList(data?.data?.data);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
   const _checkBill = async () => {
     await axios
       .put(
@@ -52,6 +145,11 @@ export default function CheckOutType({
             transferAmount: transfer,
             billAmount: totalBill,
             paymentMethod: forcus,
+            taxAmount: taxAmount,
+            taxPercent: taxPercent,
+            customerId: selectDataOpption?._id,
+            userNanme: selectDataOpption?.username,
+            phone: selectDataOpption?.phone,
           },
         },
         {
@@ -91,6 +189,9 @@ export default function CheckOutType({
   };
 
   // useEffect
+  useEffect(() => {
+    getDataCurrency();
+  }, []);
   useEffect(() => {
     if (forcus == "CASH") {
       if (dataBill?.discount) {
@@ -162,8 +263,46 @@ export default function CheckOutType({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
+
+  /**
+   * 
+   * @param {*} phone 
+   */
+  let _filterCustomer = async (phone) => {
+    try {
+      const { DATA } = await getLocalData();
+      let _getData = await axios.get(`https://app-api.appzap.la/crm/api/crm/customers?phone=${phone}&resId=${DATA?.storeId}`);
+      if (_getData?.data) {
+        setSelectData(_getData?.data)
+      }
+    } catch (error) {
+      console.log("🚀 ~ file: CheckOutType.js:268 ~ let_filterCustomer= ~ error:", error)
+    }
+  }
+
+  let _createUser = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      const url = `http://appzap-crm-web.s3-website-ap-southeast-1.amazonaws.com/store/crm_customers/create/${DATA?.storeId}?should_close_after_save=true`;
+      // Open a new tab
+      window.open(url, '_blank');
+
+    } catch (error) {
+      console.log("🚀 ~ file: CheckOutType.js:268 ~ let_filterCustomer= ~ error:", error)
+    }
+  }
+
+  let _selectDataOption = (option) => {
+    setSelectDataOpption(option)
+    setDataBill((prev) => ({
+      ...prev,
+      dataCustomer:option
+    })
+    )
+    // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
+  }
 
   return (
     <Modal
@@ -197,6 +336,34 @@ export default function CheckOutType({
             }}
           >
             <div>
+              <div style={{ justifyContent: "space-around", display: "flex" }}>
+                {!selectDataOpption?._id ?
+                  <input className="col-6" type="number" onChange={(e) => _filterCustomer(e?.target?.value)}></input>
+                  :
+                  <div className="col-6" onClick={() => {
+                    setSelectData([])
+                    setSelectDataOpption()
+                  }} style={{ cursor: "pointer", padding: 10, border: "solid 1px red", borderRadius: 10 }}>{selectDataOpption?.username}: ( {selectDataOpption?.phone} )</div>
+                }
+                <button type="button" className="btn btn-secondary col-5" onClick={() => _createUser()}>ສ້າງ User</button>
+              </div>
+
+              <div className="col-6" style={{ marginLeft: 15 }}>
+                <div style={{
+                  display: selectData?.customers?.length > 0 && !selectDataOpption?._id ? "" : "none",
+                  backgroundColor: "#E4E4E4",
+                  position: "absolute",
+                  overflowY: "scroll", // Add this style to enable vertical scrolling
+                  maxHeight: "500px",  // Set a maximum height for the dropdown
+                }} className="col-10">
+                  {selectData?.customers?.map((data, index) => (
+                    <option key={index} value={data} onClick={() => _selectDataOption(data)}>
+                      {data?.username} : ( {data?.phone} )
+                    </option>
+                  ))}
+                </div>
+              </div>
+              <div style={{ height: 20 }}></div>
               <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ</div>
               <div
                 style={{
@@ -208,15 +375,15 @@ export default function CheckOutType({
                 {/* {moneyCurrency(totalBill)} ກີບ */}
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      total - dataBill?.discount > 0
-                        ? total - dataBill?.discount
-                        : 0
-                    )
+                    totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                  )
                   : moneyCurrency(
-                      total - (total * dataBill?.discount) / 100 > 0
-                        ? total - (total * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0
+                  )}{" "}
                 ກີບ
               </div>
             </div>
@@ -242,6 +409,8 @@ export default function CheckOutType({
                 }}
                 onClick={() => {
                   setCash(0);
+                  setSelectCurrency("LAK");
+                  setRateCurrency(0);
                   setTransfer(transferCal);
                   setTab("transfer");
                   setForcus("TRANSFER");
@@ -257,6 +426,8 @@ export default function CheckOutType({
                 }}
                 onClick={() => {
                   setCash(0);
+                  setSelectCurrency("LAK");
+                  setRateCurrency(0);
                   setTransfer(0);
                   setTab("cash_transfer");
                   setForcus("TRANSFER_CASH");
@@ -268,20 +439,75 @@ export default function CheckOutType({
             {/* ---------tabs--------- */}
             <div style={{ display: tab === "cash" ? "block" : "none" }}>
               <div>
-                <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ)</div>
-                <input
-                  type="number"
-                  style={{
-                    backgroundColor: "#ccc",
-                    padding: "flex",
-                    padding: 10,
-                    border: "none",
-                    width: "100%",
-                  }}
-                  forcus={true}
-                  value={cash}
-                  onChange={(e) => setCash(parseInt(e.target.value))}
-                />
+                <div>
+                  ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນສົດ) (Rate: {rateCurrency})
+                </div>
+                <div>
+                  ລາຄາ{" "}
+                  {moneyCurrency(
+                    (dataBill && dataBill?.discountType === "LAK"
+                      ? totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
+                        : 0
+                      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0) / rateCurrency
+                  )}{" "}
+                  {selectCurrency}
+                </div>
+                <div style={{ display: "flex" }}>
+                  {selectCurrency == "LAK" ? (
+                    <input
+                      type="number"
+                      style={{
+                        backgroundColor: "#ccc",
+                        padding: "flex",
+                        padding: 10,
+                        border: "none",
+                        width: "100%",
+                      }}
+                      onWheel={(e) => {
+                        e.preventDefault();
+                      }}
+                      forcus={true}
+                      value={cash}
+                      onChange={(e) => setCash(parseInt(e.target.value))}
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      style={{
+                        backgroundColor: "#ccc",
+                        padding: "flex",
+                        padding: 10,
+                        border: "none",
+                        width: "100%",
+                      }}
+                      onWheel={(e) => {
+                        e.preventDefault();
+                      }}
+                      forcus={true}
+                      value={cashCurrency}
+                      onChange={(e) =>
+                        setCashCurrency(parseInt(e.target.value))
+                      }
+                    />
+                  )}
+                  <Form.Control
+                    as="select"
+                    name="width"
+                    style={{ width: 80, borderRadius: 0, height: 54 }}
+                    value={selectCurrency}
+                    onChange={(e) => {
+                      setSelectCurrency(e?.target?.value);
+                    }}
+                  >
+                    <option value="LAK">LAK</option>
+                    {currencyList?.map((e) => (
+                      <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                    ))}
+                  </Form.Control>
+                </div>
                 <div>ຈຳນວນທີ່ຕ້ອງທອນ</div>
                 <div
                   style={{
@@ -297,20 +523,20 @@ export default function CheckOutType({
                           ? totalBill - dataBill?.discount
                           : 0
                         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0) <=
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0) <=
                       0
                       ? 0
                       : cash -
-                          (dataBill && dataBill?.discountType === "LAK"
-                            ? totalBill - dataBill?.discount > 0
-                              ? totalBill - dataBill?.discount
-                              : 0
-                            : totalBill -
-                                (totalBill * dataBill?.discount) / 100 >
-                              0
-                            ? totalBill - (totalBill * dataBill?.discount) / 100
-                            : 0)
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill -
+                          (totalBill * dataBill?.discount) / 100 >
+                          0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0)
                   )}{" "}
                   ກີບ
                 </div>
@@ -318,7 +544,9 @@ export default function CheckOutType({
             </div>
             <div style={{ display: tab === "transfer" ? "block" : "none" }}>
               <div>
-                <div>ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ)</div>
+                <div>
+                  ລາຄາທັງໝົດທີ່ຕ້ອງຊຳລະ (ເງິນໂອນ) (Rate: {rateCurrency})
+                </div>
                 <div
                   style={{
                     backgroundColor: "#ccc",
@@ -329,15 +557,15 @@ export default function CheckOutType({
                   {/* {moneyCurrency(totalBill)} ກີບ */}
                   {dataBill && dataBill?.discountType === "LAK"
                     ? moneyCurrency(
-                        totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                      )
+                      totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
+                        : 0
+                    )
                     : moneyCurrency(
-                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                          ? totalBill - (totalBill * dataBill?.discount) / 100
-                          : 0
-                      )}{" "}
+                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0
+                    )}{" "}
                   ກີບ
                 </div>
               </div>
@@ -385,24 +613,26 @@ export default function CheckOutType({
                       0 +
                       (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
-                        ? total - dataBill?.discount > 0
-                          ? total - dataBill?.discount
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
                           : 0
-                        : total - (total * dataBill?.discount) / 100 > 0
-                        ? total - (total * dataBill?.discount) / 100
-                        : 0) <=
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0) <=
                       0
                       ? 0
                       : cash -
-                          0 +
-                          (transfer - 0) -
-                          (dataBill && dataBill?.discountType === "LAK"
-                            ? total - dataBill?.discount > 0
-                              ? total - dataBill?.discount
-                              : 0
-                            : total - (total * dataBill?.discount) / 100 > 0
-                            ? total - (total * dataBill?.discount) / 100
-                            : 0)
+                      0 +
+                      (transfer - 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill -
+                          (totalBill * dataBill?.discount) / 100 >
+                          0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0)
                   )}{" "}
                   ກີບ
                   {/* {console.log("cash===>>>", cash - 0 + (transfer - 0) -
@@ -423,18 +653,41 @@ export default function CheckOutType({
           <div style={{ padding: 20 }}>
             <KeyboardComponents
               onClickEvent={(e) => {
-                setCash((prev) => (prev ? prev + e : e));
+                setCash((prev) => {
+                  let _number = prev ? `${prev}` + e : e;
+                  return parseInt(_number);
+                });
+                console.log(parseInt(cash ? cash + e : e));
               }}
               onDelete={() =>
-                setCash((prev) =>
-                  prev?.length > 0 ? prev.substring(0, prev.length - 1) : ""
-                )
+                setCash((prev) => {
+                  let _prev = prev + "";
+                  let _number =
+                    _prev?.length > 0
+                      ? _prev.substring(0, _prev.length - 1)
+                      : "";
+                  return parseInt(_number);
+                })
               }
             />
           </div>
         </Box>
       </Modal.Body>
       <Modal.Footer>
+        <div style={{ flex: 1 }}></div>
+        <ButtonPrimary
+          style={{ color: "white" }}
+          onClick={() => {
+            onPrintBill().then(() => {
+              handleSubmit();
+            });
+          }}
+          disabled={!canCheckOut}
+        >
+          <BiSolidPrinter />
+          ພິມບິນ ແລະ ໄລເງິນ
+        </ButtonPrimary>
+        <div style={{ width: "20%" }}></div>
         <ButtonPrimary
           style={{ color: "white" }}
           onClick={handleSubmit}

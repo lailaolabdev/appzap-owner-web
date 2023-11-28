@@ -11,28 +11,31 @@ import moment from "moment";
 // import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
-  data,
-  tableData,
-  show,
+  data = { orderId: [] },
+  tableData = {},
+  show = false,
   hide,
-  onPrintBill,
-  onSubmit,
+  taxPercent = 0,
+  onPrintBill = () => {},
+  onSubmit = () => {},
 }) => {
   const [total, setTotal] = useState();
 
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
-      _calculateTotal();
+    _calculateTotal();
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, data?.orderId?.length]);
+  }, [data, data?.orderId]);
 
   const _calculateTotal = () => {
     setTotal();
     let _total = 0;
-    for (let i = 0; i < data?.orderId.length; i++) {
-      if (data?.orderId[i]?.status === "SERVED") {
-        _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+    if (data?.orderId) {
+      for (let i = 0; i < data?.orderId?.length; i++) {
+        if (data?.orderId[i]?.status === "SERVED") {
+          _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+        }
       }
     }
     // alert(_total);
@@ -102,6 +105,14 @@ const OrderCheckOut = ({
               </td>
               <td colspan="1">{moneyCurrency(total)} ກີບ</td>
             </tr>
+            <tr>
+              <td colspan="4" style={{ textAlign: "center" }}>
+                ລາຄາລວມ + ພາສີ {taxPercent}%:
+              </td>
+              <td colspan="1">
+                {moneyCurrency(total * (taxPercent * 0.01 + 1))} ກີບ
+              </td>
+            </tr>
           </tbody>
         </Table>
       </Modal.Body>
@@ -141,11 +152,18 @@ const OrderCheckOut = ({
               <b>
                 {data && data?.discountType === "LAK"
                   ? moneyCurrency(
-                      total - data?.discount > 0 ? total - data?.discount : 0
+                      total * (taxPercent * 0.01 + 1) - data?.discount > 0
+                        ? total * (taxPercent * 0.01 + 1) - data?.discount
+                        : 0
                     )
                   : moneyCurrency(
-                      total - (total * data?.discount) / 100 > 0
-                        ? total - (total * data?.discount) / 100
+                      total * (taxPercent * 0.01 + 1) -
+                        (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                          100 >
+                        0
+                        ? total * (taxPercent * 0.01 + 1) -
+                            (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                              100
                         : 0
                     )}
               </b>

@@ -57,6 +57,8 @@ import EditIncomeAndExpend from "../pages/expend/component/EditIncomeAndExpend";
 import DetailExpend from "../pages/expend/component/DetailExpend";
 import ConfigRoutes from "./Config.routes";
 import SelfOrderingOrderRoutes from "./SelfOrderingOrder.routes";
+import CurrencyList from "../pages/currency/CurrencyList";
+import BannerList from "../pages/banner/BannerList";
 
 function Router() {
   return useRoutes([
@@ -101,6 +103,10 @@ function Router() {
           element: <StoreDetail />,
         },
         {
+          path: "/settingStore/banner",
+          element: <BannerList />,
+        },
+        {
           path: "/tables",
           element: <Table />,
         },
@@ -137,6 +143,10 @@ function Router() {
         {
           path: "/settingStore/users/limit/:limit/page/:page/:id",
           element: <Users />,
+        },
+        {
+          path: "/settingStore/currency/:id",
+          element: <CurrencyList />,
         },
         {
           path: "/settingStore/menu/category/limit/:limit/page/:page/:id",

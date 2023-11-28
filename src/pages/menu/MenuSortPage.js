@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 // import "./styles.css";
 import {
   GridContextProvider,
@@ -7,23 +8,31 @@ import {
   swap,
 } from "react-grid-dnd";
 import Box from "../../components/Box";
-import { Breadcrumb } from "react-bootstrap";
+import { Breadcrumb, Button } from "react-bootstrap";
 import { useStore } from "../../store";
+import { END_POINT_SEVER } from "../../constants/api";
 
 export default function MenuSortPage() {
   // state
-  const [items, setItems] = useState([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-  ]);
+  const [items, setItems] = useState([]);
 
   // provider
-  const { menuStart } = useStore();
+  const { menus } = useStore();
 
   // useEffect
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (menus) {
+      setItems(menus);
+    }
+  }, [menus]);
 
   // function
+  async function onSaveSort() {
+    const data = items.map((e, i) => ({ id: e._id, sort: i + 1 }));
+    
+    await axios.post(`${END_POINT_SEVER}/v4/menus-sort/update`, data);
+  }
   function onChange(sourceId, sourceIndex, targetIndex, targetId) {
     const nextState = swap(items, sourceIndex, targetIndex);
     setItems(nextState);
@@ -35,10 +44,13 @@ export default function MenuSortPage() {
         <Breadcrumb.Item>ຈັດການເມນູ</Breadcrumb.Item>
         <Breadcrumb.Item active>ຈັດລຽງເມນູ</Breadcrumb.Item>
       </Breadcrumb>
+      <div style={{ marginBottom: 10 }}>
+        <Button onClick={onSaveSort}>Save</Button>
+      </div>
       <GridContextProvider onChange={onChange}>
         <GridDropZone
           id="items"
-          boxesPerRow={4}
+          boxesPerRow={6}
           rowHeight={100}
           style={{ height: "400px" }}
         >
@@ -53,7 +65,7 @@ export default function MenuSortPage() {
                   height: "100px",
                 }}
               >
-                {item}
+                {item.name}
               </div>
             </GridItem>
           ))}

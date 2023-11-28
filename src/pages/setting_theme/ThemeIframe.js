@@ -16,6 +16,7 @@ import menuDetailPageJson from "./presets/menuDetailPage";
 import cartPageJson from "./presets/cartPage";
 import myBillPageJson from "./presets/myBillPage";
 import myQRPageJson from "./presets/myQRPage";
+import { getTheme } from "../../services/theme";
 
 export default function SelfOrderingPage({
   storeDetail,
@@ -27,6 +28,13 @@ export default function SelfOrderingPage({
   const { _id } = storeDetail;
 
   // state
+  const [isLoading, setIsloading] = useState(true); // status loadinng
+  const [homePageJson, setHomePageJson] = useState(); // page home
+  const [menuDetailPageJson, setMenuDetailPageJson] = useState(); // page menu detail
+  const [cartPageJson, setCartPageJson] = useState(); // page cart
+  const [myBillPageJson, setMyBillPageJson] = useState(); // page bill
+  const [myQRPageJson, setMyQRPageJson] = useState(); // page qr
+
   const [ui, setUi] = useState({
     type: "div",
     props: {
@@ -63,8 +71,10 @@ export default function SelfOrderingPage({
     getDataMenus(_id);
   }, []);
   useEffect(() => {
-    getUi({ menus: [...menus], menuCategory: [...menuCategory] });
-  }, [menus, menuCategory, selectMenuCategoryId]);
+    if (!isLoading) {
+      getUi({ menus: [...menus], menuCategory: [...menuCategory] });
+    }
+  }, [isLoading, menus, menuCategory, selectMenuCategoryId]);
 
   useEffect(() => {
     if (selectMenuDetail) {
@@ -73,20 +83,22 @@ export default function SelfOrderingPage({
     }
   }, [selectMenuDetail]);
   useEffect(() => {
-    if (tab == "HOME") {
-      setSelectMenuDetail();
-      getUi({ menus });
-    } else if (tab == "MENU_DETAIL") {
-      showDatail();
-    } else if (tab == "BILL") {
-      getUIMyBill();
-      getMyBill().then(() => getUIMyBill());
-    } else if (tab == "QR") {
-      getUIMyQR();
-    } else if (tab == "CART") {
-      getUICart();
+    if (!isLoading) {
+      if (tab == "HOME") {
+        setSelectMenuDetail();
+        getUi({ menus });
+      } else if (tab == "MENU_DETAIL") {
+        showDatail();
+      } else if (tab == "BILL") {
+        getUIMyBill();
+        getMyBill().then(() => getUIMyBill());
+      } else if (tab == "QR") {
+        getUIMyQR();
+      } else if (tab == "CART") {
+        getUICart();
+      }
     }
-  }, [tab, cart]);
+  }, [isLoading, tab, cart]);
 
   useEffect(() => {
     if (selectMenuCategoryId == "ALL") {
@@ -104,6 +116,11 @@ export default function SelfOrderingPage({
   }, [selectMenuCategoryId]);
 
   // function
+  const getDataTheme = async () => {
+    setIsloading(true);
+    const _data = await getTheme();
+    setIsloading(false);
+  };
   const changeComment = (value) => {
     setSelectMenuDetail((prev) => ({ ...prev, note: value }));
   };
@@ -264,7 +281,7 @@ export default function SelfOrderingPage({
     setUi(deCompileJson(data, groupFunc));
   };
   const getUIMyBill = () => {
-    const data = compileJson(myBillPageJson);
+    const data = compileJson(myBillPageJson());
     setUi(deCompileJson(data, groupFunc));
   };
   const getUIMyQR = () => {

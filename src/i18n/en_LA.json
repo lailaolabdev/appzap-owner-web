@@ -249,5 +249,7 @@
     "overallStatistics":"ສະຖິຕິລວມ",
     "latest7days":"7ວັນລ່າສຸດ",
     "latest30days":"30ວັນລ່າສຸດ",
-    "transfercash": "ຈ່າຍເງິນສົດ + ໂອນ"
+    "transfercash": "ຈ່າຍເງິນສົດ + ໂອນ",
+    "soundManage": "ຈັດການສຽງ",
+    "currencyManage": "ຈັດການເລດເງິນ"
 }

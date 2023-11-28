@@ -224,7 +224,7 @@ function AddOrder() {
       }
     };
     fetchData();
-    getcurrency();
+    // getcurrency();
   }, []);
   useEffect(() => {
     // TODO: check selectTable
@@ -244,22 +244,22 @@ function AddOrder() {
     })();
   }, []);
 
-  const getcurrency = async () => {
-    try {
-      let x = await axios.get(
-        END_POINT_SEVER + `/v3/currencies?storeId=${storeDetail?._id}`,
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-        }
-      );
-      setCurrency(x.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const getcurrency = async () => {
+  //   try {
+  //     let x = await axios.get(
+  //       END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
+  //       {
+  //         headers: {
+  //           Accept: "application/json",
+  //           "Content-Type": "application/json;charset=UTF-8",
+  //         },
+  //       }
+  //     );
+  //     setCurrency(x.data);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -573,13 +573,13 @@ function AddOrder() {
                         <br />
                         <span>
                           {moneyCurrency(data?.price)} LAK{" "}
-                          {currency.map(
+                          {/* {currency?.map(
                             (e) =>
                               " / " +
                               (data?.price / e.sell).toFixed(2) +
                               " " +
-                              e.currencyCode
-                          )}
+                              e?.currencyCode
+                          )} */}
                         </span>
                         <br />
                         <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>

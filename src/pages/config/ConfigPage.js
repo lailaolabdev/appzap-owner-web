@@ -5,17 +5,23 @@ import {
   Form,
   OverlayTrigger,
   Tooltip,
+  Button,
 } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import { BsExclamationDiamondFill } from "react-icons/bs";
 import { getSetting, updateSetting } from "../../services/setting";
+import PopUpEditTax from "../../components/popup/PopUpEditTax";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import Axios from "axios";
 
 export default function ConfigPage() {
   // state
   const [setting, setSetting] = useState();
   const [switchState, setSwitchState] = useState({});
+  const [tax, setTax] = useState(0);
+  const [popup, setPopup] = useState();
 
   // provider
   const { audioSetting, setAudioSetting, storeDetail } = useStore();
@@ -23,9 +29,24 @@ export default function ConfigPage() {
   // useEffect
   useEffect(() => {
     getSettingData();
+    getDataTax();
   }, []);
 
   // function
+  const handleChangeTax = async (newTax) => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.put(
+      END_POINT_SEVER + "/v4/tax/update/" + DATA.storeId,
+      { newTax: parseInt(newTax) }
+    );
+    getDataTax();
+    setPopup();
+  };
+  const getDataTax = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
+    setTax(_res?.data?.taxPercent);
+  };
   const getSettingData = async () => {
     const data = await getSetting(storeDetail?._id);
     setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
@@ -56,6 +77,44 @@ export default function ConfigPage() {
             gridTemplateRows: "masonry",
           }}
         >
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ພາສີ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ພາສີ: {tax}%</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                    ແກ້ໄຂ
+                  </Button>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -266,6 +325,12 @@ export default function ConfigPage() {
         </Box>
       </Box>
       {/* popup */}
+      <PopUpEditTax
+        open={popup?.PopUpEditTax}
+        onClose={() => setPopup()}
+        prevTax={tax}
+        onSubmit={handleChangeTax}
+      />
     </>
   );
 }

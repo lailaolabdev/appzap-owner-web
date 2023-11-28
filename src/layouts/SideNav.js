@@ -19,6 +19,8 @@ import {
   faChartLine,
   faUser,
   faBook,
+  faMusic,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -112,18 +114,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   key: "dashboardmenu",
     //   typeStore: "",
     //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasSmartMenu,
+    //   hidden: !storeDetail?.hasPOS,
     //   system: "reportManagement",
-    //   children: [
-    //     {
-    //       title: "Dashboard (ໃໝ່)",
-    //       key: "dashboardmenu",
-    //       typeStore: "",
-    //       icon: faChartLine,
-    //       hidden: !storeDetail?.hasSmartMenu,
-    //       system: "reportManagement",
-    //     },
-    //   ],
     // },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
@@ -133,14 +125,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    // {
-    //   title: "ປ່ຽນຕຣີມ",
-    //   key: "settingTheme",
-    //   typeStore: "",
-    //   icon: faIcicles,
-    //   // hidden: !storeDetail?.hasPOS,
-    //   system: "themeManagement",
-    // },
   ];
 
   const listForRole = itemList.filter((e) => {
@@ -184,6 +168,26 @@ export default function Sidenav({ location, navigate, onToggle }) {
         }
         if (selected === "settingStore") {
           selected = selected + `/${storeDetail?._id}`;
+        }
+        if (selected === "songlist") {
+          window
+            .open(
+              "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
+              `${storeDetail?._id}`,
+              "_blank"
+            )
+            .focus();
+          return;
+        }
+        if (selected === "customerList") {
+          window
+            .open(
+              "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
+              `${storeDetail?._id}`,
+              "_blank"
+            )
+            .focus();
+          return;
         }
         const to = "/" + selected;
 
@@ -244,6 +248,46 @@ export default function Sidenav({ location, navigate, onToggle }) {
               })}
             </NavItem>
           ))}
+        {role(profile?.data?.role, profile?.data)?.["tableManagement"] ? (
+          <NavItem eventKey="songlist">
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={faMusic}
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              />
+            </NavIcon>
+            <NavText
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ລູກຄ້າຂໍເພງ
+            </NavText>
+          </NavItem>
+        ) : (
+          ""
+        )}
+        <NavItem eventKey="customerList">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faUsers}
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ສະມາຊີກ
+          </NavText>
+        </NavItem>
       </SideNav.Nav>
     </SideNav>
   );

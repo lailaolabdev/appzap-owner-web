@@ -3,8 +3,8 @@ import { USER_KEY } from "./index";
 // TODO: check domain name and set end point
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
-const dev = "https://dev-api.appzap.la"; // dev endpoint
-// const dev = "https://api.appzap.la"; //locals
+const dev = "https://api.appzap.la:17070"; // dev endpoint
+// const dev = "https://api.appzap.la"; //local
 // const dev = "http://192.168.1.11:7070"; //locals
 // const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
@@ -33,6 +33,12 @@ export const getLocalData = async () => {
   const TOKEN = { authorization: "AppZap " + _localJson2?.accessToken };
   return { TOKEN, DATA };
 };
+export const getLocalDataCustomer = async () => {
+  const _local = await localStorage.getItem("DATA_CUSTOMER");
+  const _localJson2 = await JSON.parse(_local);
+  const DATA = _localJson2;
+  return {  DATA };
+};
 
 // =====>>>>
 export const USERS = END_POINT_SEVER + "/v3/users";
@@ -47,4 +53,10 @@ export const PRESIGNED_URL = END_POINT_SEVER + "/uploadfile";
 export const TABLES = END_POINT_SEVER + "/v3/tables";
 export const STORE = END_POINT_SEVER + "/v3/store";
 export const STORE_UPDATE = END_POINT_SEVER + "/v3/store/update";
-export const QUERY_LANGUAGE = END_POINT_SEVER + "/v3/currencies";
+
+// export const QUERY_CURRENCIES = END_POINT_SEVER + "/v4/currencies";
+export const QUERY_CURRENCIES = END_POINT_SEVER + "/v4/currencies";
+export const QUERY_CURRENCY_HISTORY = END_POINT_SEVER + "/v4/currency-history";
+export const CREATE_CURRENCY = END_POINT_SEVER + "/v3/currency/create";
+export const UPDATE_CURRENCY = END_POINT_SEVER + "/v3/currency/update";
+export const DELETE_CURRENCY = END_POINT_SEVER + "/v3/currency/delete";

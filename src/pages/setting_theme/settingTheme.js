@@ -29,14 +29,20 @@ import { useStore } from "../../store/useStore";
 import MenuItemThemeTool from "./tools/MenuItemThemeTool";
 import SelfOrderingPage from "./ThemeIframe";
 import ColorTool from "./tools/ColorTool";
+import BottomBarTool from "./tools/BottomBarTool";
+import PopUpIconsFontawesome from "../../components/popup/PopUpIconsFontawesome";
 export default function SettingTheme() {
   // state
   const [selectTool, setSelectTool] = useState();
+  const [popup, setPopup] = useState({});
 
   // provider
-  const { storeDetail } = useStore();
+  const { storeDetail, themeColors } = useStore();
   // useEffect
   // function
+  const handleChangeIcon = () => {
+    setPopup({ PopUpIconsFontawesome: true });
+  };
   return (
     <Box
       sx={{
@@ -80,6 +86,11 @@ export default function SettingTheme() {
                 icon: <IoMdColorPalette />,
                 title: "ສີ",
                 onClick: () => setSelectTool("COLOR"),
+              },
+              {
+                icon: <IoMdColorPalette />,
+                title: "Bottom bar",
+                onClick: () => setSelectTool("BOTTOM_BAR"),
               },
               {
                 icon: <BsFlagFill />,
@@ -258,66 +269,19 @@ export default function SettingTheme() {
             ເຄື່ອງມື
           </Card.Header>
           <Card.Body>
-            {/* <div>
-              <Form.Control />
-            </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3,1fr)",
-                gap: 10,
-                padding: "10px 0",
-              }}
-            >
-              <div
-                style={{
-                  border: `2px solid ${COLOR_APP}`,
-                  height: 80,
-                  borderRadius: 10,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: COLOR_APP,
-                  fontWeight: "bold",
-                }}
-              >
-                <TfiLayoutGrid4Alt />
-              </div>
-              <div
-                style={{
-                  border: `2px solid ${COLOR_APP}`,
-                  height: 80,
-                  borderRadius: 10,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: COLOR_APP,
-                  fontWeight: "bold",
-                }}
-              >
-                <GoContainer />
-              </div>
-              <div
-                style={{
-                  border: `2px solid ${COLOR_APP}`,
-                  height: 80,
-                  borderRadius: 10,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: COLOR_APP,
-                  fontWeight: "bold",
-                }}
-              >
-                Max
-              </div>
-            </div> */}
-            {/* <MenuItemThemeTool /> */}
-            <ColorTool open />
+            <ColorTool open={selectTool == "COLOR"} />
+            <BottomBarTool
+              handleChangeIcon={handleChangeIcon}
+              open={selectTool == "BOTTOM_BAR"}
+            />
           </Card.Body>
         </Card>
         {/* </div> */}
       </div>
+      {/* <PopUpIconsFontawesome
+        open={popup?.PopUpIconsFontawesome}
+        onClose={() => setPopup({})}
+      /> */}
     </Box>
   );
 }

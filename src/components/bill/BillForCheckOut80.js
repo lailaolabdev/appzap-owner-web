@@ -2,23 +2,32 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
+import { QUERY_CURRENCIES, getLocalData, getLocalDataCustomer } from "../../constants/api";
+import Axios from "axios";
 
 export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
+  taxPercent = 0,
 }) {
   // state
   const [total, setTotal] = useState();
+  const [taxAmount, setTaxAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
+  const [currencyData, setCurrencyData] = useState([]);
 
   // useEffect
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill]);
+    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill?.dataCustomer)
+
+  }, [dataBill, taxPercent]);
+
   useEffect(() => {
     _calculateTotal();
+    getDataCurrency();
   }, []);
 
   // function
@@ -41,7 +50,25 @@ export default function BillForCheckOut80({
       setTotalAfterDiscount(_total);
     }
     setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
   };
+
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await Axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status == 200) {
+          setCurrencyData(data?.data?.data);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
   return (
     <Container>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
@@ -100,31 +127,45 @@ export default function BillForCheckOut80({
           );
         })}
       </Order>
-      <hr style={{ border: "1px solid #000" }} />
-      <Price>
-        <div style={{ flexGrow: 1 }}></div>
+      <div style={{height:10}}></div>
+      <hr style={{ border: "1px solid #000",margin:0 }} />
+      <div style={{fontSize:14}}>
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>
+            ລວມ + ພາສີ {taxPercent}%: {moneyCurrency(total + taxAmount)} ກີບ
+          </div>
+          {currencyData?.map((item, index) => (
+            <div key={index}>
+              ລວມ + ພາສີ {taxPercent}% ({item?.currencyCode}):{" "}
+              {moneyCurrency((total + taxAmount) / item?.sell)}
+            </div>
+          ))}
           <div>
             ສ່ວນຫຼຸດ:
             {dataBill?.discount}{" "}
             {dataBill?.discountType == "MONEY" ||
-            dataBill?.discountType == "LAK"
+              dataBill?.discountType == "LAK"
               ? "ກີບ"
               : "%"}
           </div>
+          <div>
+            ລູກຄ້າ : {dataBill?.dataCustomer?.username} ( {dataBill?.dataCustomer?.phone} )
+          </div>
         </div>
-      </Price>
-      <hr style={{ border: "1px solid #000" }} />
+      </div>
+      <hr style={{ border: "1px solid #000",margin:0 }} />
+      <div style={{height:10}}></div>
       <Price>
-        <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount)} ກີບ</h6>
+        <h6>
+          ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} ກີບ
+        </h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>ຮັບເງີນມາ 0</div>
-          <div>ເງີນທອນ 0</div>
+          <div>ຮັບເງີນມາ {dataBill?.moneyReceived || 0}</div>
+          <div>ເງີນທອນ {dataBill?.moneyChange || 0}</div>
         </div>
       </Price>
       <div
