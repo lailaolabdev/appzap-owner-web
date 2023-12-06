@@ -917,11 +917,11 @@ export default function TableList() {
                     <div
                       style={{
                         border:
-                          selectedTable?.tableName === table?.tableName
+                          selectedTable?.code === table?.code
                             ? "1px solid #404258"
                             : "1px solid #FB6E3B",
                         backgroundColor:
-                          selectedTable?.tableName === table?.tableName
+                          selectedTable?.code === table?.code
                             ? "#404258"
                             : "#FFF",
                         borderRadius: 8,
@@ -950,7 +950,7 @@ export default function TableList() {
                                 : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
-                              selectedTable?.tableName === table?.tableName
+                            selectedTable?.code === table?.code
                                 ? "3px solid #404258"
                                 : "3px solid  white",
                             display: "flex",

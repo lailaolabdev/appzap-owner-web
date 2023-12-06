@@ -670,7 +670,10 @@ export default function DashboardFinance({
               marginBottom: 10,
             }}
           >
-            <Button disabled={disabledEditBill} onClick={handleEditBill}>
+            <Button
+              disabled={disabledEditBill || selectOrder?.status === "ACTIVE"}
+              onClick={handleEditBill}
+            >
               {selectOrder?.status === "ACTIVE"
                 ? t("editingTheBill")
                 : t("billEditing")}
