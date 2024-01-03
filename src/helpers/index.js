@@ -146,6 +146,11 @@ export const formatDate = (dateTime) => {
   if (dateTime) return resp;
   else return "";
 };
+export const formatDateNow = (dateTime) => {
+  let resp = moment(dateTime).format("YYYY-MM-DD");
+  if (dateTime) return resp;
+  else return "";
+};
 
 export const formatDateTime = (dateTime) => {
   moment.locale("lo");

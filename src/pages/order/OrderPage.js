@@ -247,7 +247,6 @@ export default function OrderPage() {
           </Button>
         </div>
         <div style={{ width: "10px" }}></div>
-
         <div>
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
