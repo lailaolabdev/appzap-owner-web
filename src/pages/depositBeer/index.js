@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { formatDateNow } from "../../helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +23,13 @@ export default function DepositBeer() {
       setSeletedOrderItem({ ...seletedOrderItem, quantity: _data });
     }
   }
+
+  useEffect(() => {
+    
+  }, [])
+  
+
+
   return (
     <div>
       <div
@@ -41,15 +48,21 @@ export default function DepositBeer() {
           <thead className='thead-dark' style={{ textAlign: "center" }}>
             <tr>
               <th>#</th>
-              <th scope='col'>ຊື່ສີນຄ້າ</th>
-              <th scope='col'>ຈຳນວນ</th>
+              <th scope='col'>ເລກທີບີນຝາກ</th>
+              <th scope='col'>ຊື່ລູກຄ້າ</th>
+              <th scope='col'>ສະຖານະ</th>
+              <th scope='col'>ວັນທີຝາກເບຍ</th>
+              <th scope='col'>ກຳນົດຝາກ</th>
               <th scope='col'>ຈັດການ</th>
             </tr>
           </thead>
           <tbody>
-            <tr onClick={()=>handleShowDetail()}>
+            <tr onClick={() => handleShowDetail()}>
               <th scope='row'>1</th>
               <td>Mark</td>
+              <td>Otto</td>
+              <td>Otto</td>
+              <td>Otto</td>
               <td>Otto</td>
               <td>
                 <Button variant='secondary' onClick={handleClose}>
@@ -76,7 +89,7 @@ export default function DepositBeer() {
             <p>ໂຕະ : </p>
             <p>ເລກທີບີນຝາກ : </p>
             <p>ຊື່ລູກຄ້າ : </p>
-            <p>ວັນທີຝາກເບຍ :  , ກຳນົດຝາກ : </p>
+            <p>ວັນທີຝາກເບຍ : , ກຳນົດຝາກ : </p>
             <table className='table' striped bordered hover>
               <thead className='thead-dark' style={{ textAlign: "center" }}>
                 <tr>
@@ -89,9 +102,7 @@ export default function DepositBeer() {
                 <tr>
                   <td>1</td>
                   <td>ເບຍລາວ</td>
-                  <td>
-                    1
-                  </td>
+                  <td>1</td>
                 </tr>
               </tbody>
             </table>
@@ -105,14 +116,14 @@ export default function DepositBeer() {
         <Modal.Body>
           <div>
             <Form>
-              <Form.Group className='mb-3' controlId='formBasicEmail'>
+              {/* <Form.Group className='mb-3' controlId='formBasicEmail'>
                 <Form.Label>ລະຫັດໂຕະ</Form.Label>
                 <Form.Control type='text' placeholder='ລະຫັດໂຕະ' />
               </Form.Group>
               <Form.Group className='mb-3' controlId='formBasicEmail'>
                 <Form.Label>ໂຕະ</Form.Label>
                 <Form.Control type='text' placeholder='ໂຕະ' />
-              </Form.Group>
+              </Form.Group> */}
               <Form.Group className='mb-3' controlId='formBasicEmail'>
                 <Form.Label>ເລກທີບີນຝາກ</Form.Label>
                 <Form.Control type='text' placeholder='ເລກທີບີນຝາກ' />
@@ -141,6 +152,23 @@ export default function DepositBeer() {
                     defaultValue={endDate}
                     placeholder='ກຳນົດຝາກ'
                   />
+                </Form.Group>
+              </div>
+              <div style={{ display: "flex" }}>
+                <Form.Group
+                  className='mb-3 col-6'
+                  controlId='formBasicPassword'>
+                  <Form.Label>ຊື່ເມນູອາຫານ</Form.Label>
+                  <Form.Control type='text' placeholder='ຊື່ເມນູອາຫານ' />
+                </Form.Group>
+                <Form.Group
+                  className='mb-3 col-6'
+                  controlId='formBasicPassword' style={{padding:32}}>
+                  <Button variant='secondary' 
+                  // onClick={handleClose}
+                  >
+                    ຄົ້ນຫາເມນູ
+                  </Button>
                 </Form.Group>
               </div>
             </Form>
