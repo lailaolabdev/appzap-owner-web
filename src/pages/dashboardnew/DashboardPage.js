@@ -27,6 +27,8 @@ import PopUpPrintComponent from "../../components/popup/PopUpPrintComponent";
 import BillForReport80 from "../../components/bill/BillForReport80";
 import { base64ToBlob } from "../../helpers";
 import PopUpPrintStaffHistoryComponent from "../../components/popup/PopUpPrintStaffHistoryComponent";
+import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMenuHistoryComponent";
+import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 
 export default function DashboardPage() {
   // state
@@ -468,6 +470,19 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintStaffHistoryComponent>
+
+      <PopUpPrintMenuHistoryComponent
+        open={popup?.printReportMenuSale}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
+      </PopUpPrintMenuHistoryComponent>
+      <PopUpPrintMenuCategoryHistoryComponent
+        open={popup?.printReportMenuCategorySale}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
+      </PopUpPrintMenuCategoryHistoryComponent>
 
       <PopUpPrintReport
         open={popup?.printReport}
