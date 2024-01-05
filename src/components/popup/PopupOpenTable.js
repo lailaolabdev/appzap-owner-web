@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
+import QRCode from "react-qr-code";
 
 export default function PopupOpenTable({
   open,
@@ -17,11 +18,14 @@ export default function PopupOpenTable({
         <div style={{ textAlign: "center" }}>
           <div>QR ໂຕະ {code?.tableName}</div>
           <div style={{ width: "100%", maxWidth: "400px" }}>
-            <img
+            <QRCode
+              value={`https://client.appzap.la/store/${code?.storeId}?table=${code?.tableId}`}
+            />
+            {/* <img
               src={`https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/${code?.storeId}?table=${code?.tableId}&chs=500x500&choe=UTF-8`}
               alt=""
               style={{ width: "100%" }}
-            />
+            /> */}
           </div>
         </div>
       </Modal.Body>

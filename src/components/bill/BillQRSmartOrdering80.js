@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
+import QRCode from "react-qr-code";
 export default function BillQRSmartOrdering80({
   storeId = "",
   TokenOfBill = "",
@@ -11,11 +12,14 @@ export default function BillQRSmartOrdering80({
       <h2>{tableName}</h2>
       <div>QR ສຳຫຼັບສັ່ງອາຫານ</div>
       <Img>
-        <img
+        <QRCode
+          value={`https://client.appzap.la/store/${storeId}?token=${TokenOfBill}`}
+        />
+        {/* <img
           src={`https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/${storeId}?token=${TokenOfBill}wx-&chs=500x500&choe=UTF-8`}
           style={{ wifth: "100%", height: "100%" }}
           alt=""
-        />
+        /> */}
       </Img>
     </Container>
   );

@@ -5,6 +5,7 @@ import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 import { QUERY_CURRENCIES, getLocalData } from "../../constants/api";
 import Axios from "axios";
+import QRCode from "react-qr-code";
 
 export default function BillForCheckOut58({
   storeDetail,
@@ -24,7 +25,7 @@ export default function BillForCheckOut58({
 
   // useEffect
   useEffect(() => {
-    getDataCurrency()
+    getDataCurrency();
   }, []);
   useEffect(() => {
     _calculateTotal();
@@ -74,11 +75,14 @@ export default function BillForCheckOut58({
         </div>
         <div style={{ flexGrow: 1 }}></div>
         <Img>
-          <img
+          <QRCode
+            value={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}`}
+          />
+          {/* <img
             src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
             style={{ wifth: "100%", height: "100%" }}
             alt=""
-          />
+          /> */}
         </Img>
       </Price>
       <Name style={{ marginBottom: 10 }}>
@@ -118,7 +122,9 @@ export default function BillForCheckOut58({
         <div>
           <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
           {currencyData?.map((item, index) => (
-            <div key={index}>ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}</div>
+            <div key={index}>
+              ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
+            </div>
           ))}
           <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
         </div>

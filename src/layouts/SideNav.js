@@ -107,7 +107,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
-      system: "tableManagement",
+      system: "settingManagement",
     },
     // {
     //   title: "Dashboard (ໃໝ່)",
@@ -173,7 +173,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-              `${storeDetail?._id}`,
+                `${storeDetail?._id}`,
               "_blank"
             )
             .focus();
@@ -183,7 +183,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-              `${storeDetail?._id}`,
+                `${storeDetail?._id}`,
               "_blank"
             )
             .focus();
@@ -248,7 +248,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               })}
             </NavItem>
           ))}
-        {role(profile?.data?.role, profile?.data)?.["tableManagement"] ? (
+        {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="songlist">
             <NavIcon>
               <FontAwesomeIcon
@@ -270,24 +270,28 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )}
-        <NavItem eventKey="customerList">
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faUsers}
+        {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
+          <NavItem eventKey="customerList">
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={faUsers}
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              />
+            </NavIcon>
+            <NavText
               style={{
                 color: UN_SELECTED_TAB_TEXT,
               }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ສະມາຊີກ
-          </NavText>
-        </NavItem>
+            >
+              ສະມາຊີກ
+            </NavText>
+          </NavItem>
+        ) : (
+          ""
+        )}
       </SideNav.Nav>
     </SideNav>
   );
