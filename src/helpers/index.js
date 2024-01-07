@@ -67,6 +67,15 @@ export const STATUS_OPENTABLE = (item) => {
     return "ເປີດແລ້ວ";
   }
 };
+export const STATUS_BEERFAK = (item) => {
+  if (item === "SUCCESS") {
+    return "ສຳເລັດ";
+  } else if (item === "WAITING") {
+    return "ລໍຖ້າ";
+  } else if (item === "CANCEL") {
+    return "ຍົກເລີກ";
+  }
+};
 export const base64ToBlob = (dataurl) => {
   const arr = dataurl.split(",");
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -146,6 +155,11 @@ export const formatDate = (dateTime) => {
   if (dateTime) return resp;
   else return "";
 };
+export const formatDateDay = (dateTime) => {
+  let resp = moment(dateTime).format("DD-MM-YYYY");
+  if (dateTime) return resp;
+  else return "";
+};
 export const formatDateNow = (dateTime) => {
   let resp = moment(dateTime).format("YYYY-MM-DD");
   if (dateTime) return resp;
@@ -156,4 +170,15 @@ export const formatDateTime = (dateTime) => {
   moment.locale("lo");
   let resp = moment(dateTime).format("DD-MM-YYYY, HH:mm:ss");
   return resp;
+};
+
+export const generateRandomTextAndNumber = (length) => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
 };
