@@ -128,7 +128,7 @@ const myQRPageJson = {
 														src: {
 															isJS: true,
 															__key:
-																"'https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/' + defualtAppZap?.storeDetail?._id + '?token=' + defualtAppZap?.token + '&chs=500x500&choe=UTF-8'",
+																"'https://app-api.appzap.la/qr-gennerate/qr?data=qr&chl=https://client.appzap.la/store/' + defualtAppZap?.storeDetail?._id + '?token=' + defualtAppZap?.token",
 														},
 													},
 												},

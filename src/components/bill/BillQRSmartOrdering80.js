@@ -12,14 +12,14 @@ export default function BillQRSmartOrdering80({
       <h2>{tableName}</h2>
       <div>QR ສຳຫຼັບສັ່ງອາຫານ</div>
       <Img>
-        <QRCode
+        {/* <QRCode
           value={`https://client.appzap.la/store/${storeId}?token=${TokenOfBill}`}
-        />
-        {/* <img
-          src={`https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/${storeId}?token=${TokenOfBill}wx-&chs=500x500&choe=UTF-8`}
+        /> */}
+        <img
+          src={`https://app-api.appzap.la/qr-gennerate/qr?data=https://client.appzap.la/store/${storeId}?token=${TokenOfBill}`}
           style={{ wifth: "100%", height: "100%" }}
           alt=""
-        /> */}
+        />
       </Img>
     </Container>
   );

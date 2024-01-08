@@ -18,14 +18,14 @@ export default function PopupOpenTable({
         <div style={{ textAlign: "center" }}>
           <div>QR ໂຕະ {code?.tableName}</div>
           <div style={{ width: "100%", maxWidth: "400px" }}>
-            <QRCode
+            {/* <QRCode
               value={`https://client.appzap.la/store/${code?.storeId}?table=${code?.tableId}`}
-            />
-            {/* <img
-              src={`https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/${code?.storeId}?table=${code?.tableId}&chs=500x500&choe=UTF-8`}
+            /> */}
+            <img
+              src={`https://app-api.appzap.la/qr-gennerate/qr?data=https://client.appzap.la/store/${code?.storeId}?table=${code?.tableId}`}
               alt=""
               style={{ width: "100%" }}
-            /> */}
+            />
           </div>
         </div>
       </Modal.Body>

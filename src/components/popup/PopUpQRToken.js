@@ -26,12 +26,12 @@ export default function PopUpStoreCancle({
         >
           <div>QR ສຳຫຼັບລູກຄ້າສັງເອງ </div>
           <div style={{ width: "100%", maxWidth: "400px" }}>
-          <QRCode value={`https://client.appzap.la/store/${storeId}?token=${qr}`} />
-            {/* <img
-              src={`https://chart.googleapis.com/chart?cht=qr&chl=https://client.appzap.la/store/${storeId}?token=${qr}&chs=500x500&choe=UTF-8`}
+            {/* <QRCode value={`https://client.appzap.la/store/${storeId}?token=${qr}`} /> */}
+            <img
+              src={`https://app-api.appzap.la/qr-gennerate/qr?data=https://client.appzap.la/store/${storeId}?token=${qr}`}
               alt=""
               style={{ width: "100%" }}
-            /> */}
+            />
           </div>
         </div>
       </Modal.Body>

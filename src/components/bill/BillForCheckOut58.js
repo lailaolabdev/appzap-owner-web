@@ -75,14 +75,14 @@ export default function BillForCheckOut58({
         </div>
         <div style={{ flexGrow: 1 }}></div>
         <Img>
-          <QRCode
+          {/* <QRCode
             value={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}`}
-          />
-          {/* <img
-            src={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}&chs=500x500&choe=UTF-8`}
+          /> */}
+          <img
+            src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
             style={{ wifth: "100%", height: "100%" }}
             alt=""
-          /> */}
+          />
         </Img>
       </Price>
       <Name style={{ marginBottom: 10 }}>
