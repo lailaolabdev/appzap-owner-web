@@ -49,6 +49,7 @@ import { getCodes } from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
+import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -88,6 +89,7 @@ export default function TableList() {
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [total, setTotal] = useState(0);
   const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
+  const [codeShortLink, setCodeShortLink] = useState(null);
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -120,6 +122,7 @@ export default function TableList() {
     getTableDataStoreList,
     setPrintNowList,
     openTableAndReturnTokenOfBill,
+    openTableAndReturnCodeShortLink,
   } = useStore();
 
   const reLoadData = () => {
@@ -484,10 +487,10 @@ export default function TableList() {
     });
   }
   useEffect(() => {
-    if (tokenForSmartOrder) {
-      onPrintQR(tokenForSmartOrder);
+    if (codeShortLink) {
+      onPrintQR(codeShortLink);
     }
-  }, [tokenForSmartOrder]);
+  }, [codeShortLink]);
   const onPrintQR = async (tokenQR) => {
     try {
       if (!tokenQR) {
@@ -552,16 +555,16 @@ export default function TableList() {
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setTokenForSmartOrder(null);
+      setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
-      setTokenForSmartOrder(null);
+      setCodeShortLink(null);
     } catch (err) {
-      setTokenForSmartOrder(null);
+      setCodeShortLink(null);
       console.log(err);
       await Swal.fire({
         icon: "error",
@@ -571,6 +574,89 @@ export default function TableList() {
       });
     }
   };
+  // const onPrintQR = async (tokenQR) => {
+  //   try {
+  //     if (!tokenQR) {
+  //       return;
+  //     }
+  //     // alert(tokenQR);
+  //     // setTokenForSmartOrder(tokenQR, (ee) => {
+  //     //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
+  //     // });
+  //     // if (!tokenForSmartOrder) {
+  //     //   setTokenForSmartOrder(tokenQR);
+  //     //   await delay(1000);
+  //     //   return;
+  //     // }
+  //     // if (!tokenForSmartOrder) {
+  //     //   return;
+  //     // }
+  //     let urlForPrinter = "";
+  //     const _printerCounters = JSON.parse(printerCounter?.prints);
+  //     const printerBillData = printers?.find(
+  //       (e) => e?._id === _printerCounters?.BILL
+  //     );
+  //     let dataImageForPrint;
+  //     if (printerBillData?.width === "80mm") {
+  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
+  //         useCORS: true,
+  //         scrollX: 10,
+  //         scrollY: 0,
+  //         scale: 530 / widthBill80,
+  //       });
+  //     }
+
+  //     if (printerBillData?.width === "58mm") {
+  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
+  //         useCORS: true,
+  //         scrollX: 10,
+  //         scrollY: 0,
+  //         scale: 350 / widthBill58,
+  //       });
+  //     }
+  //     if (printerBillData?.type === "ETHERNET") {
+  //       urlForPrinter = "http://localhost:9150/ethernet/image";
+  //     }
+  //     if (printerBillData?.type === "BLUETOOTH") {
+  //       urlForPrinter = "http://localhost:9150/bluetooth/image";
+  //     }
+  //     if (printerBillData?.type === "USB") {
+  //       urlForPrinter = "http://localhost:9150/usb/image";
+  //     }
+
+  //     const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+  //     var bodyFormData = new FormData();
+  //     bodyFormData.append("ip", printerBillData?.ip);
+  //     bodyFormData.append("port", "9100");
+  //     bodyFormData.append("image", _file);
+  //     bodyFormData.append("beep1", 1);
+  //     bodyFormData.append("beep2", 9);
+
+  //     await axios({
+  //       method: "post",
+  //       url: urlForPrinter,
+  //       data: bodyFormData,
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+  //     setTokenForSmartOrder(null);
+  //     await Swal.fire({
+  //       icon: "success",
+  //       title: "ປິນສຳເລັດ",
+  //       showConfirmButton: false,
+  //       timer: 1500,
+  //     });
+  //     setTokenForSmartOrder(null);
+  //   } catch (err) {
+  //     setTokenForSmartOrder(null);
+  //     console.log(err);
+  //     await Swal.fire({
+  //       icon: "error",
+  //       title: "ປິນບໍ່ສຳເລັດ",
+  //       showConfirmButton: false,
+  //       timer: 1500,
+  //     });
+  //   }
+  // };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
 
@@ -950,7 +1036,7 @@ export default function TableList() {
                                 : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
-                            selectedTable?.code === table?.code
+                              selectedTable?.code === table?.code
                                 ? "3px solid #404258"
                                 : "3px solid  white",
                             display: "flex",
@@ -1505,6 +1591,9 @@ export default function TableList() {
                       setTokenForSmartOrder(e);
                       // onPrintQR(e);
                     });
+                    openTableAndReturnCodeShortLink().then((e) => {
+                      setCodeShortLink(e);
+                    });
                   }}
                 >
                   ເປີດໂຕະພ້ອມ ປິນ QR
@@ -1543,10 +1632,14 @@ export default function TableList() {
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
-        <BillQRSmartOrdering80
+        {/* <BillQRSmartOrdering80
           storeId={storeDetail?._id}
           TokenOfBill={tokenForSmartOrder}
           tableName={selectedTable?.tableName}
+        /> */}
+        <BillQRShortSmartOrdering80
+          tableName={selectedTable?.tableName}
+          CodeShortLink={codeShortLink}
         />
       </div>
       <div style={{ width: "58mm", padding: 10 }} ref={bill58Ref}>

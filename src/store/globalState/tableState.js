@@ -209,6 +209,62 @@ export const useTableState = (storeDetail) => {
       console.log("err", err);
     }
   };
+  const openTableAndReturnCodeShortLink = async () => {
+    try {
+      let findby = "?";
+      findby += "storeId=" + selectedTable?.storeId;
+      findby += "&code=" + selectedTable?.code;
+      findby += "&tableId=" + selectedTable?.tableId;
+
+      const codesData = await getCodes(findby);
+      const code = codesData[0];
+
+      let resData = await axios.put(
+        END_POINT + `/v3/code/update`,
+        {
+          id: code?._id,
+          data: {
+            isOpened: true,
+            isStaffConfirm: true,
+            createdAt: new Date(),
+          },
+        },
+        {
+          headers: await getHeaders(),
+        }
+      );
+      if (resData.status < 300) {
+        const data = await axios.post(
+          `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
+        );
+        const dataShortLink = await axios.post(
+          `https://e7d1e6zvrl.execute-api.ap-southeast-1.amazonaws.com/create-short-link`,
+          {
+            url: `https://client.appzap.la/store/${selectedTable?.storeId}?token=${data?.data?.token}`,
+          }
+        );
+        await getTableDataStore();
+        onSelectTable({
+          ...selectedTable,
+          isOpened: true,
+          isStaffConfirm: true,
+        });
+        Swal.fire({
+          icon: "success",
+          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        if (resData.status < 300) {
+          return dataShortLink?.data?.code;
+        } else {
+          throw new Error("can not qr token");
+        }
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
   const mergeTable = async (_newTable) => {
     try {
@@ -323,5 +379,6 @@ export const useTableState = (storeDetail) => {
     selectTable2,
     setSelectTable2,
     openTableAndReturnTokenOfBill,
+    openTableAndReturnCodeShortLink,
   };
 };
