@@ -3,6 +3,8 @@ import _message from "../../sound/message.mp3";
 import _order from "../../sound/order-sound.wav";
 import useLocalStorage from "../../helpers/useLocalStorage";
 // import { toast } from "react-toastify";
+let _messageSound = new Audio("https://appzap-file-storage.s3.ap-southeast-1.amazonaws.com/audio/incoming-message-sound-1.mp3");
+let _orderSound = new Audio("https://appzap-file-storage.s3.ap-southeast-1.amazonaws.com/audio/incoming-order-sound-1.wav");
 
 export const useSoundState = () => {
   const [audioSetting, setAudioSetting] = useLocalStorage("audioSetting", {
@@ -26,8 +28,6 @@ export const useSoundState = () => {
     }
   }, [runSound]);
 
-  let _messageSound = new Audio(_message);
-  let _orderSound = new Audio(_order);
   const messageSound = () => {
     if (audioSetting?.message) {
       _messageSound.play();

@@ -1587,10 +1587,10 @@ export default function TableList() {
                     display: !selectedTable?.isOpened ? "block" : "none",
                   }}
                   onClick={() => {
-                    openTableAndReturnTokenOfBill().then((e) => {
-                      setTokenForSmartOrder(e);
-                      // onPrintQR(e);
-                    });
+                    // openTableAndReturnTokenOfBill().then((e) => {
+                    //   setTokenForSmartOrder(e);
+                    //   // onPrintQR(e);
+                    // });
                     openTableAndReturnCodeShortLink().then((e) => {
                       setCodeShortLink(e);
                     });
