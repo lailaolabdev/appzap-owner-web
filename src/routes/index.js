@@ -60,6 +60,8 @@ import SelfOrderingOrderRoutes from "./SelfOrderingOrder.routes";
 import CurrencyList from "../pages/currency/CurrencyList";
 import BannerList from "../pages/banner/BannerList";
 
+import DepositBeer from "../pages/depositBeer/index";
+
 function Router() {
   return useRoutes([
     {
@@ -195,6 +197,10 @@ function Router() {
         {
           path: "/settingStore/:id",
           element: <SettingList />,
+        },
+        {
+          path: "/depositBeer/:storeId",
+          element: <DepositBeer />,
         },
         {
           path: "/messagerList",

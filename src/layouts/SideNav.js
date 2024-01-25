@@ -21,6 +21,7 @@ import {
   faBook,
   faMusic,
   faUsers,
+  faBeer,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -149,9 +150,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "report") {
           selected = selected + "/" + storeDetail?._id;
         }
-        // if (selected === "orders") {
-        //   selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
-        // }
         if (selected === "histories") {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
@@ -167,6 +165,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "settingStore") {
+          selected = selected + `/${storeDetail?._id}`;
+        }
+        if (selected === "depositBeer") {
           selected = selected + `/${storeDetail?._id}`;
         }
         if (selected === "songlist") {
@@ -292,6 +293,24 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )}
+        <NavItem eventKey="depositBeer">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faBeer}
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຝາກເບຍ
+          </NavText>
+        </NavItem>
       </SideNav.Nav>
     </SideNav>
   );
