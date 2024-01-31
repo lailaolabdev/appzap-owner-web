@@ -169,19 +169,6 @@ export default function CurrencyList() {
           <Breadcrumb.Item active>ຈັດການເລດເງິນ</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
-          {/* <Nav
-            variant="tabs"
-            defaultActiveKey="currency-list"
-            // onSelect={() => {}}
-            style={{ marginBottom: 20 }}
-          >
-            <Nav.Item>
-              <Nav.Link eventKey="currency-list">ສະກຸນເງິນທັງໝົດ</Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="currency-history">ປະຫວັດການເລດເງິນ</Nav.Link>
-            </Nav.Item>
-          </Nav> */}
           <Tab
             eventKey="currency-list"
             title="ສະກຸນເງິນທັງໝົດ"

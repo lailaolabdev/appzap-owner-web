@@ -61,6 +61,7 @@ import CurrencyList from "../pages/currency/CurrencyList";
 import BannerList from "../pages/banner/BannerList";
 
 import DepositBeer from "../pages/depositBeer/index";
+import FarkRoutes from "./Fark.routes";
 
 function Router() {
   return useRoutes([
@@ -255,6 +256,7 @@ function Router() {
         AudioRoutes,
         ConfigRoutes,
         SelfOrderingOrderRoutes,
+        FarkRoutes
       ],
     },
     ComponentRoutes,

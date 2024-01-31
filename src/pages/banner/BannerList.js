@@ -345,7 +345,7 @@ export default function BannerList() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
+                      placeholder="ປ້ອນຊື່ແບນເນີ..."
                       isInvalid={!!errors.name}
                     />
                     <Form.Control.Feedback type="invalid">

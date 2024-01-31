@@ -22,6 +22,7 @@ import {
   faMusic,
   faUsers,
   faBeer,
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -190,6 +191,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
             .focus();
           return;
         }
+        if (selected === "supplier") {
+          window.open("https://supplier.appzap.la", "_blank").focus();
+          return;
+        }
         const to = "/" + selected;
 
         if (location.pathname !== to) {
@@ -293,7 +298,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )}
-        <NavItem eventKey="depositBeer">
+        <NavItem eventKey="fark">
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -308,7 +313,25 @@ export default function Sidenav({ location, navigate, onToggle }) {
               color: UN_SELECTED_TAB_TEXT,
             }}
           >
-            ຝາກເບຍ
+            ຝາກສິນຄ້າ
+          </NavText>
+        </NavItem>
+        <NavItem eventKey="supplier">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faShoppingCart}
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            ຕະຫຼາດ
           </NavText>
         </NavItem>
       </SideNav.Nav>
