@@ -1990,10 +1990,11 @@ export default function TableList() {
             ຍົກເລີກ
           </Button>
           <Button
+            disabled
             variant="success"
-            onClick={() => {
-              _orderTableQunatity();
-            }}
+            // onClick={() => {
+            //   _orderTableQunatity();
+            // }}
           >
             ບັນທຶກ
           </Button>

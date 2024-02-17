@@ -57,7 +57,6 @@ export default function UserList() {
     setIsLoading(false);
   };
   const _userDetail = () => {};
-  // const [totalPage, setTotalPage] = useState([]);
   useEffect(() => {
     if (userData?.total > 0) {
       _getArrayPageNumber();

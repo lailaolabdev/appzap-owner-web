@@ -35,7 +35,7 @@ export default function SettingList() {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
       title: t("employeeManage"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
-      path: `/settingStore/users/limit/40/page/1/${params?.id}`,
+      path: `/user`,
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",

@@ -62,6 +62,7 @@ import BannerList from "../pages/banner/BannerList";
 
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
+import UserRoutes from "./User.routes";
 
 function Router() {
   return useRoutes([
@@ -256,7 +257,8 @@ function Router() {
         AudioRoutes,
         ConfigRoutes,
         SelfOrderingOrderRoutes,
-        FarkRoutes
+        FarkRoutes,
+        UserRoutes
       ],
     },
     ComponentRoutes,

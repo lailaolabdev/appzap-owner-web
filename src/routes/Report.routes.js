@@ -1,19 +1,23 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 // page
-import SettingTable from "../pages/settingStore/SettingTable";
-import ReportMenuPage from "../pages/report/ReportMenuPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
 import ReportStockPage from "../pages/report/ReportStockPage";
+import ReportLayout from "../layouts/ReportLayout";
+import MemberPage from "../pages/MemberPage";
 
 // eslint-disable-next-line
 export default {
-  path: "/new-report",
-  element: <Outlet />,
+  path: "/report",
+  element: <ReportLayout />,
   children: [
     {
-      path: "",
+      path: "sales-report",
       element: <DashboardPage />,
+    },
+    {
+      path: "members-report",
+      element: <MemberPage />,
     },
     {
       path: "stock",
