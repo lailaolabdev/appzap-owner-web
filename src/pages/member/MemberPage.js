@@ -1,31 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Card, Breadcrumb, Button, ButtonGroup, Form } from "react-bootstrap";
+import {
+  Card,
+  Breadcrumb,
+  Button,
+  ButtonGroup,
+  Form,
+  Alert,
+} from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
   BsInfoCircle,
 } from "react-icons/bs";
-import { MdOutlineCloudDownload } from "react-icons/md";
+import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
-import Box from "../components/Box";
-import ReportChartWeek from "../components/report_chart/ReportChartWeek";
-import { useStore } from "../store";
+import Box from "../../components/Box";
+import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
 import moment from "moment";
-import { COLOR_APP } from "../constants";
-import ButtonDropdown from "../components/button/ButtonDropdown";
+import { COLOR_APP } from "../../constants";
+import ButtonDropdown from "../../components/button/ButtonDropdown";
 import { FaSearch } from "react-icons/fa";
-import { getMembers } from "../services/member.service";
-import { getLocalData } from "../constants/api";
+import { getMemberCount, getMembers } from "../../services/member.service";
+import { getLocalData } from "../../constants/api";
+import { useNavigate } from "react-router-dom";
 
 export default function MemberPage() {
+  const navigate = useNavigate();
   // state
-  const [reportData, setReportData] = useState([]);
-  const [salesInformationReport, setSalesInformationReport] = useState();
-  const [userReport, setUserReport] = useState();
-  const [menuReport, setMenuReport] = useState();
-  const [categoryReport, setCategoryReport] = useState();
-  const [moneyReport, setMoneyReport] = useState();
-  const [promotionReport, setPromotionReport] = useState();
+  const [memberCount, setMemberCount] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
@@ -34,31 +36,28 @@ export default function MemberPage() {
   const [membersData, setMembersData] = useState();
 
   // provider
-  const { storeDetail } = useStore();
 
   // useEffect
   useEffect(() => {
     getMembersData();
-    // getSalesInformationReportData();
-    // getUserReportData();
-    // getMenuReportData();
-    // getMoneyReportData();
-    // getPromotionReportData();
-    // getCategoryReportData();
+    getMemberCountData();
   }, [endDate, startDate, endTime, startTime]);
 
   // function
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      console.log(
-        `%cP%c ${"tests"}`,
-        "color:#fff;background:#E60023;font-weight:bold;border-radius:2px;display:inline-block;padding:0 4px;",
-        ""
-      );
-      console.log("DATA", DATA);
-      const _data = await getMembers(DATA?._id);
-      setMembersData(_data)
+      const _data = await getMembers(DATA?.storeId, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMembersData(_data);
+    } catch (err) {}
+  };
+  const getMemberCountData = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      const _data = await getMemberCount(DATA?.storeId, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMemberCount(_data.count);
     } catch (err) {}
   };
 
@@ -69,6 +68,71 @@ export default function MemberPage() {
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານສະມາຊິກ</Breadcrumb.Item>
         </Breadcrumb>
+        <Alert key="warning" variant="warning">
+          ອັບເດດຄັ້ງລາສຸດ 2024/02/20 15:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
+        </Alert>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
+            gap: 20,
+            gridTemplateRows: "masonry",
+            marginBottom: 20,
+          }}
+        >
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຈຳນວນສະມາຊິກທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 700,
+                }}
+              >
+                {memberCount || "ບໍ່ມີສະມາຊິກ"}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຄະແນນສະສົມທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              {" "}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 700,
+                }}
+              >
+                7,600
+              </div>
+            </Card.Body>
+          </Card>
+        </Box>
+        {/* filter */}
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <Button
             variant="outline-primary"
@@ -109,7 +173,7 @@ export default function MemberPage() {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { md: "1fr 1fr 1fr", xs: "1fr" },
+            gridTemplateColumns: { md: "1fr 1fr 1fr 1fr", xs: "1fr" },
             gap: 20,
             gridTemplateRows: "masonry",
             marginBottom: 20,
@@ -124,7 +188,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ຈຳນວນສະມາຊິກ
+              ສະມາຊິກໃໝ່
             </Card.Header>
             <Card.Body>
               <div
@@ -136,7 +200,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                65
+                {memberCount || "ບໍ່ມີສະມາຊິກ"}
               </div>
             </Card.Body>
           </Card>
@@ -149,7 +213,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ຄະແນນສະສົມ
+              ຄະແນນ
             </Card.Header>
             <Card.Body>
               {" "}
@@ -175,7 +239,33 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ຈຳນວນເງິນ
+              ຈຳນວນບິນ
+            </Card.Header>
+            <Card.Body>
+              {" "}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 700,
+                }}
+              >
+                76
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຍອດບິນລວມ
             </Card.Header>
             <Card.Body>
               {" "}
@@ -201,9 +291,21 @@ export default function MemberPage() {
                 color: "#fff",
                 fontSize: 18,
                 fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
               }}
             >
-              ລາຍການສະມາຊິກ
+              <span>ລາຍການສະມາຊິກ</span>
+
+              <Button
+                variant="dark"
+                bg="dark"
+                onClick={() => navigate("/report/members-report/create-member")}
+              >
+                <MdAssignmentAdd /> ເພີ່ມສະມາຊິກ
+              </Button>
             </Card.Header>
             <Card.Body>
               <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
@@ -223,15 +325,20 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>ເບີໂທ</th>
                   <th style={{ textAlign: "center" }}>ຄະແນນສະສົມ</th>
                   <th style={{ textAlign: "center" }}>ໃຊ້ບໍລິການ</th>
+                  <th style={{ textAlign: "center" }}>ວັນທີສະໝັກ</th>
                   <th style={{ textAlign: "right" }}>ຈັດການ</th>
                 </tr>
                 {membersData?.map((e) => (
                   <tr>
-                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                    <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                    <td style={{ textAlign: "left" }}>{e?.name}</td>
+                    <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                    <td style={{ textAlign: "center" }}>-</td>
+                    <td style={{ textAlign: "center" }}>-</td>
+                    <td style={{ textAlign: "center" }}>
+                      {moment(e?.createdAt).format("DD/MM/YYYY")}
+                    </td>
                     <td style={{ textAlign: "right" }}>
-                    sdf
+                      <Button>ແກ້ໄຂ</Button>
                     </td>
                   </tr>
                 ))}
@@ -247,7 +354,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ເມນູຂາຍດີ (ສຳຫຼັບສະມາຊິກ)
+              ຍອດຂາຍເມນູ
             </Card.Header>
             <Card.Body>
               <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>

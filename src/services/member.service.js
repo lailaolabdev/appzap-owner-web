@@ -1,83 +1,36 @@
 import axios from "axios";
-import { getHeaders } from "./auth";
-let END_POINT_SEVER = "https://app-api.appzap.la/crm";
+import { END_POINT_SEVER } from "../constants/api";
 
-export const getMembers = async (storeId) => {
+export const getMembers = async (storeId, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/api/crm/customers?resId=${storeId}`;
-    const res = await axios.get(url);
+    const url = `${END_POINT_SEVER}/v4/members?storeId=${storeId}`;
+    const res = await axios.get(url, { headers: TOKEN });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-// export const getMenu = async (categoryId) => {
-//   try {
-//     const url = `${END_POINT_SEVER}/v3/menu?id=${categoryId}`;
-//     const res = await axios.get(url);
-//     return res.data;
-//   } catch (error) {
-//     return error;
-//   }
-// };
-
-export const updateMember = async (pointsChange, MemberId) => {
+export const getMemberCount = async (storeId, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/api/crm/customers/${MemberId}/points`;
-    const _category = await axios.put(
-      url,
-      {
-        pointsChange: pointsChange,
-      },
-      {
-        headers: await getHeaders(),
-      }
-    );
-    return _category;
+    const url = `${END_POINT_SEVER}/v4/member/count?storeId=${storeId}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
   } catch (error) {
     return error;
   }
 };
-// export const updateMember = async (data, id) => {
-//   try {
-//     const url = `${END_POINT_SEVER}/v3/category/update`;
-//     const _category = await axios.put(
-//       url,
-//       {
-//         id: id,
-//         data: data,
-//       },
-//       {
-//         headers: await getHeaders(),
-//       }
-//     );
-//     return _category;
-//   } catch (error) {
-//     return error;
-//   }
-// };
 
-// export const deleteMember = async (data) => {
-//   try {
-//     const url = `${END_POINT_SEVER}/v3/category/create`;
-//     const _category = await axios.post(url, data, {
-//       headers: await getHeaders(),
-//     });
-//     return _category;
-//   } catch (error) {
-//     return error;
-//   }
-// };
-
-export const addMember = async (data) => {
+export const addMember = async (data, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/api/crm/customers`;
+    const url = `${END_POINT_SEVER}/v4/member/create`;
     const _category = await axios.post(url, data, {
-      headers: await getHeaders(),
+      headers: TOKEN,
     });
     return _category;
   } catch (error) {
     return error;
   }
 };
+
+// report 

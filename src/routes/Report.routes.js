@@ -4,7 +4,8 @@ import { Outlet } from "react-router-dom";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
 import ReportStockPage from "../pages/report/ReportStockPage";
 import ReportLayout from "../layouts/ReportLayout";
-import MemberPage from "../pages/MemberPage";
+import MemberPage from "../pages/member/MemberPage";
+import CreateMemberPage from "../pages/member/CreateMemberPage";
 
 // eslint-disable-next-line
 export default {
@@ -18,6 +19,10 @@ export default {
     {
       path: "members-report",
       element: <MemberPage />,
+    },
+    {
+      path: "members-report/create-member",
+      element: <CreateMemberPage />,
     },
     {
       path: "stock",
