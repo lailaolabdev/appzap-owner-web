@@ -20,14 +20,24 @@ import moment from "moment";
 import { COLOR_APP } from "../../constants";
 import ButtonDropdown from "../../components/button/ButtonDropdown";
 import { FaSearch } from "react-icons/fa";
-import { getMemberCount, getMembers } from "../../services/member.service";
+import {
+  getMemberAllCount,
+  getMemberCount,
+  getMembers,
+  getMemberBillCount,
+  getMemberTotalMoney,
+} from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
+import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 
 export default function MemberPage() {
   const navigate = useNavigate();
   // state
+  const [memberAllCount, setMemberAllCount] = useState(); // member all
   const [memberCount, setMemberCount] = useState();
+  const [memberBillCount, setMemberBillCount] = useState();
+  const [memberTotalMoney, setMemberTotalMoney] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
@@ -41,6 +51,9 @@ export default function MemberPage() {
   useEffect(() => {
     getMembersData();
     getMemberCountData();
+    getMemberMemberCountData();
+    getMemberBillCountData();
+    getMemberTotalMoneyData();
   }, [endDate, startDate, endTime, startTime]);
 
   // function
@@ -55,10 +68,31 @@ export default function MemberPage() {
   const getMemberCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      const _data = await getMemberCount(DATA?.storeId, TOKEN);
+      const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberCount(_data.count);
+      setMemberAllCount(_data.count);
     } catch (err) {}
+  };
+  const getMemberMemberCountData = async () => {
+    const { TOKEN, DATA } = await getLocalData();
+    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const _data = await getMemberCount(findBy, TOKEN);
+    if (_data.error) return;
+    setMemberCount(_data.count);
+  };
+  const getMemberBillCountData = async () => {
+    const { TOKEN, DATA } = await getLocalData();
+    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const _data = await getMemberBillCount(findBy, TOKEN);
+    if (_data.error) return;
+    setMemberBillCount(_data.count);
+  };
+  const getMemberTotalMoneyData = async () => {
+    const { TOKEN, DATA } = await getLocalData();
+    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const _data = await getMemberTotalMoney(findBy, TOKEN);
+    if (_data.error) return;
+    setMemberTotalMoney(_data.totalMoney);
   };
 
   return (
@@ -101,7 +135,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                {memberCount || "ບໍ່ມີສະມາຊິກ"}
+                {memberAllCount}
               </div>
             </Card.Body>
           </Card>
@@ -117,7 +151,6 @@ export default function MemberPage() {
               ຄະແນນສະສົມທັງໝົດ
             </Card.Header>
             <Card.Body>
-              {" "}
               <div
                 style={{
                   display: "flex",
@@ -127,7 +160,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                7,600
+                -
               </div>
             </Card.Body>
           </Card>
@@ -157,6 +190,7 @@ export default function MemberPage() {
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
           </Button> */}
           <Button
+            disabled
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ printReport: true })}
@@ -164,6 +198,7 @@ export default function MemberPage() {
             <AiFillPrinter /> ສະມາຊີກທຸກຄົນ
           </Button>
           <Button
+            disabled
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
           >
@@ -200,7 +235,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                {memberCount || "ບໍ່ມີສະມາຊິກ"}
+                {memberCount}
               </div>
             </Card.Body>
           </Card>
@@ -226,7 +261,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                7,600
+                -
               </div>
             </Card.Body>
           </Card>
@@ -252,7 +287,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                76
+                {memberBillCount}
               </div>
             </Card.Body>
           </Card>
@@ -278,7 +313,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                423,000,000
+                {memberTotalMoney}
               </div>
             </Card.Body>
           </Card>
@@ -332,8 +367,8 @@ export default function MemberPage() {
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                    <td style={{ textAlign: "center" }}>-</td>
-                    <td style={{ textAlign: "center" }}>-</td>
+                    <td style={{ textAlign: "center" }}>{e?.point}</td>
+                    <td style={{ textAlign: "center" }}>{e?.bill}</td>
                     <td style={{ textAlign: "center" }}>
                       {moment(e?.createdAt).format("DD/MM/YYYY")}
                     </td>
@@ -388,10 +423,22 @@ export default function MemberPage() {
               </table>
             </Card.Body>
           </Card>
-          <ReportCard title={"ກຣາຟ"} chart={<ReportChartWeek />} />
+          {/* <ReportCard title={"ກຣາຟ"} chart={<ReportChartWeek />} /> */}
         </div>
       </Box>
       {/* popup */}
+      <PopUpSetStartAndEndDate
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+      />
     </>
   );
 }

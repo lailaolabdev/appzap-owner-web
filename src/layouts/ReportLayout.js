@@ -30,14 +30,19 @@ export default function ReportLayout() {
           }}
         >
           <Button>ລາຍງານຍອດຂາຍ</Button>
-          <Button variant="outline-primary">ລາຍງານສະຕ໊ອກ</Button>
+          <Button variant="outline-primary" disabled>
+            ລາຍງານສະຕ໊ອກ (Coming soon)
+          </Button>
           <Button
+            disabled
             variant="outline-primary"
             onClick={() => navigate("/report/members-report")}
           >
-            ລາຍງານສະມາຊິກ
+            ລາຍງານສະມາຊິກ (Coming soon)
           </Button>
-          <Button variant="outline-primary">ການພະລິດ</Button>
+          <Button disabled variant="outline-primary">
+            ລາຍງານການພະລິດ (Coming soon)
+          </Button>
         </div>
       </div>
       <div>

@@ -29,11 +29,21 @@ import "./sidenav.css";
 import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
+import { getLocalData, getToken } from "../constants/api";
 
 export default function Sidenav({ location, navigate, onToggle }) {
+  const [token, setToken] = useState();
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+
+  // useEffect
+  useEffect(() => {
+    (async () => {
+      const TOKEN = await getToken();
+      setToken(TOKEN);
+    })();
+  }, []);
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
   const { profile } = useStore();
@@ -111,14 +121,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-    {
-      title: "Dashboard (ໃໝ່)",
-      key: "dashboardmenu",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: "Dashboard (ໃໝ່)",
+    //   key: "dashboardmenu",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: "settingStore",
@@ -175,7 +185,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                `${storeDetail?._id}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -185,7 +195,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-                `${storeDetail?._id}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();

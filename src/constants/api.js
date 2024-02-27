@@ -34,6 +34,15 @@ export const getLocalData = async () => {
   const TOKEN = { authorization: "AppZap " + _localJson2?.accessToken };
   return { TOKEN, DATA };
 };
+/**
+ * 
+ * @returns {token}
+ */
+export const getToken = async () => {
+  const _local = await localStorage.getItem(USER_KEY);
+  const _localJson2 = await JSON.parse(_local);
+  return _localJson2?.accessToken
+};
 export const getLocalDataCustomer = async () => {
   const _local = await localStorage.getItem("DATA_CUSTOMER");
   const _localJson2 = await JSON.parse(_local);

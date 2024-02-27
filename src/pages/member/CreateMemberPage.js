@@ -53,7 +53,7 @@ export default function CreateMemberPage() {
       <div style={{ padding: 20 }}>
         <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍງານສະມາຊິກ</Breadcrumb.Item>
+          <Breadcrumb.Item active>ເພີ່ມລາຍການສະມາຊິກ</Breadcrumb.Item>
         </Breadcrumb>
 
         <Card border="primary" style={{ maxWidth: 500 }}>
@@ -125,6 +125,7 @@ export default function CreateMemberPage() {
         </Card>
       </div>
       {/* popup */}
+     
     </>
   );
 }

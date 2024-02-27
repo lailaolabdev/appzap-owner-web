@@ -11,9 +11,37 @@ export const getMembers = async (storeId, TOKEN) => {
   }
 };
 
-export const getMemberCount = async (storeId, TOKEN) => {
+export const getMemberAllCount = async (storeId, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count?storeId=${storeId}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
+export const getMemberBillCount = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/total-bill${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+export const getMemberTotalMoney = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/total-money${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+export const getMemberCount = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/count${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
     return res.data;
   } catch (error) {
@@ -33,4 +61,4 @@ export const addMember = async (data, TOKEN) => {
   }
 };
 
-// report 
+// report
