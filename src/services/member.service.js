@@ -1,9 +1,9 @@
 import axios from "axios";
 import { END_POINT_SEVER } from "../constants/api";
 
-export const getMembers = async (storeId, TOKEN) => {
+export const getMembers = async (findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/members?storeId=${storeId}`;
+    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
     return res.data;
   } catch (error) {

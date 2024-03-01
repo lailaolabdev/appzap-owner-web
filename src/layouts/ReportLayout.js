@@ -34,11 +34,10 @@ export default function ReportLayout() {
             ລາຍງານສະຕ໊ອກ (Coming soon)
           </Button>
           <Button
-            disabled
             variant="outline-primary"
             onClick={() => navigate("/report/members-report")}
           >
-            ລາຍງານສະມາຊິກ (Coming soon)
+            ລາຍງານສະມາຊິກ
           </Button>
           <Button disabled variant="outline-primary">
             ລາຍງານການພະລິດ (Coming soon)

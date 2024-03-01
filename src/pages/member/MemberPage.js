@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   Form,
   Alert,
+  Pagination,
 } from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
@@ -30,6 +31,10 @@ import {
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
+import { FaCoins } from "react-icons/fa";
+import ReactPaginate from "react-paginate";
+
+let limitData = 10;
 
 export default function MemberPage() {
   const navigate = useNavigate();
@@ -45,22 +50,38 @@ export default function MemberPage() {
   const [popup, setPopup] = useState();
   const [membersData, setMembersData] = useState();
 
+  const [paginationMember, setPaginationMember] = useState(1);
+  const [totalPaginationMember, setTotalPaginationMember] = useState();
+
   // provider
 
   // useEffect
   useEffect(() => {
     getMembersData();
     getMemberCountData();
-    getMemberMemberCountData();
+    getMemberCountByfilterData();
+    getMemberBillCountData();
+    getMemberTotalMoneyData();
+  }, []);
+  useEffect(() => {
+    getMemberCountByfilterData();
     getMemberBillCountData();
     getMemberTotalMoneyData();
   }, [endDate, startDate, endTime, startTime]);
+
+  useEffect(() => {
+    getMembersData();
+  }, [paginationMember]);
 
   // function
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      const _data = await getMembers(DATA?.storeId, TOKEN);
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${limitData}&`;
+      const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data);
     } catch (err) {}
@@ -71,11 +92,13 @@ export default function MemberPage() {
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberAllCount(_data.count);
+      setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
   };
-  const getMemberMemberCountData = async () => {
+  const getMemberCountByfilterData = async () => {
     const { TOKEN, DATA } = await getLocalData();
     const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+
     const _data = await getMemberCount(findBy, TOKEN);
     if (_data.error) return;
     setMemberCount(_data.count);
@@ -146,9 +169,21 @@ export default function MemberPage() {
                 color: "#fff",
                 fontSize: 18,
                 fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
               }}
             >
-              ຄະແນນສະສົມທັງໝົດ
+              <span>ຄະແນນສະສົມທັງໝົດ</span>
+
+              <Button
+                variant="dark"
+                bg="dark"
+                onClick={() => navigate("/report/members-report/setting-point")}
+              >
+               <FaCoins /> ຕັ້ງຄ່າການໃຫ້ຄະແນນ
+              </Button>
             </Card.Header>
             <Card.Body>
               <div
@@ -165,6 +200,102 @@ export default function MemberPage() {
             </Card.Body>
           </Card>
         </Box>
+        <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 10,
+            }}
+          >
+            <span>ລາຍການສະມາຊິກ</span>
+
+            <Button
+              variant="dark"
+              bg="dark"
+              onClick={() => navigate("/report/members-report/create-member")}
+            >
+              <MdAssignmentAdd /> ເພີ່ມສະມາຊິກ
+            </Button>
+          </Card.Header>
+          <Card.Body>
+            <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 10 }}>
+                <Form.Control placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ" />
+                <Button
+                  variant="primary"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                >
+                  <FaSearch /> ຄົ້ນຫາ
+                </Button>
+              </div>
+            </div>
+            <table style={{ width: "100%" }}>
+              <tr>
+                <th style={{ textAlign: "left" }}>ຊື່ສະມາຊິກ</th>
+                <th style={{ textAlign: "center" }}>ເບີໂທ</th>
+                <th style={{ textAlign: "center" }}>ຄະແນນສະສົມ</th>
+                <th style={{ textAlign: "center" }}>ໃຊ້ບໍລິການ</th>
+                <th style={{ textAlign: "center" }}>ວັນທີສະໝັກ</th>
+                <th style={{ textAlign: "right" }}>ຈັດການ</th>
+              </tr>
+              {membersData?.map((e) => (
+                <tr>
+                  <td style={{ textAlign: "left" }}>{e?.name}</td>
+                  <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                  <td style={{ textAlign: "center" }}>{e?.point}</td>
+                  <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                  <td style={{ textAlign: "center" }}>
+                    {moment(e?.createdAt).format("DD/MM/YYYY")}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    <Button>ແກ້ໄຂ</Button>
+                  </td>
+                </tr>
+              ))}
+            </table>
+          </Card.Body>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              bottom: 20,
+            }}
+          >
+            <ReactPaginate
+              previousLabel={
+                <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+              }
+              nextLabel={
+                <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+              }
+              breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+              breakClassName={"break-me"}
+              pageCount={totalPaginationMember} // Replace with the actual number of pages
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={3}
+              onPageChange={(e) => {
+                console.log(e);
+                setPaginationMember(e?.selected + 1);
+              }}
+              containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              activeClassName={"active"}
+              previousClassName={"page-item"}
+              nextClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextLinkClassName={"page-link"}
+            />
+          </div>
+        </Card>
+
         {/* filter */}
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <Button
@@ -319,67 +450,6 @@ export default function MemberPage() {
           </Card>
         </Box>
         <div>
-          <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: 10,
-              }}
-            >
-              <span>ລາຍການສະມາຊິກ</span>
-
-              <Button
-                variant="dark"
-                bg="dark"
-                onClick={() => navigate("/report/members-report/create-member")}
-              >
-                <MdAssignmentAdd /> ເພີ່ມສະມາຊິກ
-              </Button>
-            </Card.Header>
-            <Card.Body>
-              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <Form.Control placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ" />
-                  <Button
-                    variant="primary"
-                    style={{ display: "flex", gap: 10, alignItems: "center" }}
-                  >
-                    <FaSearch /> ຄົ້ນຫາ
-                  </Button>
-                </div>
-              </div>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>ຊື່ສະມາຊິກ</th>
-                  <th style={{ textAlign: "center" }}>ເບີໂທ</th>
-                  <th style={{ textAlign: "center" }}>ຄະແນນສະສົມ</th>
-                  <th style={{ textAlign: "center" }}>ໃຊ້ບໍລິການ</th>
-                  <th style={{ textAlign: "center" }}>ວັນທີສະໝັກ</th>
-                  <th style={{ textAlign: "right" }}>ຈັດການ</th>
-                </tr>
-                {membersData?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.name}</td>
-                    <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                    <td style={{ textAlign: "center" }}>{e?.point}</td>
-                    <td style={{ textAlign: "center" }}>{e?.bill}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {moment(e?.createdAt).format("DD/MM/YYYY")}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Button>ແກ້ໄຂ</Button>
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            </Card.Body>
-          </Card>
           <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
               style={{
