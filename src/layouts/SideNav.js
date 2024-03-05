@@ -119,7 +119,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
-      system: "settingManagement",
+      system: "report",
     },
     // {
     //   title: "Dashboard (ໃໝ່)",
