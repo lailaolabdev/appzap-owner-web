@@ -345,10 +345,15 @@ export default function CheckOutType({
             <div>
               <div>
                 <Button variant="primary" onClick={() => {}}>
-                  ສະມາຊິກ
+                  ເລືອກສະມາຊິກ
                 </Button>
               </div>
-              <div style={{ justifyContent: "space-around", display: "flex" }}>
+              <div>
+                <div>ຊື່ສະມາຊິກ: ຈອນ</div>
+                <div>ເບີໂທ: 020 9701 5341</div>
+                <div>ຄະແນນ: 89,000</div>
+              </div>
+              {/* <div style={{ justifyContent: "space-around", display: "flex" }}>
                 {!selectDataOpption?._id ? (
                   <input
                     className="col-6"
@@ -380,7 +385,7 @@ export default function CheckOutType({
                 >
                   ສ້າງ User
                 </button>
-              </div>
+              </div> */}
 
               <div className="col-6" style={{ marginLeft: 15 }}>
                 <div
