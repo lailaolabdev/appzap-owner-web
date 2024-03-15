@@ -123,3 +123,4 @@ export const BUTTON_SUCCESS = {
   zPosition: 100,
   width: BUTTON_INDEX,
 };
+

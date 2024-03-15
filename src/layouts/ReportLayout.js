@@ -1,50 +1,100 @@
-import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Button, ButtonGroup } from "react-bootstrap";
+import { MdDining, MdOutlinePieChartOutline } from "react-icons/md";
+import "./sidenav.css";
+import useWindowDimension2 from "../helpers/useWindowDimension2";
+import { COLOR_APP } from "../constants";
 
 export default function ReportLayout() {
   const navigate = useNavigate();
+  const { height, width } = useWindowDimension2();
+  const [activeButton, setActiveButton] = useState("");
+  const Location = useLocation()
+
+  const onViewStocksPath = (patch) => {
+    navigate(`/report/${patch}`);
+  };
+
+  useEffect(() => {
+    setActiveButton(Location.pathname);
+  }, [Location.pathname]);
+
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "200px 1fr",
-        minHeight: "100%",
+        gridTemplateColumns: width > 900 ? "190px 1fr" : "",
+        background: "#fafafa",
+        width: "100%",
       }}
     >
-      <div
-        style={{
-          backgroundColor: "#fff",
-          boxShadow: "1px 0px 10px rgba(0,0,0,0.1)",
-          position: "relative",
-        }}
-      >
+      {width > 900 && (
         <div
           style={{
-            position: "sticky",
-            top: 0,
-            padding: 10,
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
+            borderRight: "1px solid #f2f2f2",
+            position: "relative",
+            height: "auto",
           }}
         >
-          <Button>ລາຍງານຍອດຂາຍ</Button>
-          <Button variant="outline-primary" disabled>
-            ລາຍງານສະຕ໊ອກ (Coming soon)
-          </Button>
-          <Button
-            disabled
-            variant="outline-primary"
-            onClick={() => navigate("/report/members-report")}
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              padding: 5,
+              // display: "flex",
+              // flexDirection: "column",
+              // gap: 10,
+              height: "90vh",
+            }}
           >
-            ລາຍງານສະມາຊິກ (Coming soon)
-          </Button>
-          <Button disabled variant="outline-primary">
-            ລາຍງານການພະລິດ (Coming soon)
-          </Button>
+            <ButtonGroup vertical className="card-left-report">
+              <div
+                className="menu-report-stocks"
+                style={{
+                  background: activeButton === "/report/sales-report" ? COLOR_APP : "white",
+                  color: activeButton === "/report/sales-report" ? "white" : COLOR_APP,
+                }}
+                onClick={() => onViewStocksPath("sales-report")}
+              >
+                <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
+                <strong>ລາຍງານຍອດຂາຍ</strong>
+              </div>
+              <div
+                className="menu-report-stocks mt-1"
+                style={{
+                  background: activeButton === "/report/reportStocks" ? COLOR_APP : "white",
+                  color: activeButton === "/report/reportStocks" ? "white" : COLOR_APP,
+                }}
+                onClick={() => onViewStocksPath("reportStocks")}
+              >
+                <MdDining style={{ fontSize: 35 }} />
+                <strong>ລາຍງານສະຕ໋ອກ</strong>
+              </div>
+
+              <div
+                className="menu-report-stocks mt-1"
+                disabled
+                // onClick={() => navigate("/report/members-report")}
+              >
+                ລາຍງານການພະລິດ <br />
+                (ກຳລັງພັດທະນາ)
+              </div>
+              <div
+                className="menu-report-stocks mt-1"
+                disabled
+                // onClick={() => navigate("/report/members-report")}
+              >
+                ລາຍງານສະມາຊິກ <br />
+                (ກຳລັງພັດທະນາ)
+              </div>
+            </ButtonGroup>
+          </div>
         </div>
-      </div>
+      )}
+      {/* <div className="header-mini-layout">
+
+      </div> */}
       <div>
         <Outlet />
       </div>

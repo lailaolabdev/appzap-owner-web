@@ -30,13 +30,13 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             ປະເພດສະຕ໊ອກ
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
+        {/* <Nav.Item>
           <Nav.Link
             eventKey='/settingStore/stock/history'
             onClick={() => _history()}>
             ປະຫວັດສະຕ໊ອກ
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
       </Nav>
     </div>
   );

@@ -100,10 +100,10 @@ export default function DashboardPage() {
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
-        <Breadcrumb>
+        {/* <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
-        </Breadcrumb>
+        </Breadcrumb> */}
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <Button
             variant="outline-primary"

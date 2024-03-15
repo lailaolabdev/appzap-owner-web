@@ -13,7 +13,7 @@ import { stockType } from "../../helpers/stockType";
 import useQuery, { ObjectToQuery } from "../../helpers/useQuery";
 
 export default function Historylist() {
-  const {id} = useParams();
+  const {id, _page} = useParams();
   // state
   const [getTokken, setgetTokken] = useState();
   const [histories, setHistories] = useState([]);
@@ -25,7 +25,7 @@ export default function Historylist() {
   const limit = 20;
   const skip = (pageNumber - 1) * limit;
   const filterSearch = query?.search;
-  const [pageCountNumber, setPageCountNumber] = useState(10000);
+  const [pageCountNumber, setPageCountNumber] = useState(1000);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +38,8 @@ export default function Historylist() {
     fetchData();
   }, [limit,skip]);
 
+  console.log("check limit:--->", limit, skip)
+
   const getData = async (id) => {
     setHistories([])
     setIsLoading(true);
@@ -46,7 +48,7 @@ export default function Historylist() {
     if (limit) filter.limit = limit;
     const _resHistory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/stock-histories?storeId=${id}&limit=${filter.limit}&skip=${filter.skip}`,
+      url: END_POINT_SEVER + `/v3/stock-histories?storeId=${id}&limit=${limit}&skip=${filter.skip}`,
     });
     setHistories(_resHistory?.data);
     setIsLoading(false);

@@ -182,3 +182,8 @@ export const generateRandomTextAndNumber = (length) => {
   }
   return result;
 };
+
+export const numberFormat = (_number) => {
+  return new Intl.NumberFormat("en-US").format(_number);
+};
+ 

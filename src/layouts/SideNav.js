@@ -121,13 +121,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "report",
     },
+  
     // {
-    //   title: "Dashboard (ໃໝ່)",
-    //   key: "dashboardmenu",
+    //   title: "ລາຍງານສະຕ໋ອກ",
+    //   key: "reportStocks",
     //   typeStore: "",
     //   icon: faChartLine,
     //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
+    //   system: "settingManagement",
     // },
     {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
@@ -137,6 +138,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
+  
   ];
 
   const listForRole = itemList.filter((e) => {

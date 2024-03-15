@@ -35,7 +35,7 @@ import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 
-let limitData = 25;
+let limitData = 2;
 
 export default function UserPage() {
   const navigate = useNavigate();
@@ -88,6 +88,7 @@ export default function UserPage() {
       findby += `storeId=${storeDetail?._id}&`;
 
       const _data = await getUserCountV5(findby, TOKEN);
+      console.log("newLimit:---->", _data?.count)
       setTotalPagination(Math.ceil(_data?.count / limitData));
     } catch (err) {
       console.log("err", err);
