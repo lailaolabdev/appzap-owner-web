@@ -171,7 +171,7 @@ export default function FormAddMenuStock() {
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
-          setStocks(data.data);
+          setStocks(data?.data?.stocks);
         }
         setIsLoading(false);
       }

@@ -65,7 +65,7 @@ export default function NavBar() {
           position: "fixed",
           top: 0,
           left: 0,
-          zIndex: 1,
+          zIndex: 99,
           paddingLeft: 52,
           // marginLeft: 60,
           // paddingRight: 80,

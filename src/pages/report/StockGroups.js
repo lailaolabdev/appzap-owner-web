@@ -13,7 +13,7 @@ function StockGroups({ dataExports, isLoading, filterName }) {
 console.log("export:----999>", dataExports)
 
 
-  if (isLoading) return  
+  // if (isLoading) return  
 
   // ຂໍ້ມູນທີ່ສະແດງຕາມການຄົ້ນຫາຊື່ສິນຄ້າ
 //   const filteredData = dataExports?.filter((e) => e?.name?.includes(filterName)) || [];
