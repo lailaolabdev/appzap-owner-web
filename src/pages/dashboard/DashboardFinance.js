@@ -10,7 +10,7 @@ import Box from "../../components/Box";
 import * as _ from "lodash";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
-import useQuery from "../../helpers/useQuery";
+import useQuery, { ObjectToQuery } from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
@@ -38,6 +38,13 @@ export default function DashboardFinance({
   const [disabledEditBill, setDisabledEditBill] = useState(false);
   const handleClose = () => setShow(false);
   const { storeDetail } = useStore();
+
+  const query = useQuery();
+  const pageNumber = parseInt(query?.page || "1");
+  const limit = 25;
+  const LIMIT_PAGE = 25;
+  const skip = (pageNumber - 1) * limit;
+  const [pageCountNumber, setPageCountNumber] = useState(10000);
 
   const handleEditBill = async () => {
     try {
@@ -103,14 +110,31 @@ export default function DashboardFinance({
     }));
     return _export;
   };
-
+  const onNextPage = () => {
+    navigate(
+      ObjectToQuery({
+        ...query,
+        page: parseInt(query?.page || "1") + 1,
+      })
+    );
+  };
+  const onBackPage = () => {
+    if (parseInt(query?.page) <= 1) return;
+    if (!query?.page) return; // page === undefined
+    navigate(
+      ObjectToQuery({
+        ...query,
+        page: parseInt(query?.page || "1") - 1,
+      })
+    );
+  };
   useEffect(() => {
     getcurrency();
     _fetchFinanceData();
   }, []);
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate, selectedCurrency]);
+  }, [pageNumber]);
   const _fetchFinanceData = async () => {
     setIsLoading(true);
     // const url =
@@ -122,10 +146,10 @@ export default function DashboardFinance({
         params?.storeId +
         // "&currencyType=" +
         // selectedCurrency +
-        "&startDate=" +
-        startDate +
-        "&endDate=" +
-        endDate,
+        "&skip=" +
+        ((pageNumber - 1)*limit) +
+        "&limit=" +
+        limit,
       {
         headers: headers,
       }
@@ -257,407 +281,137 @@ export default function DashboardFinance({
   };
   return (
     <div style={{ padding: 0 }}>
-      <div
-        style={{
-          marginRight: "30px",
-          backgroundColor: "orange",
-          boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
-        }}
-      >
-        {/* <select onChange={(e) => setSelectedCurrency(e.target.value)}>
-          <option selected value="">ກີບ</option>
-          {
-            currency?.map((La, index) => (
-              <option value={La?.currencyCode}>{La?.currencyName}</option>
-            ))
-          }
-        </select> */}
-      </div>
       {isLoading && <AnimationLoading />}
-      <div className="row">
-        <div style={{ width: "100%" }}>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                md: "1fr 1fr 1fr",
-                sm: "1fr 1fr",
-                xs: "1fr",
-              },
-              padding: 10,
-            }}
-          >
-            <div
-              style={{
-                border: "solid 1px #FB6E3B",
-                borderRadius: "0px 0px 8px 8px",
-                flex: 2,
-                margin: 5,
-              }}
-            >
-              <div
-                style={{
-                  height: 50,
-                  color: "#fff",
-                  backgroundColor: "#FB6E3B",
-                  display: "flex",
-                  // justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ margin: 0, fontSize: 20 }}>
-                  {t("totalCirculation")}
-                </p>
-              </div>
-              <div style={{ padding: 15 }}>
-                <div>
-                  {t("numberOfBill")} : {data?.checkOut?.length} {t("bill")}
-                </div>
-                <div>
-                  {t("totalBalance")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    // data?.discountType === "LAK" && data?.discount > 0 ? data?.amount - disCountDataKib : data?.amount * (1 + disCountDataPercent / 100)
 
-                    // data?.discount > 0 ? (data?.discountType === "LAK" ? data?.amount - disCountDataKib :
-                    // data?.amount * (1 + disCountDataPercent / 100)
-                    // )
-                    // : data?.amount
-                    dataCheckBill?.amount + dataNotCheckBill?.amount
-                  )}{" "}
-                  {selectedCurrency}
-                  {/* {selectedCurrency} */}
-                </div>
-                {/* <div>
-                  {t("percentageDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    disCountDataPercent
-                  )}{" "}
-                  %
-                </div> */}
-                <div>
-                  {t("payBycash")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.cash
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("transferPayment")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.transfer
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {/* ສ່ວນຫຼຸດເປັນເງິນ :{" "} */}
-                  {t("cashDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    disCountDataKib
-                  )}{" "}
-                  {selectedCurrency}
-                  <span className="mx-1"></span>({" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    disCountDataPercent
-                  )}{" "}
-                  %)
-                </div>
-                <div>
-                  {t("outstandingDebt")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataNotCheckBill?.amount
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                border: "solid 1px #FB6E3B",
-                borderRadius: "0px 0px 8px 8px",
-                flex: 1,
-                margin: 5,
-              }}
-            >
-              <div
+      <div style={{ width: "100%" }}>
+        <Table striped hover size="sm" style={{ fontSize: 15 }}>
+          <thead>
+            <tr>
+              <th>{t("no")}</th>
+              <th>{t("tableNumber")}</th>
+              <th>{t("tableCode")}</th>
+              <th>{t("tableDiscount")}</th>
+              <th>
+                {t("price")} / {t("bill")}
+              </th>
+              <th>
+                {t("served")} / {t("cancel")}
+              </th>
+              <th>{t("tableStatus")}</th>
+              <th>{t("paymentType")}</th>
+              <th>{t("time")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.checkOut?.map((item, index) => (
+              <tr
+                key={"finance-" + index}
+                onClick={() => {
+                  setSelectOrder(item);
+                  handleShow(item?.orderId);
+                }}
                 style={{
-                  height: 50,
-                  color: "#fff",
-                  backgroundColor: "#FB6E3B",
-                  display: "flex",
-                  // justifyContent: "center",
-                  alignItems: "center",
+                  backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
+                    item?.status
+                  )
+                    ? "#FB6E3B"
+                    : "",
+                  color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                    ? "#ffffff"
+                    : "#616161",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 20 }}>
-                  {t("totalCompeleteBill")}
-                </p>
-              </div>
-              <div style={{ padding: 15 }}>
-                <div style={{ color: "#454545" }}>
-                  {t("numberOfBill")} : {dataCheckBill?.total} {t("bill")}
-                </div>
-                <div style={{ color: "#454545" }}>
-                  {t("totalBalance")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.amount
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("payBycash")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.cash
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("transferPayment")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.transfer
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("cashDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.discountCash
-                  )}{" "}
-                  {selectedCurrency}
-                  <span className="mx-1"></span>({" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataCheckBill?.discountPercent
-                  )}{" "}
-                  %)
-                </div>
-              </div>
-            </div>
-            <div
-              style={{
-                border: "solid 1px #FB6E3B",
-                borderRadius: "0px 0px 8px 8px",
-                flex: 1,
-                margin: 5,
-              }}
-            >
-              <div
-                style={{
-                  height: 50,
-                  color: "#fff",
-                  backgroundColor: "#FB6E3B",
-                  display: "flex",
-                  // justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ margin: 0, fontSize: 20 }}>
-                  {t("outstandingBillAmount")}
-                </p>
-              </div>
-              <div style={{ padding: 15 }}>
-                <div style={{ color: "#454545" }}>
-                  {t("numberOfBill")} : {dataNotCheckBill?.total} {t("bill")}
-                </div>
-                <div style={{ color: "#454545" }}>
-                  {t("totalBalance")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataNotCheckBill?.amount
-                  )}{" "}
-                  {selectedCurrency}
-                </div>
-                <div>
-                  {t("cashDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataNotCheckBill?.discountCash
-                  )}{" "}
-                  {selectedCurrency}
-                  <span className="mx-1"></span>({" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataNotCheckBill?.discountPercent
-                  )}{" "}
-                  % )
-                </div>
-                {/* <div>
-                  {t("percentageDiscount")} :{" "}
-                  {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                    dataNotCheckBill?.discountPercent
-                  )}{" "}
-                  %
-                </div> */}
-              </div>
-            </div>
-          </Box>
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
-          >
-            <ButtonDownloadExcel
-              // jsonData={() => {
-              //   let _export = data?.checkOut.map((item, index) => ({
-              //     ລຳດັບ: index + 1,
-              //     ເລກບິນ: item?.code,
-              //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-              //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-              //       ? new Intl.NumberFormat("ja-JP", {
-              //         currency: "JPY",
-              //       }).format(_countAmount(item?.orderId))
-              //       : new Intl.NumberFormat("ja-JP", {
-              //         currency: "JPY",
-              //       }).format(item?.billAmount),
-              //     ຈ່າຍເງິນສົດ: item?.payAmount,
-              //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
-              //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-              //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-              //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-              //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-              //         data?.amount + dataNotCheckBill?.amount
-              //       ) : "",
-              //   }))
-              //   return _export
-              // }}
-
-              jsonData={data?.checkOut.map((item, index) => ({
-                ລຳດັບ: index + 1,
-                ເລກບິນ: item?.code,
-                ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-                ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                  ? _countAmount(item?.orderId)
-                  : item?.billAmount,
-                ຈ່າຍເງິນສົດ: item?.payAmount,
-                ຈ່າຍເງິນໂອນ: item?.transferAmount,
-                ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-                ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-                ຍອດລວມທັງໝົດ:
-                  data?.checkOut?.length === index + 1
+                <td>{(pageNumber - 1) * LIMIT_PAGE + index + 1}</td>
+                <td>{item?.tableId?.name ?? "-"}</td>
+                <td>{item?.code}</td>
+                <td>
+                  {item?.discountType === "LAK"
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(data?.amount + dataNotCheckBill?.amount)
-                    : "",
-              }))}
-              // jsonData={exportJsonToExcel}
-            />
-          </Box>
-          <div style={{ padding: 10 }}>
-            <Table striped hover size="sm" style={{ fontSize: 15 }}>
-              <thead>
-                <tr>
-                  <th>{t("no")}</th>
-                  <th>{t("tableNumber")}</th>
-                  <th>{t("tableCode")}</th>
-                  <th>{t("tableDiscount")}</th>
-                  <th>
-                    {t("price")} / {t("bill")}
-                  </th>
-                  <th>
-                    {t("served")} / {t("cancel")}
-                  </th>
-                  <th>{t("tableStatus")}</th>
-                  <th>{t("paymentType")}</th>
-                  <th>{t("time")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.checkOut?.map((item, index) => (
-                  <tr
-                    key={"finance-" + index}
-                    onClick={() => {
-                      setSelectOrder(item);
-                      handleShow(item?.orderId);
-                    }}
+                      }).format(item?.discount) + t("lak")
+                    : item?.discount + "%"}
+                </td>
+                <td>
+                  {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                    ? new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(_countAmount(item?.orderId))
+                    : new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(item?.billAmount)}{" "}
+                  {selectedCurrency}
+                </td>
+                <td>
+                  <div
                     style={{
-                      backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
-                        item?.status
-                      )
-                        ? "#FB6E3B"
-                        : "",
-                      color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                        ? "#ffffff"
-                        : "#616161",
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "row",
                     }}
                   >
-                    <td>{index + 1}</td>
-                    <td>{item?.tableId?.name ?? "-"}</td>
-                    <td>{item?.code}</td>
-                    <td>
-                      {item?.discountType === "LAK"
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.discount) + t("lak")
-                        : item?.discount + "%"}
-                    </td>
-                    <td>
-                      {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
-                        : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.billAmount)}{" "}
-                      {selectedCurrency}
-                    </td>
-                    <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "row",
-                        }}
-                      >
-                        <p style={{ marginLeft: 5 }}>
-                          {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
-                        </p>
-                        <p style={{ marginLeft: 5 }}> / </p>
-                        <p
-                          style={{
-                            color:
-                              _countOrder(item?.orderId)?._countOrderCancel > 0
-                                ? "red"
-                                : "",
-                            marginLeft: 5,
-                          }}
-                        >
-                          {" "}
-                          {_countOrder(item?.orderId)?._countOrderCancel}
-                        </p>
-                      </div>
-                    </td>
-                    <td
+                    <p style={{ marginLeft: 5 }}>
+                      {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
+                    </p>
+                    <p style={{ marginLeft: 5 }}> / </p>
+                    <p
                       style={{
                         color:
-                          item?.status === "CHECKOUT"
-                            ? "green"
-                            : item?.status === "CALLTOCHECKOUT"
+                          _countOrder(item?.orderId)?._countOrderCancel > 0
                             ? "red"
-                            : item?.status === "ACTIVE"
-                            ? "#00496e"
                             : "",
+                        marginLeft: 5,
                       }}
                     >
-                      {_statusCheckBill(item?.status)}
-                    </td>
-                    <td
-                      style={{
-                        color:
-                          item?.paymentMethod === "CASH"
-                            ? "#00496e"
-                            : "#0D47A1",
-                      }}
-                    >
-                      {item?.paymentMethod === "CASH"
-                        ? t("payBycash")
-                        : item?.paymentMethod === "TRANSFER"
-                        ? t("transferPayment")
-                        : t("transfercash")}
-                    </td>
-                    <td>
-                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </div>
-        <div style={{ width: "50%", padding: 20 }}></div>
+                      {" "}
+                      {_countOrder(item?.orderId)?._countOrderCancel}
+                    </p>
+                  </div>
+                </td>
+                <td
+                  style={{
+                    color:
+                      item?.status === "CHECKOUT"
+                        ? "green"
+                        : item?.status === "CALLTOCHECKOUT"
+                        ? "red"
+                        : item?.status === "ACTIVE"
+                        ? "#00496e"
+                        : "",
+                  }}
+                >
+                  {_statusCheckBill(item?.status)}
+                </td>
+                <td
+                  style={{
+                    color:
+                      item?.paymentMethod === "CASH" ? "#00496e" : "#0D47A1",
+                  }}
+                >
+                  {item?.paymentMethod === "CASH"
+                    ? t("payBycash")
+                    : item?.paymentMethod === "TRANSFER"
+                    ? t("transferPayment")
+                    : t("transfercash")}
+                </td>
+                <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button className="appzap_button" onClick={() => onBackPage()}>
+          ກັບຄືນ
+        </button>
+        <p style={{ margin: "5px 1rem" }}>
+          {pageNumber} / {pageCountNumber}
+        </p>
+        <button className="appzap_button" onClick={() => onNextPage()}>
+          ຕໍ່ໄປ
+        </button>
+      </div>
+      <div style={{ width: "50%", padding: 20 }}></div>
+
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{t("menuModal")}</Modal.Title>
