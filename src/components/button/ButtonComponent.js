@@ -8,7 +8,6 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 
 const CustomButton = styled.button`
   height: auto;
-  border-radius: 1rem;
   border: 0;
   padding: 9px 15px;
   cursor: pointer;

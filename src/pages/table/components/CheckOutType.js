@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Button } from "react-bootstrap";
+import { Modal, Form, Button, Card } from "react-bootstrap";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -16,6 +16,7 @@ import { useStore } from "../../../store";
 import { getCurrencys } from "../../../services/currency";
 import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
 import { formatDate } from "@fullcalendar/core";
+import PopUpSelectMemberData from "../../../components/popup/PopUpSelectMemberData";
 
 export default function CheckOutType({
   onPrintBill,
@@ -331,9 +332,39 @@ export default function CheckOutType({
         <Box
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: "240px 1fr 1fr",
           }}
         >
+          <div>
+            <div style={{ display: "flex", gap: 5, padding: 10 }}>
+              <Form.Control placeholder="ຄົ້ນຫາເບີພະນັກງານ" />
+              <Button>Search</Button>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: 2,
+                overflowY: "scroll",
+                flexDirection: "column",
+                padding: 10,
+                height: "100%",
+                maxHeight: 400,
+              }}
+            >
+              {[...new Array(10)].map((e) => (
+                <Card
+                  style={{
+                    border: `1px solid ${COLOR_APP}`,
+                    padding: 5,
+                    borderRadius: 8,
+                  }}
+                >
+                  <div>MMMMM sdfd</div>
+                  <div>Phone: 2097015341</div>
+                </Card>
+              ))}
+            </div>
+          </div>
           <div
             style={{
               padding: 20,
@@ -746,6 +777,7 @@ export default function CheckOutType({
           ໄລເງິນ
         </ButtonPrimary>
       </Modal.Footer>
+      {/* <PopUpSelectMemberData open /> */}
     </Modal>
   );
 }

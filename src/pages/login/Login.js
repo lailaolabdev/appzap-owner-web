@@ -245,7 +245,7 @@ function Login() {
                   </div>
                   <div style={{ height: 15 }} />
 
-                  <div
+                  {/* <div
                     style={{
                       display: "flex",
                       justifyContent: "flex-end",
@@ -258,7 +258,7 @@ function Login() {
                     >
                       ຍັງບໍ່ມີບັນຊີ
                     </div>
-                  </div>
+                  </div> */}
                   <div style={{ height: 30 }} />
                   <Button
                     style={{

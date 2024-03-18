@@ -462,7 +462,7 @@ export default function MemberPage() {
               ຍອດຂາຍເມນູ
             </Card.Header>
             <Card.Body>
-              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+              {/* <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
                 <div style={{ display: "flex", gap: 10 }}>
                   <Form.Control placeholder="ຄົ້ນຫາຊື່ເມນູ" />
                   <Button
@@ -472,7 +472,7 @@ export default function MemberPage() {
                     <FaSearch /> ຄົ້ນຫາ
                   </Button>
                 </div>
-              </div>
+              </div> */}
               <table style={{ width: "100%" }}>
                 <tr>
                   <th style={{ textAlign: "left" }}>ຊື່ເມນູ</th>

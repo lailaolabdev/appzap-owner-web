@@ -50,6 +50,7 @@ import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
+import CheckOutPopup from "./components/CheckOutPopup";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -1686,7 +1687,7 @@ export default function TableList() {
           })}
       </div>
 
-      <CheckOutType
+      <CheckOutPopup
         onPrintBill={onPrintBill}
         dataBill={dataBill}
         tableData={selectedTable}
@@ -1695,6 +1696,15 @@ export default function TableList() {
         setDataBill={setDataBill}
         taxPercent={taxPercent}
       />
+      {/* <CheckOutType
+        onPrintBill={onPrintBill}
+        dataBill={dataBill}
+        tableData={selectedTable}
+        open={popup?.CheckOutType}
+        onClose={() => setPopup()}
+        setDataBill={setDataBill}
+        taxPercent={taxPercent}
+      /> */}
 
       <OrderCheckOut
         data={dataBill}
