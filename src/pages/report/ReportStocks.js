@@ -65,37 +65,31 @@ export default function ReportStocks() {
   const getStockHistories = async (id) => {
     try {
       setIsLoading(true);
-
+  
       const response = await axios.get(
         `${END_POINT_SEVER}/v3/stock-history-groups`,
         {
           params: { storeId: id, startDate, startTime, endDate, endTime },
         }
       );
-
+  
       if (response.status === 200 && response.data) {
         const stockData = response.data;
-
-        const _bestImport = stockData.reduce(
-          (prev, current) =>
-            prev.totalQtyImport > current.totalQtyImport ? prev : current,
-          stockData[0]
-        );
-        const _bestExport = stockData.reduce(
-          (prev, current) =>
-            prev.totalQtyExport > current.totalQtyExport ? prev : current,
-          stockData[0]
-        );
-        const _bestReturn = stockData.reduce(
-          (prev, current) =>
-            prev.totalQtyReturn > current.totalQtyReturn ? prev : current,
-          stockData[0]
-        );
-
-        setBestStockImport(_bestImport);
-        setBestStockExport(_bestExport);
-        setBestStockReturn(_bestReturn);
-
+  
+        const findBest = (key) => {
+          return stockData.reduce((prev, current) =>
+            prev[key] > current[key] ? prev : current
+          , stockData[0]);
+        };
+  
+        const bestStockImport = findBest('totalQtyImport');
+        const bestStockExport = findBest('totalQtyExport');
+        const bestStockReturn = findBest('totalQtyReturn');
+  
+        setBestStockImport(bestStockImport);
+        setBestStockExport(bestStockExport);
+        setBestStockReturn(bestStockReturn);
+  
         setHistoriesExport(stockData);
       }
     } catch (error) {
@@ -104,6 +98,7 @@ export default function ReportStocks() {
       setIsLoading(false);
     }
   };
+  
 
   // ດຶງຂໍ້ມູນສະຕ໋ອກປະຈຸບັນທັງໝົດ
   const getStocks = async () => {
@@ -221,7 +216,7 @@ export default function ReportStocks() {
             {/* <Button onClick={() => getStocks()}>Enter</Button> */}
           </InputGroup>
         </div>
-        <Form.Group style={{ width: "60%" }}>
+        <Form.Group style={{ width: width > 700 ? "60%": "100%" }}>
           <Form.Label>ວັນທີ, ເດືອນ, ປີ (ເວລາ)</Form.Label>
           <Button
             variant="outline-primary"

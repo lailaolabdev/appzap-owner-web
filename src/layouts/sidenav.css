@@ -68,10 +68,7 @@
     align-items: center;
     gap: 2;
     flex-direction: column;
-    width:100%;cursor: pointer;
+    width: 100%;
+    cursor: pointer;
   }
 }
- 
- 
-
-

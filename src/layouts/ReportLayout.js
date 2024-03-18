@@ -10,7 +10,7 @@ export default function ReportLayout() {
   const navigate = useNavigate();
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
-  const Location = useLocation()
+  const Location = useLocation();
 
   const onViewStocksPath = (patch) => {
     navigate(`/report/${patch}`);
@@ -29,7 +29,7 @@ export default function ReportLayout() {
         width: "100%",
       }}
     >
-      {width > 900 && (
+      {width > 900 ? (
         <div
           style={{
             borderRight: "1px solid #f2f2f2",
@@ -52,8 +52,14 @@ export default function ReportLayout() {
               <div
                 className="menu-report-stocks"
                 style={{
-                  background: activeButton === "/report/sales-report" ? COLOR_APP : "white",
-                  color: activeButton === "/report/sales-report" ? "white" : COLOR_APP,
+                  background:
+                    activeButton === "/report/sales-report"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/report/sales-report"
+                      ? "white"
+                      : COLOR_APP,
                 }}
                 onClick={() => onViewStocksPath("sales-report")}
               >
@@ -63,8 +69,14 @@ export default function ReportLayout() {
               <div
                 className="menu-report-stocks mt-1"
                 style={{
-                  background: activeButton === "/report/reportStocks" ? COLOR_APP : "white",
-                  color: activeButton === "/report/reportStocks" ? "white" : COLOR_APP,
+                  background:
+                    activeButton === "/report/reportStocks"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/report/reportStocks"
+                      ? "white"
+                      : COLOR_APP,
                 }}
                 onClick={() => onViewStocksPath("reportStocks")}
               >
@@ -91,10 +103,53 @@ export default function ReportLayout() {
             </ButtonGroup>
           </div>
         </div>
-      )}
-      {/* <div className="header-mini-layout">
+      ) : (
+        <div className="d-flex w-100 ">
+        <div
+          className=" d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+          style={{
+            background:
+              activeButton === "/report/sales-report" ? COLOR_APP : "white",
+            color:
+              activeButton === "/report/sales-report" ? "white" : COLOR_APP,
+          }}
+          onClick={() => onViewStocksPath("sales-report")}
+        >
+          {/* <MdOutlinePieChartOutline style={{ fontSize: 35 }} /> */}
+          <strong>ລາຍງານຍອດຂາຍ</strong>
+        </div>
+        <div
+          className="d-flex justify-content-center align-items-center cursor-pointer  p-2 w-100"
+          style={{
+            background:
+              activeButton === "/report/reportStocks" ? COLOR_APP : "white",
+            color:
+              activeButton === "/report/reportStocks" ? "white" : COLOR_APP,
+          }}
+          onClick={() => onViewStocksPath("reportStocks")}
+        >
+          {/* <MdDining style={{ fontSize: 35 }} /> */}
+          <strong>ລາຍງານສະຕ໋ອກ</strong>
+        </div>
 
-      </div> */}
+        <div
+          className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+          disabled
+          // onClick={() => navigate("/report/members-report")}
+        >
+          ລາຍງານການພະລິດ <br />
+         {/* (ກຳລັງພັດທະນາ)  */}
+        </div>
+        <div
+          className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+          disabled
+          // onClick={() => navigate("/report/members-report")}
+        >
+          ລາຍງານສະມາຊິກ <br />
+         {/* (ກຳລັງພັດທະນາ)  */}
+        </div>
+      </div>
+      )}
       <div>
         <Outlet />
       </div>
