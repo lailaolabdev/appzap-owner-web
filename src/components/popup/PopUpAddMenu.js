@@ -6,6 +6,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Box from "../../components/Box";
 import Upload from "../Upload";
 import { moneyCurrency } from "../../helpers";
+import { useStore } from "../../store";
 
 export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   // state
@@ -19,9 +20,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   const [nameOption, setNameOption] = useState();
   const [priceOption, setPriceOption] = useState();
 
-  useEffect(() => {
-    return () => { };
-  }, []);
+  const { storeDetail } = useStore();
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>
@@ -32,15 +31,15 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
         initialValues={{
           name: "",
           name_en: "",
-          name_cn:"",
-          name_kr:"",
+          name_cn: "",
+          name_kr: "",
           quantity: 1,
           categoryId: "",
           price: "",
           detail: "",
           images: [],
           unit: "",
-          menuOptionId: ""
+          menuOptionId: "",
         }}
         validate={(values) => {
           const errors = {};
@@ -56,7 +55,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then((e) => { });
+          onSubmit(values).then((e) => {});
         }}
       >
         {({
@@ -109,9 +108,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>
-                        ຊື່ອາຫານ (en)
-                      </Form.Label>
+                      <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_en"
@@ -128,9 +125,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>
-                        ຊື່ອາຫານ (cn)
-                      </Form.Label>
+                      <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_cn"
@@ -147,9 +142,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>
-                        ຊື່ອາຫານ (kr)
-                      </Form.Label>
+                      <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_kr"
@@ -179,8 +172,8 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       style={{
                         border:
                           errors.categoryId &&
-                            touched.categoryId &&
-                            errors.categoryId
+                          touched.categoryId &&
+                          errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
@@ -258,7 +251,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         type="number"
                         value={priceOption}
                         onChange={(e) => setPriceOption(e.target.value)}
-                        placeholder="ລາຄາ (ກີບ)"
+                        placeholder={`ລາຄາ (${storeDetail?.firstCurrency})`}
                       />
                       <Button
                         onClick={() =>
@@ -287,7 +280,8 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         <span style={{ color: "#ccc" }}>
                           ລາຄາ (
                           <span style={{ color: "#000", fontWeight: "bold" }}>
-                            {moneyCurrency(e?.priceOption)} ກີບ
+                            {moneyCurrency(e?.priceOption)}{" "}
+                            {storeDetail?.firstCurrency}
                           </span>
                           )-
                         </span>

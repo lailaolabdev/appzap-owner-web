@@ -11,8 +11,9 @@ import { errorAdd } from "../../../helpers/sweetalert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 import { t } from "i18next";
+import { useStore } from "../../../store";
 
 const UpdateDiscountOrder = ({
   data,
@@ -25,6 +26,8 @@ const UpdateDiscountOrder = ({
   const [total, setTotal] = useState();
   const [discount, setDiscount] = useState(0);
   const [radioValue, setRadioValue] = useState("1");
+
+  const { storeDetail } = useStore();
 
   useEffect(() => {
     setNewData(data);
@@ -50,7 +53,7 @@ const UpdateDiscountOrder = ({
 
   const radios = [
     { name: "%", value: "1" },
-    { name: "ກີບ", value: "2" },
+    { name: storeDetail?.firstCurrency, value: "2" },
   ];
 
   const _UpdateDiscount = async () => {
@@ -98,9 +101,16 @@ const UpdateDiscountOrder = ({
         <Modal.Title>ເພີ່ມສ່ວນຫຼຸດ</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>ໂຕະ:{tableData?.tableName}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>ລະຫັດ:{tableData?.code}</pre>
-        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>{t('openTime')}:{moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}</pre>
+        <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
+          ໂຕະ:{tableData?.tableName}
+        </pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+          ລະຫັດ:{tableData?.code}
+        </pre>
+        <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+          {t("openTime")}:
+          {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+        </pre>
         <Table responsive className="staff-table-list borderless table-hover">
           <thead style={{ backgroundColor: "#F1F1F1" }}>
             <tr>
@@ -132,7 +142,9 @@ const UpdateDiscountOrder = ({
               <td colspan="4" style={{ textAlign: "center" }}>
                 ລາຄາລວມ:
               </td>
-              <td colspan="1">{moneyCurrency(total)} ກີບ</td>
+              <td colspan="1">
+                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+              </td>
             </tr>
           </tbody>
         </Table>
@@ -174,7 +186,9 @@ const UpdateDiscountOrder = ({
           />
           <span style={{ justifyContent: "flex-end", display: "row" }}>
             {" "}
-            <b style={{ marginLeft: 10 }}>{radioValue === "1" ? "%" : "ກີບ"}</b>
+            <b style={{ marginLeft: 10 }}>
+              {radioValue === "1" ? "%" : storeDetail?.firstCurrency}
+            </b>
           </span>
         </div>
       </Modal.Body>
@@ -205,7 +219,7 @@ const UpdateDiscountOrder = ({
                     ? total - (total * discount) / 100
                     : total - discount
                 )}{" "}
-                ກີບ
+                {storeDetail?.firstCurrency}
               </b>
             </span>
           </div>

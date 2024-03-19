@@ -182,17 +182,17 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               {
                 name: "ຍອດທັງຫມົດ:",
                 value: reportBill["ຍອດທັງຫມົດ"],
-                type: "ກີບ",
+                type: storeDetail?.firstCurrency,
               },
               {
                 name: "ຈ່າຍເງິນສົດ:",
                 value: reportBill["ຈ່າຍເງິນສົດ"],
-                type: "ກີບ",
+                type: storeDetail?.firstCurrency,
               },
               {
                 name: "ຈ່າຍເງິນໂອນ:",
                 value: reportBill["ຈ່າຍເງິນໂອນ"],
-                type: "ກີບ",
+                type: storeDetail?.firstCurrency,
               },
               {
                 name: "ບິນສ່ວນຫຼຸດ:",
@@ -201,7 +201,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               {
                 name: "ສ່ວນຫຼຸດ:",
                 value: reportBill["ສ່ວນຫຼຸດ"],
-                type: "ກີບ",
+                type: storeDetail?.firstCurrency,
               },
               {
                 name: "ບິນຄ້າງ:",
@@ -210,7 +210,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],
-              //   type: "ກີບ",
+              //   type: storeDetail?.firstCurrency,
               // },
             ].map((e) => (
               <div style={{ display: "flex", justifyContent: "space-between" }}>

@@ -486,7 +486,7 @@ export default function MemberPage() {
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
                     <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}₭
+                      {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))} */}

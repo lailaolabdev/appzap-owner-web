@@ -32,13 +32,13 @@ export default function CheckOutPopup({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
+  const { storeDetail } = useStore();
 
   // state
-  const [selectInput, setSelectInput] = useState(null);
-  const [selectData, setSelectData] = useState([]);
+  const [selectInput, setSelectInput] = useState("inputCash");
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
-  const [transfer, setTransfer] = useState(0);
+  const [transfer, setTransfer] = useState();
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
@@ -61,12 +61,21 @@ export default function CheckOutPopup({
   const totalBill = totalBillDefualt + taxAmount;
 
   useEffect(() => {
+    setCash();
+    setTransfer();
+    setTab("cash");
+    setSelectInput("inputCash");
+    setForcus("CASH");
+    setCanCheckOut(false);
+  }, [open]);
+  useEffect(() => {
+    if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
     moneyReceived = `${
       selectCurrency == "LAK"
         ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
-        : moneyCurrency((parseFloat(cashCurrency) || 0))
+        : moneyCurrency(parseFloat(cashCurrency) || 0)
     } ${selectCurrency}`;
     moneyChange = `${moneyCurrency(
       (parseFloat(cash) || 0) +
@@ -89,7 +98,7 @@ export default function CheckOutPopup({
               : totalBill - (totalBill * dataBill?.discount) / 100 > 0
               ? totalBill - (totalBill * dataBill?.discount) / 100
               : 0)
-    )} ກີບ`;
+    )} ${storeDetail?.firstCurrency}`;
 
     setDataBill((prev) => ({
       ...prev,
@@ -98,6 +107,7 @@ export default function CheckOutPopup({
     }));
   }, [cash, transfer, selectCurrency]);
   useEffect(() => {
+    if (!open) return;
     if (selectCurrency != "LAK") {
       const _currencyData = currencyList.find(
         (e) => e.currencyCode == selectCurrency
@@ -110,6 +120,7 @@ export default function CheckOutPopup({
     }
   }, [selectCurrency, selectCurrency]);
   useEffect(() => {
+    if (!open) return;
     const amount = cashCurrency * rateCurrency;
     if (cashCurrency && rateCurrency !== 1) {
       setCash(amount);
@@ -119,6 +130,7 @@ export default function CheckOutPopup({
   }, [rateCurrency]);
 
   useEffect(() => {
+    if (!open) return;
     for (let i = 0; i < dataBill?.orderId?.length; i++) {
       _calculateTotal();
     }
@@ -167,12 +179,14 @@ export default function CheckOutPopup({
       .then(async function (response) {
         setSelectedTable();
         getTableDataStore();
-        setCash();
-        setTransfer();
-        setSelectCurrency("LAK");
-        setRateCurrency(1);
         setCashCurrency();
         setTab("cash");
+        setCash();
+        setSelectCurrency("LAK");
+        setRateCurrency(1);
+        setTransfer();
+        setSelectInput("inputCash");
+
         onClose();
         Swal.fire({
           icon: "success",
@@ -202,12 +216,10 @@ export default function CheckOutPopup({
 
   // useEffect
   useEffect(() => {
-    setCash(selectInput);
-  }, [selectInput]);
-  useEffect(() => {
     getDataCurrency();
   }, []);
   useEffect(() => {
+    if (!open) return;
     if (forcus == "CASH") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
@@ -279,6 +291,19 @@ export default function CheckOutPopup({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
+  let totalBillMoney =
+    dataBill && dataBill?.discountType === "LAK"
+      ? parseFloat(
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+        )
+      : parseFloat(
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0
+        );
+
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -286,6 +311,38 @@ export default function CheckOutPopup({
       dataCustomer: option,
     }));
     // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
+  };
+  const onChangeCurrencyInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setCashCurrency(value);
+      if (selectCurrency != "LAK") {
+        if (!value) {
+          setCash();
+        } else {
+          const amount = parseFloat(value * rateCurrency);
+          setCash(amount.toFixed(2));
+        }
+      }
+    });
+  };
+  const onChangeCashInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setCash(value);
+      if (selectCurrency != "LAK") {
+        if (!value) {
+          setCashCurrency();
+        } else {
+          const amount = value / rateCurrency;
+          setCashCurrency(amount.toFixed(2));
+        }
+      }
+    });
+  };
+
+  const onChangeTransferInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setTransfer(value);
+    });
   };
 
   return (
@@ -332,7 +389,7 @@ export default function CheckOutPopup({
                         ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0
                     )}{" "}
-                ກີບ
+                {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
                 {" "}
@@ -372,18 +429,11 @@ export default function CheckOutPopup({
                   type="text"
                   placeholder="0"
                   value={convertNumber(cashCurrency)}
+                  onClick={() => {
+                    setSelectInput("inputCurrency");
+                  }}
                   onChange={(e) => {
-                    convertNumberReverse(e.target.value, (value) => {
-                      setCashCurrency(value);
-                      if (selectCurrency != "LAK") {
-                        if (!value) {
-                          setCash();
-                        } else {
-                          const amount = parseFloat(value * rateCurrency);
-                          setCash(amount.toFixed(2));
-                        }
-                      }
-                    });
+                    onChangeCurrencyInput(e.target.value);
                   }}
                   size="lg"
                 />
@@ -396,22 +446,15 @@ export default function CheckOutPopup({
                   type="text"
                   placeholder="0"
                   value={convertNumber(cash)}
+                  onClick={() => {
+                    setSelectInput("inputCash");
+                  }}
                   onChange={(e) => {
-                    convertNumberReverse(e.target.value, (value) => {
-                      setCash(value);
-                      if (selectCurrency != "LAK") {
-                        if (!value) {
-                          setCashCurrency();
-                        } else {
-                          const amount = value / rateCurrency;
-                          setCashCurrency(amount.toFixed(2));
-                        }
-                      }
-                    });
+                    onChangeCashInput(e.target.value);
                   }}
                   size="lg"
                 />
-                <InputGroup.Text>ກີບ</InputGroup.Text>
+                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
                 <InputGroup.Text>ເງິນໂອນ</InputGroup.Text>
@@ -420,14 +463,15 @@ export default function CheckOutPopup({
                   type="text"
                   placeholder="0"
                   value={convertNumber(transfer)}
+                  onClick={() => {
+                    setSelectInput("inputTransfer");
+                  }}
                   onChange={(e) => {
-                    convertNumberReverse(e.target.value, (value) => {
-                      setTransfer(value);
-                    });
+                    onChangeTransferInput(e.target.value);
                   }}
                   size="lg"
                 />
-                <InputGroup.Text>ກີບ</InputGroup.Text>
+                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
             </div>
             <div
@@ -458,7 +502,7 @@ export default function CheckOutPopup({
                         ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0)
               )}{" "}
-              ກີບ
+              {storeDetail?.firstCurrency}
             </div>
             <div
               style={{
@@ -473,10 +517,11 @@ export default function CheckOutPopup({
                   setCash();
                   setTransfer();
                   setTab("cash");
+                  setSelectInput("inputCash");
                   setForcus("CASH");
                 }}
               >
-                Cash
+                ເງິນສົດ
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
@@ -489,7 +534,7 @@ export default function CheckOutPopup({
                   setForcus("TRANSFER");
                 }}
               >
-                Transfer
+                ໂອນ
               </Button>
               <Button
                 variant={
@@ -501,10 +546,11 @@ export default function CheckOutPopup({
                   setRateCurrency(1);
                   setTransfer();
                   setTab("cash_transfer");
+                  setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
                 }}
               >
-                Cash & Transfer
+                ເງິນສົດ ແລະ ໂອນ
               </Button>
               <div style={{ flex: 1 }} />
               <Form.Control
@@ -516,13 +562,36 @@ export default function CheckOutPopup({
                   setSelectCurrency(e?.target?.value);
                 }}
               >
-                <option value="LAK">LAK</option>
+                <option value="LAK">{storeDetail?.firstCurrency}</option>
                 {currencyList?.map((e) => (
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
             </div>
-            <NumberKeyboard setSelectInput={setCash} />
+            <NumberKeyboard
+              totalBill={totalBillMoney}
+              payType={tab}
+              selectInput={((e) => {
+                if (selectInput === "inputCash") {
+                  return cash;
+                }
+                if (selectInput === "inputTransfer") {
+                  return transfer;
+                }
+                if (selectInput === "inputCurrency") {
+                  return cashCurrency;
+                }
+              })()}
+              setSelectInput={(e) => {
+                if (selectInput === "inputCash") {
+                  onChangeCashInput(e);
+                } else if (selectInput === "inputTransfer") {
+                  onChangeTransferInput(e);
+                } else if (selectInput === "inputCurrency") {
+                  onChangeCurrencyInput(e);
+                }
+              }}
+            />
             {/* <KeyboardComponents
               onClickEvent={(e) => {
                 setCash((prev) => {

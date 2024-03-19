@@ -572,7 +572,7 @@ function AddOrder() {
                         <span>{data?.name}</span>
                         <br />
                         <span>
-                          {moneyCurrency(data?.price)} LAK{" "}
+                          {moneyCurrency(data?.price)} {storeDetail?.firstCurrency}
                           {/* {currency?.map(
                             (e) =>
                               " / " +

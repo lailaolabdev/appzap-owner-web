@@ -172,7 +172,7 @@ export default function PopUpPrintMenuCategoryHistoryComponent({
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
                     <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}₭
+                      {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}

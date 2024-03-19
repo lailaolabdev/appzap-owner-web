@@ -270,7 +270,7 @@ const cartPageJson = {
 											children: {
 												isJS: true,
 												__key:
-													'defualtAppZap?.converMoney(_.sumBy(defualtAppZap?.cart,(e)=>e.quantity*e.price)) + " ₭"',
+													'defualtAppZap?.converMoney(_.sumBy(defualtAppZap?.cart,(e)=>e.quantity*e.price)) + ` ${storeDetail?.firstCurrency}`',
 											},
 										},
 									},

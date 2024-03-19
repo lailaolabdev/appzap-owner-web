@@ -279,7 +279,7 @@ const myBillPageJson = {
 											children: {
 												isJS: true,
 												__key:
-													'defualtAppZap?.converMoney(_.sumBy(defualtAppZap?.myBill?.orderId,(e)=>e.quantity*e.price)) + " ₭"',
+													'defualtAppZap?.converMoney(_.sumBy(defualtAppZap?.myBill?.orderId,(e)=>e.quantity*e.price)) + ` ${storeDetail?.firstCurrency}`',
 											},
 										},
 									},

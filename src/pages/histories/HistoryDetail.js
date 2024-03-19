@@ -30,6 +30,7 @@ export default function HistoryDetail() {
   const {
     selectedTable,
     setSelectedTable,
+    storeDetail
   } = useStore();
 
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
@@ -118,7 +119,7 @@ export default function HistoryDetail() {
                       <td>{item?.name}</td>
                       <td>{item?.quantity}</td>
                       <td>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price)}</td>
-                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
+                      <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} {storeDetail?.firstCurrency}</b></td>
                       <td>{new Date(item?.createdAt).toLocaleDateString()}</td>
                     </tr>
                   )
@@ -126,11 +127,11 @@ export default function HistoryDetail() {
                 )}
                 <tr>
                   <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ສ່ວນຫຼຸດ : </td>
-                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.discount)} {data?.discountType === "LAK" ? "ກີບ" : "%"}</td>
+                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(data?.discount)} {data?.discountType === "LAK" ? storeDetail?.firstCurrency : "%"}</td>
                 </tr>
                 <tr>
                   <td colSpan={5} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>{t('totalPrice2')} : </td>
-                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
+                  <td colSpan={3} style={{ color: "green" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .{storeDetail?.firstCurrency}</td>
                 </tr>
               </tbody>
             </Table>

@@ -23,8 +23,12 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { BsCurrencyExchange } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import moment from "moment";
+import { useStore } from "../../store";
+import { getStore } from "../../services/store";
 
 export default function CurrencyList() {
+  const { storeDetail, setStoreDetail } = useStore();
+
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [currencyData, setCurrencyData] = useState([]);
@@ -34,6 +38,7 @@ export default function CurrencyList() {
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showEditMainCurrency, setShowEditMainCurrency] = useState(false);
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
@@ -141,6 +146,27 @@ export default function CurrencyList() {
         errorAdd("ແກ້ຂໍ້ມູນບໍ່ສຳເລັດ ກະລຸນາກວດຄືນຂໍ້ມູນ ແລ້ວລອງໃໝ່ອີກຄັ້ງ!");
       });
   };
+  const _updateFirstCurrency = async (value) => {
+    try {
+      const data = await Axios.put(
+        `${END_POINT_SEVER}/v4/store/update-first-currency`,
+        {
+          ...value,
+        },
+        { headers: getTokken?.TOKEN }
+      );
+      if (data?.data?.error) {
+        throw new Error("errors");
+      }
+
+      const dataStore = await getStore(storeDetail?._id);
+      setStoreDetail(dataStore);
+      setShowEditMainCurrency(false);
+      successAdd("ແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+    } catch {
+      errorAdd("ແກ້ໄຂຂໍ້ມູນບໍ່ສຳເລັດ !");
+    }
+  };
 
   const _confirmeDelete = async () => {
     await Axios({
@@ -189,18 +215,19 @@ export default function CurrencyList() {
                 <table style={{ width: "100%" }}>
                   <tr>
                     <th>ຊື່ສະກຸນເງິນຫຼັກ</th>
-                    <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th>
+                    {/* <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th> */}
                     <th>ເລດເງິນ</th>
                     <th>ຈັດການຂໍ້ມູນ</th>
                   </tr>
                   <tr>
-                    <td className="text-left">ກີບ</td>
-                    <td className="text-left">LAK</td>
+                    <td className="text-left">{storeDetail?.firstCurrency}</td>
+                    {/* <td className="text-left">LAK</td> */}
                     <td className="text-left">1</td>
                     <td className="text-left">
                       <FontAwesomeIcon
                         icon={faEdit}
                         style={{ color: COLOR_APP }}
+                        onClick={() => setShowEditMainCurrency(true)}
                       />
                     </td>
                   </tr>
@@ -434,6 +461,84 @@ export default function CurrencyList() {
           </Formik>
         </Modal>
 
+        {/* update first currency */}
+        <Modal
+          show={showEditMainCurrency}
+          onHide={() => setShowEditMainCurrency(false)}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>ແກ້ໄຂສະກຸນເງິນຫັກ</Modal.Title>
+          </Modal.Header>
+          <Formik
+            initialValues={{
+              firstCurrency: storeDetail?.firstCurrency,
+              storeId: storeDetail?._id,
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.firstCurrency) {
+                errors.firstCurrency = "ກະລຸນາປ້ອນ!";
+              }
+
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              console.log("values", values);
+              _updateFirstCurrency(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              setFieldValue,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              /* and other goodies */
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Body>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ຊື່ສະກຸນເງິນຫຼັກ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="firstCurrency"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.firstCurrency}
+                      placeholder="ປ້ອນຊື່ສະກຸນເງິນຫຼັກ..."
+                      isInvalid={!!errors.firstCurrency}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.firstCurrency}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button
+                    style={{
+                      backgroundColor: COLOR_APP_CANCEL,
+                      color: "#ffff",
+                    }}
+                    onClick={handleCloseEdit}
+                  >
+                    ຍົກເລີກ
+                  </Button>
+                  <Button
+                    style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
+                    onClick={() => handleSubmit()}
+                  >
+                    ບັນທືກ
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
         {/* update */}
         <Modal
           show={showEdit}

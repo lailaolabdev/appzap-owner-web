@@ -248,7 +248,7 @@ export default function Dashboard() {
             className="btn btn-outline-info"
           >
             <option value="LAK" className="option">
-              ກີບ
+            {storeDetail?.firstCurrency}
             </option>
             {currency?.map((cur, index) => (
               <option key={cur + index} value={cur?.currencyCode}>

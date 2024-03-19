@@ -4,6 +4,7 @@ import { Modal } from "react-bootstrap";
 import { URL_PHOTO_AW3 } from "../../../constants/index";
 import { moneyCurrency } from "../../../helpers";
 import { useParams } from "react-router-dom";
+import { useStore } from "../../../store";
 
 export default function MenuList() {
   const params = useParams();
@@ -14,6 +15,7 @@ export default function MenuList() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const { storeDetail } = useStore();
 
   useEffect(() => {
     getMenu();
@@ -78,7 +80,9 @@ export default function MenuList() {
             >
               <span>{data?.name}</span>
               <br />
-              <span>{moneyCurrency(data?.price)} ກີບ</span>
+              <span>
+                {moneyCurrency(data?.price)} {storeDetail?.firstCurrency}
+              </span>
             </div>
           </div>
         ))}
@@ -106,7 +110,9 @@ export default function MenuList() {
             </div>
             <div style={{ padding: 10 }}>
               <p>{dataSelect?.name}</p>
-              <p>{moneyCurrency(dataSelect?.price)} ກີບ</p>
+              <p>
+                {moneyCurrency(dataSelect?.price)} {storeDetail?.firstCurrency}
+              </p>
             </div>
           </div>
         </Modal.Body>

@@ -2,7 +2,12 @@ import React from "react";
 import { COLOR_APP } from "../../constants";
 import { Button } from "react-bootstrap";
 
-export default function NumberKeyboard({ selectInput, setSelectInput }) {
+export default function NumberKeyboard({
+  totalBill,
+  selectInput,
+  payType,
+  setSelectInput,
+}) {
   const _num = [
     {
       key: "1",
@@ -56,19 +61,18 @@ export default function NumberKeyboard({ selectInput, setSelectInput }) {
 
   // function
   async function clickButton(text) {
+    console.log("object", text);
     if (!setSelectInput) return;
 
     if (text === "Delete") {
-      setSelectInput((prev) => {
-        if (prev.length <= 0) return "";
-        let _text = prev.substr(0, prev.length - 1);
-        return _text;
-      });
+      if (!selectInput) return setSelectInput("");
+      if (selectInput.length <= 0) return setSelectInput("");
+      let _prev = selectInput || "";
+      let _text = _prev.substr(0, _prev.length - 1);
+      setSelectInput(_text);
     } else {
-      setSelectInput((prev) => {
-        let _text = (prev || "") + text;
-        return _text;
-      });
+      let _text = (selectInput || "") + text;
+      setSelectInput(_text);
     }
   }
 
@@ -104,10 +108,23 @@ export default function NumberKeyboard({ selectInput, setSelectInput }) {
             height: 250,
           }}
         >
-          <Button>ສະມາຊິກ</Button>
-          <Button>ເຕັມຈຳນວນ</Button>
-          <Button>Drawer</Button>
-          <Button>ລົບທັງໝົດ</Button>
+          <Button disabled>ສະມາຊິກ</Button>
+          <Button
+            disabled={payType != "cash"}
+            onClick={() => {
+              console.log(totalBill);
+              setSelectInput(totalBill + "");
+            }}
+          >
+            ເຕັມຈຳນວນ
+          </Button>
+          <Button disabled>Drawer</Button>
+          <Button
+            onClick={() => setSelectInput("")}
+            disabled={payType === "transfer"}
+          >
+            ລົບທັງໝົດ
+          </Button>
         </div>
         <div
           style={{
@@ -125,6 +142,7 @@ export default function NumberKeyboard({ selectInput, setSelectInput }) {
                 onClick={() => {
                   clickButton(e.key);
                 }}
+                disabled={payType === "transfer"}
               >
                 {e.name}
               </Button>

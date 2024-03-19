@@ -120,19 +120,19 @@ export default function BillForCheckOut58({
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div>
-          <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>ລວມ: {moneyCurrency(total)} {storeDetail?.firstCurrency}</div>
           {currencyData?.map((item, index) => (
             <div key={index}>
               ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
             </div>
           ))}
-          <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
+          <div>ສ່ວນຫຼຸດ ({storeDetail?.firstCurrency}) 0</div>
         </div>
       </Price>
       <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
+        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} {storeDetail?.firstCurrency}</h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>

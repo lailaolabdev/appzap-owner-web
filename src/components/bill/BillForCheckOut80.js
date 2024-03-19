@@ -138,9 +138,9 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>ລວມ: {moneyCurrency(total)} {storeDetail?.firstCurrency}</div>
           <div>
-            ລວມ + ພາສີ {taxPercent}%: {moneyCurrency(total + taxAmount)} ກີບ
+            ລວມ + ພາສີ {taxPercent}%: {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency}
           </div>
           {currencyData?.map((item, index) => (
             <div key={index}>
@@ -153,7 +153,7 @@ export default function BillForCheckOut80({
             {dataBill?.discount}{" "}
             {dataBill?.discountType == "MONEY" ||
             dataBill?.discountType == "LAK"
-              ? "ກີບ"
+              ? storeDetail?.firstCurrency
               : "%"}
           </div>
           <div>
@@ -166,7 +166,7 @@ export default function BillForCheckOut80({
       <div style={{ height: 10 }}></div>
       <Price>
         <h6>
-          ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} ກີບ
+          ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} {storeDetail?.firstCurrency}
         </h6>
       </Price>
       <Price>

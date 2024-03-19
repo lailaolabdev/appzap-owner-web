@@ -1266,7 +1266,7 @@ export default function TableList() {
                             {moneyCurrency(dataBill?.discount)}{" "}
                             {dataBill?.discountType === "PERCENT"
                               ? "%"
-                              : t("lak")}
+                              : storeDetail?.firstCurrency}
                           </span>
                         </div>
 
@@ -1282,7 +1282,7 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(total)} ກີບ
+                            {moneyCurrency(total)} {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div
@@ -1297,7 +1297,7 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(totalAfterDiscount)} ກີບ
+                            {moneyCurrency(totalAfterDiscount)} {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div

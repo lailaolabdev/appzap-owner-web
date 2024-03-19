@@ -8,6 +8,7 @@ import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
+import { useStore } from "../../../store";
 // import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
@@ -19,6 +20,7 @@ const OrderCheckOut = ({
   onPrintBill = () => {},
   onSubmit = () => {},
 }) => {
+  const { storeDetail } = useStore();
   const [total, setTotal] = useState();
 
   useEffect(() => {
@@ -96,21 +98,26 @@ const OrderCheckOut = ({
               </td>
               <td colspan="1">
                 {moneyCurrency(data?.discount)}{" "}
-                {data?.discountType !== "LAK" ? "%" : "ກີບ"}
+                {data?.discountType !== "LAK"
+                  ? "%"
+                  : storeDetail?.firstCurrency}
               </td>
             </tr>
             <tr>
               <td colspan="4" style={{ textAlign: "center" }}>
                 ລາຄາລວມ:
               </td>
-              <td colspan="1">{moneyCurrency(total)} ກີບ</td>
+              <td colspan="1">
+                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+              </td>
             </tr>
             <tr>
               <td colspan="4" style={{ textAlign: "center" }}>
                 ລາຄາລວມ + ພາສີ {taxPercent}%:
               </td>
               <td colspan="1">
-                {moneyCurrency(total * (taxPercent * 0.01 + 1))} ກີບ
+                {moneyCurrency(total * (taxPercent * 0.01 + 1))}{" "}
+                {storeDetail?.firstCurrency}
               </td>
             </tr>
           </tbody>

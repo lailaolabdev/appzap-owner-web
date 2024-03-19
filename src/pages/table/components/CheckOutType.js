@@ -43,7 +43,7 @@ export default function CheckOutType({
 
   const [currencyList, setCurrencyList] = useState([]);
 
-  const { setSelectedTable, getTableDataStore } = useStore();
+  const { setSelectedTable, getTableDataStore, storeDetail } = useStore();
 
   // val
 
@@ -81,7 +81,7 @@ export default function CheckOutType({
               : totalBill - (totalBill * dataBill?.discount) / 100 > 0
               ? totalBill - (totalBill * dataBill?.discount) / 100
               : 0)
-    )} ກີບ`;
+    )} ${storeDetail?.firstCurrency}`;
 
     setDataBill((prev) => ({
       ...prev,
@@ -465,7 +465,7 @@ export default function CheckOutType({
                         ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0
                     )}{" "}
-                ກີບ
+                {storeDetail?.firstCurrency}
               </div>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -619,7 +619,7 @@ export default function CheckOutType({
                             ? totalBill - (totalBill * dataBill?.discount) / 100
                             : 0)
                   )}{" "}
-                  ກີບ
+                  {storeDetail?.firstCurrency}
                 </div>
               </div>
             </div>
@@ -647,7 +647,7 @@ export default function CheckOutType({
                           ? totalBill - (totalBill * dataBill?.discount) / 100
                           : 0
                       )}{" "}
-                  ກີບ
+                  {storeDetail?.firstCurrency}
                 </div>
               </div>
             </div>
@@ -715,7 +715,7 @@ export default function CheckOutType({
                             ? totalBill - (totalBill * dataBill?.discount) / 100
                             : 0)
                   )}{" "}
-                  ກີບ
+                  {storeDetail?.firstCurrency}
                   {/* {console.log("cash===>>>", cash - 0 + (transfer - 0) -
                       (dataBill && dataBill?.discountType === "LAK"
                         ? total - dataBill?.discount > 0 ? total - dataBill?.discount : 0

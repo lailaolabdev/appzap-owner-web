@@ -3,6 +3,7 @@ import { COLOR_APP } from "../../constants";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { converMoney } from "../../helpers/converMoney";
+import { useStore } from "../../store";
 
 const ReportChartDayOfWeek = ({ series }) => {
   // state
@@ -53,11 +54,11 @@ const ReportChartDayOfWeek = ({ series }) => {
       },
       yaxis: {
         title: {
-          text: "ຈຳນວນເງິນເປັນ (ກີບ)",
+          text: `ຈຳນວນເງິນເປັນ (${storeDetail?.firstCurrency})`,
         },
         labels: {
           formatter: (value) => {
-            return converMoney(value) + " ກີບ";
+            return converMoney(value) + ` ${storeDetail?.firstCurrency})`;
           },
         },
       },
@@ -67,13 +68,14 @@ const ReportChartDayOfWeek = ({ series }) => {
       tooltip: {
         y: {
           formatter: function (val) {
-            return converMoney(val) + " ກີບ";
+            return converMoney(val) + ` ${storeDetail?.firstCurrency})`;
           },
         },
       },
     },
   });
 
+  const { storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     setState((prev) => ({ ...prev, series: series }));
