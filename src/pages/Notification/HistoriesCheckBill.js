@@ -24,7 +24,7 @@ export default function HistoriesCheckBill() {
   const params = useParams();
   const componentRef = useRef();
   const componentRefA = useRef();
-  const { selectedTable, resetTableOrder } = useStore();
+  const { selectedTable, resetTableOrder,storeDetail } = useStore();
   const newDate = new Date();
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState("2021-04-01");
@@ -128,6 +128,7 @@ export default function HistoriesCheckBill() {
             StatusMoney={StatusMoney}
             amount={amount}
             billId={newData ? newData[0]?.code : "-"}
+            storeDetail={storeDetail}
           />
           {/* <ComponentToPrint ref={componentRef} userData={userData} selectedMenu={newData} tableId={tableId} code={code} /> */}
         </div>
@@ -225,7 +226,7 @@ export default function HistoriesCheckBill() {
                             {new Intl.NumberFormat("ja-JP", {
                               currency: "JPY",
                             }).format(item?.price * item?.quantity)}{" "}
-                            ກີບ
+                            {storeDetail?.firstCurrency}
                           </b>
                         </td>
                         <td>

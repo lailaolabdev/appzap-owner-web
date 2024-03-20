@@ -16,6 +16,7 @@ import {
 } from "chart.js";
 import { moneyCurrency } from "../../helpers";
 import { useParams } from "react-router-dom";
+import { useStore } from "../../store";
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -30,6 +31,7 @@ export default function MoneyChart({ startDate, endDate }) {
   const params = useParams();
 
   const [data, setData] = useState();
+  const {storeDetail} = useStore()
   const [isLoading, setIsLoading] = useState(false);
 
   // =========>
@@ -79,7 +81,7 @@ export default function MoneyChart({ startDate, endDate }) {
        return moment(d?.createdAt).format("DD/MM/yyyy") +
         ": " +
         moneyCurrency(d?.billAmount) +
-        " ກີບ" +
+          ` ${storeDetail?.firstCurrency}` +
         " | cach:" +
         moneyCurrency(d?.billAmount - d?.money_transfer) +
         " | transfer:" +

@@ -19,6 +19,7 @@ export class ComponentToPrint extends React.PureComponent {
         let StatusMoney = this.props.StatusMoney;
         let amount = this.props.amount;
         let billId = this.props.billId;
+        let storeDetail = this.props.storeDetail;
         return (
             <div className="center" style={{ width: '100%', fontSize: 42 }}>
                 <div style={{ textAlign: "center", paddingTop: 30 }}>
@@ -75,7 +76,7 @@ export class ComponentToPrint extends React.PureComponent {
                                             <td><b>{item?.orderId?.customer_nickname}</b></td>
                                             <td><b>{item?.name}</b></td>
                                             <td>{item?.quantity}</td>
-                                            <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
+                                            <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} {storeDetail?.firstCurrency}</b></td>
                                             <td>{item?.orderId?.table_id}</td>
                                         </tr>
                                     )
@@ -84,7 +85,7 @@ export class ComponentToPrint extends React.PureComponent {
                                 <tr>
                                     <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>ຍອດລ້ວມເງິນ : </td>
                                     <td colSpan={1} style={{ color: StatusMoney === 'ຍັງບໍ່ຊຳລະ' ? "red" : "green" }}>{StatusMoney}</td>
-                                    <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
+                                    <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .{storeDetail?.firstCurrency}</td>
                                 </tr>
                             </tbody>
                         </Table>

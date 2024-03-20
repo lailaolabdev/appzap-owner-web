@@ -34,7 +34,7 @@ export default function ReportLayout() {
             ລາຍງານສະຕ໊ອກ (Coming soon)
           </Button>
           <Button
-            disabled
+          disabled
             variant="outline-primary"
             onClick={() => navigate("/report/members-report")}
           >

@@ -6,6 +6,7 @@ import ReportStockPage from "../pages/report/ReportStockPage";
 import ReportLayout from "../layouts/ReportLayout";
 import MemberPage from "../pages/member/MemberPage";
 import CreateMemberPage from "../pages/member/CreateMemberPage";
+import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 
 // eslint-disable-next-line
 export default {
@@ -23,6 +24,10 @@ export default {
     {
       path: "members-report/create-member",
       element: <CreateMemberPage />,
+    },
+    {
+      path: "members-report/setting-point",
+      element: <SettingMemberPointPage />,
     },
     {
       path: "stock",

@@ -18,6 +18,8 @@ export default function AddOrderPage() {
   const [selectCategory, setSelectCategory] = useState();
   const [selectMenu, setSelectMenu] = useState();
 
+  const { storeDetail } = useStore();
+
   // provider
   const { menuCategorys, menus, staffCart, setStaffCart } = useStore();
   return (
@@ -141,7 +143,10 @@ export default function AddOrderPage() {
                     )}
                   </div>
                   <div>{e?.name}</div>
-                  <div>{moneyCurrency(e?.price)}₭</div>
+                  <div>
+                    {moneyCurrency(e?.price)}
+                    {storeDetail?.firstCurrency}
+                  </div>
                 </div>
               ))}
           </div>

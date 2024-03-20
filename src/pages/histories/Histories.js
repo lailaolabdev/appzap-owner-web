@@ -9,9 +9,11 @@ import AnimationLoading from "../../constants/loading";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { t } from "i18next";
+import { useStore } from "../../store";
 export default function History() {
   const navigate = useNavigate();
   const params = useParams();
+  const { storeDetail } = useStore();
   const newDate = new Date();
   const [startDate, setSelectedDateStart] = useState("2021-02-01");
   const [endDate, setSelectedDateEnd] = useState(
@@ -149,7 +151,7 @@ export default function History() {
                               {new Intl.NumberFormat("ja-JP", {
                                 currency: "JPY",
                               }).format(_allmonny(item?.orderId))}{" "}
-                              ກີບ
+                              {storeDetail?.firstCurrency}
                             </b>
                           </td>
                           <td>
@@ -158,14 +160,16 @@ export default function History() {
                                   currency: "JPY",
                                 }).format(item?.discount)
                               : item?.discount}{" "}
-                            {item?.discountType === "LAK" ? "ກີບ" : "%"}
+                            {item?.discountType === "LAK"
+                              ? storeDetail?.firstCurrency
+                              : "%"}
                           </td>
                           <td style={{ color: "green" }}>
                             <b>
                               {new Intl.NumberFormat("ja-JP", {
                                 currency: "JPY",
                               }).format(item?.billAmount)}{" "}
-                              ກີບ
+                              {storeDetail?.firstCurrency}
                             </b>
                           </td>
                           <td>
@@ -183,13 +187,13 @@ export default function History() {
                         textAlign: "center",
                       }}
                     >
-                      {t('totalPrice2')} :{" "}
+                      {t("totalPrice2")} :{" "}
                     </td>
                     <td colSpan={2} style={{ color: "blue" }}>
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(amount)}{" "}
-                      .ກີບ
+                      .{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 </tbody>

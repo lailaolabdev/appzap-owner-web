@@ -173,12 +173,12 @@ export default function PopUpPrintStaffHistoryComponent({
                   // {
                   //   name: "ຈຳນວນອໍເດີຍົກເລີກ:",
                   //   value: e["ຈຳນວນອໍເດີຍົກເລີກ"],
-                  //   type: "ກີບ",
+                  //   type: storeDetail?.firstCurrency,
                   // },
                   {
                     name: "ຈຳນວນເງິນ (ອໍເດີທີສຳເລັດ):",
                     value: e?.["totalSaleAmount"],
-                    type: "ກີບ",
+                    type: storeDetail?.firstCurrency,
                   },
                 ].map((e) => (
                   <div

@@ -20,6 +20,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
         let firstname = this.props.firstname;
         let userData = this.props.userData;
         let amount = 0;
+        let storeDetail = this.props.storeDetail;
         return (
           <div> <div> <div>
             <div className="center" style={{ width: '100%', fontSize: 42 }}>
@@ -78,7 +79,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                             <td><b>{item?.orderId?.customer_nickname}</b></td>
                                             <td><b>{item?.name}</b></td>
                                             <td>{item?.quantity}</td>
-                                            <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} ກີບ</b></td>
+                                            <td style={{ color: "green" }}><b>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(item?.price * item?.quantity)} {storeDetail?.firstCurrency}</b></td>
                                             <td>{item?.orderId?.table_id}</td>
                                         </tr>
                                     )
@@ -87,7 +88,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                                 <tr>
                                     <td colSpan={2} style={{ color: "red", fontWeight: "bold", textAlign: "center" }}>{t('totalPrice2')} : </td>
 
-                                    <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .ກີບ</td>
+                                    <td colSpan={2} style={{ color: "blue" }}>{new Intl.NumberFormat('ja-JP', { currency: 'JPY' }).format(amount)} .{storeDetail?.firstCurrency}</td>
                                 </tr>
                             </tbody>
                         </Table>
@@ -138,7 +139,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                           {new Intl.NumberFormat("ja-JP", {
                             currency: "JPY",
                           }).format(item?.price * item?.quantity)}{" "}
-                          ກີບ
+                           {storeDetail?.firstCurrency}
                         </b>
                       </td>
                       <td>{item?.orderId?.table_id}</td>
@@ -161,7 +162,7 @@ export class ComponentToPrintBillInTable extends React.PureComponent {
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                       amount
                     )}{" "}
-                    .ກີບ
+                    .{storeDetail?.firstCurrency}
                   </td>
                 </tr>
               </tbody>

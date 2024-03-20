@@ -167,20 +167,20 @@ export default function DashboardPage() {
                   title: "ຍອດຂາຍທັງໝົດ",
                   amount: `${moneyCurrency(
                     salesInformationReport?.["totalSales"]
-                  )}₭`,
+                  )}${storeDetail?.firstCurrency}`,
                 },
 
                 // {
                 //   title: "ລາຍຈ່າຍທັງໝົດ",
                 //   amount: `${moneyCurrency(
                 //     salesInformationReport?.["totalCost"]
-                //   )}₭`,
+                //   )}${storeDetail?.firstCurrency}`,
                 // },
                 // {
                 //   title: "ກຳໄລ",
                 //   amount: `${moneyCurrency(
                 //     salesInformationReport?.["grossProfit"]
-                //   )}₭`,
+                //   )}${storeDetail?.firstCurrency}`,
                 // },
                 {
                   title: "ຈຳນວນທຸລະກຳການຂາຍ",
@@ -192,13 +192,13 @@ export default function DashboardPage() {
                   title: "ຍອດຂາຍສະເລ່ຍ ຕໍ່ ທຸລະກຳ",
                   amount: `${moneyCurrency(
                     salesInformationReport?.["averageSales_Transaction"]
-                  )}₭`,
+                  )}${storeDetail?.firstCurrency}`,
                 },
                 // {
                 //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
                 //   amount: `${moneyCurrency(
                 //     salesInformationReport?.["unpaidTransaction"]
-                //   )}₭`,
+                //   )}${storeDetail?.firstCurrency}`,
                 // },
               ].map((e) => (
                 <div
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                 }}
               >
                 <div>ສ່ວນຫຼຸດທັງໝົດ</div>
-                <div>{promotionReport?.[0]?.totalSaleAmount || 0}₭</div>
+                <div>{promotionReport?.[0]?.totalSaleAmount || 0}{storeDetail?.firstCurrency}</div>
               </div>
             </Card.Body>
           </Card>
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.amount)}₭
+                      {moneyCurrency(e?.amount)}{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -337,7 +337,7 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
                     <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}₭
+                      {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -370,10 +370,10 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
-                    <td>{moneyCurrency(e?.discount)}₭</td>
-                    <td>{moneyCurrency(e?.billBefore)}₭</td>
+                    <td>{moneyCurrency(e?.discount)}{storeDetail?.firstCurrency}</td>
+                    <td>{moneyCurrency(e?.billBefore)}{storeDetail?.firstCurrency}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount)}₭
+                      {moneyCurrency(e?.billAmount)}{storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -409,7 +409,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}₭
+                        {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
                       </td>
                     </tr>
                   ))}
@@ -447,7 +447,7 @@ export default function DashboardPage() {
                         {e?.canceled || 0}
                       </td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}₭
+                        {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
                       </td>
                     </tr>
                   ))}

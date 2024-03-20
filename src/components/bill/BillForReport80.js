@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
+import { useStore } from "../../store";
 export default function BillForReport80({}) {
+  const {storeDetail}=useStore()
   return (
     <Container>
       <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍ</div>
@@ -16,17 +18,17 @@ export default function BillForReport80({}) {
         {
           name: "ຍອດທັງຫມົດ:",
           value: 900000,
-          type: "ກີບ",
+          type: storeDetail?.firstCurrency,
         },
         {
           name: "ຈ່າຍເງິນສົດ:",
           value: 8000,
-          type: "ກີບ",
+          type: storeDetail?.firstCurrency,
         },
         {
           name: "ຈ່າຍເງິນໂອນ:",
           value: 40000,
-          type: "ກີບ",
+          type: storeDetail?.firstCurrency,
         },
         {
           name: "ບິນສ່ວນຫຼຸດ:",
@@ -35,7 +37,7 @@ export default function BillForReport80({}) {
         {
           name: "ສ່ວນຫຼຸດ:",
           value: 666,
-          type: "ກີບ",
+          type: storeDetail?.firstCurrency,
         },
         {
           name: "ບິນຄ້າງ:",
@@ -44,7 +46,7 @@ export default function BillForReport80({}) {
         {
           name: "ເງິນຄ້າງ:",
           value: 6669999,
-          type: "ກີບ",
+          type: storeDetail?.firstCurrency,
         },
       ].map((e) => (
         <div style={{ display: "flex", justifyContent: "space-between" }}>

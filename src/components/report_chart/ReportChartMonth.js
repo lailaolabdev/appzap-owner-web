@@ -3,9 +3,11 @@ import { COLOR_APP } from "../../constants";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { converMoney } from "../../helpers/converMoney";
+import { useStore } from "../../store";
 
 const ReportChartMonth = ({ series }) => {
   // state
+  const { storeDetail } = useStore();
   const [state, setState] = useState({
     series: [
       {
@@ -53,11 +55,11 @@ const ReportChartMonth = ({ series }) => {
       },
       yaxis: {
         title: {
-          text: "ຈຳນວນເງິນເປັນ (ກີບ)",
+          text: `ຈຳນວນເງິນເປັນ (${storeDetail?.firstCurrency})`,
         },
         labels: {
           formatter: (value) => {
-            return converMoney(value) + " ກີບ";
+            return converMoney(value) + ` ${storeDetail?.firstCurrency})`;
           },
         },
       },
@@ -67,7 +69,7 @@ const ReportChartMonth = ({ series }) => {
       tooltip: {
         y: {
           formatter: function (val) {
-            return converMoney(val) + " ກີບ";
+            return converMoney(val) + ` ${storeDetail?.firstCurrency})`;
           },
         },
       },
