@@ -23,6 +23,8 @@ import {
   faUsers,
   faBeer,
   faShoppingCart,
+  faBox,
+  faBoxes
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -130,6 +132,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "reportManagement",
     // },
     {
+      title: "ສະຕ໊ອກ",
+      key: "settingStore/stock",
+      typeStore: "",
+      icon: faBoxes,
+      hidden: !storeDetail?.hasPOS,
+      system: "stockManagement",
+    },
+    {
       title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
       key: "settingStore",
       typeStore: "",
@@ -165,6 +175,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
           selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
         }
         if (selected === "users") {
+          selected =
+            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+        }
+        if (selected === "settingStore/stock") {
           selected =
             selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
         }
