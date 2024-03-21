@@ -51,26 +51,26 @@ function StockGroups({ datas, isLoadingTotal, filterName, totalStock, pageTotal,
             {datas.map((item, index) => (
               <tr key={index}>
                 <td style={{ textAlign:'left'}}>{pageTotal * rowsPerPageTotal + index + 1}</td>
-                <td>  {formatDateNow(item?.stockDetails?.createdAt)}</td>
+                <td>  {formatDateNow(item?.createdAt)}</td>
                 <td style={{ textAlign:'left'}}>{item?.stockDetails?.name}</td>
                               
                 <td 
                 style={{
-                    color: item?.totalQtyExport >= 1 ? "orange" : "red",textAlign:'center'
+                     textAlign:'center'
                   }}
                 >
                   {numberFormat(item?.totalQtyExport)}  
                 </td>
                 <td 
                 style={{
-                    color: item?.totalQtyImport >= 1 ? "green" : "red",textAlign:'center'
+                    textAlign:'center'
                   }}
                 >
                   {numberFormat(item?.totalQtyImport)}  
                 </td>
                 <td 
                 style={{
-                    color: item?.totalQtyReturn >= 1 ? "green" : "red",textAlign:'center'
+                    textAlign:'center'
                   }}
                 >
                   {numberFormat(item?.totalQtyReturn)}  
