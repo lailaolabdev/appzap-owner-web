@@ -13,7 +13,7 @@ import moment from "moment";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { numberFormat } from "../../helpers";
+import { formatDateNow, numberFormat } from "../../helpers";
 import { getStocksAll, getStocksHistories } from "../../services/stocks";
 import { IoSearchCircleOutline } from "react-icons/io5";
 import EmptyState from "../../components/EmptyState";
@@ -49,7 +49,8 @@ export default function ReportStocks() {
 
   const rowsPerPageTotal = 10;
   const [pageTotal, setPageTotal] = useState(0);
-  const pageAllTotal = totalStockGroups > 0 ? Math.ceil(totalStockGroups / rowsPerPage) : 1;
+  const pageAllTotal =
+    totalStockGroups > 0 ? Math.ceil(totalStockGroups / rowsPerPage) : 1;
   const handleChangePageTotal = useCallback((newPage) => {
     setPageTotal(newPage);
   }, []);
@@ -269,7 +270,7 @@ export default function ReportStocks() {
                   <table style={{ width: "100%" }}>
                     <tr>
                       <th style={{ textAlign: "left", width: 50 }}>ລຳດັບ</th>
-                      {/* <th style={{ textAlign: "left" }}>ວັນທີ,ເດືອນ,ປີ</th> */}
+                      <th style={{ textAlign: "left" }}>ວັນທີ,ເດືອນ,ປີ</th>
                       <th style={{ textAlign: "left" }}>ປະເພດ</th>
                       <th style={{ textAlign: "left" }}>ຊື່ສິນຄ້າ</th>
                       <th style={{ textAlign: "left" }}>ຈຳນວນ</th>
@@ -283,9 +284,9 @@ export default function ReportStocks() {
                               {page * rowsPerPage + index + 1}
                             </div>
                           </td>
-                          {/* <td style={{ textAlign: "left" }}>
-                {formatDateNow(item?.createdAt)}
-              </td> */}
+                          <td style={{ textAlign: "left" }}>
+                            {formatDateNow(item?.createdAt)}
+                          </td>
                           <td style={{ textAlign: "left" }}>
                             {item?.stockCategoryId?.name ?? "-"}
                           </td>
@@ -346,8 +347,8 @@ export default function ReportStocks() {
             justifyContent: "center",
             alignItems: "center",
             height: isLoading ? 300 : "auto",
-            flexDirection:'column',
-            gap:10,
+            flexDirection: "column",
+            gap: 10,
           }}
         >
           <StockGroups

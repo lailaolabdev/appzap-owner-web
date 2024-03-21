@@ -39,6 +39,7 @@ function StockGroups({ datas, isLoadingTotal, filterName, totalStock, pageTotal,
           <thead className="thead-primary">
             <tr>
               <th>#</th>
+              <th style={{ textAlign:'center'}}>ວັນທີ,ເດືອນ,ປີ​ (ເວລາ)</th>
               <th>ຊື່ສິນຄ້າ</th>
               <th style={{ textAlign:'center'}}>ນຳອອກ</th>
               <th style={{ textAlign:'center'}}>ນຳເຂົ້າ</th>
@@ -50,9 +51,9 @@ function StockGroups({ datas, isLoadingTotal, filterName, totalStock, pageTotal,
             {datas.map((item, index) => (
               <tr key={index}>
                 <td style={{ textAlign:'left'}}>{pageTotal * rowsPerPageTotal + index + 1}</td>
+                <td>  {formatDateNow(item?.stockDetails?.createdAt)}</td>
                 <td style={{ textAlign:'left'}}>{item?.stockDetails?.name}</td>
                               
-                {/* <td>{item?.stockId?.sellPrice ?? "-"}</td> */}
                 <td 
                 style={{
                     color: item?.totalQtyExport >= 1 ? "orange" : "red",textAlign:'center'
