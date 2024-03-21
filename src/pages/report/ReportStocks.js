@@ -14,7 +14,7 @@ import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { numberFormat } from "../../helpers";
-import { getStocksAll } from "../../services/stocks";
+import { getStocksAll, getStocksHistories } from "../../services/stocks";
 import { IoSearchCircleOutline } from "react-icons/io5";
 import EmptyState from "../../components/EmptyState";
 
@@ -50,7 +50,7 @@ export default function ReportStocks() {
   useEffect(() => {
     const fetchData = async () => {
       if (_localData) {
-        getStockHistories(_localData?.DATA?.storeId);
+        getStockHistories();
       }
     };
     fetchData();
@@ -62,34 +62,44 @@ export default function ReportStocks() {
   }, [page, startDate, endDate]);
 
   // ດຶງຂໍ້ມູນຂອງປະຫວັດສະຕ໋ອກທັງໝົດ
-  const getStockHistories = async (id) => {
+  const getStockHistories = async () => {
     try {
       setIsLoading(true);
-  
-      const response = await axios.get(
-        `${END_POINT_SEVER}/v3/stock-history-groups`,
-        {
-          params: { storeId: id, startDate, startTime, endDate, endTime },
-        }
-      );
-  
+
+      // const response = await axios.get(
+      //   `${END_POINT_SEVER}/v3/stock-history-groups`,
+      //   {
+      //     params: { id, startDate, startTime, endDate, endTime },
+      //   }
+      // );
+      const _localData = await getLocalData();
+
+      const storeId = _localData?.DATA?.storeId;
+      console.log("check:response:---333-->", storeId);
+
+      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}`;
+      const response = await getStocksHistories(storeId, findBy);
+
+      console.log("check:response:----->", response);
+
       if (response.status === 200 && response.data) {
         const stockData = response.data;
-  
+
         const findBest = (key) => {
-          return stockData.reduce((prev, current) =>
-            prev[key] > current[key] ? prev : current
-          , stockData[0]);
+          return stockData.reduce(
+            (prev, current) => (prev[key] > current[key] ? prev : current),
+            stockData[0]
+          );
         };
-  
-        const bestStockImport = findBest('totalQtyImport');
-        const bestStockExport = findBest('totalQtyExport');
-        const bestStockReturn = findBest('totalQtyReturn');
-  
+
+        const bestStockImport = findBest("totalQtyImport");
+        const bestStockExport = findBest("totalQtyExport");
+        const bestStockReturn = findBest("totalQtyReturn");
+
         setBestStockImport(bestStockImport);
         setBestStockExport(bestStockExport);
         setBestStockReturn(bestStockReturn);
-  
+
         setHistoriesExport(stockData);
       }
     } catch (error) {
@@ -98,7 +108,6 @@ export default function ReportStocks() {
       setIsLoading(false);
     }
   };
-  
 
   // ດຶງຂໍ້ມູນສະຕ໋ອກປະຈຸບັນທັງໝົດ
   const getStocks = async () => {
@@ -216,7 +225,7 @@ export default function ReportStocks() {
             {/* <Button onClick={() => getStocks()}>Enter</Button> */}
           </InputGroup>
         </div>
-        <Form.Group style={{ width: width > 700 ? "60%": "100%" }}>
+        <Form.Group style={{ width: width > 700 ? "60%" : "100%" }}>
           <Form.Label>ວັນທີ, ເດືອນ, ປີ (ເວລາ)</Form.Label>
           <Button
             variant="outline-primary"
