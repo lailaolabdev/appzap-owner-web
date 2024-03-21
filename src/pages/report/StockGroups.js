@@ -4,19 +4,21 @@ import { COLOR_APP } from '../../constants';
 import { formatDateNow, numberFormat } from '../../helpers';
 import { thousandSeparator } from '../../helpers/thousandSeparator';
 import LoadingAppzap from '../../components/LoadingAppzap';
+import EmptyState from '../../components/EmptyState';
 
 // Assuming COLOR_APP is a constant defined elsewhere
 // const COLOR_APP = "#someColor";
 
-function StockGroups({ dataExports, isLoading, filterName }) {
-
-console.log("export:----999>", dataExports)
+function StockGroups({ datas, isLoadingTotal, filterName, totalStock, pageTotal, rowsPerPageTotal }) {
 
 
-  // if (isLoading) return  
+
+  if (datas?.length < 1) return <EmptyState text={`ບໍ່ມີຂໍ້ມູນສະຕ໋ອກ`} />
+  if(isLoadingTotal) return <LoadingAppzap />
+  
 
   // ຂໍ້ມູນທີ່ສະແດງຕາມການຄົ້ນຫາຊື່ສິນຄ້າ
-//   const filteredData = dataExports?.filter((e) => e?.name?.includes(filterName)) || [];
+//   const filteredData = datas?.filter((e) => e?.name?.includes(filterName)) || [];
 
   return (
     <Card className="w-100">
@@ -36,6 +38,7 @@ console.log("export:----999>", dataExports)
         <Table>
           <thead className="thead-primary">
             <tr>
+              <th>#</th>
               <th>ຊື່ສິນຄ້າ</th>
               <th style={{ textAlign:'center'}}>ນຳອອກ</th>
               <th style={{ textAlign:'center'}}>ນຳເຂົ້າ</th>
@@ -44,9 +47,11 @@ console.log("export:----999>", dataExports)
             </tr>
           </thead>
           <tbody>
-            {dataExports.map((item, index) => (
+            {datas.map((item, index) => (
               <tr key={index}>
+                <td style={{ textAlign:'left'}}>{pageTotal * rowsPerPageTotal + index + 1}</td>
                 <td style={{ textAlign:'left'}}>{item?.stockDetails?.name}</td>
+                              
                 {/* <td>{item?.stockId?.sellPrice ?? "-"}</td> */}
                 <td 
                 style={{

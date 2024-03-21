@@ -24,10 +24,12 @@ export default function ReportStocks() {
   const _edDate = moment().endOf("month").format("YYYY-MM-DD");
 
   const [historiesExport, setHistoriesExport] = useState([]);
+  const [isLoadingTotal, setIsLoadingTotal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stocks, setStocks] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [totalStock, setTotalStock] = useState(0);
+  const [totalStockGroups, setTotalStockGroups] = useState(0);
   const [bestStockImport, setBestStockImport] = useState();
   const [bestStockExport, setBestStockExport] = useState();
   const [bestStockReturn, setBestStockReturn] = useState();
@@ -45,6 +47,13 @@ export default function ReportStocks() {
     setPage(newPage);
   }, []);
 
+  const rowsPerPageTotal = 10;
+  const [pageTotal, setPageTotal] = useState(0);
+  const pageAllTotal = totalStockGroups > 0 ? Math.ceil(totalStockGroups / rowsPerPage) : 1;
+  const handleChangePageTotal = useCallback((newPage) => {
+    setPageTotal(newPage);
+  }, []);
+
   const _localData = getLocalData();
   //ເອິ້ນໃຊ້ function ດືງຂໍ້ມູນຮ້ານ
   useEffect(() => {
@@ -54,7 +63,7 @@ export default function ReportStocks() {
       }
     };
     fetchData();
-  }, [_localData?.DATA?.storeId, startDate, endDate]);
+  }, [_localData?.DATA?.storeId, startDate, endDate, pageTotal]);
 
   // ເອື້ນໃຊ້​ function ດືງຂໍ້ມູນສະຕ໋ອກ ແລະ ປະຫວັດສະຕ໋ອກ
   useEffect(() => {
@@ -64,31 +73,20 @@ export default function ReportStocks() {
   // ດຶງຂໍ້ມູນຂອງປະຫວັດສະຕ໋ອກທັງໝົດ
   const getStockHistories = async () => {
     try {
-      setIsLoading(true);
-
-      // const response = await axios.get(
-      //   `${END_POINT_SEVER}/v3/stock-history-groups`,
-      //   {
-      //     params: { id, startDate, startTime, endDate, endTime },
-      //   }
-      // );
+      setIsLoadingTotal(true);
       const _localData = await getLocalData();
-
       const storeId = _localData?.DATA?.storeId;
-      console.log("check:response:---333-->", storeId);
 
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}`;
+      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}&skip=${
+        page * rowsPerPage
+      }&limit=${rowsPerPage}`;
       const response = await getStocksHistories(storeId, findBy);
 
-      console.log("check:response:----->", response);
-
       if (response.status === 200 && response.data) {
-        const stockData = response.data;
-
         const findBest = (key) => {
-          return stockData.reduce(
+          return response?.data?.datas.reduce(
             (prev, current) => (prev[key] > current[key] ? prev : current),
-            stockData[0]
+            response?.data?.datas[0]
           );
         };
 
@@ -100,12 +98,13 @@ export default function ReportStocks() {
         setBestStockExport(bestStockExport);
         setBestStockReturn(bestStockReturn);
 
-        setHistoriesExport(stockData);
+        setHistoriesExport(response?.data?.datas);
+        setTotalStockGroups(response?.data?.total);
       }
     } catch (error) {
       console.error("error:-->", error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingTotal(false);
     }
   };
 
@@ -345,16 +344,28 @@ export default function ReportStocks() {
           style={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "start",
+            alignItems: "center",
             height: isLoading ? 300 : "auto",
+            flexDirection:'column',
+            gap:10,
           }}
         >
           <StockGroups
             isLoading={isLoading}
-            limit={rowsPerPage}
-            dataExports={historiesExport}
+            datas={historiesExport}
             filterName={filterName}
+            rowsPerPageTotal={rowsPerPageTotal}
+            pageTotal={pageTotal}
+            isLoadingTotal={isLoadingTotal}
           />
+          {totalStockGroups > 0 && (
+            <PaginationAppzap
+              rowsPerPage={rowsPerPageTotal}
+              page={pageTotal}
+              pageAll={pageAllTotal}
+              onPageChange={handleChangePageTotal}
+            />
+          )}
         </Col>
       </Row>
 
