@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCogs,
@@ -13,16 +13,23 @@ import {
   faStore,
   faDollarSign,
   faImages,
+  faDatabase,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
+import PopUpConfirm from "../../components/popup/PopUpConfirm";
+import { END_POINT_APP, getLocalData } from "../../constants/api";
+import Axios from "axios";
+import Swal from "sweetalert2";
 
 export default function SettingList() {
   const { t } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
+  const [clickCount, setClickCount] = useState(0);
+  const [showDeletem, setShowDelete] = useState(false);
 
   const data = [
     {
@@ -120,6 +127,38 @@ export default function SettingList() {
     // },
   ];
 
+  const clickDeleteHistoryStore = async () => {
+    if (clickCount > 5) {
+      setShowDelete(true);
+    }
+    setClickCount((prev) => prev + 1);
+  };
+  const deleteHistoryStore = async () => {
+    try {
+      const url = `${END_POINT_APP}/v4/reset-history-store`;
+      const { TOKEN } = await getLocalData();
+      await Axios.post(url, null, {
+        headers: TOKEN,
+      });
+      await Swal.fire({
+        icon: "success",
+        title: "ລ້າງປະຫວັດສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setShowDelete(false);
+    } catch (err) {
+      setShowDelete(false);
+      await Swal.fire({
+        icon: "error",
+        title: "ລ້າງປະຫວັດບໍ່ສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      console.log(err);
+    }
+  };
+
   return (
     <div style={{ height: "100%" }}>
       <Box
@@ -141,7 +180,18 @@ export default function SettingList() {
             {e.title}
           </ItemBox>
         ))}
+        <ItemBox onClick={clickDeleteHistoryStore}>
+          <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />,
+          ລ້າງປະຫວັດຮ້ານ
+        </ItemBox>
       </Box>
+      <PopUpConfirm
+        open={showDeletem}
+        onClose={() => setShowDelete(false)}
+        text1="ທ່ານຕ້ອງການລ້າງປະຫວັດຮ້ານຫຼືບໍ່"
+        text2=""
+        onSubmit={deleteHistoryStore}
+      />
     </div>
   );
 }
