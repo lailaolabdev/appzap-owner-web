@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 import {
@@ -9,6 +9,10 @@ import {
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
+import { URL_PHOTO_AW3 } from "../../constants";
+import { Image } from "react-bootstrap";
+import axios from 'axios';
+
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -75,12 +79,37 @@ export default function BillForCheckOut80({
       console.log("err:", err);
     }
   };
+ 
+  // ຍ້ອນຫຍັງ ເມື່ອປິ່ນບິນອອກຈາກ barican printer ຈຶ່ງບໍສາມາດດຶງຮູບພາບມາສະແດງໄດ້
+  // const urlImage = "https://res.cloudinary.com/vistaprint/image/upload/c_scale,w_440,h_440,dpr_2/f_auto,q_auto/v1704969964/ideas-and-advice-prod/en-us/CHANEL_THUMB_34302915-446e-4eb6-8eb1-ab1634e38378_1080x.jpg?_i=AA"
+  const url3 = "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/3801ff89-bfad-4dca-802d-e0dca03bd085.png"
+const urlJpg = "https://st.depositphotos.com/1144386/4493/v/450/depositphotos_44937615-stock-illustration-new-style-facebook-icon.jpg"
+const urlJpg33 = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Facebook_New_Logo_%282015%29.svg/1280px-Facebook_New_Logo_%282015%29.svg.png"
+
+// Set the src attribute to the image URL
+ 
+// ຍ້ອນຫຍັງຮູບນີ້ ທີ1 ປິ່ນໄດ້ ແຕ່ຮູບທີ2 ປິ່ນບໍໄດ້
+  const imageUrlJpg = URL_PHOTO_AW3 + storeDetail?.printer?.logo.replace('.jpeg', '.jpg');
+console.log("storeDetail999:--->", storeDetail?.printer?.logo)
+
+
+  
 
   return (
     <Container>
-      <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
+      <div style={{ width:'100%', display:'flex', justifyContent:'center' }}>
+    <Image
+      style={{ width: 60, height: 60, border: '1px solid gray', borderRadius:'10em',  overflow:'hidden' }}
+      // src={url3}
+      src={URL_PHOTO_AW3 + storeDetail?.printer?.logo}
+      alt="preview"
+      
+    />
+        {/* <Image style={{width: 60, height:60,border:'1px solid gray', borderRadius:"10em"}} src={URL_PHOTO_AW3 + storeDetail?.image} roundedCircle /> */}
+      </div>
+      <div style={{ textAlign: "center" }}>{storeDetail?.name} DEV url3 logo</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
-      <Price>
+      {/* <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
             ເບີໂທ:{" "}
@@ -183,17 +212,14 @@ export default function BillForCheckOut80({
           padding: 10,
         }}
       >
-        <Img>
-          {/* <QRCode
-            value={`https://chart.googleapis.com/chart?cht=qr&chl=${storeDetail?.printer?.qr}`}
-          /> */}
+        <Img> 
           <img
             src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
             style={{ wifth: "100%", height: "100%" }}
             alt=""
           />
         </Img>
-      </div>
+      </div> */}
     </Container>
   );
 }

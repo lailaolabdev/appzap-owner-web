@@ -142,7 +142,8 @@ export default function TableList() {
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
-
+  const [isBillTest, setIsBillTest] = useState(true);
+  
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
   //   setSeletedOrderItem(_data)
@@ -1199,6 +1200,20 @@ export default function TableList() {
                         >
                           <SiAirtable /> {selectedTable?.tableName}
                         </div>
+
+                        {/* <Button onClick={()=> setIsBillTest(true)}>test print</Button>
+
+                          <Modal show={isBillTest} onHide={() => setIsBillTest(false)}>
+                          <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+        <BillForCheckOut80
+          storeDetail={storeDetail}
+          selectedTable={selectedTable}
+          dataBill={dataBill}
+          taxPercent={taxPercent}
+        />
+      </div>
+                          </Modal> */}
+
                         <div
                           style={{
                             fontSize: 16,
