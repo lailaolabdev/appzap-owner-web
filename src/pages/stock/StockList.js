@@ -29,7 +29,7 @@ import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { thousandSeparator } from "../../helpers/thousandSeparator";
 import PopUpPreViewsPage from "../../components/popup/PopUpPreViewsPage";
 import PaginationAppzap from "../../constants/PaginationAppzap";
-import { getStocksAll } from "../../services/stocks";
+import { getCountStocksAll, getStocksAll } from "../../services/stocks";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import { MdSearch } from "react-icons/md";
 
@@ -134,14 +134,33 @@ export default function MenuList() {
         const res = await getStocksAll(findby);
         if (res.status === 200) {
           // console.log('res--->', res)
-          setTotalStock(res?.data?.total);
-          setStocks(res?.data?.stocks);
+          // setTotalStock(res?.data?.total);
+          setStocks(res?.data);
           setIsLoading(true);
         }
         setIsLoading(false);
       }
     } catch (err) {
       setLoadStatus("ERROR!!");
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
+
+  const getCountStocks = async () => {
+    try {
+      const _localData = await getLocalData();
+      if (_localData) {
+        setIsLoading(true);
+        let findby = "?";
+        findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        const res = await getCountStocksAll(findby);
+        if (res.status === 200) {
+          console.log('res--->', res)
+          setTotalStock(res?.data);
+        }
+      }
+    } catch (err) {
       setIsLoading(false);
       console.log("err:", err);
     }
@@ -231,6 +250,7 @@ export default function MenuList() {
 
   useEffect(() => {
     getStock();
+    getCountStocks()
   }, [page, filterName]);
 
   // console.log("datas:---->", stocks);
