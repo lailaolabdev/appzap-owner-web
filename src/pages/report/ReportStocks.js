@@ -14,7 +14,7 @@ import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { formatDateNow, numberFormat } from "../../helpers";
-import { getStocksAll, getStocksHistories } from "../../services/stocks";
+import { getCountStocksAll, getStocksAll, getStocksHistories } from "../../services/stocks";
 import { IoSearchCircleOutline } from "react-icons/io5";
 import EmptyState from "../../components/EmptyState";
 
@@ -69,6 +69,7 @@ export default function ReportStocks() {
   // ເອື້ນໃຊ້​ function ດືງຂໍ້ມູນສະຕ໋ອກ ແລະ ປະຫວັດສະຕ໋ອກ
   useEffect(() => {
     getStocks();
+    getCountStocks()
   }, [page, startDate, endDate]);
 
   // ດຶງຂໍ້ມູນຂອງປະຫວັດສະຕ໋ອກທັງໝົດ
@@ -123,11 +124,30 @@ export default function ReportStocks() {
         const res = await getStocksAll(findby);
         if (res.status === 200) {
           // console.log('res--->', res)
-          setTotalStock(res?.data?.total);
-          setStocks(res?.data?.stocks);
+          // setTotalStock(res?.data?.total);
+          setStocks(res?.data);
           setIsLoading(true);
         }
         setIsLoading(false);
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
+
+  const getCountStocks = async () => {
+    try {
+      const _localData = await getLocalData();
+      if (_localData) {
+        setIsLoading(true);
+        let findby = "?";
+        findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        const res = await getCountStocksAll(findby);
+        if (res.status === 200) {
+          console.log('res--->', res)
+          setTotalStock(res?.data);
+        }
       }
     } catch (err) {
       setIsLoading(false);
