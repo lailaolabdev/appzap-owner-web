@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { useState, useEffect, useRef } from "react";
-import { moneyCurrency } from "../../helpers/index";
+import { convertImageToBase64, moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 import {
   QUERY_CURRENCIES,
@@ -9,10 +9,11 @@ import {
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
-import { URL_PHOTO_AW3 } from "../../constants";
+import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image } from "react-bootstrap";
-import axios from 'axios';
-
+import axios from "axios";
+import { useTranslation } from "react-i18next";
+// import emptyLogo from "/public/images/emptyLogo.jpeg";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -25,6 +26,8 @@ export default function BillForCheckOut80({
   const [taxAmount, setTaxAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
+  const { t } = useTranslation();
+  const [base64Image, setBase64Image] = useState("");
 
   // useEffect
   useEffect(() => {
@@ -79,40 +82,70 @@ export default function BillForCheckOut80({
       console.log("err:", err);
     }
   };
- 
-  // ຍ້ອນຫຍັງ ເມື່ອປິ່ນບິນອອກຈາກ barican printer ຈຶ່ງບໍສາມາດດຶງຮູບພາບມາສະແດງໄດ້
-  // const urlImage = "https://res.cloudinary.com/vistaprint/image/upload/c_scale,w_440,h_440,dpr_2/f_auto,q_auto/v1704969964/ideas-and-advice-prod/en-us/CHANEL_THUMB_34302915-446e-4eb6-8eb1-ab1634e38378_1080x.jpg?_i=AA"
-  const url3 = "https://appzapimglailaolab.s3.ap-southeast-1.amazonaws.com/3801ff89-bfad-4dca-802d-e0dca03bd085.png"
-const urlJpg = "https://st.depositphotos.com/1144386/4493/v/450/depositphotos_44937615-stock-illustration-new-style-facebook-icon.jpg"
-const urlJpg33 = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Facebook_New_Logo_%282015%29.svg/1280px-Facebook_New_Logo_%282015%29.svg.png"
 
-// Set the src attribute to the image URL
- 
-// ຍ້ອນຫຍັງຮູບນີ້ ທີ1 ປິ່ນໄດ້ ແຕ່ຮູບທີ2 ປິ່ນບໍໄດ້
-  const imageUrlJpg = URL_PHOTO_AW3 + storeDetail?.printer?.logo.replace('.jpeg', '.jpg');
-console.log("storeDetail999:--->", storeDetail?.printer?.logo)
+  const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
+  const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
+  const myUrl =
+    " https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/8cdca155-d983-415e-86a4-99b9d0be7ef6.jpeg";
 
+  console.log("check imageUrl--->", imageUrl);
+  // console.log("check imageUrl:--->",imageUrl2)
 
-  
+  useEffect(() => {
+    convertImageToBase64(imageUrl2).then((base64) => {
+      console.log("base64:==>", {base64} );
+    setBase64Image(base64);
+    });
+  }, [imageUrl2]);
 
   return (
     <Container>
-      <div style={{ width:'100%', display:'flex', justifyContent:'center' }}>
-    <Image
-      style={{ width: 60, height: 60, border: '1px solid gray', borderRadius:'10em',  overflow:'hidden' }}
-      // src={url3}
-      src={URL_PHOTO_AW3 + storeDetail?.printer?.logo}
-      alt="preview"
-      
-    />
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <Image
+            style={{
+              width: 60,
+              height: 60,
+              border: "1px solid #f2f2f2",
+              borderRadius: "10em",
+              overflow: "hidden",
+            }}
+            src={base64Image}
+            alt="logo"
+          />
+        {/* {base64Image ? (
+          <Image
+            style={{
+              width: 60,
+              height: 60,
+              border: "1px solid #f2f2f2",
+              borderRadius: "10em",
+              overflow: "hidden",
+            }}
+            src={base64Image}
+            alt="logo"
+          />
+        ) : (
+          <Image
+            style={{
+              width: 60,
+              height: 60,
+              border: "1px solid #f2f2f2",
+              borderRadius: "10em",
+              overflow: "hidden",
+            }}
+            src={EMPTY_LOGO}
+            alt="logo"
+          />
+        )} */}
+
         {/* <Image style={{width: 60, height:60,border:'1px solid gray', borderRadius:"10em"}} src={URL_PHOTO_AW3 + storeDetail?.image} roundedCircle /> */}
       </div>
-      <div style={{ textAlign: "center" }}>{storeDetail?.name} DEV url3 logo</div>
+      <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
-      {/* <Price>
+      <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
-            ເບີໂທ:{" "}
+            {t("phoneNumber")}: {""}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
           <div>
@@ -120,11 +153,11 @@ console.log("storeDetail999:--->", storeDetail?.printer?.logo)
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
           <div>
-            ລະຫັດໂຕະ:{" "}
+            {t("tableCode")}:{" "}
             <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
           </div>
           <div>
-            ວັນທີ:{" "}
+            {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
             </span>
@@ -133,10 +166,10 @@ console.log("storeDetail999:--->", storeDetail?.printer?.logo)
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10 }}>
-        <div style={{ textAlign: "left" }}>ລາຍການ</div>
-        <div style={{ textAlign: "center" }}>ຈຳນວນ</div>
-        <div style={{ textAlign: "right" }}>ລາຄາ</div>
-        <div style={{ textAlign: "right" }}>ລວມ</div>
+        <div style={{ textAlign: "left" }}>{t("list")} </div>
+        <div style={{ textAlign: "center" }}>{t("amount")}</div>
+        <div style={{ textAlign: "right" }}>{t("price")}</div>
+        <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
         {dataBill?.orderId?.map((item, index) => {
@@ -167,26 +200,30 @@ console.log("storeDetail999:--->", storeDetail?.printer?.logo)
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
           <div>
-            ລວມ + ພາສີ {taxPercent}%: {moneyCurrency(total + taxAmount)} ກີບ
+            {t("total")}: {moneyCurrency(total)} {t("lak")}
+          </div>
+          <div>
+            {t("total")} + {t("vat")} {taxPercent}%:{" "}
+            {moneyCurrency(total + taxAmount)} {t("lak")}
           </div>
           {currencyData?.map((item, index) => (
             <div key={index}>
-              ລວມ + ພາສີ {taxPercent}% ({item?.currencyCode}):{" "}
+              {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}):{" "}
               {moneyCurrency((total + taxAmount) / item?.sell)}
             </div>
           ))}
           <div>
-            ສ່ວນຫຼຸດ:
-            {dataBill?.discount}{" "}
+            {t("discount")}:{dataBill?.discount}{" "}
             {dataBill?.discountType == "MONEY" ||
-            dataBill?.discountType == "LAK"
-              ? "ກີບ"
-              : "%"}
+            dataBill?.discountType == "LAK" ? (
+              <>{t("lak")}</>
+            ) : (
+              "%"
+            )}
           </div>
           <div>
-            ລູກຄ້າ : {dataBill?.dataCustomer?.username} ({" "}
+            {t("customerName")} : {dataBill?.dataCustomer?.username} ({" "}
             {dataBill?.dataCustomer?.phone} )
           </div>
         </div>
@@ -195,14 +232,19 @@ console.log("storeDetail999:--->", storeDetail?.printer?.logo)
       <div style={{ height: 10 }}></div>
       <Price>
         <h6>
-          ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(totalAfterDiscount + taxAmount)} ກີບ
+          {t("aPriceHasToPay")} {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
+          {t("lak")}
         </h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>ຮັບເງີນມາ {dataBill?.moneyReceived || 0}</div>
-          <div>ເງີນທອນ {dataBill?.moneyChange || 0}</div>
+          <div>
+            {t("getMoney")} {dataBill?.moneyReceived || 0}
+          </div>
+          <div>
+            {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+          </div>
         </div>
       </Price>
       <div
@@ -212,14 +254,14 @@ console.log("storeDetail999:--->", storeDetail?.printer?.logo)
           padding: 10,
         }}
       >
-        <Img> 
+        <Img>
           <img
             src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
             style={{ wifth: "100%", height: "100%" }}
             alt=""
           />
         </Img>
-      </div> */}
+      </div>
     </Container>
   );
 }

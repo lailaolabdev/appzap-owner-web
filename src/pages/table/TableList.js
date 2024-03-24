@@ -1199,20 +1199,19 @@ export default function TableList() {
                           }}
                         >
                           <SiAirtable /> {selectedTable?.tableName}
-                        </div>
-
+                        </div> 
                         {/* <Button onClick={()=> setIsBillTest(true)}>test print</Button>
 
                           <Modal show={isBillTest} onHide={() => setIsBillTest(false)}>
                           <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
-        <BillForCheckOut80
+                          <BillForCheckOut80
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
         />
       </div>
-                          </Modal> */}
+                          </Modal>   */}
 
                         <div
                           style={{
@@ -1289,7 +1288,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຍອດບິນ:{" "}
+                          {t("total")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1304,7 +1303,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຍອດທີຕ້ອງຊຳລະ:{" "}
+                          {t("aPriceHasToPay")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",

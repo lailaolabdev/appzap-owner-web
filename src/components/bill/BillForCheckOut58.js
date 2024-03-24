@@ -1,19 +1,26 @@
 import styled from "styled-components";
 
 import React, { useState, useEffect } from "react";
-import { moneyCurrency } from "../../helpers/index";
+import { convertImageToBase64, moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 import { QUERY_CURRENCIES, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
+import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
+import { useTranslation } from "react-i18next";
+import { Image } from "react-bootstrap";
 
 export default function BillForCheckOut58({
   storeDetail,
   selectedTable,
   dataBill,
 }) {
+  const { t } = useTranslation();
+
   const [total, setTotal] = useState();
   const [currencyData, setCurrencyData] = useState([]);
+  const [base64Image, setBase64Image] = useState('');
+  const imageUrl = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -32,6 +39,13 @@ export default function BillForCheckOut58({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
 
+  
+  useEffect(() => { 
+    convertImageToBase64(imageUrl).then(base64 => { 
+      setBase64Image(base64);
+    });
+  }, [imageUrl]);
+
   const getDataCurrency = async () => {
     try {
       const { DATA } = await getLocalData();
@@ -47,15 +61,31 @@ export default function BillForCheckOut58({
       console.log("err:", err);
     }
   };
+  
 
   return (
     <Container>
+      <div style={{ width:'100%', display:'flex', justifyContent:'center' }}>
+      {!base64Image ? <Image
+      style={{ width: 60, height: 60, border: '1px solid #f2f2f2', borderRadius:'10em',  overflow:'hidden' }}
+      src={base64Image}
+      alt="preview"
+      
+    /> :
+    <Image
+      style={{ width: 60, height: 60, border: '1px solid #f2f2f2', borderRadius:'10em',  overflow:'hidden' }}
+      src={EMPTY_LOGO}
+      alt="preview"
+      
+    />
+    }
+      </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
-            ເບີໂທ:{" "}
+            {t("phoneNumber")}:{" "}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
           <div>
@@ -63,11 +93,11 @@ export default function BillForCheckOut58({
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
           <div>
-            ລະຫັດໂຕະ:{" "}
+          {t("tableCode")}:{" "}
             <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
           </div>
           <div>
-            ວັນທີ:{" "}
+          {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
             </span>
@@ -86,10 +116,10 @@ export default function BillForCheckOut58({
         </Img>
       </Price>
       <Name style={{ marginBottom: 10 }}>
-        <div style={{ textAlign: "left" }}>ລາຍການ</div>
-        <div style={{ textAlign: "center" }}>ຈຳນວນ</div>
-        <div style={{ textAlign: "right" }}>ລາຄາ</div>
-        <div style={{ textAlign: "right" }}>ລວມ</div>
+      <div style={{ textAlign: "left" }}>{t("list")} </div>
+        <div style={{ textAlign: "center" }}>{t("amount")}</div>
+        <div style={{ textAlign: "right" }}>{t("price")}</div>
+        <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
         {dataBill?.orderId?.map((item, index) => {
@@ -120,25 +150,25 @@ export default function BillForCheckOut58({
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div>
-          <div>ລວມ: {moneyCurrency(total)} ກີບ</div>
+          <div>{t("total")}: {moneyCurrency(total)} ກີບ</div>
           {currencyData?.map((item, index) => (
             <div key={index}>
-              ລວມ ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
+              {t("total")} ({item?.currencyCode}): {moneyCurrency(total / item?.sell)}
             </div>
           ))}
-          <div>ສ່ວນຫຼຸດ (ກີບ) 0</div>
+          <div> {t("discount")} (ກີບ) 0</div>
         </div>
       </Price>
       <hr style={{ border: "1px solid #000" }} />
       <Price>
         <div style={{ flexGrow: 1 }}></div>
-        <h6>ເງິນທີ່ຕ້ອງຊຳລະ {moneyCurrency(total)} ກີບ</h6>
+        <h6>{t("aPriceHasToPay")}  {moneyCurrency(total)} {t("lak")}</h6>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>ຮັບເງີນມາ 0</div>
-          <div>ເງີນທອນ 0</div>
+          <div>{t("getMoney")} 0</div>
+          <div>{t("moneyWithdrawn")}  0</div>
         </div>
       </Price>
     </Container>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Form, Button, Carousel } from "react-bootstrap";
+import { Form, Button, Carousel, Spinner } from "react-bootstrap";
 import packetJson from "../../../package.json";
 import ReactGA from 'react-ga4';
 
@@ -19,6 +19,7 @@ import "./login.css";
 
 import { USER_KEY, END_POINT, COLOR_APP } from "../../constants";
 import role from "../../helpers/role";
+import LoadingAppzap from "../../components/LoadingAppzap";
 
 function Login() {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ function Login() {
 }, [])
 
   const _login = async ({ values }) => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
       const { defaultPath } = role(user?.data?.data?.role, user?.data?.data);
       if (defaultPath) {
@@ -58,6 +59,8 @@ function Login() {
         //   draggable: true,
         //   progress: undefined,
         // });
+    setIsLoading(true);
+
       }
     } catch (error) {
       // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
@@ -70,7 +73,6 @@ function Login() {
       //   progress: undefined,
       // });
     }
-    setIsLoading(true);
   };
 
   let _imgaeSlide = ["/images/slide/pro1.png", "/images/slide/pro2.png"];
@@ -264,13 +266,15 @@ function Login() {
                     style={{
                       backgroundColor: "#FB6E3B",
                       border: "1px #FB6E3B",
-                      marginLeft: 0,
                       width: "100%",
                       fontSize: 18,
+                      fontWeight:'bold',
+                      display:'flex', justifyContent:'center', alignItems:'center', gap:10
                     }}
                     onClick={handleSubmit}
                     // disabled={isLoading}
                   >
+                    {isLoading && <Spinner  size="small" animation="border" />  }
                     ເຂົ້າສູ່ລະບົບ
                   </Button>
                   <div style={{ height: 50 }} />

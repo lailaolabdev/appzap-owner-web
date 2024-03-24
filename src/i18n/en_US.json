@@ -45,11 +45,14 @@
     "printBillToKitchen":"Print bill to kitchen ",
     "updateStatus":"Update status ",
     "price":"Price ",
+    "moneyWithdrawn":"Money Withdraw ",
+    "getMoney":"Money ",
     "totalPrice":"Total price ",
     "list":"List ",
     "timeOpening":"Time opening ",
-    "aPriceHasToPay":"a price has to pay ",
+    "aPriceHasToPay":"A price has to pay ",
     "lak":"LAK ",
+    "vat":"VAT ",
     "printBill":"Print a bill ",
     "discountLAK":"Discount (LAK)", 
     "total":"Total ",
@@ -163,5 +166,6 @@
     "TableHasNoOrder": "This table has no orders yet",
     "transfercash": "Tranfer + Cash payment",
     "soundManage": "Sound Manage",
-    "currencyManage": "Currency Rate Manage"
+    "currencyManage": "Currency Rate Manage",
+    "customerName": "Customer Name"
 }
