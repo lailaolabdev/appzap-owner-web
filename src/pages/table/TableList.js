@@ -130,10 +130,10 @@ export default function TableList() {
   };
   useEffect(() => {
     if (reload) {
-      getTableOrders(selectedTable);
+      getTableOrders(selectedTable);                                                      
       setReload(false);
       // orderSound();
-    }
+    }                                     
   }, [reload]);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
