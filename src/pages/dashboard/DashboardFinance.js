@@ -689,6 +689,7 @@ export default function DashboardFinance({
                 <th>{t("servedBy")}</th>
                 <th>{t("price")}</th>
                 <th>{t("time")}</th>
+                <th>ເວລາອັບເດດ</th>
               </tr>
             </thead>
             <tbody>
@@ -722,6 +723,11 @@ export default function DashboardFinance({
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+                  <td>
+                    {item?.updatedAt
+                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                      : "-"}
+                  </td>
                 </tr>
               ))}
             </tbody>

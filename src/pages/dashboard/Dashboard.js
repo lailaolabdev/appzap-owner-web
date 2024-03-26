@@ -224,7 +224,7 @@ export default function Dashboard() {
             {t("last7days")}
           </button>
           <div style={{ width: 10 }}></div>
-          {/* <button
+          <button
             type="button"
             className="text-name"
             style={{
@@ -240,7 +240,7 @@ export default function Dashboard() {
             }}
           >
             {t("last30days")}
-          </button> */}
+          </button>
 
           <div style={{ width: 10 }}></div>
           <select
@@ -257,7 +257,7 @@ export default function Dashboard() {
             ))}
           </select>
         </div>
-        {/* <div
+        <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(2,1fr)",
@@ -292,7 +292,7 @@ export default function Dashboard() {
               setEndDate(e?.target?.value);
             }}
           />
-        </div> */}
+        </div>
       </Box>
 
       {changeUi === "MONEY_CHART" && (
