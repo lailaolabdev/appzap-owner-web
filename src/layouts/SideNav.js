@@ -115,11 +115,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: "ລາຍງານ (ໃໝ່)",
-      key: "report/sales-report",
+      key: "reports/sales-report",
       typeStore: "",
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
-      system: "report",
+      system: "reportManagement",
     },
   
     // {

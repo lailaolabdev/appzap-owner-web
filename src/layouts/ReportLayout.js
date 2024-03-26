@@ -13,7 +13,7 @@ export default function ReportLayout() {
   const Location = useLocation();
 
   const onViewStocksPath = (patch) => {
-    navigate(`/report/${patch}`);
+    navigate(`/reports/${patch}`);
   };
 
   useEffect(() => {
@@ -53,11 +53,11 @@ export default function ReportLayout() {
                 className="menu-report-stocks"
                 style={{
                   background:
-                    activeButton === "/report/sales-report"
+                    activeButton === "/reports/sales-report"
                       ? COLOR_APP
                       : "white",
                   color:
-                    activeButton === "/report/sales-report"
+                    activeButton === "/reports/sales-report"
                       ? "white"
                       : COLOR_APP,
                 }}
@@ -68,13 +68,13 @@ export default function ReportLayout() {
               </div>
               <div
                 className="menu-report-stocks mt-1"
-                style={{
+                style={{  
                   background:
-                    activeButton === "/report/reportStocks"
+                    activeButton === "/reports/reportStocks"
                       ? COLOR_APP
                       : "white",
                   color:
-                    activeButton === "/report/reportStocks"
+                    activeButton === "/reports/reportStocks"
                       ? "white"
                       : COLOR_APP,
                 }}

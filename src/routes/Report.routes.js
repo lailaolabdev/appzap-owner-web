@@ -10,13 +10,13 @@ import ReportStocks from "../pages/report/ReportStocks";
 
 // eslint-disable-next-line
 export default {
-  path: "/report",
+  path: "/reports",
   element: <ReportLayout />,
   children: [
     {
       path: "sales-report",
       element: <DashboardPage />,
-    },
+    }, 
     {
       path: "members-report",
       element: <MemberPage />,

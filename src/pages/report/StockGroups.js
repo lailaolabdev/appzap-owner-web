@@ -41,9 +41,9 @@ function StockGroups({ datas, isLoadingTotal, filterName, totalStock, pageTotal,
               <th>#</th>
               <th style={{ textAlign:'center'}}>ວັນທີ,ເດືອນ,ປີ​ (ເວລາ)</th>
               <th>ຊື່ສິນຄ້າ</th>
-              <th style={{ textAlign:'center'}}>ນຳອອກ</th>
-              <th style={{ textAlign:'center'}}>ນຳເຂົ້າ</th>
-              <th style={{ textAlign:'center'}}>ສົ່ງຄືນ</th>
+              <th style={{ textAlign:'center'}}>ຈຳນວນນຳອອກ</th>
+              <th style={{ textAlign:'center'}}>ຈຳນວນນຳເຂົ້າ</th>
+              <th style={{ textAlign:'center'}}>ຈຳນວນສົ່ງຄືນ</th>
               <th style={{ textAlign:'center'}}>ຫົວໜ່ວຍ</th>
             </tr>
           </thead>
