@@ -95,21 +95,22 @@ export default function MenuList() {
           const _localData = await getLocalData();
 
           setIsLoading(true);
-          await fetch(
-            MENUS +
-              `/?storeId=${_localData?.DATA?.storeId}${
-                filterCategory && filterCategory !== "All"
-                  ? `&categoryId=${filterCategory}`
-                  : ""
-              }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
-            {
-              method: "GET",
-            }
-          )
-            .then((response) => response.json())
-            .then((json) => {
-              setMenus(json);
-            });
+          getMenu(_localData?.DATA?.storeId, filterCategory)
+
+          // await fetch(
+          //   MENUS +
+          //   `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
+          //     : `&categoryId=${filterCategory}`
+
+          //   }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+          //   {
+          //     method: "GET",
+          //   }
+          // )
+          //   .then((response) => response.json())
+          //   .then((json) => {
+          //     setMenus(json);
+          //   });
           setIsLoading(false);
         } catch (err) {
           console.log(err);
@@ -138,19 +139,20 @@ export default function MenuList() {
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true);
+      console.log({id, categoryId})
       await fetch(
         MENUS +
-          `/?storeId=${id}${
-            categoryId && categoryId !== "All"
-              ? `&categoryId=${categoryId}`
-              : ""
-          }`,
+        `/?storeId=${id}${(categoryId && categoryId !== "All")
+          ? `&categoryId=${categoryId}`
+          : ""
+        }`,
         {
           method: "GET",
         }
       )
         .then((response) => response.json())
         .then((json) => {
+          console.log('===()()====LLLLL:::::',{json})
           setMenus(json);
         });
       setIsLoading(false);
@@ -531,20 +533,20 @@ export default function MenuList() {
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
 
-const getCategory = async () => {
-  try {
-    await fetch(
-      master_menu_api_dev + `/api/restaurant-categories`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => setCategoriesRestaurant(json));
-  } catch (err) {
-    console.log(err);
-  }
-};
+  const getCategory = async () => {
+    try {
+      await fetch(
+        master_menu_api_dev + `/api/restaurant-categories`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setCategoriesRestaurant(json));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div style={BODY}>
@@ -769,7 +771,7 @@ const getCategory = async () => {
           open={showAddMenus}
           onClose={handleCloseAddMenus}
           categoriesRestaurant={categoriesRestaurant}
-          // onSubmit={_confirmeDelete}
+        // onSubmit={_confirmeDelete}
         />
 
         {/* add menu */}
@@ -894,8 +896,8 @@ const getCategory = async () => {
                       style={{
                         border:
                           errors.categoryId &&
-                          touched.categoryId &&
-                          errors.categoryId
+                            touched.categoryId &&
+                            errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
@@ -1254,7 +1256,7 @@ const getCategory = async () => {
                 const _localData = await getLocalData();
                 if (_localData) {
                   setgetTokken(_localData);
-                  getMenu(_localData?.DATA?.storeId, selectedCategory);
+                  getMenu(_localData?.DATA?.storeId, filterCategory);
                 }
               };
               getData();
@@ -1404,8 +1406,8 @@ const getCategory = async () => {
                           style={{
                             border:
                               errors.name_en &&
-                              touched.name_en &&
-                              errors.name_en
+                                touched.name_en &&
+                                errors.name_en
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1427,8 +1429,8 @@ const getCategory = async () => {
                           style={{
                             border:
                               errors.name_cn &&
-                              touched.name_cn &&
-                              errors.name_cn
+                                touched.name_cn &&
+                                errors.name_cn
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1448,8 +1450,8 @@ const getCategory = async () => {
                           style={{
                             border:
                               errors.name_kr &&
-                              touched.name_kr &&
-                              errors.name_kr
+                                touched.name_kr &&
+                                errors.name_kr
                                 ? "solid 1px red"
                                 : "",
                           }}

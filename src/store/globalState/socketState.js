@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import socketio from "socket.io-client";
 import { END_POINT_SOCKET } from "../../constants/api";
+import { getCountOrderWaiting } from "../../services/order";
 const socket = socketio.connect(END_POINT_SOCKET, {
   reconnection: true,
   reconnectionDelay: 5000,
@@ -15,6 +16,7 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     useState(false);
   const [newOreservationTransaction, setNewOreservationTransaction] =
     useState(false);
+  const [countOrderWaiting, setCountOrderWaiting] = useState(0)
 
   useMemo(() => {
     socket.on("connect", (e) => {
@@ -23,9 +25,11 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     socket.on(`TABLE:${storeDetail?._id}`, () => {
       setNewTableTransaction(true);
     });
-    socket.on(`ORDER:${storeDetail?._id}`, () => {
+    socket.on(`ORDER:${storeDetail?._id}`, async () => {
       setRunSound({ orderSound: true });
       setNewOrderTransaction(true);
+      const count = await getCountOrderWaiting(storeDetail?._id);
+      setCountOrderWaiting(count || 0)
     });
     socket.on(`ORDER_UPDATE_STATUS:${storeDetail?._id}`, () => {
       setRunSound({ orderSound: true });
@@ -89,5 +93,7 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     setNewOrderUpdateStatusTransaction,
     newOreservationTransaction,
     setNewOreservationTransaction,
+    countOrderWaiting,
+    setCountOrderWaiting
   };
 };

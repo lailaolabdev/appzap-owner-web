@@ -9,6 +9,7 @@ import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
+import PopUpQRToken from "../../components/popup/PopUpQRToken";
 
 import { SiAirtable } from "react-icons/si";
 
@@ -34,23 +35,25 @@ import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import { COLOR_APP } from "../../constants/index";
 import { useStore } from "../../store";
 import {
+  END_POINT_APP,
   END_POINT_SEVER,
   END_POINT_WEB_CLIENT,
   getLocalData,
 } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
-import { getHeaders } from "../../services/auth";
+import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 // import _ from "lodash";
 import { updateOrderItem } from "../../services/order";
 import styled from "styled-components";
-import { getCodes } from "../../services/code";
+import { callCheckOutPrintBillOnly, getCodes } from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
+import { IoQrCode } from "react-icons/io5";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -91,6 +94,7 @@ export default function TableList() {
   const [total, setTotal] = useState(0);
   const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
   const [codeShortLink, setCodeShortLink] = useState(null);
+  const [qrToken, setQrToken] = useState("");
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -143,6 +147,7 @@ export default function TableList() {
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
+  const [codeId, setCodeId] = useState(null)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
@@ -471,6 +476,11 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1500,
       });
+
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      getTableDataStore();
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -953,6 +963,15 @@ export default function TableList() {
     }
     setTotal(_total);
   };
+
+  const getQrTokenForSelfOrdering = async () => {
+    const data = await tokenSelfOrderingPost(selectedTable?.billId);
+    if (data?.token) {
+      setQrToken(data?.token);
+      setPopup({ qrToken: true });
+    }
+  };
+
   return (
     <div
       style={{
@@ -962,6 +981,14 @@ export default function TableList() {
         width: "100%",
       }}
     >
+      {/* popup */}
+      <PopUpQRToken
+        tableName={selectedTable?.tableName}
+        open={popup?.qrToken}
+        qr={qrToken}
+        storeId={selectedTable?.storeId}
+        onClose={() => setPopup()}
+      />
       {isTableOrderLoading ? <Loading /> : ""}
       <div>
         <Box
@@ -991,9 +1018,9 @@ export default function TableList() {
               <Box
                 sx={{
                   display: "grid",
-                  gap: 5,
+                  gap: 6,
                   gridTemplateColumns: {
-                    md: "1fr 1fr 1fr 1fr",
+                    md: "1fr 1fr 1fr 1fr 1fr",
                     sm: "1fr 1fr 1fr",
                     xs: "1fr 1fr",
                   },
@@ -1034,7 +1061,7 @@ export default function TableList() {
                             background: table?.isStaffConfirm
                               ? table?.editBill
                                 ? "#bfff00"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                : table?.statusBill === 'CALL_TO_CHECKOUT' ? 'yellow' : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1049,8 +1076,8 @@ export default function TableList() {
                           className={
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
-                              : table.statusBill === "CALL_TO_CHECKOUT"
-                              ? "blink_cardCallCheckOut"
+                              // : table.statusBill === "CALL_TO_CHECKOUT"
+                              //   ? "blink_cardCallCheckOut"
                               : ""
                           }
                           onClick={() => {
@@ -1069,10 +1096,15 @@ export default function TableList() {
                             <span
                               style={{
                                 fontSize: 16,
-                                color: table?.staffConfirm
-                                  ? "white"
-                                  : "#616161",
+                                // color: table?.staffConfirm
+                                //   ? "white"
+                                //   : "#616161",
                                 fontWeight: "bold",
+                                color: table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "black"
+                                    : table?.statusBill === 'CALL_TO_CHECKOUT' ? 'black' : "white"
+                                  : "black",
                               }}
                             >
                               <div>{table?.tableName}</div>
@@ -1118,8 +1150,8 @@ export default function TableList() {
                           className={
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
-                              : table.statusBill === "CALL_TO_CHECKOUT"
-                              ? "blink_cardCallCheckOut"
+                              // : table.statusBill === "CALL_TO_CHECKOUT"
+                              //   ? "blink_cardCallCheckOut"
                               : ""
                           }
                           onClick={() => {
@@ -1189,6 +1221,18 @@ export default function TableList() {
                 >
                   {
                     <div>
+                      <Button
+                        variant="outlined"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          color: "#909090",
+                        }}
+                        onClick={getQrTokenForSelfOrdering}
+                      >
+                        <IoQrCode style={{ fontSize: "22px" }} />
+                      </Button>
                       <div style={{ backgroundColor: "#fff", padding: 10 }}>
                         <div
                           style={{
@@ -1243,10 +1287,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
+                              dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1442,55 +1486,55 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  onClick={() => handleShowQuantity(orderItem)}
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                      disabled={
-                                        orderItem?.status === "CANCELED"
-                                      }
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) => {
-                                        // e.stopPropagation()
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        });
-                                      }}
-                                    />
-                                  </td>
+                              <tr
+                                onClick={() => handleShowQuantity(orderItem)}
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+                                <td onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    disabled={
+                                      orderItem?.status === "CANCELED"
+                                    }
+                                    name="checked"
+                                    checked={orderItem?.isChecked || false}
+                                    onChange={(e) => {
+                                      // e.stopPropagation()
+                                      onSelect({
+                                        ...orderItem,
+                                        isChecked: e.target.checked,
+                                      });
+                                    }}
+                                  />
+                                </td>
 
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1937,8 +1981,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
+                            ? ""
+                            : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2002,9 +2046,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
+          // onClick={() => {
+          //   _orderTableQunatity();
+          // }}
           >
             ບັນທຶກ
           </Button>
