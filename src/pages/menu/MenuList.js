@@ -15,7 +15,12 @@ import {
   Breadcrumb,
 } from "react-bootstrap";
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER, master_menu_api_dev } from "../../constants/api";
+import {
+  MENUS,
+  getLocalData,
+  END_POINT_SEVER,
+  master_menu_api_dev,
+} from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
@@ -228,6 +233,8 @@ export default function MenuList() {
         categoryId: values?.categoryId,
         menuOptionId: menuOptions,
         price: values?.price,
+        originPrice: values?.originPrice,
+        priceProfit: values?.price - values?.originPrice ?? 0,
         detail: values?.detail,
         unit: values?.unit,
         isOpened: isOpened,
@@ -248,8 +255,8 @@ export default function MenuList() {
       const _localData = await getLocalData();
       if (resData?.data) {
         setMenus(resData?.data);
-        // handleClose();
-        handleShow();
+        handleClose();
+        // handleShow();
         setgetTokken(_localData);
         getMenu(_localData?.DATA?.storeId);
         setMenuType("MENU");
@@ -262,6 +269,8 @@ export default function MenuList() {
         values.quantity = "";
         values.categoryId = "";
         values.price = "";
+        values.originPrice = "";
+        values.priceProfit = "";
         values.detail = "";
         values.unit = "";
       }
@@ -333,6 +342,8 @@ export default function MenuList() {
           categoryId: values?.categoryId,
           menuOptionId: menuOptions,
           price: values?.price,
+          originPrice: values?.originPrice,
+          priceProfit:values?.price - values?.originPrice ?? 0,
           detail: values?.detail,
           unit: values?.unit,
           isOpened: isOpened,
@@ -531,20 +542,17 @@ export default function MenuList() {
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
 
-const getCategory = async () => {
-  try {
-    await fetch(
-      master_menu_api_dev + `/api/restaurant-categories`,
-      {
+  const getCategory = async () => {
+    try {
+      await fetch(master_menu_api_dev + `/api/restaurant-categories`, {
         method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => setCategoriesRestaurant(json));
-  } catch (err) {
-    console.log(err);
-  }
-};
+      })
+        .then((response) => response.json())
+        .then((json) => setCategoriesRestaurant(json));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div style={BODY}>
@@ -606,9 +614,20 @@ const getCategory = async () => {
                   }}
                 />
               </Col>
-              <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
+              <Col
+                md="2"
+                style={{
+                  marginTop: 32,
+                  display: "flex",
+                  justifyContent: "end",
+                }}
+              >
                 <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#ffff",
+                    border: 0,
+                  }}
                   onClick={handleShowCaution}
                 >
                   + ເພີ່ມເມນູຈຳນວນຫຼາຍ
@@ -645,7 +664,9 @@ const getCategory = async () => {
                   <th scope="col">ຊື່ປະເພດອາຫານ</th>
                   <th scope="col">ປະເພດເມນູ</th>
                   <th scope="col">ຊື່ອາຫານ</th>
-                  <th scope="col">ລາຄາ</th>
+                  <th scope="col">ລາຄາຕົ້ນທືນ</th>
+                  <th scope="col">ລາຄາຂາຍ</th>
+                  <th scope="col">ກຳໄລ</th>
                   <th scope="col">ກຳນົດສະຖານະການສະແດງ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
@@ -692,7 +713,7 @@ const getCategory = async () => {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
-                        <td>
+                        <td style={{ textAlign: "left" }}>
                           {data?.name ?? ""}
                           <br />
                           {data?.name_en ?? ""}
@@ -701,7 +722,9 @@ const getCategory = async () => {
                           <br />
                           {data?.name_kr ?? ""}
                         </td>
+                        <td>{moneyCurrency(data?.originPrice)}</td>
                         <td>{moneyCurrency(data?.price)}</td>
+                        <td>{moneyCurrency(data?.priceProfit)}</td>
                         <td>
                           <button
                             type="button"
@@ -773,7 +796,7 @@ const getCategory = async () => {
         />
 
         {/* add menu */}
-        <Modal show={show} onHide={handleClose} keyboard={false}>
+        <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>ເພີ່ມເມນູອາຫານ</Modal.Title>
           </Modal.Header>
@@ -788,6 +811,7 @@ const getCategory = async () => {
               menuOptionId: [],
               categoryId: "",
               price: "",
+              originPrice: "",
               detail: "",
               images: [],
               unit: "",
@@ -800,8 +824,12 @@ const getCategory = async () => {
               if (!values.name) {
                 errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
               }
+              
+              if (parseInt(values.originPrice) < 0 || isNaN(parseInt(values.originPrice))) {
+                errors.originPrice = "ກະລຸນາປ້ອນລາຄາຕົ້ນທືນ...";
+              }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+                errors.price = "ກະລຸນາປ້ອນລາຄາຂາຍ...";
               }
               if (!values.categoryId) {
                 errors.categoryId = "ກະລຸນາປ້ອນ...";
@@ -1024,21 +1052,53 @@ const getCategory = async () => {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາ</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.price}
-                      placeholder="ລາຄາ..."
-                      style={{
-                        border:
-                          errors.price && touched.price && errors.price
-                            ? "solid 1px red"
-                            : "",
-                      }}
-                    />
+                    <Row>
+                      <Col>
+                        <Form.Label>ລາຄາຕົ້ນທືນ</Form.Label>
+                        <Form.Control
+                          type="number"
+                          name="originPrice"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.originPrice}
+                          placeholder="ລາຄາຕົ້ນທືນ..."
+                          style={{
+                            border:
+                              errors.originPrice && touched.originPrice && errors.originPrice
+                                ? "solid 1px red"
+                                : "",
+                          }}
+                        />
+                      </Col>
+                      <Col>
+                        <Form.Label>ລາຄາຂາຍ</Form.Label>
+                        <Form.Control
+                          type="number"
+                          name="price"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values?.price}
+                          placeholder="ລາຄາຂາຍ..."
+                          style={{
+                            border:
+                              errors.price && touched.price && errors.price
+                                ? "solid 1px red"
+                                : "",
+                          }}
+                        />
+                      </Col>
+                    </Row>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1"> 
+                        <Form.Label>ກຳໄລ</Form.Label>
+                        <Form.Control
+                          type="number"
+                          name="priceProfit"
+                          // onChange={handleChange}
+                          // onBlur={handleBlur}
+                          value={values?.price - values?.originPrice ?? 0}
+                          readOnly
+                        /> 
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
@@ -1233,6 +1293,8 @@ const getCategory = async () => {
               menuOptionId: dataUpdate?.menuOptions,
               categoryId: dataUpdate?.categoryId?._id,
               price: dataUpdate?.price,
+              originPrice: dataUpdate?.originPrice,
+              priceProfit: dataUpdate?.price - dataUpdate?.originPrice ?? 0,
               detail: dataUpdate?.detail,
               unit: dataUpdate?.unit,
               isOpened: dataUpdate?.isOpened,
@@ -1458,14 +1520,33 @@ const getCategory = async () => {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາ</Form.Label>
+                    <Row>
+                      <Col>
+                      <Form.Label>ລາຄາຕົ້ນທືນ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="originPrice"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.originPrice}
+                      placeholder="ລາຄາຕົ້ນທືນ..."
+                      style={{
+                        border:
+                          errors.originPrice && touched.originPrice && errors.originPrice
+                            ? "solid 1px red"
+                            : "",
+                      }}
+                    />
+                      </Col>
+                      <Col>
+                      <Form.Label>ລາຄາຂາຍ</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.price}
-                      placeholder="ລາຄາ..."
+                      placeholder="ລາຄາຂາຍ..."
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -1473,6 +1554,17 @@ const getCategory = async () => {
                             : "",
                       }}
                     />
+                      </Col>
+                    </Row>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1"> 
+                      <Form.Label>ກຳໄລ</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="priceProfit"
+                      value={values?.price - values?.originPrice ?? 0}
+                      readOnly
+                    /> 
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>

@@ -87,7 +87,7 @@ export default function BillForCheckOut80({
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
   // const myUrl = " https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/8cdca155-d983-415e-86a4-99b9d0be7ef6.jpeg";
 
-  // console.log("check imageUrl--->", imageUrl);
+  console.log("check storeDetail--->", storeDetail);
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
@@ -103,11 +103,11 @@ export default function BillForCheckOut80({
         {base64Image ? (
           <Image
             style={{
-              width: 60,
-              height: 60,
-              border: "1px solid #f2f2f2",
-              borderRadius: "10em",
-              overflow: "hidden",
+              maxWidth: 60,
+              maxHeight: 60,
+              // border: "1px solid #ddd",
+              // borderRadius: "10em",
+              // overflow: "hidden",
             }}
             src={base64Image}
             alt="logo"
