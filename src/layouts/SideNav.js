@@ -32,8 +32,14 @@ import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
 import { getLocalData, getToken } from "../constants/api";
+import { getCountOrderWaiting } from "../services/order";
 
 export default function Sidenav({ location, navigate, onToggle }) {
+  const {
+    countOrderWaiting, setCountOrderWaiting,
+    openTableData, getTableDataStore, storeDetail
+  } = useStore();
+
   const [token, setToken] = useState();
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
@@ -44,13 +50,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     (async () => {
       const TOKEN = await getToken();
       setToken(TOKEN);
+      const count = await getCountOrderWaiting(storeDetail?._id);
+      setCountOrderWaiting(count || 0)
     })();
   }, []);
+
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
   const { profile } = useStore();
-
-  const { openTableData, getTableDataStore, storeDetail } = useStore();
   const { user } = useStore();
   const itemList = [
     {
@@ -154,6 +161,24 @@ export default function Sidenav({ location, navigate, onToggle }) {
     return verify?.[e?.system] ?? false;
   });
 
+  const popNoti = {
+    position: "absolute",
+    top: 0,
+    left: 16,
+    minWidth: 25,
+    width: 'auto',
+    height: 25,
+    fontSize: 12,
+    borderRadius: "50%",
+    background: "red",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#fff",
+  };
+
+  console.log("=====::::===", { countOrderWaiting })
+
   return (
     <SideNav
       style={{
@@ -199,7 +224,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                `${storeDetail?._id}?token=${token}`,
+              `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -209,7 +234,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-                `${storeDetail?._id}?token=${token}`,
+              `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -238,6 +263,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               eventKey={e?.key}
               style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
             >
+
               <NavIcon>
                 <FontAwesomeIcon
                   className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -247,6 +273,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                       selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
                   }}
                 />
+                {(e?.key === 'orders' && countOrderWaiting >= 0) && <span style={popNoti}>{countOrderWaiting}</span>}
               </NavIcon>
               <NavText
                 style={{

@@ -39,6 +39,17 @@ export const getOrders = async (
     console.log("get orders error:", error);
   }
 };
+export const getCountOrderWaiting = async (
+  storeId
+) => {
+  try {
+    const url = `${END_POINT}/v3/orders/count-order-waiting?storeId=${storeId}&status=WAITING`;
+    const countOrder = await axios.get(url);
+    return countOrder?.data?.count || 0
+  } catch (error) {
+    console.log("get orders error:", error);
+  }
+};
 
 export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   try {
