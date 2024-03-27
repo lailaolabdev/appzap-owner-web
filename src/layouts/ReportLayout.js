@@ -37,16 +37,6 @@ export default function ReportLayout() {
             height: "auto",
           }}
         >
-<<<<<<< HEAD
-          <Button>ລາຍງານຍອດຂາຍ</Button>
-          <Button variant="outline-primary" disabled>
-            ລາຍງານສະຕ໊ອກ (Coming soon)
-          </Button>
-          <Button
-          disabled
-            variant="outline-primary"
-            onClick={() => navigate("/report/members-report")}
-=======
           <div
             style={{
               position: "sticky",
@@ -57,7 +47,6 @@ export default function ReportLayout() {
               // gap: 10,
               height: "90vh",
             }}
->>>>>>> github/add-imageStore-bill
           >
             <ButtonGroup vertical className="card-left-report">
               <div

@@ -7,6 +7,7 @@ export default function NumberKeyboard({
   selectInput,
   payType,
   setSelectInput,
+  onClickButtonDrawer
 }) {
   const _num = [
     {
@@ -118,7 +119,7 @@ export default function NumberKeyboard({
           >
             ເຕັມຈຳນວນ
           </Button>
-          <Button disabled>Drawer</Button>
+          <Button onClick={onClickButtonDrawer}>Drawer</Button>
           <Button
             onClick={() => setSelectInput("")}
             disabled={payType === "transfer"}

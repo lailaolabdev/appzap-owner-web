@@ -17,6 +17,7 @@ export default function MainLayout({ children }) {
       sx={{
         paddingLeft: { md: 65 },
         width: "100%",
+        position: "relative",
       }}
     >
       <Box
@@ -42,9 +43,10 @@ export default function MainLayout({ children }) {
       <Navbar />
       <div
         style={{
-          paddingTop: 65,
-          height: "100dvh",
-          maxHeight: "100dvh",
+          marginTop: 65,
+          minHeight: "calc( 100dvh - 65px )",
+          height:  "calc( 100dvh - 65px )",
+          maxHeight:  "calc( 100dvh - 65px )",
           overflow: "auto",
           overflowY: "scroll",
           position: "relative",

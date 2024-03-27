@@ -546,18 +546,9 @@ export default function MenuList() {
 
   const getCategory = async () => {
     try {
-<<<<<<< HEAD
-      await fetch(
-        master_menu_api_dev + `/api/restaurant-categories`,
-        {
-          method: "GET",
-        }
-      )
-=======
       await fetch(master_menu_api_dev + `/api/restaurant-categories`, {
         method: "GET",
       })
->>>>>>> github/add-imageStore-bill
         .then((response) => response.json())
         .then((json) => setCategoriesRestaurant(json));
     } catch (err) {

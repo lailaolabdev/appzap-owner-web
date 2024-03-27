@@ -136,29 +136,6 @@ const OrderCheckOut = ({
               alignItems: "center",
             }}
           >
-            <Button
-              className="ml-2 pl-4 pr-4"
-              // onClick={hide}
-              style={{
-                backgroundColor: "#FB6E3B",
-                color: "#ffff",
-                border: "solid 1px #FB6E3B",
-                fontSize: 30,
-              }}
-              onClick={() => onPrintBill()}
-            >
-              <FontAwesomeIcon
-                icon={faCashRegister}
-                style={{ color: "#fff" }}
-              />
-              ພິມບິນ
-            </Button>
-            <div
-              className="p-2 col-example text-center"
-              style={{ fontSize: 26 }}
-            >
-              ຕ້ອງຈ່າຍທັງໝົດ:
-            </div>
             <div
               style={{
                 display: "flex",

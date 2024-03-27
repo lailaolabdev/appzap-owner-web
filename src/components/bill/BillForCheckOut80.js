@@ -102,8 +102,8 @@ export default function BillForCheckOut80({
         {base64Image ? (
           <Image
             style={{
-              maxWidth: 60,
-              maxHeight: 60,
+              maxWidth: 120,
+              maxHeight: 120,
               // border: "1px solid #ddd",
               // borderRadius: "10em",
               // overflow: "hidden",
@@ -180,7 +180,7 @@ export default function BillForCheckOut80({
           <div>
             {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
           </div>
-          <div>
+          <div hidden={taxAmount <= 0}>
             {t("total")} + {t("vat")} {taxPercent}%:{" "}
             {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency}
           </div>
@@ -222,12 +222,14 @@ export default function BillForCheckOut80({
           </div>
         </div>
       </Price>
+
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           padding: 10,
         }}
+        hidden={storeDetail?.printer?.qr ? false : true}
       >
         <Img>
           <img

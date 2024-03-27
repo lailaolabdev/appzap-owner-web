@@ -20,6 +20,7 @@ import convertNumberReverse from "../../../helpers/convertNumberReverse";
 import { BiTransfer } from "react-icons/bi";
 
 export default function CheckOutPopup({
+  onPrintDrawer,
   onPrintBill,
   open,
   onClose,
@@ -569,6 +570,7 @@ export default function CheckOutPopup({
               </Form.Control>
             </div>
             <NumberKeyboard
+              onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
               selectInput={((e) => {
