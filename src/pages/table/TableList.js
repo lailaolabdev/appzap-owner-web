@@ -135,10 +135,10 @@ export default function TableList() {
   };
   useEffect(() => {
     if (reload) {
-      getTableOrders(selectedTable);
+      getTableOrders(selectedTable);                                                      
       setReload(false);
       // orderSound();
-    }
+    }                                     
   }, [reload]);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
@@ -149,6 +149,8 @@ export default function TableList() {
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null)
 
+  const [isBillTest, setIsBillTest] = useState(true);
+  
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
   //   setSeletedOrderItem(_data)
@@ -1243,7 +1245,20 @@ export default function TableList() {
                           }}
                         >
                           <SiAirtable /> {selectedTable?.tableName}
-                        </div>
+                        </div> 
+                        {/* <Button onClick={()=> setIsBillTest(true)}>test print</Button>
+
+                          <Modal show={isBillTest} onHide={() => setIsBillTest(false)}>
+                          <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+                          <BillForCheckOut80
+          storeDetail={storeDetail}
+          selectedTable={selectedTable}
+          dataBill={dataBill}
+          taxPercent={taxPercent}
+        />
+      </div>
+                          </Modal>   */}
+
                         <div
                           style={{
                             fontSize: 16,
@@ -1319,7 +1334,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຍອດບິນ:{" "}
+                          {t("total")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1334,7 +1349,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          ຍອດທີຕ້ອງຊຳລະ:{" "}
+                          {t("aPriceHasToPay")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",

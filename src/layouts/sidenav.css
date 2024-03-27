@@ -52,7 +52,23 @@
   z-index: 2 !important;
 }
 
-.nav-item .nav-link .active{
+.nav-item .nav-link .active {
   color: #fb6e3b !important;
 }
 
+/* class report stocks */
+.card-left-report {
+  width: 100%;
+
+  & .menu-report-stocks {
+    height: 85px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2;
+    flex-direction: column;
+    width: 100%;
+    cursor: pointer;
+  }
+}

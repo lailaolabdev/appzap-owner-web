@@ -31,6 +31,8 @@ export const TITLE_HEADER = {
   backgroundColor: "#F9F9F9",
   width: "100%",
 };
+export const  EMPTY_LOGO = "https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg"
+ 
 
 export const HEADER = {
   color: "#5C5C5C",
@@ -123,3 +125,4 @@ export const BUTTON_SUCCESS = {
   zPosition: 100,
   width: BUTTON_INDEX,
 };
+

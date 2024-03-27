@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,7 +7,14 @@ import {
   faTruck,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, Spinner, Form } from "react-bootstrap";
+import {
+  Button,
+  Spinner,
+  Form,
+  ProgressBar,
+  FormControl,
+  InputGroup,
+} from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
 import { getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { STATUS_MENU } from "../../helpers";
@@ -20,6 +27,11 @@ import { getHeaders } from "../../services/auth";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { thousandSeparator } from "../../helpers/thousandSeparator";
+import PopUpPreViewsPage from "../../components/popup/PopUpPreViewsPage";
+import PaginationAppzap from "../../constants/PaginationAppzap";
+import { getCountStocksAll, getStocksAll } from "../../services/stocks";
+import LoadingAppzap from "../../components/LoadingAppzap";
+import { MdSearch } from "react-icons/md";
 
 // ------------------------------------------------------------------------------- //
 
@@ -29,14 +41,29 @@ export default function MenuList() {
   const [popMinusStock, setPopMinusStock] = useState(false);
   const [popCreateStock, setPopCreateStock] = useState(false);
   const [popDeleteStock, setPopDeleteStock] = useState(false);
+  const [isPreviewPage, setIsPreviewPage] = useState(false);
+
   const [select, setSelect] = useState();
   const [isLoading, setIsLoading] = useState(true);
   // eslint-disable-next-line
   const [loadStatus, setLoadStatus] = useState("");
   const [stocks, setStocks] = useState([]);
+  const [filterName, setFilterName] = useState("");
+  const [totalStock, setTotalStock] = useState(0);
   // eslint-disable-next-line
   const [categorys, setCategorys] = useState([]);
-  const [filterName, setFilterName] = useState("");
+  const [storeData, setStoreData] = useState();
+  const [sortedData, setSortedData] = useState([]);
+  const [sortOrder, setSortOrder] = useState("All");
+  const [isSelectAll, setIsSelectAll] = useState(false);
+  const [prepaDatas, setPrepaDatas] = useState([]);
+
+  const rowsPerPage = 10;
+  const [page, setPage] = useState(0);
+  const pageAll = totalStock > 0 ? Math.ceil(totalStock / rowsPerPage) : 1;
+  const handleChangePage = useCallback((newPage) => {
+    setPage(newPage);
+  }, []);
 
   // functions
 
@@ -61,6 +88,7 @@ export default function MenuList() {
       console.log("err:", err);
     }
   };
+
   const deleteStock = async (stock) => {
     try {
       const headers = await getHeaders();
@@ -97,12 +125,18 @@ export default function MenuList() {
       const _localData = await getLocalData();
       if (_localData) {
         setIsLoading(true);
-        const data = await axios.get(
-          `${END_POINT_SEVER}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false`
-        );
-        if (data.status < 300) {
-          setLoadStatus("SUCCESS");
-          setStocks(data.data);
+        setStoreData(_localData?.DATA);
+        let findby = "?";
+        findby += `storeId=${_localData?.DATA?.storeId}&`;
+        findby += `skip=${page * rowsPerPage}&`;
+        findby += `limit=${rowsPerPage}&`;
+        findby += `search=${filterName}&`;
+        const res = await getStocksAll(findby);
+        if (res.status === 200) {
+          // console.log('res--->', res)
+          // setTotalStock(res?.data?.total);
+          setStocks(res?.data);
+          setIsLoading(true);
         }
         setIsLoading(false);
       }
@@ -113,121 +147,362 @@ export default function MenuList() {
     }
   };
 
+  const getCountStocks = async () => {
+    try {
+      const _localData = await getLocalData();
+      if (_localData) {
+        setIsLoading(true);
+        let findby = "?";
+        findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        const res = await getCountStocksAll(findby);
+        if (res.status === 200) {
+          console.log('res--->', res)
+          setTotalStock(res?.data);
+        }
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
+
+  // get shop data
+  const getStoreData = async () => {
+    try {
+      const _localData = await getLocalData();
+      if (_localData) {
+        setIsLoading(true);
+        const data = await axios.get(
+          `${END_POINT_SEVER}/v3/store?id=${_localData?.DATA?.storeId}&isDeleted=false`
+        );
+        if (data.status < 300) {
+          setLoadStatus("SUCCESS");
+          setStoreData(data.data);
+        }
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setLoadStatus("ERROR!!");
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
+
+  // select mutiple stocks
+  const onSelectStocksAll = async () => {
+    if (isSelectAll) {
+      setPrepaDatas([]);
+      setIsSelectAll(false);
+    } else {
+      let _stocksNew = [];
+      // console.log("stocks:--new-->", stocks);
+      for (var i = 0; i < stocks.length; i++) {
+        _stocksNew.push(stocks[i]);
+      }
+      setPrepaDatas(_stocksNew);
+      setIsSelectAll(true);
+    }
+    return;
+  };
+
+  // select single stocks
+  const onSelectSigleStoks = (selectedProduct) => {
+    const exists = prepaDatas.some(
+      (product) => product._id === selectedProduct._id
+    );
+
+    if (exists) {
+      // If the product is already in the array, remove it
+      const filteredProducts = prepaDatas.filter(
+        (product) => product._id !== selectedProduct._id
+      );
+      setPrepaDatas(filteredProducts);
+    } else {
+      // If the product is not in the array, add it
+      const updatedProducts = [...prepaDatas, selectedProduct];
+      setPrepaDatas(updatedProducts);
+    }
+  };
+  // console.log("prepaDatas updated666:", prepaDatas);
+
+  // filter sort quantitys stocks
+  useEffect(() => {
+    let sorted = [];
+    if (sortOrder === "asc") {
+      sorted = [...stocks].sort((a, b) => a.quantity - b.quantity);
+    } else if (sortOrder === "desc") {
+      sorted = [...stocks].sort((a, b) => b.quantity - a.quantity);
+    } else {
+      sorted = [...stocks]; // Default or 'All' case, not sorted
+    }
+    setSortedData(sorted);
+  }, [stocks, sortOrder]);
+
   // ------------------------------------------------------------ //
 
   useEffect(() => {
     const getData = async () => {
       // getCategory();
-      getStock();
+      getStoreData();
     };
     getData();
   }, []);
+
+  useEffect(() => {
+    getStock();
+    getCountStocks()
+  }, [page, filterName]);
+
+  // console.log("datas:---->", stocks);
+
   // ------------------------------------------------------------ //
+
   return (
     <div style={BODY}>
       <NavList ActiveKey="/settingStore/stock" />
       <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 90px 190px" }}>
-          <Form.Control
-            type="text"
-            placeholder="ຄົ້ນຫາຊື່..."
-            value={filterName}
-            onChange={(e) => {
-              setFilterName(e.target.value);
-            }}
-          />
+        <div
+          style={{
+            display: "flex",
+            // gridTemplateColumns: "1fr 90px 200px"
+            gap: 10,
+          }}
+        >
+          {/* <div style={{ width: "100%" }}>
+            <label>ຄົ້ນຫາຊື່ສິນຄ້າ</label>
+            <Form.Control
+              type="text"
+              placeholder="ຄົ້ນຫາຊື່..."
+              value={filterName}
+              onChange={(e) => {
+                setFilterName(e?.target?.value);
+              }}
+            />
+          </div> */}
+
+          <div style={{ width: "100%", position: "relative" }}>
+            <div
+              style={{
+                position: "absolute",
+                top: "2.33em",
+                left: 7,
+                zIndex: 10,
+              }}
+            >
+              <MdSearch style={{ fontSize: 27, color: COLOR_APP }} />
+            </div>
+            <Form.Label>ຄົ້ນຫາ</Form.Label>
+            <InputGroup>
+              <Form.Control
+                style={{ paddingLeft: "2.5em" }}
+                value={filterName}
+                onChange={(e) => setFilterName(e?.target?.value)}
+                // onKeyDown={(e) => {
+                //   if (e.key === "Enter") {
+                //     getStock();
+                //   }
+                // }}
+                type="text"
+                placeholder="ປ້ອນຊື່ສິນຄ້າ ແລ້ວ enter..."
+              />
+              {/* <Button onClick={() => getStocks()}>Enter</Button> */}
+            </InputGroup>
+          </div>
+
+          <div style={{ width: 200 }}>
+            <label>ເລືອກຈຳນວນ</label>
+            <select
+              className="form-control w-100"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="All">ທົ່ວໄປ</option>
+              <option value="asc">ໜ້ອຍ ຫາ ຫຼາຍ</option>
+              <option value="desc">ຫຼາຍ ຫາ ໜ້ອຍ</option>
+            </select>
+          </div>
+
           <div />
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => setPopCreateStock(true)}
-          >
-            ສ້າງສະຕ໊ອກ
-          </Button>
+
+          <div style={{ width: 300 }}>
+            <div style={{ height: 20 }}></div>
+            {prepaDatas?.length >= 1 ? (
+              <Button
+                style={{
+                  color: "#ffff",
+                  border: 0,
+                  width: "100%",
+                  marginTop: 13,
+                }}
+                variant="success"
+                onClick={() => setIsPreviewPage(true)}
+              >
+                Print
+              </Button>
+            ) : (
+              <Button
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#ffff",
+                  border: 0,
+                  width: "100%",
+                  marginTop: 13,
+                }}
+                onClick={() => setPopCreateStock(true)}
+              >
+                ສ້າງສະຕ໊ອກ
+              </Button>
+            )}
+          </div>
         </div>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className="col-sm-12" style={{ overflow: "auto" }}>
-            <table className="table table-hover" style={{ minWidth: 700 }}>
-              <thead className="thead-light">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">ຊື່ສິນຄ້າ</th>
-                  <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
-                  <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
-                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stocks
-                  ?.filter((e) => e?.name?.includes(filterName))
-                  .map((data, index) => {
-                    return (
-                      <tr>
-                        <td>{index + 1}</td>
-                        <td>{data?.name}</td>
-                        <td>{data?.stockCategoryId?.name}</td>
-                        <td
-                          style={{
-                            color: data?.quantity < 10 ? "red" : "green",
-                          }}
-                        >
-                          {thousandSeparator(data?.quantity)} {data?.unit}
-                        </td>
-                        <td>
-                          <div style={{ display: "flex", gap: 10 }}>
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(data);
-                                setPopMinusStock(true);
+          <div
+            className="w-100"
+            style={{ overflow: "auto", backgroundColor: "#fff" }}
+          >
+            {isLoading ? (
+              <LoadingAppzap />
+            ) : (
+              <table className="table">
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">
+                      <Form.Check
+                        onClick={() => onSelectStocksAll()}
+                        label={"ລຳດັບ"}
+                        id={"ລຳດັບ"}
+                      />
+                    </th>
+                    <th scope="col">ຊື່ສິນຄ້າ</th>
+                    <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                    <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
+                    <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedData
+                    ?.filter((e) => e?.name?.includes(filterName))
+                    .map((data, index) => {
+                      return (
+                        <tr>
+                          <td>
+                            <div style={{ width: 30 }}>
+                              {isSelectAll ? (
+                                <Form.Check
+                                  checked={true}
+                                  label={page * rowsPerPage + index + 1}
+                                  readOnly
+                                />
+                              ) : (
+                                <Form.Check
+                                  type="checkbox"
+                                  id={page * rowsPerPage + index + 1}
+                                  onChange={() => onSelectSigleStoks(data)}
+                                  label={page * rowsPerPage + index + 1}
+                                />
+                              )}
+                            </div>
+                          </td>
+                          <td>{data?.name}</td>
+                          <td>{data?.stockCategoryId?.name}</td>
+                          <td
+                            style={{
+                              color: data?.quantity < 10 ? "red" : "green",
+                              width: 500,
+                            }}
+                          >
+                            {/* <ProgressBar
+                            min={1}
+                            now={data?.quantity ?? 0}
+                            variant={data?.quantity >= 1 ? "success" : "danger"}
+                            label={`${thousandSeparator(data?.quantity)} ${
+                              data?.unit
+                            }`}
+                          /> */}
+                            {thousandSeparator(data?.quantity)} {data?.unit}
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              justifyContent: "end",
+                              padding: 3,
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: 10,
+                                width: "100%",
+                                flexDirection: "end",
                               }}
                             >
-                              <FontAwesomeIcon
-                                icon={faMinus}
-                                style={{
-                                  color: "white",
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(data);
+                                  setPopMinusStock(true);
                                 }}
-                              />
-                            </ButtonPrimary>
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(data);
-                                setPopAddStock(true);
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faPlus}
-                                style={{
-                                  color: "white",
+                              >
+                                <FontAwesomeIcon
+                                  icon={faMinus}
+                                  style={{
+                                    color: "white",
+                                  }}
+                                />
+                              </ButtonPrimary>
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(data);
+                                  setPopAddStock(true);
                                 }}
-                              />
-                            </ButtonPrimary>
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(data);
-                                setPopDeleteStock(true);
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                style={{
-                                  color: "white",
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPlus}
+                                  style={{
+                                    color: "white",
+                                  }}
+                                />
+                              </ButtonPrimary>
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(data);
+                                  setPopDeleteStock(true);
                                 }}
-                              />
-                            </ButtonPrimary>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              {isLoading ? <Spinner animation="border" /> : ""}
-            </div>
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  style={{
+                                    color: "white",
+                                  }}
+                                />
+                              </ButtonPrimary>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            )}
+
+            <PaginationAppzap
+              rowsPerPage={rowsPerPage}
+              page={page}
+              pageAll={pageAll}
+              onPageChange={handleChangePage}
+            />
           </div>
         </div>
       </div>
       {/* >>>>>>>>>>> popup >>>>>>>>>>>>>>>> */}
+
+      <PopUpPreViewsPage
+        onClose={() => setIsPreviewPage(false)}
+        open={isPreviewPage}
+        datas={prepaDatas}
+        storeData={storeData}
+      />
+
       <PopUpAddStock
         open={popAddStock}
         onClose={() => setPopAddStock(false)}

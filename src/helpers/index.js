@@ -182,3 +182,29 @@ export const generateRandomTextAndNumber = (length) => {
   }
   return result;
 };
+
+export const numberFormat = (_number) => {
+  return new Intl.NumberFormat("en-US").format(_number);
+};
+
+
+export const convertImageToBase64 = async (imageUrl) => {
+  try {
+      console.log("convertImage:---->", typeof(imageUrl));
+      const response = await fetch(imageUrl);
+      console.log("convertResponse:---->", typeof(response));
+      const blob = await response.blob();
+      console.log("convertblob:---->", blob);
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.log("Error converting image to Base64:", error);
+    return null;
+  }
+};
+
+ 

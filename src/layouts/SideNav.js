@@ -124,19 +124,20 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: "ລາຍງານ (ໃໝ່)",
-      key: "report/sales-report",
+      key: "reports/sales-report",
       typeStore: "",
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
-      system: "report",
+      system: "reportManagement",
     },
+  
     // {
-    //   title: "Dashboard (ໃໝ່)",
-    //   key: "dashboardmenu",
+    //   title: "ລາຍງານສະຕ໋ອກ",
+    //   key: "reportStocks",
     //   typeStore: "",
     //   icon: faChartLine,
     //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
+    //   system: "settingManagement",
     // },
     {
       title: "ສະຕ໊ອກ",
@@ -154,6 +155,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
+  
   ];
 
   const listForRole = itemList.filter((e) => {

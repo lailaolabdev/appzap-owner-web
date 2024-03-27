@@ -27,6 +27,9 @@ export default function PopUpSetStartAndEndDate({
     setValueStartTime(startTime);
     setValueEndTime(endTime);
   }, [startDate, endDate, startTime, endTime]);
+
+
+
   return (
     <Modal show={open} onHide={onClose} size="lg">
       <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
@@ -46,7 +49,12 @@ export default function PopUpSetStartAndEndDate({
             marginBottom: 10,
           }}
         >
-          <Button disabled>ມື້ນີ້</Button>
+          <Button
+          disabled
+            // onClick={onGetToday}
+          >
+            ມື້ນີ້
+          </Button>
           <Button disabled>ມື້ວານ</Button>
           <Button disabled>ເດືອນນີ້</Button>
           <Button disabled>ເດືອນກ່ອນ</Button>
@@ -98,7 +106,9 @@ export default function PopUpSetStartAndEndDate({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>ຍົກເລີກ</Button>
+        <Button variant="outline-secondary" onClick={onClose}>
+          ຍົກເລີກ
+        </Button>
         <Button
           onClick={() => {
             setStartDate(valueStartDate);
@@ -108,7 +118,7 @@ export default function PopUpSetStartAndEndDate({
             onClose();
           }}
         >
-          ຍືນຍັນ
+          ຍືນຢັນ
         </Button>
       </Modal.Footer>
     </Modal>

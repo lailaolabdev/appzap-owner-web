@@ -7,16 +7,17 @@ import ReportLayout from "../layouts/ReportLayout";
 import MemberPage from "../pages/member/MemberPage";
 import CreateMemberPage from "../pages/member/CreateMemberPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
+import ReportStocks from "../pages/report/ReportStocks";
 
 // eslint-disable-next-line
 export default {
-  path: "/report",
+  path: "/reports",
   element: <ReportLayout />,
   children: [
     {
       path: "sales-report",
       element: <DashboardPage />,
-    },
+    }, 
     {
       path: "members-report",
       element: <MemberPage />,
@@ -32,6 +33,10 @@ export default {
     {
       path: "stock",
       element: <ReportStockPage />,
+    },
+    {
+      path: "reportStocks",
+      element: <ReportStocks />,
     },
   ],
 };
