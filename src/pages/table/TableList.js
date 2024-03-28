@@ -45,7 +45,7 @@ import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 // import _ from "lodash";
-import { updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { callCheckOutPrintBillOnly, getCodes } from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
@@ -128,6 +128,7 @@ export default function TableList() {
     setPrintNowList,
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
+    setCountOrderWaiting
   } = useStore();
 
   const reLoadData = () => {
@@ -888,6 +889,9 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0)
     }
   };
 
@@ -913,6 +917,9 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0)
     }
   };
 
@@ -948,6 +955,9 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0)
     }
   };
 
@@ -1107,8 +1117,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#bfff00"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "yellow"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                  ? "yellow"
+                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1124,8 +1134,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1151,8 +1161,8 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? "black"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "black"
-                                    : "white"
+                                      ? "black"
+                                      : "white"
                                   : "black",
                               }}
                             >
@@ -1200,8 +1210,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1349,10 +1359,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
+                              dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1549,55 +1559,55 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  onClick={() => handleShowQuantity(orderItem)}
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                      disabled={
-                                        orderItem?.status === "CANCELED"
-                                      }
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) => {
-                                        // e.stopPropagation()
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        });
-                                      }}
-                                    />
-                                  </td>
+                              <tr
+                                onClick={() => handleShowQuantity(orderItem)}
+                                key={"order" + index}
+                                style={{ borderBottom: "1px solid #eee" }}
+                              >
+                                <td onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    disabled={
+                                      orderItem?.status === "CANCELED"
+                                    }
+                                    name="checked"
+                                    checked={orderItem?.isChecked || false}
+                                    onChange={(e) => {
+                                      // e.stopPropagation()
+                                      onSelect({
+                                        ...orderItem,
+                                        isChecked: e.target.checked,
+                                      });
+                                    }}
+                                  />
+                                </td>
 
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                <td>{index + 1}</td>
+                                <td>{orderItem?.name}</td>
+                                <td>{orderItem?.quantity}</td>
+                                <td
+                                  style={{
+                                    color:
+                                      orderItem?.status === `SERVED`
+                                        ? "green"
+                                        : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                  }}
+                                >
+                                  {orderItem?.status
+                                    ? orderStatus(orderItem?.status)
+                                    : "-"}
+                                </td>
+                                <td>{orderItem?.createdBy?.firstname}</td>
+                                <td>
+                                  {orderItem?.createdAt
+                                    ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                    : "-"}
+                                </td>
+                              </tr>
+                            ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2045,8 +2055,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
+                            ? ""
+                            : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2110,9 +2120,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
+          // onClick={() => {
+          //   _orderTableQunatity();
+          // }}
           >
             ບັນທຶກ
           </Button>
