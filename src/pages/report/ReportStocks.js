@@ -14,7 +14,11 @@ import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { formatDateNow, numberFormat } from "../../helpers";
-import { getCountStocksAll, getStocksAll, getStocksHistories } from "../../services/stocks";
+import {
+  getCountStocksAll,
+  getStocksAll,
+  getStocksHistories,
+} from "../../services/stocks";
 import { IoSearchCircleOutline } from "react-icons/io5";
 import EmptyState from "../../components/EmptyState";
 
@@ -69,7 +73,7 @@ export default function ReportStocks() {
   // ເອື້ນໃຊ້​ function ດືງຂໍ້ມູນສະຕ໋ອກ ແລະ ປະຫວັດສະຕ໋ອກ
   useEffect(() => {
     getStocks();
-    getCountStocks()
+    getCountStocks();
   }, [page, startDate, endDate]);
 
   // ດຶງຂໍ້ມູນຂອງປະຫວັດສະຕ໋ອກທັງໝົດ
@@ -142,10 +146,11 @@ export default function ReportStocks() {
       if (_localData) {
         setIsLoading(true);
         let findby = "?";
-        findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        findby += `storeId=${_localData?.DATA?.storeId}&`;
+        findby += `search=${filterName}&`;
         const res = await getCountStocksAll(findby);
         if (res.status === 200) {
-          console.log('res--->', res)
+          console.log("res--->", res);
           setTotalStock(res?.data);
         }
       }

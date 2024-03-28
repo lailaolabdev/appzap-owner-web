@@ -154,6 +154,7 @@ export default function MenuList() {
         setIsLoading(true);
         let findby = "?";
         findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        findby += `search=${filterName}&`;
         const res = await getCountStocksAll(findby);
         if (res.status === 200) {
           console.log('res--->', res)
