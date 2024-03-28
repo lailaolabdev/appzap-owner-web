@@ -12,7 +12,7 @@ import { useStore } from "../../store";
 import { tokenSelfOrderingPost } from "../../services/auth";
 import StatusComponent from "../../components/StatusComponent";
 import PopUpStaffUpdateOrder from "../../components/popup/PopUpStaffUpdateOrder";
-import { updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import { useNavigate, useParams } from "react-router-dom";
 export default function StaffTableDetail() {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ export default function StaffTableDetail() {
     getTableOrders,
     setReload,
     isTableOrderLoading,
+    setCountOrderWaiting
   } = useStore();
   // useEffect
 
@@ -71,7 +72,11 @@ export default function StaffTableDetail() {
         showConfirmButton: false,
         timer: 2000,
       });
+
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0)
     }
+
   };
   return (
     <>

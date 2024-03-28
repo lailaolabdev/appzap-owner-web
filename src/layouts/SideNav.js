@@ -50,10 +50,17 @@ export default function Sidenav({ location, navigate, onToggle }) {
     (async () => {
       const TOKEN = await getToken();
       setToken(TOKEN);
-      const count = await getCountOrderWaiting(storeDetail?._id);
-      setCountOrderWaiting(count || 0)
     })();
   }, []);
+
+  useEffect(() => {
+    const fetchCountOrderWaiting = async () => {
+      const count = await getCountOrderWaiting(storeDetail?._id);
+      setCountOrderWaiting(count || 0)
+    }
+
+    fetchCountOrderWaiting();
+  }, [selected])
 
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
@@ -130,7 +137,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
     },
-  
+
     // {
     //   title: "ລາຍງານສະຕ໋ອກ",
     //   key: "reportStocks",
@@ -155,7 +162,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-  
+
   ];
 
   const listForRole = itemList.filter((e) => {
@@ -179,7 +186,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     color: "#fff",
   };
 
-  console.log("=====::::===", { countOrderWaiting })
+  // console.log("=====::::===", { countOrderWaiting })
 
   return (
     <SideNav
@@ -275,7 +282,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                       selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
                   }}
                 />
-                {(e?.key === 'orders' && countOrderWaiting >= 0) && <span style={popNoti}>{countOrderWaiting}</span>}
+                {(e?.key === 'orders' && countOrderWaiting > 0) && <span style={popNoti}>{countOrderWaiting}</span>}
               </NavIcon>
               <NavText
                 style={{

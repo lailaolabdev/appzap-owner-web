@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Tabs, Tab, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useStore } from "../../store";
-import { updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import axios from "axios";
@@ -45,7 +45,8 @@ export default function OrderPage() {
     getOrderWaitingAndDoingByStore,
     orderDoing,
     orderWaiting,
-    setorderItemForPrintBillSelect
+    setorderItemForPrintBillSelect,
+    setCountOrderWaiting
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -76,9 +77,11 @@ export default function OrderPage() {
         });
       }
       getOrderItemsStore(selectOrderStatus);
+      const count = await getCountOrderWaiting(storeDetail?._id);
+      setCountOrderWaiting(count || 0)
       // fetchData();
       return;
-    } catch (err) {}
+    } catch (err) { }
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
