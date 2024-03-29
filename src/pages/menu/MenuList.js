@@ -235,8 +235,6 @@ export default function MenuList() {
         categoryId: values?.categoryId,
         menuOptionId: menuOptions,
         price: values?.price,
-        originPrice: values?.originPrice,
-        priceProfit: values?.price - values?.originPrice ?? 0,
         detail: values?.detail,
         unit: values?.unit,
         isOpened: isOpened,
@@ -271,8 +269,6 @@ export default function MenuList() {
         values.quantity = "";
         values.categoryId = "";
         values.price = "";
-        values.originPrice = "";
-        values.priceProfit = "";
         values.detail = "";
         values.unit = "";
       }
@@ -344,8 +340,6 @@ export default function MenuList() {
           categoryId: values?.categoryId,
           menuOptionId: menuOptions,
           price: values?.price,
-          originPrice: values?.originPrice,
-          priceProfit:values?.price - values?.originPrice ?? 0,
           detail: values?.detail,
           unit: values?.unit,
           isOpened: isOpened,
@@ -666,9 +660,7 @@ export default function MenuList() {
                   <th scope="col">ຊື່ປະເພດອາຫານ</th>
                   <th scope="col">ປະເພດເມນູ</th>
                   <th scope="col">ຊື່ອາຫານ</th>
-                  <th scope="col">ລາຄາຕົ້ນທືນ</th>
-                  <th scope="col">ລາຄາຂາຍ</th>
-                  <th scope="col">ກຳໄລ</th>
+                  <th scope="col">ລາຄາ</th>
                   <th scope="col">ກຳນົດສະຖານະການສະແດງ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
@@ -724,9 +716,7 @@ export default function MenuList() {
                           <br />
                           {data?.name_kr ?? ""}
                         </td>
-                        <td>{moneyCurrency(data?.originPrice)}</td>
                         <td>{moneyCurrency(data?.price)}</td>
-                        <td>{moneyCurrency(data?.priceProfit)}</td>
                         <td>
                           <button
                             type="button"
@@ -812,8 +802,6 @@ export default function MenuList() {
               quantity: 1,
               menuOptionId: [],
               categoryId: "",
-              price: "",
-              originPrice: "",
               detail: "",
               images: [],
               unit: "",
@@ -827,9 +815,7 @@ export default function MenuList() {
                 errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
               }
               
-              if (parseInt(values.originPrice) < 0 || isNaN(parseInt(values.originPrice))) {
-                errors.originPrice = "ກະລຸນາປ້ອນລາຄາຕົ້ນທືນ...";
-              }
+              
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
                 errors.price = "ກະລຸນາປ້ອນລາຄາຂາຍ...";
               }
@@ -1053,55 +1039,23 @@ export default function MenuList() {
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Row>
-                      <Col>
-                        <Form.Label>ລາຄາຕົ້ນທືນ</Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="originPrice"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values.originPrice}
-                          placeholder="ລາຄາຕົ້ນທືນ..."
-                          style={{
-                            border:
-                              errors.originPrice && touched.originPrice && errors.originPrice
-                                ? "solid 1px red"
-                                : "",
-                          }}
-                        />
-                      </Col>
-                      <Col>
-                        <Form.Label>ລາຄາຂາຍ</Form.Label>
+                  <Form.Group controlId="exampleForm.ControlInput1"> 
+                        <Form.Label>ລາຄາ</Form.Label>
                         <Form.Control
                           type="number"
                           name="price"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.price}
-                          placeholder="ລາຄາຂາຍ..."
+                          placeholder="ລາຄາ..."
                           style={{
                             border:
                               errors.price && touched.price && errors.price
                                 ? "solid 1px red"
                                 : "",
                           }}
-                        />
-                      </Col>
-                    </Row>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1"> 
-                        <Form.Label>ກຳໄລ</Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="priceProfit"
-                          // onChange={handleChange}
-                          // onBlur={handleBlur}
-                          value={values?.price - values?.originPrice ?? 0}
-                          readOnly
                         /> 
-                  </Form.Group>
+                  </Form.Group> 
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
                     {dataMenuOption?.length > 0 &&
@@ -1295,8 +1249,6 @@ export default function MenuList() {
               menuOptionId: dataUpdate?.menuOptions,
               categoryId: dataUpdate?.categoryId?._id,
               price: dataUpdate?.price,
-              originPrice: dataUpdate?.originPrice,
-              priceProfit: dataUpdate?.price - dataUpdate?.originPrice ?? 0,
               detail: dataUpdate?.detail,
               unit: dataUpdate?.unit,
               isOpened: dataUpdate?.isOpened,
@@ -1521,53 +1473,23 @@ export default function MenuList() {
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Row>
-                      <Col>
-                      <Form.Label>ລາຄາຕົ້ນທືນ</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="originPrice"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.originPrice}
-                      placeholder="ລາຄາຕົ້ນທືນ..."
-                      style={{
-                        border:
-                          errors.originPrice && touched.originPrice && errors.originPrice
-                            ? "solid 1px red"
-                            : "",
-                      }}
-                    />
-                      </Col>
-                      <Col>
-                      <Form.Label>ລາຄາຂາຍ</Form.Label>
+                  <Form.Group controlId="exampleForm.ControlInput1"> 
+                      <Form.Label>ລາຄາ</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.price}
-                      placeholder="ລາຄາຂາຍ..."
+                      placeholder="ລາຄາ..."
                       style={{
                         border:
                           errors.price && touched.price && errors.price
                             ? "solid 1px red"
                             : "",
                       }}
-                    />
-                      </Col>
-                    </Row>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1"> 
-                      <Form.Label>ກຳໄລ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="priceProfit"
-                      value={values?.price - values?.originPrice ?? 0}
-                      readOnly
                     /> 
-                  </Form.Group>
+                  </Form.Group> 
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
                     {dataUpdateMenuOption?.length > 0 &&
