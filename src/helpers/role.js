@@ -100,7 +100,7 @@ const role = (role, user) => {
     case "APPZAP_COUNTER":
       return {
         defaultPath: "/tables",
-        // reportManagement: true,
+        reportManagement: true,
         tableManagement: true,
         orderManagement: true,
         reservationManagement: true,

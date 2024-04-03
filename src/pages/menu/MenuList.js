@@ -100,22 +100,22 @@ export default function MenuList() {
           const _localData = await getLocalData();
 
           setIsLoading(true);
-          getMenu(_localData?.DATA?.storeId, filterCategory)
+          // getMenu(_localData?.DATA?.storeId, filterCategory)
 
-          // await fetch(
-          //   MENUS +
-          //   `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
-          //     : `&categoryId=${filterCategory}`
+          await fetch(
+            MENUS +
+            `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
+              : `&categoryId=${filterCategory}`
 
-          //   }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
-          //   {
-          //     method: "GET",
-          //   }
-          // )
-          //   .then((response) => response.json())
-          //   .then((json) => {
-          //     setMenus(json);
-          //   });
+            }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+            {
+              method: "GET",
+            }
+          )
+            .then((response) => response.json())
+            .then((json) => {
+              setMenus(json);
+            });
           setIsLoading(false);
         } catch (err) {
           console.log(err);
@@ -144,10 +144,9 @@ export default function MenuList() {
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true);
-      console.log({id, categoryId})
       await fetch(
         MENUS +
-        `/?storeId=${id}${(categoryId && categoryId !== "All")
+        `/?storeId=${id}${filterName && filterName !== "" ? `&name=${filterName}` : ""}${(categoryId && categoryId !== "All")
           ? `&categoryId=${categoryId}`
           : ""
         }`,
@@ -157,7 +156,6 @@ export default function MenuList() {
       )
         .then((response) => response.json())
         .then((json) => {
-          console.log('===()()====LLLLL:::::',{json})
           setMenus(json);
         });
       setIsLoading(false);
@@ -814,8 +812,8 @@ export default function MenuList() {
               if (!values.name) {
                 errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
               }
-              
-              
+
+
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
                 errors.price = "ກະລຸນາປ້ອນລາຄາຂາຍ...";
               }
@@ -1039,23 +1037,23 @@ export default function MenuList() {
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Form.Group controlId="exampleForm.ControlInput1"> 
-                        <Form.Label>ລາຄາ</Form.Label>
-                        <Form.Control
-                          type="number"
-                          name="price"
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          value={values?.price}
-                          placeholder="ລາຄາ..."
-                          style={{
-                            border:
-                              errors.price && touched.price && errors.price
-                                ? "solid 1px red"
-                                : "",
-                          }}
-                        /> 
-                  </Form.Group> 
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ລາຄາ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="price"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.price}
+                      placeholder="ລາຄາ..."
+                      style={{
+                        border:
+                          errors.price && touched.price && errors.price
+                            ? "solid 1px red"
+                            : "",
+                      }}
+                    />
+                  </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
                     {dataMenuOption?.length > 0 &&
@@ -1473,8 +1471,8 @@ export default function MenuList() {
                       </Form.Group>
                     </Col>
                   </Row>
-                  <Form.Group controlId="exampleForm.ControlInput1"> 
-                      <Form.Label>ລາຄາ</Form.Label>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ລາຄາ</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
@@ -1488,8 +1486,8 @@ export default function MenuList() {
                             ? "solid 1px red"
                             : "",
                       }}
-                    /> 
-                  </Form.Group> 
+                    />
+                  </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
                     {dataUpdateMenuOption?.length > 0 &&
