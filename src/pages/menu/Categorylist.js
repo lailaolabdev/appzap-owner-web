@@ -181,7 +181,7 @@ export default function Categorylist() {
     }
   };
 
-  const _changeStatusCate = async (id, isShowCategory, index) => {
+  const _changeStatusCate = async (id, showForCustomer, index) => {
     try {
       let header = await getHeaders();
       const headers = {
@@ -195,7 +195,7 @@ export default function Categorylist() {
         data: {
           id: id,
           data: {
-            isShowCategory: !isShowCategory
+            showForCustomer: !showForCustomer
           },
         },
         headers: headers,
@@ -203,7 +203,7 @@ export default function Categorylist() {
 
       let _newData = [...Categorys];
 
-      _newData[index].isShowCategory = !isShowCategory;
+      _newData[index].showForCustomer = !showForCustomer;
       setCategorys(_newData)
 
     } catch (err) {
@@ -283,12 +283,12 @@ export default function Categorylist() {
                           />
                         </td>
                         {/*adamHere*/}
-                        <td style={{ color: data?.isShowCategory ? "green" : "red" }}>
+                        <td style={{ color: data?.showForCustomer ? "green" : "red" }}>
                           <label className="switch">
                             <input
                               type="checkbox"
-                              checked={data?.isShowCategory}
-                              onClick={() => _changeStatusCate(data?._id, data?.isShowCategory, index)}
+                              checked={data?.showForCustomer}
+                              onClick={() => _changeStatusCate(data?._id, data?.showForCustomer, index)}
                             />
                             <span className="slider round"></span>
                           </label>
