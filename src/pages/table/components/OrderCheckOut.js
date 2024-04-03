@@ -25,6 +25,7 @@ const OrderCheckOut = ({
   const [total, setTotal] = useState();
   const [isBill, setIsBill] = useState(false);
 
+
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
     _calculateTotal();

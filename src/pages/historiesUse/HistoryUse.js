@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import LoadingAppzap from "../../components/LoadingAppzap";
 
 export default function HistoryUse() {
   // const { history, location, match } = useReactRouter();
@@ -23,7 +24,7 @@ export default function HistoryUse() {
   const [filtterModele, setFiltterModele] = useState("checkBill");
 
   const _page = params?.page;
-  const LIMIT_PAGE = 300;
+  const LIMIT_PAGE = 100;
   const [pageNumber, setPageNumber] = useState(_page ?? 1);
   const [pageCountNumber, setPageCountNumber] = useState(10000);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +73,6 @@ export default function HistoryUse() {
   };
   return (
     <div style={{}}>
-      {isLoading ? <AnimationLoading /> : <div />}
       <div className="col-sm-12">
         <Nav
           fill
@@ -87,7 +87,7 @@ export default function HistoryUse() {
         >
           <Nav.Item>
             <Nav.Link
-              eventKey="/canceled"
+              eventKey="/checkBill"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -105,7 +105,7 @@ export default function HistoryUse() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey="/finance"
+              eventKey="/canceled"
               style={{
                 color: "#FB6E3B",
                 border: "none",
@@ -173,76 +173,81 @@ export default function HistoryUse() {
           </Nav.Item>
         </Nav>
       </div>
-      <div className="col-sm-12">
-        <table className="table table-hover">
-          <thead className="thead-light">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">ຊື່ຜູ້ຈັດການ</th>
-              <th scope="col">ສະຖານະ</th>
-              <th scope="col">ລາຍລະອຽດ</th>
-              <th scope="col">ເຫດຜົນ</th>
-              <th scope="col">ວັນເວລາ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((item, index) => {
-              return (
-                <tr>
-                  <td>{(pageNumber - 1) * LIMIT_PAGE + index + 1}</td>
-                  <td>{item?.user}</td>
-                  <td
-                    style={{
-                      color: item?.event === "INFO" ? "green" : "red",
-                    }}
-                  >
-                    {item?.event}
-                  </td>
-                  <td>{item?.eventDetail}</td>
-                  <td>
-                    {item?.reason === null ||
-                    item?.reason === "" ||
-                    item?.reason === undefined ||
-                    item?.reason === "undefined" ||
-                    item?.reason === "null"
-                      ? "-"
-                      : item?.reason}
-                  </td>
-                  <td>
-                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {isLoading ? (
+        <LoadingAppzap />
+      ) : (
+        <div className="col-sm-12">
+          <table className="table table-hover">
+            <thead className="thead-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">ຊື່ຜູ້ຈັດການ</th>
+                <th scope="col">ສະຖານະ</th>
+                <th scope="col">ລາຍລະອຽດ</th>
+                <th scope="col">ເຫດຜົນ</th>
+                <th scope="col">ວັນເວລາ</th>
+              </tr>
+            </thead>
 
-        {pageCountNumber && (
-          <div
-            className="row col-12 justify-content-center"
-            style={{ marginBottom: 24 }}
-          >
-            <p
-              className="col-1"
-              style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => onBackPage()}
+            <tbody>
+              {data?.map((item, index) => {
+                return (
+                  <tr>
+                    <td>{(pageNumber - 1) * LIMIT_PAGE + index + 1}</td>
+                    <td>{item?.user}</td>
+                    <td
+                      style={{
+                        color: item?.event === "INFO" ? "green" : "red",
+                      }}
+                    >
+                      {item?.event}
+                    </td>
+                    <td>{item?.eventDetail}</td>
+                    <td>
+                      {item?.reason === null ||
+                      item?.reason === "" ||
+                      item?.reason === undefined ||
+                      item?.reason === "undefined" ||
+                      item?.reason === "null"
+                        ? "-"
+                        : item?.reason}
+                    </td>
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          {pageCountNumber && (
+            <div
+              className="row col-12 justify-content-center"
+              style={{ marginBottom: 24 }}
             >
-              <u>ກັບຄືນ </u>
-            </p>
-            <p className="col-4 text-center">
-              {" "}
-              ຫນ້າ {pageNumber} / {pageCountNumber}{" "}
-            </p>
-            <p
-              className="col-1"
-              style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => onNextPage()}
-            >
-              <u> ຫນ້າຕໍ່ໄປ</u>
-            </p>
-          </div>
-        )}
-      </div>
+              <p
+                className="col-1"
+                style={{ color: "blue", cursor: "pointer" }}
+                onClick={() => onBackPage()}
+              >
+                <u>ກັບຄືນ </u>
+              </p>
+              <p className="col-4 text-center">
+                {" "}
+                ຫນ້າ {pageNumber} / {pageCountNumber}{" "}
+              </p>
+              <p
+                className="col-1"
+                style={{ color: "blue", cursor: "pointer" }}
+                onClick={() => onNextPage()}
+              >
+                <u> ຫນ້າຕໍ່ໄປ</u>
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
