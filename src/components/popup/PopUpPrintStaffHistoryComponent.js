@@ -15,6 +15,7 @@ import {
   getUserReport,
 } from "../../services/report";
 import _ from "lodash";
+import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
 
 export default function PopUpPrintStaffHistoryComponent({
   open,
@@ -46,18 +47,18 @@ export default function PopUpPrintStaffHistoryComponent({
         scale: 1,
       });
 
-      urlForPrinter = "http://localhost:9150/usb/image";
+      urlForPrinter = USB_PRINTER_PORT;
 
       const myPrinter = JSON.parse(selectPrinter);
 
       if (myPrinter?.type === "ETHERNET") {
-        urlForPrinter = "http://localhost:9150/ethernet/image";
+        urlForPrinter = ETHERNET_PRINTER_PORT;
       }
       if (myPrinter?.type === "BLUETOOTH") {
-        urlForPrinter = "http://localhost:9150/bluetooth/image";
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
       }
       if (myPrinter?.type === "USB") {
-        urlForPrinter = "http://localhost:9150/usb/image";
+        urlForPrinter = USB_PRINTER_PORT;
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());

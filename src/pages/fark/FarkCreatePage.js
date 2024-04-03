@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { COLOR_APP, COLOR_APP_CANCEL, URL_PHOTO_AW3 } from "../../constants";
+import { BLUETOOTH_PRINTER_PORT, COLOR_APP, COLOR_APP_CANCEL, ETHERNET_PRINTER_PORT, URL_PHOTO_AW3, USB_PRINTER_PORT } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, Modal, Card, Pagination } from "react-bootstrap";
@@ -201,13 +201,13 @@ export default function FarkCreatePage() {
       console.log("check 2");
 
       if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = "http://localhost:9150/ethernet/image";
+        urlForPrinter = ETHERNET_PRINTER_PORT;
       }
       if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = "http://localhost:9150/bluetooth/image";
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
       }
       if (printerBillData?.type === "USB") {
-        urlForPrinter = "http://localhost:9150/usb/image";
+        urlForPrinter = USB_PRINTER_PORT;
       }
       console.log(dataImageForPrint.toDataURL());
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());

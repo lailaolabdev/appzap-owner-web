@@ -53,6 +53,7 @@ export default function CheckOutPopup({
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
+  console.log("tableData:=======abc======>", tableData)
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -171,6 +172,9 @@ export default function CheckOutPopup({
             customerId: selectDataOpption?._id,
             userNanme: selectDataOpption?.username,
             phone: selectDataOpption?.phone,
+            billMode: tableData?.editBill,
+            tableName: tableData?.tableName,
+            tableCode: tableData?.code,
           },
         },
         {

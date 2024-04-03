@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Form, Button, Carousel, Spinner } from "react-bootstrap";
 import packetJson from "../../../package.json";
-import ReactGA from 'react-ga4';
+import ReactGA from "react-ga4";
 
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -29,13 +29,14 @@ function Login() {
   const { setStoreDetail, setProfile } = useStore();
 
   useMemo(() => {
-    console.log("GOOGLE ANALYTICS STARTED")
-    const TRACKING_ID = 'G-LLZP539QT0';
-    ReactGA.initialize(TRACKING_ID, { debug: true })
-}, [])
+    console.log("GOOGLE ANALYTICS STARTED");
+    const TRACKING_ID = "G-LLZP539QT0";
+    ReactGA.initialize(TRACKING_ID, { debug: true });
+  }, []);
 
   const _login = async ({ values }) => {
     try {
+      if (isLoading) return;
       setIsLoading(true);
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
       const { defaultPath } = role(user?.data?.data?.role, user?.data?.data);
@@ -44,11 +45,13 @@ function Login() {
         setProfile(user?.data);
         const data = await getStore(user?.data?.data?.storeId);
         setStoreDetail(data);
-          document.title = data?.name;
-       
-        ReactGA.send({ hitType: "pageview",  title: `${data?.name}` });
+        document.title = data?.name;
+
+        ReactGA.send({ hitType: "pageview", title: `${data?.name}` });
+        setIsLoading(false);
         navigate(defaultPath);
       } else {
+        console.log("INVALID_USERNAME_OR_PASSWORD");
         //  _orderSound.play();
         // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
         //   position: "bottom-left",
@@ -59,8 +62,7 @@ function Login() {
         //   draggable: true,
         //   progress: undefined,
         // });
-    setIsLoading(true);
-
+        setIsLoading(false);
       }
     } catch (error) {
       // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
@@ -268,13 +270,16 @@ function Login() {
                       border: "1px #FB6E3B",
                       width: "100%",
                       fontSize: 18,
-                      fontWeight:'bold',
-                      display:'flex', justifyContent:'center', alignItems:'center', gap:10
+                      fontWeight: "bold",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: 10,
                     }}
                     onClick={handleSubmit}
                     // disabled={isLoading}
                   >
-                    {isLoading && <Spinner  size="small" animation="border" />  }
+                    {isLoading && <Spinner size="small" animation="border" />}
                     ເຂົ້າສູ່ລະບົບ
                   </Button>
                   <div style={{ height: 50 }} />

@@ -11,7 +11,7 @@ export default function PaginationAppzap({
   // const pagesToDisplay = 10; // Number of pages to display around the current page
   const halfPagesToDisplay = Math.floor(rowsPerPage / 2);
 
-  console.log("page:--->", pageAll, page)
+  // console.log("page:--->", pageAll, page)
 
   const getPageNumbers = () => {
     const pageNumbers = [];

@@ -15,7 +15,10 @@ import {
   WAITING_STATUS,
   SERVE_STATUS,
   CANCEL_STATUS,
-} from "../../constants";
+  ETHERNET_PRINTER_PORT,
+  BLUETOOTH_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants/index";
 
 // Tab
 import WaitingOrderTab from "./WaitingOrderTab";
@@ -127,13 +130,13 @@ export default function OrderPage() {
           // }
 
           if (_printer?.type === "ETHERNET") {
-            urlForPrinter = "http://localhost:9150/ethernet/image";
+            urlForPrinter = ETHERNET_PRINTER_PORT;
           }
           if (_printer?.type === "BLUETOOTH") {
-            urlForPrinter = "http://localhost:9150/bluetooth/image";
+            urlForPrinter = BLUETOOTH_PRINTER_PORT;
           }
           if (_printer?.type === "USB") {
-            urlForPrinter = "http://localhost:9150/usb/image";
+            urlForPrinter = USB_PRINTER_PORT;
           }
           const _file = await base64ToBlob(await dataUrl.toDataURL());
           var bodyFormData = new FormData();

@@ -55,39 +55,46 @@ export default function MenuList() {
   const [storeData, setStoreData] = useState();
   const [sortedData, setSortedData] = useState([]);
   const [sortOrder, setSortOrder] = useState("All");
+  const [selectCategories, setSelectCategories] = useState("All");
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [prepaDatas, setPrepaDatas] = useState([]);
+  const _localData = getLocalData();
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 50;
   const [page, setPage] = useState(0);
   const pageAll = totalStock > 0 ? Math.ceil(totalStock / rowsPerPage) : 1;
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
   }, []);
 
-  // functions
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     getCategory();
+  //   };
+  //   getData();
+  // }, [_localData.DATA?.storeId]);
 
   // eslint-disable-next-line
-  const getCategory = async () => {
-    try {
-      const _localData = await getLocalData();
-      if (_localData) {
-        setIsLoading(true);
-        const data = await axios.get(
-          `${END_POINT_SEVER}/v3/stock-categories?storeId=${_localData.DATA?.storeId}&isDeleted=false`
-        );
-        if (data.status < 300) {
-          setLoadStatus("SUCCESS");
-          setCategorys(data.data);
-        }
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setLoadStatus("ERROR!!");
-      setIsLoading(false);
-      console.log("err:", err);
-    }
-  };
+  // const getCategory = async () => {
+  //   try {
+  //     const { DATA } = await getLocalData();
+  //     if (DATA) {
+  //       setIsLoading(true);
+  //       const res = await axios.get(
+  //         `${END_POINT_SEVER}/v3/stock-categories?storeId=${DATA?.storeId}&isDeleted=false`
+  //       );
+  //       if (res.status < 300) {
+  //         setLoadStatus("SUCCESS");
+  //         setCategorys(res.data);
+  //       }
+  //       setIsLoading(false);
+  //     }
+  //   } catch (err) {
+  //     setLoadStatus("ERROR!!");
+  //     setIsLoading(false);
+  //     console.log("err:", err);
+  //   }
+  // };
 
   const deleteStock = async (stock) => {
     try {
@@ -132,9 +139,7 @@ export default function MenuList() {
         findby += `limit=${rowsPerPage}&`;
         findby += `search=${filterName}&`;
         const res = await getStocksAll(findby);
-        if (res.status === 200) {
-          // console.log('res--->', res)
-          // setTotalStock(res?.data?.total);
+        if (res.status === 200) { 
           setStocks(res?.data);
           setIsLoading(true);
         }
@@ -153,11 +158,10 @@ export default function MenuList() {
       if (_localData) {
         setIsLoading(true);
         let findby = "?";
-        findby += `storeId=${_localData?.DATA?.storeId}&`; 
+        findby += `storeId=${_localData?.DATA?.storeId}&`;
         findby += `search=${filterName}&`;
         const res = await getCountStocksAll(findby);
         if (res.status === 200) {
-          console.log('res--->', res)
           setTotalStock(res?.data);
         }
       }
@@ -236,6 +240,8 @@ export default function MenuList() {
     } else {
       sorted = [...stocks]; // Default or 'All' case, not sorted
     }
+  
+    console.log("sorted:======>", sorted)
     setSortedData(sorted);
   }, [stocks, sortOrder]);
 
@@ -251,10 +257,10 @@ export default function MenuList() {
 
   useEffect(() => {
     getStock();
-    getCountStocks()
+    getCountStocks();
   }, [page, filterName]);
 
-  // console.log("datas:---->", stocks);
+  console.log("selectCategories:---->", categorys);
 
   // ------------------------------------------------------------ //
 
@@ -268,18 +274,7 @@ export default function MenuList() {
             // gridTemplateColumns: "1fr 90px 200px"
             gap: 10,
           }}
-        >
-          {/* <div style={{ width: "100%" }}>
-            <label>ຄົ້ນຫາຊື່ສິນຄ້າ</label>
-            <Form.Control
-              type="text"
-              placeholder="ຄົ້ນຫາຊື່..."
-              value={filterName}
-              onChange={(e) => {
-                setFilterName(e?.target?.value);
-              }}
-            />
-          </div> */}
+        > 
 
           <div style={{ width: "100%", position: "relative" }}>
             <div
@@ -310,6 +305,20 @@ export default function MenuList() {
             </InputGroup>
           </div>
 
+          {/* <div style={{ width: 500 }}>
+            <label>ໝວດໝູ່</label>
+            <select
+              className="form-control w-100"
+              value={selectCategories}
+              onChange={(e) => setSelectCategories(e?.target?.value)}
+            >
+              <option value="">ທັງໝົດ</option>
+
+              {categorys.map((elm, index) => (
+                <option key={index} value={elm?.id}>{elm?.name}</option>
+              ))}
+            </select>
+          </div> */}
           <div style={{ width: 200 }}>
             <label>ເລືອກຈຳນວນ</label>
             <select
@@ -382,9 +391,7 @@ export default function MenuList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {sortedData
-                    ?.filter((e) => e?.name?.includes(filterName))
-                    .map((data, index) => {
+                  {sortedData.map((data, index) => {
                       return (
                         <tr>
                           <td>

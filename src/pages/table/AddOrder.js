@@ -20,6 +20,9 @@ import {
   DIV_NAV,
   USER_KEY,
   URL_PHOTO_AW3,
+  USB_PRINTER_PORT,
+  BLUETOOTH_PRINTER_PORT,
+  ETHERNET_PRINTER_PORT,
 } from "../../constants/index";
 
 import {
@@ -39,6 +42,9 @@ import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
+import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
+import { RiChatNewFill } from "react-icons/ri";
+import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 
 function AddOrder() {
   const params = useParams();
@@ -63,6 +69,20 @@ function AddOrder() {
   const [menuOptions, setMenuOptions] = useState([]);
   const [selectedOptions, setselectedOptions] = useState();
   const { profile } = useStore();
+  const [isPopup, setIsPupup] = useState(false);
+  const [noteItems, setNoteItems] = useState();
+  const [addComments, setAddComments] = useState();
+  const [editComments, setEditComments] = useState();
+  const inputRef = useRef(null); // Create a ref for the input element
+  const [isRemoveItem, setIsRemoveItem] = useState(false);
+  const [itemDeleting, setItemDeleting] = useState();
+
+  useEffect(() => {
+    // Check if the modal is shown and if the ref is attached to an element
+    if (isPopup && inputRef.current) {
+      inputRef.current.focus(); // Set focus when the modal is shown
+    }
+  }, [isPopup]);
 
   const handleShow = () => {
     setShow(true);
@@ -158,13 +178,13 @@ function AddOrder() {
           });
         }
         if (_printer?.type === "ETHERNET") {
-          urlForPrinter = "http://localhost:9150/ethernet/image";
+          urlForPrinter = ETHERNET_PRINTER_PORT;
         }
         if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = "http://localhost:9150/bluetooth/image";
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
         }
         if (_printer?.type === "USB") {
-          urlForPrinter = "http://localhost:9150/usb/image";
+          urlForPrinter = USB_PRINTER_PORT;
         }
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
@@ -335,6 +355,7 @@ function AddOrder() {
       price: menu.price,
       categoryId: menu?.categoryId,
       printer: menu?.categoryId?.printer,
+      note: "",
     };
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
@@ -367,6 +388,7 @@ function AddOrder() {
       }
     }
     setSelectedMenu([...selectedMenuCopied]);
+    setIsRemoveItem(false)
   };
 
   const createOrder = async (data, header, isPrinted) => {
@@ -475,6 +497,60 @@ function AddOrder() {
     }
   };
 
+  const onAddCommentItems = (values) => {
+    setIsPupup(true);
+    setNoteItems(values);
+  };
+
+  const onEditCommentItems = (values) => {
+    setIsPupup(true);
+    setNoteItems(values);
+    setEditComments(values?.note);
+  };
+
+  const handleAddCommentInCart = () => {
+    let dataArray = [];
+    for (const i of selectedMenu) {
+      let _data = { ...i };
+      if (noteItems?.id === i?.id) {
+        if (noteItems?.note === "") {
+          _data = { ..._data, note: addComments };
+        } else {
+          _data = { ..._data, note: editComments };
+        }
+      }
+      dataArray.push(_data);
+    }
+    setSelectedMenu(dataArray);
+    setIsPupup(false);
+    setAddComments("");
+    setEditComments("");
+  };
+
+  const handleUpdateCommentInCart = () => {
+    let dataArray = [];
+    for (const i of selectedMenu) {
+      let _data = { ...i };
+      if (noteItems?.id === i?.id) {
+        if (noteItems?.note === "") {
+          _data = { ..._data, note: "" };
+        } else {
+          _data = { ..._data, note: "" };
+        }
+      }
+      dataArray.push(_data);
+    }
+    setSelectedMenu(dataArray);
+    setIsPupup(false);
+    setAddComments("");
+    setEditComments("");
+  };
+
+  const onConfirmRemoveItem = (data) => {
+    setIsRemoveItem(true);
+    setItemDeleting(data);
+  };
+
   const { t } = useTranslation();
 
   return (
@@ -572,7 +648,8 @@ function AddOrder() {
                         <span>{data?.name}</span>
                         <br />
                         <span>
-                          {moneyCurrency(data?.price)} {storeDetail?.firstCurrency}
+                          {moneyCurrency(data?.price)}{" "}
+                          {storeDetail?.firstCurrency}
                           {/* {currency?.map(
                             (e) =>
                               " / " +
@@ -609,12 +686,16 @@ function AddOrder() {
                 <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
                     <tr style={{ fontSize: "bold", border: "none" }}>
-                      <th style={{ border: "none" }}>ລຳດັບ</th>
-                      <th style={{ border: "none" }} className="text-center">
+                      <th style={{ border: "none" }}>#</th>
+                      <th style={{ border: "none", textAlign: "left" }}>
                         ຊື່ເມນູ
                       </th>
-                      <th style={{ border: "none" }}>ຈຳນວນ</th>
-                      <th style={{ border: "none" }}>ຈັດການ</th>
+                      <th style={{ border: "none", textAlign: "center" }}>
+                        ຈຳນວນ
+                      </th>
+                      <th style={{ border: "none", textAlign: "right" }}>
+                        ຈັດການ
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -622,13 +703,20 @@ function AddOrder() {
                       selectedMenu.map((data, index) => {
                         return (
                           <tr key={"selectMenu" + index}>
-                            <td>{index + 1}</td>
-                            <td>{data.name}</td>
+                            <td style={{ width: 20 }}>{index + 1}</td>
+                            <td style={{ textAlign: "left", paddingBottom: 0 }}>
+                              <p>{data.name}</p>
+                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
+                                {data?.note ?? ""}
+                              </p>
+                            </td>
                             <td
                               style={{
                                 display: "flex",
                                 flexDirection: "row",
-                                justifyContent: "space-between",
+                                justifyContent: "space-around",
+                                marginTop: "-.05em",
+                                alignItems:'center'
                               }}
                             >
                               <button
@@ -641,7 +729,7 @@ function AddOrder() {
                               >
                                 -
                               </button>
-                              {data.quantity}
+                              <p style={{ minWidth: 30, maxWidth:50 }}>{data.quantity}</p>
                               <button
                                 style={{
                                   color: "red",
@@ -653,8 +741,8 @@ function AddOrder() {
                                 +
                               </button>
                             </td>
-                            <td>
-                              <i
+                            <td style={{ padding: 0, textAlign: "right" }}>
+                              {/* <i
                                 onClick={() => onRemoveFromCart(data.id)}
                                 className="fa fa-trash"
                                 aria-hidden="true"
@@ -662,7 +750,52 @@ function AddOrder() {
                                   color: "#FB6E3B",
                                   cursor: "pointer",
                                 }}
-                              ></i>
+                              ></i> */}
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "end",
+                                  gap: 10,
+                                  paddingLeft: 10,
+                                  paddingTop: 5,
+                                }}
+                              >
+                                {data?.note === "" ? (
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "gray",
+                                    }}
+                                    onClick={() => onAddCommentItems(data)}
+                                  >
+                                    <RiChatNewFill />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "green",
+                                    }}
+                                    onClick={() => onEditCommentItems(data)}
+                                  >
+                                    <MdMarkChatRead />
+                                  </div>
+                                )}
+
+                                <div
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: 25,
+                                    color: "#FB6E3B",
+                                  }}
+                                  onClick={() => onConfirmRemoveItem(data)}
+                                >
+                                  <MdDelete />
+                                </div>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -739,25 +872,27 @@ function AddOrder() {
           </div>
         </div>
       </div>
-      {selectedMenu?.map((val, i) => {
-        return (
-          <div
-            style={{
-              width: "80mm",
-              paddingRight: "20px",
-              paddingBottom: "10px",
-            }}
-            ref={(el) => (billForCher80.current[i] = el)}
-          >
-            <BillForChef80
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              // dataBill={dataBill}
-              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-            />
-          </div>
-        );
-      })}
+      <div style={{ display: "none" }}>
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => (billForCher80.current[i] = el)}
+            >
+              <BillForChef80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          );
+        })}
+      </div>
       <div>
         {selectedMenu?.map((val, i) => {
           return (
@@ -878,6 +1013,64 @@ function AddOrder() {
           )}
         </Formik>
       </Modal>
+
+      {/* modal comment of items   */}
+      <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{noteItems?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-4">
+          <Form.Group>
+            <Form.Label>
+              {noteItems?.note === ""
+                ? "ໃສ່ຄຳອະທິບາຍເພິ່ມເຕີມ"
+                : "ແກ້ໄຂຄຳອະທິລາຍ"}
+            </Form.Label>
+            <Form.Control
+              ref={noteItems?.note === "" ? inputRef : null}
+              as="textarea"
+              rows={3}
+              value={noteItems?.note === "" ? addComments : editComments}
+              onChange={(e) =>
+                noteItems?.note === ""
+                  ? setAddComments(e.target.value)
+                  : setEditComments(e.target.value)
+              }
+              placeholder="ຄຳອະທິລາຍ..."
+              className="w-100"
+            />
+          </Form.Group>
+          <div style={{ display: "flex", gap: 10, marginTop: 5 }}>
+            {noteItems?.note !== "" && (
+              <Button
+                variant="outline-danger"
+                className="w-100 p-2"
+                onClick={handleUpdateCommentInCart}
+              >
+                ລຶບທັງໝົດ
+              </Button>
+            )}
+            <Button className="w-100 p-2" onClick={handleAddCommentInCart}>
+              {noteItems?.note !== "" ? (
+                "ແກ້ໄຂ"
+              ) : (
+                <>
+                  <MdAdd style={{fontSize:28}} />
+                  ເພິ່ມໃໝ່
+                </>
+              )}
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* modal confirm delete item from cart */}
+      <PopUpConfirmDeletion
+        open={isRemoveItem}
+        text={itemDeleting?.name}
+        onClose={() => setIsRemoveItem(false)}
+        onSubmit={ async () => onRemoveFromCart(itemDeleting.id)}
+      />
     </div>
   );
 }

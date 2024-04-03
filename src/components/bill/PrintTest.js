@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { base64ToBlob } from "../../helpers";
 import html2canvas from "html2canvas";
 import axios from "axios";
+import { USB_PRINTER_PORT } from "../../constants";
 
 export default function PrintTest() {
   let bill80Ref = useRef(null);
@@ -22,7 +23,7 @@ export default function PrintTest() {
         scale: 530 / widthBill80,
       });
 
-      urlForPrinter = "http://localhost:9150/usb/image";
+      urlForPrinter = USB_PRINTER_PORT;
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();

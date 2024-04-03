@@ -32,7 +32,12 @@ import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 /**
  * const
  **/
-import { COLOR_APP } from "../../constants/index";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  COLOR_APP,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants/index";
 import { useStore } from "../../store";
 import {
   END_POINT_APP,
@@ -128,7 +133,7 @@ export default function TableList() {
     setPrintNowList,
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
-    setCountOrderWaiting
+    setCountOrderWaiting,
   } = useStore();
 
   const reLoadData = () => {
@@ -151,6 +156,8 @@ export default function TableList() {
   const [codeId, setCodeId] = useState(null);
 
   const [isBillTest, setIsBillTest] = useState(true);
+
+  console.log("tableList==========>", tableList)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
@@ -299,6 +306,7 @@ export default function TableList() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+
       const changTable = await axios({
         method: "put",
         url: END_POINT_SEVER + `/v3/bill-transfer`,
@@ -306,6 +314,8 @@ export default function TableList() {
           billOld: _billIdOld,
           billNew: _billIdNew ?? "NOT_BILL",
           codeId: _codeIdNew,
+          tableNow: selectedTable?.tableName,
+          tableNew: selectNewTable?.tableName,
         },
         headers: headers,
       });
@@ -321,6 +331,7 @@ export default function TableList() {
         });
       }
     } catch (err) {
+      console.log({ err });
       await Swal.fire({
         icon: "error",
         title: "ການປ່ຽນໂຕະບໍ່ສໍາເລັດ",
@@ -449,13 +460,13 @@ export default function TableList() {
         });
       }
       if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = "http://localhost:9150/ethernet/image";
+        urlForPrinter = ETHERNET_PRINTER_PORT;
       }
       if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = "http://localhost:9150/bluetooth/image";
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
       }
       if (printerBillData?.type === "USB") {
-        urlForPrinter = "http://localhost:9150/usb/image";
+        urlForPrinter = USB_PRINTER_PORT;
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
@@ -546,13 +557,13 @@ export default function TableList() {
         });
       }
       if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = "http://localhost:9150/ethernet/image";
+        urlForPrinter = ETHERNET_PRINTER_PORT;
       }
       if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = "http://localhost:9150/bluetooth/image";
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
       }
       if (printerBillData?.type === "USB") {
-        urlForPrinter = "http://localhost:9150/usb/image";
+        urlForPrinter = USB_PRINTER_PORT;
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
@@ -672,13 +683,13 @@ export default function TableList() {
   //       });
   //     }
   //     if (printerBillData?.type === "ETHERNET") {
-  //       urlForPrinter = "http://localhost:9150/ethernet/image";
+  //       urlForPrinter = ETHERNET_PRINTER_PORT;
   //     }
   //     if (printerBillData?.type === "BLUETOOTH") {
-  //       urlForPrinter = "http://localhost:9150/bluetooth/image";
+  //       urlForPrinter = BLUETOOTH_PRINTER_PORT;
   //     }
   //     if (printerBillData?.type === "USB") {
-  //       urlForPrinter = "http://localhost:9150/usb/image";
+  //       urlForPrinter = USB_PRINTER_PORT;
   //     }
 
   //     const _file = await base64ToBlob(dataImageForPrint.toDataURL());
@@ -773,13 +784,13 @@ export default function TableList() {
         //   });
         // }
         if (_printer?.type === "ETHERNET") {
-          urlForPrinter = "http://localhost:9150/ethernet/image";
+          urlForPrinter = ETHERNET_PRINTER_PORT;
         }
         if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = "http://localhost:9150/bluetooth/image";
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
         }
         if (_printer?.type === "USB") {
-          urlForPrinter = "http://localhost:9150/usb/image";
+          urlForPrinter = USB_PRINTER_PORT;
         }
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
@@ -879,7 +890,8 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId,   seletedCancelOrderItem,
+      selectedTable);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
       setCheckedBox(!checkedBox);
@@ -891,7 +903,7 @@ export default function TableList() {
       });
 
       const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0)
+      setCountOrderWaiting(count || 0);
     }
   };
 
@@ -907,7 +919,8 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId);
+    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId,   seletedCancelOrderItem,
+      selectedTable);
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
       setCheckedBox(!checkedBox);
@@ -919,7 +932,7 @@ export default function TableList() {
       });
 
       const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0)
+      setCountOrderWaiting(count || 0);
     }
   };
 
@@ -927,6 +940,7 @@ export default function TableList() {
     // getOrderItemsStore(CANCEL_STATUS);
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
+    console.log("selectedTable:==8888=>", selectedTable);
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -935,6 +949,7 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
+          name: i?.name,
           // remark: seletedCancelOrderItem
         };
       });
@@ -942,7 +957,8 @@ export default function TableList() {
       _updateItems,
       storeId,
       menuId,
-      seletedCancelOrderItem
+      seletedCancelOrderItem,
+      selectedTable
     );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       handleClose1();
@@ -957,7 +973,7 @@ export default function TableList() {
       });
 
       const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0)
+      setCountOrderWaiting(count || 0);
     }
   };
 
@@ -1026,6 +1042,7 @@ export default function TableList() {
       setPopup({ qrToken: true });
     }
   };
+
 
   return (
     <div
@@ -1117,8 +1134,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#bfff00"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "yellow"
-                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                ? "yellow"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1134,8 +1151,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1161,8 +1178,8 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? "black"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "black"
-                                      : "white"
+                                    ? "black"
+                                    : "white"
                                   : "black",
                               }}
                             >
@@ -1210,8 +1227,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1359,10 +1376,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId?.[0]?.updatedBy?.lastname
+                            dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1559,55 +1576,55 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                              <tr
-                                onClick={() => handleShowQuantity(orderItem)}
-                                key={"order" + index}
-                                style={{ borderBottom: "1px solid #eee" }}
-                              >
-                                <td onClick={(e) => e.stopPropagation()}>
-                                  <Checkbox
-                                    disabled={
-                                      orderItem?.status === "CANCELED"
-                                    }
-                                    name="checked"
-                                    checked={orderItem?.isChecked || false}
-                                    onChange={(e) => {
-                                      // e.stopPropagation()
-                                      onSelect({
-                                        ...orderItem,
-                                        isChecked: e.target.checked,
-                                      });
-                                    }}
-                                  />
-                                </td>
+                                <tr
+                                  onClick={() => handleShowQuantity(orderItem)}
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        // e.stopPropagation()
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
 
-                                <td>{index + 1}</td>
-                                <td>{orderItem?.name}</td>
-                                <td>{orderItem?.quantity}</td>
-                                <td
-                                  style={{
-                                    color:
-                                      orderItem?.status === `SERVED`
-                                        ? "green"
-                                        : orderItem?.status === "DOING"
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                  }}
-                                >
-                                  {orderItem?.status
-                                    ? orderStatus(orderItem?.status)
-                                    : "-"}
-                                </td>
-                                <td>{orderItem?.createdBy?.firstname}</td>
-                                <td>
-                                  {orderItem?.createdAt
-                                    ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
-                                    )
-                                    : "-"}
-                                </td>
-                              </tr>
-                            ))
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1813,6 +1830,7 @@ export default function TableList() {
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
+        // editMode={select}
       />
       {/* <CheckOutType
         onPrintBill={onPrintBill}
@@ -2055,8 +2073,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                            ? ""
-                            : "red",
+                          ? ""
+                          : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2120,9 +2138,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-          // onClick={() => {
-          //   _orderTableQunatity();
-          // }}
+            // onClick={() => {
+            //   _orderTableQunatity();
+            // }}
           >
             ບັນທຶກ
           </Button>
