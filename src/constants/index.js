@@ -23,7 +23,8 @@ export const ALL_STATUS = [
   { value: "DOING", label: "ກໍາລັງຄົວ" },
   { value: "SERVED", label: "	ເສີບແລ້ວ" },
 ];
-export const COLOR_APP = "#FB6E3B";
+export const COLOR_APP = "#FF6700";
+export const COLOR_GRAY = "#3D3C3A"
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {
   // paddingLeft: 55,

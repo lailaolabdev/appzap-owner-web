@@ -1023,8 +1023,8 @@ function AddOrder() {
           <Form.Group>
             <Form.Label>
               {noteItems?.note === ""
-                ? "ໃສ່ຄຳອະທິບາຍເພິ່ມເຕີມ"
-                : "ແກ້ໄຂຄຳອະທິລາຍ"}
+                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
+                : "ແກ້ໄຂຄອມເມັ້ນ"}
             </Form.Label>
             <Form.Control
               ref={noteItems?.note === "" ? inputRef : null}
@@ -1036,7 +1036,7 @@ function AddOrder() {
                   ? setAddComments(e.target.value)
                   : setEditComments(e.target.value)
               }
-              placeholder="ຄຳອະທິລາຍ..."
+              placeholder="ປ້ອນຄຳອະທິບາຍ..."
               className="w-100"
             />
           </Form.Group>

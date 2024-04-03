@@ -15,7 +15,7 @@ export default {
   element: <ReportLayout />,
   children: [
     {
-      path: "sales-report",
+      path: "/reports/sales-report",
       element: <DashboardPage />,
     }, 
     {

@@ -182,7 +182,7 @@ export default function HistoryUse() {
               <tr>
                 <th scope="col">#</th>
                 <th scope="col">ຊື່ຜູ້ຈັດການ</th>
-                <th scope="col">ສະຖານະ</th>
+                {/* <th scope="col">ສະຖານະ</th> */}
                 <th scope="col">ລາຍລະອຽດ</th>
                 <th scope="col">ເຫດຜົນ</th>
                 <th scope="col">ວັນເວລາ</th>
@@ -195,13 +195,13 @@ export default function HistoryUse() {
                   <tr>
                     <td>{(pageNumber - 1) * LIMIT_PAGE + index + 1}</td>
                     <td>{item?.user}</td>
-                    <td
+                    {/* <td
                       style={{
                         color: item?.event === "INFO" ? "green" : "red",
                       }}
                     >
                       {item?.event}
-                    </td>
+                    </td> */}
                     <td>{item?.eventDetail}</td>
                     <td>
                       {item?.reason === null ||

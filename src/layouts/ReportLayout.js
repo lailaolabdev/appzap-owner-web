@@ -109,9 +109,9 @@ export default function ReportLayout() {
           className=" d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
           style={{
             background:
-              activeButton === "/report/sales-report" ? COLOR_APP : "white",
+              activeButton === "/reports" ? COLOR_APP : "white",
             color:
-              activeButton === "/report/sales-report" ? "white" : COLOR_APP,
+              activeButton === "/reports" ? "white" : COLOR_APP,
           }}
           onClick={() => onViewStocksPath("sales-report")}
         >
