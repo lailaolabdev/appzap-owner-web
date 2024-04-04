@@ -106,7 +106,7 @@ td,
 th {
   padding: 15px 10px;
 
-  text-align: center;
+  text-align: left;
   font-family: "NotoSansLao", Arial, Helvetica, sans-serif;
 }
 tr:hover {
@@ -114,6 +114,8 @@ tr:hover {
 }
 td {
   color: #5a5a5a;
+  text-align: left;
+
 }
 
 .customTab {

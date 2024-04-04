@@ -24,26 +24,35 @@ import {
   faBeer,
   faShoppingCart,
   faBox,
-  faBoxes
+  faBoxes,
+  faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
-import { COLOR_APP, WAITING_STATUS } from "../constants";
+import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
 import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
 import { getLocalData, getToken } from "../constants/api";
 import { getCountOrderWaiting } from "../services/order";
+import _ from "lodash";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const {
-    countOrderWaiting, setCountOrderWaiting,
-    openTableData, getTableDataStore, storeDetail
+    countOrderWaiting,
+    setCountOrderWaiting,
+    openTableData,
+    getTableDataStore,
+    storeDetail,
   } = useStore();
 
   const [token, setToken] = useState();
+  const [isTitle, setIsTitle] = useState(false)
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+
+  const isPathInclude = (condition) =>
+    _.includes(condition, selected.split("/page")[0]);
 
   // useEffect
   useEffect(() => {
@@ -56,11 +65,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
   useEffect(() => {
     const fetchCountOrderWaiting = async () => {
       const count = await getCountOrderWaiting(storeDetail?._id);
-      setCountOrderWaiting(count || 0)
-    }
+      setCountOrderWaiting(count || 0);
+    };
 
     fetchCountOrderWaiting();
-  }, [selected])
+  }, [selected]);
 
   const UN_SELECTED_TAB_TEXT = "#606060";
   const { t } = useTranslation();
@@ -83,13 +92,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "orderManagement",
     },
-    {
-      title: t("financialStatic"),
-      key: "report",
-      icon: faTachometerAlt,
-      typeStore: "",
-      system: "reportManagement",
-    },
+    // {
+    //   title: t("financialStatic"),
+    //   key: "report",
+    //   icon: faTachometerAlt,
+    //   typeStore: "",
+    //   system: "reportManagement",
+    // },
     {
       title: "ຈັດການລາຍຈ່າຍ",
       key: "expends",
@@ -129,14 +138,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
-    {
-      title: "ລາຍງານ (ໃໝ່)",
-      key: "reports/sales-report",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: "ລາຍງານ (ໃໝ່)",
+    //   key: "reports/sales-report",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
 
     // {
     //   title: "ລາຍງານສະຕ໋ອກ",
@@ -146,23 +155,40 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   hidden: !storeDetail?.hasPOS,
     //   system: "settingManagement",
     // },
-    {
-      title: "ສະຕ໊ອກ",
-      key: "settingStore/stock",
-      typeStore: "",
-      icon: faBoxes,
-      hidden: !storeDetail?.hasPOS,
-      system: "stockManagement",
-    },
-    {
-      title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-      key: "settingStore",
-      typeStore: "",
-      icon: faCogs,
-      hidden: !storeDetail?.hasPOS,
-      system: "settingManagement",
-    },
+    // {
+    //   title: "ສະຕ໊ອກ",
+    //   key: "settingStore/stock",
+    //   typeStore: "",
+    //   icon: faBoxes,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "stockManagement",
+    // },
+    // {
+    //   title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
+    //   key: "settingStore",
+    //   typeStore: "",
+    //   icon: faCogs,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "settingManagement",
+    // },
+  ];
 
+  const itemReports = [
+    {
+      title: "ສະຖິຕິການເງິນ",
+      key: "report",
+      icon: faLayerGroup,
+      typeStore: "",
+      system: "reportManagement",
+    },
+    {
+      title: "ລາຍງານ (ໃໝ່)",
+      key: "reports/sales-report",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
   ];
 
   const listForRole = itemList.filter((e) => {
@@ -173,10 +199,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const popNoti = {
     position: "absolute",
     top: 0,
-    left: 16,
-    minWidth: 25,
-    width: 'auto',
-    height: 25,
+    right: 5,
+    minWidth: 20,
+    width: "auto",
+    height: 20,
     fontSize: 12,
     borderRadius: "50%",
     background: "red",
@@ -233,7 +259,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-              `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -243,7 +269,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-              `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -263,8 +289,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
         onToggle(expanded);
       }}
     >
-      <Toggle />
+      <Toggle/>
       <SideNav.Nav value={location.pathname.split("/")[1]}>
+      <hr style={{marginTop:'-.05em'}} />
         {listForRole
           .filter((e) => !e?.hidden)
           .map((e) => (
@@ -272,7 +299,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
               eventKey={e?.key}
               style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
             >
-
               <NavIcon>
                 <FontAwesomeIcon
                   className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -280,16 +306,23 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   style={{
                     color:
                       selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                    fontSize: 16,
                   }}
                 />
-                {(e?.key === 'orders' && countOrderWaiting > 0) && <span style={popNoti}>{countOrderWaiting}</span>}
+                {e?.key === "orders" && countOrderWaiting > 0 && (
+                  <span style={popNoti}>{countOrderWaiting}</span>
+                )}
               </NavIcon>
-              <NavText
-                style={{
-                  color: selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-                }}
-              >
-                {e?.title}
+              <NavText>
+                <b
+                  style={{
+                    color:
+                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                  }}
+                >
+                  {" "}
+                  {e?.title}
+                </b>
               </NavText>
               {e?.children?.map((element, index) => {
                 return (
@@ -314,28 +347,134 @@ export default function Sidenav({ location, navigate, onToggle }) {
               })}
             </NavItem>
           ))}
-        {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
-          <NavItem eventKey="songlist">
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faMusic}
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              />
-            </NavIcon>
-            <NavText
+
+        <hr />
+
+        <NavItem
+          eventKey="reportGroups"
+          style={{
+            color:
+              isPathInclude(["report"]) || isPathInclude(["reports"])
+                ? COLOR_APP
+                : COLOR_GRAY,
+          }}
+        >
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faTachometerAlt}
               style={{
-                color: UN_SELECTED_TAB_TEXT,
+                color:
+                  isPathInclude(["report"]) || isPathInclude(["reports"])
+                    ? COLOR_APP
+                    : COLOR_GRAY,
+              }}
+            />
+          </NavIcon>
+          <NavText>
+            <b
+              style={{
+                color:
+                  isPathInclude(["report"]) || isPathInclude(["reports"])
+                    ? COLOR_APP
+                    : COLOR_GRAY,
               }}
             >
-              ລູກຄ້າຂໍເພງ
-            </NavText>
-          </NavItem>
-        ) : (
-          ""
-        )}
+              ລາຍງານທັງໝົດ
+            </b>
+          </NavText>
+          {itemReports.map((elm, index) => (
+            <NavItem key={index} eventKey={elm?.key}>
+              <NavText>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "start",
+                    height: 40,
+                    alignItems: "center",
+                    gap: 8,
+                    width: "100%",
+                  }}
+                >
+                  <div>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={elm?.icon}
+                      style={{
+                        color:
+                        selected === elm?.key
+                          ? COLOR_APP
+                          : COLOR_GRAY,
+                        marginTop: "-2em",
+                      }}
+                    />
+                  </div>
+                  <p
+                    style={{
+                      paddingTop: 13,
+                      fontSize: 15,
+                      color:
+                      selected === elm?.key
+                        ? COLOR_APP
+                        : COLOR_GRAY,
+                    }}
+                  >
+                    {elm?.title}
+                  </p>
+                </div>
+              </NavText>
+            </NavItem>
+          ))}
+        </NavItem>
+
+        <NavItem eventKey="settingStore">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faCogs}
+              style={{
+                color: isPathInclude(["settingStore"]) ? COLOR_APP : COLOR_GRAY,
+              }}
+            />
+          </NavIcon>
+          <NavText>
+            <b
+              style={{
+                color: isPathInclude(["settingStore"]) ? COLOR_APP : COLOR_GRAY,
+              }}
+            >
+              ຕັ້ງຄ່າຮ້ານຄ້າ
+            </b>
+          </NavText>
+        </NavItem>
+
+        <NavItem eventKey="fark">
+          <NavIcon>
+            <FontAwesomeIcon
+              className={openTableData.length > 0 ? "scale-animation" : ""}
+              icon={faBeer}
+              style={{
+                color: isPathInclude(["fark"]) ? COLOR_APP : COLOR_GRAY,
+              }}
+            />
+          </NavIcon>
+          <NavText
+            style={{
+              color: UN_SELECTED_TAB_TEXT,
+            }}
+          >
+            <b
+              style={{
+                color: isPathInclude(["fark"]) ? COLOR_APP : COLOR_GRAY,
+              }}
+            >
+              ຝາກສິນຄ້າ
+            </b>
+          </NavText>
+        </NavItem>
+        <hr />
         {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
             <NavIcon>
@@ -347,35 +486,40 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 }}
               />
             </NavIcon>
-            <NavText
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-            >
-              ສະມາຊີກ
+            <NavText>
+              <b
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              >
+                ສະມາຊີກ
+              </b>
             </NavText>
           </NavItem>
         ) : (
           ""
         )}
-        <NavItem eventKey="fark">
+        <NavItem eventKey="songlist">
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faBeer}
+              icon={faMusic}
               style={{
                 color: UN_SELECTED_TAB_TEXT,
               }}
             />
           </NavIcon>
-          <NavText
-            style={{
-              color: UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            ຝາກສິນຄ້າ
+          <NavText>
+            <b
+              style={{
+                color: UN_SELECTED_TAB_TEXT,
+              }}
+            >
+              ລູກຄ້າຂໍເພງ
+            </b>
           </NavText>
         </NavItem>
+
         <NavItem eventKey="supplier">
           <NavIcon>
             <FontAwesomeIcon
@@ -391,7 +535,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
               color: UN_SELECTED_TAB_TEXT,
             }}
           >
-            ຕະຫຼາດ
+            <b
+              style={{
+                color: COLOR_GRAY,
+              }}
+            >
+              ຕະຫຼາດ
+            </b>
           </NavText>
         </NavItem>
       </SideNav.Nav>
