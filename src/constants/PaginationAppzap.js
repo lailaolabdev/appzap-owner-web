@@ -42,7 +42,7 @@ export default function PaginationAppzap({
           <Pagination.Prev
             disabled={page === 0}
             onClick={() => onPageChange(page - 1)}
-          />
+          >ກັບຄືນ</Pagination.Prev>
           {getPageNumbers().map((pageNumber) => (
             <Pagination.Item
               active={pageNumber === page}
@@ -54,7 +54,7 @@ export default function PaginationAppzap({
           <Pagination.Next
             disabled={page === pageAll - 1}
             onClick={() => onPageChange(page + 1)}
-          />
+          >ຖັດໄປ</Pagination.Next>
            
         </Pagination>
       </Col>

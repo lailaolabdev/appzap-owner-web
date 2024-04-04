@@ -48,7 +48,7 @@ import {
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBills } from "../../services/bill";
+import { createHistoriesPrinter, getBills } from "../../services/bill";
 // import _ from "lodash";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import styled from "styled-components";
@@ -434,8 +434,35 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
+
+// ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ 
+const _createHistoriesPrinter = async (data) => {
+  try {
+    let headers = await getHeaders();
+    const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
+    const updateTable = await axios({
+      method: "post",
+      url: _url,
+      data: data,
+      headers: headers,
+    });
+
+    if (updateTable?.status < 300) {
+      console.log("success create printer bil...")
+    }
+  } catch (err) {
+    console.log({err})
+  }
+};
+
   const onPrintBill = async () => {
     try {
+
+      let _dataBill = {
+        ...dataBill, typePrint: "PRINT_BILL_CHECKOUT"
+      }
+       await _createHistoriesPrinter(_dataBill)
+
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
@@ -743,9 +770,18 @@ export default function TableList() {
       .fill()
       .map((_, i) => billForCher58.current[i]);
   }
+
+
+
   const [onPrinting, setOnPrinting] = useState(false);
-  const onPrintForCher = async () => {
+  const onPrintForCher = async () => { 
     setOnPrinting(true);
+
+    let _dataBill = {
+      ...dataBill, typePrint: "PRINT_BILL_FORCHER"
+    }
+    await _createHistoriesPrinter(_dataBill)
+
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
     const printDate = [...billForCher80.current];

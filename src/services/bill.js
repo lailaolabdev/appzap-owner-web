@@ -11,4 +11,4 @@ export const getBills = async (findBy) => {
   } catch (error) {
     return error;
   }
-};
+}; 
