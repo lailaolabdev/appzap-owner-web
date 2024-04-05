@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 // import useReactRouter from "use-react-router"
 import { Nav } from "react-bootstrap";
 import moment from "moment";
@@ -16,43 +16,48 @@ import {
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import LoadingAppzap from "../../components/LoadingAppzap";
+import PaginationAppzap from "../../constants/PaginationAppzap";
 
 export default function HistoryUse() {
   // const { history, location, match } = useReactRouter();
   const params = useParams();
   const [data, setData] = useState([]);
+  const [totalLogs, setTotalLogs] = useState();
   const [filtterModele, setFiltterModele] = useState("checkBill");
 
-  const _page = params?.page;
-  const LIMIT_PAGE = 100;
-  const [pageNumber, setPageNumber] = useState(_page ?? 1);
-  const [pageCountNumber, setPageCountNumber] = useState(10000);
   const [isLoading, setIsLoading] = useState(false);
+
+  const rowsPerPage = 100;
+  const [page, setPage] = useState(0);
+  const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+  const handleChangePage = useCallback((newPage) => {
+    setPage(newPage);
+  }, []);
 
   useEffect(() => {
     _getdataHistories();
   }, []);
   useEffect(() => {
     _getdataHistories();
-  }, [pageNumber]);
+  }, [page]);
 
   useEffect(() => {
-    setPageNumber(1);
     _getdataHistories();
   }, [filtterModele]);
   const _getdataHistories = async () => {
-    const headers = await getHeaders();
-    setIsLoading(true);
     try {
-      const data = await axios.get(
+      const headers = await getHeaders();
+      setIsLoading(true);
+      const res = await axios.get(
         END_POINT_SEVER +
-          `/v3/logs/skip/${pageNumber - 1}/limit/${LIMIT_PAGE}?storeId=${
+          `/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
             params?.id
           }&modele=${filtterModele}`,
         { headers }
       );
-      if (data.status < 300) {
-        setData(data.data);
+      if (res?.status < 300) {
+        setData(res?.data?.data);
+        setTotalLogs(res?.data?.total);
       }
     } catch (error) {
       console.log(error);
@@ -60,29 +65,19 @@ export default function HistoryUse() {
     setIsLoading(false);
   };
 
-  const onNextPage = () => {
-    setPageNumber(
-      parseInt(pageNumber) != parseInt(pageCountNumber)
-        ? parseInt(pageNumber) + 1
-        : parseInt(pageCountNumber)
-    );
-  };
-
-  const onBackPage = () => {
-    setPageNumber(parseInt(pageNumber) != 1 ? parseInt(pageNumber) - 1 : 1);
-  };
   return (
-    <div style={{}}>
-      <div className="col-sm-12">
+    <div>
+      <div>
         <Nav
           fill
           variant="tabs"
-          defaultActiveKey="/home"
+          defaultActiveKey="/checkBill"
           style={{
             fontWeight: "bold",
             backgroundColor: "#f8f8f8",
             border: "none",
             height: 60,
+            marginBottom:5
           }}
         >
           <Nav.Item>
@@ -180,12 +175,12 @@ export default function HistoryUse() {
           <table className="table table-hover">
             <thead className="thead-light">
               <tr>
-                <th scope="col">#</th>
+                <th scope="col">ລຳດັບ</th>
                 <th scope="col">ຊື່ຜູ້ຈັດການ</th>
                 {/* <th scope="col">ສະຖານະ</th> */}
                 <th scope="col">ລາຍລະອຽດ</th>
                 <th scope="col">ເຫດຜົນ</th>
-                <th scope="col">ວັນເວລາ</th>
+                <th scope="col">ວັນທີ, ເດືອນ, ປີ (ເວລາ)</th>
               </tr>
             </thead>
 
@@ -193,7 +188,7 @@ export default function HistoryUse() {
               {data?.map((item, index) => {
                 return (
                   <tr>
-                    <td>{(pageNumber - 1) * LIMIT_PAGE + index + 1}</td>
+                    <td>{page * rowsPerPage + index + 1}</td>
                     <td>{item?.user}</td>
                     {/* <td
                       style={{
@@ -221,31 +216,12 @@ export default function HistoryUse() {
             </tbody>
           </table>
 
-          {pageCountNumber && (
-            <div
-              className="row col-12 justify-content-center"
-              style={{ marginBottom: 24 }}
-            >
-              <p
-                className="col-1"
-                style={{ color: "blue", cursor: "pointer" }}
-                onClick={() => onBackPage()}
-              >
-                <u>ກັບຄືນ </u>
-              </p>
-              <p className="col-4 text-center">
-                {" "}
-                ຫນ້າ {pageNumber} / {pageCountNumber}{" "}
-              </p>
-              <p
-                className="col-1"
-                style={{ color: "blue", cursor: "pointer" }}
-                onClick={() => onNextPage()}
-              >
-                <u> ຫນ້າຕໍ່ໄປ</u>
-              </p>
-            </div>
-          )}
+          <PaginationAppzap
+            rowsPerPage={rowsPerPage}
+            page={page}
+            pageAll={pageAll}
+            onPageChange={handleChangePage}
+          />
         </div>
       )}
     </div>
