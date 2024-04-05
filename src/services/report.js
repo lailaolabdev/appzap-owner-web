@@ -24,6 +24,18 @@ export const getSalesInformationReport = async (storeId, findBy) => {
   }
 };
 
+
+export const getTotalBillActiveReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/total-bill-active-report/${storeId}${findBy}`;
+    const res = await axios.post(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getUserReport = async (storeId, findBy) => {
   try {
     const _header = await getHeaders();

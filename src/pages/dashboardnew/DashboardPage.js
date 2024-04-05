@@ -75,7 +75,6 @@ export default function DashboardPage() {
     const data = await getUserReport(storeDetail?._id, findBy);
     setUserReport(data);
   };
-
   const getMenuReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getMenuReport(storeDetail?._id, findBy);
@@ -96,6 +95,7 @@ export default function DashboardPage() {
     const data = await getPromotionReport(storeDetail?._id, findBy);
     setPromotionReport(data);
   };
+ 
 
   return (
     <>

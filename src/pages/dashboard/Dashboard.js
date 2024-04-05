@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import moment from "moment";
-import { Nav } from "react-bootstrap";
+import { Nav, Button, Card } from "react-bootstrap";
 import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
@@ -24,28 +24,61 @@ import { COLOR_APP } from "../../constants";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import { END_POINT_SEVER } from "../../constants/api";
 import { useStore } from "../../store";
+import { MdOutlineCloudDownload } from "react-icons/md";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
+import {
+  getMoneyReport,
+  getPromotionReport,
+  getReports,
+  getSalesInformationIgnoreCheckoutReport,
+  getSalesInformationReport,
+  getTotalBillActiveReport,
+} from "../../services/report";
+import { getCountBills } from "../../services/bill";
+import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
+import convertNumber from "../../helpers/convertNumber";
 
 export default function Dashboard() {
   const { accessToken } = useQuery();
-  const [currency, setcurrency] = useState([]);
-  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
-  const { storeDetail } = useStore();
+  const { t } = useTranslation();
   const newDate = new Date();
 
-  const [startDate, setStartDate] = useState(
-    moment(moment(newDate)).format("YYYY-MM-DD")
-  );
-  const [endDate, setEndDate] = useState(
-    moment(moment(newDate)).format("YYYY-MM-DD")
-  );
+  // state
+  const [reportData, setReportData] = useState([]); // ຂໍ້ມູນລາຍງານ
+  const [salesInformationReport, setSalesInformationReport] = useState();
+  const [totalBillActiveReport, setTotalBillActiveReport] = useState();
+  const [promotionReport, setPromotionReport] = useState();
+  const [countAllBillReport, setCountAllBillReport] = useState();
+  const [countBillActiveReport, setCountBillActiveReport] = useState();
+  const [moneyReport, setMoneyReport] = useState();
+  const [currency, setcurrency] = useState([]);
+  const [popup, setPopup] = useState();
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
 
+  const { storeDetail } = useStore();
+
+  // useEffect
+  useEffect(() => {
+    getReportData();
+    getSalesInformationReportData();
+    getMoneyReportData();
+    getPromotionReportData();
+    getCountAllBillReportData();
+    getCountBillActiveReportData();
+    getTotalBillActiveReportData();
+  }, [endDate, startDate, endTime, startTime]);
+
+  // function
   const _click1day = () => {
     setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
     setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
   };
-
   const _click7days = () => {
     setStartDate(moment(moment(newDate).add(-7, "days")).format("YYYY-MM-DD"));
     setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
@@ -54,24 +87,43 @@ export default function Dashboard() {
     setStartDate(moment(moment(newDate).add(-30, "days")).format("YYYY-MM-DD"));
     setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
   };
-
-  const { t } = useTranslation();
-
-  const getcurrency = async () => {
-    // try {
-    //   let res = await axios.get(
-    //     END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`
-    //   );
-    //   setcurrency(res.data ?? []);
-    // } catch (err) {
-    //   console.log(err);
-    // }
+  const getReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findBy);
+    setReportData(data);
+  };
+  const getSalesInformationReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getSalesInformationReport(storeDetail?._id, findBy);
+    setSalesInformationReport(data);
+  };
+  const getMoneyReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getMoneyReport(storeDetail?._id, findBy);
+    setMoneyReport(data);
+  };
+  const getPromotionReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getPromotionReport(storeDetail?._id, findBy);
+    setPromotionReport(data);
+  };
+  const getCountAllBillReportData = async () => {
+    const findBy = `?storeId=${storeDetail?._id}&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+    const data = await getCountBills(findBy);
+    setCountAllBillReport(data);
   };
 
-  useEffect(() => {
-    getcurrency();
-  }, []);
+  const getCountBillActiveReportData = async () => {
+    const findBy = `?storeId=${storeDetail?._id}&isCheckout=false&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+    const data = await getCountBills(findBy);
+    setCountBillActiveReport(data);
+  };
 
+  const getTotalBillActiveReportData = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
+    setTotalBillActiveReport(data);
+  };
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
       <Box
@@ -123,178 +175,151 @@ export default function Dashboard() {
             <div style={{ width: 8 }}></div> {t("financialStatic")}
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/best-category"
-            style={{
-              color: "#FB6E3B",
-              backgroundColor: changeUi === "CATEGORY" ? "#FFDBD0" : "",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setChangeUi("CATEGORY")}
-          >
-            <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("famousType")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/best-menu"
-            style={{
-              color: "#FB6E3B",
-              backgroundColor: changeUi === "MENUS" ? "#FFDBD0" : "",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setChangeUi("MENUS")}
-          >
-            <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("famousMenu")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/staff-history"
-            style={{
-              color: "#FB6E3B",
-              backgroundColor: changeUi === "STAFF" ? "#FFDBD0" : "",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setChangeUi("STAFF")}
-          >
-            <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("waitstaffReport")}
-          </Nav.Link>
-        </Nav.Item>
       </Box>
       <div style={{ height: 10 }}></div>
-      <Box
-        sx={{
-          display: "flex",
-          gap: 10,
-          justifyContent: "space-between ",
-          flexDirection: { md: "row", xs: "column" },
-        }}
-      >
-        <div style={{ display: "flex" }}>
-          <button
-            type="button"
-            className="text-name"
-            style={{
-              backgroundColor: changeText == "CLICK1" ? "#fb6e3b" : "#D9D9D9",
-              color: changeText == "CLICK1" ? "#ffffff" : "#686868",
-              border: "none",
-              width: 125,
-              height: 48,
-            }}
-            onClick={() => {
-              _click1day("");
-              setChangeText("CLICK1");
-            }}
+      <div>
+        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+          <Button
+            variant="outline-primary"
+            size="small"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ popupfiltter: true })}
           >
-            {t("theLastList")}
-          </button>
-          <div style={{ width: 10 }}></div>
-          <button
-            type="button"
-            className="text-name"
-            style={{
-              backgroundColor: changeText == "CLICK7" ? "#fb6e3b" : "#D9D9D9",
-              color: changeText == "CLICK7" ? "#ffffff" : "#686868",
-              border: "none",
-              width: 125,
-              height: 48,
-            }}
-            onClick={() => {
-              _click7days();
-              setChangeText("CLICK7");
-            }}
+            <BsFillCalendarWeekFill />
+            <div>
+              {startDate} {startTime}
+            </div>{" "}
+            ~{" "}
+            <div>
+              {endDate} {endTime}
+            </div>
+          </Button>
+          {/* <Button
+            variant="outline-primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ PopupDaySplitView: true })}
           >
-            {t("last7days")}
-          </button>
-          <div style={{ width: 10 }}></div>
-          <button
-            type="button"
-            className="text-name"
-            style={{
-              backgroundColor: changeText == "CLICK30" ? "#fb6e3b" : "#D9D9D9",
-              color: changeText == "CLICK30" ? "#ffffff" : "#686868",
-              border: "none",
-              width: 125,
-              height: 48,
-            }}
-            onClick={() => {
-              _click30days();
-              setChangeText("CLICK30");
-            }}
-          >
-            {t("last30days")}
-          </button>
-
-          <div style={{ width: 10 }}></div>
-          <select
-            onChange={(e) => setSelectedCurrency(e.target.value)}
-            className="btn btn-outline-info"
-          >
-            <option value="LAK" className="option">
-              ກີບ
-            </option>
-            {currency?.map((cur, index) => (
-              <option key={cur + index} value={cur?.currencyCode}>
-                {cur?.currencyName}
-              </option>
-            ))}
-          </select>
+            <BsFillCalendarEventFill /> DAY SPLIT VIEW
+          </Button> */}
+          <div style={{ flex: 1 }} />
         </div>
-        <div
-          style={{
+        <Box
+          sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(2,1fr)",
-            gridGap: 10,
+            gridTemplateColumns: {
+              md: "1fr 1fr 1fr",
+              sm: "1fr 1fr",
+              xs: "1fr",
+            },
+            gap: 10,
           }}
         >
-          <input
-            type="date"
-            className="px-2"
-            style={{
-              color: "#003049",
-              border: "2px solid #fb6e3b",
-              borderRadius: "5px",
-              fontWeight: "bold",
-            }}
-            value={startDate}
-            onChange={(e) => {
-              setStartDate(e?.target?.value);
-            }}
-          />
-          <input
-            type="date"
-            className="px-2"
-            style={{
-              color: "#003049",
-              border: "2px solid #fb6e3b",
-              borderRadius: "5px",
-              fontWeight: "bold",
-            }}
-            value={endDate}
-            onChange={(e) => {
-              setEndDate(e?.target?.value);
-            }}
-          />
-        </div>
-      </Box>
-
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຍອດທັງຫມົດ
+            </Card.Header>
+            <Card.Body>
+              <div>
+                {t("numberOfBill")}
+                {" : "}
+                {countAllBillReport?.count} ບິນ
+              </div>
+              <div>
+                ຍອດເງິນທັງໝົດທີຈະໄດ້
+                {" : "}
+                {convertNumber(totalBillActiveReport?.total +
+                  salesInformationReport?.totalSales)}
+              </div>
+              <div>
+                {t("outstandingDebt")}
+                {" : "}
+                {convertNumber(countBillActiveReport?.count)} ບິນ
+              </div>
+              <div>
+                ຍອດເງິນຍັງຄ້າງ
+                {" : "}
+                {convertNumber(totalBillActiveReport?.total)}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຍອດບິນທີສຳເລັດ
+            </Card.Header>
+            <Card.Body>
+              <div>
+                {t("numberOfBill")}
+                {" : "}
+                {convertNumber(salesInformationReport?.noOfSalesTransactions)} ບິນ
+              </div>
+              <div>
+                {t("totalBalance")}
+                {" : "}
+                {convertNumber(salesInformationReport?.totalSales)}
+              </div>
+              <div>
+                {t("payBycash")}
+                {" : "}
+                {convertNumber(moneyReport?.cash?.totalBill)}
+              </div>
+              <div>
+                {t("transferPayment")}
+                {" : "}
+                {convertNumber(moneyReport?.transfer?.totalBill)}
+              </div>
+              <div>
+                ຈ່າຍເງິນໂອນ+ເງິນສົດ
+                {" : "}
+                {convertNumber(moneyReport?.transferCash?.totalBill)}
+              </div>
+              <div>
+                {t("cashDiscount")}
+                {" : "}
+                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
+                {convertNumber(promotionReport?.[0]?.count)}ບິນ
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຍອດບິນທີຍັງຄ້າງ
+            </Card.Header>
+            <Card.Body>
+              <div>
+                {t("numberOfBill")}
+                {" : "}
+                {convertNumber(countBillActiveReport?.count)} ບິນ
+              </div>
+              <div>
+                ຍອດເງິນຍັງຄ້າງ
+                {" : "}
+                {convertNumber(totalBillActiveReport?.total)}
+              </div>
+            </Card.Body>
+          </Card>
+        </Box>
+      </div>
       {changeUi === "MONEY_CHART" && (
         <MoneyChart
           startDate={startDate}
@@ -330,6 +355,18 @@ export default function Dashboard() {
           selectedCurrency={selectedCurrency}
         />
       )}
+       <PopUpSetStartAndEndDate
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+      />
     </div>
   );
 }

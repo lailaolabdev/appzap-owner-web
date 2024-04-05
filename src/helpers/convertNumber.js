@@ -5,6 +5,9 @@ const convertNumber = (number) => {
     if (number === undefined) {
       return "";
     }
+    if (number === NaN) {
+      return "";
+    }
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
   

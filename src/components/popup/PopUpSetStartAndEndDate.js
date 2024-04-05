@@ -2,6 +2,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import TimePicker from "react-bootstrap-time-picker";
+import Box from "../Box";
 
 export default function PopUpSetStartAndEndDate({
   open,
@@ -28,8 +29,6 @@ export default function PopUpSetStartAndEndDate({
     setValueEndTime(endTime);
   }, [startDate, endDate, startTime, endTime]);
 
-
-
   return (
     <Modal show={open} onHide={onClose} size="lg">
       <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
@@ -40,17 +39,17 @@ export default function PopUpSetStartAndEndDate({
           width: "100%",
         }}
       >
-        <div
-          style={{
+        <Box
+          sx={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
+            gridTemplateColumns: { md: "1fr 1fr 1fr", xs: "1fr 1fr" },
             width: "100%",
             gap: 10,
             marginBottom: 10,
           }}
         >
           <Button
-          disabled
+            disabled
             // onClick={onGetToday}
           >
             ມື້ນີ້
@@ -60,9 +59,14 @@ export default function PopUpSetStartAndEndDate({
           <Button disabled>ເດືອນກ່ອນ</Button>
           <Button disabled>ປີນີ້</Button>
           <Button disabled>ປີກ່ອນ</Button>
-        </div>
-        <div
-          style={{ display: "flex", gap: 20, justifyContent: "space-between" }}
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            gap:{ md: 20, xs: 10 },
+            justifyContent: "space-between",
+            flexDirection: { md: "row", xs: "column" },
+          }}
         >
           <InputGroup>
             <Form.Control
@@ -83,7 +87,7 @@ export default function PopUpSetStartAndEndDate({
               max={valueEndDate}
             />
           </InputGroup>
-          <div> ຫາ </div>
+          <div style={{textAlign:"center"}}> ຫາ </div>
           <InputGroup>
             <Form.Control
               type="date"
@@ -103,7 +107,7 @@ export default function PopUpSetStartAndEndDate({
               max={valueEndDate}
             />
           </InputGroup>
-        </div>
+        </Box>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onClose}>

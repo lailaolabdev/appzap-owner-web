@@ -50,8 +50,7 @@ export const useTableState = (storeDetail) => {
         .catch((err) => {});
     },
     []
-  );
-  // useEffect(() => {
+  ); // useEffect(() => {
   //   getTableDataStore();
   // }, []);
   const getTableDataStoreList = useMemo(
@@ -143,10 +142,8 @@ export const useTableState = (storeDetail) => {
       );
       if (resData.status < 300) {
         await getTableDataStore();
-        onSelectTable({
-          ...selectedTable,
-          isOpened: true,
-          isStaffConfirm: true,
+        await onSelectTable({
+          ...resData?.data,
         });
         Swal.fire({
           icon: "success",
@@ -188,7 +185,7 @@ export const useTableState = (storeDetail) => {
           `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
         );
         await getTableDataStore();
-        onSelectTable({
+        await onSelectTable({
           ...selectedTable,
           isOpened: true,
           isStaffConfirm: true,
