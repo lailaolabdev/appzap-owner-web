@@ -189,7 +189,9 @@ function AddOrder() {
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
+        console.log("dataUrl=5555==========>", dataUrl)
         const _file = await base64ToBlob(dataUrl.toDataURL());
+        console.log("_file===========>", _file)
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
@@ -198,6 +200,8 @@ function AddOrder() {
           bodyFormData.append("beep2", 9);
         }
         bodyFormData.append("image", _file);
+
+        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData)
         await axios({
           method: "post",
           url: urlForPrinter,
@@ -872,8 +876,7 @@ function AddOrder() {
           </div>
         </div>
       </div>
-      <div style={{ display: "none" }}>
-        {selectedMenu?.map((val, i) => {
+      {selectedMenu?.map((val, i) => {
           return (
             <div
               style={{
@@ -892,8 +895,6 @@ function AddOrder() {
             </div>
           );
         })}
-      </div>
-      <div>
         {selectedMenu?.map((val, i) => {
           return (
             <div
@@ -913,7 +914,6 @@ function AddOrder() {
             </div>
           );
         })}
-      </div>
 
       <Modal
         show={show}
