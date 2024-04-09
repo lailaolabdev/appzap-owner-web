@@ -167,7 +167,7 @@ export default function FormAddMenuStock() {
       if (_localData) {
         setIsLoading(true);
         const data = await axios.get(
-          `${END_POINT_SEVER}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false`
+          `${END_POINT_SEVER}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false&limit=1000`
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
