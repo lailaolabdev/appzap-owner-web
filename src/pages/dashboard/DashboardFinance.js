@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import { Table, Modal, Button } from "react-bootstrap";
-import { END_POINT_SEVER } from "../../constants/api";
+import { Table, Modal, Button, Pagination } from "react-bootstrap";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { _statusCheckBill, orderStatus } from "./../../helpers";
 import AnimationLoading from "../../constants/loading";
 import { useNavigate, useParams } from "react-router-dom";
@@ -16,9 +16,16 @@ import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import { useTranslation } from "react-i18next";
 import { stringify } from "query-string";
 import Loading from "../../components/Loading";
+import ReactPaginate from "react-paginate";
+import { getCountBills } from "../../services/bill";
+
+let limitData = 50;
+
 export default function DashboardFinance({
   startDate,
   endDate,
+  startTime,
+  endTime,
   selectedCurrency,
 }) {
   const [currency, setcurrency] = useState();
@@ -37,9 +44,34 @@ export default function DashboardFinance({
   const [dataModale, setDataModale] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [disabledEditBill, setDisabledEditBill] = useState(false);
+
+  const [pagination, setPagination] = useState(1);
+  const [totalPagination, setTotalPagination] = useState();
+
   const handleClose = () => setShow(false);
   const { storeDetail } = useStore();
 
+  const getPaginationCountData = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let query =
+        "?storeId=" +
+        params?.storeId +
+        // "&currencyType=" +
+        // selectedCurrency +
+        "&dateFrom=" +
+        startDate +
+        "&dateTo=" +
+        endDate +
+        "&timeFrom=" +
+        startTime +
+        "&timeTo=" +
+        endTime;
+      const _data = await getCountBills(query, TOKEN);
+      if (_data.error) throw new Error("error");
+      setTotalPagination(Math.ceil(_data?.count / limitData));
+    } catch (err) {}
+  };
   const handleEditBill = async () => {
     try {
       setDisabledEditBill(true);
@@ -109,9 +141,13 @@ export default function DashboardFinance({
     getcurrency();
     _fetchFinanceData();
   }, []);
+
+  useEffect(() => {
+    getPaginationCountData();
+  }, [endDate, startDate, selectedCurrency]);
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate, selectedCurrency]);
+  }, [endDate, startDate, selectedCurrency, pagination, totalPagination]);
   const _fetchFinanceData = async () => {
     setIsLoading(true);
     // const url =
@@ -126,7 +162,15 @@ export default function DashboardFinance({
         "&startDate=" +
         startDate +
         "&endDate=" +
-        endDate,
+        endDate +
+        "&startTime=" +
+        startTime +
+        "&endTime=" +
+        endTime +
+        "&skip=" +
+        (pagination - 1) * limitData +
+        "&limit=" +
+        limitData,
       {
         headers: headers,
       }
@@ -259,179 +303,204 @@ export default function DashboardFinance({
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
-      <div className="row">
-        <div style={{ width: "100%" }}>
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}
-          >
-            <ButtonDownloadExcel
-              // jsonData={() => {
-              //   let _export = data?.checkOut.map((item, index) => ({
-              //     ລຳດັບ: index + 1,
-              //     ເລກບິນ: item?.code,
-              //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-              //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-              //       ? new Intl.NumberFormat("ja-JP", {
-              //         currency: "JPY",
-              //       }).format(_countAmount(item?.orderId))
-              //       : new Intl.NumberFormat("ja-JP", {
-              //         currency: "JPY",
-              //       }).format(item?.billAmount),
-              //     ຈ່າຍເງິນສົດ: item?.payAmount,
-              //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
-              //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-              //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-              //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-              //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-              //         data?.amount + dataNotCheckBill?.amount
-              //       ) : "",
-              //   }))
-              //   return _export
-              // }}
 
-              jsonData={data?.checkOut.map((item, index) => ({
-                ລຳດັບ: index + 1,
-                ເລກບິນ: item?.code,
-                ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-                ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                  ? _countAmount(item?.orderId)
-                  : item?.billAmount,
-                ຈ່າຍເງິນສົດ: item?.payAmount,
-                ຈ່າຍເງິນໂອນ: item?.transferAmount,
-                ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-                ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-                ຍອດລວມທັງໝົດ:
-                  data?.checkOut?.length === index + 1
+      <Box sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}>
+        <ButtonDownloadExcel
+          // jsonData={() => {
+          //   let _export = data?.checkOut.map((item, index) => ({
+          //     ລຳດັບ: index + 1,
+          //     ເລກບິນ: item?.code,
+          //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+          //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+          //       ? new Intl.NumberFormat("ja-JP", {
+          //         currency: "JPY",
+          //       }).format(_countAmount(item?.orderId))
+          //       : new Intl.NumberFormat("ja-JP", {
+          //         currency: "JPY",
+          //       }).format(item?.billAmount),
+          //     ຈ່າຍເງິນສົດ: item?.payAmount,
+          //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
+          //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+          //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+          //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
+          //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+          //         data?.amount + dataNotCheckBill?.amount
+          //       ) : "",
+          //   }))
+          //   return _export
+          // }}
+
+          jsonData={data?.checkOut.map((item, index) => ({
+            ລຳດັບ: index + 1,
+            ເລກບິນ: item?.code,
+            ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+            ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+              ? _countAmount(item?.orderId)
+              : item?.billAmount,
+            ຈ່າຍເງິນສົດ: item?.payAmount,
+            ຈ່າຍເງິນໂອນ: item?.transferAmount,
+            ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
+            ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
+            ຍອດລວມທັງໝົດ:
+              data?.checkOut?.length === index + 1
+                ? new Intl.NumberFormat("ja-JP", {
+                    currency: "JPY",
+                  }).format(data?.amount + dataNotCheckBill?.amount)
+                : "",
+          }))}
+          // jsonData={exportJsonToExcel}
+        />
+      </Box>
+      <div style={{ padding: 10 }}>
+        <Table striped hover size="sm" style={{ fontSize: 15 }}>
+          <thead>
+            <tr>
+              <th>{t("no")}</th>
+              <th>{t("tableNumber")}</th>
+              <th>{t("tableCode")}</th>
+              <th>{t("tableDiscount")}</th>
+              <th>
+                {t("price")} / {t("bill")}
+              </th>
+              <th>
+                {t("served")} / {t("cancel")}
+              </th>
+              <th>{t("tableStatus")}</th>
+              <th>{t("paymentType")}</th>
+              <th>{t("time")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.checkOut?.map((item, index) => (
+              <tr
+                key={"finance-" + index}
+                onClick={() => {
+                  setSelectOrder(item);
+                  handleShow(item?.orderId);
+                }}
+                style={{
+                  backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
+                    item?.status
+                  )
+                    ? "#FB6E3B"
+                    : "",
+                  color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                    ? "#ffffff"
+                    : "#616161",
+                }}
+              >
+                <td>{(pagination - 1) * limitData + index + 1}</td>
+                <td>{item?.tableId?.name ?? "-"}</td>
+                <td>{item?.code}</td>
+                <td>
+                  {item?.discountType === "LAK"
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(data?.amount + dataNotCheckBill?.amount)
-                    : "",
-              }))}
-              // jsonData={exportJsonToExcel}
-            />
-          </Box>
-          <div style={{ padding: 10 }}>
-            <Table striped hover size="sm" style={{ fontSize: 15 }}>
-              <thead>
-                <tr>
-                  <th>{t("no")}</th>
-                  <th>{t("tableNumber")}</th>
-                  <th>{t("tableCode")}</th>
-                  <th>{t("tableDiscount")}</th>
-                  <th>
-                    {t("price")} / {t("bill")}
-                  </th>
-                  <th>
-                    {t("served")} / {t("cancel")}
-                  </th>
-                  <th>{t("tableStatus")}</th>
-                  <th>{t("paymentType")}</th>
-                  <th>{t("time")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.checkOut?.map((item, index) => (
-                  <tr
-                    key={"finance-" + index}
-                    onClick={() => {
-                      setSelectOrder(item);
-                      handleShow(item?.orderId);
-                    }}
+                      }).format(item?.discount) + t("lak")
+                    : item?.discount + "%"}
+                </td>
+                <td>
+                  {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                    ? new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(_countAmount(item?.orderId))
+                    : new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(item?.billAmount)}{" "}
+                  {selectedCurrency}
+                </td>
+                <td>
+                  <div
                     style={{
-                      backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
-                        item?.status
-                      )
-                        ? "#FB6E3B"
-                        : "",
-                      color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                        ? "#ffffff"
-                        : "#616161",
+                      display: "flex",
+                      justifyContent: "center",
+                      flexDirection: "row",
                     }}
                   >
-                    <td>{index + 1}</td>
-                    <td>{item?.tableId?.name ?? "-"}</td>
-                    <td>{item?.code}</td>
-                    <td>
-                      {item?.discountType === "LAK"
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.discount) + t("lak")
-                        : item?.discount + "%"}
-                    </td>
-                    <td>
-                      {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
-                        : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.billAmount)}{" "}
-                      {selectedCurrency}
-                    </td>
-                    <td>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          flexDirection: "row",
-                        }}
-                      >
-                        <p style={{ marginLeft: 5 }}>
-                          {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
-                        </p>
-                        <p style={{ marginLeft: 5 }}> / </p>
-                        <p
-                          style={{
-                            color:
-                              _countOrder(item?.orderId)?._countOrderCancel > 0
-                                ? "red"
-                                : "",
-                            marginLeft: 5,
-                          }}
-                        >
-                          {" "}
-                          {_countOrder(item?.orderId)?._countOrderCancel}
-                        </p>
-                      </div>
-                    </td>
-                    <td
+                    <p style={{ marginLeft: 5 }}>
+                      {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
+                    </p>
+                    <p style={{ marginLeft: 5 }}> / </p>
+                    <p
                       style={{
                         color:
-                          item?.status === "CHECKOUT"
-                            ? "green"
-                            : item?.status === "CALLTOCHECKOUT"
+                          _countOrder(item?.orderId)?._countOrderCancel > 0
                             ? "red"
-                            : item?.status === "ACTIVE"
-                            ? "#00496e"
                             : "",
+                        marginLeft: 5,
                       }}
                     >
-                      {_statusCheckBill(item?.status)}
-                    </td>
-                    <td
-                      style={{
-                        color:
-                          item?.paymentMethod === "CASH"
-                            ? "#00496e"
-                            : "#0D47A1",
-                      }}
-                    >
-                      {item?.paymentMethod === "CASH"
-                        ? t("payBycash")
-                        : item?.paymentMethod === "TRANSFER"
-                        ? t("transferPayment")
-                        : t("transfercash")}
-                    </td>
-                    <td>
-                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
+                      {" "}
+                      {_countOrder(item?.orderId)?._countOrderCancel}
+                    </p>
+                  </div>
+                </td>
+                <td
+                  style={{
+                    color:
+                      item?.status === "CHECKOUT"
+                        ? "green"
+                        : item?.status === "CALLTOCHECKOUT"
+                        ? "red"
+                        : item?.status === "ACTIVE"
+                        ? "#00496e"
+                        : "",
+                  }}
+                >
+                  {_statusCheckBill(item?.status)}
+                </td>
+                <td
+                  style={{
+                    color:
+                      item?.paymentMethod === "CASH" ? "#00496e" : "#0D47A1",
+                  }}
+                >
+                  {item?.paymentMethod === "CASH"
+                    ? t("payBycash")
+                    : item?.paymentMethod === "TRANSFER"
+                    ? t("transferPayment")
+                    : t("transfercash")}
+                </td>
+                <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+            bottom: 20,
+          }}
+        >
+          <ReactPaginate
+            previousLabel={
+              <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+            }
+            nextLabel={
+              <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+            }
+            breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+            breakClassName={"break-me"}
+            pageCount={totalPagination} // Replace with the actual number of pages
+            marginPagesDisplayed={1}
+            pageRangeDisplayed={3}
+            onPageChange={(e) => {
+              console.log(e);
+              setPagination(e?.selected + 1);
+            }}
+            containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            activeClassName={"active"}
+            previousClassName={"page-item"}
+            nextClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextLinkClassName={"page-link"}
+          />
         </div>
-        <div style={{ width: "50%", padding: 20 }}></div>
       </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>

@@ -234,8 +234,10 @@ export default function Dashboard() {
               <div>
                 ຍອດເງິນທັງໝົດທີຈະໄດ້
                 {" : "}
-                {convertNumber(totalBillActiveReport?.total +
-                  salesInformationReport?.totalSales)}
+                {convertNumber(
+                  totalBillActiveReport?.total +
+                    salesInformationReport?.totalSales
+                )}
               </div>
               <div>
                 {t("outstandingDebt")}
@@ -264,7 +266,10 @@ export default function Dashboard() {
               <div>
                 {t("numberOfBill")}
                 {" : "}
-                {convertNumber(salesInformationReport?.noOfSalesTransactions)} ບິນ
+                {convertNumber(
+                  salesInformationReport?.noOfSalesTransactions
+                )}{" "}
+                ບິນ
               </div>
               <div>
                 {t("totalBalance")}
@@ -331,6 +336,8 @@ export default function Dashboard() {
         <DashboardFinance
           startDate={startDate}
           endDate={endDate}
+          startTime={startTime}
+          endTime={endTime}
           selectedCurrency={selectedCurrency}
         />
       )}
@@ -355,7 +362,7 @@ export default function Dashboard() {
           selectedCurrency={selectedCurrency}
         />
       )}
-       <PopUpSetStartAndEndDate
+      <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}
         startDate={startDate}
