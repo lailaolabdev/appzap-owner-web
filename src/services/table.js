@@ -75,6 +75,20 @@ export const generatedCode = async (data) => {
     console.log("get genearted code error:", error);
   }
 };
+export const getManyTables = async (storeId) => {
+  try {
+    const geneartedCode = await axios.get(`${END_POINT}/v3/tables/${storeId}`);
+    console.log({})
+    if (geneartedCode) {
+      let data = geneartedCode.data;
+      return data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("get genearted code error:", error);
+  }
+};
 
 // TO DO: get Order
 

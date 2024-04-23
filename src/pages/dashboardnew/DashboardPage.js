@@ -16,8 +16,9 @@ import {
   getPromotionReport,
   getReports,
   getSalesInformationReport,
-  getUserReport,
+  getUserReport
 } from "../../services/report";
+import { getManyTables } from "../../services/table"
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
@@ -29,6 +30,7 @@ import { base64ToBlob } from "../../helpers";
 import PopUpPrintStaffHistoryComponent from "../../components/popup/PopUpPrintStaffHistoryComponent";
 import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMenuHistoryComponent";
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
+import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 
 export default function DashboardPage() {
   // state
@@ -44,11 +46,16 @@ export default function DashboardPage() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
+  const [tableList, setTableList] = useState([]);
+  const [selectedTableIds, setSelectedTableIds] = useState([])
 
   // provider
   const { storeDetail } = useStore();
 
   // useEffect
+  useEffect(() => {
+    getTable();
+  }, [])
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
@@ -57,45 +64,49 @@ export default function DashboardPage() {
     getMoneyReportData();
     getPromotionReportData();
     getCategoryReportData();
-  }, [endDate, startDate, endTime, startTime]);
+  }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
+  const getTable = async () => {
+    const data = await getManyTables(storeDetail?._id);
+    setTableList(data)
+  }
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(storeDetail?._id, findBy);
+    const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
     setReportData(data);
   };
   const getSalesInformationReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(storeDetail?._id, findBy);
+    const data = await getSalesInformationReport(storeDetail?._id, findBy, selectedTableIds);
     setSalesInformationReport(data);
   };
   const getUserReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getUserReport(storeDetail?._id, findBy);
+    const data = await getUserReport(storeDetail?._id, findBy, selectedTableIds);
     setUserReport(data);
   };
   const getMenuReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMenuReport(storeDetail?._id, findBy);
+    const data = await getMenuReport(storeDetail?._id, findBy, selectedTableIds);
     setMenuReport(data);
   };
   const getCategoryReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getCategoryReport(storeDetail?._id, findBy);
+    const data = await getCategoryReport(storeDetail?._id, findBy, selectedTableIds);
     setCategoryReport(data);
   };
   const getMoneyReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(storeDetail?._id, findBy);
+    const data = await getMoneyReport(storeDetail?._id, findBy, selectedTableIds);
     setMoneyReport(data);
   };
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(storeDetail?._id, findBy);
+    const data = await getPromotionReport(storeDetail?._id, findBy, selectedTableIds);
     setPromotionReport(data);
   };
- 
+
 
   return (
     <>
@@ -105,21 +116,25 @@ export default function DashboardPage() {
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
         </Breadcrumb> */}
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-          <Button
-            variant="outline-primary"
-            size="small"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ popupfiltter: true })}
-          >
-            <BsFillCalendarWeekFill />
-            <div>
-              {startDate} {startTime}
-            </div>{" "}
-            ~{" "}
-            <div>
-              {endDate} {endTime}
-            </div>
-          </Button>
+          <div style={{ display: "flex", gap: 10 }}>
+            <Button
+              variant="outline-primary"
+              size="small"
+              style={{ display: "flex", gap: 10, alignItems: "center" }}
+              onClick={() => setPopup({ popupfiltter: true })}
+            >
+              <BsFillCalendarWeekFill />
+              <div>
+                {startDate} {startTime}
+              </div>{" "}
+              ~{" "}
+              <div>
+                {endDate} {endTime}
+              </div>
+            </Button>
+            <Button
+              onClick={() => setPopup({ popUpChooseTableComponent: true })}>ເລືອກໂຕະ</Button>
+          </div>
           {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
@@ -501,6 +516,11 @@ export default function DashboardPage() {
         endTime={endTime}
         endDate={endDate}
       />
+      <PopUpChooseTableComponent
+        open={popup?.popUpChooseTableComponent}
+        onClose={() => setPopup()}
+        tableList={tableList || []}
+        setSelectedTable={setSelectedTableIds} />
     </>
   );
 }

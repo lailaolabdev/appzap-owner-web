@@ -2,22 +2,22 @@ import { END_POINT_APP } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 
-export const getReports = async (storeId, findBy, token) => {
+export const getReports = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/report-daily/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds: tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getSalesInformationReport = async (storeId, findBy) => {
+export const getSalesInformationReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/sales-information-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
@@ -25,86 +25,86 @@ export const getSalesInformationReport = async (storeId, findBy) => {
 };
 
 
-export const getTotalBillActiveReport = async (storeId, findBy) => {
+export const getTotalBillActiveReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/total-bill-active-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getUserReport = async (storeId, findBy) => {
+export const getUserReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/user-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getMenuReport = async (storeId, findBy) => {
+export const getMenuReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/menu-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getCategoryReport = async (storeId, findBy) => {
+export const getCategoryReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/category-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getMoneyReport = async (storeId, findBy) => {
+export const getMoneyReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/report-money/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
 
-export const getPromotionReport = async (storeId, findBy) => {
+export const getPromotionReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/report-promotion/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
-export const getBillReport = async (storeId, findBy) => {
+export const getBillReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/bill-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
   }
 };
-export const getActiveBillReport = async (storeId, findBy) => {
+export const getActiveBillReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/active-bill-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { headers: _header });
+    const res = await axios.post(url, { tableIds: tableIds ? tableIds : [] }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
