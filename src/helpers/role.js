@@ -28,6 +28,7 @@ const role = (role, user) => {
         themeManagement: true,
         report: true,
         stockManagement: true,
+        farkManagement:true,
       };
     case "APPZAP_STAFF":
       return {
@@ -39,6 +40,7 @@ const role = (role, user) => {
         // menuManagement: true,
         // settingManagement: true,
         // themeManagement: true,
+        // farkManagement:true,
       };
     case "APPZAP_RESTAURANT":
       return {
@@ -52,6 +54,7 @@ const role = (role, user) => {
         themeManagement: true,
         report: true,
         stockManagement: true,
+        farkManagement:true,
       };
     case "APPZAP_USER":
       return {
@@ -109,6 +112,7 @@ const role = (role, user) => {
         // themeManagement: true,
         report: true,
         stockManagement: true,
+        farkManagement:true,
       };
     default:
       return {};

@@ -46,7 +46,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   } = useStore();
 
   const [token, setToken] = useState();
-  const [isTitle, setIsTitle] = useState(false)
+  const [isTitle, setIsTitle] = useState(false);
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
@@ -189,7 +189,36 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
     },
-  ];
+  ]
+    .filter((e) => {
+      const verify = role(profile?.data?.role, profile?.data);
+      return verify?.[e?.system] ?? false;
+    })
+    .filter((e) => !e?.hidden);
+
+  const settingNavItem = [
+    {
+      title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
+      key: "settingStore",
+      typeStore: "",
+      icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+      system: "settingManagement",
+    },
+    {
+      title: "ຝາກສິນຄ້າ",
+      key: "fark",
+      typeStore: "",
+      icon: faBeer,
+      hidden: !storeDetail?.hasPOS,
+      system: "farkManagement",
+    },
+  ]
+    .filter((e) => {
+      const verify = role(profile?.data?.role, profile?.data);
+      return verify?.[e?.system] ?? false;
+    })
+    .filter((e) => !e?.hidden);
 
   const listForRole = itemList.filter((e) => {
     const verify = role(profile?.data?.role, profile?.data);
@@ -289,9 +318,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
         onToggle(expanded);
       }}
     >
-      <Toggle/>
+      <Toggle />
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-      <hr style={{marginTop:'-.05em'}} />
+        <hr style={{ marginTop: "-.05em" }} />
         {listForRole
           .filter((e) => !e?.hidden)
           .map((e) => (
@@ -350,130 +379,98 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
         <hr />
 
-        <NavItem
-          eventKey="reportGroups"
-          style={{
-            color:
-              isPathInclude(["report"]) || isPathInclude(["reports"])
-                ? COLOR_APP
-                : COLOR_GRAY,
-          }}
-        >
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faTachometerAlt}
-              style={{
-                color:
-                  isPathInclude(["report"]) || isPathInclude(["reports"])
-                    ? COLOR_APP
-                    : COLOR_GRAY,
-              }}
-            />
-          </NavIcon>
-          <NavText>
-            <b
-              style={{
-                color:
-                  isPathInclude(["report"]) || isPathInclude(["reports"])
-                    ? COLOR_APP
-                    : COLOR_GRAY,
-              }}
-            >
-              ລາຍງານທັງໝົດ
-            </b>
-          </NavText>
-          {itemReports.map((elm, index) => (
-            <NavItem key={index} eventKey={elm?.key}>
-              <NavText>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "start",
-                    height: 40,
-                    alignItems: "center",
-                    gap: 8,
-                    width: "100%",
-                  }}
-                >
-                  <div>
-                    <FontAwesomeIcon
-                      className={
-                        openTableData.length > 0 ? "scale-animation" : ""
-                      }
-                      icon={elm?.icon}
-                      style={{
-                        color:
-                        selected === elm?.key
-                          ? COLOR_APP
-                          : COLOR_GRAY,
-                        marginTop: "-2em",
-                      }}
-                    />
-                  </div>
-                  <p
-                    style={{
-                      paddingTop: 13,
-                      fontSize: 15,
-                      color:
-                      selected === elm?.key
-                        ? COLOR_APP
-                        : COLOR_GRAY,
-                    }}
-                  >
-                    {elm?.title}
-                  </p>
-                </div>
-              </NavText>
-            </NavItem>
-          ))}
-        </NavItem>
-
-        <NavItem eventKey="settingStore">
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faCogs}
-              style={{
-                color: isPathInclude(["settingStore"]) ? COLOR_APP : COLOR_GRAY,
-              }}
-            />
-          </NavIcon>
-          <NavText>
-            <b
-              style={{
-                color: isPathInclude(["settingStore"]) ? COLOR_APP : COLOR_GRAY,
-              }}
-            >
-              ຕັ້ງຄ່າຮ້ານຄ້າ
-            </b>
-          </NavText>
-        </NavItem>
-
-        <NavItem eventKey="fark">
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faBeer}
-              style={{
-                color: isPathInclude(["fark"]) ? COLOR_APP : COLOR_GRAY,
-              }}
-            />
-          </NavIcon>
-          <NavText
+        {itemReports?.length != 0 ? (
+          <NavItem
+            eventKey="reportGroups"
             style={{
-              color: UN_SELECTED_TAB_TEXT,
+              color:
+                isPathInclude(["report"]) || isPathInclude(["reports"])
+                  ? COLOR_APP
+                  : COLOR_GRAY,
             }}
           >
-            <b
-              style={{
-                color: isPathInclude(["fark"]) ? COLOR_APP : COLOR_GRAY,
-              }}
-            >
-              ຝາກສິນຄ້າ
-            </b>
-          </NavText>
-        </NavItem>
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={faTachometerAlt}
+                style={{
+                  color:
+                    isPathInclude(["report"]) || isPathInclude(["reports"])
+                      ? COLOR_APP
+                      : COLOR_GRAY,
+                }}
+              />
+            </NavIcon>
+
+            {itemReports.map((elm, index) => (
+              <NavItem key={index} eventKey={elm?.key}>
+                <NavText>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "start",
+                      height: 40,
+                      alignItems: "center",
+                      gap: 8,
+                      width: "100%",
+                    }}
+                  >
+                    <div>
+                      <FontAwesomeIcon
+                        className={
+                          openTableData.length > 0 ? "scale-animation" : ""
+                        }
+                        icon={elm?.icon}
+                        style={{
+                          color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                          marginTop: "-2em",
+                        }}
+                      />
+                    </div>
+                    <p
+                      style={{
+                        paddingTop: 13,
+                        fontSize: 15,
+                        color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                      }}
+                    >
+                      {elm?.title}
+                    </p>
+                  </div>
+                </NavText>
+              </NavItem>
+            ))}
+          </NavItem>
+        ) : (
+          ""
+        )}
+
+        {settingNavItem?.map((e) => (
+          <NavItem eventKey={e?.key}>
+            <NavIcon>
+              <FontAwesomeIcon
+                className={openTableData.length > 0 ? "scale-animation" : ""}
+                icon={e?.icon}
+                style={{
+                  color: isPathInclude([e?.key])
+                    ? COLOR_APP
+                    : COLOR_GRAY,
+                }}
+              />
+            </NavIcon>
+            <NavText>
+              <b
+                style={{
+                  color: isPathInclude([e?.key])
+                    ? COLOR_APP
+                    : COLOR_GRAY,
+                }}
+              >
+                {e?.title}
+              </b>
+            </NavText>
+          </NavItem>
+        ))}
         <hr />
         {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
