@@ -94,7 +94,7 @@ export default function Dashboard() {
   };
   const getSalesInformationReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(storeDetail?._id, findBy, ['64c9d9a2968013001f916e77']);
+    const data = await getSalesInformationReport(storeDetail?._id, findBy);
     setSalesInformationReport(data);
   };
   const getMoneyReportData = async () => {
