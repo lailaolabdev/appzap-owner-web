@@ -43,6 +43,7 @@ import {
   END_POINT_APP,
   END_POINT_SEVER,
   END_POINT_WEB_CLIENT,
+  USERS,
   getLocalData,
 } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
@@ -154,15 +155,32 @@ export default function TableList() {
   const [taxPercent, setTaxPercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null);
+  const [userData, setuserData] = useState(null);
 
   const [isBillTest, setIsBillTest] = useState(true);
-
-  console.log("tableList==========>", tableList)
+ 
+  // console.log("shopId==========>", storeDetail?._id)
+  // console.log("userData==========>", userData)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
   //   setSeletedOrderItem(_data)
   // }
+
+  useEffect(() => {
+     
+    getUserData();
+  }, []);
+  const getUserData = async () => {
+    // setIsLoading(true);
+    await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((json) => setuserData(json));
+    // setIsLoading(false);
+  };
+
   useEffect(() => {
     const getDataTax = async () => {
       const { DATA } = await getLocalData();
@@ -249,6 +267,7 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
+      console.log("logBill_80:------>", _resBill?.data)
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -1886,7 +1905,9 @@ const _createHistoriesPrinter = async (data) => {
       /> */}
 
       <OrderCheckOut
+        staffData={userData}
         data={dataBill}
+        setDataBill={setDataBill}
         onPrintBill={onPrintBill}
         tableData={selectedTable}
         show={menuItemDetailModal}

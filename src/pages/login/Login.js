@@ -65,6 +65,8 @@ function Login() {
         setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
+
       // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
       //   position: "bottom-left",
       //   autoClose: 1000,

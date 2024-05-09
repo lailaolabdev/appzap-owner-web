@@ -368,6 +368,7 @@ export default function DashboardFinance({
               <th>{t("tableStatus")}</th>
               <th>{t("paymentType")}</th>
               <th>{t("time")}</th>
+              <th>{t("staffCheckBill")}</th>
             </tr>
           </thead>
           <tbody>
@@ -462,6 +463,7 @@ export default function DashboardFinance({
                     : t("transfercash")}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+                <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
               </tr>
             ))}
           </tbody>

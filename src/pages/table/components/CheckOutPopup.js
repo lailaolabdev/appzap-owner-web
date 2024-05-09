@@ -34,6 +34,7 @@ export default function CheckOutPopup({
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
   const { storeDetail } = useStore();
+  const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA")); 
 
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
@@ -53,7 +54,7 @@ export default function CheckOutPopup({
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
-  console.log("tableData:=======abc======>", tableData)
+  // console.log("tableData:=======abc======>", tableData)
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -106,6 +107,7 @@ export default function CheckOutPopup({
       ...prev,
       moneyReceived: moneyReceived,
       moneyChange: moneyChange,
+      dataStaffConfirm: staffConfirm,
     }));
   }, [cash, transfer, selectCurrency]);
   useEffect(() => {
@@ -155,6 +157,7 @@ export default function CheckOutPopup({
     }
   };
   const _checkBill = async () => {
+    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA")); 
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -175,6 +178,8 @@ export default function CheckOutPopup({
             billMode: tableData?.editBill,
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
+            fullnameStaffCheckOut: staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
+            staffCheckOutId: staffConfirm?.id,
           },
         },
         {
@@ -191,6 +196,7 @@ export default function CheckOutPopup({
         setRateCurrency(1);
         setTransfer();
         setSelectInput("inputCash");
+        localStorage.removeItem("STAFFCONFIRM_DATA")
 
         onClose();
         Swal.fire({
@@ -207,6 +213,7 @@ export default function CheckOutPopup({
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();
+    // console.log("valueConfirm:------>", valueConfirm)
   };
 
   const _calculateTotal = () => {
@@ -621,7 +628,9 @@ export default function CheckOutPopup({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <div style={{ flex: 1 }}></div>
+        <div style={{ flex: 1 }}>
+          <p>ພະນັກງານເຊັກບິນ: <b>{staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}</b></p>
+        </div>
         <Button
           onClick={() => {
             onPrintBill().then(() => {

@@ -35,7 +35,7 @@ export default function BillForCheckOut80({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     console.log(
       "🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:",
-      dataBill?.dataCustomer
+      dataBill
     );
   }, [dataBill, taxPercent]);
 
@@ -87,7 +87,7 @@ export default function BillForCheckOut80({
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
   // const myUrl = " https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/8cdca155-d983-415e-86a4-99b9d0be7ef6.jpeg";
 
-  console.log("check storeDetail--->", storeDetail);
+  // console.log("check storeDetail--->", storeDetail);
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
@@ -137,6 +137,12 @@ export default function BillForCheckOut80({
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
+            </span>
+          </div>
+          <div>
+            {t("staffCheckBill")}:{" "}
+            <span style={{ fontWeight: "bold" }}>
+              {dataBill?.dataStaffConfirm?.firstname ?? "-"} {dataBill?.dataStaffConfirm?.lastname ?? "-"}
             </span>
           </div>
         </div>

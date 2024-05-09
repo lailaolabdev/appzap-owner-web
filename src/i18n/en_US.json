@@ -167,5 +167,6 @@
     "transfercash": "Tranfer + Cash payment",
     "soundManage": "Sound Manage",
     "currencyManage": "Currency Rate Manage",
-    "customerName": "Customer Name"
+    "customerName": "Customer Name",
+    "staffCheckBill": "Check-in staff"
 }
