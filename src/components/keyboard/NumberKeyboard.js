@@ -7,7 +7,8 @@ export default function NumberKeyboard({
   selectInput,
   payType,
   setSelectInput,
-  onClickButtonDrawer
+  onClickButtonDrawer,
+  onClickMember,
 }) {
   const _num = [
     {
@@ -109,7 +110,13 @@ export default function NumberKeyboard({
             height: 250,
           }}
         >
-          <Button disabled>ສະມາຊິກ</Button>
+          <Button
+            onClick={() => {
+              onClickMember();
+            }}
+          >
+            ສະມາຊິກ
+          </Button>
           <Button
             disabled={payType != "cash"}
             onClick={() => {

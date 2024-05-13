@@ -1875,15 +1875,6 @@ const _createHistoriesPrinter = async (data) => {
         taxPercent={taxPercent}
       // editMode={select}
       />
-      {/* <CheckOutType
-        onPrintBill={onPrintBill}
-        dataBill={dataBill}
-        tableData={selectedTable}
-        open={popup?.CheckOutType}
-        onClose={() => setPopup()}
-        setDataBill={setDataBill}
-        taxPercent={taxPercent}
-      /> */}
 
       <OrderCheckOut
         data={dataBill}

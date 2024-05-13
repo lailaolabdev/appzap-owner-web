@@ -180,7 +180,7 @@ export default function MemberPage() {
               <Button
                 variant="dark"
                 bg="dark"
-                onClick={() => navigate("/report/members-report/setting-point")}
+                onClick={() => navigate("/reports/members-report/setting-point")}
               >
                <FaCoins /> ຕັ້ງຄ່າການໃຫ້ຄະແນນ
               </Button>
@@ -218,7 +218,7 @@ export default function MemberPage() {
             <Button
               variant="dark"
               bg="dark"
-              onClick={() => navigate("/report/members-report/create-member")}
+              onClick={() => navigate("/reports/members-report/create-member")}
             >
               <MdAssignmentAdd /> ເພີ່ມສະມາຊິກ
             </Button>

@@ -68,7 +68,7 @@ export default function ReportLayout() {
               </div>
               <div
                 className="menu-report-stocks mt-1"
-                style={{  
+                style={{
                   background:
                     activeButton === "/reports/reportStocks"
                       ? COLOR_APP
@@ -87,68 +87,86 @@ export default function ReportLayout() {
               <div
                 className="menu-report-stocks mt-1"
                 disabled
-                // onClick={() => navigate("/report/members-report")}
+                // onClick={() => navigate("/reports/members-report")}
               >
                 ລາຍງານການພະລິດ <br />
                 (ກຳລັງພັດທະນາ)
               </div>
               <div
                 className="menu-report-stocks mt-1"
-                disabled
-                // onClick={() => navigate("/report/members-report")}
+                style={{
+                  background:
+                    activeButton === "/reports/members-report"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/reports/members-report"
+                      ? "white"
+                      : COLOR_APP,
+                }}
+                onClick={() => navigate("/reports/members-report")}
               >
-                ລາຍງານສະມາຊິກ <br />
-                (ກຳລັງພັດທະນາ)
+                <MdDining style={{ fontSize: 35 }} />
+                <strong>ລາຍງານສະມາຊິກ</strong>
               </div>
             </ButtonGroup>
           </div>
         </div>
       ) : (
         <div className="d-flex w-100 ">
-        <div
-          className=" d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
-          style={{
-            background:
-              activeButton === "/reports" ? COLOR_APP : "white",
-            color:
-              activeButton === "/reports" ? "white" : COLOR_APP,
-          }}
-          onClick={() => onViewStocksPath("sales-report")}
-        >
-          {/* <MdOutlinePieChartOutline style={{ fontSize: 35 }} /> */}
-          <strong>ລາຍງານຍອດຂາຍ</strong>
-        </div>
-        <div
-          className="d-flex justify-content-center align-items-center cursor-pointer  p-2 w-100"
-          style={{
-            background:
-              activeButton === "/report/reportStocks" ? COLOR_APP : "white",
-            color:
-              activeButton === "/report/reportStocks" ? "white" : COLOR_APP,
-          }}
-          onClick={() => onViewStocksPath("reportStocks")}
-        >
-          {/* <MdDining style={{ fontSize: 35 }} /> */}
-          <strong>ລາຍງານສະຕ໋ອກ</strong>
-        </div>
+          <div
+            className=" d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+            style={{
+              background: activeButton === "/reports" ? COLOR_APP : "white",
+              color: activeButton === "/reports" ? "white" : COLOR_APP,
+            }}
+            onClick={() => onViewStocksPath("sales-report")}
+          >
+            {/* <MdOutlinePieChartOutline style={{ fontSize: 35 }} /> */}
+            <strong>ລາຍງານຍອດຂາຍ</strong>
+          </div>
+          <div
+            className="d-flex justify-content-center align-items-center cursor-pointer  p-2 w-100"
+            style={{
+              background:
+                activeButton === "/reports/reportstocks" ? COLOR_APP : "white",
+              color:
+                activeButton === "/reports/reportstocks" ? "white" : COLOR_APP,
+            }}
+            onClick={() => onViewStocksPath("reportStocks")}
+          >
+            {/* <MdDining style={{ fontSize: 35 }} /> */}
+            <strong>ລາຍງານສະຕ໋ອກ</strong>
+          </div>
 
-        <div
-          className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
-          disabled
-          // onClick={() => navigate("/report/members-report")}
-        >
-          ລາຍງານການພະລິດ <br />
-         {/* (ກຳລັງພັດທະນາ)  */}
+          <div
+            className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+            disabled
+            // onClick={() => navigate("/reports/members-report")}
+          >
+            ລາຍງານການພະລິດ <br />
+            {/* (ກຳລັງພັດທະນາ)  */}
+          </div>
+          <div
+            className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
+            style={{
+              background:
+                activeButton === "/reports/members-report"
+                  ? COLOR_APP
+                  : "white",
+              color:
+                activeButton === "/reports/members-report"
+                  ? "white"
+                  : COLOR_APP,
+            }}
+            // disabled
+            onClick={() => navigate("/reports/members-report")}
+          >
+            <MdDining style={{ fontSize: 35 }} />
+            <strong>ລາຍງານສະມາຊິກ</strong>
+            {/* (ກຳລັງພັດທະນາ)  */}
+          </div>
         </div>
-        <div
-          className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
-          disabled
-          // onClick={() => navigate("/report/members-report")}
-        >
-          ລາຍງານສະມາຊິກ <br />
-         {/* (ກຳລັງພັດທະນາ)  */}
-        </div>
-      </div>
       )}
       <div>
         <Outlet />

@@ -22,6 +22,7 @@ import {
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
+import { errorAdd } from "../../helpers/sweetalert";
 
 export default function CreateMemberPage() {
   const navigate = useNavigate();
@@ -41,9 +42,10 @@ export default function CreateMemberPage() {
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
-      navigate("/report/members-report");
+      navigate("/reports/members-report");
     } catch (err) {
-      setDisabledButton(true);
+      errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
+      setDisabledButton(false);
       console.error(err);
     }
   };
@@ -89,6 +91,7 @@ export default function CreateMemberPage() {
                   <Form.Control
                     placeholder="XXXX-XXXX"
                     aria-describedby="phone-addon1"
+                    maxLength={8}
                     value={formData?.phone}
                     onChange={(e) => {
                       setFormData((prev) => ({
@@ -125,7 +128,6 @@ export default function CreateMemberPage() {
         </Card>
       </div>
       {/* popup */}
-     
     </>
   );
 }
