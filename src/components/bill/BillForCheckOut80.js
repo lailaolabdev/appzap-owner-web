@@ -198,8 +198,8 @@ export default function BillForCheckOut80({
               : "%"}
           </div>
           <div>
-            {t("customerName")} : {dataBill?.dataCustomer?.username} ({" "}
-            {dataBill?.dataCustomer?.phone} )
+            {t("customerName")} : {dataBill?.memberName} ({" "}
+            {dataBill?.memberPhone} )
           </div>
         </div>
       </div>

@@ -41,7 +41,7 @@ export default function SettingMemberPointPage() {
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
-      navigate("/report/members-report");
+      navigate("/reports/members-report");
     } catch (err) {
       setDisabledButton(true);
       console.error(err);

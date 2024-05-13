@@ -8,11 +8,16 @@ import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter } from "react-icons/bi";
+import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
 
 import { useStore } from "../../../store";
-import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
+import {
+  END_POINT_SEVER,
+  QUERY_CURRENCIES,
+  getLocalData,
+} from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
@@ -47,13 +52,42 @@ export default function CheckOutPopup({
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
+  const [hasCRM, setHasCRM] = useState(false);
+  const [memberData, setMemberData] = useState();
+  const [textSearchMember, setTextSearchMember] = useState("");
 
   const [currencyList, setCurrencyList] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
-  console.log("tableData:=======abc======>", tableData)
+  console.log("tableData:=======abc======>", tableData);
+
+  useEffect(() => {
+    setMemberData();
+    if (textSearchMember.length == 8) {
+      handleSearchOne();
+    }
+  }, [textSearchMember]);
+  const handleSearchOne = async () => {
+    try {
+      let url =
+        END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
+      const _header = await getHeaders();
+      const _res = await axios.get(url, { headers: _header });
+      if (!_res.data) throw new Error("Empty!");
+      setMemberData(_res.data);
+      setDataBill((prev) => ({
+        ...prev,
+        memberId: _res.data?._id,
+        memberName: _res.data?.name,
+        memberPhone: _res.data?.phone,
+      }));
+    } catch (err) {
+      console.log(err);
+      errorAdd("ບໍ່ພົບສະມາຊິກ");
+    }
+  };
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -172,6 +206,9 @@ export default function CheckOutPopup({
             customerId: selectDataOpption?._id,
             userNanme: selectDataOpption?.username,
             phone: selectDataOpption?.phone,
+            memberId: memberData?._id,
+            memberName: memberData?.name,
+            memberPhone: memberData?.phone,
             billMode: tableData?.editBill,
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
@@ -191,7 +228,8 @@ export default function CheckOutPopup({
         setRateCurrency(1);
         setTransfer();
         setSelectInput("inputCash");
-
+        setHasCRM(false);
+        setTextSearchMember("");
         onClose();
         Swal.fire({
           icon: "success",
@@ -478,6 +516,29 @@ export default function CheckOutPopup({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
+              <InputGroup hidden={!hasCRM}>
+                <InputGroup.Text>ສະມາຊິກ</InputGroup.Text>
+                <InputGroup.Text>+856 20</InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  placeholder="xxxx xxxx"
+                  maxLength={8}
+                  value={textSearchMember}
+                  // onClick={() => {
+                  //   setSelectInput("inputTransfer");
+                  // }}
+                  onChange={(e) => {
+                    setTextSearchMember(e.target.value);
+                  }}
+                  size="lg"
+                />
+                <Button>
+                  <FaSearch />
+                </Button>
+                <div style={{ width: 30 }} />
+                <InputGroup.Text>ຊື່: {memberData?.name}</InputGroup.Text>
+                <InputGroup.Text>ຄະແນນ: {memberData?.point}</InputGroup.Text>
+              </InputGroup>
             </div>
             <div
               style={{
@@ -574,6 +635,9 @@ export default function CheckOutPopup({
               </Form.Control>
             </div>
             <NumberKeyboard
+              onClickMember={() => {
+                setHasCRM((prev) => !prev);
+              }}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
