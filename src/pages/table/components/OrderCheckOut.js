@@ -183,7 +183,7 @@ const OrderCheckOut = ({
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
-                  fontSize: 30,
+                  fontSize: 26,
                 }}
                 onClick={() => onPrintBill()}
                 // onClick={() => setIsBill(true)}
@@ -230,24 +230,46 @@ const OrderCheckOut = ({
                   </b>
                 </span>
               </div>
-              <Button
-                className="ml-2 pl-4 pr-4"
-                // onClick={hide}
-                style={{
-                  backgroundColor: "#FB6E3B",
-                  color: "#ffff",
-                  border: "solid 1px #FB6E3B",
-                  fontSize: 30,
-                }}
-                onClick={onConfirmStaffToCheckBill}
-                // onClick={() => onSubmit()}
+              <div
+                style={{ display: "flex", gap: 20, flexDirection: "column" }}
               >
-                <FontAwesomeIcon
-                  icon={faCashRegister}
-                  style={{ color: "#fff" }}
-                />{" "}
-                ເຊັກບິນ
-              </Button>
+                <Button
+                  className="ml-2 pl-4 pr-4"
+                  // onClick={hide}
+                  style={{
+                    backgroundColor: "#FB6E3B",
+                    color: "#ffff",
+                    border: "solid 1px #FB6E3B",
+                    fontSize: 26,
+                  }}
+                  onClick={onConfirmStaffToCheckBill}
+                  // onClick={() => onSubmit()}
+                >
+                  <FontAwesomeIcon
+                    icon={faCashRegister}
+                    style={{ color: "#fff" }}
+                  />{" "}
+                  ປ່ຽນຜູ້ເຊັກບິນ
+                </Button>
+                <Button
+                  className="ml-2 pl-4 pr-4"
+                  // onClick={hide}
+                  style={{
+                    backgroundColor: "#FB6E3B",
+                    color: "#ffff",
+                    border: "solid 1px #FB6E3B",
+                    fontSize: 26,
+                  }}
+                  // onClick={onConfirmStaffToCheckBill}
+                  onClick={() => onSubmit()}
+                >
+                  <FontAwesomeIcon
+                    icon={faCashRegister}
+                    style={{ color: "#fff" }}
+                  />{" "}
+                  ເຊັກບິນ
+                </Button>
+              </div>
             </div>
           </div>
         </Modal.Footer>

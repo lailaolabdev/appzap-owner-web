@@ -204,8 +204,15 @@ export default function DashboardPage() {
                     salesInformationReport?.["averageSales_Transaction"]
                   )}${storeDetail?.firstCurrency}`,
                 },
+
                 {
-                  title: "ກຳໄລ",
+                  title: "ລາຍຈ່າຍ",
+                  amount: `${moneyCurrency(
+                    salesInformationReport?.["grossProfit"]
+                  )}${storeDetail?.firstCurrency}`,
+                },
+                {
+                  title: "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍ)",
                   amount: `${moneyCurrency(
                     salesInformationReport?.["grossProfit"]
                   )}${storeDetail?.firstCurrency}`,

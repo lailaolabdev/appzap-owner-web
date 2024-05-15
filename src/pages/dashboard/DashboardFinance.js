@@ -49,7 +49,7 @@ export default function DashboardFinance({
   const [totalPagination, setTotalPagination] = useState();
 
   const handleClose = () => setShow(false);
-  const { storeDetail } = useStore();
+  const { storeDetail,profile } = useStore();
 
   const getPaginationCountData = async () => {
     try {
@@ -517,7 +517,7 @@ export default function DashboardFinance({
             }}
           >
             <Button
-              disabled={disabledEditBill || selectOrder?.status === "ACTIVE"}
+              disabled={disabledEditBill || selectOrder?.status === "ACTIVE" || profile?.data?.role != "APPZAP_ADMIN"}
               onClick={handleEditBill}
             >
               {selectOrder?.status === "ACTIVE"

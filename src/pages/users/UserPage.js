@@ -35,7 +35,7 @@ import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 
-let limitData = 2;
+let limitData = 10;
 
 export default function UserPage() {
   const navigate = useNavigate();
