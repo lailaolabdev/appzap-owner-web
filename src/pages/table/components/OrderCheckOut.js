@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import Modal from "react-bootstrap/Modal";
-import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
+import { Modal, Table, Button, Form } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 // import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +8,8 @@ import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
+import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
+import { URL_PHOTO_AW3 } from "../../../constants";
 // import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
@@ -20,11 +20,15 @@ const OrderCheckOut = ({
   taxPercent = 0,
   onPrintBill = () => {},
   onSubmit = () => {},
+  staffData,
+  // setDataBill
 }) => {
   const { storeDetail } = useStore();
   const [total, setTotal] = useState();
   const [isBill, setIsBill] = useState(false);
+  const [isConfirmStaff, setIsConFirmStaff] = useState(false);
 
+  console.log("storeDetail:---->", storeDetail, staffData?.users)
 
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
@@ -45,6 +49,31 @@ const OrderCheckOut = ({
     }
     // alert(_total);
     setTotal(_total);
+  };
+
+  const onConfirmStaffToCheckBill = () => {
+    setIsConFirmStaff(true);
+    hide();
+    console.log("check confirm staff......");
+    // onsubmit()
+  };
+
+  const onCancelConfirmStaff = () => {
+    setIsConFirmStaff(false);
+  };
+
+  const onConfirmToCheckOut = async (data) => {
+    let _staffConfirm = {
+      id: data?._id,
+      firstname: data?.firstname,
+      lastname: data?.lastname,
+      phone: data?.phone,
+    };
+    // console.log("_staffConfirm:=======>", _staffConfirm)
+    await localStorage.setItem("STAFFCONFIRM_DATA",JSON.stringify(_staffConfirm)
+    );
+    onSubmit();
+    setIsConFirmStaff(false);
   };
 
   return (
@@ -207,7 +236,8 @@ const OrderCheckOut = ({
                   border: "solid 1px #FB6E3B",
                   fontSize: 30,
                 }}
-                onClick={() => onSubmit()}
+                onClick={onConfirmStaffToCheckBill}
+                // onClick={() => onSubmit()}
               >
                 <FontAwesomeIcon
                   icon={faCashRegister}
@@ -223,6 +253,56 @@ const OrderCheckOut = ({
       {/* <Modal show={isBill} onHide={() => setIsBill(false)}>
         <BillForCheckOut80 />
       </Modal> */}
+
+      <Modal
+        size="lg"
+        centered
+        show={isConfirmStaff}
+        onHide={onCancelConfirmStaff}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <b>ເລືອກຊື່ພະນັກງານເຊັກບິນ</b>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(10em, 1fr))",
+              gap: 15,
+              padding: "1em 0",
+            }}
+          >
+            {staffData?.users.map((data, index) => {
+              return (
+                <Button
+                onClick={() => onConfirmToCheckOut(data)}
+                variant="outline-danger"
+                key={index}
+                style={{ width: "100%", padding: "1em 0" }}
+              >
+                {data?.image ? (
+                  <img
+                    style={{
+                      width: 35,
+                      height: 35,
+                      background: "#ffffff",
+                      borderRadius: "50em",
+                      border: "1px solid #ddd",
+                    }}
+                    src={URL_PHOTO_AW3 + data?.image}
+                  />
+                ) : (
+                  <FaUserCircle style={{ fontSize: 35, }} />
+                )}
+                <p>{data?.firstname ?? "-"} {data?.lastname ?? "-"}</p>
+              </Button>
+              )
+            })}
+          </div>
+        </Modal.Body>
+      </Modal>
     </>
   );
 };

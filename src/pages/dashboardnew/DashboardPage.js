@@ -191,12 +191,7 @@ export default function DashboardPage() {
                 //     salesInformationReport?.["totalCost"]
                 //   )}${storeDetail?.firstCurrency}`,
                 // },
-                // {
-                //   title: "ກຳໄລ",
-                //   amount: `${moneyCurrency(
-                //     salesInformationReport?.["grossProfit"]
-                //   )}${storeDetail?.firstCurrency}`,
-                // },
+              
                 {
                   title: "ຈຳນວນທຸລະກຳການຂາຍ",
                   amount: `${moneyCurrency(
@@ -207,6 +202,12 @@ export default function DashboardPage() {
                   title: "ຍອດຂາຍສະເລ່ຍ ຕໍ່ ທຸລະກຳ",
                   amount: `${moneyCurrency(
                     salesInformationReport?.["averageSales_Transaction"]
+                  )}${storeDetail?.firstCurrency}`,
+                },
+                {
+                  title: "ກຳໄລ",
+                  amount: `${moneyCurrency(
+                    salesInformationReport?.["grossProfit"]
                   )}${storeDetail?.firstCurrency}`,
                 },
                 // {
