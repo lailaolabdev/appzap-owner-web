@@ -20,6 +20,7 @@ import "./login.css";
 import { USER_KEY, END_POINT, COLOR_APP } from "../../constants";
 import role from "../../helpers/role";
 import LoadingAppzap from "../../components/LoadingAppzap";
+import { errorAdd } from "../../helpers/sweetalert";
 
 function Login() {
   const navigate = useNavigate();
@@ -62,9 +63,12 @@ function Login() {
         //   draggable: true,
         //   progress: undefined,
         // });
+        errorAdd("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ");
         setIsLoading(false);
       }
     } catch (error) {
+      setIsLoading(false);
+      errorAdd("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ");
       // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
       //   position: "bottom-left",
       //   autoClose: 1000,
