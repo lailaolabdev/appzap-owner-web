@@ -67,34 +67,34 @@ export default function MenuList() {
     setPage(newPage);
   }, []);
 
-  // useEffect(() => {
-  //   const getData = async () => {
-  //     getCategory();
-  //   };
-  //   getData();
-  // }, [_localData.DATA?.storeId]);
+  useEffect(() => {
+    const getData = async () => {
+      getCategory();
+    };
+    getData();
+  }, [_localData.DATA?.storeId]);
 
   // eslint-disable-next-line
-  // const getCategory = async () => {
-  //   try {
-  //     const { DATA } = await getLocalData();
-  //     if (DATA) {
-  //       setIsLoading(true);
-  //       const res = await axios.get(
-  //         `${END_POINT_SEVER}/v3/stock-categories?storeId=${DATA?.storeId}&isDeleted=false`
-  //       );
-  //       if (res.status < 300) {
-  //         setLoadStatus("SUCCESS");
-  //         setCategorys(res.data);
-  //       }
-  //       setIsLoading(false);
-  //     }
-  //   } catch (err) {
-  //     setLoadStatus("ERROR!!");
-  //     setIsLoading(false);
-  //     console.log("err:", err);
-  //   }
-  // };
+  const getCategory = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        setIsLoading(true);
+        const res = await axios.get(
+          `${END_POINT_SEVER}/v3/stock-categories?storeId=${DATA?.storeId}&isDeleted=false`
+        );
+        if (res.status < 300) {
+          setLoadStatus("SUCCESS");
+          setCategorys(res.data);
+        }
+        setIsLoading(false);
+      }
+    } catch (err) {
+      setLoadStatus("ERROR!!");
+      setIsLoading(false);
+      console.log("err:", err);
+    }
+  };
 
   const deleteStock = async (stock) => {
     try {
@@ -138,6 +138,7 @@ export default function MenuList() {
         findby += `skip=${page * rowsPerPage}&`;
         findby += `limit=${rowsPerPage}&`;
         findby += `search=${filterName}&`;
+        findby += `categories=${selectCategories}&`;
         const res = await getStocksAll(findby);
         if (res.status === 200) { 
           setStocks(res?.data);
@@ -260,7 +261,7 @@ export default function MenuList() {
     getCountStocks();
   }, [page, filterName]);
 
-  console.log("selectCategories:---->", categorys);
+  console.log("selectCategories:---->", selectCategories);
 
   // ------------------------------------------------------------ //
 
@@ -305,7 +306,7 @@ export default function MenuList() {
             </InputGroup>
           </div>
 
-          {/* <div style={{ width: 500 }}>
+          <div style={{ width: 500 }}>
             <label>ໝວດໝູ່</label>
             <select
               className="form-control w-100"
@@ -315,10 +316,10 @@ export default function MenuList() {
               <option value="">ທັງໝົດ</option>
 
               {categorys.map((elm, index) => (
-                <option key={index} value={elm?.id}>{elm?.name}</option>
+                <option key={index} value={elm?._id}>{elm?.name}</option>
               ))}
             </select>
-          </div> */}
+          </div>
           <div style={{ width: 200 }}>
             <label>ເລືອກຈຳນວນ</label>
             <select
