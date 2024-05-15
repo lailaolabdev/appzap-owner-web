@@ -23,12 +23,13 @@ const OrderCheckOut = ({
   staffData,
   // setDataBill
 }) => {
-  const { storeDetail } = useStore();
+  const { storeDetail, profile } = useStore();
   const [total, setTotal] = useState();
   const [isBill, setIsBill] = useState(false);
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
+  const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
 
-  console.log("storeDetail:---->", storeDetail, staffData?.users)
+  console.log("storeDetail:---->", storeDetail, staffData?.users);
 
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
@@ -70,7 +71,9 @@ const OrderCheckOut = ({
       phone: data?.phone,
     };
     // console.log("_staffConfirm:=======>", _staffConfirm)
-    await localStorage.setItem("STAFFCONFIRM_DATA",JSON.stringify(_staffConfirm)
+    await localStorage.setItem(
+      "STAFFCONFIRM_DATA",
+      JSON.stringify(_staffConfirm)
     );
     onSubmit();
     setIsConFirmStaff(false);
@@ -266,40 +269,58 @@ const OrderCheckOut = ({
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <div style={{ display: "flex", gap: 20 }}>
+            <Button onClick={() => setDefualtRoleUser("APPZAP_COUNTER")}>
+              ເຄົ້າເຕີ
+            </Button>
+            <Button onClick={() => setDefualtRoleUser("APPZAP_STAFF")}>
+              ພະນັກງານເສີບ
+            </Button>
+            <Button
+              disabled={profile?.data?.role != "APPZAP_ADMIN"}
+              onClick={() => setDefualtRoleUser("APPZAP_ADMIN")}
+            >
+              ຜູ້ບໍ່ລິຫານ
+            </Button>
+          </div>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(10em, 1fr))",
+              gridTemplateColumns: "repeat(4, 1fr)",
               gap: 15,
               padding: "1em 0",
             }}
           >
-            {staffData?.users.map((data, index) => {
-              return (
-                <Button
-                onClick={() => onConfirmToCheckOut(data)}
-                variant="outline-danger"
-                key={index}
-                style={{ width: "100%", padding: "1em 0" }}
-              >
-                {data?.image ? (
-                  <img
-                    style={{
-                      width: 35,
-                      height: 35,
-                      background: "#ffffff",
-                      borderRadius: "50em",
-                      border: "1px solid #ddd",
-                    }}
-                    src={URL_PHOTO_AW3 + data?.image}
-                  />
-                ) : (
-                  <FaUserCircle style={{ fontSize: 35, }} />
-                )}
-                <p>{data?.firstname ?? "-"} {data?.lastname ?? "-"}</p>
-              </Button>
-              )
-            })}
+            {staffData?.users
+              ?.filter((e) => e?.role == defualtRoleUser)
+              ?.map((data, index) => {
+                return (
+                  <Button
+                    onClick={() => onConfirmToCheckOut(data)}
+                    variant="outline-danger"
+                    key={index}
+                    style={{ width: "100%", padding: "1em 0" }}
+                  >
+                    {data?.image ? (
+                      <img
+                        style={{
+                          width: 35,
+                          height: 35,
+                          background: "#ffffff",
+                          borderRadius: "50em",
+                          border: "1px solid #ddd",
+                        }}
+                        src={URL_PHOTO_AW3 + data?.image}
+                      />
+                    ) : (
+                      <FaUserCircle style={{ fontSize: 35 }} />
+                    )}
+                    <p>
+                      {data?.firstname ?? "-"} {data?.lastname ?? "-"}
+                    </p>
+                  </Button>
+                );
+              })}
           </div>
         </Modal.Body>
       </Modal>
