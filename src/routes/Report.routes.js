@@ -7,7 +7,7 @@ import ReportLayout from "../layouts/ReportLayout";
 import MemberPage from "../pages/member/MemberPage";
 import CreateMemberPage from "../pages/member/CreateMemberPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
-import ReportStocks from "../pages/report/ReportStockPage";
+import ReportStocks from "../pages/report/ReportStocks";
 
 // eslint-disable-next-line
 export default {
