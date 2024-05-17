@@ -26,6 +26,7 @@ import DoingOrderTab from "./DoingOrderTab";
 import ServedOrderTab from "./ServedOrderTab";
 import CanceledOrderTab from "./CanceledOrderTab";
 import Loading from "../../components/Loading";
+import PopUpPin from "../../components/popup/PopUpPin";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -35,6 +36,9 @@ export default function OrderPage() {
   const [isLoading, setIsLoading] = useState(false);
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
+  const [popup, setPopup] = useState();
+  const [pinStatus, setPinStatus] = useState(false);
+  const [workAfterPin, setWorkAfterPin] = useState("");
 
   const {
     orderItems,
@@ -49,7 +53,7 @@ export default function OrderPage() {
     orderDoing,
     orderWaiting,
     setorderItemForPrintBillSelect,
-    setCountOrderWaiting
+    setCountOrderWaiting,
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -81,10 +85,10 @@ export default function OrderPage() {
       }
       getOrderItemsStore(selectOrderStatus);
       const count = await getCountOrderWaiting(storeDetail?._id);
-      setCountOrderWaiting(count || 0)
+      setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) { }
+    } catch (err) {}
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -189,6 +193,19 @@ export default function OrderPage() {
   // useEffect
 
   useEffect(() => {
+    const _run = async () => {
+      if (!pinStatus) return;
+      setPinStatus(false);
+      if (workAfterPin == "cancle_order") {
+        await handleUpdateOrderStatus("CANCELED");
+        getOrderWaitingAndDoingByStore();
+      }
+      setWorkAfterPin("");
+    };
+    _run();
+  }, [pinStatus]);
+
+  useEffect(() => {
     if (!onPrinting) {
       setSelectOrderStatus(WAITING_STATUS);
       setNewOrderTransaction(true);
@@ -244,8 +261,8 @@ export default function OrderPage() {
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
-              await handleUpdateOrderStatus("CANCELED");
-              getOrderWaitingAndDoingByStore();
+              setWorkAfterPin("cancle_order");
+              setPopup({ PopUpPin: true });
             }}
           >
             {/* ຍົກເລີກ */}
@@ -289,7 +306,7 @@ export default function OrderPage() {
           defaultActiveKey={WAITING_STATUS}
           id="OrderTabs"
           onSelect={(select) => {
-            setorderItemForPrintBillSelect([])
+            setorderItemForPrintBillSelect([]);
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
             getOrderWaitingAndDoingByStore();
@@ -344,6 +361,14 @@ export default function OrderPage() {
             );
           })}
       </div>
+      <PopUpPin
+        open={popup?.PopUpPin}
+        onClose={() => setPopup()}
+        setPinStatus={(e) => {
+          setPinStatus(e);
+          setPopup();
+        }}
+      />
       {/* <div>
         {orderItems
           ?.filter((e) => e?.isChecked)

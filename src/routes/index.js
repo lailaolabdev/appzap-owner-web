@@ -63,6 +63,7 @@ import BannerList from "../pages/banner/BannerList";
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
 import UserRoutes from "./User.routes";
+import PinRoutes from "./Pin.routes";
 
 function Router() {
   return useRoutes([
@@ -258,7 +259,8 @@ function Router() {
         ConfigRoutes,
         SelfOrderingOrderRoutes,
         FarkRoutes,
-        UserRoutes
+        UserRoutes,
+        PinRoutes,
       ],
     },
     ComponentRoutes,
