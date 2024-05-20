@@ -77,7 +77,7 @@ export default function Historylist() {
   return (
     <div style={BODY}>
       <NavList ActiveKey="/settingStore/stock/history" />
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+      <div>
         <div style={{ height: 20 }}></div>
         <div>
           <div className="col-sm-12">

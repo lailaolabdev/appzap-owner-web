@@ -175,7 +175,7 @@ export default function SettingTable() {
   };
   return (
     <div style={{ padding: 10 }} className="col-sm-12">
-      <div style={{ backgroundColor: "#FAF9F7", padding: 10, borderRadius: 8 }}>
+      <div style={{  padding: 10, borderRadius: 8 }}>
         <div className="col-sm-12 text-right">
           <button
             className="col-sm-2"

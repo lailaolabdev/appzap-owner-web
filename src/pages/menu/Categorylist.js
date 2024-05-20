@@ -233,7 +233,7 @@ export default function Categorylist() {
           </Nav.Item>
         </Nav>
       </div>
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+      <div>
         <div className="col-sm-12 text-right">
           <Button
             className="col-sm-2"
