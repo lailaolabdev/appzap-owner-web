@@ -29,6 +29,7 @@ import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import PopUpPin from "../../components/popup/PopUpPin";
+import printFlutter from "../../helpers/printFlutter"
 
 /**
  * const
@@ -540,6 +541,7 @@ export default function TableList() {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
 
+      printFlutter({imageBuffer:_file,ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
         method: "post",
         url: urlForPrinter,
@@ -874,6 +876,7 @@ export default function TableList() {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
+        printFlutter({imageBuffer:_file,ip:_printer?.ip,type:_printer?.type,port:"9100"});
         await axios({
           method: "post",
           url: urlForPrinter,
