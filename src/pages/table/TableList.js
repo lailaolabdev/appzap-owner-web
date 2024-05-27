@@ -541,7 +541,7 @@ export default function TableList() {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
 
-      printFlutter({imageBuffer:_file,ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+      printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
         method: "post",
         url: urlForPrinter,
@@ -876,7 +876,7 @@ export default function TableList() {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
-        printFlutter({imageBuffer:_file,ip:_printer?.ip,type:_printer?.type,port:"9100"});
+        printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
         await axios({
           method: "post",
           url: urlForPrinter,
