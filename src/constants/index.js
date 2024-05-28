@@ -37,6 +37,12 @@ export const ETHERNET_PRINTER_PORT = "http://localhost:9150/ethernet/image";
 export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
 
+// No Cut Endpoint
+export const NOCUT_ETHERNET_PRINTER_PORT = "http://localhost:9150/nocut/ethernet/image";
+export const NOCUT_BLUETOOTH_PRINTER_PORT = "http://localhost:9150/nocut/bluetooth/image";
+export const NOCUT_USB_PRINTER_PORT = "http://localhost:9150/nocut/usb/image";
+
+
 export const HEADER = {
   color: "#5C5C5C",
   backgroundColor: "#F9F9F9",

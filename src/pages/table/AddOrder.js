@@ -23,6 +23,9 @@ import {
   USB_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
+  NOCUT_ETHERNET_PRINTER_PORT,
+  NOCUT_BLUETOOTH_PRINTER_PORT,
+  NOCUT_USB_PRINTER_PORT
 } from "../../constants/index";
 
 import {
@@ -42,9 +45,8 @@ import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
-import BillForChefNoCutBody from "../../components/bill/BillForChefNoCutBody";
-import BillForChefNoCutHeader from "../../components/bill/BillForChefNoCutHeader";
-import BillForChefNoCutTrailer from "../../components/bill/BillForChefNoCutTrailer";
+
+import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
@@ -141,8 +143,7 @@ function AddOrder() {
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
-  const billForCherNoCut80 = useRef([]);
-  const billForCherNoCut58 = useRef([]);
+  const combinedBillRef = useRef(null);
 
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
@@ -155,19 +156,6 @@ function AddOrder() {
     billForCher58.current = Array(arrLength)
       .fill()
       .map((_, i) => billForCher58?.current[i]);
-  }
-  // No Cut
-  if (billForCherNoCut80.current.length !== arrLength) {
-    // add or remove refs
-    billForCherNoCut80.current = Array(arrLength)
-      .fill()
-      .map((_, i) => billForCherNoCut80.current[i]);
-  }
-  if (billForCherNoCut58.current.length !== arrLength) {
-    // add or remove refs
-    billForCherNoCut58.current = Array(arrLength)
-      .fill()
-      .map((_, i) => billForCherNoCut58?.current[i]);
   }
 
 
@@ -255,100 +243,76 @@ function AddOrder() {
     }
   };
 
-  // No Cut Printing
+  /**
+   * No Cut Printing
+   */
+  const printItems = async (retryCount = 0) => {
+    const _printer = printers.find((e) => e?._id === selectedMenu[0].printer);
 
+    let canvas;
+    if (_printer?.width === "80mm") {
+      canvas = await html2canvas(combinedBillRef.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+      });
+    } else if (_printer?.width === "58mm") {
+      canvas = await html2canvas(combinedBillRef.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+      });
+    }
 
-  // Send to printer in Single Request
-  const onPrintForCherSingleRequest = async () => {
-    const orderSelect = selectedMenu;
+    const dataUrl = canvas.toDataURL();
+    const _file = await base64ToBlob(dataUrl);
 
-    console.log("orderSelect: ", orderSelect)
-  
+    let urlForPrinter = "";
+    if (_printer?.type === "ETHERNET") {
+      urlForPrinter = ETHERNET_PRINTER_PORT;
+    } else if (_printer?.type === "BLUETOOTH") {
+      urlForPrinter = BLUETOOTH_PRINTER_PORT;
+    } else if (_printer?.type === "USB") {
+      urlForPrinter = USB_PRINTER_PORT;
+    }
+
+    const bodyFormData = new FormData();
+    bodyFormData.append("ip", _printer?.ip);
+    bodyFormData.append("port", "9100");
+    bodyFormData.append("image", _file);
+
+    console.log("PREPARE TO SEND TO ELECTRON");
+
     try {
-      const combinedCanvas = document.createElement('canvas');
-      const context = combinedCanvas.getContext('2d');
-      let totalHeight = 0;
-  
-      // Function to calculate the total height
-      const calculateTotalHeight = async () => {
-        for (let i = 0; i < billForCher80.current.length; i++) {
-          const _printer = printers.find((e) => e?._id === orderSelect?.[i]?.printer);
-          let canvas;
-          if (_printer?.width === "80mm") {
-            canvas = await html2canvas(billForCher80?.current[i], { useCORS: true, scrollX: 10, scrollY: 0 });
-          } else if (_printer?.width === "58mm") {
-            canvas = await html2canvas(billForCher58?.current[i], { useCORS: true, scrollX: 10, scrollY: 0 });
-          }
-          totalHeight += canvas.height;
-        }
-      };
-  
-      // Function to draw each canvas onto the combined canvas
-      const drawCanvases = async () => {
-        let currentHeight = 0;
-        for (let i = 0; i < billForCher80.current.length; i++) {
-          const _printer = printers.find((e) => e?._id === orderSelect?.[i]?.printer);
-          let canvas;
-          if (_printer?.width === "80mm") {
-            canvas = await html2canvas(billForCher80?.current[i], { useCORS: true, scrollX: 10, scrollY: 0 });
-          } else if (_printer?.width === "58mm") {
-            canvas = await html2canvas(billForCher58?.current[i], { useCORS: true, scrollX: 10, scrollY: 0 });
-          }
-          context.drawImage(canvas, 0, currentHeight);
-          currentHeight += canvas.height;
-        }
-      };
-  
-      console.log("billForCher80: ", billForCher80);
-  
-      await calculateTotalHeight();
-  
-      // Set combined canvas dimensions
-      combinedCanvas.width = billForCher80.current[0].offsetWidth; // Assuming all bills have the same width
-      combinedCanvas.height = totalHeight;
-  
-      await drawCanvases();
-  
-      // Convert combined canvas to data URL
-      const dataUrl = combinedCanvas.toDataURL();
-  
-      // Determine printer URL based on the type of the first printer
-      const _printer = printers.find((e) => e?._id === orderSelect?.[0]?.printer);
-      let urlForPrinter = "";
-      if (_printer?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      } else if (_printer?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      } else if (_printer?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
-  
-      // Convert image to Blob
-      const _file = await base64ToBlob(dataUrl);
-  
-      // Prepare FormData
-      const bodyFormData = new FormData();
-      bodyFormData.append("ip", _printer?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("image", _file);
-  
-      console.log("bodyFormData: ", bodyFormData);
-      console.log("urlForPrinter: ", urlForPrinter);
-  
-      // Send data to printer
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
+      const response = await axios.post(urlForPrinter, bodyFormData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+      if (response.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Printing process completed",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        return true; // Printing succeeded
+      } else {
+        throw new Error("Printing failed");
+      }
     } catch (err) {
-      console.log(err);
+      if (retryCount < 1) { // Retry once
+        return await printItems(retryCount + 1); 
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: `Failed to print items`,
+          text: `Error: ${err.message}. Please check the printer and try again.`,
+          showConfirmButton: true,
+        });
+        return false; // Printing failed after retry
+      }
     }
   };
+
   
   
 
@@ -560,20 +524,22 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              // // print with no cut
-              // onPrintForCherSingleRequest().then(() => {
-              //   onSelectTable(selectedTable);
-              //   navigate(
-              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              //   );
-
-              //  print with cut
-              onPrintForCher().then(() => {
+              // print with no cut
+              printItems().then(() => {
                 onSelectTable(selectedTable);
                 navigate(
                   `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                 );
-              });
+                })
+
+              // //  print with cut
+              // onPrintForCher().then(() => {
+              //   onSelectTable(selectedTable);
+              //   navigate(
+              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+              //   );
+              // });
+
             } else {
               onSelectTable(selectedTable);
               navigate(
@@ -1045,66 +1011,39 @@ function AddOrder() {
           );
         })}
 
-        {/* (No-Cut) Bill Print for each item  */}
-        {selectedMenu?.map((val, i) => {
-          let Component;
-          if (i === 0) {
-            Component = BillForChefNoCutHeader;
-          } else if (i === selectedMenu.length - 1) {
-            Component = BillForChefNoCutTrailer;
-          } else {
-            Component = BillForChefNoCutBody;
-          }
+        {/* Render the combined bill for 80mm */}
+        <div
+          style={{
+            width: "80mm",
+            paddingRight: "20px",
+            // paddingBottom: "10px",
+          }}
+          ref={combinedBillRef}
+        >
+          <CombinedBillForChefNoCut
+            storeDetail={storeDetail}
+            selectedTable={selectedTable}
+            selectedMenu={selectedMenu}
+            table={{ tableId: { name: selectedTable?.tableName } }}
+          />
+        </div>
 
-          return (
-            <div
-              key={i}
-              style={{
-                width: "80mm",
-                paddingRight: "20px",
-                // paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCherNoCut80.current[i] = el)}
-            >
-              <Component
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-                itemLen={selectedMenu.length}
-              />
-            </div>
-          );
-        })}
-
-        {selectedMenu?.map((val, i) => {
-          let Component;
-          if (i === 0) {
-            Component = BillForChefNoCutHeader;
-          } else if (i === selectedMenu.length - 1) {
-            Component = BillForChefNoCutTrailer;
-          } else {
-            Component = BillForChefNoCutBody;
-          }
-
-          return (
-            <div
-              key={i}
-              style={{
-                width: "58mm",
-                paddingRight: "20px",
-                // paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCherNoCut58.current[i] = el)}
-            >
-              <Component
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-                itemLen={selectedMenu.length}
-              />
-            </div>
-          );
-        })}
+        {/* Render the combined bill for 58mm (if needed) */}
+        <div
+          style={{
+            width: "58mm",
+            paddingRight: "20px",
+            // paddingBottom: "10px",
+          }}
+          ref={combinedBillRef}
+        >
+          <CombinedBillForChefNoCut
+            storeDetail={storeDetail}
+            selectedTable={selectedTable}
+            selectedMenu={selectedMenu}
+            table={{ tableId: { name: selectedTable?.tableName } }}
+          />
+        </div>
 
       <Modal
         show={show}
