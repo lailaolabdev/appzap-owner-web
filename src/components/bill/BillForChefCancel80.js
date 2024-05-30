@@ -27,7 +27,7 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
                 padding: 5,
               }}
             >
-              {val?.tableId?.name || selectedTable?.name}
+              {val?.tableId?.name || selectedTable?.tableName}
             </td>
             <td
               style={{
