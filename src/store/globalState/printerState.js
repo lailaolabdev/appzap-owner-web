@@ -6,7 +6,7 @@ const socket = socketio.connect("http://localhost:9150", {
   reconnection: true,
   reconnectionDelay: 5000,
   reconnectionDelayMax: 10000,
-  reconnectionAttempts: 25,
+  // reconnectionAttempts: 25,
 });
 export const usePrintersState = ({ storeDetail }) => {
   // state

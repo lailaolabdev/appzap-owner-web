@@ -20,6 +20,23 @@ export const getStore = async (storeId) => {
     return error;
   }
 };
+export const updateStorePin = async (usePin = false) => {
+  try {
+    const url = `${END_POINT_APP}/v4/store/pin`;
+    const reservation = await axios.put(
+      url,
+      {
+        usePin: usePin,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return reservation;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const updateStore = async (data, id) => {
   try {

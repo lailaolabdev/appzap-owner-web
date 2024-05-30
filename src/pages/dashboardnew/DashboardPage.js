@@ -16,9 +16,9 @@ import {
   getPromotionReport,
   getReports,
   getSalesInformationReport,
-  getUserReport
+  getUserReport,
 } from "../../services/report";
-import { getManyTables } from "../../services/table"
+import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
@@ -31,6 +31,7 @@ import PopUpPrintStaffHistoryComponent from "../../components/popup/PopUpPrintSt
 import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMenuHistoryComponent";
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
+import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
 
 export default function DashboardPage() {
   // state
@@ -47,7 +48,7 @@ export default function DashboardPage() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [tableList, setTableList] = useState([]);
-  const [selectedTableIds, setSelectedTableIds] = useState([])
+  const [selectedTableIds, setSelectedTableIds] = useState([]);
 
   // provider
   const { storeDetail } = useStore();
@@ -55,7 +56,7 @@ export default function DashboardPage() {
   // useEffect
   useEffect(() => {
     getTable();
-  }, [])
+  }, []);
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
@@ -69,8 +70,8 @@ export default function DashboardPage() {
   // function
   const getTable = async () => {
     const data = await getManyTables(storeDetail?._id);
-    setTableList(data)
-  }
+    setTableList(data);
+  };
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
@@ -78,35 +79,58 @@ export default function DashboardPage() {
   };
   const getSalesInformationReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getSalesInformationReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setSalesInformationReport(data);
   };
   const getUserReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getUserReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getUserReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setUserReport(data);
   };
   const getMenuReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMenuReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getMenuReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setMenuReport(data);
   };
   const getCategoryReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getCategoryReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getCategoryReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setCategoryReport(data);
   };
   const getMoneyReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getMoneyReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setMoneyReport(data);
   };
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getPromotionReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
     setPromotionReport(data);
   };
-
 
   return (
     <>
@@ -133,7 +157,10 @@ export default function DashboardPage() {
               </div>
             </Button>
             <Button
-              onClick={() => setPopup({ popUpChooseTableComponent: true })}>ເລືອກໂຕະ</Button>
+              onClick={() => setPopup({ popUpChooseTableComponent: true })}
+            >
+              ເລືອກໂຕະ
+            </Button>
           </div>
           {/* <Button
             variant="outline-primary"
@@ -191,7 +218,7 @@ export default function DashboardPage() {
                 //     salesInformationReport?.["totalCost"]
                 //   )}${storeDetail?.firstCurrency}`,
                 // },
-              
+
                 {
                   title: "ຈຳນວນທຸລະກຳການຂາຍ",
                   amount: `${moneyCurrency(
@@ -206,15 +233,15 @@ export default function DashboardPage() {
                 },
 
                 {
-                  title: "ລາຍຈ່າຍ",
+                  title: "ລາຍຈ່າຍ ກີບ",
                   amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfit"]
-                  )}${storeDetail?.firstCurrency}`,
+                    salesInformationReport?.["totalCostLAK"]
+                  )} ກີບ`,
                 },
                 {
-                  title: "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍ)",
+                  title: "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍກີບ)",
                   amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfit"]
+                    salesInformationReport?.["grossProfitLAK"]
                   )}${storeDetail?.firstCurrency}`,
                 },
                 // {
@@ -274,7 +301,10 @@ export default function DashboardPage() {
                 }}
               >
                 <div>ສ່ວນຫຼຸດທັງໝົດ</div>
-                <div>{promotionReport?.[0]?.totalSaleAmount || 0}{storeDetail?.firstCurrency}</div>
+                <div>
+                  {promotionReport?.[0]?.totalSaleAmount || 0}
+                  {storeDetail?.firstCurrency}
+                </div>
               </div>
             </Card.Body>
           </Card>
@@ -328,7 +358,8 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.amount)}{storeDetail?.firstCurrency}
+                      {moneyCurrency(e?.amount)}
+                      {storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -360,7 +391,8 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
                     <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
+                      {moneyCurrency(e?.totalSaleAmount)}
+                      {storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -393,10 +425,17 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
-                    <td>{moneyCurrency(e?.discount)}{storeDetail?.firstCurrency}</td>
-                    <td>{moneyCurrency(e?.billBefore)}{storeDetail?.firstCurrency}</td>
+                    <td>
+                      {moneyCurrency(e?.discount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                    <td>
+                      {moneyCurrency(e?.billBefore)}
+                      {storeDetail?.firstCurrency}
+                    </td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount)}{storeDetail?.firstCurrency}
+                      {moneyCurrency(e?.billAmount)}
+                      {storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -432,7 +471,8 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
                       </td>
                     </tr>
                   ))}
@@ -470,7 +510,8 @@ export default function DashboardPage() {
                         {e?.canceled || 0}
                       </td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
                       </td>
                     </tr>
                   ))}
@@ -506,7 +547,12 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuCategoryHistoryComponent>
-
+      <PopUpPrintMenuAndCategoryHistoryComponent
+        open={popup?.printReportMenuAndCategorySale}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
+      </PopUpPrintMenuAndCategoryHistoryComponent>
       <PopUpPrintReport
         open={popup?.printReport}
         setPopup={setPopup}
@@ -528,7 +574,8 @@ export default function DashboardPage() {
         open={popup?.popUpChooseTableComponent}
         onClose={() => setPopup()}
         tableList={tableList || []}
-        setSelectedTable={setSelectedTableIds} />
+        setSelectedTable={setSelectedTableIds}
+      />
     </>
   );
 }
