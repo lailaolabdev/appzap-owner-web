@@ -21,6 +21,7 @@ import styled from "styled-components";
 import { useTranslation } from "react-i18next";
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import { END_POINT_APP, getLocalData } from "../../constants/api";
+import { MdPassword } from "react-icons/md";
 import Axios from "axios";
 import Swal from "sweetalert2";
 
@@ -118,7 +119,14 @@ export default function SettingList() {
       title: "Banner",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
+    },  
+    {
+      id: "f962968d-1bed-48da-9049-92551dcd7102",
+      title: "PIN",
+      icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
+      path: `/PIN`,
     },
+
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",

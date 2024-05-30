@@ -60,6 +60,12 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
           >
             <span>ລາຍງານປະເພດເມນູ</span>
           </Button>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={() => setPopup({ printReportMenuAndCategorySale: true })}
+          >
+            <span>ລາຍງານເມນູແລະປະເພດ</span>
+          </Button>
         </div>
       </Modal.Body>
     </Modal>

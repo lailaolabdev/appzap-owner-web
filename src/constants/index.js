@@ -49,13 +49,13 @@ export const HEADER = {
 export const BODY = {
   width: "100%",
   minHeight: "100vh",
-  backgroundColor: "white",
   // marginRight: 32,
   // marginLeft: 32,
   // paddingLeft: 32,
   // paddingTop: 32,
   // paddingRight: 32,
   // paddingBottom: 40,
+  padding:20,
 };
 
 export const DIV_NAV = {

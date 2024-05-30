@@ -78,7 +78,7 @@ export default function Categorylist() {
   return (
     <div style={BODY}>
       <NavList ActiveKey='/settingStore/stock/category' />
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
+      <div>
         <div className='col-sm-12 text-right'>
           <Button
             className='col-sm-2'

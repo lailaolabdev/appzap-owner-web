@@ -1,9 +1,9 @@
 import React from "react";
-import { Nav } from "react-bootstrap";
-import {  useNavigate, useParams } from "react-router-dom";
+import { Breadcrumb, Nav } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function NavList({ ActiveKey = "/settingStore/stock" }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   // functions
   const _menuList = () => {
@@ -17,23 +17,29 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
   };
   return (
     <div>
-      <Nav variant='tabs' defaultActiveKey={ActiveKey}>
+      <Breadcrumb>
+        <Breadcrumb.Item>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
+        <Breadcrumb.Item active>ຈັດການສະຕ໊ອກ</Breadcrumb.Item>
+      </Breadcrumb>
+      <Nav variant="tabs" defaultActiveKey={ActiveKey}>
         <Nav.Item>
-          <Nav.Link eventKey='/settingStore/stock' onClick={() => _menuList()}>
+          <Nav.Link eventKey="/settingStore/stock" onClick={() => _menuList()}>
             ສະຕ໊ອກທັງໝົດ
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
-            eventKey='/settingStore/stock/category'
-            onClick={() => _category()}>
+            eventKey="/settingStore/stock/category"
+            onClick={() => _category()}
+          >
             ປະເພດສະຕ໊ອກ
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link
-            eventKey='/settingStore/stock/history'
-            onClick={() => _history()}>
+            eventKey="/settingStore/stock/history"
+            onClick={() => _history()}
+          >
             ປະຫວັດສະຕ໊ອກ
           </Nav.Link>
         </Nav.Item>

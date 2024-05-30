@@ -28,6 +28,8 @@ import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
+import PopUpPin from "../../components/popup/PopUpPin";
+import printFlutter from "../../helpers/printFlutter";
 
 /**
  * const
@@ -60,6 +62,7 @@ import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
+import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -101,6 +104,8 @@ export default function TableList() {
   const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
   const [codeShortLink, setCodeShortLink] = useState(null);
   const [qrToken, setQrToken] = useState("");
+  const [pinStatus, setPinStatus] = useState(false);
+  const [workAfterPin, setWorkAfterPin] = useState("");
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -158,7 +163,7 @@ export default function TableList() {
   const [userData, setuserData] = useState(null);
 
   const [isBillTest, setIsBillTest] = useState(true);
- 
+
   // console.log("shopId==========>", storeDetail?._id)
   // console.log("userData==========>", userData)
 
@@ -168,7 +173,24 @@ export default function TableList() {
   // }
 
   useEffect(() => {
-     
+    if (!pinStatus) return;
+    setPinStatus(false);
+    if (workAfterPin == "discount") {
+      setWorkAfterPin("");
+      setPopup({ discount: true });
+    }
+    if (workAfterPin == "cancle_order") {
+      setWorkAfterPin("");
+      setPopup();
+      setShow1(true);
+    }
+    if (workAfterPin == "cancle_order_and_print") {
+    }
+
+    getUserData();
+  }, [pinStatus]);
+
+  useEffect(() => {
     getUserData();
   }, []);
   const getUserData = async () => {
@@ -267,7 +289,7 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      console.log("logBill_80:------>", _resBill?.data)
+      console.log("logBill_80:------>", _resBill?.data);
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -453,34 +475,33 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
+  // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
+  const _createHistoriesPrinter = async (data) => {
+    try {
+      let headers = await getHeaders();
+      const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
+      const updateTable = await axios({
+        method: "post",
+        url: _url,
+        data: data,
+        headers: headers,
+      });
 
-// ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ 
-const _createHistoriesPrinter = async (data) => {
-  try {
-    let headers = await getHeaders();
-    const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
-    const updateTable = await axios({
-      method: "post",
-      url: _url,
-      data: data,
-      headers: headers,
-    });
-
-    if (updateTable?.status < 300) {
-      console.log("success create printer bil...")
+      if (updateTable?.status < 300) {
+        console.log("success create printer bil...");
+      }
+    } catch (err) {
+      console.log({ err });
     }
-  } catch (err) {
-    console.log({err})
-  }
-};
+  };
 
   const onPrintBill = async () => {
     try {
-
       let _dataBill = {
-        ...dataBill, typePrint: "PRINT_BILL_CHECKOUT"
-      }
-       await _createHistoriesPrinter(_dataBill)
+        ...dataBill,
+        typePrint: "PRINT_BILL_CHECKOUT",
+      };
+      await _createHistoriesPrinter(_dataBill);
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -523,6 +544,7 @@ const _createHistoriesPrinter = async (data) => {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
 
+      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
         method: "post",
         url: urlForPrinter,
@@ -776,6 +798,7 @@ const _createHistoriesPrinter = async (data) => {
 
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
+  const billForCherCancel80 = useRef([]);
 
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
@@ -789,17 +812,22 @@ const _createHistoriesPrinter = async (data) => {
       .fill()
       .map((_, i) => billForCher58.current[i]);
   }
-
-
+  if (billForCherCancel80.current.length !== arrLength) {
+    // add or remove refs
+    billForCherCancel80.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCherCancel80.current[i]);
+  }
 
   const [onPrinting, setOnPrinting] = useState(false);
-  const onPrintForCher = async () => { 
+  const onPrintForCher = async () => {
     setOnPrinting(true);
 
     let _dataBill = {
-      ...dataBill, typePrint: "PRINT_BILL_FORCHER"
-    }
-    await _createHistoriesPrinter(_dataBill)
+      ...dataBill,
+      typePrint: "PRINT_BILL_FORCHER",
+    };
+    await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
@@ -858,6 +886,7 @@ const _createHistoriesPrinter = async (data) => {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
+        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
         await axios({
           method: "post",
           url: urlForPrinter,
@@ -875,6 +904,105 @@ const _createHistoriesPrinter = async (data) => {
       } catch (err) {
         console.log(err);
         if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      }
+      _index++;
+    }
+    setOnPrinting(false);
+  };
+
+  const onPrintForCherCancel = async () => {
+    setOnPrinting(true);
+
+    let _dataBill = {
+      ...dataBill,
+      typePrint: "PRINT_BILL_FORCHER",
+    };
+    await _createHistoriesPrinter(_dataBill);
+
+    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    let _index = 0;
+    const printDate = [...billForCherCancel80.current];
+    let dataUrls = [];
+    for (const _ref of printDate) {
+      const dataUrl = await html2canvas(_ref, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      dataUrls.push(dataUrl);
+    }
+    for (const _ref of printDate) {
+      const _printer = printers.find((e) => {
+        return e?._id === orderSelect?.[_index]?.printer;
+      });
+
+      try {
+        let urlForPrinter = "";
+        let dataUrl = dataUrls[_index];
+        // if (_printer?.width === "80mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 530 / widthBill80,
+        //   });
+        // }
+        // if (_printer?.width === "58mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 350 / widthBill58,
+        //   });
+        // }
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = ETHERNET_PRINTER_PORT;
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = USB_PRINTER_PORT;
+        }
+        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        if (_index === 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
+        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
+        await axios({
+          method: "post",
+          url: urlForPrinter,
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        if (_index === 0) {
+          setOnPrinting(false);
+          return {error:true,err}
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -945,8 +1073,13 @@ const _createHistoriesPrinter = async (data) => {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem,
-      selectedTable);
+    let _resOrderUpdate = await updateOrderItem(
+      _updateItems,
+      storeId,
+      menuId,
+      seletedCancelOrderItem,
+      selectedTable
+    );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
       setCheckedBox(!checkedBox);
@@ -974,8 +1107,13 @@ const _createHistoriesPrinter = async (data) => {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(_updateItems, storeId, menuId, seletedCancelOrderItem,
-      selectedTable);
+    let _resOrderUpdate = await updateOrderItem(
+      _updateItems,
+      storeId,
+      menuId,
+      seletedCancelOrderItem,
+      selectedTable
+    );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
       setCheckedBox(!checkedBox);
@@ -1029,6 +1167,57 @@ const _createHistoriesPrinter = async (data) => {
 
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
+    }
+  };
+
+  const handleUpdateOrderStatuscancelAndCallback = async (status, callback) => {
+    try {
+      // getOrderItemsStore(CANCEL_STATUS);
+      const storeId = storeDetail?._id;
+      // let previousStatus = orderItems[0].status;
+      console.log("selectedTable:==8888=>", selectedTable);
+      let menuId;
+      let _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+            name: i?.name,
+            // remark: seletedCancelOrderItem
+          };
+        });
+      
+      const checkError=   await callback();
+      if(checkError?.error){
+        throw new Error("ປິນບໍ່ສຳເລັດ");
+      }
+      let _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        handleClose1();
+
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
+        Swal.fire({
+          icon: "success",
+          title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+      }
+    } catch (err) {
+      errorAdd("ບໍ່ສຳເລັດ");
     }
   };
 
@@ -1098,7 +1287,6 @@ const _createHistoriesPrinter = async (data) => {
     }
   };
 
-
   return (
     <div
       style={{
@@ -1134,7 +1322,13 @@ const _createHistoriesPrinter = async (data) => {
               flexDirection: "column",
             }}
           >
-            <div style={{ backgroundColor: "#ff926a", padding: "10px", color: '#fff' }}>
+            <div
+              style={{
+                backgroundColor: "#ff926a",
+                padding: "10px",
+                color: "#fff",
+              }}
+            >
               {t("totalTable")} : {tableList?.length},{" "}
               {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
               {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
@@ -1189,8 +1383,8 @@ const _createHistoriesPrinter = async (data) => {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "#FFE17B"
-                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                ? "#FFE17B"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1206,8 +1400,8 @@ const _createHistoriesPrinter = async (data) => {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1233,15 +1427,15 @@ const _createHistoriesPrinter = async (data) => {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? ""
-                                      : "bold"
+                                    ? ""
+                                    : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "#616161"
-                                      : "white"
+                                    ? "#616161"
+                                    : "white"
                                   : "#616161",
                               }}
                             >
@@ -1289,8 +1483,8 @@ const _createHistoriesPrinter = async (data) => {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1438,10 +1632,10 @@ const _createHistoriesPrinter = async (data) => {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId?.[0]?.updatedBy?.lastname
+                            dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1557,7 +1751,8 @@ const _createHistoriesPrinter = async (data) => {
                         <ButtonCustom
                           onClick={() => {
                             // _onAddDiscount();
-                            setPopup({ discount: true });
+                            setWorkAfterPin("discount");
+                            setPopup({ PopUpPin: true });
                           }}
                         >
                           {t("discount")}
@@ -1596,7 +1791,27 @@ const _createHistoriesPrinter = async (data) => {
                         hidden={checkedBox}
                       >
                         <ButtonCustom
-                          onClick={() => handleShow1()}
+                          onClick={() => {
+                            handleUpdateOrderStatuscancelAndCallback(
+                              "CANCELED",
+                              async () => {
+                                const data = await onPrintForCherCancel();
+                               return data
+                              }
+                            ).then();
+                          }}
+                          disabled={checkedBox || onPrinting}
+                        >
+                          {onPrinting && (
+                            <Spinner animation="border" size="sm" />
+                          )}
+                          ຍົກເລີກແລະພິມບິນໄປຄົວ
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => {
+                            setWorkAfterPin("cancle_order");
+                            setPopup({ PopUpPin: true });
+                          }}
                           disabled={checkedBox}
                         >
                           {t("cancel")}
@@ -1638,55 +1853,55 @@ const _createHistoriesPrinter = async (data) => {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                              <tr
-                                onClick={() => handleShowQuantity(orderItem)}
-                                key={"order" + index}
-                                style={{ borderBottom: "1px solid #eee" }}
-                              >
-                                <td onClick={(e) => e.stopPropagation()}>
-                                  <Checkbox
-                                    disabled={
-                                      orderItem?.status === "CANCELED"
-                                    }
-                                    name="checked"
-                                    checked={orderItem?.isChecked || false}
-                                    onChange={(e) => {
-                                      // e.stopPropagation()
-                                      onSelect({
-                                        ...orderItem,
-                                        isChecked: e.target.checked,
-                                      });
-                                    }}
-                                  />
-                                </td>
+                                <tr
+                                  onClick={() => handleShowQuantity(orderItem)}
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        // e.stopPropagation()
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
 
-                                <td>{index + 1}</td>
-                                <td>{orderItem?.name}</td>
-                                <td>{orderItem?.quantity}</td>
-                                <td
-                                  style={{
-                                    color:
-                                      orderItem?.status === `SERVED`
-                                        ? "green"
-                                        : orderItem?.status === "DOING"
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                  }}
-                                >
-                                  {orderItem?.status
-                                    ? orderStatus(orderItem?.status)
-                                    : "-"}
-                                </td>
-                                <td>{orderItem?.createdBy?.firstname}</td>
-                                <td>
-                                  {orderItem?.createdAt
-                                    ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
-                                    )
-                                    : "-"}
-                                </td>
-                              </tr>
-                            ))
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -1863,6 +2078,23 @@ const _createHistoriesPrinter = async (data) => {
             </div>
           );
         })}
+      {isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((val, i) => {
+          return (
+            <div
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCherCancel80.current[i] = el)}
+            >
+              <BillForChefCancel80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                dataBill={dataBill}
+                val={val}
+              />
+            </div>
+          );
+        })}
       <div>
         {isCheckedOrderItem
           ?.filter((e) => e?.isChecked)
@@ -1892,7 +2124,7 @@ const _createHistoriesPrinter = async (data) => {
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
-      // editMode={select}
+        // editMode={select}
       />
 
       <OrderCheckOut
@@ -1908,6 +2140,13 @@ const _createHistoriesPrinter = async (data) => {
         onSubmit={() => {
           setMenuItemDetailModal(false);
           setPopup({ CheckOutType: true });
+        }}
+      />
+      <PopUpPin
+        open={popup?.PopUpPin}
+        onClose={() => setPopup()}
+        setPinStatus={(e) => {
+          setPinStatus(e);
         }}
       />
 
@@ -2023,7 +2262,6 @@ const _createHistoriesPrinter = async (data) => {
               className="form-control"
               onChange={handleSelectedCancelOrder}
             >
-              {/* value={seletedCancelOrderItem?.remark} */}
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
@@ -2128,8 +2366,8 @@ const _createHistoriesPrinter = async (data) => {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                            ? ""
-                            : "red",
+                          ? ""
+                          : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2193,9 +2431,9 @@ const _createHistoriesPrinter = async (data) => {
           <Button
             disabled
             variant="success"
-          // onClick={() => {
-          //   _orderTableQunatity();
-          // }}
+            // onClick={() => {
+            //   _orderTableQunatity();
+            // }}
           >
             ບັນທຶກ
           </Button>

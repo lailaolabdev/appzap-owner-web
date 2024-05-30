@@ -32,15 +32,16 @@ import PaginationAppzap from "../../constants/PaginationAppzap";
 import { getCountStocksAll, getStocksAll } from "../../services/stocks";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import { MdSearch } from "react-icons/md";
+import { FaSearch } from "react-icons/fa";
+import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
 
 // ------------------------------------------------------------------------------- //
 
 export default function MenuList() {
   // state
+  const [popup, setPopup] = useState();
   const [popAddStock, setPopAddStock] = useState(false);
   const [popMinusStock, setPopMinusStock] = useState(false);
-  const [popCreateStock, setPopCreateStock] = useState(false);
-  const [popDeleteStock, setPopDeleteStock] = useState(false);
   const [isPreviewPage, setIsPreviewPage] = useState(false);
 
   const [select, setSelect] = useState();
@@ -55,7 +56,7 @@ export default function MenuList() {
   const [storeData, setStoreData] = useState();
   const [sortedData, setSortedData] = useState([]);
   const [sortOrder, setSortOrder] = useState("All");
-  const [selectCategories, setSelectCategories] = useState("All");
+  const [selectCategories, setSelectCategories] = useState("");
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [prepaDatas, setPrepaDatas] = useState([]);
   const _localData = getLocalData();
@@ -138,9 +139,9 @@ export default function MenuList() {
         findby += `skip=${page * rowsPerPage}&`;
         findby += `limit=${rowsPerPage}&`;
         findby += `search=${filterName}&`;
-        findby += `categories=${selectCategories}&`;
+        findby += `stockCategoryId=${selectCategories}&`;
         const res = await getStocksAll(findby);
-        if (res.status === 200) { 
+        if (res.status === 200) {
           setStocks(res?.data);
           setIsLoading(true);
         }
@@ -161,6 +162,7 @@ export default function MenuList() {
         let findby = "?";
         findby += `storeId=${_localData?.DATA?.storeId}&`;
         findby += `search=${filterName}&`;
+        findby += `stockCategoryId=${selectCategories}&`;
         const res = await getCountStocksAll(findby);
         if (res.status === 200) {
           setTotalStock(res?.data);
@@ -241,8 +243,8 @@ export default function MenuList() {
     } else {
       sorted = [...stocks]; // Default or 'All' case, not sorted
     }
-  
-    console.log("sorted:======>", sorted)
+
+    console.log("sorted:======>", sorted);
     setSortedData(sorted);
   }, [stocks, sortOrder]);
 
@@ -259,7 +261,7 @@ export default function MenuList() {
   useEffect(() => {
     getStock();
     getCountStocks();
-  }, [page, filterName]);
+  }, [page, filterName, selectCategories]);
 
   console.log("selectCategories:---->", selectCategories);
 
@@ -268,160 +270,109 @@ export default function MenuList() {
   return (
     <div style={BODY}>
       <NavList ActiveKey="/settingStore/stock" />
-      <div style={{ backgroundColor: "#FAF9F7", padding: 20, borderRadius: 8 }}>
-        <div
-          style={{
-            display: "flex",
-            // gridTemplateColumns: "1fr 90px 200px"
-            gap: 10,
-          }}
-        > 
-
-          <div style={{ width: "100%", position: "relative" }}>
-            <div
-              style={{
-                position: "absolute",
-                top: "2.33em",
-                left: 7,
-                zIndex: 10,
-              }}
-            >
-              <MdSearch style={{ fontSize: 27, color: COLOR_APP }} />
-            </div>
-            <Form.Label>ຄົ້ນຫາ</Form.Label>
-            <InputGroup>
-              <Form.Control
-                style={{ paddingLeft: "2.5em" }}
-                value={filterName}
-                onChange={(e) => setFilterName(e?.target?.value)}
-                // onKeyDown={(e) => {
-                //   if (e.key === "Enter") {
-                //     getStock();
-                //   }
-                // }}
-                type="text"
-                placeholder="ປ້ອນຊື່ສິນຄ້າ ແລ້ວ enter..."
-              />
-              {/* <Button onClick={() => getStocks()}>Enter</Button> */}
-            </InputGroup>
-          </div>
-
-          <div style={{ width: 500 }}>
-            <label>ໝວດໝູ່</label>
-            <select
-              className="form-control w-100"
-              value={selectCategories}
-              onChange={(e) => setSelectCategories(e?.target?.value)}
-            >
-              <option value="">ທັງໝົດ</option>
-
-              {categorys.map((elm, index) => (
-                <option key={index} value={elm?._id}>{elm?.name}</option>
-              ))}
-            </select>
-          </div>
-          <div style={{ width: 200 }}>
-            <label>ເລືອກຈຳນວນ</label>
-            <select
-              className="form-control w-100"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
-              <option value="All">ທົ່ວໄປ</option>
-              <option value="asc">ໜ້ອຍ ຫາ ຫຼາຍ</option>
-              <option value="desc">ຫຼາຍ ຫາ ໜ້ອຍ</option>
-            </select>
-          </div>
-
-          <div />
-
-          <div style={{ width: 300 }}>
-            <div style={{ height: 20 }}></div>
-            {prepaDatas?.length >= 1 ? (
-              <Button
-                style={{
-                  color: "#ffff",
-                  border: 0,
-                  width: "100%",
-                  marginTop: 13,
-                }}
-                variant="success"
-                onClick={() => setIsPreviewPage(true)}
-              >
-                Print
-              </Button>
-            ) : (
-              <Button
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#ffff",
-                  border: 0,
-                  width: "100%",
-                  marginTop: 13,
-                }}
-                onClick={() => setPopCreateStock(true)}
-              >
-                ສ້າງສະຕ໊ອກ
-              </Button>
-            )}
-          </div>
-        </div>
-        <div style={{ height: 20 }}></div>
-        <div>
-          <div
-            className="w-100"
-            style={{ overflow: "auto", backgroundColor: "#fff" }}
+      <div
+        style={{
+          display: "flex",
+          // gridTemplateColumns: "1fr 90px 200px"
+          gap: 10,
+          padding: "10px 0",
+        }}
+      >
+        <div style={{ display: "flex", gap: 10 }}>
+          <Form.Control
+            placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ"
+            value={filterName}
+            onChange={(e) => setFilterName(e?.target?.value)}
+          />
+          <Button
+            variant="primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
           >
-            {isLoading ? (
-              <LoadingAppzap />
-            ) : (
-              <table className="table">
-                <thead className="thead-light">
-                  <tr>
-                    <th scope="col">
-                      <Form.Check
-                        onClick={() => onSelectStocksAll()}
-                        label={"ລຳດັບ"}
-                        id={"ລຳດັບ"}
-                      />
-                    </th>
-                    <th scope="col">ຊື່ສິນຄ້າ</th>
-                    <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
-                    <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
-                    <th scope="col">ຈັດການຂໍ້ມູນ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedData.map((data, index) => {
-                      return (
-                        <tr>
-                          <td>
-                            <div style={{ width: 30 }}>
-                              {isSelectAll ? (
-                                <Form.Check
-                                  checked={true}
-                                  label={page * rowsPerPage + index + 1}
-                                  readOnly
-                                />
-                              ) : (
-                                <Form.Check
-                                  type="checkbox"
-                                  id={page * rowsPerPage + index + 1}
-                                  onChange={() => onSelectSigleStoks(data)}
-                                  label={page * rowsPerPage + index + 1}
-                                />
-                              )}
-                            </div>
-                          </td>
-                          <td>{data?.name}</td>
-                          <td>{data?.stockCategoryId?.name}</td>
-                          <td
-                            style={{
-                              color: data?.quantity < 10 ? "red" : "green",
-                              width: 500,
-                            }}
-                          >
-                            {/* <ProgressBar
+            <FaSearch /> ຄົ້ນຫາ
+          </Button>
+        </div>
+        <Button
+          variant="outline-primary"
+          onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
+        >
+          ເລືອກໝວດໝູ່
+        </Button>
+        <select
+          className="btn btn-outline-primary"
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value)}
+        >
+          <option value="All">ຈັດລຽງ</option>
+          <option value="asc">ໜ້ອຍ ຫາ ຫຼາຍ</option>
+          <option value="desc">ຫຼາຍ ຫາ ໜ້ອຍ</option>
+        </select>
+        <div style={{ flex: 1 }} />
+        <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
+          ສ້າງສະຕ໊ອກ
+        </Button>
+        <Button
+          variant="success"
+          onClick={() => setPopup({ PopUpPreViewsPage: true })}
+        >
+          Print
+        </Button>
+      </div>
+      <div>
+        <div style={{ overflow: "auto", backgroundColor: "#fff" }}>
+          {isLoading ? (
+            <LoadingAppzap />
+          ) : (
+            <table className="table">
+              <thead className="thead-light">
+                <tr>
+                  <th scope="col" style={{ width: 50 }}>
+                    <Form.Check
+                      onClick={() => onSelectStocksAll()}
+                      label={"ລຳດັບ"}
+                      id={"ລຳດັບ"}
+                    />
+                  </th>
+                  <th scope="col" style={{ textAlign: "start" }}>
+                    ຊື່ສິນຄ້າ
+                  </th>
+                  <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                  <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
+                  <th scope="col" style={{ textAlign: "end" }}>
+                    ຈັດການຂໍ້ມູນ
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedData.map((data, index) => {
+                  return (
+                    <tr>
+                      <td>
+                        <div style={{ width: 30 }}>
+                          {isSelectAll ? (
+                            <Form.Check
+                              checked={true}
+                              label={page * rowsPerPage + index + 1}
+                              readOnly
+                            />
+                          ) : (
+                            <Form.Check
+                              type="checkbox"
+                              id={page * rowsPerPage + index + 1}
+                              onChange={() => onSelectSigleStoks(data)}
+                              label={page * rowsPerPage + index + 1}
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td>{data?.name}</td>
+                      <td>{data?.stockCategoryId?.name}</td>
+                      <td
+                        style={{
+                          color: data?.quantity < 10 ? "red" : "green",
+                          width: 500,
+                        }}
+                      >
+                        {/* <ProgressBar
                             min={1}
                             now={data?.quantity ?? 0}
                             variant={data?.quantity >= 1 ? "success" : "danger"}
@@ -429,117 +380,126 @@ export default function MenuList() {
                               data?.unit
                             }`}
                           /> */}
-                            {thousandSeparator(data?.quantity)} {data?.unit}
-                          </td>
-                          <td
-                            style={{
-                              display: "flex",
-                              justifyContent: "end",
-                              padding: 3,
+                        {thousandSeparator(data?.quantity)} {data?.unit}
+                      </td>
+                      <td
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                          padding: 3,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 10,
+                            width: "100%",
+                            justifyContent: "flex-end",
+                            textAlign: "end",
+                          }}
+                        >
+                          <ButtonPrimary
+                            onClick={() => {
+                              setSelect(data);
+                              setPopup({ PopUpMinusStock: true });
                             }}
                           >
-                            <div
+                            <FontAwesomeIcon
+                              icon={faMinus}
                               style={{
-                                display: "flex",
-                                gap: 10,
-                                width: "100%",
-                                flexDirection: "end",
+                                color: "white",
                               }}
-                            >
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(data);
-                                  setPopMinusStock(true);
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faMinus}
-                                  style={{
-                                    color: "white",
-                                  }}
-                                />
-                              </ButtonPrimary>
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(data);
-                                  setPopAddStock(true);
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faPlus}
-                                  style={{
-                                    color: "white",
-                                  }}
-                                />
-                              </ButtonPrimary>
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(data);
-                                  setPopDeleteStock(true);
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  style={{
-                                    color: "white",
-                                  }}
-                                />
-                              </ButtonPrimary>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            )}
-
-            <PaginationAppzap
-              rowsPerPage={rowsPerPage}
-              page={page}
-              pageAll={pageAll}
-              onPageChange={handleChangePage}
-            />
-          </div>
+                            />
+                          </ButtonPrimary>
+                          <ButtonPrimary
+                            onClick={() => {
+                              setSelect(data);
+                              setPopup({ PopUpAddStock: true });
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faPlus}
+                              style={{
+                                color: "white",
+                              }}
+                            />
+                          </ButtonPrimary>
+                          <ButtonPrimary
+                            onClick={() => {
+                              setSelect(data);
+                              setPopup({ PopUpConfirmDeletion: true });
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              style={{
+                                color: "white",
+                              }}
+                            />
+                          </ButtonPrimary>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
+        <PaginationAppzap
+          rowsPerPage={rowsPerPage}
+          page={page}
+          pageAll={pageAll}
+          onPageChange={handleChangePage}
+        />
       </div>
       {/* >>>>>>>>>>> popup >>>>>>>>>>>>>>>> */}
 
       <PopUpPreViewsPage
-        onClose={() => setIsPreviewPage(false)}
-        open={isPreviewPage}
+        onClose={() => setPopup()}
+        open={popup?.PopUpPreViewsPage}
         datas={prepaDatas}
         storeData={storeData}
       />
 
       <PopUpAddStock
-        open={popAddStock}
-        onClose={() => setPopAddStock(false)}
+        open={popup?.PopUpAddStock}
+        onClose={() => setPopup()}
         data={select}
         callback={() => getStock()}
       />
       <PopUpMinusStock
-        open={popMinusStock}
-        onClose={() => setPopMinusStock(false)}
+        open={popup?.PopUpMinusStock}
+        onClose={() => setPopup()}
         data={select}
         callback={() => getStock()}
       />
       <PopUpCreateStock
-        open={popCreateStock}
-        onClose={() => setPopCreateStock(false)}
+        open={popup?.PopUpCreateStock}
+        onClose={() => setPopup()}
         callback={() => getStock()}
       />
       <PopUpConfirmDeletion
-        open={popDeleteStock}
+        open={popup?.PopUpConfirmDeletion}
         text={select?.name}
-        onClose={() => setPopDeleteStock(false)}
+        onClose={() => setPopup()}
         onSubmit={async () => {
           deleteStock(select).then(() => {
             getStock();
-            setPopDeleteStock(false);
+            setPopup();
           });
         }}
       />
+      <PopUpChooseCategoryTypeComponent
+        open={popup?.PopUpChooseCategoryTypeComponent}
+        onClose={() => setPopup()}
+        categoryData={categorys}
+        setSelectedCategory={(_array) => {
+          let data = _array.join("||");
+          setSelectCategories(data);
+        }}
+      />
+
       {/* <<<<<<<<<<< popup <<<<<<<<<<<<<<<< */}
     </div>
   );
