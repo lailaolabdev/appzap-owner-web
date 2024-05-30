@@ -1001,6 +1001,8 @@ export default function TableList() {
       } catch (err) {
         console.log(err);
         if (_index === 0) {
+          setOnPrinting(false);
+          return {error:true,err}
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -1186,7 +1188,11 @@ export default function TableList() {
             // remark: seletedCancelOrderItem
           };
         });
-      await callback();
+      
+      const checkError=   await callback();
+      if(checkError?.error){
+        throw new Error("ປິນບໍ່ສຳເລັດ");
+      }
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
@@ -1789,7 +1795,8 @@ export default function TableList() {
                             handleUpdateOrderStatuscancelAndCallback(
                               "CANCELED",
                               async () => {
-                                await onPrintForCherCancel();
+                                const data = await onPrintForCherCancel();
+                               return data
                               }
                             ).then();
                           }}
