@@ -43,6 +43,7 @@ import {
   faYenSign,
 } from "@fortawesome/free-solid-svg-icons";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
+import EmptyState from "../../components/EmptyState";
 
 export default function ExpendList() {
   //constant
@@ -205,26 +206,38 @@ export default function ExpendList() {
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e?.target?.value)}
-            style={{ width: 250 }}
+            style={{ width: 150 }}
           />{" "}
           ~
           <Form.Control
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e?.target?.value)}
-            style={{ width: 250 }}
+            style={{ width: 150 }}
           />
           <Form.Control
             as="select"
             name="payment"
             value={filterByPayment}
             onChange={(e) => setFilterByPayment(e?.target?.value)}
-            style={{ width: 250 }}
+            style={{ width: 150 }}
           >
-            <option value="ALL">ສະແດງທັງໝົດຮູບແບບ</option>
+            <option value="ALL">ສະແດງຮູບແບບ</option>
             <option value="CASH">ເງິນສົດ</option>
             <option value="TRANSFER">ເງິນໂອນ</option>
           </Form.Control>
+          {/* <Form.Control
+            as="select"
+            name="payment"
+            value={filterByPayment}
+            onChange={(e) => setFilterByPayment(e?.target?.value)}
+            style={{ width: 60 }}
+          >
+            <option value="40">ຈຳນວນສະແດງ</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </Form.Control> */}
           <ButtonComponent
             title="ລົງບັນຊີປະຈຳວັນ"
             icon={faPlusCircle}
@@ -245,52 +258,6 @@ export default function ExpendList() {
         dateEnd={dateEnd}
         setDateEnd={setDateEnd}
       />
-
-
-      {/* <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div className="p-2">ທັງໝົດ {expendData?.total} ລາຍການ</div>
-        <div className="p-2">
-          ລວມກີບ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceLAK)}
-          </span>
-        </div>
-        <div className="p-2">
-          ລວມບາດ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceTHB)}
-          </span>
-        </div>
-        <div className="p-2">
-          ລວມຢວນ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceCNY)}
-          </span>
-        </div>
-        <div className="p-2">
-          ລວມໂດລາ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceUSD)}
-          </span>
-        </div>
-        <div className="p-2">
-          <ButtonComponent
-            title="ລົງບັນຊີປະຈຳວັນ"
-            icon={faPlusCircle}
-            colorbg={"#fb6e3b"}
-            hoverbg={"orange"}
-            width={"150px"}
-            handleClick={() => navigate("/add-expend")}
-          />
-        </div>
-      </div> */}
 
       <div style={{
         display: "flex",
@@ -388,8 +355,8 @@ export default function ExpendList() {
         </div>
       </div>
       {isGraphDisplay && <ExpendatureChart />}
-      
-      {isLoading  ? (
+
+      {isLoading ? (
         <div>
           <center>
             <Spinner animation="border" variant="warning" />
@@ -418,6 +385,7 @@ export default function ExpendList() {
               expendData?.data.length > 0 &&
               expendData?.data.map((item, index) => (
                 <tr
+                  key={"expend" + index}
                   style={{ cursor: "pointer" }}
                   onClick={() => navigate(`/detail-expend/${item?._id}`)}
                 >
@@ -430,13 +398,13 @@ export default function ExpendList() {
                   </td>
                   <td>{convertPayment(item?.payment)}</td>
                   <td>{convertPayment(item?.payment)}</td>
-                  <td><Image
+                  <td style={{ padding: 0, display: "flex", justifyContent: "center", height: 50, alignItems: "center" }}><Image
                     src={item?.expendImages?.length > 0 ? URL_PHOTO_AW3 + item?.expendImages[0] : EMPTY_LOGO}
-                    width="150"
-                    height="150"
+                    // width="100"
+                    // height="100"
                     style={{
-                      height: 50,
-                      width: 50,
+                      height: 40,
+                      width: 40,
                       objectFit: "cover"
                     }}
                   /></td>
@@ -488,6 +456,7 @@ export default function ExpendList() {
         </Table>
       )}
 
+      {expendData?.data.length == 0 && <EmptyState text={"ຍັງບໍ່ມີລາຍຈ່າຍ"} />}
       {Pagination_component(
         expendData?.total,
         "/expends",
