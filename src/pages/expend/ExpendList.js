@@ -11,6 +11,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import PaginationComponent from "../../components/PaginationComponent";
 import queryString from "query-string";
+import ExpendatureChart from "./component/ExpendatureChart";
 
 /**
  * function
@@ -26,14 +27,22 @@ import { END_POINT_SERVER_BUNSI, getLocalData } from "../../constants/api";
 /**
  * css
  */
-import { Table, Spinner, Form } from "react-bootstrap";
+import { Table, Spinner, Form, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
+  faBalanceScaleRight,
+  faBold,
+  faChartLine,
+  faDollarSign,
   faEdit,
+  faListAlt,
+  faMoneyBillWave,
   faPlusCircle,
   faTrash,
+  faYenSign,
 } from "@fortawesome/free-solid-svg-icons";
+import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 
 export default function ExpendList() {
   //constant
@@ -52,6 +61,7 @@ export default function ExpendList() {
   const [shoConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const [totalReport, setTotalReport] = useState();
+  const [isGraphDisplay, setIsShowGraphDisplay] = useState(false);
 
   //filter
   const [filterByYear, setFilterByYear] = useState(
@@ -70,10 +80,6 @@ export default function ExpendList() {
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
 
-  //useEffect()
-  // useEffect(() => {
-  //   fetchExpend();
-  // }, []);
 
   useEffect(() => {
     let filter = {
@@ -81,27 +87,27 @@ export default function ExpendList() {
       filterByMonth: filterByMonth,
       dateStart: dateStart,
       dateEnd: dateEnd,
-      filterByPayment:filterByPayment,
+      filterByPayment: filterByPayment,
     };
 
     console.log("parame?.skip:::", parame?.skip)
 
-    fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
+    fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment,parame?.skip]);
+  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment, parame?.skip]);
 
   //function()
-  const fetchExpend = async (filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment) => {
+  const fetchExpend = async (filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment) => {
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
       let findby = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      if(filterByYear) findby +=  `&year=${filterByYear}`
-      if(filterByMonth) findby +=  `&month=${filterByMonth}`
-      if(dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
-      if(filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
+      if (filterByYear) findby += `&year=${filterByYear}`
+      if (filterByMonth) findby += `&month=${filterByMonth}`
+      if (dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
+      if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
-      console.log("findby::",findby)
+      console.log("findby::", findby)
 
       let header = await getHeadersAccount();
       const headers = {
@@ -114,7 +120,7 @@ export default function ExpendList() {
         headers: headers,
       }).then((res) => {
         setExpendData(res.data);
-      }).finally(()=>{
+      }).finally(() => {
         setIsLoading(false);
       });
 
@@ -125,7 +131,7 @@ export default function ExpendList() {
       }).then((res) => {
         setTotalReport(res?.data?.data);
         setIsLoading(false);
-      }).finally(()=>{
+      }).finally(() => {
         setIsLoading(false);
       });;
     } catch (err) {
@@ -152,7 +158,7 @@ export default function ExpendList() {
       }).then(async () => {
         await setExpendDetail();
         await successAdd("ລຶບສຳເລັດ");
-        await fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
+        await fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
         await setIsLoading(false);
       });
     } catch (err) {
@@ -212,13 +218,21 @@ export default function ExpendList() {
             as="select"
             name="payment"
             value={filterByPayment}
-            onChange={(e)=> setFilterByPayment(e?.target?.value)}
+            onChange={(e) => setFilterByPayment(e?.target?.value)}
             style={{ width: 250 }}
           >
             <option value="ALL">ສະແດງທັງໝົດຮູບແບບ</option>
             <option value="CASH">ເງິນສົດ</option>
             <option value="TRANSFER">ເງິນໂອນ</option>
           </Form.Control>
+          <ButtonComponent
+            title="ລົງບັນຊີປະຈຳວັນ"
+            icon={faPlusCircle}
+            colorbg={"#fb6e3b"}
+            hoverbg={"orange"}
+            width={"150px"}
+            handleClick={() => navigate("/add-expend")}
+          />
         </div>
       </div>
       <Filter
@@ -232,7 +246,8 @@ export default function ExpendList() {
         setDateEnd={setDateEnd}
       />
 
-      <div
+
+      {/* <div
         style={{
           display: "flex",
           flexDirection: "row",
@@ -275,29 +290,127 @@ export default function ExpendList() {
             handleClick={() => navigate("/add-expend")}
           />
         </div>
-      </div>
+      </div> */}
 
-      {isLoading ? (
+      <div style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}
+
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍການທັງຫມົດ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{expendData?.total}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍກີບ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceLAK)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faBold} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍບາດ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceTHB)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faDollarSign} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍໂດລາ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceUSD)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faYenSign} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍຢວນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceCNY)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}
+          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ສະແດງຜົນເປັນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : "ລາຍລະອຽດ"}</div>
+          </div>
+        </div>
+      </div>
+      {isGraphDisplay && <ExpendatureChart />}
+      
+      {isLoading  ? (
         <div>
           <center>
             <Spinner animation="border" variant="warning" />
           </center>
         </div>
       ) : (
-        <Table responsive="xl" className="mt-3 table-hover">
+        <Table responsive="xl" className="mt-3 table-hover table-bordered">
           <thead>
-            <tr>
+            <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
               <th>ວັນທີຈ່າຍ</th>
               <th width="30%">ລາຍລະອຽດ</th>
-              {/* <th>ຊື່ຜູ້ຈ່າຍ</th>
-            <th>ຊື່ຜູ້ຮັບ</th> */}
+              <th>ປະເພດລາຍຈ່າຍ</th>
               <th>ຮູບແບບການຈ່າຍ</th>
+              <th>ຕິດຂັດ</th>
+              <th>ຜູ້ຈ່າຍ</th>
               <th style={{ textAlign: "right" }}>ກີບ</th>
               <th style={{ textAlign: "right" }}>ບາດ</th>
               <th style={{ textAlign: "right" }}>ຢວນ</th>
               <th style={{ textAlign: "right" }}>ໂດລາ</th>
-              <th></th>
+              <th>ຈັດການ</th>
             </tr>
           </thead>
           <tbody>
@@ -315,19 +428,29 @@ export default function ExpendList() {
                   <td style={{ textAlign: "left" }}>
                     {limitText(item?.detail, 50)}
                   </td>
-                  {/* <td>{item?.paidBy}</td>
-                <td>{item?.paidTo}</td> */}
                   <td>{convertPayment(item?.payment)}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td>{convertPayment(item?.payment)}</td>
+                  <td><Image
+                    src={item?.expendImages?.length > 0 ? URL_PHOTO_AW3 + item?.expendImages[0] : EMPTY_LOGO}
+                    width="150"
+                    height="150"
+                    style={{
+                      height: 50,
+                      width: 50,
+                      objectFit: "cover"
+                    }}
+                  /></td>
+                  <td>{item?.paidBy}</td>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceLAK)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceTHB)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceCNY)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceUSD)}
                   </td>
                   <td>
