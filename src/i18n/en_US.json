@@ -168,5 +168,8 @@
     "soundManage": "Sound Manage",
     "currencyManage": "Currency Rate Manage",
     "customerName": "Customer Name",
-    "staffCheckBill": "Check-in staff"
+    "staffCheckBill": "Check-in staff",
+    "billCutPaperTitle": "Cut Paper",
+    "billCut": "Cut",
+    "billNoCut": "Not Cut"
 }

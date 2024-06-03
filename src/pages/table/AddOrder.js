@@ -267,6 +267,8 @@ function AddOrder() {
    * No Cut Printing
    */
   const printItems = async (groupedItems, retryCount = 0) => {
+    console.log("groupedItems2: ", groupedItems)
+
     for (const [printerIp, items] of Object.entries(groupedItems)) {
       const _printer = printers.find((e) => e?.ip === printerIp);
   
@@ -274,12 +276,16 @@ function AddOrder() {
         console.error(`No printer found with IP: ${printerIp}`);
         continue;
       }
+
+      console.log("combinedBillRefs1: ", combinedBillRefs)
   
       const canvas = await html2canvas(combinedBillRefs[printerIp].current, {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
       });
+
+      console.log("combinedBillRefs2: ", combinedBillRefs)
   
       const dataUrl = canvas.toDataURL();
       const _file = await base64ToBlob(dataUrl);
@@ -544,7 +550,7 @@ function AddOrder() {
             // Send print command
             if (isPrinted) {
               // print with no cut
-              printItems().then(() => {
+              printItems(groupedItems, 0).then(() => {
                 onSelectTable(selectedTable);
                 navigate(
                   `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`

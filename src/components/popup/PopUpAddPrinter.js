@@ -1,10 +1,14 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
+import { useTranslation } from "react-i18next";
 import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store/useStore";
 
 export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
+
+  const { t } = useTranslation();
+
   // state
   const { storeDetail } = useStore();
 
@@ -21,6 +25,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
           width: value?.width || "",
           type: value?.type || "",
           ip: value?.ip,
+          cutPaper: value?.cutPaper || "cut", // Set default to "cut"
         }}
         validate={(values) => {
           const errors = {};
@@ -35,6 +40,9 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
           }
           if (!values.ip) {
             errors.ip = "-";
+          }
+          if (!values.cutPaper) { // Validate new field
+            errors.cutPaper = "-";
           }
 
           return errors;
@@ -113,7 +121,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   </option>
                   <option value="ETHERNET">ETHERNET</option>
                   <option value="BLUETOOTH">BLUETOOTH</option>
-                  <option value="USB">USB - (coming soon)</option>
+                  <option value="USB">USB</option>
                 </Form.Control>
               </Form.Group>
               {values?.type !== "USB" ? (
@@ -134,6 +142,25 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
               ) : (
                 ""
               )}
+              <Form.Group>
+                <Form.Label>
+                  {t("billCutPaperTitle")} <span style={{ color: "red" }}>*</span>
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  name="cutPaper"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values?.cutPaper}
+                  isInvalid={errors?.cutPaper}
+                >
+                  <option value="" disabled>
+                    -Select Option-
+                  </option>
+                  <option value={"cut"}>{t("billCut")}</option>
+                  <option value="not_cut">{t("billNoCut")}</option>
+                </Form.Control>
+              </Form.Group>
             </Modal.Body>
             <Modal.Footer>
               <Button
@@ -144,7 +171,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                 }}
                 onClick={() => handleSubmit()}
               >
-                ບັນທຶກເມນູອາຫານ
+                ບັນທຶກປິນເຕີ້
               </Button>
             </Modal.Footer>
           </form>

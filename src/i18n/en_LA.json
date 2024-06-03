@@ -256,5 +256,8 @@
     "transfercash": "ຈ່າຍເງິນສົດ + ໂອນ",
     "soundManage": "ຈັດການສຽງ",
     "currencyManage": "ຈັດການເລດເງິນ",
-    "staffCheckBill": "ພະນັກງານເຊັກບິນ"
+    "staffCheckBill": "ພະນັກງານເຊັກບິນ",
+    "billCutPaperTitle": "ຕັດເຈ້ຍຕາມເມນູ",
+    "billCut": "ຕັດ",
+    "billNoCut": "ບໍ່ຕັດ"
 }
