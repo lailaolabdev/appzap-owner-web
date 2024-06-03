@@ -82,6 +82,15 @@ function AddOrder() {
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
 
+  const [combinedBillRefs, setCombinedBillRefs] = useState({});
+  const [groupedItems, setGroupedItems] = useState({});
+
+
+
+
+
+
+
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -250,6 +259,19 @@ function AddOrder() {
   /**
    * Group Items By Printer
    */
+  useEffect(() => {
+    const refs = {};
+    const grouped = groupItemsByPrinter(selectedMenu);
+    // Create refs for each printer IP
+    Object.keys(grouped).forEach((printerIp) => {
+      refs[printerIp] = React.createRef();
+    });
+    console.log("refs: ", refs)
+    setCombinedBillRefs(refs);
+    setGroupedItems(grouped);
+  }, [selectedMenu]);
+  
+  // Function to group items by printer
   const groupItemsByPrinter = (items) => {
     return items.reduce((groups, item) => {
       const printer = printers.find((e) => e?._id === item.printer);
@@ -262,13 +284,15 @@ function AddOrder() {
     }, {});
   };
   
+  
 
   /**
    * No Cut Printing
    */
   const printItems = async (groupedItems, retryCount = 0) => {
-    console.log("groupedItems2: ", groupedItems)
-
+    console.log("groupedItems2: ", groupedItems);
+    console.log("combinedBillRefs1: ", combinedBillRefs);
+  
     for (const [printerIp, items] of Object.entries(groupedItems)) {
       const _printer = printers.find((e) => e?.ip === printerIp);
   
@@ -276,40 +300,55 @@ function AddOrder() {
         console.error(`No printer found with IP: ${printerIp}`);
         continue;
       }
-
-      console.log("combinedBillRefs1: ", combinedBillRefs)
   
-      const canvas = await html2canvas(combinedBillRefs[printerIp].current, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-      });
-
-      console.log("combinedBillRefs2: ", combinedBillRefs)
+      
   
-      const dataUrl = canvas.toDataURL();
-      const _file = await base64ToBlob(dataUrl);
+      const element = combinedBillRefs[printerIp]?.current;
+      console.log("element: ", element)
   
-      let urlForPrinter = "";
-      if (_printer?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      } else if (_printer?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      } else if (_printer?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
+      if (!element) {
+        console.error(`No element found for printer IP: ${printerIp}`);
+        Swal.fire({
+          icon: "error",
+          title: `Failed to find the element for printer ${printerIp}`,
+          text: `Please check the printer and try again.`,
+          showConfirmButton: true,
+        });
+        continue;
       }
   
-      const bodyFormData = new FormData();
-      bodyFormData.append("ip", _printer?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", _file);
-  
-      console.log(`PREPARE TO SEND TO PRINTER: ${printerIp}`);
-  
       try {
+        const canvas = await html2canvas(element, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+        });
+  
+        console.log("combinedBillRefs2: ", combinedBillRefs);
+  
+        const dataUrl = canvas.toDataURL();
+        const _file = await base64ToBlob(dataUrl);
+  
+        let urlForPrinter = "";
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = ETHERNET_PRINTER_PORT;
+        } else if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
+        } else if (_printer?.type === "USB") {
+          urlForPrinter = USB_PRINTER_PORT;
+        }
+  
+        const bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+  
+        console.log(`PREPARE TO SEND TO PRINTER: ${printerIp}`);
+  
         const response = await axios.post(urlForPrinter, bodyFormData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
+  
         if (response.status === 200) {
           Swal.fire({
             icon: "success",
@@ -322,7 +361,7 @@ function AddOrder() {
         }
       } catch (err) {
         if (retryCount < 1) { // Retry once
-          return await printItems({ [printerIp]: items }, retryCount + 1); 
+          return await printItems({ [printerIp]: items }, retryCount + 1);
         } else {
           Swal.fire({
             icon: "error",
@@ -336,6 +375,7 @@ function AddOrder() {
     }
     return true; // Printing succeeded for all groups
   };
+  
   
 
   
@@ -676,14 +716,7 @@ function AddOrder() {
 
   const { t } = useTranslation();
 
-  // combinedBillRefs
-  const combinedBillRefs = {};
 
-  const groupedItems = groupItemsByPrinter(selectedMenu);
-  // Create refs for each printer IP
-  Object.keys(groupedItems).forEach((printerIp) => {
-    combinedBillRefs[printerIp] = React.createRef();
-  });
 
   return (
     <div>
@@ -1067,7 +1100,9 @@ function AddOrder() {
           ))}
         </div>
 
-        {/* Render the combined bill for 58mm (if needed) */}
+
+
+        {/* Render the combined bill for 58mm (if needed)
         <div>
           {Object.entries(groupedItems).map(([printerIp, items]) => (
             <div key={printerIp}>
@@ -1087,7 +1122,7 @@ function AddOrder() {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
 
       <Modal
         show={show}
