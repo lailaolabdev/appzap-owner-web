@@ -589,23 +589,27 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              // print with no cut
-              printItems(groupedItems, 0).then(() => {
-                onSelectTable(selectedTable);
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-                })
-
-              // //  print with cut
-              // onPrintForCher().then(() => {
-              //   onSelectTable(selectedTable);
-              //   navigate(
-              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              //   );
-              // });
-
-            } else {
+              const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+            
+              if (hasNoCut) {
+                // Print with no cut
+                printItems(groupedItems, 0).then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                  );
+                });
+              } else {
+                // Print with cut
+                onPrintForCher().then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                  );
+                });
+              }
+            }
+             else {
               onSelectTable(selectedTable);
               navigate(
                 `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
