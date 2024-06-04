@@ -7,6 +7,7 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
+import { printItems } from './printItems';
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
@@ -284,65 +285,7 @@ function AddOrder() {
     }, {});
   };
   
-  
 
-  /**
-   * No Cut Printing
-   */
-  const printItems = async (groupedItems) => {
-  
-    for (const [printerIp, items] of Object.entries(groupedItems)) {
-      const _printer = printers.find((e) => e?.ip === printerIp);
-  
-      if (!_printer) {
-        console.error(`No printer found with IP: ${printerIp}`);
-        continue;
-      }
-  
-      const element = combinedBillRefs[printerIp]?.current;
-  
-      if (!element) {
-        console.error(`No element found for printer IP: ${printerIp}`);
-        continue;
-      }
-  
-      try {
-        const canvas = await html2canvas(element, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-        });
-  
-        console.log("combinedBillRefs2: ", combinedBillRefs);
-  
-        const dataUrl = canvas.toDataURL();
-        const _file = await base64ToBlob(dataUrl);
-  
-        let urlForPrinter = "";
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = ETHERNET_PRINTER_PORT;
-        } else if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        } else if (_printer?.type === "USB") {
-          urlForPrinter = USB_PRINTER_PORT;
-        }
-  
-        const bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-  
-        console.log(`PREPARE TO SEND TO PRINTER: ${printerIp}`);
-  
-        // Send the request without handling response
-        axios.post(urlForPrinter, bodyFormData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } catch (err) {
-        console.error(`Failed to print items for printer ${printerIp}:`, err);
-      }
-    }
-  };
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -556,7 +499,7 @@ function AddOrder() {
             
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, 0).then(() => {
+                printItems(groupedItems, combinedBillRefs, printers).then(() => {
                   onSelectTable(selectedTable);
                   navigate(
                     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
