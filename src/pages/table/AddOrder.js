@@ -289,9 +289,7 @@ function AddOrder() {
   /**
    * No Cut Printing
    */
-  const printItems = async (groupedItems, retryCount = 0) => {
-    console.log("groupedItems2: ", groupedItems);
-    console.log("combinedBillRefs1: ", combinedBillRefs);
+  const printItems = async (groupedItems) => {
   
     for (const [printerIp, items] of Object.entries(groupedItems)) {
       const _printer = printers.find((e) => e?.ip === printerIp);
@@ -301,19 +299,10 @@ function AddOrder() {
         continue;
       }
   
-      
-  
       const element = combinedBillRefs[printerIp]?.current;
-      console.log("element: ", element)
   
       if (!element) {
         console.error(`No element found for printer IP: ${printerIp}`);
-        Swal.fire({
-          icon: "error",
-          title: `Failed to find the element for printer ${printerIp}`,
-          text: `Please check the printer and try again.`,
-          showConfirmButton: true,
-        });
         continue;
       }
   
@@ -345,41 +334,15 @@ function AddOrder() {
   
         console.log(`PREPARE TO SEND TO PRINTER: ${printerIp}`);
   
-        const response = await axios.post(urlForPrinter, bodyFormData, {
+        // Send the request without handling response
+        axios.post(urlForPrinter, bodyFormData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-  
-        if (response.status === 200) {
-          Swal.fire({
-            icon: "success",
-            title: "Printing process completed",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        } else {
-          throw new Error("Printing failed");
-        }
       } catch (err) {
-        if (retryCount < 1) { // Retry once
-          return await printItems({ [printerIp]: items }, retryCount + 1);
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: `Failed to print items for printer ${printerIp}`,
-            text: `Error: ${err.message}. Please check the printer and try again.`,
-            showConfirmButton: true,
-          });
-          return false; // Printing failed after retry
-        }
+        console.error(`Failed to print items for printer ${printerIp}:`, err);
       }
     }
-    return true; // Printing succeeded for all groups
   };
-  
-  
-
-  
-  
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
