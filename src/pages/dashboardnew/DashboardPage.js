@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button } from "react-bootstrap";
-import { COLOR_APP } from "../../constants";
+import { COLOR_APP, END_POINT } from "../../constants";
 import {
   BsFillCalendarWeekFill,
   BsFillCalendarEventFill,
@@ -18,6 +18,7 @@ import {
   getSalesInformationReport,
   getUserReport,
 } from "../../services/report";
+import fileDownload from "js-file-download";
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
@@ -32,6 +33,8 @@ import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMen
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
+import { errorAdd } from "../../helpers/sweetalert";
+import Axios from "axios";
 
 export default function DashboardPage() {
   // state
@@ -49,6 +52,7 @@ export default function DashboardPage() {
   const [popup, setPopup] = useState();
   const [tableList, setTableList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
+  const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
   // provider
   const { storeDetail } = useStore();
@@ -131,7 +135,19 @@ export default function DashboardPage() {
     );
     setPromotionReport(data);
   };
-
+  const downloadCsv = async () => {
+    try {
+      const findBy = `&dateForm=${startDate}&endDate=${dateTo}&timeTo=${endTime}&timeFrom=${startTime}`;
+      setLoadingExportCsv(true);
+      const url = END_POINT + "/export/bill?storeId=" + storeId + findBy;
+      const _res = await Axios.get(url);
+      fileDownload(_res.data, storeData?.name + ".csv" || "export.csv");
+      setLoadingExportCsv(false);
+    } catch (err) {
+      setLoadingExportCsv(false);
+      errorAdd("Export ບໍ່ສຳເລັດ");
+    }
+  };
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -180,6 +196,8 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={downloadCsv}
+            disabled={loadingExportCsv}
           >
             <MdOutlineCloudDownload /> EXPORT
           </Button>
