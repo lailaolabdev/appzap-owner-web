@@ -36,6 +36,8 @@ import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/Po
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 
+const END_POINT_EXPORT = "https://api.appzap.la:2000"
+
 export default function DashboardPage() {
   // state
   const [reportData, setReportData] = useState([]);
@@ -139,7 +141,7 @@ export default function DashboardPage() {
     try {
       const findBy = `&dateForm=${startDate}&endDate=${dateTo}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
-      const url = END_POINT + "/export/bill?storeId=" + storeId + findBy;
+      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeId + findBy;
       const _res = await Axios.get(url);
       fileDownload(_res.data, storeData?.name + ".csv" || "export.csv");
       setLoadingExportCsv(false);
