@@ -36,7 +36,7 @@ import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/Po
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 
-const END_POINT_EXPORT = "https://api.appzap.la:2000"
+const END_POINT_EXPORT = "https://api.appzap.la:2000";
 
 export default function DashboardPage() {
   // state
