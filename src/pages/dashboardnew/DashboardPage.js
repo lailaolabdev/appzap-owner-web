@@ -139,11 +139,11 @@ export default function DashboardPage() {
   };
   const downloadCsv = async () => {
     try {
-      const findBy = `&dateForm=${startDate}&endDate=${dateTo}&timeTo=${endTime}&timeFrom=${startTime}`;
+      const findBy = `&dateForm=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
-      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeId + findBy;
+      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
-      fileDownload(_res.data, storeData?.name + ".csv" || "export.csv");
+      fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
