@@ -480,7 +480,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           </NavItem>
         ))}
         <hr />
-        {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
+        {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
             <NavIcon>
               <FontAwesomeIcon
@@ -503,7 +503,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           </NavItem>
         ) : (
           ""
-        )}
+        )} */}
         <NavItem eventKey="songlist">
           <NavIcon>
             <FontAwesomeIcon
