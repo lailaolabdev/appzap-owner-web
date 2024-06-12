@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 /**
@@ -11,14 +11,14 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import PaginationComponent from "../../components/PaginationComponent";
 import queryString from "query-string";
-import ExpendatureChart from "./component/ExpendatureChart";
+
 
 /**
  * function
  */
 
 import { getHeadersAccount } from "../../services/auth";
-import { moneyCurrency, convertPayment, formatDate } from "../../helpers";
+import { moneyCurrency, convertPayment, formatDate, convertExpendatureType } from "../../helpers";
 /**
  * api
  */
@@ -44,6 +44,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import EmptyState from "../../components/EmptyState";
+import ExpendatureChart from "./ExpendatureChart";
 
 export default function ExpendList() {
   //constant
@@ -396,7 +397,7 @@ export default function ExpendList() {
                   <td style={{ textAlign: "left" }}>
                     {limitText(item?.detail, 50)}
                   </td>
-                  <td>{convertPayment(item?.payment)}</td>
+                  <td>{convertExpendatureType(item?.type)}</td>
                   <td>{convertPayment(item?.payment)}</td>
                   <td style={{ padding: 0, display: "flex", justifyContent: "center", height: 50, alignItems: "center" }}><Image
                     src={item?.expendImages?.length > 0 ? URL_PHOTO_AW3 + item?.expendImages[0] : EMPTY_LOGO}

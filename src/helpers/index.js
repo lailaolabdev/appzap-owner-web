@@ -147,6 +147,29 @@ export const convertPayment = (status) => {
       return "ອື່ນໆ";
   }
 };
+export const convertExpendatureType = (status) => {
+  switch (status) {
+
+    case "INGREDIENT_FOOD":
+      return "ຊື້ວັດຖຸດິບອາຫານ";
+    case "INGREDIENT_DRINK":
+      return `ຊື້ວັດຖຸດິບເຄື່ອງດື່ມ`;
+    case "MAINTENANCE":
+      return `ແປງຮ້ານ`;
+    case "SALARY":
+      return `ເງິນເດືອນພະນັກງານ`;
+    case "WELFARE":
+      return `ສະຫວັດດີການ`;
+    case "OPERATION":
+      return `ຄ່າບໍລິຫານ`;
+    case "MARKETING":
+      return "ການຕະຫລາດ";
+    case "OTHER":
+      return `ອື່ນໆ`;
+    default:
+      return "ອື່ນໆ";
+  }
+};
 
 // ກຳນົດ ວັນທີປັດຈຸບັນ(ພາສາລາວ)
 export const formatDate = (dateTime) => {

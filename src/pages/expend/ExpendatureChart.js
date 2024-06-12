@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { COLOR_APP } from "../../../constants";
+import { COLOR_APP } from "../../constants";
 
 export default function ExpendatureChart() {
   const [series] = useState([

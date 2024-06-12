@@ -31,7 +31,7 @@ import {
 import { Row, Col, Form, ProgressBar, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP } from "../../../constants";
 
 export default function EditIncomeAndExpend() {
@@ -265,6 +265,7 @@ export default function EditIncomeAndExpend() {
                             <option value="INGREDIENT_FOOD">ຊື້ວັດຖຸດິບອາຫານ</option>
                             <option value="INGREDIENT_DRINK">ຊື້ວັດຖຸດິບເຄື່ອງດື່ມ</option>
                             <option value="MAINTENANCE">ແປງຮ້ານ</option>
+                            <option value="MARKETING">ການຕະຫລາດ</option>
                             <option value="SALARY">ເງິນເດືອນພະນັກງານ</option>
                             <option value="WELFARE">ສະຫວັດດີການ</option>
                             <option value="OPERATION">ຄ່າບໍລິຫານ</option>
@@ -497,7 +498,7 @@ export default function EditIncomeAndExpend() {
                         : ""}
                     </Form.Group>
                   </Col>
-
+                  {/* 
                   <Col xs={12} md={12}>
                     <div
                       style={{
@@ -524,8 +525,36 @@ export default function EditIncomeAndExpend() {
                         disabled={isSubmitting}
                       />
                     </div>
-                  </Col>
+                  </Col> */}
                 </Row>
+                <div style={{ backgroundColor: "", height: 50, width: "100vw", position: "fixed", bottom: 30 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 10,
+                      marginTop: "2rem",
+                    }}
+                  >
+                    <ButtonComponent
+                      title={"ປິດອອກ"}
+                      width="150px"
+                      handleClick={() => navigate("/expends/limit/40/skip/1", { replace: true })}
+                      colorbg={"lightgray"}
+                      hoverbg={"gray"}
+                    />
+                    <ButtonComponent
+                      type="button"
+                      icon={faSave}
+                      title={"ບັນທຶກ"}
+                      width="350px"
+                      handleClick={() => handleSubmit()}
+                      colorbg={"#fb6e3b"}
+                      hoverbg={"orange"}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
               </form>
             )}
           </Formik>
