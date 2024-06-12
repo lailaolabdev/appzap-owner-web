@@ -44,8 +44,10 @@ export default function CurrencyList() {
   const handleCloseAdd = () => setShowAdd(false);
 
   const handleShowEdit = (data) => {
+    console.log({data})
     setDataUpdate(data);
     setShowEdit(true);
+
   };
   const handleCloseEdit = () => setShowEdit(false);
 
@@ -54,6 +56,7 @@ export default function CurrencyList() {
     setShowDelete(true);
   };
   const handleCloseDelete = () => setShowDelete(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -407,6 +410,7 @@ export default function CurrencyList() {
                         setFieldValue("currencyCode", e.target.value);
                       }}
                     >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
                       <option value="LAK">ກີບ (LAK)</option>
                       <option value="THB">ບາດ (THB)</option>
                       <option value="USD">ໂດລາ (USD)</option>
@@ -515,20 +519,23 @@ export default function CurrencyList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນຫຼັກ</Form.Label>
+                  <Form.Group>
+                    <Form.Label style={{ fontWeight: "bold" }}>
+                    ຊື່ສະກຸນເງິນຫຼັກ <span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="firstCurrency"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.firstCurrency}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນຫຼັກ..."
-                      isInvalid={!!errors.firstCurrency}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.firstCurrency}
-                    </Form.Control.Feedback>
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                    >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
+                      <option value="LAK">ກີບ (LAK)</option>
+                      <option value="THB">ບາດ (THB)</option>
+                      <option value="USD">ໂດລາ (USD)</option>
+                      <option value="CNY">ຢວນ (CNY)</option>
+                    </Form.Control>
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -537,7 +544,7 @@ export default function CurrencyList() {
                       backgroundColor: COLOR_APP_CANCEL,
                       color: "#ffff",
                     }}
-                    onClick={handleCloseEdit}
+                    onClick={()=>setShowEditMainCurrency(false)}
                   >
                     ຍົກເລີກ
                   </Button>
@@ -553,6 +560,7 @@ export default function CurrencyList() {
           </Formik>
         </Modal>
         
+
         {/* update */}
         <Modal
           show={showEdit}
@@ -611,10 +619,10 @@ export default function CurrencyList() {
                       name="currencyName"
                       onChange={(e) => {
                         handleChange(e);
-                        console.log(e.target.value)
                         setFieldValue("currencyCode", e.target.value);
                       }}
                     >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
                       <option value="LAK">ກີບ (LAK)</option>
                       <option value="THB">ບາດ (THB)</option>
                       <option value="USD">ໂດລາ (USD)</option>
