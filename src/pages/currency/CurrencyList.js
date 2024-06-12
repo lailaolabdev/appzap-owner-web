@@ -44,8 +44,10 @@ export default function CurrencyList() {
   const handleCloseAdd = () => setShowAdd(false);
 
   const handleShowEdit = (data) => {
+    console.log({data})
     setDataUpdate(data);
     setShowEdit(true);
+
   };
   const handleCloseEdit = () => setShowEdit(false);
 
@@ -54,6 +56,7 @@ export default function CurrencyList() {
     setShowDelete(true);
   };
   const handleCloseDelete = () => setShowDelete(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +109,7 @@ export default function CurrencyList() {
   };
 
   const _create = async (values) => {
+    console.log({values})
     await Axios({
       method: "POST",
       url: CREATE_CURRENCY,
@@ -260,7 +264,8 @@ export default function CurrencyList() {
                     <th>#</th>
                     <th>ຊື່ສະກຸນເງິນ</th>
                     <th>ຕົວຫຍໍ້ສະກຸນເງິນ</th>
-                    <th>ເລດເງິນ</th>
+                    <th>ລາຄາຊື້</th>
+                    <th>ລາຄາຂາຍ</th>
                     <th>ຈັດການຂໍ້ມູນ</th>
                     {/* <th style={{ textAlign: "left" }}>ວັນທີ່</th>
                         <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
@@ -274,6 +279,7 @@ export default function CurrencyList() {
                       <td className="text-left">{index + 1}</td>
                       <td className="text-left">{data?.currencyName}</td>
                       <td className="text-left">{data?.currencyCode}</td>
+                      <td className="text-left">{moneyCurrency(data?.buy)}</td>
                       <td className="text-left">{moneyCurrency(data?.sell)}</td>
                       <td className="text-left">
                         <FontAwesomeIcon
@@ -318,7 +324,8 @@ export default function CurrencyList() {
                     <th>#</th>
                     <th>ຊື່ສະກຸນເງິນຫຼັກ</th>
                     <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th>
-                    <th>ເລດເງິນ</th>
+                    <th>ລາຄາຊື້</th>
+                    <th>ລາຄາຂາຍ</th>
                     <th>ຜູ້ແກ້ໄຂ</th>
                     <th>ເວລາແກ້ໄຂ</th>
                   </tr>
@@ -328,6 +335,7 @@ export default function CurrencyList() {
                       <td className="text-left">{e?.currencyName}</td>
                       <td className="text-left">{e?.currencyCode}</td>
                       <td className="text-left">{e?.buy}</td>
+                      <td className="text-left">{e?.sell}</td>
                       <td className="text-left">{e?.createdBy?.userId}</td>
                       <td className="text-left">
                         {moment(e?.createdAt).format("DD/MM/YYYY LT")}
@@ -361,15 +369,15 @@ export default function CurrencyList() {
             }}
             validate={(values) => {
               const errors = {};
-              if (!values.currencyName) {
-                errors.currencyName = "ກະລຸນາປ້ອນ!";
-              }
-              if (!values.currencyCode) {
-                errors.currencyCode = "ກະລຸນາປ້ອນ!";
-              }
-              if (!values.sell) {
-                errors.sell = "ກະລຸນາປ້ອນ!";
-              }
+              // if (!values.currencyName) {
+              //   errors.currencyName = "ກະລຸນາປ້ອນ!";
+              // }
+              // if (!values.currencyCode) {
+              //   errors.currencyCode = "ກະລຸນາປ້ອນ!";
+              // }
+              // if (!values.sell) {
+              //   errors.sell = "ກະລຸນາປ້ອນ!";
+              // }
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -389,45 +397,35 @@ export default function CurrencyList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
+                  <Form.Group>
+                    <Form.Label style={{ fontWeight: "bold" }}>
+                      ຊື່ສະກຸນເງິນ <span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="currencyName"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyName}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                      isInvalid={!!errors.currencyName}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyName}
-                    </Form.Control.Feedback>
+                      onChange={(e) => {
+                        handleChange(e);
+                        console.log(e.target.value)
+                        setFieldValue("currencyCode", e.target.value);
+                      }}
+                    >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
+                      <option value="LAK">ກີບ (LAK)</option>
+                      <option value="THB">ບາດ (THB)</option>
+                      <option value="USD">ໂດລາ (USD)</option>
+                      <option value="CNY">ຢວນ (CNY)</option>
+                    </Form.Control>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="currencyCode"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyCode}
-                      isInvalid={!!errors.currencyCode}
-                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyCode}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເລດເງິນ</Form.Label>
+                    <Form.Label>ລາຄາຊື້</Form.Label>
                     <Form.Control
                       type="number"
                       name="sell"
                       // onChange={handleChange}
                       onChange={(e) => {
                         handleChange(e);
-                        setFieldValue("buy", parseFloat(e.target.value));
+                        // setFieldValue("buy", parseFloat(e.target.value));
                       }}
                       onBlur={handleBlur}
                       value={values.sell}
@@ -436,6 +434,25 @@ export default function CurrencyList() {
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.sell}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ລາຄາຂາຍ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="buy"
+                      // onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        // setFieldValue("buy", parseFloat(e.target.value));
+                      }}
+                      onBlur={handleBlur}
+                      value={values.buy}
+                      isInvalid={!!errors.buy}
+                      placeholder="ປ້ອນເລດເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.buy}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Modal.Body>
@@ -502,20 +519,23 @@ export default function CurrencyList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນຫຼັກ</Form.Label>
+                  <Form.Group>
+                    <Form.Label style={{ fontWeight: "bold" }}>
+                    ຊື່ສະກຸນເງິນຫຼັກ <span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="firstCurrency"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.firstCurrency}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນຫຼັກ..."
-                      isInvalid={!!errors.firstCurrency}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.firstCurrency}
-                    </Form.Control.Feedback>
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                    >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
+                      <option value="LAK">ກີບ (LAK)</option>
+                      <option value="THB">ບາດ (THB)</option>
+                      <option value="USD">ໂດລາ (USD)</option>
+                      <option value="CNY">ຢວນ (CNY)</option>
+                    </Form.Control>
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -524,7 +544,7 @@ export default function CurrencyList() {
                       backgroundColor: COLOR_APP_CANCEL,
                       color: "#ffff",
                     }}
-                    onClick={handleCloseEdit}
+                    onClick={()=>setShowEditMainCurrency(false)}
                   >
                     ຍົກເລີກ
                   </Button>
@@ -539,6 +559,8 @@ export default function CurrencyList() {
             )}
           </Formik>
         </Modal>
+        
+
         {/* update */}
         <Modal
           show={showEdit}
@@ -588,45 +610,35 @@ export default function CurrencyList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ສະກຸນເງິນ</Form.Label>
+                  <Form.Group>
+                    <Form.Label style={{ fontWeight: "bold" }}>
+                      ຊື່ສະກຸນເງິນ <span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control
-                      type="text"
+                      as="select"
                       name="currencyName"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyName}
-                      placeholder="ປ້ອນຊື່ສະກຸນເງິນ..."
-                      isInvalid={!!errors.currencyName}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyName}
-                    </Form.Control.Feedback>
+                      onChange={(e) => {
+                        handleChange(e);
+                        setFieldValue("currencyCode", e.target.value);
+                      }}
+                    >
+                      <option value="">--ກະລຸນາເລືອກສະກຸນເງິນຫຼັກ--</option>
+                      <option value="LAK">ກີບ (LAK)</option>
+                      <option value="THB">ບາດ (THB)</option>
+                      <option value="USD">ໂດລາ (USD)</option>
+                      <option value="CNY">ຢວນ (CNY)</option>
+                    </Form.Control>
                   </Form.Group>
+             
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຕົວຫຍໍ້ສະກຸນເງິນ</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="currencyCode"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.currencyCode}
-                      isInvalid={!!errors.currencyCode}
-                      placeholder="ປ້ອນຕົວຫຍໍ້ສະກຸນເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.currencyCode}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເລດເງິນ</Form.Label>
+                    <Form.Label>ລາຄາຊື້</Form.Label>
                     <Form.Control
                       type="number"
                       name="sell"
                       // onChange={handleChange}
                       onChange={(e) => {
                         handleChange(e);
-                        setFieldValue("buy", parseFloat(e.target.value));
+                        // setFieldValue("buy", parseFloat(e.target.value));
                       }}
                       onBlur={handleBlur}
                       value={values.sell}
@@ -635,6 +647,23 @@ export default function CurrencyList() {
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.sell}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ລາຄາຂາຍ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="buy"
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                      onBlur={handleBlur}
+                      value={values.buy}
+                      isInvalid={!!errors.buy}
+                      placeholder="ປ້ອນເລດເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.buy}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Modal.Body>

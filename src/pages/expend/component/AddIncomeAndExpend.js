@@ -31,7 +31,8 @@ import {
 import { Row, Col, Form, ProgressBar, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { COLOR_APP } from "../../../constants";
 
 export default function AddIncomeAndExpend() {
   const navigate = useNavigate();
@@ -50,6 +51,8 @@ export default function AddIncomeAndExpend() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      
+      console.log({data})
 
       await axios({
         method: "POST",
@@ -206,7 +209,7 @@ export default function AddIncomeAndExpend() {
                   <Row>
                     <Col xs={12} sm={12} md={6}>
                       <Form.Group>
-                        <Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>
                           ວັນທີຈ່າຍ <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <Form.Control
@@ -215,26 +218,31 @@ export default function AddIncomeAndExpend() {
                           name="dateExpend"
                           isInvalid={!!errors.dateExpend}
                           value={values.dateExpend}
-                          // style={{ width: 300 }}
+                        // style={{ width: 300 }}
                         />
                       </Form.Group>
                     </Col>
 
                     <Col xs={12} sm={12} md={6}>
                       <Form.Group>
-                        <Form.Label>
-                          ຮູບແບບຈ່າຍ <span style={{ color: "red" }}>*</span>
+                        <Form.Label  style={{fontWeight:"bold"}}>
+                          ປະເພດລາຍຈ່າຍ <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <Form.Control
                           as="select"
-                          name="payment"
-                          isInvalid={!!errors.payment}
-                          value={values.payment}
+                          name="type"
+                          // isInvalid={!!errors.payment}
+                          // value={values.payment}
                           onChange={handleChange}
                         >
-                          <option value="">ເລືອກຮູບແບບຈ່າຍ</option>
-                          <option value="CASH">ເງິນສົດ</option>
-                          <option value="TRANSFER">ເງິນໂອນ</option>
+                          <option value="INGREDIENT_FOOD">ຊື້ວັດຖຸດິບອາຫານ</option>
+                          <option value="INGREDIENT_DRINK">ຊື້ວັດຖຸດິບເຄື່ອງດື່ມ</option>
+                          <option value="MAINTENANCE">ແປງຮ້ານ</option>
+                          <option value="MARKETING">ການຕະຫລາດ</option>
+                          <option value="SALARY">ເງິນເດືອນພະນັກງານ</option>
+                          <option value="WELFARE">ສະຫວັດດີການ</option>
+                          <option value="OPERATION">ຄ່າບໍລິຫານ</option>
+                          <option value="OTHER">ອື່ນໆ</option>
                           {/* <option value="OTHER">ອື່ນໆ</option> */}
                         </Form.Control>
                       </Form.Group>
@@ -244,7 +252,7 @@ export default function AddIncomeAndExpend() {
                   <Row>
                     <Col xs={12} sm={6} md={6}>
                       <Form.Group>
-                        <Form.Label>ຜູ້ຈ່າຍ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ຜູ້ຈ່າຍ</Form.Label>
                         <Form.Control
                           type="text"
                           name="paidBy"
@@ -257,7 +265,7 @@ export default function AddIncomeAndExpend() {
                     </Col>
                     <Col xs={12} sm={6} md={6}>
                       <Form.Group>
-                        <Form.Label>ຜູ້ຮັບ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ຜູ້ຮັບ</Form.Label>
                         <Form.Control
                           type="text"
                           name="paidTo"
@@ -273,7 +281,7 @@ export default function AddIncomeAndExpend() {
                   <Row>
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
-                        <Form.Label>ເງິນກີບ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ເງິນກີບ</Form.Label>
                         <NumericFormat
                           allowLeadingZeros
                           thousandSeparator=","
@@ -292,7 +300,7 @@ export default function AddIncomeAndExpend() {
                     </Col>
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
-                        <Form.Label>ເງິນບາດ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ເງິນບາດ</Form.Label>
                         <NumericFormat
                           allowLeadingZeros
                           thousandSeparator=","
@@ -311,7 +319,7 @@ export default function AddIncomeAndExpend() {
                     </Col>
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
-                        <Form.Label>ເງິນໂດລາ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ເງິນໂດລາ</Form.Label>
                         <NumericFormat
                           allowLeadingZeros
                           thousandSeparator=","
@@ -330,7 +338,7 @@ export default function AddIncomeAndExpend() {
                     </Col>
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
-                        <Form.Label>ເງິນຢວນ</Form.Label>
+                        <Form.Label  style={{fontWeight:"bold"}}>ເງິນຢວນ</Form.Label>
                         <NumericFormat
                           allowLeadingZeros
                           thousandSeparator=","
@@ -351,8 +359,24 @@ export default function AddIncomeAndExpend() {
                 </Col>
 
                 <Col xs={12} md={6}>
+                  <Form.Label  style={{fontWeight:"bold"}}>
+                    ຮູບແບບຈ່າຍ <span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="payment"
+                    isInvalid={!!errors.payment}
+                    value={values.payment}
+                    onChange={handleChange}
+                  >
+                    <option value="">ເລືອກຮູບແບບຈ່າຍ</option>
+                    <option value="CASH">ເງິນສົດ</option>
+                    <option value="TRANSFER">ເງິນໂອນ</option>
+                    <option value="DEBT">ຕິດຫນີ້</option>
+                    {/* <option value="OTHER">ອື່ນໆ</option> */}
+                  </Form.Control>
                   <Form.Group>
-                    <Form.Label>
+                    <Form.Label  style={{fontWeight:"bold"}}>
                       ລາຍລະອຽດການຈ່າຍ <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
@@ -366,7 +390,7 @@ export default function AddIncomeAndExpend() {
                     />
                   </Form.Group>
                   <Form.Group>
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label  style={{fontWeight:"bold"}}>ໝາຍເຫດ</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
@@ -378,7 +402,7 @@ export default function AddIncomeAndExpend() {
                   </Form.Group>
 
                   <Form.Group>
-                    <Form.Label xs={12} sm="3">
+                    <Form.Label  style={{fontWeight:"bold"}} xs={12} sm="3">
                       ອັບໂຫລດຮູບໃບບິນ
                     </Form.Label>
 
@@ -411,35 +435,38 @@ export default function AddIncomeAndExpend() {
                           )}
                         </label>
                       </Col>
-                      {imgArr.length > 0
-                        ? imgArr.map((item, index) => (
-                            <Col xs="12" sm="6" md="6" key={index}>
-                              <div className="show-img-upload">
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  className="delete-img"
-                                  onClick={() => _onDeleteImg(item)}
-                                />
-                                <img
-                                  src={
-                                    "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                                    item
-                                  }
-                                  alt={item}
-                                />
-                              </div>
-                            </Col>
-                          ))
-                        : ""}
+
                     </Row>
                   </Form.Group>
-
+                  {imgArr.length > 0
+                    ? imgArr.map((item, index) => (
+                      <Col xs="12" sm="6" md="6" key={index}>
+                        <div className="show-img-upload">
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            // className="delete-img"
+                            onClick={() => _onDeleteImg(item)}
+                            style={{ position: 'absolute', top: 5, right: 5, fontSize: 24, color: COLOR_APP, cursor: "pointer", zIndex: 999 }}
+                          />
+                          <img
+                            src={
+                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                              item
+                            }
+                            alt={item}
+                          />
+                        </div>
+                      </Col>
+                    ))
+                    : ""}
 
                 </Col>
 
-               
 
-                <Col xs={12} md={12}>
+
+
+              </Row>
+              <div style={{ backgroundColor: "", height: 50, width:"100vw",position: "fixed", bottom: 30 }}>
                   <div
                     style={{
                       display: "flex",
@@ -451,22 +478,22 @@ export default function AddIncomeAndExpend() {
                     <ButtonComponent
                       title={"ປິດອອກ"}
                       width="150px"
-                      handleClick={() => navigate("/expends/limit/40/skip/1",{replace:true})}
+                      handleClick={() => navigate("/expends/limit/40/skip/1", { replace: true })}
                       colorbg={"lightgray"}
                       hoverbg={"gray"}
                     />
                     <ButtonComponent
+                    icon={faSave}
                       type="button"
                       title={"ບັນທຶກ"}
-                      width="150px"
+                      width="350px"
                       handleClick={() => handleSubmit()}
                       colorbg={"#fb6e3b"}
                       hoverbg={"orange"}
                       disabled={isSubmitting}
                     />
                   </div>
-                </Col>
-              </Row>
+              </div>
             </form>
           )}
         </Formik>

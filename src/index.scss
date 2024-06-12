@@ -146,10 +146,12 @@ $theme-colors: (
 
 .inputMoney[type="text"] {
   height: 50px;
-  font-size: 2.5rem;
+  font-size: 2.0rem;
   border: 0;
+  padding: 20px;
   outline-style: none;
   outline-color: none;
+  background-color: #efefef;
 }
 
 blockquote {
