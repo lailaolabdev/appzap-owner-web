@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import moment from "moment";
 /**
@@ -12,12 +12,13 @@ import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import PaginationComponent from "../../components/PaginationComponent";
 import queryString from "query-string";
 
+
 /**
  * function
  */
 
 import { getHeadersAccount } from "../../services/auth";
-import { moneyCurrency, convertPayment, formatDate } from "../../helpers";
+import { moneyCurrency, convertPayment, formatDate, convertExpendatureType } from "../../helpers";
 /**
  * api
  */
@@ -26,14 +27,24 @@ import { END_POINT_SERVER_BUNSI, getLocalData } from "../../constants/api";
 /**
  * css
  */
-import { Table, Spinner, Form } from "react-bootstrap";
+import { Table, Spinner, Form, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
+  faBalanceScaleRight,
+  faBold,
+  faChartLine,
+  faDollarSign,
   faEdit,
+  faListAlt,
+  faMoneyBillWave,
   faPlusCircle,
   faTrash,
+  faYenSign,
 } from "@fortawesome/free-solid-svg-icons";
+import { COLOR_APP, EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
+import EmptyState from "../../components/EmptyState";
+import ExpendatureChart from "./ExpendatureChart";
 
 export default function ExpendList() {
   //constant
@@ -47,11 +58,13 @@ export default function ExpendList() {
   //useState
   const [isLoading, setIsLoading] = useState(false);
   const [expendData, setExpendData] = useState(null);
+  const [expendGraphData, setExpendGraphData] = useState();
 
   const [expendDetail, setExpendDetail] = useState();
   const [shoConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const [totalReport, setTotalReport] = useState();
+  const [isGraphDisplay, setIsShowGraphDisplay] = useState(false);
 
   //filter
   const [filterByYear, setFilterByYear] = useState(
@@ -60,20 +73,24 @@ export default function ExpendList() {
   const [filterByMonth, setFilterByMonth] = useState(
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
+
+  // const startDate = new Date(year, month, 1);
+  // const endDate = new Date(year, month + 1, 0);
+  const time = new Date();
+  const month = time.getMonth();
+  const year = time.getFullYear();
   const [dateStart, setDateStart] = useState(
-    !parsed?.dateStart ? "" : parsed?.dateStart
+    // !parsed?.dateStart ? "" : parsed?.dateStart
+    new Date(year, month, 1)
   );
   const [dateEnd, setDateEnd] = useState(
-    !parsed?.dateEnd ? "" : parsed?.dateEnd
+    // !parsed?.dateEnd ? "" : parsed?.dateEnd
+    new Date(year, month + 1, 0)
   );
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
 
-  //useEffect()
-  // useEffect(() => {
-  //   fetchExpend();
-  // }, []);
 
   useEffect(() => {
     let filter = {
@@ -81,27 +98,104 @@ export default function ExpendList() {
       filterByMonth: filterByMonth,
       dateStart: dateStart,
       dateEnd: dateEnd,
-      filterByPayment:filterByPayment,
+      filterByPayment: filterByPayment,
     };
 
     console.log("parame?.skip:::", parame?.skip)
 
-    fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
+    fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment,parame?.skip]);
+  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment, parame?.skip]);
+
+  const [series, setSeries] = useState([
+    {
+      name: "ລາຍຈ່າຍກີບ",
+      data: [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
+      ],
+    },
+  ]);
+
+  const [options, setOptions] = useState({
+    chart: {
+      height: 350,
+      type: "line",
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+     
+    },
+    stroke: {
+      curve: "straight",
+    },
+    colors: [COLOR_APP, "#00ABB3"],
+    dataLabels: {
+      enabled: true,
+      formatter: function (value) {
+        return value.toLocaleString('en-US');
+      }
+    },
+    title: {
+      text: "ລາຍຈ່າຍ",
+      align: "left",
+    },
+    grid: {
+      row: {
+        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+        opacity: 0.5,
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return value.toLocaleString('en-US');
+        }
+      },
+    },
+    xaxis: {
+      categories: [
+      ],
+    },
+  });
+
+  const modifyData = () => {
+    let _createdAtGraph = expendGraphData?.createdAt
+    let _xAxisData = []
+    _createdAtGraph.map((x) => _xAxisData.push(x))
+    let _options = options
+    _options.xaxis.categories = _xAxisData;
+
+    let _dataAtGraph = expendGraphData?.totalExpendLAK
+    let _lakData = []
+    _dataAtGraph.map((x) => _lakData.push(x))
+    let _series = [...series];
+    _series[0]={
+      data:[..._lakData]
+    }
+    setSeries(_series)
+    setOptions(_options)
+  }
+
+  useEffect(() => {
+    if (!expendGraphData) return;
+    modifyData()
+  }, [expendGraphData])
 
   //function()
-  const fetchExpend = async (filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment) => {
+  const fetchExpend = async (filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment) => {
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
       let findby = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      if(filterByYear) findby +=  `&year=${filterByYear}`
-      if(filterByMonth) findby +=  `&month=${filterByMonth}`
-      if(dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
-      if(filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
+      if (filterByYear) findby += `&year=${filterByYear}`
+      if (filterByMonth) findby += `&month=${filterByMonth}`
+      if (dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
+      if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
-      console.log("findby::",findby)
+      console.log("findby::", findby)
 
       let header = await getHeadersAccount();
       const headers = {
@@ -114,7 +208,7 @@ export default function ExpendList() {
         headers: headers,
       }).then((res) => {
         setExpendData(res.data);
-      }).finally(()=>{
+      }).finally(() => {
         setIsLoading(false);
       });
 
@@ -124,8 +218,10 @@ export default function ExpendList() {
         headers: headers,
       }).then((res) => {
         setTotalReport(res?.data?.data);
+        console.log(res?.data?.data);
+        setExpendGraphData(res?.data?.data?.chartExpend)
         setIsLoading(false);
-      }).finally(()=>{
+      }).finally(() => {
         setIsLoading(false);
       });;
     } catch (err) {
@@ -152,7 +248,7 @@ export default function ExpendList() {
       }).then(async () => {
         await setExpendDetail();
         await successAdd("ລຶບສຳເລັດ");
-        await fetchExpend(filterByYear,filterByMonth,dateStart,dateEnd,filterByPayment);
+        await fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
         await setIsLoading(false);
       });
     } catch (err) {
@@ -199,26 +295,46 @@ export default function ExpendList() {
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e?.target?.value)}
-            style={{ width: 250 }}
+            style={{ width: 150 }}
           />{" "}
           ~
           <Form.Control
             type="date"
             value={dateEnd}
             onChange={(e) => setDateEnd(e?.target?.value)}
-            style={{ width: 250 }}
+            style={{ width: 150 }}
           />
           <Form.Control
             as="select"
             name="payment"
             value={filterByPayment}
-            onChange={(e)=> setFilterByPayment(e?.target?.value)}
-            style={{ width: 250 }}
+            onChange={(e) => setFilterByPayment(e?.target?.value)}
+            style={{ width: 150 }}
           >
-            <option value="ALL">ສະແດງທັງໝົດຮູບແບບ</option>
+            <option value="ALL">ສະແດງຮູບແບບ</option>
             <option value="CASH">ເງິນສົດ</option>
             <option value="TRANSFER">ເງິນໂອນ</option>
           </Form.Control>
+          {/* <Form.Control
+            as="select"
+            name="payment"
+            value={filterByPayment}
+            onChange={(e) => setFilterByPayment(e?.target?.value)}
+            style={{ width: 60 }}
+          >
+            <option value="40">ຈຳນວນສະແດງ</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </Form.Control> */}
+          <ButtonComponent
+            title="ລົງບັນຊີປະຈຳວັນ"
+            icon={faPlusCircle}
+            colorbg={"#fb6e3b"}
+            hoverbg={"orange"}
+            width={"150px"}
+            handleClick={() => navigate("/add-expend")}
+          />
         </div>
       </div>
       <Filter
@@ -232,50 +348,118 @@ export default function ExpendList() {
         setDateEnd={setDateEnd}
       />
 
-      <div
-        style={{
-          display: "flex",
+      <div style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
         }}
-      >
-        <div className="p-2">ທັງໝົດ {expendData?.total} ລາຍການ</div>
-        <div className="p-2">
-          ລວມກີບ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceLAK)}
-          </span>
+
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍການທັງຫມົດ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{expendData?.total}</div>
+          </div>
         </div>
-        <div className="p-2">
-          ລວມບາດ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceTHB)}
-          </span>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍກີບ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceLAK)}</div>
+          </div>
         </div>
-        <div className="p-2">
-          ລວມຢວນ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceCNY)}
-          </span>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faBold} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍບາດ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceTHB)}</div>
+          </div>
         </div>
-        <div className="p-2">
-          ລວມໂດລາ:{" "}
-          <span style={{ fontWeight: 900 }}>
-            {moneyCurrency(totalReport?.priceUSD)}
-          </span>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faDollarSign} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍໂດລາ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceUSD)}</div>
+          </div>
         </div>
-        <div className="p-2">
-          <ButtonComponent
-            title="ລົງບັນຊີປະຈຳວັນ"
-            icon={faPlusCircle}
-            colorbg={"#fb6e3b"}
-            hoverbg={"orange"}
-            width={"150px"}
-            handleClick={() => navigate("/add-expend")}
-          />
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faYenSign} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍຢວນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceCNY)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}
+          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລວມທຸກສະກຸນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.totalSumInLAK)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}
+          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ສະແດງຜົນເປັນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : "ລາຍລະອຽດ"}</div>
+          </div>
         </div>
       </div>
+      {isGraphDisplay && <ExpendatureChart series={series} options={options} />}
 
       {isLoading ? (
         <div>
@@ -284,20 +468,21 @@ export default function ExpendList() {
           </center>
         </div>
       ) : (
-        <Table responsive="xl" className="mt-3 table-hover">
+        <Table responsive="xl" className="mt-3 table-hover table-bordered">
           <thead>
-            <tr>
+            <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
               <th>ວັນທີຈ່າຍ</th>
               <th width="30%">ລາຍລະອຽດ</th>
-              {/* <th>ຊື່ຜູ້ຈ່າຍ</th>
-            <th>ຊື່ຜູ້ຮັບ</th> */}
+              <th>ປະເພດລາຍຈ່າຍ</th>
               <th>ຮູບແບບການຈ່າຍ</th>
+              <th>ຕິດຂັດ</th>
+              <th>ຜູ້ຈ່າຍ</th>
               <th style={{ textAlign: "right" }}>ກີບ</th>
               <th style={{ textAlign: "right" }}>ບາດ</th>
               <th style={{ textAlign: "right" }}>ຢວນ</th>
               <th style={{ textAlign: "right" }}>ໂດລາ</th>
-              <th></th>
+              <th>ຈັດການ</th>
             </tr>
           </thead>
           <tbody>
@@ -305,6 +490,7 @@ export default function ExpendList() {
               expendData?.data.length > 0 &&
               expendData?.data.map((item, index) => (
                 <tr
+                  key={"expend" + index}
                   style={{ cursor: "pointer" }}
                   onClick={() => navigate(`/detail-expend/${item?._id}`)}
                 >
@@ -315,19 +501,29 @@ export default function ExpendList() {
                   <td style={{ textAlign: "left" }}>
                     {limitText(item?.detail, 50)}
                   </td>
-                  {/* <td>{item?.paidBy}</td>
-                <td>{item?.paidTo}</td> */}
+                  <td>{convertExpendatureType(item?.type)}</td>
                   <td>{convertPayment(item?.payment)}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ padding: 0, display: "flex", justifyContent: "center", height: 50, alignItems: "center" }}><Image
+                    src={item?.expendImages?.length > 0 ? URL_PHOTO_AW3 + item?.expendImages[0] : EMPTY_LOGO}
+                    // width="100"
+                    // height="100"
+                    style={{
+                      height: 40,
+                      width: 40,
+                      objectFit: "cover"
+                    }}
+                  /></td>
+                  <td>{item?.paidBy}</td>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceLAK)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceTHB)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceCNY)}
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceUSD)}
                   </td>
                   <td>
@@ -365,6 +561,7 @@ export default function ExpendList() {
         </Table>
       )}
 
+      {expendData?.data.length == 0 && <EmptyState text={"ຍັງບໍ່ມີລາຍຈ່າຍ"} />}
       {Pagination_component(
         expendData?.total,
         "/expends",
