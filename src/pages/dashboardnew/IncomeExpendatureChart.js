@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { COLOR_APP } from "../../constants";
 
-export default function ExpendatureChart({ series,options }) {
+export default function IncomeExpendatureChart({ series,options }) {
+
   return (
     <div id="chart">
       <ReactApexChart
         options={options}
         series={series}
-        type="line"
+        type="area"
         height={350}
       />
     </div>

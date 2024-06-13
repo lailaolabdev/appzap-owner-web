@@ -634,28 +634,11 @@ export default function CurrencyList() {
                     <Form.Label>ລາຄາຊື້</Form.Label>
                     <Form.Control
                       type="number"
-                      name="sell"
+                      name="buy"
                       // onChange={handleChange}
                       onChange={(e) => {
                         handleChange(e);
                         // setFieldValue("buy", parseFloat(e.target.value));
-                      }}
-                      onBlur={handleBlur}
-                      value={values.sell}
-                      isInvalid={!!errors.sell}
-                      placeholder="ປ້ອນເລດເງິນ..."
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.sell}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາຂາຍ</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="buy"
-                      onChange={(e) => {
-                        handleChange(e);
                       }}
                       onBlur={handleBlur}
                       value={values.buy}
@@ -664,6 +647,23 @@ export default function CurrencyList() {
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.buy}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>ລາຄາຂາຍ</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="sell"
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                      onBlur={handleBlur}
+                      value={values.sell}
+                      isInvalid={!!errors.sell}
+                      placeholder="ປ້ອນເລດເງິນ..."
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.sell}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Modal.Body>
