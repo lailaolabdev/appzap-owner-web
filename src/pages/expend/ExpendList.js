@@ -42,7 +42,7 @@ import {
   faTrash,
   faYenSign,
 } from "@fortawesome/free-solid-svg-icons";
-import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
+import { COLOR_APP, EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import EmptyState from "../../components/EmptyState";
 import ExpendatureChart from "./ExpendatureChart";
 
@@ -58,6 +58,7 @@ export default function ExpendList() {
   //useState
   const [isLoading, setIsLoading] = useState(false);
   const [expendData, setExpendData] = useState(null);
+  const [expendGraphData, setExpendGraphData] = useState();
 
   const [expendDetail, setExpendDetail] = useState();
   const [shoConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -72,11 +73,19 @@ export default function ExpendList() {
   const [filterByMonth, setFilterByMonth] = useState(
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
+
+  // const startDate = new Date(year, month, 1);
+  // const endDate = new Date(year, month + 1, 0);
+  const time = new Date();
+  const month = time.getMonth();
+  const year = time.getFullYear();
   const [dateStart, setDateStart] = useState(
-    !parsed?.dateStart ? "" : parsed?.dateStart
+    // !parsed?.dateStart ? "" : parsed?.dateStart
+    new Date(year, month, 1)
   );
   const [dateEnd, setDateEnd] = useState(
-    !parsed?.dateEnd ? "" : parsed?.dateEnd
+    // !parsed?.dateEnd ? "" : parsed?.dateEnd
+    new Date(year, month + 1, 0)
   );
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
@@ -97,6 +106,83 @@ export default function ExpendList() {
     fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment, parame?.skip]);
+
+  const [series, setSeries] = useState([
+    {
+      name: "ລາຍຈ່າຍກີບ",
+      data: [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
+      ],
+    },
+  ]);
+
+  const [options, setOptions] = useState({
+    chart: {
+      height: 350,
+      type: "line",
+      zoom: {
+        enabled: false,
+      },
+    },
+    dataLabels: {
+      enabled: false,
+     
+    },
+    stroke: {
+      curve: "straight",
+    },
+    colors: [COLOR_APP, "#00ABB3"],
+    dataLabels: {
+      enabled: true,
+      formatter: function (value) {
+        return value.toLocaleString('en-US');
+      }
+    },
+    title: {
+      text: "ລາຍຈ່າຍ",
+      align: "left",
+    },
+    grid: {
+      row: {
+        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+        opacity: 0.5,
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return value.toLocaleString('en-US');
+        }
+      },
+    },
+    xaxis: {
+      categories: [
+      ],
+    },
+  });
+
+  const modifyData = () => {
+    let _createdAtGraph = expendGraphData?.createdAt
+    let _xAxisData = []
+    _createdAtGraph.map((x) => _xAxisData.push(x))
+    let _options = options
+    _options.xaxis.categories = _xAxisData;
+
+    let _dataAtGraph = expendGraphData?.totalExpendLAK
+    let _lakData = []
+    _dataAtGraph.map((x) => _lakData.push(x))
+    let _series = [...series];
+    _series[0]={
+      data:[..._lakData]
+    }
+    setSeries(_series)
+    setOptions(_options)
+  }
+
+  useEffect(() => {
+    if (!expendGraphData) return;
+    modifyData()
+  }, [expendGraphData])
 
   //function()
   const fetchExpend = async (filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment) => {
@@ -132,6 +218,8 @@ export default function ExpendList() {
         headers: headers,
       }).then((res) => {
         setTotalReport(res?.data?.data);
+        console.log(res?.data?.data);
+        setExpendGraphData(res?.data?.data?.chartExpend)
         setIsLoading(false);
       }).finally(() => {
         setIsLoading(false);
@@ -350,12 +438,28 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "white" }}> ລວມທຸກສະກຸນ</div>
+            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.totalSumInLAK)}</div>
+          </div>
+        </div>
+        <div className="p-2 hover-me" style={{
+          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around", alignItems: "center",
+          margin: 12
+        }}
+          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
+        >
+          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
+            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ fontWeight: "bold", color: "white" }}> ສະແດງຜົນເປັນ</div>
             <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : "ລາຍລະອຽດ"}</div>
           </div>
         </div>
       </div>
-      {isGraphDisplay && <ExpendatureChart />}
+      {isGraphDisplay && <ExpendatureChart series={series} options={options} />}
 
       {isLoading ? (
         <div>
