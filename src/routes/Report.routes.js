@@ -8,6 +8,7 @@ import MemberPage from "../pages/member/MemberPage";
 import CreateMemberPage from "../pages/member/CreateMemberPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 import ReportStocks from "../pages/report/ReportStocks";
+import IncomeExpendExport from "../pages/dashboardnew/IncomeExpendReport";
 
 // eslint-disable-next-line
 export default {
@@ -18,6 +19,10 @@ export default {
       path: "/reports/sales-report",
       element: <DashboardPage />,
     }, 
+    {
+      path: "income-expend-report",
+      element: <IncomeExpendExport />,
+    },
     {
       path: "members-report",
       element: <MemberPage />,

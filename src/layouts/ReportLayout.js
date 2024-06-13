@@ -5,6 +5,7 @@ import { MdDining, MdOutlinePieChartOutline } from "react-icons/md";
 import "./sidenav.css";
 import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
+import { FaChartLine } from "react-icons/fa";
 
 export default function ReportLayout() {
   const navigate = useNavigate();
@@ -70,6 +71,23 @@ export default function ReportLayout() {
                 className="menu-report-stocks mt-1"
                 style={{
                   background:
+                    activeButton === "/reports/income-expend-report"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/reports/income-expend-report"
+                      ? "white"
+                      : COLOR_APP,
+                }}
+                onClick={() => navigate("/reports/income-expend-report")}
+              >
+                <FaChartLine style={{ fontSize: 35 }} />
+                <strong>ລາຍງານລາຍຮັບລາຍຈ່າຍ</strong>
+              </div>
+              <div
+                className="menu-report-stocks mt-1"
+                style={{
+                  background:
                     activeButton === "/reports/reportStocks"
                       ? COLOR_APP
                       : "white",
@@ -109,6 +127,7 @@ export default function ReportLayout() {
                 <MdDining style={{ fontSize: 35 }} />
                 <strong>ລາຍງານສະມາຊິກ</strong>
               </div>
+             
             </ButtonGroup>
           </div>
         </div>

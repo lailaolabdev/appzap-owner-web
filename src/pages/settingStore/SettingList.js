@@ -36,18 +36,21 @@ export default function SettingList() {
     {
       id: "479af7e5-1947-426d-b511-d95f0155f70f",
       title: t("restuarentSetting"),
+      subTitle: "ຕັ້ງຄ່າຊື່ຮ້ານ ເບີໂທ ລາຍລະອຽດ ຮູບພາບຮ້ານ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faCogs} />,
       path: `/settingStore/storeDetail/${params?.id}`,
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
       title: t("employeeManage"),
+      subTitle: "ຈັດການພະນັກງານ ບັນຊີສຳລັບເຂົ້າສູ່ລະບົບ ເບີໂທ ຕຳແຫນ່ງພະນັກງານ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/user`,
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
       title: t("Promotion"),
+      subTitle: "ຈັດການໂປໂມເຊິນຮ້ານ ແລະ ຊ່ວງເວລາ",
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faFolderOpen} />
       ),
@@ -57,6 +60,7 @@ export default function SettingList() {
     {
       id: "ab2dd4fe-617d-48f7-afa6-645fa3b8e04e",
       title: t("menuManage"),
+      subTitle: "ຈັດການເມນູ ລາຄາ ຮູບພາບ ລາຍລະອຽດ ຜູກກັບສະຕ໊ອກ",
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUtensils} />
       ),
@@ -65,30 +69,35 @@ export default function SettingList() {
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",
       title: t("tableSetting"),
+      subTitle: "ຈັດການໂຕະໃນຮ້ານ ຊື່ໂຕະ ຕຳແຫນ່ງ ລາຍລະອຽດ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTable} />,
       path: `/settingStore/settingTable/${params?.id}`,
     },
     {
       id: "1cb62d9b-01bd-419b-a60e-9b5b43133d7a",
       title: t("activityHistory"),
+      subTitle: "ປະຫວັດການໃຊ້ງານຂອງລະບົບ ການຄິດໄລ່ເງິນ ຍົກເລີກອາຫານ ແກ້ໄຂບິນ ຍ້າຍໂຕະ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faHistory} />,
       path: `/historyUse/${params?.id}`,
     },
     {
       id: "42e27d60-6f12-446a-aa8f-ae6307b8ab34",
       title: t("stockManage"),
+      subTitle: "ຈັດການຄັງວັດຖຸດິບຂອງຮ້ານ ກວດສອບຍອດຄົງຄັງ ແລະ ເພີ່ມລົບວັດຖຸດິບ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",
       title: t("printerSetting"),
+      subTitle: "ຈັດການປຣິນເຕີ້ ຕັ້ງຄ່າIPAddress ຕຳແຫນ່ງ ອື່ນໆ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faPrint} />,
       path: `/printer`,
     },
     {
       id: "a2233469-a0b3-4247-9247-6282e2bafc1b",
       title: t("soundManage"),
+      subTitle: "ຈັດການສຽງໃນລະບົບ ເວລາມີອໍເດີ ເຊັກບິນ ອື່ນໆ",
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
       ),
@@ -97,6 +106,7 @@ export default function SettingList() {
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
       title: "POS Config",
+      subTitle: "ຕັ້ງຄ່າການນຳໃຊ້ງານ POS ເປີດນຳໃຊ້ລະບົບຈອງ Smart Order",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faStore} />,
       path: `/config`,
     },
@@ -109,6 +119,7 @@ export default function SettingList() {
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
       title: t("currencyManage"),
+      subTitle: "ຕັ້ງຄ່າເລດເງິນກີບ ແລະ ສະກຸນຕ່າງປະເທດ ກໍລະນີຮ້ານມີຫລາຍສະກຸນເງິນ",
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
       ),
@@ -117,12 +128,14 @@ export default function SettingList() {
     {
       id: "f962968d-1bed-48da-9049-92551dcd7101",
       title: "Banner",
+      subTitle: "ຕັ້ງຄ່າຮູບພາບໂປໂມເຊິນຫນ້າຮ້ານເພື່ອນການຕະຫລາດ ແລະ ເຂົ້າເຖິງງ່າຍຂຶ້ນ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
-    },  
+    },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7102",
       title: "PIN",
+      subTitle: "ຕັ້ງຄ່າຄວາມປອດໄພ ເພື່ອເຂົ້ານຳໃຊ້ລະບົບຂັ້ນສູງ",
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
     },
@@ -184,12 +197,16 @@ export default function SettingList() {
       >
         {data.map((e) => (
           <ItemBox onClick={() => navigate(e.path)} key={e.id}>
-            {e.icon}
-            {e.title}
+            <div style={{ display: "flex", flexDirection: "column",justifyContent:"center",alignItems:"center" }}>
+              <div>{e.icon}</div>
+              <div style={{fontWeight:"bold"}}>{e.title}</div>
+              <div style={{fontSize:10,textAlign:"center"}}>{e?.subTitle}</div>
+            </div>
+
           </ItemBox>
         ))}
         <ItemBox onClick={clickDeleteHistoryStore}>
-          <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />,
+          <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
           ລ້າງປະຫວັດຮ້ານ
         </ItemBox>
       </Box>
@@ -207,7 +224,7 @@ export default function SettingList() {
 const ItemBox = styled("div")({
   padding: 10,
   height: "100%",
-  color: "#212529",
+  color: "#616161",
   outlineColor: "#FB6E3B",
   backgroundColor: "white",
   border: "1px solid  #E4E4E4",
