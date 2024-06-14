@@ -84,7 +84,7 @@ export default function IncomeExpendExport() {
           return value ? `${moment(value).format("DD-MM-YYYY")} (${convertWeekDay(moment(value).weekday())})`: 0;
         },
         style: {
-          fontSize: '7px',
+          fontSize: '10px',
         },
       },
       categories: [
