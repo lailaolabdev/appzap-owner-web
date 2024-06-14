@@ -246,6 +246,34 @@ export default function IncomeExpendExport() {
     return moneyCurrency(_summaryAmount)
   }
 
+  const convertWeekDay = (day) =>{
+    switch(day) {
+      case 0:
+        return 'ອາທິດ'
+        break;
+      case 1:
+        return 'ຈັນ'
+        break;
+      case 2:
+        return 'ອັງຄານ'
+        break;
+      case 3:
+        return 'ພຸດ'
+        break;
+      case 4:
+        return 'ພະຫັດ'
+        break;
+      case 5:
+        return 'ສຸກ'
+        break;
+      case 6:
+        return 'ເສົາ'
+        break;
+      default:
+        return ''
+    }
+  }
+
   return (
     <>
       <div
@@ -373,7 +401,7 @@ export default function IncomeExpendExport() {
           </tr>
           {incomeExpendData?.map((e) => (
             <tr>
-              <td style={{ textAlign: "left" }}>{e?.date}</td>
+              <td style={{ textAlign: "left" }}>{e?.date} ({convertWeekDay(moment(e?.date).weekday())})</td>
               <td style={{ textAlign: "right" }}>
                 {moneyCurrency(e?.income)}
               </td>
