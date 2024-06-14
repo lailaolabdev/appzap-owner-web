@@ -112,7 +112,7 @@ export default function HistoryUse() {
               onClick={() => setFiltterModele("canceled")}
             >
               <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ຍົກເລີກອາຫານ
+              <div style={{ width: 8 }}></div> ປະຫວັດອາຫານ
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
