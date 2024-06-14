@@ -77,22 +77,20 @@ export default function IncomeExpendExport() {
         }
       },
     },
+    fontSize: '3px',
     xaxis: {
-      // type: 'datetime',
       labels: {
         formatter: function (value) {
-          return value ? `${moment(value).format("YYYYMMDD")} (${convertWeekDay(moment(value).weekday())})`: 0;
-        }
+          return value ? `${moment(value).format("DD-MM-YYYY")} (${convertWeekDay(moment(value).weekday())})`: 0;
+        },
+        style: {
+          fontSize: '7px',
+        },
       },
       categories: [
 
       ],
     },
-    // tooltip: {
-    //   x: {
-    //     format: 'dd/MM/yy'
-    //   },
-    // },
   }
   const [series, setSeries] = useState([
     {
