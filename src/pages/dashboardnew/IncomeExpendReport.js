@@ -60,10 +60,10 @@ export default function IncomeExpendExport() {
         return value ? value?.toLocaleString('en-US') : 0;
       }
     },
-    title: {
-      text: "ລາຍຮັບ ແລະ ລາຍຈ່າຍ",
-      align: "left",
-    },
+    // title: {
+    //   text: "ລາຍຮັບ ແລະ ລາຍຈ່າຍ",
+    //   align: "left",
+    // },
     grid: {
       row: {
         colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
@@ -136,7 +136,7 @@ export default function IncomeExpendExport() {
       let findby = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
       // if (filterByYear) findby += `&year=${filterByYear}`
       // if (filterByMonth) findby += `&month=${filterByMonth}`
-      if (dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
+      if (dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd)).format("YYYY/MM/DD")}`
       // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
 
@@ -158,7 +158,7 @@ export default function IncomeExpendExport() {
 
 
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      if (dateStart && dateEnd) findIncomeby += `startDate=${moment(moment(dateStart)).format("YYYY-MM-DD")}&endDate=${moment(moment(dateEnd).add(1, "days")).format("YYYY-MM-DD")}`
+      if (dateStart && dateEnd) findIncomeby += `startDate=${moment(moment(dateStart)).format("YYYY-MM-DD")}&endDate=${moment(moment(dateEnd)).format("YYYY-MM-DD")}`
       findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
       await axios({
         method: "post",
