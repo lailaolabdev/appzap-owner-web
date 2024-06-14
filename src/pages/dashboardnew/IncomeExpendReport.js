@@ -207,14 +207,15 @@ export default function IncomeExpendExport() {
 
     let _series = [...series];
     _series[0] = {
-      name: "ລາຍຈ່າຍກີບ",
-      data: [..._lakData]
-    }
-    _series[1] = {
       name: "ລາຍຮັບກີບ",
       data: [..._incomeData]
     }
 
+    _series[1] = {
+      name: "ລາຍຈ່າຍກີບ",
+      data: [..._lakData]
+    }
+  
     let _graphData = {}
     _graphData.options = _options
     _graphData.series = _series
