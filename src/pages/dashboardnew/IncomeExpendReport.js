@@ -9,40 +9,43 @@ import { COLOR_APP } from "../../constants";
 import { END_POINT_SERVER_BUNSI, getLocalData } from "../../constants/api";
 import PaginationComponent from "../../components/PaginationComponent";
 import { getHeadersAccount } from "../../services/auth";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
+import { moneyCurrency } from "../../helpers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBalanceScaleRight, faDollarSign, faFunnelDollar, faMoneyBillWave } from "@fortawesome/free-solid-svg-icons";
+import Filter from "../expend/component/filter";
+import queryString from "query-string";
 
 export default function IncomeExpendExport() {
   const parame = useParams();
+  const location = useLocation();
   const time = new Date();
   const month = time.getMonth();
   const year = time.getFullYear();
+  const parsed = queryString?.parse(location?.state);
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
   const [dateStart, setDateStart] = useState(
     new Date(year, month, 1)
   );
   const [dateEnd, setDateEnd] = useState(
     new Date(year, month + 1, 0)
   );
+  //filter
+  const [filterByYear, setFilterByYear] = useState(
+    !parsed?.filterByYear ? currentYear : parsed?.filterByYear
+  );
+  const [filterByMonth, setFilterByMonth] = useState(
+    !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
+  );
   const { _limit, _skip, Pagination_component } = PaginationComponent();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [expendGraphData, setExpendGraphData] = useState();
   const [incomeGraphData, setIncomeGraphData] = useState();
-
-  const [series, setSeries] = useState([
-    {
-      name: "ລາຍຈ່າຍກີບ",
-      data: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
-      ],
-    },
-    {
-      name: "ລາຍຮັບກີບ",
-      data: [
-        0, 0, 0, 0, 0, 0, 0, 0, 2, 4, , 9, 5, 3, 6, 6, 6, 9, 4, 4, 5, 4, 7, 8,
-      ],
-    },
-  ]);
-
-  const [options, setOptions] = useState({
+  const [graphData, setGraphData] = useState();
+  const [incomeExpendData, setIncomeExpendData] = useState([]);
+  const OPTION = {
     chart: {
       height: 350,
       type: "area",
@@ -52,7 +55,7 @@ export default function IncomeExpendExport() {
     },
     colors: [COLOR_APP, "#00ABB3"],
     dataLabels: {
-      enabled: true,
+      enabled: false,
       formatter: function (value) {
         return value ? value?.toLocaleString('en-US') : 0;
       }
@@ -77,7 +80,7 @@ export default function IncomeExpendExport() {
     xaxis: {
       // type: 'datetime',
       categories: [
-        
+
       ],
     },
     tooltip: {
@@ -85,7 +88,23 @@ export default function IncomeExpendExport() {
         format: 'dd/MM/yy'
       },
     },
-  });
+  }
+  const [series, setSeries] = useState([
+    {
+      name: "ລາຍຈ່າຍກີບ",
+      data: [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
+      ],
+    },
+    {
+      name: "ລາຍຮັບກີບ",
+      data: [
+        0, 0, 0, 0, 0, 0, 0, 0, 2, 4, , 9, 5, 3, 6, 6, 6, 9, 4, 4, 5, 4, 7, 8,
+      ],
+    },
+  ]);
+
+  const [options, setOptions] = useState(OPTION);
 
 
 
@@ -93,11 +112,20 @@ export default function IncomeExpendExport() {
     getIncomeExpendData()
   }, [])
 
+  useEffect(() => {
+    getIncomeExpendData()
+  }, [dateStart, dateEnd])
+
 
   useEffect(() => {
     if (!expendGraphData) return;
     modifyData()
   }, [expendGraphData, incomeGraphData])
+
+  useEffect(() => {
+    if (!series || !options) return;
+    // modifyData()
+  }, [series, options])
 
   const getIncomeExpendData = async () => {
     try {
@@ -150,38 +178,71 @@ export default function IncomeExpendExport() {
 
 
   const modifyData = () => {
-    console.log({ expendGraphData })
+    if (!incomeGraphData) return;
+
+    setSeries([])
+    setOptions(null)
+    setGraphData(null)
+
     let _createdAtGraph = expendGraphData?.createdAt
     let _xAxisData = []
-    console.log(_createdAtGraph.reverse())
-    _createdAtGraph.reverse().map((x) => _xAxisData.push(moment(x).format("YYYY/MM/DD")))
-    let _options = options
+    let bbb = [..._createdAtGraph]
+    bbb.reverse()
+    bbb.map((x) => _xAxisData.push(moment(x).format("YYYY-MM-DD")))
+    let _options = OPTION
     _options.xaxis.categories = _xAxisData;
+    console.log({ _xAxisData })
 
     let _dataAtGraph = expendGraphData?.totalExpendLAK
     let _lakData = []
-    _dataAtGraph.map((x) => _lakData.push(x))
-    console.log(_dataAtGraph)
-    console.log(_dataAtGraph.reverse())
-
-    console.log({ incomeGraphData })
-
-    if (!incomeGraphData) return;
+    let ccc = [..._dataAtGraph]
+    ccc.reverse()
+    ccc.map((x) => _lakData.push(x))
     let _incomeData = []
-    incomeGraphData.reverse().map((y) => {
-      _incomeData.push(y?.billAmount)
+    _xAxisData.map((y) => {
+      let _isMatchDate = incomeGraphData.filter((z) => z?.date == y)
+      if (_isMatchDate.length > 0) _incomeData.push(_isMatchDate[0]?.billAmount)
+      else _incomeData.push(0)
     })
 
     let _series = [...series];
     _series[0] = {
+      name: "ລາຍຈ່າຍກີບ",
       data: [..._lakData]
     }
     _series[1] = {
+      name: "ລາຍຮັບກີບ",
       data: [..._incomeData]
     }
-    setOptions(_options)
-    setSeries(_series)
-    console.log(_options)
+
+    let _graphData = {}
+    _graphData.options = _options
+    _graphData.series = _series
+    setGraphData(_graphData)
+
+    let _incomeExpendData = []
+    _xAxisData.map((t, index) => {
+      _incomeExpendData.push({
+        date: t,
+        income: _series[0]?.data[index],
+        expend: _series[1]?.data[index],
+      })
+    })
+    setIncomeExpendData(_incomeExpendData)
+  }
+
+
+  const calculateSummaryIncome = (type) => {
+    let _summaryAmount = 0;
+    incomeExpendData.map((x) => {
+      if (type == "INCOME")
+        _summaryAmount = _summaryAmount + x.income
+      else if (type == "EXPEND")
+        _summaryAmount = _summaryAmount + x.expend
+      else
+        _summaryAmount = _summaryAmount + (x.income - x.expend)
+    })
+    return moneyCurrency(_summaryAmount)
   }
 
   return (
@@ -210,7 +271,7 @@ export default function IncomeExpendExport() {
           <Form.Control
             type="date"
             value={dateStart}
-            // onChange={(e) => setDateStart(e?.target?.value)}
+            onChange={(e) => setDateStart(e?.target?.value)}
             style={{ width: 150 }}
           />{" "}
           ~
@@ -220,7 +281,7 @@ export default function IncomeExpendExport() {
             onChange={(e) => setDateEnd(e?.target?.value)}
             style={{ width: 150 }}
           />
-          <Form.Control
+          {/* <Form.Control
             as="select"
             name="payment"
             // value={filterByPayment}
@@ -230,11 +291,102 @@ export default function IncomeExpendExport() {
             <option value="ALL">ສະແດງຮູບແບບ</option>
             <option value="CASH">ເງິນສົດ</option>
             <option value="TRANSFER">ເງິນໂອນ</option>
-          </Form.Control>
+          </Form.Control> */}
         </div>
       </div>
-      <IncomeExpendatureChart series={series} options={options} />
+      {/* <Filter
+        filterByYear={filterByYear}
+        setFilterByYear={setFilterByYear}
+        filterByMonth={filterByMonth}
+        setFilterByMonth={setFilterByMonth}
+        dateStart={dateStart}
+        setDateStart={setDateStart}
+        dateEnd={dateEnd}
+        setDateEnd={setDateEnd}
+      /> */}
+      {graphData && <IncomeExpendatureChart graphData={graphData} />}
+      <div style={{ display: "flex" }}>
+        <div>
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            // justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+            <div className="p-2 hover-me" style={{
+              backgroundColor: "#fb6e3b", width: "25vw", height: 80, borderRadius: 8, display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around", alignItems: "center",
+              margin: 12
+            }}
 
+            >
+              <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+                <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ລາຍຮັບທັງຫມົດ</div>
+                <div style={{ fontSize: 24, color: "white", fontSize: 30, textAlign: "right" }}>{calculateSummaryIncome("INCOME")}</div>
+              </div>
+            </div>
+            <div className="p-2 hover-me" style={{
+              backgroundColor: "#fb6e3b", width: "25vw", height: 80, borderRadius: 8, display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around", alignItems: "center",
+              margin: 12
+            }}
+
+            >
+              <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+                <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faFunnelDollar} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ລາຍຈ່າຍທັງຫມົດ</div>
+                <div style={{ fontSize: 24, color: "white", textAlign: "right" }}>{calculateSummaryIncome("EXPEND")}</div>
+              </div>
+            </div>
+            <div className="p-2 hover-me" style={{
+              backgroundColor: "#fb6e3b", width: "25vw", height: 80, borderRadius: 8, display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around", alignItems: "center",
+              margin: 12
+            }}
+
+            >
+              <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
+                <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ສ່ວນຕ່າງການເງິນ</div>
+                <div style={{ fontSize: 24, color: "white", textAlign: "right" }}>{calculateSummaryIncome("")}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <table style={{ width: "60%" }} className="table-bordered">
+          <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
+            <th style={{ textAlign: "left" }}>ວັນທີ່</th>
+            <th style={{ textAlign: "right" }}>ລວມລາຍຮັບ</th>
+            <th style={{ textAlign: "right" }}>ລວມລາຍຈ່າຍ</th>
+            <th style={{ textAlign: "right" }}>ສ່ວນຕ່າງ</th>
+          </tr>
+          {incomeExpendData?.map((e) => (
+            <tr>
+              <td style={{ textAlign: "left" }}>{e?.date}</td>
+              <td style={{ textAlign: "right" }}>
+                {moneyCurrency(e?.income)}
+              </td>
+              <td style={{ textAlign: "right" }}>
+                {moneyCurrency(e?.expend)}
+              </td>
+              <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                {moneyCurrency(e?.income - e?.expend)}
+              </td>
+            </tr>
+          ))}
+        </table>
+
+      </div>
     </>
   );
 }
