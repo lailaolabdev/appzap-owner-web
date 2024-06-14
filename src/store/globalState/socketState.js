@@ -6,7 +6,7 @@ const socket = socketio.connect(END_POINT_SOCKET, {
   reconnection: true,
   reconnectionDelay: 5000,
   reconnectionDelayMax: 10000,
-  reconnectionAttempts: 25,
+  // reconnectionAttempts: 25,
 });
 export const useSocketState = ({ storeDetail, setRunSound }) => {
   const [socketConneted, setSocketConneted] = useState(false);

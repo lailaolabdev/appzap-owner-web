@@ -8,15 +8,20 @@ import { useStore } from "../../store";
 export default function PopUpPin({ open, onClose, setPinStatus }) {
   const [value, setValue] = useState("");
 
+  const { storeDetail } = useStore();
   useEffect(() => {
     setValue("");
+    if (open) {
+      if (!storeDetail?.usePin) {
+        setPinStatus(true);
+      }
+    }
   }, [open]);
   useEffect(() => {
     if (value.length == 6) {
       checkPin();
     }
   }, [value]);
-  const { storeDetail } = useStore();
   const checkPin = async () => {
     try {
       const url = END_POINT + "/v4/pin/check-pin";

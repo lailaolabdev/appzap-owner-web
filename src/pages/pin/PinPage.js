@@ -34,6 +34,7 @@ import Spinner from "react-bootstrap/Spinner";
 import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
+import { getStore, updateStorePin } from "../../services/store";
 
 let limitData = 10;
 
@@ -46,7 +47,7 @@ export default function PinPage() {
   const [PINs, setPINs] = useState();
 
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {
@@ -75,13 +76,9 @@ export default function PinPage() {
       setIsLoading(true);
       const { DATA, TOKEN } = await getLocalData();
       const url = `${END_POINT}/v4/pin/random`;
-      const res = await Axios.post(
-        url,
-        null,
-        {
-          headers: TOKEN,
-        }
-      );
+      const res = await Axios.post(url, null, {
+        headers: TOKEN,
+      });
       getPIN();
       return res.data;
     } catch (error) {
@@ -95,8 +92,8 @@ export default function PinPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ພະນັກງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍການພະນັກງານ</Breadcrumb.Item>
+          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
+          <Breadcrumb.Item active>ຕັ້ງຄ່າລາຍການລະຫັດ</Breadcrumb.Item>
         </Breadcrumb>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
@@ -105,6 +102,73 @@ export default function PinPage() {
           />
           <Button variant="primary">ຄົ້ນຫາ</Button>
         </div> */}
+
+        <Card border="primary" style={{ margin: 0, marginBottom: 10 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 10,
+            }}
+          >
+            <span>
+              <IoPeople /> ຕັ້ງຄ່າລາຍການລະຫັດ
+            </span>
+          </Card.Header>
+          <Card.Body>
+            {[
+              {
+                title: "ເປີດໃຊ້ງານ PIN ຕອນຍົກເລີກແລະ ໃຫ້ສ່ວນຫຼຸດ",
+                key: "pin",
+                default: false,
+                disabled: true,
+              },
+            ].map((item, index) => (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+                key={index}
+              >
+                <div>{item?.title}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                    {storeDetail?.usePin ? "ເປີດ" : "ປິດ"}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.usePin}
+                    id={"switch-audio-" + item?.key}
+                    onChange={(e) => {
+                      const _run = async () => {
+                        await updateStorePin(e.target.checked);
+                        const data = await getStore(storeDetail?._id);
+                        setStoreDetail(data);
+                      };
+                      _run();
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </Card.Body>
+        </Card>
 
         <Card border="primary" style={{ margin: 0 }}>
           <Card.Header
@@ -120,7 +184,7 @@ export default function PinPage() {
             }}
           >
             <span>
-              <IoPeople /> ລາຍການພະນັກງານ
+              <IoPeople /> ລາຍການລະຫັດ
             </span>
             <Button
               variant="dark"

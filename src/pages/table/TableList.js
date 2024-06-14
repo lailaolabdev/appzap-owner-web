@@ -29,7 +29,7 @@ import BillForChef58 from "../../components/bill/BillForChef58";
 import CheckOutType from "./components/CheckOutType";
 import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import PopUpPin from "../../components/popup/PopUpPin";
-import printFlutter from "../../helpers/printFlutter"
+import printFlutter from "../../helpers/printFlutter";
 
 /**
  * const
@@ -62,6 +62,7 @@ import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
+import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -182,6 +183,8 @@ export default function TableList() {
       setWorkAfterPin("");
       setPopup();
       setShow1(true);
+    }
+    if (workAfterPin == "cancle_order_and_print") {
     }
 
     getUserData();
@@ -541,7 +544,7 @@ export default function TableList() {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
 
-      printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
         method: "post",
         url: urlForPrinter,
@@ -795,6 +798,7 @@ export default function TableList() {
 
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
+  const billForCherCancel80 = useRef([]);
 
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
@@ -807,6 +811,12 @@ export default function TableList() {
     billForCher58.current = Array(arrLength)
       .fill()
       .map((_, i) => billForCher58.current[i]);
+  }
+  if (billForCherCancel80.current.length !== arrLength) {
+    // add or remove refs
+    billForCherCancel80.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCherCancel80.current[i]);
   }
 
   const [onPrinting, setOnPrinting] = useState(false);
@@ -876,7 +886,7 @@ export default function TableList() {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
-        printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
+        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
         await axios({
           method: "post",
           url: urlForPrinter,
@@ -894,6 +904,105 @@ export default function TableList() {
       } catch (err) {
         console.log(err);
         if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      }
+      _index++;
+    }
+    setOnPrinting(false);
+  };
+
+  const onPrintForCherCancel = async () => {
+    setOnPrinting(true);
+
+    let _dataBill = {
+      ...dataBill,
+      typePrint: "PRINT_BILL_FORCHER",
+    };
+    await _createHistoriesPrinter(_dataBill);
+
+    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    let _index = 0;
+    const printDate = [...billForCherCancel80.current];
+    let dataUrls = [];
+    for (const _ref of printDate) {
+      const dataUrl = await html2canvas(_ref, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      dataUrls.push(dataUrl);
+    }
+    for (const _ref of printDate) {
+      const _printer = printers.find((e) => {
+        return e?._id === orderSelect?.[_index]?.printer;
+      });
+
+      try {
+        let urlForPrinter = "";
+        let dataUrl = dataUrls[_index];
+        // if (_printer?.width === "80mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 530 / widthBill80,
+        //   });
+        // }
+        // if (_printer?.width === "58mm") {
+        //   dataUrl = await html2canvas(printDate[_index], {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //     scale: 350 / widthBill58,
+        //   });
+        // }
+        if (_printer?.type === "ETHERNET") {
+          urlForPrinter = ETHERNET_PRINTER_PORT;
+        }
+        if (_printer?.type === "BLUETOOTH") {
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
+        }
+        if (_printer?.type === "USB") {
+          urlForPrinter = USB_PRINTER_PORT;
+        }
+        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        if (_index === 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
+        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
+        await axios({
+          method: "post",
+          url: urlForPrinter,
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "success",
+            title: "ປິ້ນສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      } catch (err) {
+        console.log(err);
+        if (_index === 0) {
+          setOnPrinting(false);
+          return {error:true,err}
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -1058,6 +1167,57 @@ export default function TableList() {
 
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
+    }
+  };
+
+  const handleUpdateOrderStatuscancelAndCallback = async (status, callback) => {
+    try {
+      // getOrderItemsStore(CANCEL_STATUS);
+      const storeId = storeDetail?._id;
+      // let previousStatus = orderItems[0].status;
+      console.log("selectedTable:==8888=>", selectedTable);
+      let menuId;
+      let _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+            name: i?.name,
+            // remark: seletedCancelOrderItem
+          };
+        });
+      
+      const checkError=   await callback();
+      if(checkError?.error){
+        throw new Error("ປິນບໍ່ສຳເລັດ");
+      }
+      let _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        handleClose1();
+
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
+        Swal.fire({
+          icon: "success",
+          title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+      }
+    } catch (err) {
+      errorAdd("ບໍ່ສຳເລັດ");
     }
   };
 
@@ -1632,6 +1792,23 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() => {
+                            handleUpdateOrderStatuscancelAndCallback(
+                              "CANCELED",
+                              async () => {
+                                const data = await onPrintForCherCancel();
+                               return data
+                              }
+                            ).then();
+                          }}
+                          disabled={checkedBox || onPrinting}
+                        >
+                          {onPrinting && (
+                            <Spinner animation="border" size="sm" />
+                          )}
+                          ຍົກເລີກແລະພິມບິນໄປຄົວ
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => {
                             setWorkAfterPin("cancle_order");
                             setPopup({ PopUpPin: true });
                           }}
@@ -1893,6 +2070,23 @@ export default function TableList() {
               ref={(el) => (billForCher80.current[i] = el)}
             >
               <BillForChef80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                dataBill={dataBill}
+                val={val}
+              />
+            </div>
+          );
+        })}
+      {isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((val, i) => {
+          return (
+            <div
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCherCancel80.current[i] = el)}
+            >
+              <BillForChefCancel80
                 storeDetail={storeDetail}
                 selectedTable={selectedTable}
                 dataBill={dataBill}

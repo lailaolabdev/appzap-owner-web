@@ -10,13 +10,13 @@ export default function BillQRShortSmartOrdering80({
     <Container>
       <h2>{tableName}</h2>
       <div>QR ສຳຫຼັບສັ່ງອາຫານ</div>
-      <div>{`HTTPS://APZ.PW/${CodeShortLink}`.toLowerCase()}</div>
+      <div>v2: {`HTTPS://APZ.PW/${CodeShortLink}`.toLowerCase()}</div>
       <Img>
         {/* <QRCode
           value={`https://client.appzap.la/store/${storeId}?token=${TokenOfBill}`}
         /> */}
         <img
-          src={`https://app-api.appzap.la/qr-gennerate/qr?data=HTTPS://APZ.PW/${CodeShortLink}`}
+          src={`https://app-api.appzap.la/qr-gennerate/qr?data=HTTPS://APZ.PW/${CodeShortLink}`.toLowerCase()}
           style={{ wifth: "100%", height: "100%" }}
           alt=""
         />
