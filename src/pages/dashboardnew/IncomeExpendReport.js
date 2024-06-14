@@ -79,15 +79,20 @@ export default function IncomeExpendExport() {
     },
     xaxis: {
       // type: 'datetime',
+      labels: {
+        formatter: function (value) {
+          return value ? `${moment(value).format("YYYYMMDD")} (${convertWeekDay(moment(value).weekday())})`: 0;
+        }
+      },
       categories: [
 
       ],
     },
-    tooltip: {
-      x: {
-        format: 'dd/MM/yy'
-      },
-    },
+    // tooltip: {
+    //   x: {
+    //     format: 'dd/MM/yy'
+    //   },
+    // },
   }
   const [series, setSeries] = useState([
     {
@@ -188,7 +193,7 @@ export default function IncomeExpendExport() {
     let _xAxisData = []
     let bbb = [..._createdAtGraph]
     bbb.reverse()
-    bbb.map((x) => _xAxisData.push(moment(x).format("YYYY-MM-DD")))
+    bbb.map((x) => _xAxisData.push(`${moment(x).format("YYYY-MM-DD")}`))
     let _options = OPTION
     _options.xaxis.categories = _xAxisData;
     console.log({ _xAxisData })
