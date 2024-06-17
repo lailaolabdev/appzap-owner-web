@@ -616,7 +616,7 @@ export default function MenuList() {
                   justifyContent: "end",
                 }}
               >
-                <Button
+                {/* <Button
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
@@ -625,7 +625,7 @@ export default function MenuList() {
                   onClick={handleShowCaution}
                 >
                   + ເພີ່ມເມນູຈຳນວນຫຼາຍ
-                </Button>
+                </Button> */}
               </Col>
               <Col
                 md="2"

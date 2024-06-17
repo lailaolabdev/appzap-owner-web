@@ -85,8 +85,8 @@ export default function CreateMemberPage() {
                 />
               </div>
               <div className="mb-3">
-                <Form.Label>ເບີໂທ</Form.Label>
-                <InputGroup>
+                {/* <Form.Label>ເບີໂທ</Form.Label> */}
+                {/* <InputGroup>
                   <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
                   <Form.Control
                     placeholder="XXXX-XXXX"
@@ -100,7 +100,7 @@ export default function CreateMemberPage() {
                       }));
                     }}
                   />
-                </InputGroup>
+                </InputGroup> */}
               </div>
               <div className="mb-3">
                 <Form.Label>ວັນ/ເດືອນ/ປີ ເກີດ</Form.Label>

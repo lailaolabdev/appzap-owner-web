@@ -172,7 +172,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "settingManagement",
     // },
   ];
-
   const itemReports = [
     {
       title: "ສະຖິຕິການເງິນ",
@@ -190,11 +189,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "reportManagement",
     },
   ]
+    .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
+  
 
   const settingNavItem = [
     {
@@ -379,72 +380,79 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
         <hr />
 
-        {itemReports?.length != 0 ? (
-          <NavItem
-            eventKey="reportGroups"
+        {itemReports?.length !== 0 ? (
+  <NavItem
+    eventKey="reportGroups"
+    style={{
+      color:
+        isPathInclude(["report"]) || isPathInclude(["reports"])
+          ? COLOR_APP
+          : COLOR_GRAY,
+    }}
+  >
+    <NavIcon>
+      <FontAwesomeIcon
+        className={openTableData.length > 0 ? "scale-animation" : ""}
+        icon={faTachometerAlt}
+        style={{
+          color:
+            isPathInclude(["report"]) || isPathInclude(["reports"])
+              ? COLOR_APP
+              : COLOR_GRAY,
+        }}
+      />
+    </NavIcon>
+    <NavText>
+              <b
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              >
+                ລາຍງານ
+              </b>
+            </NavText>
+    
+
+    {itemReports.map((elm, index) => (
+      <NavItem key={index} eventKey={elm?.key}>
+        <NavText>
+          <div
             style={{
-              color:
-                isPathInclude(["report"]) || isPathInclude(["reports"])
-                  ? COLOR_APP
-                  : COLOR_GRAY,
+              display: "flex",
+              justifyContent: "start",
+              height: 40,
+              alignItems: "center",
+              gap: 8,
+              width: "100%",
             }}
           >
-            <NavIcon>
+            <div>
               <FontAwesomeIcon
                 className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faTachometerAlt}
+                icon={elm?.icon}
                 style={{
-                  color:
-                    isPathInclude(["report"]) || isPathInclude(["reports"])
-                      ? COLOR_APP
-                      : COLOR_GRAY,
+                  color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                  marginTop: "-2em",
                 }}
               />
-            </NavIcon>
-
-            {itemReports.map((elm, index) => (
-              <NavItem key={index} eventKey={elm?.key}>
-                <NavText>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "start",
-                      height: 40,
-                      alignItems: "center",
-                      gap: 8,
-                      width: "100%",
-                    }}
-                  >
-                    <div>
-                      <FontAwesomeIcon
-                        className={
-                          openTableData.length > 0 ? "scale-animation" : ""
-                        }
-                        icon={elm?.icon}
-                        style={{
-                          color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                          marginTop: "-2em",
-                        }}
-                      />
-                    </div>
-                    <p
-                      style={{
-                        paddingTop: 13,
-                        fontSize: 15,
-                        color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                      }}
-                    >
-                      {elm?.title}
-                    </p>
-                  </div>
-                </NavText>
-              </NavItem>
-            ))}
-          </NavItem>
-        ) : (
-          ""
-        )}
-
+            </div>
+            <p
+              style={{
+                paddingTop: 13,
+                fontSize: 15,
+                color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+              }}
+            >
+              {elm?.title}
+            </p>
+          </div>
+        </NavText>
+      </NavItem>
+    ))}
+  </NavItem>
+) : (
+  ""
+)}
         {settingNavItem?.map((e) => (
           <NavItem eventKey={e?.key}>
             <NavIcon>
@@ -472,7 +480,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           </NavItem>
         ))}
         <hr />
-        {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
+        {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
             <NavIcon>
               <FontAwesomeIcon
@@ -495,7 +503,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           </NavItem>
         ) : (
           ""
-        )}
+        )} */}
         <NavItem eventKey="songlist">
           <NavIcon>
             <FontAwesomeIcon
