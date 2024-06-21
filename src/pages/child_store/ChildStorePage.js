@@ -22,7 +22,7 @@ import {
 import { getLocalData } from "../../constants/api";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import Box from "../../components/Box";
-import { COLOR_APP, END_POINT } from "../../constants";
+import { COLOR_APP } from "../../constants";
 import moment from "moment";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
@@ -122,9 +122,21 @@ export default function ChildStores() {
       setReportData(data);
     };
 
+    const getMenuReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getMenuReport(
+        storeDetail?._id,
+        findBy,
+        selectedTableIds
+      );
+      setMenuReport(data);
+    };
+
     getSalesInformationReportData();
+    getPromotionReportData();
     getMoneyReportData();
     getUserReportData();
+    getMenuReportData();
     getTable();
     getReportData();
     getCategoryReportData();
@@ -156,7 +168,7 @@ export default function ChildStores() {
                 <DropdownButton
                   style={{ margin: 0 }}
                   id="dropdown-basic-button"
-                  title={selectedStore ? selectedStore.name : "Select a store"}
+                  title={selectedStore ? selectedStore.name : "ເລືອກສາຂາຮ້ານອາຫານ"}
                   onSelect={handleSelect}
                 >
                   {branchStore.childStores.map((store, index) => (
