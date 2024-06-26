@@ -19,6 +19,7 @@ export default function BillForCheckOut58({
 
   const [total, setTotal] = useState();
   const [currencyData, setCurrencyData] = useState([]);
+  const [rateCurrency , setRateCurrency] = useState([]);
   const [base64Image, setBase64Image] = useState('');
   const imageUrl = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
@@ -55,6 +56,10 @@ export default function BillForCheckOut58({
         );
         if (data?.status == 200) {
           setCurrencyData(data?.data?.data);
+
+          const _currencyData = currencyData.find((e) => e.currencyCode === "THB")
+
+          setRateCurrency(_currencyData?.buy)
         }
       }
     } catch (err) {
@@ -157,6 +162,7 @@ export default function BillForCheckOut58({
             </div>
           ))}
           <div>{t("discount")} ({storeDetail?.firstCurrency}) 0</div>
+          <div>rateCurrency</div>
         </div>
       </Price>
       <hr style={{ border: "1px solid #000" }} />
