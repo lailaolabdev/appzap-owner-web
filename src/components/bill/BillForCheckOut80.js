@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer,
+  getLocalDataCustomer
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
@@ -19,13 +19,14 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  taxPercent = 0,
+  taxPercent = 0
 }) {
   // state
   const [total, setTotal] = useState();
   const [taxAmount, setTaxAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
+  const [rateCurrency, setRateCurrency] = useState();
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
@@ -33,10 +34,8 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    console.log(
-      "🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:",
-      dataBill
-    );
+    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
+    console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent]);
 
   useEffect(() => {
@@ -76,6 +75,10 @@ export default function BillForCheckOut80({
         );
         if (data?.status == 200) {
           setCurrencyData(data?.data?.data);
+          const _currencyData = data?.data?.data?.find(
+            (e) => e.currencyCode === "THB"
+          );
+          setRateCurrency(_currencyData?.buy || 1);
         }
       }
     } catch (err) {
@@ -103,7 +106,7 @@ export default function BillForCheckOut80({
           <Image
             style={{
               maxWidth: 120,
-              maxHeight: 120,
+              maxHeight: 120
               // border: "1px solid #ddd",
               // borderRadius: "10em",
               // overflow: "hidden",
@@ -142,7 +145,8 @@ export default function BillForCheckOut80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {dataBill?.dataStaffConfirm?.firstname ?? "-"} {dataBill?.dataStaffConfirm?.lastname ?? "-"}
+              {dataBill?.dataStaffConfirm?.firstname ?? "-"}{" "}
+              {dataBill?.dataStaffConfirm?.lastname ?? "-"}
             </span>
           </div>
         </div>
@@ -161,7 +165,7 @@ export default function BillForCheckOut80({
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                fontSize: 14,
+                fontSize: 14
               }}
               key={index}
             >
@@ -183,8 +187,16 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <div>
+          <div style={{ textAlign: "right" }}>
             {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
+          </div>
+          <div>
+            {currencyData?.map((item, index) => (
+              <div key={index}>
+                {t("exchangeRate")} ({item?.buy} {item?.currencyCode}):{" "}
+                {moneyCurrency(total / item?.sell)} {item?.currencyName}
+              </div>
+            ))}
           </div>
           <div hidden={taxAmount <= 0}>
             {t("total")} + {t("vat")} {taxPercent}%:{" "}
@@ -210,12 +222,15 @@ export default function BillForCheckOut80({
         </div>
       </div>
       <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ height: 10 }}></div>
+      <div style={{ margin: "10px" }}></div>
       <Price>
-        <h6>
-          {t("aPriceHasToPay")} {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
-          {storeDetail?.firstCurrency}
-        </h6>
+        <div style={{ textAlign: "right", display: "flex", gap: 10,}}>
+          <h6>
+            {t("aPriceHasToPay")}{" "}
+            {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
+            {storeDetail?.firstCurrency}
+          </h6>
+        </div>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
@@ -233,7 +248,7 @@ export default function BillForCheckOut80({
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10,
+          padding: 10
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
