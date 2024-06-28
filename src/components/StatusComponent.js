@@ -1,4 +1,4 @@
-const StatusComponent = ({ status }) => {
+const StatusComponent = ({ status, style }) => {
   const converStatusName = (status) => {
     switch (status) {
       case "WAITING":
@@ -40,6 +40,7 @@ const StatusComponent = ({ status }) => {
         color: "#fff",
         borderRadius: 4,
         fontWeight: "bold",
+        ...style,
       }}
     >
       {converStatusName(status)}

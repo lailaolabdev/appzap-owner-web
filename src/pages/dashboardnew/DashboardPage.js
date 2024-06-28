@@ -141,7 +141,8 @@ export default function DashboardPage() {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
-      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+      const url =
+        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
       fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
       setLoadingExportCsv(false);
@@ -358,16 +359,49 @@ export default function DashboardPage() {
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
-                    method: "ບິນເງິນສົດແລະເງິນໂອນ",
+                    method: (
+                      <div>
+                        ບິນເງິນສົດແລະເງິນໂອນ
+                        <br />
+                        ສົດ{" "}
+                        {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
+                        ໂອນ{" "}
+                        {moneyCurrency(
+                          moneyReport?.transferCash?.transfer || 0
+                        )}
+                      </div>
+                    ),
                     qty: moneyReport?.transferCash?.count,
                     amount: moneyReport?.transferCash?.totalBill,
                   },
                   {
-                    method: "ລວມບິນທັງໝົດ",
+                    method: (
+                      <div style={{ fontWeight: 700 }}>ເງິນສົດທັງໝົດ</div>
+                    ),
+                    qty:
+                      (moneyReport?.transferCash?.count || 0) +
+                      (moneyReport?.cash?.count || 0),
+                    amount:
+                      (moneyReport?.transferCash?.cash || 0) +
+                      (moneyReport?.cash?.totalBill || 0),
+                  },
+                  {
+                    method: (
+                      <div style={{ fontWeight: 700 }}>ເງິນໂອນທັງໝົດ</div>
+                    ),
+                    qty:
+                      (moneyReport?.transferCash?.count || 0) +
+                      (moneyReport?.transfer?.count || 0),
+                    amount:
+                      (moneyReport?.transferCash?.transfer || 0) +
+                      (moneyReport?.transfer?.totalBill || 0),
+                  },
+                  {
+                    method: <div style={{ fontWeight: 700 }}>ທັງໝົດ</div>,
                     qty:
                       (moneyReport?.cash?.count || 0) +
                       (moneyReport?.transferCash?.count || 0) +
-                      moneyReport?.transfer?.count,
+                      (moneyReport?.transfer?.count || 0),
                     amount:
                       (moneyReport?.cash?.totalBill || 0) +
                       (moneyReport?.transferCash?.totalBill || 0) +
