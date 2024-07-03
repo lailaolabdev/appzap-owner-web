@@ -543,6 +543,7 @@ export default function TableList() {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
@@ -641,6 +642,7 @@ export default function TableList() {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       await axios({
         method: "post",
@@ -842,6 +844,7 @@ export default function TableList() {
       });
       dataUrls.push(dataUrl);
     }
+    console.log('fff',dataUrls[0])
     for (const _ref of printDate) {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
@@ -882,6 +885,8 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+
         if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
@@ -979,6 +984,7 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
         if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
@@ -2059,6 +2065,7 @@ export default function TableList() {
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+          taxPercent={taxPercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2101,7 +2108,7 @@ export default function TableList() {
           .map((val, i) => {
             return (
               <div
-                style={{ width: "80mm", padding: 10 }}
+                style={{ width: "58mm", padding: 10 }}
                 ref={(el) => (billForCher58.current[i] = el)}
               >
                 <BillForChef58

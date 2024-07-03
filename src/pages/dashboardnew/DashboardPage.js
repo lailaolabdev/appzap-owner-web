@@ -19,6 +19,8 @@ import {
   getUserReport,
 } from "../../services/report";
 import fileDownload from "js-file-download";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
@@ -143,7 +145,34 @@ export default function DashboardPage() {
       setLoadingExportCsv(true);
       const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
-      fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
+      // fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
+      setLoadingExportCsv(false);
+    } catch (err) {
+      setLoadingExportCsv(false);
+      errorAdd("Export ບໍ່ສຳເລັດ");
+    }
+  };
+  
+  const downloadExcel = async () => {
+    try {
+      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      setLoadingExportCsv(true);
+      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+      const _res = await Axios.get(url);
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: 'blob', // Important to get the response as a Blob
+        });
+  
+        // Create a Blob from the response data
+        console.log("response", response.data)
+        const fileBlob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+        // Use the file-saver library to save the file with a new name
+        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+      }
+      
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
@@ -198,7 +227,8 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={downloadCsv}
+            // onClick={downloadCsv}
+            onClick={downloadExcel}
             disabled={loadingExportCsv}
           >
             <MdOutlineCloudDownload /> EXPORT
