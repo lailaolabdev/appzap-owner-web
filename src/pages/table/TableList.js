@@ -833,22 +833,42 @@ export default function TableList() {
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     let _index = 0;
-    const printDate = [...billForCher80.current];
+
+    const _printer = printers.find((e) => {
+      return e?._id === orderSelect?.[_index]?.printer;
+    });
+
+    let printDate = [];
+    console.log("orderSelect", orderSelect)
+    console.log("_printer", _printer)
+    if (_printer?.width === "80mm") {
+      printDate = [...billForCher80.current];
+    }
+    if (_printer?.width === "58mm") {
+      printDate = [...billForCher58.current];
+    }
+
     let dataUrls = [];
     for (const _ref of printDate) {
-      const dataUrl = await html2canvas(_ref, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-        scale: 530 / widthBill80,
-      });
+      let dataUrl;
+      if (_printer?.width === "80mm") {
+        dataUrl = await html2canvas(_ref, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (_printer?.width === "58mm") {
+        dataUrl = await html2canvas(_ref, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 350 / widthBill58,
+        });
+      }
       dataUrls.push(dataUrl);
-    }
-    console.log('fff',dataUrls[0])
-    for (const _ref of printDate) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
 
       try {
         let urlForPrinter = "";
