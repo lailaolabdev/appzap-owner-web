@@ -33,6 +33,11 @@ import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
 
+const OPTION_PRICE_TYPE = {
+    MONEY: "MONEY",
+    PERCENT: "PERCENT"
+}
+
 export default function MenuListOption() {
   const navigate = useNavigate();
   const params = useParams();
@@ -63,7 +68,7 @@ export default function MenuListOption() {
   const [filterName, setFilterName] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
 
-  const [menuType, setMenuType] = useState("MENU");
+  const [menuType, setMenuType] = useState(OPTION_PRICE_TYPE.MONEY);
   const [connectMenues, setConnectMenues] = useState([]);
   const [connectMenuId, setConnectMenuId] = useState("");
   const [dataMenuOption, setDataMenuOption] = useState([]);
@@ -223,53 +228,43 @@ export default function MenuListOption() {
       Authorization: header.authorization,
     };
     try {
+
       let createData = {
-        recommended: values?.recommended,
         name: values?.name,
-        name_en: values?.name_en,
-        name_cn: values?.name_cn,
-        name_kr: values?.name_kr,
-        quantity: values?.quantity,
-        categoryId: values?.categoryId,
-        menuOptionId: menuOptions,
         price: values?.price,
-        detail: values?.detail,
-        unit: values?.unit,
-        isOpened: isOpened,
-        images: [...values?.images],
-        storeId: getTokken?.DATA?.storeId,
         type: menuType,
-        sort: values?.sort,
-        menuOption: dataMenuOption,
       };
-      if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
-        createData = { ...createData, menuId: connectMenuId };
-      const resData = await axios({
-        method: "POST",
-        url: END_POINT_SEVER + "/v3/menu/create",
-        data: createData,
-        headers: headers,
-      });
-      const _localData = await getLocalData();
-      if (resData?.data) {
-        setMenus(resData?.data);
-        handleClose();
-        // handleShow();
-        setgetTokken(_localData);
-        getMenu(_localData?.DATA?.storeId);
-        setMenuType("MENU");
-        setConnectMenuId("");
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-        values.name = "";
-        values.name_en = "";
-        values.name_cn = "";
-        values.name_kr = "";
-        values.quantity = "";
-        values.categoryId = "";
-        values.price = "";
-        values.detail = "";
-        values.unit = "";
-      }
+
+      console.log({createData})
+
+    //   if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
+    //     createData = { ...createData, menuId: connectMenuId };
+    //   const resData = await axios({
+    //     method: "POST",
+    //     url: END_POINT_SEVER + "/v3/menu/create",
+    //     data: createData,
+    //     headers: headers,
+    //   });
+    //   const _localData = await getLocalData();
+    //   if (resData?.data) {
+    //     setMenus(resData?.data);
+    //     handleClose();
+    //     // handleShow();
+    //     setgetTokken(_localData);
+    //     getMenu(_localData?.DATA?.storeId);
+    //     setMenuType("MENU");
+    //     setConnectMenuId("");
+    //     successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+    //     values.name = "";
+    //     values.name_en = "";
+    //     values.name_cn = "";
+    //     values.name_kr = "";
+    //     values.quantity = "";
+    //     values.categoryId = "";
+    //     values.price = "";
+    //     values.detail = "";
+    //     values.unit = "";
+    //   }
     } catch (err) {
       errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
     }
@@ -317,42 +312,52 @@ export default function MenuListOption() {
     setDataUpdateMenuOption(item?.menuOption);
     setShow2(true);
   };
-  const _updateCategory = async (values) => {
+  const _updateMenuOption = async (values) => {
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
       Authorization: header.authorization,
     };
-    const resData = await axios({
-      method: "PUT",
-      url: END_POINT_SEVER + `/v3/menu/update`,
-      data: {
-        id: dataUpdate?._id,
-        data: {
-          recommended: values?.recommended,
-          name: values?.name,
-          name_en: values?.name_en,
-          name_cn: values?.name_cn,
-          name_kr: values?.name_kr,
-          quantity: values?.quantity,
-          categoryId: values?.categoryId,
-          menuOptionId: menuOptions,
-          price: values?.price,
-          detail: values?.detail,
-          unit: values?.unit,
-          isOpened: isOpened,
-          images: [...values?.images],
-          type: values?.type,
-          sort: values?.sort,
-          menuOption: dataUpdateMenuOption,
-        },
-      },
-      headers: headers,
-    });
-    if (resData?.data) {
-      handleClose2();
-      successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+
+    console.log({values})
+    const updateData = {
+        name: values?.name,
+        price: values?.price,
+        type: menuType,
     }
+
+    console.log(updateData)
+
+    // const resData = await axios({
+    //   method: "PUT",
+    //   url: END_POINT_SEVER + `/v3/menu/update`,
+    //   data: {
+    //     id: dataUpdate?._id,
+    //     data: {
+    //       recommended: values?.recommended,
+    //       name: values?.name,
+    //       name_en: values?.name_en,
+    //       name_cn: values?.name_cn,
+    //       name_kr: values?.name_kr,
+    //       quantity: values?.quantity,
+    //       categoryId: values?.categoryId,
+    //       menuOptionId: menuOptions,
+    //       price: values?.price,
+    //       detail: values?.detail,
+    //       unit: values?.unit,
+    //       isOpened: isOpened,
+    //       images: [...values?.images],
+    //       type: values?.type,
+    //       sort: values?.sort,
+    //       menuOption: dataUpdateMenuOption,
+    //     },
+    //   },
+    //   headers: headers,
+    // });
+    // if (resData?.data) {
+    //   handleClose2();
+    //   successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+    // }
   };
   const _updateQtyCategory = async (values) => {
     await axios({
@@ -381,18 +386,6 @@ export default function MenuListOption() {
   const handleChangeMenuType = async (e) => {
     setMenuType(e.target.value);
 
-    if (e.target.value === "MENUOPTION") {
-      await fetch(
-        MENUS + `/?isOpened=true&storeId=${getTokken?.DATA?.storeId}&type=MENU`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => {
-          setConnectMenues(json);
-        });
-    }
   };
 
   const handleChangeConnectMenu = (e) => {
@@ -704,42 +697,18 @@ export default function MenuListOption() {
           </Modal.Header>
           <Formik
             initialValues={{
-              recommended: false,
-              name: "",
-              name_en: "",
-              name_cn: "",
-              name_kr: "",
-              quantity: 1,
-              menuOptionId: [],
-              categoryId: "",
-              detail: "",
-              images: [],
-              unit: "",
-              isOpened: true,
-              type: "",
-              sort: 0,
+              name: ""
             }}
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+                errors.name = "ກະລຸນາປ້ອນຊື່";
               }
-
 
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາຂາຍ...";
+                errors.price = "ກະລຸນາປ້ອນລາຄາທີ່ເພີ່ມຂຶ້ນ";
               }
-              if (!values.categoryId) {
-                errors.categoryId = "ກະລຸນາປ້ອນ...";
-              }
-              for (let i = 0; i < dataMenuOption.length; i++) {
-                if (dataMenuOption[i]?.name === "") {
-                  errors.menuOptionName = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-                }
-                if (!dataMenuOption[i]?.price) {
-                  errors.menuOptionPrice = "ກະລຸນາປ້ອນລາຄາ...";
-                }
-              }
+
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -801,8 +770,8 @@ export default function MenuListOption() {
                         onChange={handleChangeMenuType}
                         value={menuType}
                         >
-                        <option value={"MONEY"}>ເງິນ</option>
-                        <option value={"PERCENT"}>%</option>
+                        <option value={OPTION_PRICE_TYPE.MONEY}>ເງິນ</option>
+                        <option value={OPTION_PRICE_TYPE.PERCENT}>%</option>
                         </Form.Control>
                     </Form.Group> 
 
@@ -845,26 +814,14 @@ export default function MenuListOption() {
           </Modal.Header>
           <Formik
             initialValues={{
-              recommended: dataUpdate?.recommended,
               name: dataUpdate?.name,
-              name_en: dataUpdate?.name_en,
-              name_cn: dataUpdate?.name_cn,
-              name_kr: dataUpdate?.name_kr,
-              images: dataUpdate?.images,
-              quantity: dataUpdate?.quantity,
-              sort: dataUpdate?.sort,
-              menuOptionId: dataUpdate?.menuOptions,
-              categoryId: dataUpdate?.categoryId?._id,
               price: dataUpdate?.price,
-              detail: dataUpdate?.detail,
-              unit: dataUpdate?.unit,
-              isOpened: dataUpdate?.isOpened,
               type: dataUpdate?.type,
             }}
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+                errors.name = "ກະລຸນາປ້ອນຊື່ອ໋ອບຊັນ...";
               }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
                 errors.price = "ກະລຸນາປ້ອນລາຄາ...";
@@ -873,12 +830,12 @@ export default function MenuListOption() {
             }}
             onSubmit={(values, { setSubmitting }) => {
               const getData = async () => {
-                await _updateCategory(values);
-                const _localData = await getLocalData();
-                if (_localData) {
-                  setgetTokken(_localData);
-                  getMenu(_localData?.DATA?.storeId, filterCategory);
-                }
+                await _updateMenuOption(values);
+                // const _localData = await getLocalData();
+                // if (_localData) {
+                //   setgetTokken(_localData);
+                //   getMenu(_localData?.DATA?.storeId, filterCategory);
+                // }
               };
               getData();
             }}
