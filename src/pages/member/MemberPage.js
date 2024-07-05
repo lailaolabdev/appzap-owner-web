@@ -196,9 +196,9 @@ export default function MemberPage() {
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານສະມາຊິກ</Breadcrumb.Item>
         </Breadcrumb>
-        {/* <Alert key="warning" variant="warning">
-          ອັບເດດຄັ້ງລາສຸດ 2024/02/20 15:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
-        </Alert> */}
+        <Alert key="warning" variant="warning">
+          ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
+        </Alert>
         <Box
           sx={{
             display: "grid",

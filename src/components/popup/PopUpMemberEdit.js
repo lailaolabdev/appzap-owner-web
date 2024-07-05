@@ -80,14 +80,14 @@ export default function PopUpMemberEdit({
             onChange={(e) => setPoint(e.target.value)}
           />
         </div>
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <Form.Label>ໃຊ້ບໍລິການ</Form.Label>
           <Form.Control
             placeholder="ໃຊ້ບໍລິການ"
             value={bill}
             onChange={(e) => setBill(e.target.value)}
           />
-        </div>
+        </div> */}
         {/* `<div className="mb-3">
           <Form.Label>ວັນ/ເດືອນ/ປີ ເກີດ</Form.Label>
           <Form.Control
