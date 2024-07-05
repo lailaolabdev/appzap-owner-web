@@ -25,6 +25,11 @@ export const END_POINT_WEB_CLIENT = isProduction
 // export const END_POINT_SERVER_BUNSI = 'http://localhost:7070';
 export const END_POINT_SERVER_BUNSI = "https://accounting.lailaolab.la/";
 
+// ------------EXPORT END POINT--------------
+const production_export = "https://api.appzap.la";
+const dev_export = "https://api.appzap.la:17070";
+export const END_POINT_EXPORT = isProduction ? production_export : dev_export;
+
 // ------------------------------------------
 
 export const getLocalData = async () => {

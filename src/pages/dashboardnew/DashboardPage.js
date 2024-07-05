@@ -37,8 +37,7 @@ import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableCo
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
-
-const END_POINT_EXPORT = "https://api.appzap.la:2000";
+import { END_POINT_EXPORT } from "../../constants/api";
 
 export default function DashboardPage() {
   // state
