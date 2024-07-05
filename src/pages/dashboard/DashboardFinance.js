@@ -303,54 +303,6 @@ export default function DashboardFinance({
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", padding: 10 }}>
-        <ButtonDownloadExcel
-          // jsonData={() => {
-          //   let _export = data?.checkOut.map((item, index) => ({
-          //     ລຳດັບ: index + 1,
-          //     ເລກບິນ: item?.code,
-          //     ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-          //     ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-          //       ? new Intl.NumberFormat("ja-JP", {
-          //         currency: "JPY",
-          //       }).format(_countAmount(item?.orderId))
-          //       : new Intl.NumberFormat("ja-JP", {
-          //         currency: "JPY",
-          //       }).format(item?.billAmount),
-          //     ຈ່າຍເງິນສົດ: item?.payAmount,
-          //     ຈ່າຍເງິນໂອນ: item?.transferAmount,
-          //     ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-          //     ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-          //     ຍອດລວມທັງໝົດ: data?.checkOut?.length === index + 1 ?
-          //       new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-          //         data?.amount + dataNotCheckBill?.amount
-          //       ) : "",
-          //   }))
-          //   return _export
-          // }}
-
-          jsonData={data?.checkOut.map((item, index) => ({
-            ລຳດັບ: index + 1,
-            ເລກບິນ: item?.code,
-            ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-            ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-              ? _countAmount(item?.orderId)
-              : item?.billAmount,
-            ຈ່າຍເງິນສົດ: item?.payAmount,
-            ຈ່າຍເງິນໂອນ: item?.transferAmount,
-            ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-            ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-            ຍອດລວມທັງໝົດ:
-              data?.checkOut?.length === index + 1
-                ? new Intl.NumberFormat("ja-JP", {
-                    currency: "JPY",
-                  }).format(data?.amount + dataNotCheckBill?.amount)
-                : "",
-          }))}
-          // jsonData={exportJsonToExcel}
-        />
-      </Box>
       <div style={{ padding: 10 }}>
         <Table striped hover size="sm" style={{ fontSize: 15 }}>
           <thead>

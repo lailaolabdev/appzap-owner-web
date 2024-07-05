@@ -69,6 +69,7 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => {
+    
     const getData = async () => {
       getCategory();
     };

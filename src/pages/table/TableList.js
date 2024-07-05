@@ -63,6 +63,7 @@ import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOr
 import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
+import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -1006,7 +1007,7 @@ export default function TableList() {
         console.log(err);
         if (_index === 0) {
           setOnPrinting(false);
-          return {error:true,err}
+          return { error: true, err };
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -1192,9 +1193,9 @@ export default function TableList() {
             // remark: seletedCancelOrderItem
           };
         });
-      
-      const checkError=   await callback();
-      if(checkError?.error){
+
+      const checkError = await callback();
+      if (checkError?.error) {
         throw new Error("ປິນບໍ່ສຳເລັດ");
       }
       let _resOrderUpdate = await updateOrderItem(
@@ -1779,6 +1780,12 @@ export default function TableList() {
                         >
                           + {t("addOrder")}
                         </ButtonCustom>
+                        <ButtonCustom disabled></ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => setPopup({ PopUpTranferTable: true })}
+                        >
+                          ຍ້າຍອໍເດີ
+                        </ButtonCustom>
                       </div>
                       <div
                         style={{
@@ -1800,7 +1807,7 @@ export default function TableList() {
                               "CANCELED",
                               async () => {
                                 const data = await onPrintForCherCancel();
-                               return data
+                                return data;
                               }
                             ).then();
                           }}
@@ -2463,6 +2470,12 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <PopUpTranferTable
+        open={popup?.PopUpTranferTable}
+        onClose={() => setPopup({ PopUpTranferTable: false })}
+        onSubmit={reLoadData}
+        tableList={tableList}
+      />
     </div>
   );
 }
