@@ -46,8 +46,9 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 color: "#000",
                 fontWeight: "bold",
                 fontSize: 20,
-                lineHeight: "100%",
-                wordWrap: "break-word",
+                lineHeight: 1.2,
+                // lineHeight: "100%",
+                // wordWrap: "break-word",
                 textAlign: "left",
                 padding: 5,
               }}
@@ -61,8 +62,9 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
               style={{
                 color: "#000",
                 fontSize: 18,
-                lineHeight: "100%",
-                wordWrap: "break-word",
+                lineHeight: 1.2,
+                // lineHeight: "100%",
+                // wordWrap: "break-word",
                 textAlign: "left",
                 padding: 5,
               }}
