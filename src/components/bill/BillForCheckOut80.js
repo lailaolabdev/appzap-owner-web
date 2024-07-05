@@ -185,19 +185,12 @@ export default function BillForCheckOut80({
       </Order>
       <div style={{ height: 10 }}></div>
       <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
+      <div style={{ fontSize: 14, textAlign: "right" }}>
         <div>
-          <div style={{ textAlign: "right" }}>
-            {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
-          </div>
-          <div>
-            {currencyData?.map((item, index) => (
-              <div key={index}>
-                {t("exchangeRate")} ({item?.buy} {item?.currencyCode}):{" "}
-                {moneyCurrency(total / item?.sell)} {item?.currencyName}
-              </div>
-            ))}
-          </div>
+          {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
+          {/* <div style={{ textAlign: "right" }}>
+            
+          </div> */}
           <div hidden={taxAmount <= 0}>
             {t("total")} + {t("vat")} {taxPercent}%:{" "}
             {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency}
@@ -224,12 +217,23 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ margin: "10px" }}></div>
       <Price>
-        <div style={{ textAlign: "right", display: "flex", gap: 10,}}>
+        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ display: "flex", gap: 10 }}>
           <h6>
             {t("aPriceHasToPay")}{" "}
             {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
             {storeDetail?.firstCurrency}
           </h6>
+        </div>
+      </Price>
+      <Price>
+        <div style={{ flexGrow: 1, display: "flex", gap: 10 }}></div>
+        <div style={{ fontSize: 12 }}>
+          {currencyData?.map((item, index) => (
+            <div key={index}>
+              {t("exchangeRate")} ({item?.currencyCode}): {item?.buy}
+            </div>
+          ))}
         </div>
       </Price>
       <Price>

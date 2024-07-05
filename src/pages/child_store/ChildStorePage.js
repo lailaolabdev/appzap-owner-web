@@ -125,7 +125,7 @@ export default function ChildStores() {
     const getMenuReportData = async () => {
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
       const data = await getMenuReport(
-        storeDetail?._id,
+        childId,
         findBy,
         selectedTableIds
       );

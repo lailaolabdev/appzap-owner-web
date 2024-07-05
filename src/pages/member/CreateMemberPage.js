@@ -3,7 +3,7 @@ import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle,
+  BsInfoCircle
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -17,7 +17,7 @@ import { FaSearch } from "react-icons/fa";
 import {
   addMember,
   getMemberCount,
-  getMembers,
+  getMembers
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
@@ -64,7 +64,7 @@ export default function CreateMemberPage() {
               backgroundColor: COLOR_APP,
               color: "#fff",
               fontSize: 18,
-              fontWeight: "bold",
+              fontWeight: "bold"
             }}
           >
             ຟອມເພີ່ມສະມາຊິກ
@@ -79,14 +79,14 @@ export default function CreateMemberPage() {
                   onChange={(e) => {
                     setFormData((prev) => ({
                       ...prev,
-                      name: e.target.value,
+                      name: e.target.value
                     }));
                   }}
                 />
               </div>
               <div className="mb-3">
-                {/* <Form.Label>ເບີໂທ</Form.Label> */}
-                {/* <InputGroup>
+                <Form.Label>ເບີໂທ</Form.Label>
+                <InputGroup>
                   <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
                   <Form.Control
                     placeholder="XXXX-XXXX"
@@ -96,11 +96,11 @@ export default function CreateMemberPage() {
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        phone: e.target.value,
+                        phone: e.target.value
                       }));
                     }}
                   />
-                </InputGroup> */}
+                </InputGroup>
               </div>
               <div className="mb-3">
                 <Form.Label>ວັນ/ເດືອນ/ປີ ເກີດ</Form.Label>
@@ -109,7 +109,7 @@ export default function CreateMemberPage() {
                   onChange={(birthday) => {
                     setFormData((prev) => ({
                       ...prev,
-                      birthday: birthday,
+                      birthday: birthday
                     }));
                   }}
                 />
