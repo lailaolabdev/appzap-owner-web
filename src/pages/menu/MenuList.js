@@ -530,6 +530,9 @@ export default function MenuList() {
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
+  const _menuOptionList = () => {
+    navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
+  };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
@@ -563,6 +566,14 @@ export default function MenuList() {
                 onClick={() => _menuList()}
               >
                 ເມນູອາຫານ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu-option"
+                onClick={() => _menuOptionList()}
+              >
+                ອ໋ອບເຊິນ
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

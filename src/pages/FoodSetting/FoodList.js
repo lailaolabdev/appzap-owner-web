@@ -372,6 +372,7 @@ export default function FoodList() {
   const _menuList = () => {
     navigate(`/food-setting/limit/40/page/1`);
   };
+
   const _category = () => {
     navigate(
       `/food-setting/food-type/limit/40/page/1`
@@ -397,11 +398,15 @@ export default function FoodList() {
                 ເມນູອາຫານ
               </Nav.Link>
             </Nav.Item>
+            
             <Nav.Item>
               <Nav.Link eventKey="/settingStore/food-type" onClick={() => _category()} >
                 ປະເພດອາຫານ
               </Nav.Link>
             </Nav.Item>
+
+            
+            
           </Nav>
         </div>
         <Row>
