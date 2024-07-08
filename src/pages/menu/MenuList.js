@@ -30,6 +30,7 @@ import Upload from "../../components/Upload";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
+import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
 import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
 
@@ -38,6 +39,9 @@ export default function MenuList() {
   const params = useParams();
 
   const [showSetting, setShowSetting] = useState(false);
+  const [showOptionSetting, setShowOptionSetting] = useState(false);
+
+  
 
   const [isOpened, setIsOpened] = useState(true);
   const [show, setShow] = useState(false);
@@ -73,6 +77,8 @@ export default function MenuList() {
 
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
+  const [detailMenuOption, setDetailMenuOption] = useState();
+
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
@@ -671,6 +677,7 @@ export default function MenuList() {
                   <th scope="col">ຊື່ອາຫານ</th>
                   <th scope="col">ລາຄາ</th>
                   <th scope="col">ກຳນົດສະຖານະການສະແດງ</th>
+                  <th scope="col">ອ໋ອບຊັນເສີມ</th>
                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
                 </tr>
               </thead>
@@ -736,6 +743,19 @@ export default function MenuList() {
                             }}
                           >
                             ກຳນົດ
+                          </button>
+                        </td>
+
+                        <td>
+                          <button
+                            type="button"
+                            className="menuSetting"
+                            onClick={() => {
+                              setShowOptionSetting(true);
+                              setDetailMenuOption({ data, index });
+                            }}
+                          >
+                            +ອ໋ອບຊັນເສີມ
                           </button>
                         </td>
 
@@ -1711,6 +1731,29 @@ export default function MenuList() {
             _onOpenMenuStaff(id, isOpenMenuStaff, index)
           }
         />
+
+        <PopUpAddMenuOption
+          showSetting={showOptionSetting}
+          detailMenu={detailMenuOption}
+          handleClose={async () => {
+            await setShowOptionSetting(false);
+            await setDetailMenuOption();
+          }}
+          _handOpenMenu={(id, isOpenMenuCustomerWeb, index) =>
+            _onOpenMenu(id, isOpenMenuCustomerWeb, index)
+          }
+          _handOpenMenuCounterApp={(id, isShowCounterApp, index) =>
+            _onOpenMenuCounter(id, isShowCounterApp, index)
+          }
+          _handOpenMenuCustomerApp={(id, isOpenMenuCustomerApp, index) =>
+            _onOpenMenuCustomerApp(id, isOpenMenuCustomerApp, index)
+          }
+          _handOpenMenuShowStaff={(id, isOpenMenuStaff, index) =>
+            _onOpenMenuStaff(id, isOpenMenuStaff, index)
+          }
+        />
+
+
       </Box>
     </div>
   );
