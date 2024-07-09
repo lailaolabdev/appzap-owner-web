@@ -78,6 +78,10 @@ export default function MenuList() {
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
   const [detailMenuOption, setDetailMenuOption] = useState();
+  const [menuOptionsCount, setMenuOptionsCount] = useState({});
+
+  const [allMenuOptions, setAllMenuOptions] = useState([]);
+  const [menuSpecificOptions, setMenuSpecificOptions] = useState([]);
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
@@ -153,6 +157,10 @@ export default function MenuList() {
     }
   };
 
+  const handleUpdateMenuOptionsCount = (menuId, count) => {
+    setMenuOptionsCount(prev => ({ ...prev, [menuId]: count }));
+  };
+
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true);
@@ -176,6 +184,8 @@ export default function MenuList() {
       setIsLoading(false);
     }
   };
+
+  
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -761,7 +771,7 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ
+                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data.menuOptions.length || 0})
                           </button>
                         </td>
 
@@ -1738,26 +1748,16 @@ export default function MenuList() {
           }
         />
 
-        <PopUpAddMenuOption
+      <PopUpAddMenuOption
           showSetting={showOptionSetting}
           detailMenu={detailMenuOption}
-          handleClose={async () => {
-            await setShowOptionSetting(false);
-            await setDetailMenuOption();
+          handleClose={() => {
+              setShowOptionSetting(false);
+              setDetailMenuOption(null);
           }}
-          _handOpenMenu={(id, isOpenMenuCustomerWeb, index) =>
-            _onOpenMenu(id, isOpenMenuCustomerWeb, index)
-          }
-          _handOpenMenuCounterApp={(id, isShowCounterApp, index) =>
-            _onOpenMenuCounter(id, isShowCounterApp, index)
-          }
-          _handOpenMenuCustomerApp={(id, isOpenMenuCustomerApp, index) =>
-            _onOpenMenuCustomerApp(id, isOpenMenuCustomerApp, index)
-          }
-          _handOpenMenuShowStaff={(id, isOpenMenuStaff, index) =>
-            _onOpenMenuStaff(id, isOpenMenuStaff, index)
-          }
-        />
+          getTokken={getTokken}
+          updateMenuOptionsCount={handleUpdateMenuOptionsCount}
+      />
 
 
       </Box>
