@@ -27,7 +27,7 @@ import profileImage from "../../image/profile.png";
 import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Box from "../../components/Box";
 import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
@@ -82,6 +82,12 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
+
+  const location = useLocation();
+  const pathParts = location.pathname.split('/');
+  const defaultActiveKey = `/settingStore/${pathParts[2]}`;
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -565,7 +571,7 @@ export default function MenuList() {
           <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
         </Breadcrumb>
         <div>
-          <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
+          <Nav variant="tabs" defaultActiveKey={defaultActiveKey}>
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/menu"
