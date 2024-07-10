@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
+import {
+  Card,
+  Breadcrumb,
+  Button,
+  InputGroup,
+  Form,
+  Modal,
+  Spinner
+} from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle,
+  BsInfoCircle
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -14,39 +22,129 @@ import moment from "moment";
 import { COLOR_APP } from "../../constants";
 import ButtonDropdown from "../../components/button/ButtonDropdown";
 import { FaSearch } from "react-icons/fa";
-import {
-  addMember,
-  getMemberCount,
-  getMembers,
-} from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
+import {
+  addMemberPoint,
+  getAllStorePoints,
+  updatePointStore
+} from "../../services/member.service";
 
 export default function SettingMemberPointPage() {
   const navigate = useNavigate();
   // state
   const [disabledButton, setDisabledButton] = useState(false);
-  const [formData, setFormData] = useState();
+  const [formData, setFormData] = useState({
+    totalAmount: "",
+    points: "",
+    storeId: ""
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [pointsData, setPointsData] = useState([]);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const [editMode, setEditMode] = useState(false);
+  const handleShow = async () => {
+    const { DATA } = await getLocalData();
+    setFormData((prevData) => ({ ...prevData, storeId: DATA.storeId }));
+    setShow(true);
+  };
 
   // provider
 
   // useEffect
 
   // function
-  const createMember = async () => {
+  // const createMember = async () => {
+  //   try {
+  //     if (disabledButton) return;
+  //     setDisabledButton(true);
+  //     const { TOKEN } = await getLocalData();
+  //     const _data = await addMember(formData, TOKEN);
+  //     if (_data.error) throw new Error("can not create member");
+  //     navigate("/reports/members-report");
+  //   } catch (err) {
+  //     setDisabledButton(true);
+  //     console.error(err);
+  //   }
+  // };
+
+  const createMemberPoint = async () => {
     try {
-      if (disabledButton) return;
       setDisabledButton(true);
-      const { TOKEN } = await getLocalData();
-      const _data = await addMember(formData, TOKEN);
-      if (_data.error) throw new Error("can not create member");
-      navigate("/reports/members-report");
+      const body = {
+        money: formData.totalAmount,
+        piont: formData.points,
+        storeId: formData.storeId
+      };
+      console.log("Submitting formData: ", body);
+      const _data = await addMemberPoint(body);
+      if (_data.error) throw new Error("Cannot create point");
+      handleClose();
+
+      fetchPointsData();
     } catch (err) {
-      setDisabledButton(true);
       console.error(err);
+    } finally {
+      setDisabledButton(false);
     }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleUpdateChange = (e) => {
+    const { name, value } = e.target;
+    const updatedPointsData = [...pointsData];
+    updatedPointsData[0] = { ...updatedPointsData[0], [name]: value };
+    setPointsData(updatedPointsData);
+  };
+
+  const fetchPointsData = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const data = await getAllStorePoints();
+      if (!data.error) {
+        const { DATA } = await getLocalData();
+        const filteredData = data.filter(
+          (point) => point.storeId === DATA.storeId
+        );
+        setPointsData(filteredData);
+      } else {
+        setError(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch points data: ", error);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const dataToSend = {
+        piontStoreId: pointsData[0]._id,
+        money: pointsData[0].money,
+        point: pointsData[0].piont
+      };
+      const response = await updatePointStore(dataToSend);
+      if (response.error) throw new Error("Cannot update point");
+      fetchPointsData();
+      setEditMode(false);
+    } catch (err) {
+      console.error("Failed to update points data: ", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPointsData();
+  }, []);
 
   return (
     <>
@@ -55,45 +153,144 @@ export default function SettingMemberPointPage() {
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ຕັ້ງຄ່າການໃຫ້ຄະແນນ</Breadcrumb.Item>
         </Breadcrumb>
-
-        <Card border="primary" style={{ maxWidth: 500 }}>
-          <Card.Header
+        {loading ? (
+          <div>
+            <center>
+              <Spinner animation="border" variant="warning" />
+            </center>
+          </div>
+        ) : error ? (
+          <div>Failed to load points data.</div>
+        ) : pointsData.length > 0 ? (
+          <Card border="primary" style={{ maxWidth: 500 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold"
+              }}
+            >
+              ຟອມຕັ້ງຄ່າການໃຫ້ຄະແນນ
+            </Card.Header>
+            <Card.Body>
+              <div>
+                <div
+                  className="mb-3"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 20,
+                    width: "100%"
+                  }}
+                >
+                  <div>
+                    <Form.Label>ຈຳນວນເງິນລວມຂອງບິນ</Form.Label>
+                    <Form.Control
+                      name="money"
+                      value={pointsData[0].money}
+                      onChange={handleUpdateChange}
+                      disabled={!editMode}
+                    />
+                  </div>
+                  <div>
+                    <Form.Label>ຈຳນວນຄະແນນທທີ່ຈະໄດ້</Form.Label>
+                    <Form.Control
+                      name="piont"
+                      value={pointsData[0].piont}
+                      onChange={handleUpdateChange}
+                      disabled={!editMode}
+                    />
+                  </div>
+                </div>
+              </div>
+              {editMode ? (
+                <Button variant="primary" onClick={handleUpdate}>
+                  ບັນທຶກ
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={() => setEditMode(true)}>
+                  ອັບເດດຄະແນນ
+                </Button>
+              )}
+            </Card.Body>
+          </Card>
+        ) : (
+          <div
             style={{
-              backgroundColor: COLOR_APP,
-              color: "#fff",
-              fontSize: 18,
-              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "80vh"
             }}
           >
-            ຟອມຕັ້ງຄ່າການໃຫ້ຄະແນນ
-          </Card.Header>
-          <Card.Body>
-            <div>
+            <Button
+              variant="primary"
+              onClick={handleShow}
+              disabled={disabledButton}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "8px"
+              }}
+            >
+              <BsInfoCircle />
+              Create Member
+            </Button>
+          </div>
+        )}
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>ຟອມຕັ້ງຄ່າການໃຫ້ຄະແນນ</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
               <div
-               className="mb-3"
+                className="mb-3"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: 20,
-                  width: "100%",
+                  width: "100%"
                 }}
               >
-                <div>
+                <Form.Group>
                   <Form.Label>ຈຳນວນເງິນລວມຂອງບິນ</Form.Label>
-                  <Form.Control value={1} disabled />
-                </div>
-                <div>
+                  <Form.Control
+                    name="totalAmount"
+                    value={formData.totalAmount}
+                    onChange={handleChange}
+                    type="number"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
                   <Form.Label>ຈຳນວນຄະແນນທທີ່ຈະໄດ້</Form.Label>
-                  <Form.Control value={1} disabled />
-                </div>
+                  <Form.Control
+                    name="points"
+                    value={formData.points}
+                    onChange={handleChange}
+                    type="number"
+                    required
+                  />
+                </Form.Group>
               </div>
-              <div className="mb-3">
-               <p>ປະຈຸບັນຍັງບໍ່ສາມາດແກ້ໄຂຄະແນນໄດ້ຖ້າຕ້ອງການແກ້ໄຂກະລຸນາແຈ້ງທີມງານຊັບພອດຂອງ AppZap</p>
-              </div>
-              
-            </div>
-          </Card.Body>
-        </Card>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              ປິດ
+            </Button>
+            <Button
+              variant="primary"
+              onClick={createMemberPoint}
+              disabled={disabledButton}
+            >
+              ຕັ້ງຄະແນນ
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
       {/* popup */}
     </>

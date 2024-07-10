@@ -200,6 +200,7 @@ function AddOrder() {
           bodyFormData.append("beep2", 9);
         }
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
         console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData)
         await axios({

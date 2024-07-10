@@ -151,6 +151,7 @@ export default function OrderPage() {
           }
           bodyFormData.append("port", "9100");
           bodyFormData.append("image", _file);
+          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
           await axios({
             method: "post",
             url: urlForPrinter,

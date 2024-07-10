@@ -63,6 +63,7 @@ import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOr
 import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
+import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -543,6 +544,7 @@ export default function TableList() {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
@@ -641,6 +643,7 @@ export default function TableList() {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       await axios({
         method: "post",
@@ -882,6 +885,7 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
         if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
@@ -979,6 +983,7 @@ export default function TableList() {
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
         if (_index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
@@ -1002,7 +1007,7 @@ export default function TableList() {
         console.log(err);
         if (_index === 0) {
           setOnPrinting(false);
-          return {error:true,err}
+          return { error: true, err };
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -1188,9 +1193,9 @@ export default function TableList() {
             // remark: seletedCancelOrderItem
           };
         });
-      
-      const checkError=   await callback();
-      if(checkError?.error){
+
+      const checkError = await callback();
+      if (checkError?.error) {
         throw new Error("ປິນບໍ່ສຳເລັດ");
       }
       let _resOrderUpdate = await updateOrderItem(
@@ -1775,6 +1780,12 @@ export default function TableList() {
                         >
                           + {t("addOrder")}
                         </ButtonCustom>
+                        <ButtonCustom disabled></ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => setPopup({ PopUpTranferTable: true })}
+                        >
+                          ຍ້າຍອໍເດີ
+                        </ButtonCustom>
                       </div>
                       <div
                         style={{
@@ -1796,7 +1807,7 @@ export default function TableList() {
                               "CANCELED",
                               async () => {
                                 const data = await onPrintForCherCancel();
-                               return data
+                                return data;
                               }
                             ).then();
                           }}
@@ -2059,6 +2070,7 @@ export default function TableList() {
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+          taxPercent={taxPercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2101,7 +2113,7 @@ export default function TableList() {
           .map((val, i) => {
             return (
               <div
-                style={{ width: "80mm", padding: 10 }}
+                style={{ width: "58mm", padding: 10 }}
                 ref={(el) => (billForCher58.current[i] = el)}
               >
                 <BillForChef58
@@ -2458,6 +2470,12 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <PopUpTranferTable
+        open={popup?.PopUpTranferTable}
+        onClose={() => setPopup({ PopUpTranferTable: false })}
+        onSubmit={reLoadData}
+        tableList={tableList}
+      />
     </div>
   );
 }

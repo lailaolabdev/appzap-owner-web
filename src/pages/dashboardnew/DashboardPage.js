@@ -19,6 +19,8 @@ import {
   getUserReport,
 } from "../../services/report";
 import fileDownload from "js-file-download";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
@@ -35,8 +37,7 @@ import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableCo
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
-
-const END_POINT_EXPORT = "https://api.appzap.la:2000";
+import { END_POINT_EXPORT } from "../../constants/api";
 
 export default function DashboardPage() {
   // state
@@ -141,9 +142,37 @@ export default function DashboardPage() {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
+      const url =
+        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+      const _res = await Axios.get(url);
+      // fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
+      setLoadingExportCsv(false);
+    } catch (err) {
+      setLoadingExportCsv(false);
+      errorAdd("Export ບໍ່ສຳເລັດ");
+    }
+  };
+  
+  const downloadExcel = async () => {
+    try {
+      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      setLoadingExportCsv(true);
       const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
-      fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: 'blob', // Important to get the response as a Blob
+        });
+  
+        // Create a Blob from the response data
+        console.log("response", response.data)
+        const fileBlob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  
+        // Use the file-saver library to save the file with a new name
+        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+      }
+      
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
@@ -198,7 +227,8 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={downloadCsv}
+            // onClick={downloadCsv}
+            onClick={downloadExcel}
             disabled={loadingExportCsv}
           >
             <MdOutlineCloudDownload /> EXPORT
@@ -358,16 +388,49 @@ export default function DashboardPage() {
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
-                    method: "ບິນເງິນສົດແລະເງິນໂອນ",
+                    method: (
+                      <div>
+                        ບິນເງິນສົດແລະເງິນໂອນ
+                        <br />
+                        ສົດ{" "}
+                        {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
+                        ໂອນ{" "}
+                        {moneyCurrency(
+                          moneyReport?.transferCash?.transfer || 0
+                        )}
+                      </div>
+                    ),
                     qty: moneyReport?.transferCash?.count,
                     amount: moneyReport?.transferCash?.totalBill,
                   },
                   {
-                    method: "ລວມບິນທັງໝົດ",
+                    method: (
+                      <div style={{ fontWeight: 700 }}>ເງິນສົດທັງໝົດ</div>
+                    ),
+                    qty:
+                      (moneyReport?.transferCash?.count || 0) +
+                      (moneyReport?.cash?.count || 0),
+                    amount:
+                      (moneyReport?.transferCash?.cash || 0) +
+                      (moneyReport?.cash?.totalBill || 0),
+                  },
+                  {
+                    method: (
+                      <div style={{ fontWeight: 700 }}>ເງິນໂອນທັງໝົດ</div>
+                    ),
+                    qty:
+                      (moneyReport?.transferCash?.count || 0) +
+                      (moneyReport?.transfer?.count || 0),
+                    amount:
+                      (moneyReport?.transferCash?.transfer || 0) +
+                      (moneyReport?.transfer?.totalBill || 0),
+                  },
+                  {
+                    method: <div style={{ fontWeight: 700 }}>ທັງໝົດ</div>,
                     qty:
                       (moneyReport?.cash?.count || 0) +
                       (moneyReport?.transferCash?.count || 0) +
-                      moneyReport?.transfer?.count,
+                      (moneyReport?.transfer?.count || 0),
                     amount:
                       (moneyReport?.cash?.totalBill || 0) +
                       (moneyReport?.transferCash?.totalBill || 0) +

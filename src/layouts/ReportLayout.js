@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup } from "react-bootstrap";
-import { MdDining, MdOutlinePieChartOutline } from "react-icons/md";
+import { MdDining, MdOutlinePieChartOutline, MdStore } from "react-icons/md";
 import "./sidenav.css";
 import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
@@ -127,7 +127,23 @@ export default function ReportLayout() {
                 <MdDining style={{ fontSize: 35 }} />
                 <strong>ລາຍງານສະມາຊິກ</strong>
               </div>
-             
+              <div
+                className="menu-report-stocks mt-1"
+                style={{
+                  background:
+                    activeButton === "/reports/ChildStores-report"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/reports/ChildStores-report"
+                      ? "white"
+                      : COLOR_APP,
+                }}
+                onClick={() => navigate("/reports/ChildStores-report")}
+              >
+                <MdStore style={{ fontSize: 35 }} />
+                <strong>ສາຂາຍ່ອຍ</strong>
+              </div>
             </ButtonGroup>
           </div>
         </div>
@@ -185,6 +201,7 @@ export default function ReportLayout() {
             <strong>ລາຍງານສະມາຊິກ</strong>
             {/* (ກຳລັງພັດທະນາ)  */}
           </div>
+          
         </div>
       )}
       <div>

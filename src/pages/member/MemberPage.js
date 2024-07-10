@@ -6,12 +6,12 @@ import {
   ButtonGroup,
   Form,
   Alert,
-  Pagination,
+  Pagination
 } from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle,
+  BsInfoCircle
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -27,13 +27,19 @@ import {
   getMembers,
   getMemberBillCount,
   getMemberTotalMoney,
+  getAllPoints,
+  getMemberOrderMenu,
+  getTotalPoint,
+  getSearchOne
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
+import { useStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import { FaCoins } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
-
+import { moneyCurrency } from "../../helpers/index";
+import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 let limitData = 10;
 
 export default function MemberPage() {
@@ -49,10 +55,16 @@ export default function MemberPage() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [membersData, setMembersData] = useState();
-
+  const [allPoints, setallPoints] = useState();
+  const [totalPoints, setTotalPoints] = useState();
+  const [orderMenu, setOrderMenu] = useState();
+  const [filterName, setFilterName] = useState("");
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState();
+  const [selectedMember, setSelectedMember] = useState();
+  const [searchMember, setSearchMember] = useState([]);
 
+  const { storeDetail } = useStore();
   // provider
 
   // useEffect
@@ -62,16 +74,25 @@ export default function MemberPage() {
     getMemberCountByfilterData();
     getMemberBillCountData();
     getMemberTotalMoneyData();
+    getAllPoint();
+    getMemberOrderMenus();
+    getTotalPoints();
   }, []);
   useEffect(() => {
     getMemberCountByfilterData();
     getMemberBillCountData();
     getMemberTotalMoneyData();
+    getTotalPoints();
   }, [endDate, startDate, endTime, startTime]);
 
   useEffect(() => {
     getMembersData();
   }, [paginationMember]);
+
+  const handleEditClick = (member) => {
+    setSelectedMember(member);
+    setPopup({ PopUpMemberEdit: true });
+  };
 
   // function
   const getMembersData = async () => {
@@ -81,11 +102,44 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
+      if (filterName) {
+        findby += `name=${filterName}&`;
+      }
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data);
     } catch (err) {}
   };
+
+  const getAllPoint = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllPoints(TOKEN);
+      if (_data.error) throw new Error("error");
+      setallPoints(_data);
+    } catch (error) {}
+  };
+
+  const getTotalPoints = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      console.log(findBy);
+      const _data = await getTotalPoint(findBy, TOKEN);
+      if (_data.error) throw new Error("error");
+      setTotalPoints(_data?.totalPoint);
+    } catch (error) {}
+  };
+
+  const getMemberOrderMenus = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getMemberOrderMenu(TOKEN);
+      if (_data.error) throw new Error("error");
+      setOrderMenu(_data._memberOrderMenu || []);
+    } catch (error) {}
+  };
+
   const getMemberCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -118,6 +172,23 @@ export default function MemberPage() {
     setMemberTotalMoney(_data.totalMoney);
   };
 
+  const getSearchOnes = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      if (filterName) {
+        findby += `name=${filterName}&`;
+      }
+      findby += `storeId=${DATA?.storeId}&`;
+
+      const _data = await getSearchOne(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setSearchMember(_data);
+    } catch (err) {
+      console.error("Error fetching members:", err);
+    }
+  };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -126,7 +197,7 @@ export default function MemberPage() {
           <Breadcrumb.Item active>ລາຍງານສະມາຊິກ</Breadcrumb.Item>
         </Breadcrumb>
         <Alert key="warning" variant="warning">
-          ອັບເດດຄັ້ງລາສຸດ 2024/02/20 15:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
+          ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
         </Alert>
         <Box
           sx={{
@@ -134,7 +205,7 @@ export default function MemberPage() {
             gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
             gap: 20,
             gridTemplateRows: "masonry",
-            marginBottom: 20,
+            marginBottom: 20
           }}
         >
           <Card border="primary" style={{ margin: 0 }}>
@@ -143,7 +214,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ຈຳນວນສະມາຊິກທັງໝົດ
@@ -155,7 +226,7 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
                 {memberAllCount}
@@ -172,7 +243,7 @@ export default function MemberPage() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: 10,
+                padding: 10
               }}
             >
               <span>ຄະແນນສະສົມທັງໝົດ</span>
@@ -180,9 +251,11 @@ export default function MemberPage() {
               <Button
                 variant="dark"
                 bg="dark"
-                onClick={() => navigate("/reports/members-report/setting-point")}
+                onClick={() =>
+                  navigate("/reports/members-report/setting-point")
+                }
               >
-               <FaCoins /> ຕັ້ງຄ່າການໃຫ້ຄະແນນ
+                <FaCoins /> ຕັ້ງຄ່າການໃຫ້ຄະແນນ
               </Button>
             </Card.Header>
             <Card.Body>
@@ -192,10 +265,10 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
-                -
+                {allPoints?.pointAmmount}
               </div>
             </Card.Body>
           </Card>
@@ -210,7 +283,7 @@ export default function MemberPage() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: 10,
+              padding: 10
             }}
           >
             <span>ລາຍການສະມາຊິກ</span>
@@ -226,8 +299,13 @@ export default function MemberPage() {
           <Card.Body>
             <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
               <div style={{ display: "flex", gap: 10 }}>
-                <Form.Control placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ" />
+                <Form.Control
+                  placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                />
                 <Button
+                  onClick={() => getMembersData()}
                   variant="primary"
                   style={{ display: "flex", gap: 10, alignItems: "center" }}
                 >
@@ -254,7 +332,12 @@ export default function MemberPage() {
                     {moment(e?.createdAt).format("DD/MM/YYYY")}
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    <Button>ແກ້ໄຂ</Button>
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => handleEditClick(e)}
+                    >
+                      ແກ້ໄຂ
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -265,7 +348,7 @@ export default function MemberPage() {
               display: "flex",
               justifyContent: "center",
               width: "100%",
-              bottom: 20,
+              bottom: 20
             }}
           >
             <ReactPaginate
@@ -342,7 +425,7 @@ export default function MemberPage() {
             gridTemplateColumns: { md: "1fr 1fr 1fr 1fr", xs: "1fr" },
             gap: 20,
             gridTemplateRows: "masonry",
-            marginBottom: 20,
+            marginBottom: 20
           }}
         >
           <Card border="primary" style={{ margin: 0 }}>
@@ -351,7 +434,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ສະມາຊິກໃໝ່
@@ -363,7 +446,7 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
                 {memberCount}
@@ -376,7 +459,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ຄະແນນ
@@ -389,10 +472,10 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
-                -
+                {totalPoints}
               </div>
             </Card.Body>
           </Card>
@@ -402,7 +485,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ຈຳນວນບິນ
@@ -415,7 +498,7 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
                 {memberBillCount}
@@ -428,7 +511,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ຍອດບິນລວມ
@@ -441,10 +524,10 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700,
+                  fontWeight: 700
                 }}
               >
-                {memberTotalMoney}
+                {moneyCurrency(memberTotalMoney)} {storeDetail?.firstCurrency}
               </div>
             </Card.Body>
           </Card>
@@ -456,7 +539,7 @@ export default function MemberPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               ຍອດຂາຍເມນູ
@@ -477,19 +560,21 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>ຊື່ເມນູ</th>
                   <th style={{ textAlign: "center" }}>ຈຳນວນອໍເດີ</th>
-                  <th style={{ textAlign: "center" }}>ຈຳນວນເງິນ</th>
-                  <th style={{ textAlign: "right" }}></th>
+                  <th style={{ textAlign: "right" }}>ຈຳນວນເງິນ</th>
+                  {/* <th style={{ textAlign: "right" }}></th> */}
                 </tr>
-                {/* {userReport?.map((e) => (
+
+                {orderMenu?.map((e) => (
                   <tr>
-                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
+                    <td style={{ textAlign: "left" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                    {/* <td style={{ textAlign: "center" }}>{e?.canceled}</td> */}
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}{storeDetail?.firstCurrency}
+                      {moneyCurrency(e?.totalSaleAmount)}{" "}
+                      {storeDetail?.firstCurrency}
                     </td>
                   </tr>
-                ))} */}
+                ))}
               </table>
             </Card.Body>
           </Card>
@@ -509,6 +594,11 @@ export default function MemberPage() {
         endTime={endTime}
         endDate={endDate}
       />
+      <PopUpMemberEdit
+        open={popup?.PopUpMemberEdit}
+        onClose={() => setPopup()}
+        memberData={selectedMember}
+      />
     </>
   );
 }
@@ -521,7 +611,7 @@ function ReportCard({ title, chart }) {
           backgroundColor: COLOR_APP,
           color: "#fff",
           fontSize: 18,
-          fontWeight: "bold",
+          fontWeight: "bold"
         }}
       >
         {title} <BsInfoCircle />
@@ -537,7 +627,7 @@ function ReportCard({ title, chart }) {
             flexWrap: "wrap",
             alignItems: "center",
             gap: 10,
-            padding: 10,
+            padding: 10
           }}
         >
           <ButtonDropdown variant="outline-primary">

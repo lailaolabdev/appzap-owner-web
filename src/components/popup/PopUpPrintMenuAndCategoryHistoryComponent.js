@@ -94,6 +94,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
       await axios({
         method: "post",

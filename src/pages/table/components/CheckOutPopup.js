@@ -16,7 +16,7 @@ import { useStore } from "../../../store";
 import {
   END_POINT_SEVER,
   QUERY_CURRENCIES,
-  getLocalData,
+  getLocalData
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
@@ -33,13 +33,13 @@ export default function CheckOutPopup({
   dataBill,
   tableData,
   setDataBill,
-  taxPercent = 0,
+  taxPercent = 0
 }) {
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
   const { storeDetail } = useStore();
-  const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA")); 
+  const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
@@ -82,7 +82,7 @@ export default function CheckOutPopup({
         ...prev,
         memberId: _res.data?._id,
         memberName: _res.data?.name,
-        memberPhone: _res.data?.phone,
+        memberPhone: _res.data?.phone
       }));
     } catch (err) {
       console.log(err);
@@ -142,7 +142,7 @@ export default function CheckOutPopup({
       ...prev,
       moneyReceived: moneyReceived,
       moneyChange: moneyChange,
-      dataStaffConfirm: staffConfirm,
+      dataStaffConfirm: staffConfirm
     }));
   }, [cash, transfer, selectCurrency]);
   useEffect(() => {
@@ -169,6 +169,10 @@ export default function CheckOutPopup({
   }, [rateCurrency]);
 
   useEffect(() => {
+    setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
+  }, [forcus]);
+
+  useEffect(() => {
     if (!open) return;
     for (let i = 0; i < dataBill?.orderId?.length; i++) {
       _calculateTotal();
@@ -192,7 +196,7 @@ export default function CheckOutPopup({
     }
   };
   const _checkBill = async () => {
-    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA")); 
+    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -216,12 +220,13 @@ export default function CheckOutPopup({
             billMode: tableData?.editBill,
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
-            fullnameStaffCheckOut: staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
-          },
+            fullnameStaffCheckOut:
+              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
+            staffCheckOutId: staffConfirm?.id
+          }
         },
         {
-          headers: await getHeaders(),
+          headers: await getHeaders()
         }
       )
       .then(async function (response) {
@@ -236,14 +241,14 @@ export default function CheckOutPopup({
         setSelectInput("inputCash");
         setHasCRM(false);
         setTextSearchMember("");
-        localStorage.removeItem("STAFFCONFIRM_DATA")
+        localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
         Swal.fire({
           icon: "success",
           title: "ສໍາເລັດການເຊັກບິນ",
           showConfirmButton: false,
-          timer: 1800,
+          timer: 1800
         });
       })
       .catch(function (error) {
@@ -360,7 +365,7 @@ export default function CheckOutPopup({
     setSelectDataOpption(option);
     setDataBill((prev) => ({
       ...prev,
-      dataCustomer: option,
+      dataCustomer: option
     }));
     // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
   };
@@ -417,7 +422,7 @@ export default function CheckOutPopup({
         <Box
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr",
+            gridTemplateColumns: "1fr"
           }}
         >
           {/* news---------------------------------------------------------------------------------------------------------------------- */}
@@ -425,7 +430,7 @@ export default function CheckOutPopup({
             <div
               style={{
                 marginBottom: 10,
-                fontSize: 22,
+                fontSize: 22
               }}
             >
               <span>ລາຄາລວມ: </span>
@@ -472,7 +477,7 @@ export default function CheckOutPopup({
                 display: "flex",
                 flexDirection: "column",
                 gap: 10,
-                marginBottom: 10,
+                marginBottom: 10
               }}
             >
               <InputGroup hidden={selectCurrency == "LAK"}>
@@ -551,7 +556,7 @@ export default function CheckOutPopup({
             </div>
             <div
               style={{
-                marginBottom: 10,
+                marginBottom: 10
               }}
             >
               ທອນ:{" "}
@@ -583,7 +588,7 @@ export default function CheckOutPopup({
               style={{
                 display: "flex",
                 gap: 10,
-                marginBottom: 30,
+                marginBottom: 30
               }}
             >
               <Button
@@ -695,7 +700,12 @@ export default function CheckOutPopup({
       </Modal.Body>
       <Modal.Footer>
         <div style={{ flex: 1 }}>
-          <p>ພະນັກງານເຊັກບິນ: <b>{staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}</b></p>
+          <p>
+            ພະນັກງານເຊັກບິນ:{" "}
+            <b>
+              {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
+            </b>
+          </p>
         </div>
         <Button
           onClick={() => {
