@@ -7,8 +7,11 @@ import Loading from "../../components/Loading";
 import { orderStatus } from "../../helpers";
 import { useParams } from "react-router-dom";
 import { useStore } from "../../store";
+import { useTranslation } from "react-i18next";
+
 
 const ServedOrderTab = () => {
+  const { t } = useTranslation();
   /**
    * routes
    */
@@ -38,14 +41,14 @@ const ServedOrderTab = () => {
               <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th width="20px"></th>
-                  <th>ລ/ດ</th>
-                  <th>ຊື່ເມນູ</th>
-                  <th>ຈຳນວນ</th>
-                  <th>ຈາກໂຕະ</th>
-                  <th>ລະຫັດໂຕະ</th>
-                  <th>ສະຖານະ</th>
-                  <th>ເວລາ</th>
-                  <th>ຄອມເມັ້ນ</th>
+                  <th>{t('no')}</th>
+                  <th>{t('menu_name')}</th>
+                  <th>{t('amount')}</th>
+                  <th>{t('from_table')}</th>
+                  <th>{t('table_code')}</th>
+                  <th>{t('status')}</th>
+                  <th>{t('time')}</th>
+                  <th>{t('commend')}</th>
                 </tr>
               </thead>
               <tbody>

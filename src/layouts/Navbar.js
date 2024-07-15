@@ -11,12 +11,14 @@ import { MdPrint, MdPrintDisabled } from "react-icons/md";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
+import { useTranslation } from "react-i18next";
 
 // sound
 import messageSound from "../sound/message.mp3";
 
 export default function NavBar() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // state
   const [userData, setUserData] = useState({});
@@ -117,7 +119,7 @@ export default function NavBar() {
                   fontSize: 12,
                 }}
               >
-                <MdPrint /> <span>ເຊື່ອມຕໍ່</span>
+                <MdPrint /> <span>{t('connect_pinter')}</span>
               </div>
             ) : (
               <a
@@ -135,7 +137,7 @@ export default function NavBar() {
                     fontSize: 12,
                   }}
                 >
-                  <MdPrintDisabled /> ບໍ່ໄດ້ເຊື່ອມປິນເຕີ້ !
+                  <MdPrintDisabled /> {t('unconnect_pinter')} !
                 </div>
               </a>
             )}
@@ -155,10 +157,10 @@ export default function NavBar() {
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
                     ? (userData?.data?.firstname
-                        ? userData?.data?.firstname
-                        : "") +
-                      " " +
-                      (userData?.data?.lastname ? userData?.data?.lastname : "")
+                      ? userData?.data?.firstname
+                      : "") +
+                    " " +
+                    (userData?.data?.lastname ? userData?.data?.lastname : "")
                     : ""}
                 </Box>
               </Dropdown.Toggle>
@@ -167,7 +169,7 @@ export default function NavBar() {
                   style={{ color: "#909090" }}
                   onClick={() => _onLogout()}
                 >
-                  ອອກຈາກລະບົບ
+                  {t('log_out')}
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

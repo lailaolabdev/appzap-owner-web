@@ -27,8 +27,10 @@ import moment from "moment";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import { getManyTables } from "../../services/table";
+import { useTranslation } from "react-i18next";
 
 export default function ChildStores() {
+  const { t } = useTranslation();
   const [branchStore, setBranchStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -159,8 +161,8 @@ export default function ChildStores() {
           ) : branchStore.childStores.length > 0 ? (
             <div>
               <Breadcrumb>
-                <Breadcrumb.Item>ສາຂາຍ່ອຍ</Breadcrumb.Item>
-                <Breadcrumb.Item active>ລາຍງານສາຂາຍ່ອຍ</Breadcrumb.Item>
+                <Breadcrumb.Item>{t('sub_branch')}</Breadcrumb.Item>
+                <Breadcrumb.Item active>{t('sub_branch_report')}</Breadcrumb.Item>
               </Breadcrumb>
               <div
                 style={{ display: "flex", gap: "10px", alignItems: "center" }}
@@ -168,7 +170,7 @@ export default function ChildStores() {
                 <DropdownButton
                   style={{ margin: 0 }}
                   id="dropdown-basic-button"
-                  title={selectedStore ? selectedStore.name : "ເລືອກສາຂາຮ້ານອາຫານ"}
+                  title={selectedStore ? selectedStore.name : `${t('select_branch')}`}
                   onSelect={handleSelect}
                 >
                   {branchStore.childStores.map((store, index) => (
@@ -180,7 +182,7 @@ export default function ChildStores() {
                 <Button
                   onClick={() => setPopup({ popUpChooseTableComponent: true })}
                 >
-                  ເລືອກໂຕະ
+                  {t('chose_table')}
                 </Button>
                 <Button
                   variant="outline-primary"
@@ -217,12 +219,12 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ຂໍ້ມູນການຂາຍ (Sales Information)
+                        {t('sales_info')}
                       </Card.Header>
                       <Card.Body>
                         {[
                           {
-                            title: "ຍອດຂາຍທັງໝົດ",
+                            title: `${t('total_sales')}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["totalSales"]
                             )}${storeDetail?.firstCurrency}`
@@ -236,27 +238,27 @@ export default function ChildStores() {
                           // },
 
                           {
-                            title: "ຈຳນວນທຸລະກຳການຂາຍ",
+                            title: `${t('sales_transaction')}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["noOfSalesTransactions"]
                             )}`
                           },
                           {
-                            title: "ຍອດຂາຍສະເລ່ຍ ຕໍ່ ທຸລະກຳ",
+                            title: `${t('avg_sale')}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.[
-                                "averageSales_Transaction"
+                              "averageSales_Transaction"
                               ]
                             )}${storeDetail?.firstCurrency}`
                           },
                           {
-                            title: "ລາຍຈ່າຍ ກີບ",
+                            title: `${t('paid_lak')}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["totalCostLAK"]
-                            )} ກີບ`
+                            )} ${t('lak')}`
                           },
                           {
-                            title: "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍກີບ)",
+                            title: `${t('primary_profit')}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["grossProfitLAK"]
                             )}${storeDetail?.firstCurrency}`
@@ -293,7 +295,7 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ໂປຣໂມຊັ້ນ
+                        {t('promotion')}
                       </Card.Header>
                       <Card.Body>
                         <div
@@ -305,7 +307,7 @@ export default function ChildStores() {
                             borderBottom: `1px dotted ${COLOR_APP}`
                           }}
                         >
-                          <div>ຈຳນວນບິນສ່ວນຫຼຸດ</div>
+                          <div>{t('discount_bill')}</div>
                           <div>{promotionReport?.[0]?.count || 0}</div>
                         </div>
                         <div
@@ -317,7 +319,7 @@ export default function ChildStores() {
                             borderBottom: `1px dotted ${COLOR_APP}`
                           }}
                         >
-                          <div>ສ່ວນຫຼຸດທັງໝົດ</div>
+                          <div>{t('all_discount')}</div>
                           <div>
                             {promotionReport?.[0]?.totalSaleAmount || 0}
                             {storeDetail?.firstCurrency}
@@ -334,33 +336,33 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ຂໍ້ມູນບິນ
+                        {t('bill_info')}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th>ປະເພດບິນ</th>
-                            <th style={{ textAlign: "center" }}>ຈຳນວນບິນ</th>
-                            <th style={{ textAlign: "right" }}>ລາຄາລວມ</th>
+                            <th>{t('bill_type')}</th>
+                            <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
+                            <th style={{ textAlign: "right" }}>{t('total_price')}</th>
                           </tr>
                           {[
                             {
-                              method: "ບິນເງິນສົດ",
+                              method: `${t('cash_bill')}`,
                               qty: moneyReport?.cash?.count,
                               amount: moneyReport?.cash?.totalBill
                             },
                             {
-                              method: "ບິນເງິນໂອນ",
+                              method: `${t('transfer_bill')}`,
                               qty: moneyReport?.transfer?.count,
                               amount: moneyReport?.transfer?.totalBill
                             },
                             {
-                              method: "ບິນເງິນສົດແລະເງິນໂອນ",
+                              method: `${t('transfer_cash')}`,
                               qty: moneyReport?.transferCash?.count,
                               amount: moneyReport?.transferCash?.totalBill
                             },
                             {
-                              method: "ລວມບິນທັງໝົດ",
+                              method: `${t('include_bill')}`,
                               qty:
                                 (moneyReport?.cash?.count || 0) +
                                 (moneyReport?.transferCash?.count || 0) +
@@ -392,17 +394,17 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ຂໍ້ມູນພະນັກງານ
+                        {t('staff_info')}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>ຊື່ຜູ້ໃຊ້</th>
-                            <th style={{ textAlign: "center" }}>ອໍເດີສັ່ງ</th>
+                            <th style={{ textAlign: "left" }}>{t('user_name')}</th>
+                            <th style={{ textAlign: "center" }}>{t('order')}</th>
                             <th style={{ textAlign: "center" }}>
-                              ອໍເດີຍົກເລີກ
+                              {t('order_cancel')}
                             </th>
-                            <th style={{ textAlign: "right" }}>ລວມຍອດ</th>
+                            <th style={{ textAlign: "right" }}>{t('total_balance')}</th>
                           </tr>
                           {userReport?.map((e) => (
                             <tr>
@@ -433,17 +435,17 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ຂໍ້ມູນການຂາຍແຕ່ລະມື້
+                        {t('dialy_sales')}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>ວັນທີ່</th>
-                            <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
-                            <th style={{ textAlign: "center" }}>ຍອດບິນ</th>
-                            <th style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ</th>
-                            <th style={{ textAlign: "center" }}>ຍອດກ່ອນ</th>
-                            <th style={{ textAlign: "right" }}>ຍອດລວມ</th>
+                            <th style={{ textAlign: "left" }}>{t('date')}</th>
+                            <th style={{ textAlign: "center" }}>{t('orders')}</th>
+                            <th style={{ textAlign: "center" }}>{t('bill_balance')}</th>
+                            <th style={{ textAlign: "center" }}>{t('discount')}</th>
+                            <th style={{ textAlign: "center" }}>{t('last_balance')}</th>
+                            <th style={{ textAlign: "right" }}>{t('total_balance')}</th>
                           </tr>
                           {reportData.map((e) => (
                             <tr>
@@ -476,15 +478,15 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ປະເພດເມນູ
+                        {t('menu_type')}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>ປະເພດເມນູ</th>
-                            <th style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</th>
-                            <th style={{ textAlign: "center" }}>ຍົກເລີກ</th>
-                            <th style={{ textAlign: "right" }}>ຍອດຂາຍ</th>
+                            <th style={{ textAlign: "left" }}>{t('menu_type')}</th>
+                            <th style={{ textAlign: "center" }}>{t('order_cussess')}</th>
+                            <th style={{ textAlign: "center" }}>{t('cancel')}</th>
+                            <th style={{ textAlign: "right" }}>{t('total_sale')}</th>
                           </tr>
                           {categoryReport
                             ?.sort((x, y) => {
@@ -517,15 +519,15 @@ export default function ChildStores() {
                           fontWeight: "bold"
                         }}
                       >
-                        ຂໍ້ມູນເມນູ
+                        {t('menu_info')}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>ເມນູ</th>
-                            <th style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</th>
-                            <th style={{ textAlign: "center" }}>ຍົກເລີກ</th>
-                            <th style={{ textAlign: "right" }}>ຍອດຂາຍ</th>
+                            <th style={{ textAlign: "left" }}>{t('menu')}</th>
+                            <th style={{ textAlign: "center" }}>{t('order_success')}</th>
+                            <th style={{ textAlign: "center" }}>{t('cancel')}</th>
+                            <th style={{ textAlign: "right" }}>{t('sales')}</th>
                           </tr>
                           {menuReport
                             ?.sort((x, y) => {

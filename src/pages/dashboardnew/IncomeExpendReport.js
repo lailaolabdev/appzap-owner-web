@@ -15,8 +15,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBalanceScaleRight, faDollarSign, faFunnelDollar, faMoneyBillWave } from "@fortawesome/free-solid-svg-icons";
 import Filter from "../expend/component/filter";
 import queryString from "query-string";
+import { useTranslation } from "react-i18next";
 
 export default function IncomeExpendExport() {
+  const { t } = useTranslation();
   const parame = useParams();
   const location = useLocation();
   const time = new Date();
@@ -81,7 +83,7 @@ export default function IncomeExpendExport() {
     xaxis: {
       labels: {
         formatter: function (value) {
-          return value ? `${moment(value).format("DD-MM-YYYY")} (${convertWeekDay(moment(value).weekday())})`: 0;
+          return value ? `${moment(value).format("DD-MM-YYYY")} (${convertWeekDay(moment(value).weekday())})` : 0;
         },
         style: {
           fontSize: '10px',
@@ -94,13 +96,13 @@ export default function IncomeExpendExport() {
   }
   const [series, setSeries] = useState([
     {
-      name: "ລາຍຈ່າຍກີບ",
+      name: `${t('expe_lak')}`,
       data: [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
       ],
     },
     {
-      name: "ລາຍຮັບກີບ",
+      name: `${t('recieve_lak')}`,
       data: [
         0, 0, 0, 0, 0, 0, 0, 0, 2, 4, , 9, 5, 3, 6, 6, 6, 9, 4, 4, 5, 4, 7, 8,
       ],
@@ -210,15 +212,15 @@ export default function IncomeExpendExport() {
 
     let _series = [...series];
     _series[0] = {
-      name: "ລາຍຮັບກີບ",
+      name: `${t('recieve_lak')}`,
       data: [..._incomeData]
     }
 
     _series[1] = {
-      name: "ລາຍຈ່າຍກີບ",
+      name: `${t('paid_lak')}`,
       data: [..._lakData]
     }
-  
+
     let _graphData = {}
     _graphData.options = _options
     _graphData.series = _series
@@ -249,28 +251,28 @@ export default function IncomeExpendExport() {
     return moneyCurrency(_summaryAmount)
   }
 
-  const convertWeekDay = (day) =>{
-    switch(day) {
+  const convertWeekDay = (day) => {
+    switch (day) {
       case 0:
-        return 'ອາທິດ'
+        return `${t('sun')}`
         break;
       case 1:
-        return 'ຈັນ'
+        return `${t('Mon')}`
         break;
       case 2:
-        return 'ອັງຄານ'
+        return `${t('tues')}`
         break;
       case 3:
-        return 'ພຸດ'
+        return `${t('wed')}`
         break;
       case 4:
-        return 'ພະຫັດ'
+        return `${t('thurs')}`
         break;
       case 5:
-        return 'ສຸກ'
+        return `${t('fri')}`
         break;
       case 6:
-        return 'ເສົາ'
+        return `${t('set')}`
         break;
       default:
         return ''
@@ -289,7 +291,7 @@ export default function IncomeExpendExport() {
           padding: 8
         }}
       >
-        <TitleComponent title="ລາຍງານລາຍຮັບ ແລະ ລາຍຈ່າຍ" />
+        <TitleComponent title={t('inc_expe')} />
         <div
           style={{
             display: "flex",
@@ -299,7 +301,7 @@ export default function IncomeExpendExport() {
             gap: 5,
           }}
         >
-          <Form.Label>ວັນທີ</Form.Label>
+          <Form.Label>{t('date')}</Form.Label>
           <Form.Control
             type="date"
             value={dateStart}
@@ -357,7 +359,7 @@ export default function IncomeExpendExport() {
                 <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ລາຍຮັບທັງຫມົດ</div>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> {t('all_recieve')}</div>
                 <div style={{ fontSize: 24, color: "white", fontSize: 30, textAlign: "right" }}>{calculateSummaryIncome("INCOME")}</div>
               </div>
             </div>
@@ -373,7 +375,7 @@ export default function IncomeExpendExport() {
                 <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faFunnelDollar} />
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ລາຍຈ່າຍທັງຫມົດ</div>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> {t('all_paid')}</div>
                 <div style={{ fontSize: 24, color: "white", textAlign: "right" }}>{calculateSummaryIncome("EXPEND")}</div>
               </div>
             </div>
@@ -389,7 +391,7 @@ export default function IncomeExpendExport() {
                 <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> ສ່ວນຕ່າງການເງິນ</div>
+                <div style={{ fontWeight: "bold", color: "white", fontSize: 30, textAlign: "right" }}> {t('accounting')}</div>
                 <div style={{ fontSize: 24, color: "white", textAlign: "right" }}>{calculateSummaryIncome("")}</div>
               </div>
             </div>
@@ -397,10 +399,10 @@ export default function IncomeExpendExport() {
         </div>
         <table style={{ width: "60%" }} className="table-bordered">
           <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
-            <th style={{ textAlign: "left" }}>ວັນທີ່</th>
-            <th style={{ textAlign: "right" }}>ລວມລາຍຮັບ</th>
-            <th style={{ textAlign: "right" }}>ລວມລາຍຈ່າຍ</th>
-            <th style={{ textAlign: "right" }}>ສ່ວນຕ່າງ</th>
+            <th style={{ textAlign: "left" }}>{t('date')}່</th>
+            <th style={{ textAlign: "right" }}>{t('total_recieve')}</th>
+            <th style={{ textAlign: "right" }}>{t('total_paid')}</th>
+            <th style={{ textAlign: "right" }}>{t('other_')}</th>
           </tr>
           {incomeExpendData?.map((e) => (
             <tr>

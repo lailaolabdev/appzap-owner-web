@@ -23,8 +23,10 @@ import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
 import { errorAdd } from "../../helpers/sweetalert";
+import { useTranslation } from "react-i18next";
 
 export default function CreateMemberPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [disabledButton, setDisabledButton] = useState(false);
@@ -44,7 +46,7 @@ export default function CreateMemberPage() {
       if (_data.error) throw new Error("can not create member");
       navigate("/reports/members-report");
     } catch (err) {
-      errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
+      errorAdd(`${t('add_fail')}`);
       setDisabledButton(false);
       console.error(err);
     }
@@ -54,8 +56,8 @@ export default function CreateMemberPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ເພີ່ມລາຍການສະມາຊິກ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('add_member')}</Breadcrumb.Item>
         </Breadcrumb>
 
         <Card border="primary" style={{ maxWidth: 500 }}>
@@ -67,14 +69,14 @@ export default function CreateMemberPage() {
               fontWeight: "bold"
             }}
           >
-            ຟອມເພີ່ມສະມາຊິກ
+            {t('add_member_form')}
           </Card.Header>
           <Card.Body>
             <div>
               <div className="mb-3">
-                <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
+                <Form.Label>{t('member_name')}</Form.Label>
                 <Form.Control
-                  placeholder="ຊື່ສະມາຊິກ"
+                  placeholder={t('member_name')}
                   value={formData?.name}
                   onChange={(e) => {
                     setFormData((prev) => ({
@@ -85,7 +87,7 @@ export default function CreateMemberPage() {
                 />
               </div>
               <div className="mb-3">
-                <Form.Label>ເບີໂທ</Form.Label>
+                <Form.Label>{t('tel')}</Form.Label>
                 <InputGroup>
                   <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
                   <Form.Control
@@ -103,7 +105,7 @@ export default function CreateMemberPage() {
                 </InputGroup>
               </div>
               <div className="mb-3">
-                <Form.Label>ວັນ/ເດືອນ/ປີ ເກີດ</Form.Label>
+                <Form.Label>{t('birth_date')}</Form.Label>
                 <DateTimeComponent
                   value={formData?.birthday}
                   onChange={(birthday) => {
@@ -120,7 +122,7 @@ export default function CreateMemberPage() {
                   disabled={disabledButton}
                   onClick={createMember}
                 >
-                  ເພີ່ມ
+                  {t('add')}
                 </Button>
               </div>
             </div>

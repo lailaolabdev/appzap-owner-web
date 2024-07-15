@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpConfirm({
   open,
@@ -9,6 +10,7 @@ export default function PopUpConfirm({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   return (
     <Modal show={open} onHide={onClose}>
@@ -21,7 +23,7 @@ export default function PopUpConfirm({
       </Modal.Body>
       <Modal.Footer>
         <Button disabled={buttonDisabled} variant="secondary" onClick={onClose}>
-          ຍົກເລີກ
+          {t('cancel')}
         </Button>
         <Button
           disabled={buttonDisabled}
@@ -31,7 +33,7 @@ export default function PopUpConfirm({
             onSubmit().then(() => setButtonDisabled(false));
           }}
         >
-          ຢືນຢັນ
+          {t('ok')}
         </Button>
       </Modal.Footer>
     </Modal>

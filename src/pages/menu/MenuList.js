@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -34,6 +35,7 @@ import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
 
 export default function MenuList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -259,7 +261,7 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
         setMenuType("MENU");
         setConnectMenuId("");
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+        successAdd(`${t('add_success')}`);
         values.name = "";
         values.name_en = "";
         values.name_cn = "";
@@ -271,7 +273,7 @@ export default function MenuList() {
         values.unit = "";
       }
     } catch (err) {
-      errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(`${t('add_fail')}`);
     }
   };
   // detele menu
@@ -301,10 +303,10 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
 
         handleClose3();
-        successAdd("ການລົບຂໍ້ມູນສຳເລັດ");
+        successAdd(`${t('delete_success')}`);
       }
     } catch (err) {
-      errorAdd("ການລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(`${t('delete_fail')}`);
     }
   };
   // =======>
@@ -351,7 +353,7 @@ export default function MenuList() {
     });
     if (resData?.data) {
       handleClose2();
-      successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+      successAdd(`${t('edit_success')}`);
     }
   };
   const _updateQtyCategory = async (values) => {
@@ -367,14 +369,14 @@ export default function MenuList() {
     })
       .then(async function () {
         handleClose4();
-        successAdd("ການເພີ່ມຈຳນວນສຳເລັດ");
+        successAdd(`${t('edd_amount_success')}`);
         handleClose();
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
       .catch(function (error) {
-        errorAdd("ການເພີ່ມຈຳນວນບໍ່ສຳເລັດ !");
+        errorAdd(`${t('add_amount_fail')}`);
       });
   };
 
@@ -552,8 +554,8 @@ export default function MenuList() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('menu')}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
@@ -562,7 +564,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                ເມນູອາຫານ
+                {t('menu')}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -570,7 +572,7 @@ export default function MenuList() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                ປະເພດອາຫານ
+                {t('food_type')}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -580,7 +582,7 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>ເລືອກປະເພດ</label>
+                <label>{t('chose_food_type')}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
@@ -598,10 +600,10 @@ export default function MenuList() {
                 </select>
               </Col>
               <Col md="4">
-                <label>ຄົ້ນຫາ</label>
+                <label>{t('search')}</label>
                 <Form.Control
                   type="text"
-                  placeholder="ຄົ້ນຫາຊື່ອາຫານ..."
+                  placeholder={t('search_food_name')}
                   value={filterName}
                   onChange={(e) => {
                     setFilterName(e.target.value);
@@ -643,7 +645,7 @@ export default function MenuList() {
                   }}
                   onClick={handleShow}
                 >
-                  + ເພີ່ມເມນູອາຫານ
+                  + {t('add_menu')}
                 </Button>
               </Col>
             </Row>
@@ -653,14 +655,14 @@ export default function MenuList() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ລຳດັບສະແດງ</th>
-                  <th scope="col">ຮູບພາບ</th>
-                  <th scope="col">ຊື່ປະເພດອາຫານ</th>
-                  <th scope="col">ປະເພດເມນູ</th>
-                  <th scope="col">ຊື່ອາຫານ</th>
-                  <th scope="col">ລາຄາ</th>
-                  <th scope="col">ກຳນົດສະຖານະການສະແດງ</th>
-                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">{t('no_show')}</th>
+                  <th scope="col">{t('picture')}</th>
+                  <th scope="col">{t('type_name')}</th>
+                  <th scope="col">{t('menu_type')}</th>
+                  <th scope="col">{t('food_name')}</th>
+                  <th scope="col">{t('price')}</th>
+                  <th scope="col">{t('setting_show')}</th>
+                  <th scope="col">{t('manage_data')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -724,7 +726,7 @@ export default function MenuList() {
                               setDetailMenu({ data, index });
                             }}
                           >
-                            ກຳນົດ
+                            {t('define')}
                           </button>
                         </td>
 
@@ -788,7 +790,7 @@ export default function MenuList() {
         {/* add menu */}
         <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>ເພີ່ມເມນູອາຫານ</Modal.Title>
+            <Modal.Title>{t('add_menu')}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -810,22 +812,22 @@ export default function MenuList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+                errors.name = `${t('fill_food_name')}`;
               }
 
 
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາຂາຍ...";
+                errors.price = `${t('fill_price')}`;
               }
               if (!values.categoryId) {
-                errors.categoryId = "ກະລຸນາປ້ອນ...";
+                errors.categoryId = `${t('please_fill')}`;
               }
               for (let i = 0; i < dataMenuOption.length; i++) {
                 if (dataMenuOption[i]?.name === "") {
-                  errors.menuOptionName = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+                  errors.menuOptionName = `${t('fill_food_name')}`;
                 }
                 if (!dataMenuOption[i]?.price) {
-                  errors.menuOptionPrice = "ກະລຸນາປ້ອນລາຄາ...";
+                  errors.menuOptionPrice = `${t('fill_price')}`;
                 }
               }
               return errors;
@@ -858,7 +860,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ສະຖານະເປີດ/ປິດ</label>
+                    <label>{t('close_open_status')}</label>
                     <input
                       type="checkbox"
                       id="isOpened"
@@ -868,13 +870,13 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? "ເປີດ" : "ປິດ"}
+                      {values?.isOpened ? `${t('open')}` : `${t('close')}`}
                     </label>
                   </div>
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ເມນູແນະນຳ</label>
+                    <label>{t('sg_menu')}</label>
                     <input
                       type="checkbox"
                       id="recommended"
@@ -884,21 +886,21 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? "ເປີດ" : "ປິດ"}
+                      {values?.recommended ? `${t('open')}` : `${t('close')}`}
                     </label>
                   </div>
                   <Form.Group>
-                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Label>{t('no')}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder="ລຳດັບ"
+                      placeholder={t('no')}
                       value={values.sort}
                       onChange={handleChange}
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ປະເພດອາຫານ</Form.Label>
+                    <Form.Label>{t('food_type')}</Form.Label>
                     <Form.Control
                       as="select"
                       name="categoryId"
@@ -915,7 +917,7 @@ export default function MenuList() {
                       }}
                     >
                       <option selected={true} disabled={true} value="">
-                        ເລືອກປະເພດອາຫານ
+                        {t('chose_food_type')}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -924,21 +926,21 @@ export default function MenuList() {
                   </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ປະເພດ</Form.Label>
+                    <Form.Label>{t('type')}</Form.Label>
                     <Form.Control
                       as="select"
                       name="menuType"
                       onChange={handleChangeMenuType}
                       value={menuType}
                     >
-                      <option value={"MENU"}>ເມນູ</option>
-                      <option value={"MENUOPTION"}>ເມນູຍ່ອຍ</option>
+                      <option value={"MENU"}>{t('menu')}</option>
+                      <option value={"MENUOPTION"}>{t('sub_menu')}</option>
                     </Form.Control>
                   </Form.Group>
 
                   {menuType === "MENUOPTION" && (
                     <Form.Group controlId="exampleForm.ControlSelect1">
-                      <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                      <Form.Label>{t('menu_hide')}</Form.Label>
                       <Form.Control
                         as="select"
                         name="connectMenuId"
@@ -946,7 +948,7 @@ export default function MenuList() {
                         value={connectMenuId}
                       >
                         <option selected={true} disabled={true} value="">
-                          ເລືອກເມນູທີ່ເຊື່ອມ
+                          {t('chose_mune_hide')}
                         </option>
                         {connectMenues.map((item, index) => (
                           <option key={index} value={item?._id}>
@@ -960,14 +962,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ</Form.Label>
+                        <Form.Label>{t('food_name')}</Form.Label>
                         <Form.Control
                           type="text"
                           name="name"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name && touched.name && errors.name
@@ -979,14 +981,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                        <Form.Label>{t('food_name')} (en)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_en}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_en && touched.name && errors.name_en
@@ -1000,14 +1002,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                        <Form.Label>{t('food_name')} (cn)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_cn}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_cn && touched.name && errors.name_cn
@@ -1019,14 +1021,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                        <Form.Label>{t('food_name')} (kr)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_kr}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_kr && touched.name && errors.name_kr
@@ -1038,14 +1040,14 @@ export default function MenuList() {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາ</Form.Label>
+                    <Form.Label>{t('price')}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values?.price}
-                      placeholder="ລາຄາ..."
+                      placeholder={t('food_name')}
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -1055,7 +1057,7 @@ export default function MenuList() {
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
+                    <Form.Label>{t('order_add')}</Form.Label>
                     {dataMenuOption?.length > 0 &&
                       dataMenuOption?.map((item, index) => (
                         <div key={index}>
@@ -1064,7 +1066,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ</Form.Label>
+                                    <Form.Label>{t('food_name')}</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name"
@@ -1076,14 +1078,14 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                       isInvalid={!item?.name}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                                    <Form.Label>{t('food_name')} (en)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_en"
@@ -1095,7 +1097,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_en}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1103,7 +1105,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                                    <Form.Label>{t('food_name')} (cn)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_cn"
@@ -1115,13 +1117,13 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_cn}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                                    <Form.Label>{t('food_name')} (kr)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_kr"
@@ -1133,7 +1135,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_kr}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1141,7 +1143,7 @@ export default function MenuList() {
                               <Row>
                                 <Col xs={6}>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ລາຄາ</Form.Label>
+                                    <Form.Label>{t('price')}</Form.Label>
                                     <Form.Control
                                       type="number"
                                       name="price"
@@ -1153,7 +1155,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.price}
-                                      placeholder="ລາຄາ..."
+                                      placeholder={t('food_name')}
                                       min="0"
                                       isInvalid={!item?.price ? "required" : ""}
                                     />
@@ -1182,19 +1184,19 @@ export default function MenuList() {
                         }}
                         onClick={() => _addMenuOption()}
                       >
-                        + ເມນູສັ່ງເພີ່ມ
+                        + {t('order_add')}
                       </Button>
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t('note')}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t('note')}
                     />
                   </Form.Group>
                 </Modal.Body>
@@ -1206,7 +1208,7 @@ export default function MenuList() {
                       setDataMenuOption([]);
                     }}
                   >
-                    ຍົກເລີກ
+                    {t('cancel')}
                   </Button>
                   <Button
                     style={{
@@ -1216,7 +1218,7 @@ export default function MenuList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t('save')}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -1232,7 +1234,7 @@ export default function MenuList() {
           size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>ອັບເດດເມນູອາຫານ</Modal.Title>
+            <Modal.Title>{t('update-menu')}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -1255,10 +1257,10 @@ export default function MenuList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+                errors.name = `${t('fill_food_name')}`;
               }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+                errors.price = `${t('fill_price')}`;
               }
               return errors;
             }}
@@ -1296,7 +1298,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ສະຖານະເປີດ/ປິດ</label>
+                    <label>{t('close_open_status')}</label>
                     <input
                       type="checkbox"
                       id="isOpened"
@@ -1306,13 +1308,13 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? "ເປີດ" : "ປິດ"}
+                      {values?.isOpened ? `${t('open')}` : `${t('close')}`}
                     </label>
                   </div>
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ເມນູແນະນຳ</label>
+                    <label>{t('sg_menu')}</label>
                     <input
                       type="checkbox"
                       id="recommended"
@@ -1322,7 +1324,7 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? "ເປີດ" : "ປິດ"}
+                      {values?.recommended ? `${t('open')}` : `${t('close')}`}
                     </label>
                   </div>
                   <Form.Group>
@@ -1330,13 +1332,13 @@ export default function MenuList() {
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder="ລຳດັບ"
+                      placeholder={t('menu_no')}
                       value={values.sort}
                       onChange={handleChange}
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ປະເພດອາຫານ</Form.Label>
+                    <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"
                       name="categoryId"
@@ -1345,7 +1347,7 @@ export default function MenuList() {
                       value={values.categoryId}
                     >
                       <option selected={true} disabled={true}>
-                        ເລືອກປະເພດອາຫານ
+                        {t('chose_food_type')}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -1353,21 +1355,21 @@ export default function MenuList() {
                     </Form.Control>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ປະເພດ</Form.Label>
+                    <Form.Label>{t('type')}</Form.Label>
                     <Form.Control
                       as="select"
                       name="menuType"
                       onChange={handleChangeMenuType}
                       value={menuType}
                     >
-                      <option value={"MENU"}>ເມນູ</option>
-                      <option value={"MENUOPTION"}>ເມນູຍ່ອຍ</option>
+                      <option value={"MENU"}>{t('menu')}</option>
+                      <option value={"MENUOPTION"}>{t('sub_menu')}</option>
                     </Form.Control>
                   </Form.Group>
 
                   {menuType === "MENUOPTION" && (
                     <Form.Group controlId="exampleForm.ControlSelect1">
-                      <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                      <Form.Label>{t('menu_hide')}</Form.Label>
                       <Form.Control
                         as="select"
                         name="connectMenuId"
@@ -1375,7 +1377,7 @@ export default function MenuList() {
                         value={connectMenuId}
                       >
                         <option selected={true} disabled={true} value="">
-                          ເລືອກເມນູທີ່ເຊື່ອມ
+                          {t('chose_menu_hide')}
                         </option>
                         {connectMenues.map((item, index) => (
                           <option key={index} value={item?._id}>
@@ -1388,14 +1390,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ</Form.Label>
+                        <Form.Label>{t('food_name')}</Form.Label>
                         <Form.Control
                           type="text"
                           name="name"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name && touched.name && errors.name
@@ -1407,14 +1409,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                        <Form.Label>{t('food_name')} (en)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_en}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_en &&
@@ -1430,14 +1432,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                        <Form.Label>{t('food_name')} (cn)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_cn}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_cn &&
@@ -1451,14 +1453,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                        <Form.Label>{t('food_name')} (kr)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_kr}
-                          placeholder="ຊື່ອາຫານ..."
+                          placeholder={t('food_name')}
                           style={{
                             border:
                               errors.name_kr &&
@@ -1472,14 +1474,14 @@ export default function MenuList() {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາ</Form.Label>
+                    <Form.Label>{t('price')}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.price}
-                      placeholder="ລາຄາ..."
+                      placeholder={t('food_name')}
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -1489,7 +1491,7 @@ export default function MenuList() {
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
+                    <Form.Label>{t('order_add')}</Form.Label>
                     {dataUpdateMenuOption?.length > 0 &&
                       dataUpdateMenuOption?.map((item, index) => (
                         <div key={index}>
@@ -1498,7 +1500,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ</Form.Label>
+                                    <Form.Label>{t('food_name')}</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name"
@@ -1510,14 +1512,14 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                       isInvalid={!item?.name}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                                    <Form.Label>{t('food_name')} (en)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_en"
@@ -1529,7 +1531,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_en}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1537,7 +1539,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                                    <Form.Label>{t('food_name')} (cn)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_cn"
@@ -1549,13 +1551,13 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_cn}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                                    <Form.Label>{t('food_name')} (kr)</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_kr"
@@ -1567,7 +1569,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_kr}
-                                      placeholder="ຊື່ອາຫານ..."
+                                      placeholder={t('food_name')}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1575,7 +1577,7 @@ export default function MenuList() {
                               <Row>
                                 <Col xs={6}>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ລາຄາ</Form.Label>
+                                    <Form.Label>{t('price')}</Form.Label>
                                     <Form.Control
                                       type="number"
                                       name="price"
@@ -1587,7 +1589,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.price}
-                                      placeholder="ລາຄາ..."
+                                      placeholder={t('food_name')}
                                       min="0"
                                       isInvalid={!item?.price ? "required" : ""}
                                     />
@@ -1616,25 +1618,25 @@ export default function MenuList() {
                         }}
                         onClick={() => _addUpdateMenuOption()}
                       >
-                        + ເມນູສັ່ງເພີ່ມ
+                        + {t('order_add')}
                       </Button>
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t('note')}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t('note')}
                     />
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
-                    ຍົກເລີກ
+                    {t('cancel')}
                   </Button>
                   <Button
                     style={{
@@ -1644,7 +1646,7 @@ export default function MenuList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t('save')}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -1656,7 +1658,7 @@ export default function MenuList() {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <div style={{ textAlign: "center" }}>
-              <div>ປ້ອນຈຳນວນສີນຄ້າ </div>
+              <div>{t('file_prod_amount')} </div>
               <div style={{ height: 20 }}></div>
               <input
                 type="number"
@@ -1667,14 +1669,14 @@ export default function MenuList() {
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="secondary" onClick={handleClose4}>
-              ຍົກເລີກ
+              {t('cancel')}
             </Button>
             <Button
               type="button"
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={() => _updateQtyCategory()}
             >
-              ຢືນຢັນການເພີ່ມ
+              {t('approve_add')}
             </Button>
           </Modal.Footer>
         </Modal>

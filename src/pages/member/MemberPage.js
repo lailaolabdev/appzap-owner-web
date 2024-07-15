@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Card,
   Breadcrumb,
@@ -43,6 +44,7 @@ import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 let limitData = 10;
 
 export default function MemberPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [memberAllCount, setMemberAllCount] = useState(); // member all
@@ -108,7 +110,7 @@ export default function MemberPage() {
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const getAllPoint = async () => {
@@ -117,7 +119,7 @@ export default function MemberPage() {
       const _data = await getAllPoints(TOKEN);
       if (_data.error) throw new Error("error");
       setallPoints(_data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getTotalPoints = async () => {
@@ -128,7 +130,7 @@ export default function MemberPage() {
       const _data = await getTotalPoint(findBy, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPoints(_data?.totalPoint);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getMemberOrderMenus = async () => {
@@ -137,7 +139,7 @@ export default function MemberPage() {
       const _data = await getMemberOrderMenu(TOKEN);
       if (_data.error) throw new Error("error");
       setOrderMenu(_data._memberOrderMenu || []);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getMemberCountData = async () => {
@@ -147,7 +149,7 @@ export default function MemberPage() {
       if (_data.error) throw new Error("error");
       setMemberAllCount(_data.count);
       setTotalPaginationMember(Math.ceil(_data?.count / limitData));
-    } catch (err) {}
+    } catch (err) { }
   };
   const getMemberCountByfilterData = async () => {
     const { TOKEN, DATA } = await getLocalData();
@@ -193,8 +195,8 @@ export default function MemberPage() {
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍງານສະມາຊິກ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('report_member')}</Breadcrumb.Item>
         </Breadcrumb>
         <Alert key="warning" variant="warning">
           ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
@@ -217,7 +219,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ຈຳນວນສະມາຊິກທັງໝົດ
+              {t('all_member')}
             </Card.Header>
             <Card.Body>
               <div
@@ -246,7 +248,7 @@ export default function MemberPage() {
                 padding: 10
               }}
             >
-              <span>ຄະແນນສະສົມທັງໝົດ</span>
+              <span>{t('all_point')}</span>
 
               <Button
                 variant="dark"
@@ -255,7 +257,7 @@ export default function MemberPage() {
                   navigate("/reports/members-report/setting-point")
                 }
               >
-                <FaCoins /> ຕັ້ງຄ່າການໃຫ້ຄະແນນ
+                <FaCoins /> {t('point_setting')}
               </Button>
             </Card.Header>
             <Card.Body>
@@ -286,21 +288,21 @@ export default function MemberPage() {
               padding: 10
             }}
           >
-            <span>ລາຍການສະມາຊິກ</span>
+            <span>{t('member_list')}</span>
 
             <Button
               variant="dark"
               bg="dark"
               onClick={() => navigate("/reports/members-report/create-member")}
             >
-              <MdAssignmentAdd /> ເພີ່ມສະມາຊິກ
+              <MdAssignmentAdd /> {t('add_member')}
             </Button>
           </Card.Header>
           <Card.Body>
             <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
               <div style={{ display: "flex", gap: 10 }}>
                 <Form.Control
-                  placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ"
+                  placeholder={t('search_name')}
                   value={filterName}
                   onChange={(e) => setFilterName(e.target.value)}
                 />
@@ -309,18 +311,18 @@ export default function MemberPage() {
                   variant="primary"
                   style={{ display: "flex", gap: 10, alignItems: "center" }}
                 >
-                  <FaSearch /> ຄົ້ນຫາ
+                  <FaSearch /> {t('search')}
                 </Button>
               </div>
             </div>
             <table style={{ width: "100%" }}>
               <tr>
-                <th style={{ textAlign: "left" }}>ຊື່ສະມາຊິກ</th>
-                <th style={{ textAlign: "center" }}>ເບີໂທ</th>
-                <th style={{ textAlign: "center" }}>ຄະແນນສະສົມ</th>
-                <th style={{ textAlign: "center" }}>ໃຊ້ບໍລິການ</th>
-                <th style={{ textAlign: "center" }}>ວັນທີສະໝັກ</th>
-                <th style={{ textAlign: "right" }}>ຈັດການ</th>
+                <th style={{ textAlign: "left" }}>{t('member_name')}</th>
+                <th style={{ textAlign: "center" }}>{t('phone')}</th>
+                <th style={{ textAlign: "center" }}>{t('point')}</th>
+                <th style={{ textAlign: "center" }}>{t('use_service')}</th>
+                <th style={{ textAlign: "center" }}>{t('regis_date')}</th>
+                <th style={{ textAlign: "right" }}>{t('manage')}</th>
               </tr>
               {membersData?.map((e) => (
                 <tr>
@@ -336,7 +338,7 @@ export default function MemberPage() {
                       variant="outline-primary"
                       onClick={() => handleEditClick(e)}
                     >
-                      ແກ້ໄຂ
+                      {t('edit')}
                     </Button>
                   </td>
                 </tr>
@@ -409,7 +411,7 @@ export default function MemberPage() {
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ printReport: true })}
           >
-            <AiFillPrinter /> ສະມາຊີກທຸກຄົນ
+            <AiFillPrinter /> {t('all_member')}
           </Button>
           <Button
             disabled
@@ -437,7 +439,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ສະມາຊິກໃໝ່
+              {t('new_member')}
             </Card.Header>
             <Card.Body>
               <div
@@ -462,7 +464,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ຄະແນນ
+              {t('point')}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -488,7 +490,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ຈຳນວນບິນ
+              {t('bill_amount')}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -514,7 +516,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ຍອດບິນລວມ
+              {t('total_price')}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -542,7 +544,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              ຍອດຂາຍເມນູ
+              {t('menu_amount')}
             </Card.Header>
             <Card.Body>
               {/* <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
@@ -558,9 +560,9 @@ export default function MemberPage() {
               </div> */}
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>ຊື່ເມນູ</th>
-                  <th style={{ textAlign: "center" }}>ຈຳນວນອໍເດີ</th>
-                  <th style={{ textAlign: "right" }}>ຈຳນວນເງິນ</th>
+                  <th style={{ textAlign: "left" }}>{t('menu_name')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order_amount')}</th>
+                  <th style={{ textAlign: "right" }}>{t('total_money')}</th>
                   {/* <th style={{ textAlign: "right" }}></th> */}
                 </tr>
 
@@ -604,6 +606,7 @@ export default function MemberPage() {
 }
 
 function ReportCard({ title, chart }) {
+  const { t } = useTranslation();
   return (
     <Card border="primary" style={{ margin: 0 }}>
       <Card.Header
@@ -631,19 +634,19 @@ function ReportCard({ title, chart }) {
           }}
         >
           <ButtonDropdown variant="outline-primary">
-            <option>ຍອດຈຳນວນ</option>
-            <option>ຍອດເງິນ</option>
+            <option>{t('amount')}</option>
+            <option>{t('price')}</option>
           </ButtonDropdown>
-          <Button variant="outline-primary">ເລືອກສິນຄ້າ 1 ລາຍການ</Button>
+          <Button variant="outline-primary">{t('chose_one_prod')}</Button>
           <ButtonGroup aria-label="Basic example">
             <Button variant="outline-primary">{"<<"}</Button>
             <Button variant="outline-primary">01/03/2023 ~ 31/03/2023</Button>
             <Button variant="outline-primary">{">>"}</Button>
           </ButtonGroup>
-          <div>ປຽບທຽບກັບ</div>
+          <div>{t('compare')}</div>
           <ButtonDropdown variant="outline-primary">
-            <option value={"test"}>ເດືອນແລ້ວ</option>
-            <option value={"test2"}>ຕົ້ນປີ</option>
+            <option value={"test"}>{t('last_month')}</option>
+            <option value={"test2"}>{t('bg_year')}</option>
             <option value={"test3"}>01/03/2023 ~ 31/03/2023</option>
           </ButtonDropdown>
           <Button variant="outline-primary">

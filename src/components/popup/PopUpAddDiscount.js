@@ -143,44 +143,44 @@ export default function PopUpAddDiscount({
         <TableCustom>
           <thead>
             <tr>
-              <th>ລຳດັບ</th>
-              <th>ຊື່ເມນູ</th>
-              <th>ຈຳນວນ</th>
-              <th>ສະຖານະ</th>
-              <th>ຜູ້ສັ່ງ</th>
-              <th>ເວລາ</th>
+              <th>{t('no')}</th>
+              <th>{t('menu_name')}</th>
+              <th>{t('qty')}</th>
+              <th>{t('status')}</th>
+              <th>{t('who_order')}</th>
+              <th>{t('time')}</th>
             </tr>
           </thead>
           <tbody>
             {value
               ? value?.map((orderItem, index) => (
-                  <tr
-                    key={"order" + index}
-                    style={{ borderBottom: "1px solid #eee" }}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{orderItem?.name}</td>
-                    <td>{orderItem?.quantity}</td>
-                    <td
-                      style={{
-                        color:
-                          orderItem?.status === `SERVED`
-                            ? "green"
-                            : orderItem?.status === "DOING"
+                <tr
+                  key={"order" + index}
+                  style={{ borderBottom: "1px solid #eee" }}
+                >
+                  <td>{index + 1}</td>
+                  <td>{orderItem?.name}</td>
+                  <td>{orderItem?.quantity}</td>
+                  <td
+                    style={{
+                      color:
+                        orderItem?.status === `SERVED`
+                          ? "green"
+                          : orderItem?.status === "DOING"
                             ? ""
                             : "red"
-                      }}
-                    >
-                      {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
-                    </td>
-                    <td>{orderItem?.createdBy?.firstname}</td>
-                    <td>
-                      {orderItem?.createdAt
-                        ? moment(orderItem?.createdAt).format("HH:mm A")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))
+                    }}
+                  >
+                    {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
+                  </td>
+                  <td>{orderItem?.createdBy?.firstname}</td>
+                  <td>
+                    {orderItem?.createdAt
+                      ? moment(orderItem?.createdAt).format("HH:mm A")
+                      : "-"}
+                  </td>
+                </tr>
+              ))
               : ""}
           </tbody>
         </TableCustom>
@@ -192,33 +192,33 @@ export default function PopUpAddDiscount({
           }}
         >
           <div>
-            ລວມ: {moneyCurrency(total)} {storeDetail?.firstCurrency}
+            {t('total')}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div>ສ່ວນຫຼຸດ</div>
+          <div>{t('discount')}</div>
           <div style={{ display: "flex", border: "1px solid #ccc" }}>
             <div
               onClick={() => setSelectedButton("%")}
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === "%" ? COLOR_APP : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               %
@@ -228,24 +228,24 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === storeDetail?.firstCurrency
+                        ? COLOR_APP
+                        : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               {storeDetail?.firstCurrency}
@@ -267,17 +267,17 @@ export default function PopUpAddDiscount({
         <hr />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}></div>
         <div >
-          <h5>ສ່ວນຫຼຸດປະເພດອາຫານ</h5>
+          <h5>{t('discount_for_food')}</h5>
         </div>
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          <label style={{ marginRight: "18px" }}>ປະເພດ</label>
+          <label style={{ marginRight: "18px" }}>{t('type')}</label>
           <select
             className="form-control"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
             style={{ display: "inline-block", width: "auto" }}
           >
-            <option value="All">ເລືອກປະເພດ</option>
+            <option value="All">{t('chose_type')}</option>
             {Categorys &&
               Categorys?.map((data, index) => {
                 return (
@@ -289,29 +289,29 @@ export default function PopUpAddDiscount({
           </select>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div>ສ່ວນຫຼຸດ</div>
+          <div>{t('discount')}</div>
           <div style={{ display: "flex", border: "1px solid #ccc" }}>
             <div
               onClick={() => setSelectedButton("%")}
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === "%" ? COLOR_APP : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               %
@@ -321,24 +321,24 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === storeDetail?.firstCurrency
+                        ? COLOR_APP
+                        : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               {storeDetail?.firstCurrency}
@@ -363,15 +363,15 @@ export default function PopUpAddDiscount({
         </div>
 
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          ຍອດລວມຂອງປະເພດທີ່ເລືອກ: {moneyCurrency(categoryTotal)}{" "}
+          {t('total_price_of_chosen')}: {moneyCurrency(categoryTotal)}{" "}
           {storeDetail?.firstCurrency}
         </div>
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          ຍອດຫຼຸດຂອງປະເພດທີ່ເລືອກ: {moneyCurrency(discountCategoryAmount)}{" "}
+          {t('discount_of_chosen')}: {moneyCurrency(discountCategoryAmount)}{" "}
           {storeDetail?.firstCurrency}
         </div>
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          ລວມຫຼັງສ່ວນຫຼຸດ: {moneyCurrency(adjustedTotal)}{" "}
+          {t('total_after_discount')}: {moneyCurrency(adjustedTotal)}{" "}
           {storeDetail?.firstCurrency}
         </div>
       </Modal.Body>
@@ -388,7 +388,7 @@ export default function PopUpAddDiscount({
             });
           }}
         >
-          ເພີ່ມສ່ວນຫຼຸດ
+          {t('append_discount')}
         </Button>
       </Modal.Footer>
     </Modal>

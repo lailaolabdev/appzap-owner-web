@@ -38,8 +38,10 @@ import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/Po
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
@@ -149,10 +151,10 @@ export default function DashboardPage() {
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
-      errorAdd("Export ບໍ່ສຳເລັດ");
+      errorAdd(`${t('export_fail')}`);
     }
   };
-  
+
   const downloadExcel = async () => {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
@@ -164,19 +166,19 @@ export default function DashboardPage() {
         const response = await Axios.get(_res?.data?.exportUrl, {
           responseType: 'blob', // Important to get the response as a Blob
         });
-  
+
         // Create a Blob from the response data
         console.log("response", response.data)
         const fileBlob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
+
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
       }
-      
+
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
-      errorAdd("Export ບໍ່ສຳເລັດ");
+      errorAdd(`${t('export_fail')}`);
     }
   };
   return (
@@ -206,7 +208,7 @@ export default function DashboardPage() {
             <Button
               onClick={() => setPopup({ popUpChooseTableComponent: true })}
             >
-              ເລືອກໂຕະ
+              {t('chose_table')}
             </Button>
           </div>
           {/* <Button
@@ -251,12 +253,12 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ຂໍ້ມູນການຂາຍ (Sales Information)
+              {t('sales_info')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ຍອດຂາຍທັງໝົດ",
+                  title: `${t('total_sale')}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["totalSales"]
                   )}${storeDetail?.firstCurrency}`,
@@ -270,26 +272,26 @@ export default function DashboardPage() {
                 // },
 
                 {
-                  title: "ຈຳນວນທຸລະກຳການຂາຍ",
+                  title: `${t('business_amount')}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["noOfSalesTransactions"]
                   )}`,
                 },
                 {
-                  title: "ຍອດຂາຍສະເລ່ຍ ຕໍ່ ທຸລະກຳ",
+                  title: `${t('per_bsn')}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["averageSales_Transaction"]
                   )}${storeDetail?.firstCurrency}`,
                 },
 
                 {
-                  title: "ລາຍຈ່າຍ ກີບ",
+                  title: `${t('paid_lak')}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["totalCostLAK"]
-                  )} ກີບ`,
+                  )} ${t('lak')}`,
                 },
                 {
-                  title: "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍກີບ)",
+                  title: `${t('defult_profit')}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["grossProfitLAK"]
                   )}${storeDetail?.firstCurrency}`,
@@ -326,7 +328,7 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ໂປຣໂມຊັ້ນ
+              {t('promotion')}
             </Card.Header>
             <Card.Body>
               <div
@@ -338,7 +340,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ຈຳນວນບິນສ່ວນຫຼຸດ</div>
+                <div>{t('discount_bill')}</div>
                 <div>{promotionReport?.[0]?.count || 0}</div>
               </div>
               <div
@@ -350,7 +352,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ສ່ວນຫຼຸດທັງໝົດ</div>
+                <div>{t('all_discount')}</div>
                 <div>
                   {promotionReport?.[0]?.totalSaleAmount || 0}
                   {storeDetail?.firstCurrency}
@@ -367,34 +369,34 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ຂໍ້ມູນບິນ
+              {t('bill_detial')}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th>ປະເພດບິນ</th>
-                  <th style={{ textAlign: "center" }}>ຈຳນວນບິນ</th>
-                  <th style={{ textAlign: "right" }}>ລາຄາລວມ</th>
+                  <th>{t('bill_type')}</th>
+                  <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
+                  <th style={{ textAlign: "right" }}>{t('total_price')}</th>
                 </tr>
                 {[
                   {
-                    method: "ບິນເງິນສົດ",
+                    method: `${t('bill_crash')}`,
                     qty: moneyReport?.cash?.count,
                     amount: moneyReport?.cash?.totalBill,
                   },
                   {
-                    method: "ບິນເງິນໂອນ",
+                    method: `${t('tsf_bill')}`,
                     qty: moneyReport?.transfer?.count,
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
                     method: (
                       <div>
-                        ບິນເງິນສົດແລະເງິນໂອນ
+                        {t('tsf_cash')}
                         <br />
-                        ສົດ{" "}
+                        {t('cash')}{" "}
                         {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                        ໂອນ{" "}
+                        {t('transfer')}{" "}
                         {moneyCurrency(
                           moneyReport?.transferCash?.transfer || 0
                         )}
@@ -405,7 +407,7 @@ export default function DashboardPage() {
                   },
                   {
                     method: (
-                      <div style={{ fontWeight: 700 }}>ເງິນສົດທັງໝົດ</div>
+                      <div style={{ fontWeight: 700 }}>{t('total_cash')}</div>
                     ),
                     qty:
                       (moneyReport?.transferCash?.count || 0) +
@@ -416,7 +418,7 @@ export default function DashboardPage() {
                   },
                   {
                     method: (
-                      <div style={{ fontWeight: 700 }}>ເງິນໂອນທັງໝົດ</div>
+                      <div style={{ fontWeight: 700 }}>{t('total_tsf')}</div>
                     ),
                     qty:
                       (moneyReport?.transferCash?.count || 0) +
@@ -426,7 +428,7 @@ export default function DashboardPage() {
                       (moneyReport?.transfer?.totalBill || 0),
                   },
                   {
-                    method: <div style={{ fontWeight: 700 }}>ທັງໝົດ</div>,
+                    method: <div style={{ fontWeight: 700 }}>{t('total')}</div>,
                     qty:
                       (moneyReport?.cash?.count || 0) +
                       (moneyReport?.transferCash?.count || 0) +
@@ -458,15 +460,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ຂໍ້ມູນພະນັກງານ
+              {t('staf_info')}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>ຊື່ຜູ້ໃຊ້</th>
-                  <th style={{ textAlign: "center" }}>ອໍເດີສັ່ງ</th>
-                  <th style={{ textAlign: "center" }}>ອໍເດີຍົກເລີກ</th>
-                  <th style={{ textAlign: "right" }}>ລວມຍອດ</th>
+                  <th style={{ textAlign: "left" }}>{t('user')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order_cancel')}</th>
+                  <th style={{ textAlign: "right" }}>{t('total')}</th>
                 </tr>
                 {userReport?.map((e) => (
                   <tr>
@@ -491,17 +493,17 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ຂໍ້ມູນການຂາຍແຕ່ລະມື້
+              {t('sales_info')}{t('every_day')}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>ວັນທີ່</th>
-                  <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
-                  <th style={{ textAlign: "center" }}>ຍອດບິນ</th>
-                  <th style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ</th>
-                  <th style={{ textAlign: "center" }}>ຍອດກ່ອນ</th>
-                  <th style={{ textAlign: "right" }}>ຍອດລວມ</th>
+                  <th style={{ textAlign: "left" }}>{t('date')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order')}</th>
+                  <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
+                  <th style={{ textAlign: "center" }}>{t('discount')}</th>
+                  <th style={{ textAlign: "center" }}>{t('last_amount')}</th>
+                  <th style={{ textAlign: "right" }}>{t('total')}</th>
                 </tr>
                 {reportData.map((e) => (
                   <tr>
@@ -534,15 +536,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ປະເພດເມນູ
+              {t('menu_type')}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>ປະເພດເມນູ</th>
-                  <th style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</th>
-                  <th style={{ textAlign: "center" }}>ຍົກເລີກ</th>
-                  <th style={{ textAlign: "right" }}>ຍອດຂາຍ</th>
+                  <th style={{ textAlign: "left" }}>{t('menu_type')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order_success')}</th>
+                  <th style={{ textAlign: "center" }}>{t('cancel')}</th>
+                  <th style={{ textAlign: "right" }}>{t('sale_amount')}</th>
                 </tr>
                 {categoryReport
                   ?.sort((x, y) => {
@@ -571,15 +573,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              ຂໍ້ມູນເມນູ
+              {t('menu_info')}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>ເມນູ</th>
-                  <th style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</th>
-                  <th style={{ textAlign: "center" }}>ຍົກເລີກ</th>
-                  <th style={{ textAlign: "right" }}>ຍອດຂາຍ</th>
+                  <th style={{ textAlign: "left" }}>{t('menu')}</th>
+                  <th style={{ textAlign: "center" }}>{t('order_success')}</th>
+                  <th style={{ textAlign: "center" }}>{t('cancel')}</th>
+                  <th style={{ textAlign: "right" }}>{t('sale_amount')}</th>
                 </tr>
                 {menuReport
                   ?.sort((x, y) => {

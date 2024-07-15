@@ -12,7 +12,7 @@ const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
 const dev_web_client = "http://18.141.158.70:3000/store/";
-export const master_menu_api_dev ="https://kq2xqiss46.execute-api.ap-southeast-1.amazonaws.com"
+export const master_menu_api_dev = "https://kq2xqiss46.execute-api.ap-southeast-1.amazonaws.com"
 // export const master_menu_api_dev =" http://18.141.158.70:9090"
 const isProduction = production_domain == now_domain;
 export const END_POINT_SEVER = isProduction ? production : dev;
@@ -52,7 +52,7 @@ export const getLocalDataCustomer = async () => {
   const _local = await localStorage.getItem("DATA_CUSTOMER");
   const _localJson2 = await JSON.parse(_local);
   const DATA = _localJson2;
-  return {  DATA };
+  return { DATA };
 };
 
 // =====>>>>

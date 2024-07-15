@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 /**
  * import function
@@ -15,6 +16,7 @@ import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
 import { useParams } from "react-router-dom";
 import { useStore } from "../../store";
 const CanceledOrderTab = () => {
+  const { t } = useTranslation(); //translate
   /**
    * routes
    */
@@ -47,12 +49,12 @@ const CanceledOrderTab = () => {
               {/* <th>
                   <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
                 </th> */}
-              <th>ລ/ດ</th>
-              <th>ຊື່ເມນູ</th>
-              <th>ຈຳນວນ</th>
-              <th>ເບີໂຕະ</th>
-              <th>ສະຖານະ</th>
-              <th>ເວລາ</th>
+              <th>{t('no')}</th>
+              <th>{t('menu_name')}</th>
+              <th>{t('amount')}</th>
+              <th>{t('table_code')}</th>
+              <th>{t('status')}</th>
+              <th>{t('time')}</th>
             </tr>
           </thead>
           <tbody>
