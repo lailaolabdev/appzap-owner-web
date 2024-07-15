@@ -21,8 +21,10 @@ import {
 } from "../../services/stocks";
 import { IoSearchCircleOutline } from "react-icons/io5";
 import EmptyState from "../../components/EmptyState";
+import { useTranslation } from "react-i18next";
 
 export default function ReportStocks() {
+  const { t } = useTranslation();
   const { height, width } = useWindowDimension2();
   const _stDate = moment().startOf("month").format("YYYY-MM-DD");
   const _edDate = moment().endOf("month").format("YYYY-MM-DD");
@@ -83,9 +85,8 @@ export default function ReportStocks() {
       const _localData = await getLocalData();
       const storeId = _localData?.DATA?.storeId;
 
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}&skip=${
-        page * rowsPerPage
-      }&limit=${rowsPerPage}`;
+      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}&skip=${page * rowsPerPage
+        }&limit=${rowsPerPage}`;
       const response = await getStocksHistories(storeId, findBy);
 
       if (response.status === 200 && response.data) {
@@ -233,7 +234,7 @@ export default function ReportStocks() {
           >
             <MdSearch style={{ fontSize: 27, color: COLOR_APP }} />
           </div>
-          <Form.Label>ຄົ້ນຫາ</Form.Label>
+          <Form.Label>{t('search')}</Form.Label>
           <InputGroup>
             <Form.Control
               style={{ paddingLeft: "2.5em" }}
@@ -245,13 +246,13 @@ export default function ReportStocks() {
                 }
               }}
               type="text"
-              placeholder="ປ້ອນຊື່ສິນຄ້າ ແລ້ວ enter..."
+              placeholder={t('fill_prod_enter')}
             />
             {/* <Button onClick={() => getStocks()}>Enter</Button> */}
           </InputGroup>
         </div>
         <Form.Group style={{ width: width > 700 ? "60%" : "100%" }}>
-          <Form.Label>ວັນທີ, ເດືອນ, ປີ (ເວລາ)</Form.Label>
+          <Form.Label>{t('date_time')}</Form.Label>
           <Button
             variant="outline-primary"
             size="small"
@@ -284,7 +285,7 @@ export default function ReportStocks() {
               fontWeight: "bold",
             }}
           >
-            ສະຕ໋ອກປັດຈຸບັນ
+            {t('current_stoke')}
           </Card.Header>
           {isLoading ? (
             <LoadingAppzap />
@@ -294,12 +295,12 @@ export default function ReportStocks() {
                 <Card.Body>
                   <table style={{ width: "100%" }}>
                     <tr>
-                      <th style={{ textAlign: "left", width: 50 }}>ລຳດັບ</th>
-                      <th style={{ textAlign: "left" }}>ວັນທີ,ເດືອນ,ປີ</th>
-                      <th style={{ textAlign: "left" }}>ປະເພດ</th>
-                      <th style={{ textAlign: "left" }}>ຊື່ສິນຄ້າ</th>
-                      <th style={{ textAlign: "left" }}>ຈຳນວນ</th>
-                      <th style={{ textAlign: "right", width: 40 }}>ຫົວໜ່ວຍ</th>
+                      <th style={{ textAlign: "left", width: 50 }}>{t('no')}</th>
+                      <th style={{ textAlign: "left" }}>{t('date')}</th>
+                      <th style={{ textAlign: "left" }}>{t('type')}</th>
+                      <th style={{ textAlign: "left" }}>{t('prod_name')}</th>
+                      <th style={{ textAlign: "left" }}>{t('amount')}</th>
+                      <th style={{ textAlign: "right", width: 40 }}>{t('unit')}</th>
                     </tr>
                     {stocks &&
                       stocks.map((item, index) => (
@@ -324,8 +325,8 @@ export default function ReportStocks() {
                                 item?.quantity >= 1
                                   ? "#fff"
                                   : item?.quantity <= 0
-                                  ? "red"
-                                  : "#777"
+                                    ? "red"
+                                    : "#777"
                               }
                               bgColor={item?.quantity >= 1 ? "#0ab847" : ""}
                               completed={`${thousandSeparator(
@@ -339,7 +340,7 @@ export default function ReportStocks() {
                   </table>
                 </Card.Body>
               ) : (
-                <EmptyState text={`ບໍ່ມີລາຍການສິນຄ້າ [${filterName}] ສະຕ໋ອກ`} />
+                <EmptyState text={`${t('no_prod_list')} [${filterName}] ${t('stoke')}`} />
               )}
             </>
           )}

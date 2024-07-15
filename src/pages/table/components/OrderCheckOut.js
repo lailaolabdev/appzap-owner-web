@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
+import { useTranslation } from "react-i18next";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3 } from "../../../constants";
@@ -18,11 +19,12 @@ const OrderCheckOut = ({
   show = false,
   hide,
   taxPercent = 0,
-  onPrintBill = () => {},
-  onSubmit = () => {},
+  onPrintBill = () => { },
+  onSubmit = () => { },
   staffData,
   // setDataBill
 }) => {
+  const { t } = useTranslation();
   const { storeDetail, profile } = useStore();
   const [total, setTotal] = useState();
   const [isBill, setIsBill] = useState(false);
@@ -88,27 +90,27 @@ const OrderCheckOut = ({
         arialabelledby="contained-modal-title-vcenter"
       >
         <Modal.Header closeButton>
-          <Modal.Title>ລາຍລະອຽດເມນູອໍເດີ້</Modal.Title>
+          <Modal.Title>{t('order_detial')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            ໂຕະ:{tableData?.tableName}
+            {t('table')}:{tableData?.tableName}
           </pre>
           <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            ລະຫັດ:{tableData?.code}
+            {t('code')}:{tableData?.code}
           </pre>
           <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            ເປີດເມື່ອ:
+            {t('open_at')}:
             {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
           </pre>
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
-                <th>ລຳດັບ</th>
-                <th>ຊື່ເມນູ</th>
-                <th>ຈຳນວນ</th>
-                <th>ລາຄາ</th>
-                <th>ລາຄາລວມ</th>
+                <th>{t('no')}</th>
+                <th>{t('menu_name')}</th>
+                <th>{t('qty')}</th>
+                <th>{t('price')}</th>
+                <th>{t('total_price')}</th>
               </tr>
             </thead>
             <tbody>
@@ -123,8 +125,8 @@ const OrderCheckOut = ({
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                              orderItem?.price * orderItem?.quantity
-                            )
+                            orderItem?.price * orderItem?.quantity
+                          )
                           : "-"}
                       </td>
                     </tr>
@@ -132,7 +134,7 @@ const OrderCheckOut = ({
                 })}
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  ສ່ວນຫຼຸດ:
+                  {t('discount')}:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(data?.discount)}{" "}
@@ -143,7 +145,7 @@ const OrderCheckOut = ({
               </tr>
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  ລາຄາລວມ:
+                  {t('total_price')}:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(total)} {storeDetail?.firstCurrency}
@@ -151,7 +153,7 @@ const OrderCheckOut = ({
               </tr>
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  ລາຄາລວມ + ພາສີ {taxPercent}%:
+                  {t('total_price')} + {t('tax')} {taxPercent}%:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(total * (taxPercent * 0.01 + 1))}{" "}
@@ -186,19 +188,19 @@ const OrderCheckOut = ({
                   fontSize: 26,
                 }}
                 onClick={() => onPrintBill()}
-                // onClick={() => setIsBill(true)}
+              // onClick={() => setIsBill(true)}
               >
                 <FontAwesomeIcon
                   icon={faCashRegister}
                   style={{ color: "#fff" }}
                 />
-                ພິມບິນ
+                {t('print_bill')}
               </Button>
               <div
                 className="p-2 col-example text-center"
                 style={{ fontSize: 26 }}
               >
-                ຕ້ອງຈ່າຍທັງໝົດ:
+                {t('total_must_pay')}:
               </div>
               <div
                 className="p-2 col-example text-center"
@@ -211,22 +213,22 @@ const OrderCheckOut = ({
                   <b>
                     {data && data?.discountType === "LAK"
                       ? moneyCurrency(
-                          total * (taxPercent * 0.01 + 1) - data?.discount > 0
-                            ? total * (taxPercent * 0.01 + 1) - data?.discount
-                            : 0
-                        )
+                        total * (taxPercent * 0.01 + 1) - data?.discount > 0
+                          ? total * (taxPercent * 0.01 + 1) - data?.discount
+                          : 0
+                      )
                       : moneyCurrency(
-                          total * (taxPercent * 0.01 + 1) -
-                            (total * (taxPercent * 0.01 + 1) * data?.discount) /
-                              100 >
-                            0
-                            ? total * (taxPercent * 0.01 + 1) -
-                                (total *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100
-                            : 0
-                        )}
+                        total * (taxPercent * 0.01 + 1) -
+                          (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                          100 >
+                          0
+                          ? total * (taxPercent * 0.01 + 1) -
+                          (total *
+                            (taxPercent * 0.01 + 1) *
+                            data?.discount) /
+                          100
+                          : 0
+                      )}
                   </b>
                 </span>
               </div>
@@ -243,13 +245,13 @@ const OrderCheckOut = ({
                     fontSize: 26,
                   }}
                   onClick={onConfirmStaffToCheckBill}
-                  // onClick={() => onSubmit()}
+                // onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
                     icon={faCashRegister}
                     style={{ color: "#fff" }}
                   />{" "}
-                  ປ່ຽນຜູ້ເຊັກບິນ
+                  {t('change_who_check_bill')}
                 </Button>
                 <Button
                   className="ml-2 pl-4 pr-4"
@@ -267,7 +269,7 @@ const OrderCheckOut = ({
                     icon={faCashRegister}
                     style={{ color: "#fff" }}
                   />{" "}
-                  ເຊັກບິນ
+                  {t('check_bill')}
                 </Button>
               </div>
             </div>
@@ -287,22 +289,22 @@ const OrderCheckOut = ({
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <b>ເລືອກຊື່ພະນັກງານເຊັກບິນ</b>
+            <b>{t('chose_staff_check_bill')}</b>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div style={{ display: "flex", gap: 20 }}>
             <Button onClick={() => setDefualtRoleUser("APPZAP_COUNTER")}>
-              ເຄົ້າເຕີ
+              {t('counter')}
             </Button>
             <Button onClick={() => setDefualtRoleUser("APPZAP_STAFF")}>
-              ພະນັກງານເສີບ
+              {t('server')}
             </Button>
             <Button
               disabled={profile?.data?.role != "APPZAP_ADMIN"}
               onClick={() => setDefualtRoleUser("APPZAP_ADMIN")}
             >
-              ຜູ້ບໍ່ລິຫານ
+              {t('ceo')}
             </Button>
           </div>
           <div

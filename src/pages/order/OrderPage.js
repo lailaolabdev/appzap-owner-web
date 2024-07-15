@@ -88,7 +88,7 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) {}
+    } catch (err) { }
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -254,7 +254,7 @@ export default function OrderPage() {
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}
-            ພິມບິນໄປຄົວ
+            {t('send_to_kitchen')}
           </Button>
         </div>
         <div style={{ width: "50px" }}></div>

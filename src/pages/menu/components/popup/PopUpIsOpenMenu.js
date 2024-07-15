@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from "react-i18next";
 
 import { Modal, Button } from 'react-bootstrap';
 
@@ -13,15 +14,16 @@ function PopUpIsOpenMenu({
     _handOpenMenuShowStaff
 
 }) {
+    const { t } = useTranslation();
     return (
         <div>
             <Modal show={showSetting} onHide={handleClose}>
                 <Modal.Header>
-                    <Modal.Title style={{ color: "#fb6e3b", fontWeight: "800" }}>ກຳນົດການສະແດງເມນູ: <q>{detailMenu && detailMenu?.data?.name}</q></Modal.Title>
+                    <Modal.Title style={{ color: "#fb6e3b", fontWeight: "800" }}>{t('define_show_menu')}: <q>{detailMenu && detailMenu?.data?.name}</q></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className='menuSttingShow'>
-                        <label>ເປີດສະແດງເຄົ້າເຕີ້</label>
+                        <label>{t('show_at_counter')}</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -32,7 +34,7 @@ function PopUpIsOpenMenu({
                         </label>
                     </div>
                     <div className='menuSttingShow'>
-                        <label>ເປີດສະແດງລູກຄ້າ(ແອັບ)</label>
+                        <label>{t('show_to_app')}</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -43,7 +45,7 @@ function PopUpIsOpenMenu({
                         </label>
                     </div>
                     <div className='menuSttingShow'>
-                        <label>ເປີດສະແດງລູກຄ້າ(ເວບ)</label>
+                        <label>{t('show_to_web')}</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -55,7 +57,7 @@ function PopUpIsOpenMenu({
                     </div>
 
                     <div className='menuSttingShow'>
-                        <label>ເປີດສະແດງພະນັກງານ</label>
+                        <label>{t('show_to_staff')}</label>
                         <label className="switch">
                             <input
                                 type="checkbox"
@@ -69,7 +71,7 @@ function PopUpIsOpenMenu({
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
-                        ປິດອອກ
+                        {t('close')}
                     </Button>
                 </Modal.Footer>
             </Modal>

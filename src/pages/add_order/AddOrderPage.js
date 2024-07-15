@@ -10,8 +10,10 @@ import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers";
+import { useTranslation } from "react-i18next";
 
 export default function AddOrderPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { codeId } = useParams();
   // state
@@ -176,7 +178,7 @@ export default function AddOrderPage() {
             </div>
             <Form.Control
               type="text"
-              placeholder="ບອກພໍຄົວ Ex:ບໍ່ເພັດ, ອື່ນ..."
+              placeholder={t('ask_chef')}
               value={selectMenu?.note}
               onChange={(e) =>
                 setSelectMenu((prev) => ({ ...prev, note: e.target.value }))
@@ -232,7 +234,7 @@ export default function AddOrderPage() {
                 setSelectMenu();
               }}
             >
-              ເພີ່ມເຂົ້າກະຕ່າ
+              {t('add_to_cart')}
             </Button>
           </div>
         </div>
@@ -278,7 +280,7 @@ const NavContainer = ({ onBack, codeId, setPopup }) => {
           position: "relative",
         }}
         onClick={() => navigate(`/staff/cart/${codeId}`, { replace: true })}
-        //   onClick={getQrTokenForSelfOrdering}
+      //   onClick={getQrTokenForSelfOrdering}
       >
         <FaShoppingCart style={{ fontSize: "22px" }} />
         {staffCart?.length > 0 ? (

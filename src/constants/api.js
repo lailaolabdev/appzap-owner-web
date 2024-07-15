@@ -3,17 +3,16 @@ import { USER_KEY } from "./index";
 // TODO: check domain name and set end point
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
-const dev = "https://api.appzap.la:17070"; // dev endpoint
+// const dev = "https://api.appzap.la:17070"; // dev endpoint
 // const dev = "https://api.appzap.la"; //local
 // const dev = "http://192.168.1.11:7070"; //locals
-// const dev = "http://localhost:7070"; //locals
+const dev = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la"; // Production
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
 const dev_web_client = "http://18.141.158.70:3000/store/";
-export const master_menu_api_dev =
-  "https://kq2xqiss46.execute-api.ap-southeast-1.amazonaws.com";
+export const master_menu_api_dev = "https://kq2xqiss46.execute-api.ap-southeast-1.amazonaws.com"
 // export const master_menu_api_dev =" http://18.141.158.70:9090"
 const isProduction = production_domain == now_domain;
 export const END_POINT_SEVER = isProduction ? production : dev;

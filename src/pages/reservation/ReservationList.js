@@ -205,7 +205,7 @@ export default function ReservationList() {
               <Form.Label>{t("search")}</Form.Label>
               <InputGroup>
                 <Form.Control
-                  placeholder="Example: (ເບີໂທ) (ຊື່ຜູ້ຈອງ)"
+                  placeholder={t('ex_phone')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
