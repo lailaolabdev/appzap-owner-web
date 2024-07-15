@@ -1,8 +1,6 @@
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
-import DateTimeComponent from "../../components/DateTimeComponent";
 import React, { useState, useEffect } from "react";
-import moment from "moment";
-import { updateMember, getMembers } from "../../services/member.service";
+import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 
 export default function PopUpMemberEdit({
@@ -39,7 +37,7 @@ export default function PopUpMemberEdit({
 
       const response = await updateMember(memberData._id, updatedData, TOKEN);
       if (response.error) throw new Error("Cannot update member");
-      getMembers();
+      onUpdate();
       onClose();
     } catch (error) {
       console.error(error);

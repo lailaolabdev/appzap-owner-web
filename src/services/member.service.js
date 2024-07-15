@@ -21,19 +21,23 @@ export const getMemberAllCount = async (storeId, TOKEN) => {
   }
 };
 
-export const getMemberBillCount = async (findBy, TOKEN) => {
+export const getMemberBillCount = async (memberId, findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/member/total-bill${findBy}`;
+    const url = `${END_POINT_SEVER}/v4/member/total-bill?memberId=${memberId}${findBy}`;
+    
     const res = await axios.get(url, { headers: TOKEN });
+    
     return res.data;
   } catch (error) {
     return { error: true };
   }
 };
-export const getMemberTotalMoney = async (findBy, TOKEN) => {
+export const getMemberTotalMoney = async (memberId, findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/member/total-money${findBy}`;
+    const url = `${END_POINT_SEVER}/v4/member/total-money?memberId=${memberId}${findBy}`;
+    console.log("URL: ", url);
     const res = await axios.get(url, { headers: TOKEN });
+    console.log("RESDATA: ", res.data);
     return res.data;
   } catch (error) {
     return { error: true };
@@ -104,20 +108,42 @@ export const getAllPoints = async (TOKEN) => {
   }
 };
 
-export const getMemberOrderMenu = async (TOKEN) => {
+export const getAllBills = async (TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/member/orders-menu`;
+    const url = `${END_POINT_SEVER}/v4/member/all-bill`;
     const response = await axios.get(url, { headers: TOKEN });
     return response.data;
+  } catch (error) {
+    console.error("Error in getAllBills: ", error);
+    return { error: true };
+  }
+};
+
+export const getAllMoneys = async (TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/all-money`;
+    const response = await axios.get(url, { headers: TOKEN });
+    return response.data;
+  } catch (error) {
+    console.error("Error in getAllMoneys: ", error);
+    return { error: true };
+  }
+};
+
+export const getMemberOrderMenu = async (memmberId, findby, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
+    const response = await axios.post(url, null, { headers: TOKEN });
+    return response.data.data;
   } catch (error) {
     console.error("Error in GetMemberOrderMenu: ", error);
     return { error: true };
   }
 };
 
-export const getTotalPoint = async (findBy, TOKEN) => {
+export const getTotalPoint = async (memmberId, findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/member/total-point${findBy}`;
+    const url = `${END_POINT_SEVER}/v4/member/total-point?memberId=${memmberId}${findBy}`;
     const response = await axios.get(url, { headers: TOKEN });
     console.log("DATA: ", response.data);
     return response.data;
@@ -145,6 +171,16 @@ export const getSearchOne = async (findBy, TOKEN) => {
     const res = await axios.get(url, { headers: TOKEN });
     console.log(res.data);
     return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getMemberAllMenu = async (TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/member/all-menu`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data.data;
   } catch (error) {
     return error;
   }

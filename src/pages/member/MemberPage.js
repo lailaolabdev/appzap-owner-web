@@ -21,7 +21,7 @@ import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
 import moment from "moment";
 import { COLOR_APP } from "../../constants";
 import ButtonDropdown from "../../components/button/ButtonDropdown";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaUser } from "react-icons/fa";
 import {
   getMemberAllCount,
   getMemberCount,
@@ -29,9 +29,10 @@ import {
   getMemberBillCount,
   getMemberTotalMoney,
   getAllPoints,
+  getAllBills,
   getMemberOrderMenu,
   getTotalPoint,
-  getSearchOne
+  getAllMoneys
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useStore } from "../../store";
@@ -41,6 +42,9 @@ import { FaCoins } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import { moneyCurrency } from "../../helpers/index";
 import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
+import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
+import PopUpMemberOrderAll from "../../components/popup/PopUpMemberOrderAll";
+import { use } from "i18next";
 let limitData = 10;
 
 export default function MemberPage() {
@@ -58,13 +62,19 @@ export default function MemberPage() {
   const [popup, setPopup] = useState();
   const [membersData, setMembersData] = useState();
   const [allPoints, setallPoints] = useState();
+  const [allBills, setAllBills] = useState();
+  const [allMoneys, setAllMoneys] = useState();
   const [totalPoints, setTotalPoints] = useState();
   const [orderMenu, setOrderMenu] = useState();
-  const [filterName, setFilterName] = useState("");
+  const [filterValue, setFilterValue] = useState("");
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState();
   const [selectedMember, setSelectedMember] = useState();
   const [searchMember, setSearchMember] = useState([]);
+  const [selectedMenuIds, setSelectedMenuIds] = useState([]);
+  const [selectedMemberOrders, setSelectedMemberOrders] = useState("");
+  const [memberOrdersToTalMoney, setMemberOrdersToTalMoney] = useState([]);
+  const [memberOrdersTotalBill, setMemberOrdersTotalBill] = useState([]);
 
   const { storeDetail } = useStore();
   // provider
@@ -77,7 +87,9 @@ export default function MemberPage() {
     getMemberBillCountData();
     getMemberTotalMoneyData();
     getAllPoint();
+    getAllBill();
     getMemberOrderMenus();
+    getAllMoney();
     getTotalPoints();
   }, []);
   useEffect(() => {
@@ -85,15 +97,42 @@ export default function MemberPage() {
     getMemberBillCountData();
     getMemberTotalMoneyData();
     getTotalPoints();
-  }, [endDate, startDate, endTime, startTime]);
+    getMemberOrderMenus();
+    getMemberTotalMoneyData();
+    getMemberBillCountData();
+  }, [endDate, startDate, endTime, startTime, selectedMenuIds]);
 
   useEffect(() => {
     getMembersData();
   }, [paginationMember]);
 
+  useEffect(() => {
+    getMemberOrderMenus();
+    getMemberTotalMoneyData();
+    getMemberBillCountData();
+    getTotalPoints();
+  }, [selectedMemberOrders]);
+
+  // useEffect(() => {
+  //   console.log(object)
+  // }, [selectedMenuIds]);
+
+  // useEffect(() => {
+  //   console.log("memberOrders: ", memberOrders.data);
+  // }, [memberOrders]);
+
   const handleEditClick = (member) => {
     setSelectedMember(member);
     setPopup({ PopUpMemberEdit: true });
+  };
+
+  const handleUpdate = () => {
+    getMembersData(); // Refresh the members data
+  };
+
+  const handleSelectMember = (memberOrders) => {
+    console.log("DATAID: ", selectedMemberOrders, memberOrders);
+    setSelectedMemberOrders(memberOrders);
   };
 
   // function
@@ -104,8 +143,8 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
-      if (filterName) {
-        findby += `name=${filterName}&`;
+      if (filterValue) {
+        findby += `search=${filterValue}&`;
       }
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
@@ -122,12 +161,29 @@ export default function MemberPage() {
     } catch (error) { }
   };
 
+  const getAllBill = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllBills(TOKEN);
+      if (_data.error) throw new Error("error");
+      setAllBills(_data);
+    } catch (error) {}
+  };
+
+  const getAllMoney = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllMoneys(TOKEN);
+      if (_data.error) throw new Error("error");
+      setAllMoneys(_data);
+    } catch (error) {}
+  };
+
   const getTotalPoints = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      console.log(findBy);
-      const _data = await getTotalPoint(findBy, TOKEN);
+      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const _data = await getTotalPoint(selectedMemberOrders, findBy, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPoints(_data?.totalPoint);
     } catch (error) { }
@@ -135,11 +191,16 @@ export default function MemberPage() {
 
   const getMemberOrderMenus = async () => {
     try {
-      const { TOKEN } = await getLocalData();
-      const _data = await getMemberOrderMenu(TOKEN);
+      const { TOKEN, DATA } = await getLocalData();
+      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const _data = await getMemberOrderMenu(
+        selectedMemberOrders,
+        findBy,
+        TOKEN
+      );
       if (_data.error) throw new Error("error");
-      setOrderMenu(_data._memberOrderMenu || []);
-    } catch (error) { }
+      setOrderMenu(_data || []);
+    } catch (error) {}
   };
 
   const getMemberCountData = async () => {
@@ -161,50 +222,41 @@ export default function MemberPage() {
   };
   const getMemberBillCountData = async () => {
     const { TOKEN, DATA } = await getLocalData();
-    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const _data = await getMemberBillCount(findBy, TOKEN);
+    const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const _data = await getMemberBillCount(selectedMemberOrders, findBy, TOKEN);
     if (_data.error) return;
-    setMemberBillCount(_data.count);
+    setMemberBillCount(_data.billAmount);
   };
   const getMemberTotalMoneyData = async () => {
     const { TOKEN, DATA } = await getLocalData();
-    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const _data = await getMemberTotalMoney(findBy, TOKEN);
+    const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const _data = await getMemberTotalMoney(
+      selectedMemberOrders,
+      findBy,
+      TOKEN
+    );
+
+    console.log("MEMBERID: ", selectedMemberOrders);
+
     if (_data.error) return;
     setMemberTotalMoney(_data.totalMoney);
-  };
-
-  const getSearchOnes = async () => {
-    try {
-      const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      if (filterName) {
-        findby += `name=${filterName}&`;
-      }
-      findby += `storeId=${DATA?.storeId}&`;
-
-      const _data = await getSearchOne(findby, TOKEN);
-      if (_data.error) throw new Error("error");
-      setSearchMember(_data);
-    } catch (err) {
-      console.error("Error fetching members:", err);
-    }
   };
 
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('report_member')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("report_member")}</Breadcrumb.Item>
         </Breadcrumb>
         <Alert key="warning" variant="warning">
           ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)
         </Alert>
+
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
+            gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
             gap: 20,
             gridTemplateRows: "masonry",
             marginBottom: 20
@@ -219,7 +271,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('all_member')}
+              {t("all_member")}
             </Card.Header>
             <Card.Body>
               <div
@@ -227,11 +279,62 @@ export default function MemberPage() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  fontSize: 32,
-                  fontWeight: 700
+                  fontSize: 32
+                  // fontWeight: 700
                 }}
               >
                 {memberAllCount}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold"
+              }}
+            >
+              ຈຳນວນເງີນທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32
+                  // fontWeight: 700
+                }}
+              >
+                {moneyCurrency(allMoneys?.moneyAmount)}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold"
+              }}
+            >
+              ຈຳນວນບີນທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32
+                  // fontWeight: 700
+                }}
+              >
+                {allBills?.billAmount}
               </div>
             </Card.Body>
           </Card>
@@ -248,7 +351,7 @@ export default function MemberPage() {
                 padding: 10
               }}
             >
-              <span>{t('all_point')}</span>
+              <span>{t("all_point")}</span>
 
               <Button
                 variant="dark"
@@ -257,7 +360,7 @@ export default function MemberPage() {
                   navigate("/reports/members-report/setting-point")
                 }
               >
-                <FaCoins /> {t('point_setting')}
+                <FaCoins /> {t("point_setting")}
               </Button>
             </Card.Header>
             <Card.Body>
@@ -267,7 +370,7 @@ export default function MemberPage() {
                   justifyContent: "center",
                   alignItems: "center",
                   fontSize: 32,
-                  fontWeight: 700
+                  fontWeight: 400
                 }}
               >
                 {allPoints?.pointAmmount}
@@ -288,41 +391,41 @@ export default function MemberPage() {
               padding: 10
             }}
           >
-            <span>{t('member_list')}</span>
+            <span>{t("member_list")}</span>
 
             <Button
               variant="dark"
               bg="dark"
               onClick={() => navigate("/reports/members-report/create-member")}
             >
-              <MdAssignmentAdd /> {t('add_member')}
+              <MdAssignmentAdd /> {t("add_member")}
             </Button>
           </Card.Header>
           <Card.Body>
             <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
               <div style={{ display: "flex", gap: 10 }}>
                 <Form.Control
-                  placeholder={t('search_name')}
-                  value={filterName}
-                  onChange={(e) => setFilterName(e.target.value)}
+                  placeholder={t("search_name")}
+                  value={filterValue}
+                  onChange={(e) => setFilterValue(e.target.value)}
                 />
                 <Button
                   onClick={() => getMembersData()}
                   variant="primary"
                   style={{ display: "flex", gap: 10, alignItems: "center" }}
                 >
-                  <FaSearch /> {t('search')}
+                  <FaSearch /> {t("search")}
                 </Button>
               </div>
             </div>
             <table style={{ width: "100%" }}>
               <tr>
-                <th style={{ textAlign: "left" }}>{t('member_name')}</th>
-                <th style={{ textAlign: "center" }}>{t('phone')}</th>
-                <th style={{ textAlign: "center" }}>{t('point')}</th>
-                <th style={{ textAlign: "center" }}>{t('use_service')}</th>
-                <th style={{ textAlign: "center" }}>{t('regis_date')}</th>
-                <th style={{ textAlign: "right" }}>{t('manage')}</th>
+                <th style={{ textAlign: "left" }}>{t("member_name")}</th>
+                <th style={{ textAlign: "center" }}>{t("phone")}</th>
+                <th style={{ textAlign: "center" }}>{t("point")}</th>
+                <th style={{ textAlign: "center" }}>{t("use_service")}</th>
+                <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
+                <th style={{ textAlign: "right" }}>{t("manage")}</th>
               </tr>
               {membersData?.map((e) => (
                 <tr>
@@ -338,7 +441,7 @@ export default function MemberPage() {
                       variant="outline-primary"
                       onClick={() => handleEditClick(e)}
                     >
-                      {t('edit')}
+                      {t("edit")}
                     </Button>
                   </td>
                 </tr>
@@ -406,17 +509,16 @@ export default function MemberPage() {
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
           </Button> */}
           <Button
-            disabled
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ printReport: true })}
+            onClick={() => setPopup({ popupmemberorder: true })}
           >
-            <AiFillPrinter /> {t('all_member')}
+            <AiFillPrinter /> {t("all_member")}
           </Button>
           <Button
-            disabled
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ popupmemberorderall: true })}
           >
             <MdOutlineCloudDownload /> ທຸກເມນູ
           </Button>
@@ -439,7 +541,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('new_member')}
+              {t("new_member")}
             </Card.Header>
             <Card.Body>
               <div
@@ -464,7 +566,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('point')}
+              {t("point")}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -490,7 +592,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('bill_amount')}
+              {t("bill_amount")}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -516,7 +618,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('total_price')}
+              {t("total_price")}
             </Card.Header>
             <Card.Body>
               {" "}
@@ -544,7 +646,7 @@ export default function MemberPage() {
                 fontWeight: "bold"
               }}
             >
-              {t('menu_amount')}
+              {t("menu_amount")}
             </Card.Header>
             <Card.Body>
               {/* <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
@@ -560,9 +662,9 @@ export default function MemberPage() {
               </div> */}
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t('menu_name')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order_amount')}</th>
-                  <th style={{ textAlign: "right" }}>{t('total_money')}</th>
+                  <th style={{ textAlign: "left" }}>{t("menu_name")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_amount")}</th>
+                  <th style={{ textAlign: "right" }}>{t("total_money")}</th>
                   {/* <th style={{ textAlign: "right" }}></th> */}
                 </tr>
 
@@ -600,6 +702,18 @@ export default function MemberPage() {
         open={popup?.PopUpMemberEdit}
         onClose={() => setPopup()}
         memberData={selectedMember}
+        onUpdate={handleUpdate}
+      />
+      <PopUpMemberOrder
+        open={popup?.popupmemberorder}
+        onClose={() => setPopup()}
+        onSelectMember={handleSelectMember}
+        // setData={setSelectedMemberOrders}
+      />
+      <PopUpMemberOrderAll
+        open={popup?.popupmemberorderall}
+        onClose={() => setPopup()}
+        setSelectedMenu={setSelectedMenuIds}
       />
     </>
   );
