@@ -296,6 +296,8 @@ export default function OrderPage() {
             {t("served")}
           </Button>
         </div>
+        <div style={{ flex: 1 }} />
+        <div>ປຸ່ມພິມບິນອັດຕະໂນມັດ</div>
       </div>
     );
   };

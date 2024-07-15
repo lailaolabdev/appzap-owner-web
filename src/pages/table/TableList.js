@@ -1175,7 +1175,7 @@ export default function TableList() {
     }
   };
 
-  const handleUpdateOrderStatuscancelAndCallback = async (status, callback) => {
+  const handleUpdateOrderStatusAndCallback = async (status, callback) => {
     try {
       // getOrderItemsStore(CANCEL_STATUS);
       const storeId = storeDetail?._id;
@@ -1803,7 +1803,7 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() => {
-                            handleUpdateOrderStatuscancelAndCallback(
+                            handleUpdateOrderStatusAndCallback(
                               "CANCELED",
                               async () => {
                                 const data = await onPrintForCherCancel();
@@ -1826,6 +1826,23 @@ export default function TableList() {
                           disabled={checkedBox}
                         >
                           {t("cancel")}
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() => {
+                            handleUpdateOrderStatusAndCallback(
+                              "DOING",
+                              async () => {
+                                const data = await onPrintForCher();
+                                return data;
+                              }
+                            ).then();
+                          }}
+                          disabled={checkedBox || onPrinting}
+                        >
+                          {onPrinting && (
+                            <Spinner animation="border" size="sm" />
+                          )}
+                          ອັບເດດພິມໄປຄົວ
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
