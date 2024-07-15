@@ -7,6 +7,7 @@ import { base64ToBlob } from "../../helpers";
 import Swal from "sweetalert2";
 import axios from "axios";
 import styled from "styled-components";
+import { useTranslation } from "react-i18next";
 
 /**
  * import components
@@ -24,6 +25,7 @@ import Notification from "../../vioceNotification/ding.mp3";
 // import { socket } from "../../services/socket";
 
 export default function WaitingOrderTab() {
+  const { t } = useTranslation();
   const {
     soundPlayer,
     orderItems,
@@ -64,14 +66,14 @@ export default function WaitingOrderTab() {
                   style={{ marginLeft: 2 }}
                 />
               </th>
-              <th>ລ/ດ</th>
-              <th>ຊື່ເມນູ</th>
-              <th>ຈຳນວນ</th>
-              <th>ຈາກໂຕະ</th>
-              <th>ລະຫັດໂຕະ</th>
-              <th>ສະຖານະ</th>
-              <th>ເວລາ</th>
-              <th>ຄອມເມັ້ນ</th>
+              <th>{t('no')}</th>
+              <th>{t('menu_name')}</th>
+              <th>{t('amount')}</th>
+              <th>{t('from_table')}</th>
+              <th>{t('table_code')}</th>
+              <th>{t('status')}</th>
+              <th>{t('status')}</th>
+              <th>{t('commend')}</th>
             </tr>
           </thead>
           <tbody>
@@ -101,7 +103,6 @@ export default function WaitingOrderTab() {
                       {order?.createdAt
                         ? moment(order?.createdAt).format("HH:mm ")
                         : "-"}{" "}
-                      ໂມງ
                     </td>
                     <td>{order?.note ?? "-"} </td>
                   </tr>

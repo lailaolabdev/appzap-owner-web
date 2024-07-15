@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button, ButtonGroup } from "react-bootstrap";
-import { MdDining, MdOutlinePieChartOutline } from "react-icons/md";
+import { MdDining, MdOutlinePieChartOutline, MdStore } from "react-icons/md";
 import "./sidenav.css";
 import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export default function ReportLayout() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
@@ -65,7 +67,7 @@ export default function ReportLayout() {
                 onClick={() => onViewStocksPath("sales-report")}
               >
                 <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
-                <strong>ລາຍງານຍອດຂາຍ</strong>
+                <strong>{t('report_sell')}</strong>
               </div>
               <div
                 className="menu-report-stocks mt-1"
@@ -82,7 +84,7 @@ export default function ReportLayout() {
                 onClick={() => navigate("/reports/income-expend-report")}
               >
                 <FaChartLine style={{ fontSize: 35 }} />
-                <strong>ລາຍງານລາຍຮັບລາຍຈ່າຍ</strong>
+                <strong>{t('report_p_c')}</strong>
               </div>
               <div
                 className="menu-report-stocks mt-1"
@@ -99,16 +101,16 @@ export default function ReportLayout() {
                 onClick={() => onViewStocksPath("reportStocks")}
               >
                 <MdDining style={{ fontSize: 35 }} />
-                <strong>ລາຍງານສະຕ໋ອກ</strong>
+                <strong>{t('stoke_report')}</strong>
               </div>
 
               <div
                 className="menu-report-stocks mt-1"
                 disabled
-                // onClick={() => navigate("/reports/members-report")}
+              // onClick={() => navigate("/reports/members-report")}
               >
-                ລາຍງານການພະລິດ <br />
-                (ກຳລັງພັດທະນາ)
+                {t('rp_build')} <br />
+                ({t('dping')})
               </div>
               <div
                 className="menu-report-stocks mt-1"
@@ -125,9 +127,25 @@ export default function ReportLayout() {
                 onClick={() => navigate("/reports/members-report")}
               >
                 <MdDining style={{ fontSize: 35 }} />
-                <strong>ລາຍງານສະມາຊິກ</strong>
+                <strong>{t('member_report')}</strong>
               </div>
-             
+              <div
+                className="menu-report-stocks mt-1"
+                style={{
+                  background:
+                    activeButton === "/reports/ChildStores-report"
+                      ? COLOR_APP
+                      : "white",
+                  color:
+                    activeButton === "/reports/ChildStores-report"
+                      ? "white"
+                      : COLOR_APP,
+                }}
+                onClick={() => navigate("/reports/ChildStores-report")}
+              >
+                <MdStore style={{ fontSize: 35 }} />
+                <strong>{t('report_sub')}</strong>
+              </div>
             </ButtonGroup>
           </div>
         </div>
@@ -142,7 +160,7 @@ export default function ReportLayout() {
             onClick={() => onViewStocksPath("sales-report")}
           >
             {/* <MdOutlinePieChartOutline style={{ fontSize: 35 }} /> */}
-            <strong>ລາຍງານຍອດຂາຍ</strong>
+            <strong>{t('report_sell')}</strong>
           </div>
           <div
             className="d-flex justify-content-center align-items-center cursor-pointer  p-2 w-100"
@@ -155,15 +173,15 @@ export default function ReportLayout() {
             onClick={() => onViewStocksPath("reportStocks")}
           >
             {/* <MdDining style={{ fontSize: 35 }} /> */}
-            <strong>ລາຍງານສະຕ໋ອກ</strong>
+            <strong>{t('stoke_report')}</strong>
           </div>
 
           <div
             className="d-flex justify-content-center align-items-center cursor-pointer p-2 w-100"
             disabled
-            // onClick={() => navigate("/reports/members-report")}
+          // onClick={() => navigate("/reports/members-report")}
           >
-            ລາຍງານການພະລິດ <br />
+            {t('rp_build')} <br />
             {/* (ກຳລັງພັດທະນາ)  */}
           </div>
           <div
@@ -182,9 +200,10 @@ export default function ReportLayout() {
             onClick={() => navigate("/reports/members-report")}
           >
             <MdDining style={{ fontSize: 35 }} />
-            <strong>ລາຍງານສະມາຊິກ</strong>
+            <strong>{t('member_report')}</strong>
             {/* (ກຳລັງພັດທະນາ)  */}
           </div>
+
         </div>
       )}
       <div>

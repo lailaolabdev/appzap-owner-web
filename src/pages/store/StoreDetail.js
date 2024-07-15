@@ -29,7 +29,7 @@ export default function StoreDetail() {
   const [numBerMenus, setnumBerMenus] = useState(0);
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
-  
+
   useEffect(() => {
     const fetchData = async () => {
       const _localData = await getLocalData();
@@ -81,7 +81,7 @@ export default function StoreDetail() {
       return;
     }
   };
-  
+
   // lung jak upload leo pic ja ma so u nee
   const _updateIsOpenStore = async (data) => {
     await axios({
@@ -166,7 +166,7 @@ export default function StoreDetail() {
             />
             <div>({dataStore?.reviewStarCount || 0})</div>
           </div>
-          <div style={{ padding: 5 }}>ເປີດບໍລິການ</div>
+          <div style={{ padding: 5 }}>{t('open_service')}</div>
           <div style={{ padding: 5 }}>{dataStore?.note}</div>
           <label className="switch">
             <input

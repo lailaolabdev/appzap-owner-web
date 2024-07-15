@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { BsQuestionLg } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
+
 
 // Assuming COLOR_APP is defined elsewhere
 import { COLOR_APP } from "../../constants";
@@ -54,6 +56,7 @@ export default function PopUpConfirmDeletion({
   onClose,
   onSubmit,
 }) {
+  const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const handleConfirmClick = () => {
@@ -71,24 +74,24 @@ export default function PopUpConfirmDeletion({
         </div>
         <div style={modalBodyStyle}>
           <h3 style={{ fontSize: 30, fontWeight: 600 }}>
-            <b>ແຈ້ງເຕືອນ!</b>
+            <b>{t('noti')}!</b>
           </h3>
           <div>
-            ທ່ານຕ້ອງການລົບລາຍການ <span style={{ color: "red" }}>{text}</span>{" "}
-            ອອກແທ້ ຫຼື ບໍ?
+            {t('would_you_delete')} <span style={{ color: "red" }}>{text}</span>{" "}
+            {t('realy_out')}
           </div>
         </div>
       </Modal.Body>
       <Modal.Footer style={modalFooterStyle}>
         <Button disabled={buttonDisabled} variant="secondary" onClick={onClose}>
-          ຍົກເລີກ
+          {t('cancel')}
         </Button>
         <Button
           disabled={buttonDisabled}
           style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
           onClick={handleConfirmClick}
         >
-          ຢືນຢັນ
+          {t('ok')}
         </Button>
       </Modal.Footer>
     </Modal>

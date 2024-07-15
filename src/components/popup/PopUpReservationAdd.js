@@ -94,7 +94,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 <Form.Label>{t('bookedBy')}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="ຊື່"
+                  placeholder={t('name')}
                   name="clientNames[0]"
                   value={values?.clientNames?.[0]}
                   isInvalid={errors.clientNames}
@@ -107,7 +107,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 <Form.Control
                   type="text"
                   maxlength="8"
-                  placeholder="ເບີໂທລະສັບ 8 ໂຕເລກ"
+                  placeholder={t('phone')}
                   name="clientPhone"
                   value={values?.clientPhone}
                   isInvalid={errors.clientPhone}
@@ -120,7 +120,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 <Form.Label>{t('numberOfPeople')}</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder="ຈຳນວນຄົນ"
+                  placeholder={t('people')}
                   name="clientNumber"
                   value={values?.clientNumber}
                   isInvalid={errors.clientNumber}
@@ -181,7 +181,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="secondary" onClick={handleClose}>
-                ຍົກເລີກ
+                {t('cancel')}
               </Button>
               <Button
                 type="submit"
@@ -192,7 +192,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                   border: 0,
                 }}
               >
-                ຢືນຢັນ
+                {t('apply')}
               </Button>
             </Modal.Footer>
           </form>

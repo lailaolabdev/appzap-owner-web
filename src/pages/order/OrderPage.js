@@ -88,7 +88,7 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) {}
+    } catch (err) { }
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -151,6 +151,7 @@ export default function OrderPage() {
           }
           bodyFormData.append("port", "9100");
           bodyFormData.append("image", _file);
+          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
           await axios({
             method: "post",
             url: urlForPrinter,
@@ -253,7 +254,7 @@ export default function OrderPage() {
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}
-            ພິມບິນໄປຄົວ
+            {t('send_to_kitchen')}
           </Button>
         </div>
         <div style={{ width: "50px" }}></div>
@@ -295,6 +296,8 @@ export default function OrderPage() {
             {t("served")}
           </Button>
         </div>
+        <div style={{ flex: 1 }} />
+        <div>ປຸ່ມພິມບິນອັດຕະໂນມັດ</div>
       </div>
     );
   };

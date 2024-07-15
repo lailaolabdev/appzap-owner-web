@@ -11,7 +11,11 @@ import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers/index";
 import { getActiveBillReport, getBillReport } from "../../services/report";
 import _ from "lodash";
-import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT
+} from "../../constants";
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
@@ -27,13 +31,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     ບິນສ່ວນຫຼຸດ: 0,
     ສ່ວນຫຼຸດ: 0,
     ບິນຄ້າງ: 0,
-    ເງິນຄ້າງ: 0,
+    ເງິນຄ້າງ: 0
   });
 
   // provider
   const { printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
+    console.log("printers: ",billRef.current)
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -46,7 +51,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
-        scale: 1,
+        scale: 1
       });
 
       urlForPrinter = USB_PRINTER_PORT;
@@ -70,18 +75,19 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
       await axios({
         method: "post",
         url: urlForPrinter,
         data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": "multipart/form-data" }
       });
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 1500
       });
     } catch (err) {
       console.log(err);
@@ -89,7 +95,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         icon: "error",
         title: "ປິນບໍ່ສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500,
+        timer: 1500
       });
     }
   };
@@ -132,7 +138,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ບິນສ່ວນຫຼຸດ: countDiscountBill,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
-        ເງິນຄ້າງ: totalActiveBill,
+        ເງິນຄ້າງ: totalActiveBill
       });
       setBill(data);
     } catch (err) {}
@@ -154,7 +160,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          flexDirection: "column",
+          flexDirection: "column"
         }}
       >
         <div>
@@ -169,7 +175,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           style={{ maxWidth: 330, width: "100%", minWidth: 330 }}
         >
           <Container>
-            <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍ</div>
+            <div style={{ fontWeight: "bold", fontSize: 24 }}>
+              ລາຍງານຍອດຂາຍ
+            </div>
             <div style={{ fontWeight: "bold" }}>
               ເລີ່ມ: {startDate} 00:00:00
             </div>
@@ -178,36 +186,36 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             {[
               {
                 name: "ຈຳນວນບິນ:",
-                value: reportBill["ຈຳນວນບິນ"],
+                value: reportBill["ຈຳນວນບິນ"]
               },
               {
                 name: "ຍອດທັງຫມົດ:",
                 value: reportBill["ຍອດທັງຫມົດ"],
-                type: storeDetail?.firstCurrency,
+                type: storeDetail?.firstCurrency
               },
               {
                 name: "ຈ່າຍເງິນສົດ:",
                 value: reportBill["ຈ່າຍເງິນສົດ"],
-                type: storeDetail?.firstCurrency,
+                type: storeDetail?.firstCurrency
               },
               {
                 name: "ຈ່າຍເງິນໂອນ:",
                 value: reportBill["ຈ່າຍເງິນໂອນ"],
-                type: storeDetail?.firstCurrency,
+                type: storeDetail?.firstCurrency
               },
               {
                 name: "ບິນສ່ວນຫຼຸດ:",
-                value: reportBill["ບິນສ່ວນຫຼຸດ"],
+                value: reportBill["ບິນສ່ວນຫຼຸດ"]
               },
               {
                 name: "ສ່ວນຫຼຸດ:",
                 value: reportBill["ສ່ວນຫຼຸດ"],
-                type: storeDetail?.firstCurrency,
+                type: storeDetail?.firstCurrency
               },
               {
                 name: "ບິນຄ້າງ:",
-                value: reportBill["ບິນຄ້າງ"],
-              },
+                value: reportBill["ບິນຄ້າງ"]
+              }
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],
@@ -288,8 +296,8 @@ const TableComponent = styled("table")({
   color: "#000",
   td: {
     padding: 0,
-    color: "#000",
-  },
+    color: "#000"
+  }
 });
 const Price = styled.div`
   display: flex;

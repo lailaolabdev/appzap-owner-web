@@ -52,6 +52,7 @@ export const getMenuReport = async (storeId, findBy, tableIds) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/menu-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
+    console.log('url: ', url)
     return res.data;
   } catch (error) {
     return error;
@@ -64,6 +65,7 @@ export const getCategoryReport = async (storeId, findBy, tableIds) => {
     const url = `${END_POINT_APP}/v4/category-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
+    
   } catch (error) {
     return error;
   }

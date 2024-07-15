@@ -13,9 +13,11 @@ import PopUpAddMenuStocks from "../components/popup/PopUpAddMenuStocks";
 import PopUpEditMenuStocks from "../components/popup/PopUpEditMenuStocks";
 import { getHeaders } from "../../../services/auth";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // ---------------------------------------------- //
 export default function FormAddMenuStock() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   // state
@@ -258,17 +260,17 @@ export default function FormAddMenuStock() {
         }}
       >
         <div>
-          <div style={{ textAlign: "center" }}>ສະຕ໊ອກທັງໝົດ</div>
+          <div style={{ textAlign: "center" }}>{t('all_stoke')}</div>
           <div className="col-sm-12">
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ຊື່ສິນຄ້າ</th>
-                  <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                  <th scope="col">{t('prod_name')}</th>
+                  <th scope="col">{t('prod_mode')}</th>
                   {/* <th scope='col'>ສະຖານະ</th> */}
-                  <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
-                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">{t('stoke_amount')}</th>
+                  <th scope="col">{t('manage_data')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -316,17 +318,17 @@ export default function FormAddMenuStock() {
           </div>
         </div>
         <div>
-          <div style={{ textAlign: "center" }}>ສະຕ໊ອກທີຕ້ອງການ</div>
+          <div style={{ textAlign: "center" }}>{t('stoke_needed')}</div>
           <div className="col-sm-12">
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ຊື່ສິນຄ້າ</th>
-                  <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                  <th scope="col">{t('prod_name')}</th>
+                  <th scope="col">{t('prod_mode')}</th>
                   {/* <th scope='col'>ສະຖານະ</th> */}
-                  <th scope="col">ຈຳນວນທີຕ້ອງການ</th>
-                  <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">{t('stoke_amount')}</th>
+                  <th scope="col">{t('manage_data')}</th>
                 </tr>
               </thead>
               <tbody>

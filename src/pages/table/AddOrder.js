@@ -200,6 +200,7 @@ function AddOrder() {
           bodyFormData.append("beep2", 9);
         }
         bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
         console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData)
         await axios({
@@ -296,9 +297,8 @@ function AddOrder() {
     setIsLoading(true);
     await fetch(
       MENUS +
-        `?storeId=${id}&${
-          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-        }`,
+      `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
+      }`,
       {
         method: "GET",
       }
@@ -408,7 +408,7 @@ function AddOrder() {
       if (!_billId) {
         Swal.fire({
           icon: "error",
-          title: "ບໍ່ສຳເລັດ",
+          title: `${t('not_success')}`,
           showConfirmButton: false,
           timer: 1800,
         });
@@ -434,7 +434,7 @@ function AddOrder() {
           if (response?.data) {
             Swal.fire({
               icon: "success",
-              title: "ເພີ່ມອໍເດີສໍາເລັດ",
+              title: `${t('add_order_success')}`,
               showConfirmButton: false,
               timer: 1800,
             });
@@ -457,7 +457,7 @@ function AddOrder() {
         .catch((error) => {
           Swal.fire({
             icon: "warning",
-            title: "ອາຫານບໍ່ພຽງພໍ",
+            title: `${t('food_not_enouch')}`,
             showConfirmButton: false,
             timer: 1800,
           });
@@ -467,7 +467,7 @@ function AddOrder() {
       console.log("error", error);
       Swal.fire({
         icon: "error",
-        title: "ບໍ່ສຳເລັດ",
+        title: `${t('not_success')}`,
         showConfirmButton: false,
         timer: 1800,
       });
@@ -481,7 +481,7 @@ function AddOrder() {
       if (selectedMenu.length === 0) {
         Swal.fire({
           icon: "warning",
-          title: "ເລືອກເມນູອໍເດີກ່ອນກົດສັ່ງອາຫານ",
+          title: `${t('please_chose_order_first')}`,
           showConfirmButton: false,
           timer: 1800,
         });
@@ -581,12 +581,12 @@ function AddOrder() {
             }}
           >
             <div>
-              <label>ເລືອກປະເພດ</label>
+              <label>{t('chose_food_type')}</label>
               <select
                 className="form-control"
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <option value="All">ທັງໝົດ</option>
+                <option value="All">{t('all')}</option>
                 {Categorys &&
                   Categorys?.map((data, index) => {
                     return (
@@ -598,9 +598,9 @@ function AddOrder() {
               </select>
             </div>
             <div>
-              <label>ຄົ້ນຫາ</label>
+              <label>{t('search')}</label>
               <input
-                placeholder="ຄົ້ນຫາ"
+                placeholder={t('search')}
                 className="form-control"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -663,7 +663,7 @@ function AddOrder() {
                           )} */}
                         </span>
                         <br />
-                        <span>ຈຳນວນທີ່ມີ : {data?.quantity}</span>
+                        <span>{t('amount_exist')} : {data?.quantity}</span>
                       </div>
                     </div>
                   );
@@ -692,13 +692,13 @@ function AddOrder() {
                     <tr style={{ fontSize: "bold", border: "none" }}>
                       <th style={{ border: "none" }}>#</th>
                       <th style={{ border: "none", textAlign: "left" }}>
-                        ຊື່ເມນູ
+                        {t('menu_name')}
                       </th>
                       <th style={{ border: "none", textAlign: "center" }}>
-                        ຈຳນວນ
+                        {t('amount')}
                       </th>
                       <th style={{ border: "none", textAlign: "right" }}>
-                        ຈັດການ
+                        {t('manage')}
                       </th>
                     </tr>
                   </thead>
@@ -720,7 +720,7 @@ function AddOrder() {
                                 flexDirection: "row",
                                 justifyContent: "space-around",
                                 marginTop: "-.05em",
-                                alignItems:'center'
+                                alignItems: 'center'
                               }}
                             >
                               <button
@@ -733,7 +733,7 @@ function AddOrder() {
                               >
                                 -
                               </button>
-                              <p style={{ minWidth: 30, maxWidth:50 }}>{data.quantity}</p>
+                              <p style={{ minWidth: 30, maxWidth: 50 }}>{data.quantity}</p>
                               <button
                                 style={{
                                   color: "red",
@@ -823,7 +823,7 @@ function AddOrder() {
                       )
                     }
                   >
-                    ຍົກເລີກ
+                    {t('cancel')}
                   </Button>
                   <Button
                     variant="light"
@@ -841,7 +841,7 @@ function AddOrder() {
                       onSubmit(false);
                     }}
                   >
-                    ສັ່ງອາຫານ
+                    {t('order_food')}
                   </Button>
                 </div>
                 <div style={{ height: 10 }} />
@@ -864,7 +864,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    ສັ່ງອາຫານ ແລະ ປຣິນບິນໄປຫາຄົວ +{" "}
+                    {t('order_and_send_to_kitchen')} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}
@@ -877,43 +877,43 @@ function AddOrder() {
         </div>
       </div>
       {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "80mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher80.current[i] = el)}
-            >
-              <BillForChef80
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
-        {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "58mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher58.current[i] = el)}
-            >
-              <BillForChef58
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
+        return (
+          <div
+            style={{
+              width: "80mm",
+              paddingRight: "20px",
+              paddingBottom: "10px",
+            }}
+            ref={(el) => (billForCher80.current[i] = el)}
+          >
+            <BillForChef80
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              // dataBill={dataBill}
+              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+            />
+          </div>
+        );
+      })}
+      {selectedMenu?.map((val, i) => {
+        return (
+          <div
+            style={{
+              width: "58mm",
+              paddingRight: "20px",
+              paddingBottom: "10px",
+            }}
+            ref={(el) => (billForCher58.current[i] = el)}
+          >
+            <BillForChef58
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              // dataBill={dataBill}
+              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+            />
+          </div>
+        );
+      })}
 
       <Modal
         show={show}
@@ -922,7 +922,7 @@ function AddOrder() {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Option ເມນູອາຫານ</Modal.Title>
+          <Modal.Title>{t('menu_option')}</Modal.Title>
         </Modal.Header>
         <Formik
           initialValues={{
@@ -941,28 +941,28 @@ function AddOrder() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+              errors.name = `${t('please_fill_menu_name')}`;
             }
             // if (!values.name_en) {
             //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
             // }
             if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-              errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+              errors.price = `${t('please_fill_price')}`;
             }
             return errors;
           }}
-          // onSubmit={(values, { setSubmitting }) => {
-          //   const getData = async () => {
-          //     await _updateCategory(values);
-          //     const _localData = await getLocalData();
-          //     if (_localData) {
-          //       setgetTokken(_localData);
-          //       getMenu(_localData?.DATA?.storeId);
-          //       // getMenu(getTokken?.DATA?.storeId);
-          //     }
-          //   };
-          //   getData();
-          // }}
+        // onSubmit={(values, { setSubmitting }) => {
+        //   const getData = async () => {
+        //     await _updateCategory(values);
+        //     const _localData = await getLocalData();
+        //     if (_localData) {
+        //       setgetTokken(_localData);
+        //       getMenu(_localData?.DATA?.storeId);
+        //       // getMenu(getTokken?.DATA?.storeId);
+        //     }
+        //   };
+        //   getData();
+        // }}
         >
           {({
             values,
@@ -985,7 +985,7 @@ function AddOrder() {
                         setselectedOptions(item);
                       }}
                     >
-                      {item?.name} ລາຄາ {item?.price} LAK
+                      {item?.name} {t('price')} {item?.price} LAK
                     </button>
                   ))}
                   {/* </Form.Control> */}
@@ -993,7 +993,7 @@ function AddOrder() {
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose}>
-                  ຍົກເລີກ
+                  {t('cancel')}
                 </Button>
                 <Button
                   style={{
@@ -1006,7 +1006,7 @@ function AddOrder() {
                     handleClose();
                   }}
                 >
-                  ບັນທືກ
+                  {t('save')}
                 </Button>
               </Modal.Footer>
             </form>
@@ -1023,8 +1023,8 @@ function AddOrder() {
           <Form.Group>
             <Form.Label>
               {noteItems?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? `${t('commend_how_is_food')}`
+                : `${t('edit_commend')}`}
             </Form.Label>
             <Form.Control
               ref={noteItems?.note === "" ? inputRef : null}
@@ -1036,7 +1036,7 @@ function AddOrder() {
                   ? setAddComments(e.target.value)
                   : setEditComments(e.target.value)
               }
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t('fill_desc')}
               className="w-100"
             />
           </Form.Group>
@@ -1047,16 +1047,16 @@ function AddOrder() {
                 className="w-100 p-2"
                 onClick={handleUpdateCommentInCart}
               >
-                ລຶບທັງໝົດ
+                {t('delete_all')}
               </Button>
             )}
             <Button className="w-100 p-2" onClick={handleAddCommentInCart}>
               {noteItems?.note !== "" ? (
-                "ແກ້ໄຂ"
+                `${t('edit')}`
               ) : (
                 <>
-                  <MdAdd style={{fontSize:28}} />
-                  ເພິ່ມໃໝ່
+                  <MdAdd style={{ fontSize: 28 }} />
+                  {t('add_new')}
                 </>
               )}
             </Button>
@@ -1069,7 +1069,7 @@ function AddOrder() {
         open={isRemoveItem}
         text={itemDeleting?.name}
         onClose={() => setIsRemoveItem(false)}
-        onSubmit={ async () => onRemoveFromCart(itemDeleting.id)}
+        onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
       />
     </div>
   );

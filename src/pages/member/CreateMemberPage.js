@@ -3,7 +3,7 @@ import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle,
+  BsInfoCircle
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -17,14 +17,16 @@ import { FaSearch } from "react-icons/fa";
 import {
   addMember,
   getMemberCount,
-  getMembers,
+  getMembers
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
-import { errorAdd } from "../../helpers/sweetalert";
+import { useTranslation } from "react-i18next";
+import { errorAdd, successAdd } from "../../helpers/sweetalert";
 
 export default function CreateMemberPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [disabledButton, setDisabledButton] = useState(false);
@@ -42,9 +44,10 @@ export default function CreateMemberPage() {
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
+      successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
       navigate("/reports/members-report");
     } catch (err) {
-      errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
+      errorAdd(`${t('add_fail')}`);
       setDisabledButton(false);
       console.error(err);
     }
@@ -54,8 +57,8 @@ export default function CreateMemberPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ເພີ່ມລາຍການສະມາຊິກ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('add_member')}</Breadcrumb.Item>
         </Breadcrumb>
 
         <Card border="primary" style={{ maxWidth: 500 }}>
@@ -64,29 +67,29 @@ export default function CreateMemberPage() {
               backgroundColor: COLOR_APP,
               color: "#fff",
               fontSize: 18,
-              fontWeight: "bold",
+              fontWeight: "bold"
             }}
           >
-            ຟອມເພີ່ມສະມາຊິກ
+            {t('add_member_form')}
           </Card.Header>
           <Card.Body>
             <div>
               <div className="mb-3">
-                <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
+                <Form.Label>{t('member_name')}</Form.Label>
                 <Form.Control
-                  placeholder="ຊື່ສະມາຊິກ"
+                  placeholder={t('member_name')}
                   value={formData?.name}
                   onChange={(e) => {
                     setFormData((prev) => ({
                       ...prev,
-                      name: e.target.value,
+                      name: e.target.value
                     }));
                   }}
                 />
               </div>
               <div className="mb-3">
-                {/* <Form.Label>ເບີໂທ</Form.Label> */}
-                {/* <InputGroup>
+                <Form.Label>{t('tel')}</Form.Label>
+                <InputGroup>
                   <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
                   <Form.Control
                     placeholder="XXXX-XXXX"
@@ -96,20 +99,20 @@ export default function CreateMemberPage() {
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        phone: e.target.value,
+                        phone: e.target.value
                       }));
                     }}
                   />
-                </InputGroup> */}
+                </InputGroup>
               </div>
               <div className="mb-3">
-                <Form.Label>ວັນ/ເດືອນ/ປີ ເກີດ</Form.Label>
+                <Form.Label>{t('birth_date')}</Form.Label>
                 <DateTimeComponent
                   value={formData?.birthday}
                   onChange={(birthday) => {
                     setFormData((prev) => ({
                       ...prev,
-                      birthday: birthday,
+                      birthday: birthday
                     }));
                   }}
                 />
@@ -120,7 +123,7 @@ export default function CreateMemberPage() {
                   disabled={disabledButton}
                   onClick={createMember}
                 >
-                  ເພີ່ມ
+                  {t('add')}
                 </Button>
               </div>
             </div>

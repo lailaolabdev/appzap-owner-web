@@ -5,12 +5,12 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer,
+  getLocalDataCustomer
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
-import { Image } from "react-bootstrap";
+import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 // import emptyLogo from "/public/images/emptyLogo.jpeg";
@@ -19,13 +19,14 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  taxPercent = 0,
+  taxPercent = 0
 }) {
   // state
   const [total, setTotal] = useState();
   const [taxAmount, setTaxAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
+  const [rateCurrency, setRateCurrency] = useState();
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
@@ -33,10 +34,8 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    console.log(
-      "🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:",
-      dataBill
-    );
+    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
+    console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent]);
 
   useEffect(() => {
@@ -76,6 +75,10 @@ export default function BillForCheckOut80({
         );
         if (data?.status == 200) {
           setCurrencyData(data?.data?.data);
+          const _currencyData = data?.data?.data?.find(
+            (e) => e.currencyCode === "THB"
+          );
+          setRateCurrency(_currencyData?.buy || 1);
         }
       }
     } catch (err) {
@@ -103,7 +106,7 @@ export default function BillForCheckOut80({
           <Image
             style={{
               maxWidth: 120,
-              maxHeight: 120,
+              maxHeight: 120
               // border: "1px solid #ddd",
               // borderRadius: "10em",
               // overflow: "hidden",
@@ -142,14 +145,16 @@ export default function BillForCheckOut80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {dataBill?.dataStaffConfirm?.firstname ?? "-"} {dataBill?.dataStaffConfirm?.lastname ?? "-"}
+              {dataBill?.dataStaffConfirm?.firstname ?? "-"}{" "}
+              {dataBill?.dataStaffConfirm?.lastname ?? "-"}
             </span>
           </div>
         </div>
         <div style={{ flexGrow: 1 }}></div>
       </Price>
-      <Name style={{ marginBottom: 10 }}>
-        <div style={{ textAlign: "left" }}>{t("list")} </div>
+      <Name style={{ marginBottom: 10, fontSize: 12 }}>
+        <div style={{ textAlign: "left" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "center" }}>{t("list")} </div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
         <div style={{ textAlign: "right" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
@@ -160,12 +165,13 @@ export default function BillForCheckOut80({
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                fontSize: 14,
+                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
+                fontSize: 12
               }}
               key={index}
             >
-              <div style={{ textAlign: "left" }}>{item?.name}</div>
+              <div style={{ textAlign: "left" }}>{index + 1}</div>
+              <div style={{ textAlign: "center" }}>{item?.name}</div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
               <div style={{ textAlign: "right" }}>
                 {item?.price ? moneyCurrency(item?.price) : "-"}
@@ -183,43 +189,168 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <div>
-            {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
-          </div>
+          <Row>
+            <Col></Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>{t("total")}: </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+              </div>
+            </Col>
+          </Row>
+          {/* {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency} */}
+          {/* <div style={{ textAlign: "right" }}>
+            
+          </div> */}
           <div hidden={taxAmount <= 0}>
-            {t("total")} + {t("vat")} {taxPercent}%:{" "}
-            {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency}
+            <Row>
+              <Col sm={8}>
+                <div style={{ textAlign: "right" }}>
+                  {t("total")} + {t("vat2")} {taxPercent}%:{" "}
+                </div>
+              </Col>
+              <Col sm={4}>
+                <div style={{ textAlign: "right", fontSize: 13.5 }}>
+                  {moneyCurrency(total + taxAmount)}{" "}
+                  {storeDetail?.firstCurrency}
+                </div>
+              </Col>
+            </Row>
+            {/* {t("total")} + {t("vat2")} {taxPercent}%:{" "}
+            {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency} */}
           </div>
           {currencyData?.map((item, index) => (
-            <div key={index}>
-              {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}):{" "}
-              {moneyCurrency((total + taxAmount) / item?.sell)}
-            </div>
+            <>
+              <div
+                key={index}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "space-between"
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center"
+                  }}
+                >
+                  {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}
+                  ):
+                </div>
+                <div
+                  style={{
+                    width: "60%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center"
+                  }}
+                >
+                  {moneyCurrency((total + taxAmount) / item?.sell)}
+                </div>
+              </div>
+              {/* <Row>
+                <Col></Col>
+                <Col
+                  xs={8}
+                  style={{
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                    border: "1px solid red"
+                  }}
+                >
+                  {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}
+                  ):
+                </Col>
+                <Col style={{ minWidth: 400 }}>
+                  <div style={{ textAlign: "right" }}>
+                    {moneyCurrency((total + taxAmount) / item?.sell)}
+                  </div>
+                </Col>
+              </Row> */}
+              {/* {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}):{" "}
+              {moneyCurrency((total + taxAmount) / item?.sell)} */}
+            </>
           ))}
+
           <div>
-            {t("discount")}:{dataBill?.discount}{" "}
+            <Row>
+              <Col></Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>{t("discount")}:</div>
+              </Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>
+                  {dataBill?.discount}{" "}
+                  {dataBill?.discountType == "MONEY" ||
+                  dataBill?.discountType == "LAK"
+                    ? storeDetail?.firstCurrency
+                    : "%"}
+                </div>
+              </Col>
+            </Row>
+            {/* {t("discount")}:{dataBill?.discount}{" "}
             {dataBill?.discountType == "MONEY" ||
             dataBill?.discountType == "LAK"
               ? storeDetail?.firstCurrency
-              : "%"}
+              : "%"} */}
           </div>
           <div>
-            {t("customerName")} : {dataBill?.memberName} ({" "}
-            {dataBill?.memberPhone} )
+            <Row>
+              <Col></Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
+              </Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>
+                  {dataBill?.memberName} ( {dataBill?.memberPhone} )
+                </div>
+              </Col>
+            </Row>
+            {/* {t("customerName")} : {dataBill?.memberName} ({" "}
+            {dataBill?.memberPhone} ) */}
           </div>
         </div>
       </div>
       <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ height: 10 }}></div>
+      <div style={{ margin: "10px" }}></div>
       <Price>
-        <h6>
-          {t("aPriceHasToPay")} {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
-          {storeDetail?.firstCurrency}
-        </h6>
+        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <h6>
+            {t("aPriceHasToPay")}{" "}
+            {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
+            {storeDetail?.firstCurrency}
+          </h6>
+        </div>
+      </Price>
+      <Price>
+        <div style={{ flexGrow: 1, display: "flex", gap: 10 }}></div>
+        <div style={{ fontSize: 12 }}>
+          {currencyData?.map((item, index) => (
+            <div key={index}>
+              {t("exchangeRate")} ({item?.currencyCode}): {item?.buy}
+            </div>
+          ))}
+        </div>
       </Price>
       <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
+          <div>
+            {dataBill?.paymentMethod === "CASH"
+              ? "ເງີນສົດ"
+              : dataBill?.paymentMethod === "TRANSFER"
+              ? "ເງີນໂອນ"
+              : dataBill?.paymentMethod === "TRANSFER_CASH"
+              ? "ເງີນສົດແລະໂອນ"
+              : ""}
+          </div>
           <div>
             {t("getMoney")} {dataBill?.moneyReceived || 0}
           </div>
@@ -228,12 +359,20 @@ export default function BillForCheckOut80({
           </div>
         </div>
       </Price>
-
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center"
+        }}
+      >
+        {" "}
+        ໂອນເງີນສຳລະ{" "}
+      </div>
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10,
+          padding: 10
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
@@ -251,7 +390,7 @@ export default function BillForCheckOut80({
 
 const Name = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 `;
 const Price = styled.div`
   display: flex;
