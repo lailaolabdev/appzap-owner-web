@@ -11,6 +11,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import PaginationComponent from "../../components/PaginationComponent";
 import queryString from "query-string";
+import { useTranslation } from "react-i18next";
 
 
 /**
@@ -47,6 +48,7 @@ import EmptyState from "../../components/EmptyState";
 import ExpendatureChart from "./ExpendatureChart";
 
 export default function ExpendList() {
+  const { t } = useTranslation();
   //constant
   const parame = useParams();
   const navigate = useNavigate();
@@ -126,7 +128,7 @@ export default function ExpendList() {
     },
     dataLabels: {
       enabled: false,
-     
+
     },
     stroke: {
       curve: "straight",
@@ -172,8 +174,8 @@ export default function ExpendList() {
     let _lakData = []
     _dataAtGraph.map((x) => _lakData.push(x))
     let _series = [...series];
-    _series[0]={
-      data:[..._lakData]
+    _series[0] = {
+      data: [..._lakData]
     }
     setSeries(_series)
     setOptions(_options)
@@ -247,12 +249,12 @@ export default function ExpendList() {
         headers: headers,
       }).then(async () => {
         await setExpendDetail();
-        await successAdd("ລຶບສຳເລັດ");
+        await successAdd(`${t('delete_success')}`);
         await fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
         await setIsLoading(false);
       });
     } catch (err) {
-      errorAdd("ລຶບບໍ່ສຳເລັດ");
+      errorAdd(`${t('delete_fail')}`);
       console.log("err:::", err);
     }
   };
@@ -280,7 +282,7 @@ export default function ExpendList() {
           gap: 5,
         }}
       >
-        <TitleComponent title="ບັນຊີລາຍຈ່າຍ" />
+        <TitleComponent title={t('paid_account')} />
         <div
           style={{
             display: "flex",
@@ -290,7 +292,7 @@ export default function ExpendList() {
             gap: 5,
           }}
         >
-          <Form.Label>ວັນທີ</Form.Label>
+          <Form.Label>{t('date')}</Form.Label>
           <Form.Control
             type="date"
             value={dateStart}
@@ -311,9 +313,9 @@ export default function ExpendList() {
             onChange={(e) => setFilterByPayment(e?.target?.value)}
             style={{ width: 150 }}
           >
-            <option value="ALL">ສະແດງຮູບແບບ</option>
-            <option value="CASH">ເງິນສົດ</option>
-            <option value="TRANSFER">ເງິນໂອນ</option>
+            <option value="ALL">{t('show_shape')}</option>
+            <option value="CASH">{t('real_money')}</option>
+            <option value="TRANSFER">{t('e_money')}</option>
           </Form.Control>
           {/* <Form.Control
             as="select"
@@ -328,7 +330,7 @@ export default function ExpendList() {
             <option value="200">200</option>
           </Form.Control> */}
           <ButtonComponent
-            title="ລົງບັນຊີປະຈຳວັນ"
+            title={t('daily_account')}
             icon={faPlusCircle}
             colorbg={"#fb6e3b"}
             hoverbg={"orange"}
@@ -366,7 +368,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍການທັງຫມົດ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('all_list')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{expendData?.total}</div>
           </div>
         </div>
@@ -380,7 +382,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍກີບ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_lak')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceLAK)}</div>
           </div>
         </div>
@@ -394,7 +396,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faBold} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍບາດ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_thb')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceTHB)}</div>
           </div>
         </div>
@@ -408,7 +410,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faDollarSign} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍໂດລາ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_usd')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceUSD)}</div>
           </div>
         </div>
@@ -422,7 +424,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faYenSign} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລາຍຈ່າຍຢວນ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_cny')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceCNY)}</div>
           </div>
         </div>
@@ -438,7 +440,7 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ລວມທຸກສະກຸນ</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('total_in_lak')}</div>
             <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.totalSumInLAK)}</div>
           </div>
         </div>
@@ -454,8 +456,8 @@ export default function ExpendList() {
             <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> ສະແດງຜົນເປັນ</div>
-            <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : "ລາຍລະອຽດ"}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}> {t('show_in')}</div>
+            <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : `${t('detial')}`}</div>
           </div>
         </div>
       </div>
@@ -472,17 +474,17 @@ export default function ExpendList() {
           <thead>
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
-              <th>ວັນທີຈ່າຍ</th>
-              <th width="30%">ລາຍລະອຽດ</th>
-              <th>ປະເພດລາຍຈ່າຍ</th>
-              <th>ຮູບແບບການຈ່າຍ</th>
-              <th>ຕິດຂັດ</th>
-              <th>ຜູ້ຈ່າຍ</th>
-              <th style={{ textAlign: "right" }}>ກີບ</th>
-              <th style={{ textAlign: "right" }}>ບາດ</th>
-              <th style={{ textAlign: "right" }}>ຢວນ</th>
-              <th style={{ textAlign: "right" }}>ໂດລາ</th>
-              <th>ຈັດການ</th>
+              <th>{t('date')}</th>
+              <th width="30%">{t('detial')}</th>
+              <th>{t('paid_type')}</th>
+              <th>{t('paid_mode')}</th>
+              <th>{t('jam')}</th>
+              <th>{t('payer')}</th>
+              <th style={{ textAlign: "right" }}>{t('lak')}</th>
+              <th style={{ textAlign: "right" }}>{t('thb')}</th>
+              <th style={{ textAlign: "right" }}>{t('cny')}</th>
+              <th style={{ textAlign: "right" }}>{t('usd')}</th>
+              <th>{t('manage')}</th>
             </tr>
           </thead>
           <tbody>
@@ -561,7 +563,7 @@ export default function ExpendList() {
         </Table>
       )}
 
-      {expendData?.data.length == 0 && <EmptyState text={"ຍັງບໍ່ມີລາຍຈ່າຍ"} />}
+      {expendData?.data.length == 0 && <EmptyState text={`${t('still_not_paid')}`} />}
       {Pagination_component(
         expendData?.total,
         "/expends",

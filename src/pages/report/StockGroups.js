@@ -5,6 +5,7 @@ import { formatDateNow, numberFormat } from "../../helpers";
 import { thousandSeparator } from "../../helpers/thousandSeparator";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import EmptyState from "../../components/EmptyState";
+import { useTranslation } from "react-i18next";
 
 // Assuming COLOR_APP is a constant defined elsewhere
 // const COLOR_APP = "#someColor";
@@ -17,7 +18,8 @@ function StockGroups({
   pageTotal,
   rowsPerPageTotal,
 }) {
-  if (datas?.length < 1) return <EmptyState text={`ບໍ່ມີຂໍ້ມູນສະຕ໋ອກ`} />;
+  const { t } = useTranslation();
+  if (datas?.length < 1) return <EmptyState text={`${t('no_stoke_data')}`} />;
   if (isLoadingTotal) return <LoadingAppzap />;
 
   // ຂໍ້ມູນທີ່ສະແດງຕາມການຄົ້ນຫາຊື່ສິນຄ້າ
@@ -39,19 +41,19 @@ function StockGroups({
           }}
         >
           <h5>
-            <b>ສະຕ໋ອກທີ່ ນຳອອກ, ນຳເຂົ້າ ແລະ ສົ່ງຄືນ </b>
+            <b>{t('stoke_transport')}</b>
           </h5>
         </div>
         <Table>
           <thead className="thead-primary">
             <tr>
               <th>#</th>
-              <th style={{ textAlign: "center" }}>ວັນທີ,ເດືອນ,ປີ​ (ເວລາ)</th>
-              <th>ຊື່ສິນຄ້າ</th>
-              <th style={{ textAlign: "center" }}>ຈຳນວນນຳອອກ</th>
-              <th style={{ textAlign: "center" }}>ຈຳນວນນຳເຂົ້າ</th>
-              <th style={{ textAlign: "center" }}>ຈຳນວນສົ່ງຄືນ</th>
-              <th style={{ textAlign: "center" }}>ຫົວໜ່ວຍ</th>
+              <th style={{ textAlign: "center" }}>{t('date_day')}</th>
+              <th>{t('prod_name')}</th>
+              <th style={{ textAlign: "center" }}>{t('out_amount')}</th>
+              <th style={{ textAlign: "center" }}>{t('in_amount')}</th>
+              <th style={{ textAlign: "center" }}>{t('return_amount')}</th>
+              <th style={{ textAlign: "center" }}>{t('unit')}</th>
             </tr>
           </thead>
           <tbody>

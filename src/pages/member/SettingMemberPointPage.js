@@ -30,8 +30,10 @@ import {
   getAllStorePoints,
   updatePointStore
 } from "../../services/member.service";
+import { useTranslation } from "react-i18next";
 
 export default function SettingMemberPointPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [disabledButton, setDisabledButton] = useState(false);
@@ -150,8 +152,8 @@ export default function SettingMemberPointPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ຕັ້ງຄ່າການໃຫ້ຄະແນນ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('point_setting')}</Breadcrumb.Item>
         </Breadcrumb>
         {loading ? (
           <div>
@@ -171,7 +173,7 @@ export default function SettingMemberPointPage() {
                 fontWeight: "bold"
               }}
             >
-              ຟອມຕັ້ງຄ່າການໃຫ້ຄະແນນ
+              {t('point_setting_form')}
             </Card.Header>
             <Card.Body>
               <div>
@@ -185,7 +187,7 @@ export default function SettingMemberPointPage() {
                   }}
                 >
                   <div>
-                    <Form.Label>ຈຳນວນເງິນລວມຂອງບິນ</Form.Label>
+                    <Form.Label>{t('bill_total_price')}</Form.Label>
                     <Form.Control
                       name="money"
                       value={pointsData[0].money}
@@ -194,7 +196,7 @@ export default function SettingMemberPointPage() {
                     />
                   </div>
                   <div>
-                    <Form.Label>ຈຳນວນຄະແນນທທີ່ຈະໄດ້</Form.Label>
+                    <Form.Label>{t('money_will_got')}</Form.Label>
                     <Form.Control
                       name="piont"
                       value={pointsData[0].piont}
@@ -206,11 +208,11 @@ export default function SettingMemberPointPage() {
               </div>
               {editMode ? (
                 <Button variant="primary" onClick={handleUpdate}>
-                  ບັນທຶກ
+                  {t('save')}
                 </Button>
               ) : (
                 <Button variant="secondary" onClick={() => setEditMode(true)}>
-                  ອັບເດດຄະແນນ
+                  {t('update')}
                 </Button>
               )}
             </Card.Body>
@@ -242,7 +244,7 @@ export default function SettingMemberPointPage() {
         )}
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>ຟອມຕັ້ງຄ່າການໃຫ້ຄະແນນ</Modal.Title>
+            <Modal.Title>{t('point_setting_form')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -256,7 +258,7 @@ export default function SettingMemberPointPage() {
                 }}
               >
                 <Form.Group>
-                  <Form.Label>ຈຳນວນເງິນລວມຂອງບິນ</Form.Label>
+                  <Form.Label>{t('bill_total_price')}</Form.Label>
                   <Form.Control
                     name="totalAmount"
                     value={formData.totalAmount}
@@ -266,7 +268,7 @@ export default function SettingMemberPointPage() {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label>ຈຳນວນຄະແນນທທີ່ຈະໄດ້</Form.Label>
+                  <Form.Label>{t('point_will_got')}</Form.Label>
                   <Form.Control
                     name="points"
                     value={formData.points}
@@ -280,14 +282,14 @@ export default function SettingMemberPointPage() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
-              ປິດ
+              {t('close')}
             </Button>
             <Button
               variant="primary"
               onClick={createMemberPoint}
               disabled={disabledButton}
             >
-              ຕັ້ງຄະແນນ
+              {t('set_point')}
             </Button>
           </Modal.Footer>
         </Modal>

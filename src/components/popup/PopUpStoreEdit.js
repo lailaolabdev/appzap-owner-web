@@ -3,8 +3,10 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import Upload from "../Upload";
 import { COLOR_APP_CANCEL, COLOR_APP } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
+  const { t } = useTranslation();
   return (
     <Modal show={open} onHide={onClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>

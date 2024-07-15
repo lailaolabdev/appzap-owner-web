@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { PRESIGNED_URL } from "../constants/api";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../constants";
+import { useTranslation } from "react-i18next";
 
 export default function Upload({
   src,
@@ -11,6 +12,7 @@ export default function Upload({
   removeImage,
   ...other
 }) {
+  const { t } = useTranslation();
   const [selectImage, setSelectImage] = useState();
   const [imageLoading, setImageLoading] = useState("");
   const [url, setUrl] = useState(URL_PHOTO_AW3 + src);
@@ -86,7 +88,7 @@ export default function Upload({
             }}
             onClick={removeImage}
           >
-            ລົບຮູບ
+            {t('delete_image')}
           </div>
         ) : (
           ""

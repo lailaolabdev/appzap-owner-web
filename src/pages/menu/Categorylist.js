@@ -37,7 +37,7 @@ export default function Categorylist() {
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
 
-  console.log("Categorys::",Categorys)
+  console.log("Categorys::", Categorys)
 
   const handleShow2 = async (item) => {
     setdataUpdate(item);
@@ -60,10 +60,10 @@ export default function Categorylist() {
       if (_resData?.data) {
         setCategorys(_resData?.data);
         handleClose3();
-        successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+        successAdd(`${t('delete_success')}`);
       }
     } catch (err) {
-      errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(`${t('delete_fail')}`);
     }
   };
   const _createCategory = async (values) => {
@@ -89,10 +89,10 @@ export default function Categorylist() {
       .then(async function (response) {
         setCategorys(response?.data);
         handleClose();
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+        successAdd(`${t('add_success')}}`);
       })
       .catch(function (error) {
-        errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+        errorAdd(`${t('add_fail')}`);
       });
   };
   const _updateCategory = async (values) => {
@@ -124,10 +124,10 @@ export default function Categorylist() {
         // setCategorys(resData?.data);
         getData(getTokken?.DATA?.storeId)
         setShow2(false);
-        successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
+        successAdd(`${t('edit_success')}`);
       }
     } catch (err) {
-      errorAdd("ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(`${t('edit_fail')}`);
     }
   };
   const [isLoading, setIsLoading] = useState(false);
@@ -188,7 +188,7 @@ export default function Categorylist() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-  
+
       await axios({
         method: "PUT",
         url: END_POINT_SEVER + `/v3/category/update/`,
@@ -314,7 +314,7 @@ export default function Categorylist() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+              errors.name = `${t('file_type_name')}`
             }
             return errors;
           }}
@@ -333,28 +333,28 @@ export default function Categorylist() {
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
+                <Modal.Title>{t('add_food_type')}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group>
-                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Label>{t('no')}</Form.Label>
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder="ລຳດັບ"
+                    placeholder={t('no')}
                     value={values?.sort}
                     onChange={handleChange}
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານ</Form.Label>
+                  <Form.Label>{t('type_name')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder="ຊື່ປະເພດອາຫານ..."
+                    placeholder={t('type_name')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -362,42 +362,42 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                  <Form.Label>{t('type_name_en')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_en"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                    placeholder={t('type_name_en')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                  <Form.Label>{t('type_name_cn')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_cn"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                    placeholder={t('type_name_cn')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_cn && touched.name_cn && errors.name_cn}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                  <Form.Label>{t('type_name_kr')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_kr"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                    placeholder={t('type_name_kr')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -405,20 +405,20 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ໝາຍເຫດ</Form.Label>
+                  <Form.Label>{t('note')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="note"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder="ໝາຍເຫດ..."
+                    placeholder={t('note')}
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose}>
-                  ຍົກເລີກ
+                  {t('cancel')}
                 </Button>
                 <Button
                   style={{
@@ -428,7 +428,7 @@ export default function Categorylist() {
                   }}
                   onClick={() => handleSubmit()}
                 >
-                  ບັນທືກ
+                  {t('save')}
                 </Button>
               </Modal.Footer>
             </form>
@@ -448,7 +448,7 @@ export default function Categorylist() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+              errors.name = `${t('fill_type_name')}`;
             }
             return errors;
           }}
@@ -467,28 +467,28 @@ export default function Categorylist() {
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
+                <Modal.Title>{t('edit_food_type')}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group>
-                  <Form.Label>ລຳດັບ</Form.Label>
+                  <Form.Label>{t('no')}</Form.Label>
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder="ລຳດັບ"
+                    placeholder="{t('no')}"
                     value={values.sort}
                     onChange={handleChange}
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ປະເພດອາຫານ</Form.Label>
+                  <Form.Label>{t('food_type')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder="ຊື່ປະເພດອາຫານ..."
+                    placeholder={t('food_type')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -496,42 +496,42 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                  <Form.Label>{t('type_name_en')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_en"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                    placeholder={t('type_name_en')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                  <Form.Label>{t('type_name_cn')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_cn"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                    placeholder={t('type_name_cn')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_cn && touched.name_cn && errors.name_cn}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                  <Form.Label>{t('type_name_kr')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_kr"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                    placeholder={t('type_name_kr')}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -539,20 +539,20 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ໝາຍເຫດ</Form.Label>
+                  <Form.Label>{t('note')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="note"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder="ໝາຍເຫດ..."
+                    placeholder={t('note')}
                   />
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose2}>
-                  ຍົກເລີກ
+                  {t('cancel')}
                 </Button>
                 <Button
                   style={{
@@ -562,7 +562,7 @@ export default function Categorylist() {
                   }}
                   onClick={() => handleSubmit()}
                 >
-                  ບັນທືກ
+                  {t('save')}
                 </Button>
               </Modal.Footer>
             </form>
@@ -573,19 +573,19 @@ export default function Categorylist() {
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
+            <div>{t('would_delete')}? </div>
             <div style={{ color: "red" }}>{dateDelete?.name}</div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose3}>
-            ຍົກເລີກ
+            {t('cancel')}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _confirmeDelete()}
           >
-            ຢືນຢັນການລົບ
+            {t('approve_delete')}
           </Button>
         </Modal.Footer>
       </Modal>

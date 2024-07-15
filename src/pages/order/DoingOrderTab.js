@@ -10,6 +10,7 @@ import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import styled from "styled-components";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 /**
  * import components
@@ -29,6 +30,7 @@ import { useStore } from "../../store";
 import { socket } from "../../services/socket";
 
 const DoingOrderTab = () => {
+  const { t } = useTranslation();
   // if (billForCher80.current.length !== arrLength) {
   //   // add or remove refs
   //   billForCher80.current = Array(arrLength)
@@ -57,7 +59,7 @@ const DoingOrderTab = () => {
     getOrderWaitingAndDoingByStore,
   } = useStore();
 
- 
+
 
   return (
     <div>
@@ -121,14 +123,14 @@ const DoingOrderTab = () => {
                     />
                   </th>
 
-                  <th>ລ/ດ</th>
-                  <th>ຊື່ເມນູ</th>
-                  <th>ຈຳນວນ</th>
-                  <th>ຈາກໂຕະ</th>
+                  <th>{t('no')}</th>
+                  <th>{t('menu_name')}</th>
+                  <th>{t('amount')}</th>
+                  <th>{t('from_table')}</th>
                   {/* <th>ລະຫັດໂຕະ</th> */}
-                  <th>ສະຖານະ</th>
-                  <th>ເວລາ</th>
-                  <th>ຄອມເມັ້ນ</th>
+                  <th>{t('status')}</th>
+                  <th>{t('time')}</th>
+                  <th>{t('commend')}</th>
                 </tr>
               </thead>
               <tbody>
