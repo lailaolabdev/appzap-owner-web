@@ -149,7 +149,7 @@ export default function MemberPage() {
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const getAllPoint = async () => {
@@ -158,7 +158,7 @@ export default function MemberPage() {
       const _data = await getAllPoints(TOKEN);
       if (_data.error) throw new Error("error");
       setallPoints(_data);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getAllBill = async () => {
@@ -186,7 +186,7 @@ export default function MemberPage() {
       const _data = await getTotalPoint(selectedMemberOrders, findBy, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPoints(_data?.totalPoint);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getMemberOrderMenus = async () => {
@@ -210,7 +210,7 @@ export default function MemberPage() {
       if (_data.error) throw new Error("error");
       setMemberAllCount(_data.count);
       setTotalPaginationMember(Math.ceil(_data?.count / limitData));
-    } catch (err) { }
+    } catch (err) {}
   };
   const getMemberCountByfilterData = async () => {
     const { TOKEN, DATA } = await getLocalData();
@@ -516,9 +516,10 @@ export default function MemberPage() {
             <AiFillPrinter /> {t("all_member")}
           </Button>
           <Button
-            variant="outline-primary"
+            disabled
+            // variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ popupmemberorderall: true })}
+            // onClick={() => setPopup({ popupmemberorderall: true })}
           >
             <MdOutlineCloudDownload /> ທຸກເມນູ
           </Button>
@@ -748,19 +749,19 @@ function ReportCard({ title, chart }) {
           }}
         >
           <ButtonDropdown variant="outline-primary">
-            <option>{t('amount')}</option>
-            <option>{t('price')}</option>
+            <option>{t("amount")}</option>
+            <option>{t("price")}</option>
           </ButtonDropdown>
-          <Button variant="outline-primary">{t('chose_one_prod')}</Button>
+          <Button variant="outline-primary">{t("chose_one_prod")}</Button>
           <ButtonGroup aria-label="Basic example">
             <Button variant="outline-primary">{"<<"}</Button>
             <Button variant="outline-primary">01/03/2023 ~ 31/03/2023</Button>
             <Button variant="outline-primary">{">>"}</Button>
           </ButtonGroup>
-          <div>{t('compare')}</div>
+          <div>{t("compare")}</div>
           <ButtonDropdown variant="outline-primary">
-            <option value={"test"}>{t('last_month')}</option>
-            <option value={"test2"}>{t('bg_year')}</option>
+            <option value={"test"}>{t("last_month")}</option>
+            <option value={"test2"}>{t("bg_year")}</option>
             <option value={"test3"}>01/03/2023 ~ 31/03/2023</option>
           </ButtonDropdown>
           <Button variant="outline-primary">
