@@ -22,7 +22,7 @@ import {
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
-import { errorAdd } from "../../helpers/sweetalert";
+import { errorAdd, successAdd } from "../../helpers/sweetalert";
 
 export default function CreateMemberPage() {
   const navigate = useNavigate();
@@ -42,6 +42,7 @@ export default function CreateMemberPage() {
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
+      successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
       navigate("/reports/members-report");
     } catch (err) {
       errorAdd("ເພີ່ມບໍ່ສຳເລັດ");

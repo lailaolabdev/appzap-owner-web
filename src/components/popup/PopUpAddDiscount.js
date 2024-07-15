@@ -71,6 +71,7 @@ export default function PopUpAddDiscount({
         }
       );
       const json = await response.json();
+      
       const orderCategoryIds = value.map((order) => order.categoryId);
       const filteredCategories = json.filter((category) =>
         orderCategoryIds.includes(category._id)
@@ -266,7 +267,7 @@ export default function PopUpAddDiscount({
         </div>
         <hr />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}></div>
-        <div >
+        <div>
           <h5>ສ່ວນຫຼຸດປະເພດອາຫານ</h5>
         </div>
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
