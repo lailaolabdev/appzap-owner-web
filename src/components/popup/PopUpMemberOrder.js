@@ -58,6 +58,7 @@ export default function PopUpMemberOrder({
 
   const handleMemberClick = async (member) => {
     onSelectMember(member._id);
+    setData(member.name);
     onClose();
   };
 
