@@ -342,7 +342,8 @@ function AddOrder() {
   
     const totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
     const quantity = 1;
-  
+    
+    // the totalPrice is the totalOptionPrice + (price * quantity)
     const data = {
       id: selectedItem._id,
       name: selectedItem.name,
