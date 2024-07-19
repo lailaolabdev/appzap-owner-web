@@ -37,6 +37,7 @@ import Loading from "../../components/Loading";
 import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
@@ -76,6 +77,9 @@ function AddOrder() {
   const inputRef = useRef(null); // Create a ref for the input element
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
+
+  const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
+  const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] = useState(0);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -269,22 +273,113 @@ function AddOrder() {
     })();
   }, []);
 
-  // const getcurrency = async () => {
-  //   try {
-  //     let x = await axios.get(
-  //       END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
-  //       {
-  //         headers: {
-  //           Accept: "application/json",
-  //           "Content-Type": "application/json;charset=UTF-8",
-  //         },
-  //       }
-  //     );
-  //     setCurrency(x.data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+
+  const handleAddOption = (menuId, option) => {
+    console.log({option})
+    setSelectedOptionsArray(prevOptions => {
+      const menuOptions = prevOptions[menuId] || [];
+      const existingOption = menuOptions.find(opt => opt._id === option._id);
+  
+      if (existingOption) {
+        return {
+          ...prevOptions,
+          [menuId]: menuOptions.map(opt =>
+            opt._id === option._id ? { ...opt, quantity: opt.quantity + 1 } : opt
+          )
+        };
+      }
+  
+      return {
+        ...prevOptions,
+        [menuId]: [...menuOptions, { ...option, quantity: 1 }]
+      };
+    });
+  };
+  
+  const handleRemoveOption = (menuId, option) => {
+    setSelectedOptionsArray(prevOptions => {
+      const menuOptions = prevOptions[menuId] || [];
+      const existingOption = menuOptions.find(opt => opt._id === option._id);
+  
+      if (existingOption && existingOption.quantity > 1) {
+        return {
+          ...prevOptions,
+          [menuId]: menuOptions.map(opt =>
+            opt._id === option._id ? { ...opt, quantity: opt.quantity - 1 } : opt
+          )
+        };
+      }
+  
+      return {
+        ...prevOptions,
+        [menuId]: menuOptions.filter(opt => opt._id !== option._id)
+      };
+    });
+  };
+  
+  
+
+  const calculateTotalPrice = (menu, selectedOptionsArray) => {
+    console.log({menu})
+    if (!menu || !menu._id) {
+      return 0;
+    }
+    
+    const menuOptions = selectedOptionsArray[menu._id] || [];
+    const optionsTotalPrice = menuOptions.reduce((sum, option) => sum + (option.price * option.quantity), 0);
+    return menu.price + optionsTotalPrice;
+  };
+  
+
+
+  const handleConfirmOptions = () => {
+    console.log("menuOptions: ", menuOptions);
+    console.log("selectedItem: ", selectedItem);
+    console.log("SelectedOptionsArray: ", selectedOptionsArray);
+    console.log("selectedMenu: ", selectedMenu);
+  
+    const filteredOptions = selectedOptionsArray[selectedItem._id].filter(option => option.quantity >= 1);
+  
+    const totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
+    const quantity = 1;
+  
+    const data = {
+      id: selectedItem._id,
+      name: selectedItem.name,
+      quantity: quantity,
+      price: selectedItem.price,
+      categoryId: selectedItem?.categoryId,
+      printer: selectedItem?.categoryId?.printer,
+      note: "",
+      options: filteredOptions,
+      totalOptionPrice: totalOptionPrice,
+    };
+  
+    setSelectedMenu(prevMenu => {
+      const existingMenuIndex = prevMenu.findIndex(item => item.id === selectedItem._id);
+  
+      if (existingMenuIndex !== -1) {
+        // Menu is already in selectedMenu, increase the quantity and update options
+        const updatedMenu = [...prevMenu];
+        updatedMenu[existingMenuIndex].quantity += 1;
+        updatedMenu[existingMenuIndex].options = filteredOptions;
+        updatedMenu[existingMenuIndex].totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
+        // updatedMenu[existingMenuIndex].totalPrice = (updatedMenu[existingMenuIndex].price * updatedMenu[existingMenuIndex].quantity) + updatedMenu[existingMenuIndex].totalOptionPrice;
+        return updatedMenu;
+      } else {
+        // Menu is not in selectedMenu, add it
+        return [...prevMenu, data];
+      }
+    });
+  
+    handleClose();
+  };
+  
+  
+  
+  
+
+
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -316,73 +411,102 @@ function AddOrder() {
       });
   };
 
-  const _checkMenuOption = async (menuId) => {
+  const _checkMenuOption = (menu) => {
     try {
-      var _menuOptions = [];
-      // await fetch(
-      //   MENUS +
-      //   `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
-      //   {
-      //     method: "GET",
-      //   }
-      // )
-      //   .then((response) => response.json())
-      //   .then((json) => {
-      //     _menuOptions = json;
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-      _menuOptions = _.filter(
-        allSelectedMenu,
-        (e) => e?.menuId?._id === menuId
-      );
-      return _menuOptions;
+      return menu.menuOptions && menu.menuOptions.length > 0 ? menu.menuOptions : [];
     } catch (error) {
       return [];
     }
   };
+  
+
+  // const addToCart = async (menu) => {
+  //   const _menuOptions = await _checkMenuOption(menu?._id);
+  //   if (_menuOptions.length >= 1) {
+  //     setMenuOptions(_menuOptions);
+  //     handleShow();
+  //     return;
+  //   }
+  //   setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+  //   let allowToAdd = true;
+  //   let itemIndexInSelectedMenu = 0;
+  //   let data = {
+  //     id: menu._id,
+  //     name: menu.name,
+  //     quantity: 1,
+  //     price: menu.price,
+  //     categoryId: menu?.categoryId,
+  //     printer: menu?.categoryId?.printer,
+  //     note: "",
+  //   };
+  //   if (selectedMenu.length === 0) {
+  //     setSelectedMenu([...selectedMenu, data]);
+  //   } else {
+  //     let thisSelectedMenu = [...selectedMenu];
+  //     for (let index in thisSelectedMenu) {
+  //       if (thisSelectedMenu[index]?.id === menu?._id) {
+  //         allowToAdd = false;
+  //         itemIndexInSelectedMenu = index;
+  //       }
+  //     }
+  //     if (allowToAdd) {
+  //       setSelectedMenu([...selectedMenu, data]);
+  //     } else {
+  //       let copySelectedMenu = [...selectedMenu];
+  //       let currentData = copySelectedMenu[itemIndexInSelectedMenu];
+  //       currentData.quantity += 1;
+  //       copySelectedMenu[itemIndexInSelectedMenu] = currentData;
+  //       setSelectedMenu(copySelectedMenu);
+  //     }
+  //   }
+  // };
 
   const addToCart = async (menu) => {
-    const _menuOptions = await _checkMenuOption(menu?._id);
-    if (_menuOptions.length >= 1) {
-      setMenuOptions(_menuOptions);
-      handleShow();
+    console.log("addToCart: ", menu);
+  
+    const _menuOptions = _checkMenuOption(menu);
+  
+    // If there is no menu options in the selected menu
+    if (_menuOptions.length === 0) {
+      // Menu has no options, add to cart immediately
+      const data = {
+        id: menu._id,
+        name: menu.name,
+        quantity: 1,
+        price: menu.price,
+        categoryId: menu?.categoryId,
+        printer: menu?.categoryId?.printer,
+        note: "",
+      };
+  
+      const existingMenuIndex = selectedMenu.findIndex(item => item.id === menu._id);
+  
+      if (existingMenuIndex !== -1) {
+        // Menu is already in selectedMenu, increase the quantity
+        const updatedMenu = [...selectedMenu];
+        updatedMenu[existingMenuIndex].quantity += 1;
+        setSelectedMenu(updatedMenu);
+      } else {
+        // Menu is not in selectedMenu, add it
+        setSelectedMenu([...selectedMenu, data]);
+      }
+  
+      // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
       return;
     }
+  
+    // Menu has options, show popup
+    setMenuOptions(_menuOptions);
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-    let allowToAdd = true;
-    let itemIndexInSelectedMenu = 0;
-    let data = {
-      id: menu._id,
-      name: menu.name,
-      quantity: 1,
-      price: menu.price,
-      categoryId: menu?.categoryId,
-      printer: menu?.categoryId?.printer,
-      note: "",
-    };
-    if (selectedMenu.length === 0) {
-      setSelectedMenu([...selectedMenu, data]);
-    } else {
-      let thisSelectedMenu = [...selectedMenu];
-      for (let index in thisSelectedMenu) {
-        if (thisSelectedMenu[index]?.id === menu?._id) {
-          allowToAdd = false;
-          itemIndexInSelectedMenu = index;
-        }
-      }
-      if (allowToAdd) {
-        setSelectedMenu([...selectedMenu, data]);
-      } else {
-        let copySelectedMenu = [...selectedMenu];
-        let currentData = copySelectedMenu[itemIndexInSelectedMenu];
-        currentData.quantity += 1;
-        copySelectedMenu[itemIndexInSelectedMenu] = currentData;
-        setSelectedMenu(copySelectedMenu);
-      }
-    }
+    setSelectedOptionsArray({
+      [menu._id]: _menuOptions.map(option => ({ ...option, quantity: 0 }))
+    });
+    handleShow();
   };
+  
+  
+  
+  
 
   const onRemoveFromCart = (id) => {
     let selectedMenuCopied = [...selectedMenu];
@@ -427,6 +551,9 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
+
+      console.log("CreateOrder: ", _body)
+
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
           headers: headers,
@@ -916,104 +1043,74 @@ function AddOrder() {
           );
         })}
 
-      <Modal
-        show={show}
-        onHide={handleClose}
-        // backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Option ເມນູອາຫານ</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{
-            name: menuOptions?.name,
-            name_en: menuOptions?.name_en,
-            images: menuOptions?.images,
-            quantity: menuOptions?.quantity,
-            menuOptionId: menuOptions?.menuOptions,
-            categoryId: menuOptions?.categoryId?._id,
-            price: menuOptions?.price,
-            detail: menuOptions?.detail,
-            unit: menuOptions?.unit,
-            isOpened: menuOptions?.isOpened,
-            type: menuOptions?.type,
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.name) {
-              errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            }
-            // if (!values.name_en) {
-            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            // }
-            if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-              errors.price = "ກະລຸນາປ້ອນລາຄາ...";
-            }
-            return errors;
-          }}
-          // onSubmit={(values, { setSubmitting }) => {
-          //   const getData = async () => {
-          //     await _updateCategory(values);
-          //     const _localData = await getLocalData();
-          //     if (_localData) {
-          //       setgetTokken(_localData);
-          //       getMenu(_localData?.DATA?.storeId);
-          //       // getMenu(getTokken?.DATA?.storeId);
-          //     }
-          //   };
-          //   getData();
-          // }}
+<Modal show={show} onHide={handleClose} centered>
+  <Modal.Header closeButton>
+    <Modal.Title>
+      <div style={{ fontSize: 24 }}>
+        {selectedItem?.name} ({moneyCurrency(selectedItem?.price)} LAK)
+      </div>
+      <div style={{ fontSize: 18 }}>
+        ອ໋ອບຊັນເສີມ: 
+        {selectedOptionsArray[selectedItem?._id]?.map((option) => (
+          option.quantity > 0 && (
+            <span key={option._id} style={{ marginRight: '5px' }}>
+              {option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`}
+            </span>
+          )
+        ))}
+      </div>
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form.Group>
+      {menuOptions.map((option, index) => (
+        <div
+          key={index}
+          className="d-flex justify-content-between align-items-center mb-2"
+          style={
+            selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity >= 1
+              ? { backgroundColor: "#fd8b66", borderRadius: '5px', padding: 5 }
+              : {}
+          }
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <Form.Group controlId="exampleForm.ControlSelect1">
-                  {menuOptions.map((item) => (
-                    <button
-                      className="form-control mb-2"
-                      key=""
-                      onClick={() => {
-                        setselectedOptions(item);
-                      }}
-                    >
-                      {item?.name} ລາຄາ {item?.price} LAK
-                    </button>
-                  ))}
-                  {/* </Form.Control> */}
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="danger" onClick={handleClose}>
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: "orange",
-                    color: "#ffff",
-                    border: 0,
-                  }}
-                  onClick={() => {
-                    addToCart(selectedOptions);
-                    handleClose();
-                  }}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
+          <div>
+            <strong>{option.name}</strong> - {moneyCurrency(option.price)} LAK
+          </div>
+          <div className="d-flex align-items-center">
+            <Button variant="outline-secondary" size="sm" onClick={() => handleRemoveOption(selectedItem?._id, option)}>-</Button>
+            <span className="mx-2">{selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity || 0}</span>
+            <Button variant="outline-secondary" size="sm" onClick={() => handleAddOption(selectedItem?._id, option)}>+</Button>
+          </div>
+        </div>
+      ))}
+    </Form.Group>
+    <div className="mt-3">
+      <strong>ລາຄາລວມອ໋ອບຊັນ: {moneyCurrency(calculateTotalPrice(selectedItem, selectedOptionsArray))} LAK</strong>
+    </div>
+    <Form.Group className="mt-3">
+      <Form.Label>
+        {selectedItem?.note === "" ? "ຄອມເມັ້ນລົດຊາດອາຫານ" : "ແກ້ໄຂຄອມເມັ້ນ"}
+      </Form.Label>
+      <Form.Control
+        ref={selectedItem?.note === "" ? inputRef : null}
+        as="textarea"
+        rows={3}
+        value={addComments}
+        onChange={(e) => setAddComments(e.target.value)}
+        placeholder="ປ້ອນຄຳອະທິບາຍ..."
+        className="w-100"
+      />
+    </Form.Group>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+    <Button variant="primary" onClick={handleConfirmOptions}>Confirm</Button>
+  </Modal.Footer>
+</Modal>
+
+
+
+
 
       {/* modal comment of items   */}
       <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>
