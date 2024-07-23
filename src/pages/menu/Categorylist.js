@@ -282,7 +282,7 @@ export default function Categorylist() {
                         <td>{data?.name_en ?? ""}</td>
                         <td>{data?.name_cn ?? ""}</td>
                         <td>{data?.name_kr ?? ""}</td>
-                        <td>{data?.categoryTypeId?.name ?? ""}</td>
+                        {/* <td>{data?.categoryTypeId?.name ?? ""}</td> */}
                         <td>
                           <FontAwesomeIcon
                             icon={faEdit}
