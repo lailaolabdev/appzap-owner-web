@@ -7,8 +7,10 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
+import { useTranslation } from "react-i18next";
 
 export default function PrinterCounter() {
+  const { t } = useTranslation();
   let navigate = useNavigate();
   // state
   const [printers, setPrinters] = useState();
@@ -124,11 +126,11 @@ export default function PrinterCounter() {
         }}
         onClick={() => navigate(-1)}
       >
-        ກັບຄືນ
+        {t('previous')}
       </div>
       <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
-          ພິມບິນໜ້າໂຕະ <span style={{ color: "red" }}>*</span>
+          {t('print_table_bill')} <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
@@ -136,7 +138,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL}
           onChange={(e) => handleChangePrinterCounter(e)}
         >
-          <option value="">--ເລືອກປິນເຕີ--</option>
+          <option value="">{t('chose_printer')}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})
@@ -147,7 +149,7 @@ export default function PrinterCounter() {
       <br />
       <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
-          ພິມບິນໜ້າປະຫວັດ <span style={{ color: "red" }}>*</span>
+          {t('print_bill_history')} <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
@@ -155,7 +157,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL_HISTORY}
           onChange={(e) => handleChangePrinterHistory(e)}
         >
-          <option value="">--ເລືອກປິນເຕີ--</option>
+          <option value="">{t('chose_printer')}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})

@@ -34,10 +34,12 @@ import Spinner from "react-bootstrap/Spinner";
 import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
+import { useTranslation } from "react-i18next";
 
 let limitData = 10;
 
 export default function UserPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -105,8 +107,8 @@ export default function UserPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ພະນັກງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍການພະນັກງານ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('staff')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('staff_report')}</Breadcrumb.Item>
         </Breadcrumb>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
@@ -130,7 +132,7 @@ export default function UserPage() {
             }}
           >
             <span>
-              <IoPeople /> ລາຍການພະນັກງານ
+              <IoPeople /> {t('staff_report')}
             </span>
             <Button
               variant="dark"
@@ -139,7 +141,7 @@ export default function UserPage() {
                 setPopup({ PopUpCreateUser: true });
               }}
             >
-              <MdAssignmentAdd /> ເພີ່ມລາຍການ
+              <MdAssignmentAdd /> {t('add_list')}
             </Button>
           </Card.Header>
           <Card.Body>
@@ -158,12 +160,12 @@ export default function UserPage() {
               <table style={{ width: "100%" }}>
                 <tr>
                   <th>#</th>
-                  <th>ຮູບພາບ</th>
-                  <th>ຊື່</th>
-                  <th>username</th>
-                  <th>ເບີໂທ</th>
-                  <th>ສິດນຳໃຊ້ລະບົບ</th>
-                  <th>ຈັດການ</th>
+                  <th>{t('image')}</th>
+                  <th>{t('name')}</th>
+                  <th>Username</th>
+                  <th>{t('tel')}</th>
+                  <th>{t('permision')}</th>
+                  <th>{t('manage')}</th>
                 </tr>
                 {userData?.map((e, i) => (
                   <tr>
@@ -213,7 +215,7 @@ export default function UserPage() {
                             setPopup({ PopUpConfirmDeletion: true });
                           }}
                         >
-                          ລົບ
+                          {t('delete')}
                         </Button>
                       </div>
                     </td>
@@ -232,10 +234,10 @@ export default function UserPage() {
           >
             <ReactPaginate
               previousLabel={
-                <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                <span className="glyphicon glyphicon-chevron-left">{`${t('previous')}`}</span>
               }
               nextLabel={
-                <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                <span className="glyphicon glyphicon-chevron-right">{`${t('next')}`}</span>
               }
               breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
               breakClassName={"break-me"}

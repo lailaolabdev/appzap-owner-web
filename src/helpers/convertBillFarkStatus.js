@@ -1,6 +1,9 @@
 import { Button } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
-export const convertBillFarkStatus = (status) => {
+
+export const convertBillFarkStatus = (status, t) => {
+
   switch (status) {
     case "INSTOCK":
       return (
@@ -10,7 +13,7 @@ export const convertBillFarkStatus = (status) => {
           disabled
           style={{ backgroundColor: "green" }}
         >
-          ຝາກ
+          {t('deposit')}
         </Button>
       );
     case "OUT_STOCK":
@@ -21,7 +24,7 @@ export const convertBillFarkStatus = (status) => {
           disabled
           style={{ backgroundColor: "red" }}
         >
-          ມາເອົາແລ້ວ
+          {t('taken')}
         </Button>
       );
     case "MOVE_STOCK":
@@ -32,7 +35,7 @@ export const convertBillFarkStatus = (status) => {
           disabled
           style={{ backgroundColor: "yellow" }}
         >
-          ກັບເຂົ້າສະຕ໊ອກຄືນ
+          {t('back_to_stock')}
         </Button>
       );
 

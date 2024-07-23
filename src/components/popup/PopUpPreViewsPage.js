@@ -11,8 +11,10 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { useStore } from "../../store";
 import { base64ToBlob } from "../../helpers";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
+  const { t } = useTranslation();
   let billRef = useRef(null);
 
   const [selectPrinter, setSelectPrinter] = useState();
@@ -64,7 +66,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
       });
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t('print_success')}`,
         showConfirmButton: false,
         timer: 1500
       });
@@ -72,7 +74,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
       console.log(error);
       await Swal.fire({
         icon: "error",
-        title: "ປິນບໍ່ສຳເລັດ",
+        title: `${t('print_fail')}`,
         showConfirmButton: false,
         timer: 1500
       });
@@ -95,7 +97,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
               />
             </div>
             <h2>{storeData?.name}</h2>
-            <p>ເບີໂທລະສັບ: {storeData?.phone}</p>
+            <p>{t('tel')}: {storeData?.phone}</p>
           </div>
           <div>
             <Table
@@ -110,7 +112,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                       textAlign: "center"
                     }}
                   >
-                    ລ/ດ
+                    {t('no')}
                   </th>
                   <th
                     style={{
@@ -118,7 +120,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                       textAlign: "center"
                     }}
                   >
-                    ປະເພດ
+                    {t('type')}
                   </th>
                   <th
                     style={{
@@ -126,7 +128,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                       textAlign: "center"
                     }}
                   >
-                    ຊື່ສິນຄ້າ
+                    {t("product_name")}
                   </th>
                   <th
                     style={{
@@ -134,23 +136,23 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                       textAlign: "center"
                     }}
                   >
-                    ຈຳນວນ (ຫົວໜ່ວຍ)
+                    {t('amount_unit')}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {datas.map((item, index) => (
                   <tr key={index}>
-                    <td style={{ padding: "4px 2px", textAlign: "center" ,border: "1.5px solid #000",}}>
+                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
                       {index + 1}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center" ,border: "1.5px solid #000",}}>
+                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
                       {item?.stockCategoryId?.name}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center" ,border: "1.5px solid #000",}}>
+                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
                       {item?.name}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center" ,border: "1.5px solid #000",}}>
+                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
                       {item?.quantity} {item?.unit}
                     </td>
                   </tr>
@@ -178,7 +180,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
               onClose();
             }}
           >
-            ປິ້ນບິນ
+            {t('print_bill')}
           </Button>
         </Form.Group>
       </Modal.Footer>

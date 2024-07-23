@@ -8,6 +8,7 @@ import { getMenus } from "../../services/menu";
 import { useStore } from "../../store";
 import { URL_PHOTO_AW3 } from "../../constants";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpAddMenuForBillFark({
   open,
@@ -16,6 +17,7 @@ export default function PopUpAddMenuForBillFark({
   prevTax,
   callback
 }) {
+  const { t } = useTranslation()
   // state
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
@@ -47,7 +49,7 @@ export default function PopUpAddMenuForBillFark({
       const data = await Axios.post(url, { canFark: true }, { headers: TOKEN });
       await Swal.fire({
         icon: "success",
-        title: "ສຳເລັດ",
+        title: `${t('success')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -63,7 +65,7 @@ export default function PopUpAddMenuForBillFark({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        ເພີ່ມເມນູທີສາມາດຝາກໄດ້
+        {t('add_able_deposit_menu')}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -119,7 +121,7 @@ export default function PopUpAddMenuForBillFark({
                     handleAddMenuToCanFark(e?._id);
                   }}
                 >
-                  ເພີ່ມ
+                  {t('add')}
                 </Button>
               </div>
             </div>

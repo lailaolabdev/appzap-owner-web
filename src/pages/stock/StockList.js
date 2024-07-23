@@ -34,10 +34,12 @@ import LoadingAppzap from "../../components/LoadingAppzap";
 import { MdSearch } from "react-icons/md";
 import { FaSearch } from "react-icons/fa";
 import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
+import { useTranslation } from "react-i18next";
 
 // ------------------------------------------------------------------------------- //
 
 export default function MenuList() {
+  const { t } = useTranslation();
   // state
   const [popup, setPopup] = useState();
   const [popAddStock, setPopAddStock] = useState(false);
@@ -69,7 +71,7 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => {
-    
+
     const getData = async () => {
       getCategory();
     };
@@ -125,7 +127,7 @@ export default function MenuList() {
       }
     } catch (err) {
       console.log("err:", err);
-      errorAdd(`ລົບ ບໍ່ສຳເລັດ`);
+      errorAdd(`${t('delete_fail')}`);
     }
   };
 
@@ -281,7 +283,7 @@ export default function MenuList() {
       >
         <div style={{ display: "flex", gap: 10 }}>
           <Form.Control
-            placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ"
+            placeholder={t('member_name')}
             value={filterName}
             onChange={(e) => setFilterName(e?.target?.value)}
           />
@@ -289,27 +291,27 @@ export default function MenuList() {
             variant="primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
           >
-            <FaSearch /> ຄົ້ນຫາ
+            <FaSearch /> {t('search')}
           </Button>
         </div>
         <Button
           variant="outline-primary"
           onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
         >
-          ເລືອກໝວດໝູ່
+          {t('chose_type')}
         </Button>
         <select
           className="btn btn-outline-primary"
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
-          <option value="All">ຈັດລຽງ</option>
-          <option value="asc">ໜ້ອຍ ຫາ ຫຼາຍ</option>
-          <option value="desc">ຫຼາຍ ຫາ ໜ້ອຍ</option>
+          <option value="All">{t('arranged')}</option>
+          <option value="asc">{t('ascend')}</option>
+          <option value="desc">{t('descend')}</option>
         </select>
         <div style={{ flex: 1 }} />
         <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
-          ສ້າງສະຕ໊ອກ
+          {t('create_stock')}
         </Button>
         <Button
           variant="success"
@@ -329,17 +331,17 @@ export default function MenuList() {
                   <th scope="col" style={{ width: 50 }}>
                     <Form.Check
                       onClick={() => onSelectStocksAll()}
-                      label={"ລຳດັບ"}
-                      id={"ລຳດັບ"}
+                      label={t('no')}
+                      id={t('no')}
                     />
                   </th>
                   <th scope="col" style={{ textAlign: "start" }}>
-                    ຊື່ສິນຄ້າ
+                    {t('product_name')}
                   </th>
-                  <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
-                  <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
+                  <th scope="col">{t('product_type')}</th>
+                  <th scope="col">{t('stock_amount')}</th>
                   <th scope="col" style={{ textAlign: "end" }}>
-                    ຈັດການຂໍ້ມູນ
+                    {t('manage_data')}
                   </th>
                 </tr>
               </thead>

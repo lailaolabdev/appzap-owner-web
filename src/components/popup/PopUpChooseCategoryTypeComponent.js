@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../Box";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpChooseCategoryTypeComponent({
   open,
@@ -9,6 +10,7 @@ export default function PopUpChooseCategoryTypeComponent({
   categoryData,
   setSelectedCategory,
 }) {
+  const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
 
@@ -36,7 +38,7 @@ export default function PopUpChooseCategoryTypeComponent({
 
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ເລືອກໝວດໝູ່</Modal.Header>
+      <Modal.Header closeButton>{t('chose_type')}</Modal.Header>
       <Modal.Body>
         <div style={{ textAlign: "center" }}>
           <Box
@@ -96,7 +98,7 @@ export default function PopUpChooseCategoryTypeComponent({
       </Modal.Body>
       <Modal.Footer>
         <Button disabled={buttonDisabled} variant="secondary" onClick={onClose}>
-          ຍົກເລີກ
+          {t('cancel')}
         </Button>
         <Button
           disabled={buttonDisabled}
@@ -108,7 +110,7 @@ export default function PopUpChooseCategoryTypeComponent({
             // onSubmit().then(() => setButtonDisabled(false));
           }}
         >
-          ຢືນຢັນ
+          {t('ok')}
         </Button>
       </Modal.Footer>
     </Modal>

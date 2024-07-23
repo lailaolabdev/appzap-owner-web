@@ -15,7 +15,9 @@ import {
 import { useStore } from "../../store/useStore";
 import Loading from "../../components/Loading";
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
+import { useTranslation } from "react-i18next";
 export default function PrinterList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // state
@@ -55,12 +57,12 @@ export default function PrinterList() {
             marginBottom: 10,
           }}
         >
-          <div>ປິນເຕີ້ທັງໝົດ ({printers?.length})</div>
+          <div>{t('all_printer')} ({printers?.length})</div>
           <ButtonPrimary
             style={{ color: "white" }}
             onClick={() => setPopup({ add: true })}
           >
-            ເພີ່ມປິນເຕີ້
+            {t('add_printer')}
           </ButtonPrimary>
         </div>
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
@@ -68,13 +70,13 @@ export default function PrinterList() {
             style={{ color: "white" }}
             onClick={() => navigate("/printer/counter")}
           >
-            ຕັ້ງປິນເຕີເຄົ້າເຕີ້
+            {t('config_counter_printer')}
           </ButtonPrimary>
           <ButtonPrimary
             style={{ color: "white" }}
             onClick={() => navigate("/printer/menu-type")}
           >
-            ຕັ້ງປິນປະເພດເມນູ
+            {t('config_menu_type')}
           </ButtonPrimary>
         </div>
         <div style={{ width: "100%", overflow: "auto" }}>
@@ -82,10 +84,10 @@ export default function PrinterList() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>ຊື່ປິນເຕີ້</th>
-                <th>ຂະໜາດ</th>
+                <th>{t('printer_name')}</th>
+                <th>{t('size')}</th>
                 <th>IP</th>
-                <th>ຈັດການ</th>
+                <th>{t('manage')}</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +146,7 @@ export default function PrinterList() {
       <PopUpConfirm
         open={popup?.delete}
         onClose={() => setPopup()}
-        text1="ທ່ານຕ້ອງການລົບເຄື່ອງປິນຫຼືບໍ່"
+        text1={t('sure_to_remove_printer')}
         text2={selectPrinter?.name}
         onSubmit={handleDeleterinter}
       />

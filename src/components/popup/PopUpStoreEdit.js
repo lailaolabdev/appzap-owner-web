@@ -10,7 +10,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
   return (
     <Modal show={open} onHide={onClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>ແກ້ໄຂຂໍ້ມູນຮ້ານ</Modal.Title>
+        <Modal.Title>{t('edit_store')}</Modal.Title>
       </Modal.Header>
       <Formik
         initialValues={{
@@ -26,19 +26,19 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
           const errors = {};
 
           if (!values.name) {
-            errors.name = "ກະລຸນາປ້ອນ !";
+            errors.name = t('please_fill');
           }
           if (!values.adminName) {
-            errors.adminName = "ກະລຸນາປ້ອນ !";
+            errors.adminName = t('please_fill');
           }
           if (!values.whatsapp) {
-            errors.whatsapp = "ກະລຸນາປ້ອນ !";
+            errors.whatsapp = t('please_fill');
           }
           if (!values.detail) {
-            errors.detail = "ກະລຸນາປ້ອນ !";
+            errors.detail = t('please_fill');
           }
           if (!values.phone) {
-            errors.phone = "ກະລຸນາປ້ອນ !";
+            errors.phone = t('please_fill');
           }
           return errors;
         }}
@@ -70,33 +70,33 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </div>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຊື່ຮ້ານ</Form.Label>
+                <Form.Label>{t('restaurant_name')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder="ຊື່ຮ້ານ..."
+                  placeholder={t('restaurant_name')}
                   isInvalid={errors.name && touched.name && errors.name}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຊື່ເຈົ້າຂອງຮ້ານ</Form.Label>
+                <Form.Label>{t('restaurant_owner')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="adminName"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.adminName}
-                  placeholder="ຊື່ເຈົ້າຂອງຮ້ານ..."
+                  placeholder={t('restaurant_owner')}
                   isInvalid={
                     errors.adminName && touched.adminName && errors.adminName
                   }
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຂໍ້ມູນທີ່ຢູ່</Form.Label>
+                <Form.Label>{t('location')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="detail"
@@ -108,7 +108,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ເບີ whatsapp</Form.Label>
+                <Form.Label>whatsapp</Form.Label>
                 <Form.Control
                   type="text"
                   name="whatsapp"
@@ -122,7 +122,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ເບີໂທ</Form.Label>
+                <Form.Label>{t('tel')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="phone"
@@ -130,11 +130,11 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onBlur={handleBlur}
                   value={values.phone}
                   isInvalid={errors.phone && touched.phone && errors.phone}
-                  placeholder="ເບີໂທ..."
+                  placeholder={t('tel')}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ລາຍລະອຽດ</Form.Label>
+                <Form.Label>{t('detial')}</Form.Label>
               </Form.Group>
               <Form.Control
                 as="textarea"
@@ -150,13 +150,13 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
                 onClick={onClose}
               >
-                ຍົກເລີກ
+                {t('cancel')}
               </Button>
               <Button
                 style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
                 onClick={() => handleSubmit()}
               >
-                ບັນທືກ
+                {t('save')}
               </Button>
             </Modal.Footer>
           </form>

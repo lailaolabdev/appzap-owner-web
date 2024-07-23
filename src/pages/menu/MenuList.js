@@ -588,7 +588,7 @@ export default function MenuList() {
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
                 >
-                  <option value="All">ທັງໝົດ</option>
+                  <option value="All">{t('all')}</option>
                   {Categorys &&
                     Categorys?.map((data, index) => {
                       return (
@@ -890,11 +890,11 @@ export default function MenuList() {
                     </label>
                   </div>
                   <Form.Group>
-                    <Form.Label>{t('no')}</Form.Label>
+                    <Form.Label>{t('sequence')}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder={t('no')}
+                      placeholder={t('sequence')}
                       value={values.sort}
                       onChange={handleChange}
                     />
@@ -1328,7 +1328,7 @@ export default function MenuList() {
                     </label>
                   </div>
                   <Form.Group>
-                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Label>{t('sequence')}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"

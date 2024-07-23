@@ -8,8 +8,10 @@ import {
   END_POINT_SEVER,
 } from "../../../../constants/api";
 import { successAdd, errorAdd } from "../../../../helpers/sweetalert";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpCreateStock({ onClose, open, callback }) {
+  const { t } = useTranslation();
   // state
   const [Categorys, setCategorys] = useState();
   const _createStock = async (values) => {
@@ -38,7 +40,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
       if (_localData) {
         await fetch(
           END_POINT_SEVER +
-            `/v3/stock-categories?storeId=${_localData?.DATA?.storeId}&isDeleted=false`,
+          `/v3/stock-categories?storeId=${_localData?.DATA?.storeId}&isDeleted=false`,
           {
             method: "GET",
           }
@@ -53,7 +55,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
   return (
     <Modal show={open} onHide={onClose} /*backdrop="static"*/ keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>ສ້າງສະຕ໊ອກ</Modal.Title>
+        <Modal.Title>{t('create_stock')}</Modal.Title>
       </Modal.Header>
       <Formik
         initialValues={{
@@ -71,22 +73,22 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            errors.name = `${t('fill_food_name')}`;
           }
           if (parseInt(values.quantity) < 0) {
-            errors.quantity = "ກະລຸນາປ້ອນ...";
+            errors.quantity = `${t('please_fill')}`;
           }
           if (isNaN(parseInt(values.quantity))) {
-            errors.quantity = "ກະລຸນາປ້ອນ...";
+            errors.quantity = `${t('please_fill')}`;
           }
           if (!values.stockCategoryId) {
-            errors.stockCategoryId = "ກະລຸນາປ້ອນ...";
+            errors.stockCategoryId = `${t('please_fill')}`;
           }
           if (!values.unit) {
-            errors.unit = "ກະລຸນາປ້ອນ...";
+            errors.unit = `${t('please_fill')}`;
           }
           if (!values.otherUnit) {
-            errors.otherUnit = "ກະລຸນາປ້ອນ...";
+            errors.otherUnit = `${t('please_fill')}`;
           }
           return errors;
         }}
@@ -99,10 +101,10 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           const fetchData = async () => {
             try {
               await _createStock(values);
-              successAdd("ສ້າງສະຕ໊ອກສຳເລັດ");
+              successAdd(`${t('create_stock_success')}`);
             } catch (error) {
               console.log(error);
-              errorAdd("ສ້າງສະຕ໊ອນບໍ່ສຳເລັດ");
+              errorAdd(`${t('create_stock_fail')}`);
             }
             setSubmitting(false);
           };
@@ -124,7 +126,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
           <form onSubmit={handleSubmit}>
             <Modal.Body>
               <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>ປະເພດສະຕ໊ອກ</Form.Label>
+                <Form.Label>{t('stock_type')}</Form.Label>
                 <Form.Control
                   as="select"
                   name="stockCategoryId"
@@ -134,7 +136,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   isInvalid={errors.stockCategoryId}
                 >
                   <option selected={true} disabled={true} value="">
-                    ເລືອກປະເພດສະຕ໊ອກ
+                    {t('chose_stock_type')}
                   </option>
                   {Categorys?.map((item, index) => {
                     return <option value={item?._id}>{item?.name}</option>;
@@ -142,14 +144,14 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 </Form.Control>
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຊື່ສະຕ໊ອກ</Form.Label>
+                <Form.Label>{t('stock_name')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder="ຊື່ອາຫານ..."
+                  placeholder={t('food_name')}
                   style={{
                     border:
                       errors.name && touched.name && errors.name
@@ -160,20 +162,20 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
               </Form.Group>
 
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຈຳນວນສະຕ໊ອກ</Form.Label>
+                <Form.Label>{t('stock_amount')}</Form.Label>
                 <Form.Control
                   type="number"
                   name="quantity"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.quantity}
-                  placeholder="ຈຳນວນສະຕ໊ອກ..."
+                  placeholder={t('stock_amount')}
                   isInvalid={errors?.quantity}
                 />
               </Form.Group>
 
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ຫົວໜ່ວຍ</Form.Label>
+                <Form.Label>{t('unit')}</Form.Label>
                 <Form.Control
                   as="select"
                   onChange={(e) => {
@@ -184,12 +186,12 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                   isInvalid={errors.unit}
                 >
                   <option selected={true} disabled={true} value="">
-                    ເລືອກຫົວໜ່ວຍ
+                    {t('chose_unit')}
                   </option>
-                  <option value="ກຣາມ">ກຣາມ</option>
-                  <option value="ໝັດ">ໝັດ</option>
-                  <option value="ແກ້ວ">ແກ້ວ</option>
-                  <option value="ອື່ນໆ">ອື່ນໆ</option>
+                  <option value="ກຣາມ">{t('g')}</option>
+                  <option value="ໝັດ">{t('bundle')}</option>
+                  <option value="ແກ້ວ">{t('bottle')}</option>
+                  <option value="ອື່ນໆ">{t('etc')}</option>
                 </Form.Control>
                 {values.unit === "ອື່ນໆ" && (
                   <Form.Control
@@ -201,7 +203,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                     }}
                     onBlur={handleBlur}
                     value={values.otherUnit}
-                    placeholder="ຫົວໜ່ວຍ..."
+                    placeholder={t('unit')}
                     style={{
                       border:
                         errors.unit && touched.unit && errors.unit
@@ -213,20 +215,20 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 )}
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ໝາຍເຫດ</Form.Label>
+                <Form.Label>{t('note')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="detail"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.detail}
-                  placeholder="ໝາຍເຫດ..."
+                  placeholder={t('note')}
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="danger" onClick={onClose}>
-                ຍົກເລີກ
+                {t('cancel')}
               </Button>
               <Button
                 style={{
@@ -237,7 +239,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
                 disabled={isSubmitting}
                 onClick={handleSubmit}
               >
-                ບັນທືກ
+                {t('save')}
               </Button>
             </Modal.Footer>
           </form>

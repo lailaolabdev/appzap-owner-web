@@ -11,9 +11,11 @@ import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 import { stockType } from "../../helpers/stockType";
 import useQuery, { ObjectToQuery } from "../../helpers/useQuery";
+import { useTranslation } from "react-i18next";
 
 export default function Historylist() {
-  const {id, _page} = useParams();
+  const { t } = useTranslation();
+  const { id, _page } = useParams();
   // state
   const [getTokken, setgetTokken] = useState();
   const [histories, setHistories] = useState([]);
@@ -36,7 +38,7 @@ export default function Historylist() {
       }
     };
     fetchData();
-  }, [limit,skip]);
+  }, [limit, skip]);
 
   console.log("check limit:--->", limit, skip)
 
@@ -85,16 +87,16 @@ export default function Historylist() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ລາຍການຊະຕ໊ອກ</th>
-                  <th scope="col">ປະເພດ</th>
-                  <th scope="col">ຈຳນວນ</th>
-                  <th scope="col">ວັນທີ</th>
+                  <th scope="col">{t('stock_list')}</th>
+                  <th scope="col">{t('type')}</th>
+                  <th scope="col">{t('amount')}</th>
+                  <th scope="col">{t('date')}</th>
                 </tr>
               </thead>
               <tbody>
                 {
-                
-                histories &&
+
+                  histories &&
                   histories.map((data, index) => {
                     return (
                       <tr>
@@ -112,13 +114,13 @@ export default function Historylist() {
             <div style={{ display: "flex", justifyContent: "center" }}>
               {isLoading ? <Spinner animation="border" /> : ""}
             </div>
-            {!isLoading ? 
-           <div style={{display: 'flex', justifyContent: 'center'}}>
-              <button className="appzap_button" onClick={()=>onBackPage()}>ກັບຄືນ</button>
-              <p style={{margin: '5px 1rem'}}>{pageNumber} / {pageCountNumber}</p>
-              <button className="appzap_button" onClick={()=>onNextPage()}>ຕໍ່ໄປ</button>
-           </div>
-           : ""}
+            {!isLoading ?
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button className="appzap_button" onClick={() => onBackPage()}>{t('previous')}</button>
+                <p style={{ margin: '5px 1rem' }}>{pageNumber} / {pageCountNumber}</p>
+                <button className="appzap_button" onClick={() => onNextPage()}>{t('next')}</button>
+              </div>
+              : ""}
           </div>
         </div>
       </div>

@@ -23,10 +23,12 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
+import { useTranslation } from "react-i18next";
 
 let limitData = 50;
 
 export default function FarkPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -64,21 +66,21 @@ export default function FarkPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຝັງຊັ້ນຝາກ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍການຝາກ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('bury_deposit')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('deposit_list')}</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="billFark-list">
           <Tab
             eventKey="billFark-list"
-            title="ລາຍການຝາກທັງໝົດ"
+            title={t('all_deposit')}
             style={{ paddingTop: 20 }}
           >
             <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
               <Form.Control
                 style={{ maxWidth: 220 }}
-                placeholder="ຄົ້ນຫາລະຫັດບິນ"
+                placeholder={t('search_bill_code')}
               />
-              <Button variant="primary">ຄົ້ນຫາ</Button>
+              <Button variant="primary">{t('search')}</Button>
             </div>
 
             <Card border="primary" style={{ margin: 0 }}>
@@ -95,26 +97,26 @@ export default function FarkPage() {
                 }}
               >
                 <span>
-                  <IoBeerOutline /> ລາຍການຝາກ
+                  <IoBeerOutline /> {t('deposit_list')}
                 </span>
                 <Button
                   variant="dark"
                   bg="dark"
                   onClick={() => navigate("/fark/create")}
                 >
-                  <MdAssignmentAdd /> ເພີ່ມລາຍການ
+                  <MdAssignmentAdd /> {t('add_deposit')}
                 </Button>
               </Card.Header>
               <Card.Body>
                 <table style={{ width: "100%" }}>
                   <tr>
                     <th>#</th>
-                    <th>ລະຫັດບິນ</th>
-                    {/* <th>ຈຳນວນອໍເດີ</th> */}
-                    <th>ສະຖານະ</th>
-                    <th>ວັນທີສ້າງລາຍການ</th>
-                    <th>ໝົດກຳນົດ</th>
-                    <th>ວັນທີມາເອົາ</th>
+                    <th>{t('bill_no')}</th>
+                    {/* <th>{t('order_anount')}</th> */}
+                    <th>{t('status')}</th>
+                    <th>{t('date_add')}</th>
+                    <th>{t('expired')}</th>
+                    <th>{t('date_pick_up')}</th>
                   </tr>
                   {billFarkData?.map((e, i) => (
                     <tr
@@ -127,7 +129,7 @@ export default function FarkPage() {
                       <td style={{ textAlign: "start" }}>{e?.code}</td>
                       {/* <td style={{ textAlign: "start" }}>0</td> */}
                       <td style={{ textAlign: "start" }}>
-                        <div>{convertBillFarkStatus(e?.stockStatus)}</div>
+                        <div>{convertBillFarkStatus(e?.stockStatus, t)}</div>
                       </td>
                       <td style={{ textAlign: "start" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
@@ -183,15 +185,15 @@ export default function FarkPage() {
           <Tab
             disabled
             eventKey="currency-list"
-            title="ປະຫວັດລາຍການຝາກ"
+            title={t('deposit_history')}
             style={{ paddingTop: 20 }}
           >
             <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
               <Form.Control
                 style={{ maxWidth: 220 }}
-                placeholder="ຄົ້ນຫາລະຫັດບິນ"
+                placeholder={t('search_bill_code')}
               />
-              <Button variant="primary">ຄົ້ນຫາ</Button>
+              <Button variant="primary">{t('search')}</Button>
             </div>
 
             <Card border="secondary" bg="light" style={{ margin: 0 }}>
@@ -201,18 +203,18 @@ export default function FarkPage() {
                   fontWeight: "bold",
                 }}
               >
-                <IoBeerOutline /> ປະຫວັດລາຍການຝາກ
+                <IoBeerOutline /> {t('deposit_history')}
               </Card.Header>
               <Card.Body>
                 <table style={{ width: "100%" }}>
                   <tr>
                     <th>#</th>
-                    <th>ລະຫັດບິນ</th>
-                    <th>ຈຳນວນອໍເດີ</th>
-                    <th>ສະຖານະ</th>
-                    <th>ວັນທີສ້າງລາຍການ</th>
-                    <th>ໝົດກຳນົດ</th>
-                    <th>ຈັດການຂໍ້ມູນ</th>
+                    <th>{t('bill_no')}</th>
+                    <th>{t('order_anount')}</th>
+                    <th>{t('status')}</th>
+                    <th>{t('date_add')}</th>
+                    <th>{t('expired')}</th>
+                    <th>{t('date_pick_up')}</th>
                   </tr>
                   <tr>
                     <td style={{ textAlign: "start" }}>1</td>
@@ -226,7 +228,7 @@ export default function FarkPage() {
                           disabled
                           style={{ backgroundColor: "green" }}
                         >
-                          ຝາກ
+                          {t('deposit')}
                         </Button>
                       </div>
                     </td>

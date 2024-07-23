@@ -1,5 +1,6 @@
 import React from 'react'
 import { Pagination, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export default function PaginationAppzap({
   count = 0,
@@ -8,6 +9,7 @@ export default function PaginationAppzap({
   pageAll,
   onPageChange,
 }) {
+  const { t } = useTranslation();
   // const pagesToDisplay = 10; // Number of pages to display around the current page
   const halfPagesToDisplay = Math.floor(rowsPerPage / 2);
 
@@ -36,13 +38,13 @@ export default function PaginationAppzap({
   };
 
   return (
-    <Row> 
+    <Row>
       <Col xs={12} style={{ display: "flex", justifyContent: "center", }}>
         <Pagination>
           <Pagination.Prev
             disabled={page === 0}
             onClick={() => onPageChange(page - 1)}
-          >ກັບຄືນ</Pagination.Prev>
+          >{t('previous')}</Pagination.Prev>
           {getPageNumbers().map((pageNumber) => (
             <Pagination.Item
               active={pageNumber === page}
@@ -54,8 +56,8 @@ export default function PaginationAppzap({
           <Pagination.Next
             disabled={page === pageAll - 1}
             onClick={() => onPageChange(page + 1)}
-          >ຖັດໄປ</Pagination.Next>
-           
+          >{t('next')}</Pagination.Next>
+
         </Pagination>
       </Col>
     </Row>

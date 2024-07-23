@@ -3,8 +3,10 @@ import { Card, Breadcrumb, Form } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
+import { useTranslation } from "react-i18next";
 
 export default function AudioSettingPage() {
+  const { t } = useTranslation();
   // state
 
   // provider
@@ -18,8 +20,8 @@ export default function AudioSettingPage() {
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ຈັດການສຽງ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('menage_sound')}</Breadcrumb.Item>
         </Breadcrumb>
         <Box
           sx={{
@@ -38,16 +40,16 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              ສຽງລະບົບຂາຍໜ້າຮ້ານ
+              {t('restaurant_sound')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ສຽງອໍເດີເຂົ້າ",
+                  title: `${t('has_order')}`,
                   key: "order",
                 },
                 {
-                  title: "ສຽງເປີດໂຕະ",
+                  title: `${t('oppen_tb_sound')}`,
                   key: "openTable",
                 },
               ].map((item, index) => (
@@ -71,7 +73,7 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -99,12 +101,12 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              ສຽງຂໍ້ຄວາມ
+              {t('mg_sound')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ສຽງຂໍ້ຄວາມເຂົ້າ",
+                  title: `${t('mg_in_sound')}`,
                   key: "message",
                 },
               ].map((item, index) => (
@@ -128,7 +130,7 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -156,12 +158,12 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              ສຽງອື່ນໆ
+              {t('other_sound')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ສຽງເພງ",
+                  title: `${t('song_sound')}`,
                   key: "music",
                 },
               ].map((item, index) => (
@@ -185,7 +187,7 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"

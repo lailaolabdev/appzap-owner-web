@@ -6,8 +6,10 @@ import { END_POINT_SEVER } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
+import { useTranslation } from "react-i18next";
 
 export default function PrinterCounter() {
+  const { t } = useTranslation();
   // state
   const [printers, setPrinters] = useState();
   const [selectPrinterCounter, setSelectPrinterCounter] = useState();
@@ -106,7 +108,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL}
           onChange={(e) => handleChangePrinterCounter(e)}
         >
-          <option value="">--ເລືອກປິນເຕີ--</option>
+          <option value="">{t('chose_printer')}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})
@@ -117,7 +119,7 @@ export default function PrinterCounter() {
       <br />
       <Form.Group>
         <Form.Label>
-          ພິມບິນໜ້າປະຫວັດ <span style={{ color: "red" }}>*</span>
+          {t('print_bill_history')} <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
@@ -125,7 +127,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL_HISTORY}
           onChange={(e) => handleChangePrinterHistory(e)}
         >
-          <option value="">--ເລືອກປິນເຕີ--</option>
+          <option value="">{t('chose_printer')}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})

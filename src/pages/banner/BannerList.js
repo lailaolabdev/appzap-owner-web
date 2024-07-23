@@ -10,7 +10,7 @@ import {
 } from "../../constants/api";
 import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
-import { Breadcrumb,  Tab, Tabs } from "react-bootstrap";
+import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
 import { BsImages } from "react-icons/bs";
@@ -18,8 +18,10 @@ import Loading from "../../components/Loading";
 import ImageSlider from "../../components/ImageSlider";
 import { getBanners } from "../../services/banner";
 import Upload from "../../components/Upload";
+import { useTranslation } from "react-i18next";
 
 export default function BannerList() {
+  const { t } = useTranslation();
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [bannerData, setBannerData] = useState([]);
@@ -83,14 +85,14 @@ export default function BannerList() {
     })
       .then(async function (response) {
         if (response?.status === 200) {
-          successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+          successAdd(`${t('add_data_success')}`);
           handleCloseAdd();
           getDataBanner();
         }
       })
       .catch(function (error) {
         console.log("error", error);
-        errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ ສະກຸນເງິນນີ້ມີແລ້ວ!");
+        errorAdd(`${t('add_data_fail_crc_existed')}`);
       });
   };
 
@@ -102,13 +104,13 @@ export default function BannerList() {
     })
       .then(async function (response) {
         if (response?.status === 200) {
-          successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+          successAdd(`${t('delete_data_success')}`);
           handleCloseDelete();
           getDataBanner();
         }
       })
       .catch(function (error) {
-        errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+        errorAdd(`${t('delete_data_fail')}`);
       });
   };
 
@@ -117,13 +119,13 @@ export default function BannerList() {
       {isLoading ? <Loading /> : ""}
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ຈັດການແບນເນີ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('manage_banner')}</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
           <Tab
             eventKey="currency-list"
-            title="ລາຍການແບນເນີ"
+            title={t('banner_list')}
             style={{ paddingTop: 20 }}
           >
             <div
@@ -143,7 +145,7 @@ export default function BannerList() {
                     fontWeight: "bold",
                   }}
                 >
-                  <BsImages /> ຕົວຢ່າງ
+                  <BsImages /> {t('ex')}
                 </Card.Header>
                 <Card.Body>
                   <ImageSlider images={images} />
@@ -158,12 +160,12 @@ export default function BannerList() {
                     fontWeight: "bold",
                   }}
                 >
-                  <BsImages /> ເຄື່ອງມື
+                  <BsImages /> {t('tool')}
                 </Card.Header>
                 <Card.Body>
                   {[
                     {
-                      title: "ເປີດໃຊ້ງານແບນເນີ",
+                      title: `${t('enable_banner')}`,
                       key: "fer",
                       disabled: true,
                     },
@@ -188,7 +190,7 @@ export default function BannerList() {
                         }}
                       >
                         <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                          ເປີດ
+                          {t('oppen')}
                           {/* {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"} */}
                         </Form.Label>
                         <Form.Check
@@ -196,7 +198,7 @@ export default function BannerList() {
                           type="switch"
                           checked={true}
                           id={"switch-audio-" + item?.key}
-                          onChange={(e) => {}}
+                          onChange={(e) => { }}
                         />
                       </div>
                     </div>
@@ -218,20 +220,20 @@ export default function BannerList() {
                 }}
               >
                 <span>
-                  <BsImages /> ລາຍການແບນເນີ
+                  <BsImages /> {t('banner_list')}
                 </span>
                 <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> ເພີ່ມລາຍການ
+                  <MdAssignmentAdd /> {t('add_banner')}
                 </Button>
               </Card.Header>
               <Card.Body>
                 <table style={{ width: "100%" }}>
                   <tr>
                     <th>#</th>
-                    <th>ຮູບແບນເນີ</th>
-                    <th>ຊື່ແບນນີ້</th>
-                    <th>ສະຖານະ</th>
-                    <th>ຈັດການຂໍ້ມູນ</th>
+                    <th>{t('banner_image')}</th>
+                    <th>{t('banner_name')}</th>
+                    <th>{t('status')}</th>
+                    <th>{t('manage_data')}</th>
                   </tr>
                   {bannerData?.map((data, index) => (
                     <tr key={index}>
@@ -259,7 +261,7 @@ export default function BannerList() {
                         </div>
                       </td>
                       <td className="text-left">{data?.name}</td>
-                      <td className="text-left">ເປີດ</td>
+                      <td className="text-left">{t('oppen')}</td>
                       <td className="text-left">
                         {/* <FontAwesomeIcon
                           icon={faEdit}
@@ -281,10 +283,10 @@ export default function BannerList() {
           <Tab
             disabled
             eventKey="currency-history"
-            title="ປະຫວັດການແບນເນີ"
+            title={t('banner_history')}
             style={{ paddingTop: 20 }}
           >
-            
+
           </Tab>
         </Tabs>
 
@@ -296,7 +298,7 @@ export default function BannerList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>ເພີ່ມແບນເນີ</Modal.Title>
+            <Modal.Title>{t('add_banner')}</Modal.Title>
           </Modal.Header>
           <Formik
             enableReinitialize
@@ -308,7 +310,7 @@ export default function BannerList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນ!";
+                errors.name = `${t('please_fill')}`;
               }
 
               return errors;
@@ -338,14 +340,14 @@ export default function BannerList() {
                     }}
                   />
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ແບນເນີ</Form.Label>
+                    <Form.Label>{t('banner_name')}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ປ້ອນຊື່ແບນເນີ..."
+                      placeholder={t('fill_banner')}
                       isInvalid={!!errors.name}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -361,13 +363,13 @@ export default function BannerList() {
                     }}
                     onClick={handleCloseAdd}
                   >
-                    ຍົກເລີກ
+                    {t('cancel')}
                   </Button>
                   <Button
                     style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t('save')}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -380,20 +382,20 @@ export default function BannerList() {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <div style={{ textAlign: "center" }}>
-              <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ</div>
+              <div>{t('sure_to_delete_data')}</div>
               <div style={{ color: "red" }}>{`${dataDelete?.name}`}</div>
-              <div>ແທ້ບໍ່ ?</div>
+              <div>{t('realy')} ?</div>
             </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
-              ຍົກເລີກ
+              {t('cancel')}
             </Button>
             <Button
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={() => _confirmeDelete()}
             >
-              ຢືນຢັນການລົບ
+              {t('confirm')}
             </Button>
           </Modal.Footer>
         </Modal>

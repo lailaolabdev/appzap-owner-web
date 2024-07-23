@@ -9,8 +9,10 @@ import { useStore } from "../../store/useStore";
 import Loading from "../../components/Loading";
 import { Form } from "react-bootstrap";
 import { updateCategory } from "../../services/menuCategory";
+import { useTranslation } from "react-i18next";
 
 export default function PrinterMenuType() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // state
@@ -33,7 +35,7 @@ export default function PrinterMenuType() {
 
   return (
     <>
-    <div style={{textDecoration: "underline", textAlign: "center", color: "blue"}} onClick={() => navigate(-1)}>ກັບຄືນ</div>
+      <div style={{ textDecoration: "underline", textAlign: "center", color: "blue" }} onClick={() => navigate(-1)}>ກັບຄືນ</div>
       {isMenuCategoryLoadings ? <Loading /> : ""}
       <div style={{ padding: 10 }}>
         <div
@@ -44,17 +46,17 @@ export default function PrinterMenuType() {
             marginBottom: 10,
           }}
         >
-          <div>ປະເພດເມນູທັງໝົດ ({menuCategorys?.length}) ປະເພດ</div>
+          <div>{t('all_menu_type')} ({menuCategorys?.length}) {t('type')}</div>
         </div>
         <div>
           <TableComponent>
             <thead>
               <tr>
                 <th>#</th>
-                <th>ຮູບ</th>
-                <th>ຊື່ປະເພດເມນູ</th>
-                <th>ໝາຍເຫດ</th>
-                <th>ເລືອກປິນເຕີ້</th>
+                <th>{t('image')}</th>
+                <th>{t('menu_type_name')}</th>
+                <th>{t('note')}</th>
+                <th>{t('chose_printer_')}</th>
               </tr>
             </thead>
             <tbody>
@@ -83,7 +85,7 @@ export default function PrinterMenuType() {
                         handleChangePrinterMenuCat(e?._id, event)
                       }
                     >
-                      <option value="">--ເລືອກປິນເຕີ--</option>
+                      <option value="">{t('chose_printer')}</option>
                       {printers?.map((e, i) => (
                         <option value={e?._id} key={i}>
                           {e?.name} ({e?.ip})

@@ -280,7 +280,7 @@ export default function OrderPage() {
             }}
           >
             {/* ສົ່ງໄປຄົວ */}
-            {t("sendToKitchen")}
+            {t("send_to_kitchen")}
           </Button>
         </div>
         <div style={{ width: "10px" }}></div>

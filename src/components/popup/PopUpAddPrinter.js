@@ -3,15 +3,17 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store/useStore";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
+  const { t } = useTranslation();
   // state
   const { storeDetail } = useStore();
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>ເພີ່ມປິນເຕີ້</Modal.Title>
+        <Modal.Title>{t('add_printer')}</Modal.Title>
       </Modal.Header>
       <Formik
         enableReinitialize={true}
@@ -40,7 +42,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then((e) => {});
+          onSubmit(values).then((e) => { });
         }}
       >
         {({
@@ -57,7 +59,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
             <Modal.Body>
               <Form.Group>
                 <Form.Label>
-                  ຊື່ປິນເຕີ້ <span style={{ color: "red" }}>*</span>
+                  {t('printer_name')} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   type="text"
@@ -65,13 +67,13 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values?.name}
-                  placeholder="ຊື່ປິນເຕີ້..."
+                  placeholder={t('printer_name')}
                   isInvalid={errors?.name}
                 />
               </Form.Group>
               <Form.Group>
                 <Form.Label>
-                  ຂະໜາດເຈ້ຍ <span style={{ color: "red" }}>*</span>
+                  {t('papper_size')} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -82,7 +84,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   isInvalid={errors?.width}
                 >
                   <option value="" disabled>
-                    -ເລືອກຂະໜາດເຈ້ຍ-
+                    {t('chose_papper_size')}
                   </option>
                   <option value="80mm">80mm</option>
                   <option value="58mm">58mm</option>
@@ -91,7 +93,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
 
               <Form.Group>
                 <Form.Label>
-                  ປະເພດປິນເຕີ <span style={{ color: "red" }}>*</span>
+                  {t('printer_type')} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -109,7 +111,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   isInvalid={errors?.type}
                 >
                   <option value="" disabled>
-                    -ເລືອກປະເພດປິນເຕີ-
+                    {t('chose_papper_size')}
                   </option>
                   <option value="ETHERNET">ETHERNET</option>
                   <option value="BLUETOOTH">BLUETOOTH</option>
@@ -144,7 +146,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                 }}
                 onClick={() => handleSubmit()}
               >
-                ບັນທຶກເມນູອາຫານ
+                {t('save_menu')}
               </Button>
             </Modal.Footer>
           </form>

@@ -15,8 +15,10 @@ import { getSetting, updateSetting } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
+import { useTranslation } from "react-i18next";
 
 export default function ConfigPage() {
+  const { t } = useTranslation();
   // state
   const [setting, setSetting] = useState();
   const [switchState, setSwitchState] = useState({});
@@ -66,7 +68,7 @@ export default function ConfigPage() {
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
           <Breadcrumb.Item active>POS config</Breadcrumb.Item>
         </Breadcrumb>
         <Box
@@ -86,7 +88,7 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              ພາສີ
+              {t('tax')}
             </Card.Header>
             <Card.Body>
               <div
@@ -98,7 +100,7 @@ export default function ConfigPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ພາສີ: {tax}%</div>
+                <div>{t('tax')}: {tax}%</div>
                 <div
                   style={{
                     display: "flex",
@@ -108,7 +110,7 @@ export default function ConfigPage() {
                   }}
                 >
                   <Button onClick={() => setPopup({ PopUpEditTax: true })}>
-                    ແກ້ໄຂ
+                    {t('edit')}
                   </Button>
                 </div>
               </div>
@@ -129,26 +131,26 @@ export default function ConfigPage() {
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານ SMART MENU & SELF ORDERING",
+                  title: `${t('oppen_smart_menu')}`,
                   key: "open",
-                  tooltip: "ເປີດ/ປິດ ເພື່ອໃຊ້ງານສະມາດເມນູແລະເຊວອໍເດີຣິງ",
+                  tooltip: `${t('close_oppen_for_work')}`,
                   disabled: true,
                   default: true,
                 },
                 {
-                  title: "ເປີດໂຕະກ່ອນຈຶ່ງສາມາດສັ່ງອາຫານ",
+                  title: `${t('oppen_table_first')}`,
                   key: "shouldOpenTableForSelfOrdering",
                   tooltip: "",
                   disabled: true,
                 },
                 {
-                  title: "ເປີດໂຕະອັດຕະໂນມັດ",
+                  title: `${t('auto_oppen')}`,
                   key: "autoOpenTable",
                   tooltip: "",
                   disabled: true,
                 },
                 {
-                  title: "QR ໜ້າໂຕະສາມາດສະແກນເພື່ອສັ່ງອາຫານໄດ້ທຸກຄົນ",
+                  title: `${t('table_qr')}`,
                   key: "tableQrEveryoneCanSelfOrdering",
                   tooltip: "",
                   disabled: true,
@@ -178,8 +180,8 @@ export default function ConfigPage() {
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
                       {switchState?.[item?.key] || item?.default
-                        ? "ເປີດ"
-                        : "ປິດ"}
+                        ? `${t('oppen')}`
+                        : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
@@ -211,12 +213,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              ສະບົບສາງ ແລະ ສະຕ໊ອກ
+              {t('stock_system')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານ ລະບົບສາງ",
+                  title: `${t('enable_stock')}`,
                   key: "sang",
                   default: false,
                   disabled: true,
@@ -243,8 +245,8 @@ export default function ConfigPage() {
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
                       {audioSetting?.[item?.key] || item?.default
-                        ? "ເປີດ"
-                        : "ປິດ"}
+                        ? `${t('oppen')}`
+                        : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
@@ -273,12 +275,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              ການຈອງ
+              {t('booking')}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານການຈອງ",
+                  title: `${t('enable_booking')}`,
                   key: "fer",
                   disabled: true,
                 },
@@ -303,7 +305,7 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? "ເປີດ" : "ປິດ"}
+                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}

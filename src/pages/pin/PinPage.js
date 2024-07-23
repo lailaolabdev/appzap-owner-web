@@ -35,10 +35,12 @@ import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { getStore, updateStorePin } from "../../services/store";
+import { useTranslation } from "react-i18next";
 
 let limitData = 10;
 
 export default function PinPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -92,8 +94,8 @@ export default function PinPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ຕັ້ງຄ່າລາຍການລະຫັດ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('setting_prod_code')}</Breadcrumb.Item>
         </Breadcrumb>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
@@ -117,13 +119,13 @@ export default function PinPage() {
             }}
           >
             <span>
-              <IoPeople /> ຕັ້ງຄ່າລາຍການລະຫັດ
+              <IoPeople /> {t('setting_prod_code')}
             </span>
           </Card.Header>
           <Card.Body>
             {[
               {
-                title: "ເປີດໃຊ້ງານ PIN ຕອນຍົກເລີກແລະ ໃຫ້ສ່ວນຫຼຸດ",
+                title: `${t('enable_pin')}`,
                 key: "pin",
                 default: false,
                 disabled: true,
@@ -149,7 +151,7 @@ export default function PinPage() {
                   }}
                 >
                   <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                    {storeDetail?.usePin ? "ເປີດ" : "ປິດ"}
+                    {storeDetail?.usePin ? `${t('oppen')}` : `${t('close')}`}
                   </Form.Label>
                   <Form.Check
                     type="switch"
@@ -184,7 +186,7 @@ export default function PinPage() {
             }}
           >
             <span>
-              <IoPeople /> ລາຍການລະຫັດ
+              <IoPeople /> {t('code_list')}
             </span>
             <Button
               variant="dark"
@@ -193,7 +195,7 @@ export default function PinPage() {
                 handleRandomPassword();
               }}
             >
-              <MdAssignmentAdd /> ປຽນລະຫັດໃໝ່
+              <MdAssignmentAdd /> {t('change_code')}
             </Button>
           </Card.Header>
           <Card.Body>
@@ -212,7 +214,7 @@ export default function PinPage() {
               <table style={{ width: "100%" }}>
                 <tr>
                   <th>#</th>
-                  <th>ລະຫັດ PIN</th>
+                  <th>{t('pin_code')}</th>
                 </tr>
                 {PINs?.map((e, i) => (
                   <tr>

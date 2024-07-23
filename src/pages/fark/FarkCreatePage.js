@@ -31,10 +31,12 @@ import { base64ToBlob } from "../../helpers";
 import axios from "axios";
 import BillFark80 from "../../components/bill/BillFark80";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 let limitData = 50;
 
 export default function FarkCreatePage() {
+  const { t } = useTranslation()
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -145,13 +147,13 @@ export default function FarkCreatePage() {
       };
       const data = await createBillFark(_body, TOKEN);
       if (data.error) {
-        errorAdd("ທັນຖືກບໍ່ສຳເລັດ");
+        errorAdd(`${t('save_fail')}`);
         return;
       }
       setPrintCode(data.code);
       // await onPrintBillFark();
       // navigate("../", { replace: true });
-      successAdd("ບັນທຶກສຳເລັດ");
+      successAdd(`${t('save_success')}`);
     } catch (err) {
       console.log(err);
     }
@@ -220,7 +222,7 @@ export default function FarkCreatePage() {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-      
+
       console.log("check 4");
       await axios({
         method: "post",
@@ -232,7 +234,7 @@ export default function FarkCreatePage() {
       // setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t('print_success')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -244,7 +246,7 @@ export default function FarkCreatePage() {
       console.log("onprint:", err);
       await Swal.fire({
         icon: "error",
-        title: "ປິນບໍ່ສຳເລັດ",
+        title: `${t('print_fail')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -262,8 +264,8 @@ export default function FarkCreatePage() {
       >
         <div style={{ padding: 20 }}>
           <Breadcrumb>
-            <Breadcrumb.Item>ຝັງຊັ້ນຝາກ</Breadcrumb.Item>
-            <Breadcrumb.Item active>ສ້າງລາຍການ</Breadcrumb.Item>
+            <Breadcrumb.Item>{t('bury_deposit_layer')}</Breadcrumb.Item>
+            <Breadcrumb.Item active>{t('add_list')}</Breadcrumb.Item>
           </Breadcrumb>
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
@@ -279,14 +281,14 @@ export default function FarkCreatePage() {
               }}
             >
               <span>
-                <IoBeerOutline /> ລາຍການຝາກ
+                <IoBeerOutline /> {t('dps_list')}
               </span>
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpAddMenuForBillFark: true })}
               >
-                <MdAssignmentAdd /> ເພີ່ມລາຍການ
+                <MdAssignmentAdd /> {t('add_dps')}
               </Button>
             </Card.Header>
             <Card.Body style={{ padding: 5 }}>
@@ -328,7 +330,7 @@ export default function FarkCreatePage() {
                         disabled={e?.addToCart}
                         onClick={() => addToCart(e?._id)}
                       >
-                        ເພີ່ມ
+                        {t('add')}
                       </Button>
                     </div>
                   </div>
@@ -356,7 +358,7 @@ export default function FarkCreatePage() {
               padding: 20,
             }}
           >
-            ສ້າງລາຍການຝາກ
+            {t('create_dps_list')}
           </div>
           <div
             style={{
@@ -367,21 +369,21 @@ export default function FarkCreatePage() {
               marginBottom: "200px",
             }}
           >
-            <Form.Label>ຊື່ລູກຄ້າ</Form.Label>
+            <Form.Label>{t('customer_name')}</Form.Label>
             <Form.Control
-              placeholder="ຊື່ລູກຄ້າ"
+              placeholder={t('customer_name')}
               value={customerName}
               onChange={(e) => setCustomerName(e?.target.value)}
             />
-            <Form.Label>ເບີໂທລູກຄ້າ</Form.Label>
+            <Form.Label>{t('ctm_tel')}</Form.Label>
             <Form.Control
-              placeholder="ເບີໂທລູກຄ້າ"
+              placeholder={t('ctm_tel')}
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e?.target.value)}
             />
-            <Form.Label>ວັນໝົດກຳໜົດ</Form.Label>
+            <Form.Label>{t('exp_date')}</Form.Label>
             <Form.Control
-              placeholder="ວັນໝົດກຳໜົດ"
+              placeholder={t('exp_date')}
               type="date"
               value={expirDate}
               onChange={(e) => setexpirDate(e?.target.value)}
@@ -389,8 +391,8 @@ export default function FarkCreatePage() {
             <div style={{ flex: 1 }}>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th>ຊື່</th>
-                  <th style={{ textAlign: "center" }}>ຈຳນວນ</th>
+                  <th>{t('name')}</th>
+                  <th style={{ textAlign: "center" }}>{t('amount')}</th>
                 </tr>
                 {menuFarkData
                   ?.filter((e) => e?.addToCart)
@@ -449,7 +451,7 @@ export default function FarkCreatePage() {
               style={{ width: "100%", height: 60 }}
               onClick={() => handleClickCreateBillFark()}
             >
-              ບັນທຶກແລະປິນ
+              {t('save_print')}
             </Button>
           </div>
         </div>

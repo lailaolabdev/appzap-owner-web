@@ -17,8 +17,10 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
+import { useTranslation } from "react-i18next";
 
 export default function HistoryUse() {
+  const { t } = useTranslation();
   // const { history, location, match } = useReactRouter();
   const params = useParams();
   const [data, setData] = useState([]);
@@ -50,9 +52,8 @@ export default function HistoryUse() {
       setIsLoading(true);
       const res = await axios.get(
         END_POINT_SEVER +
-          `/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
-            params?.id
-          }&modele=${filtterModele}`,
+        `/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${params?.id
+        }&modele=${filtterModele}`,
         { headers }
       );
       if (res?.status < 300) {
@@ -77,7 +78,7 @@ export default function HistoryUse() {
             backgroundColor: "#f8f8f8",
             border: "none",
             height: 60,
-            marginBottom:5
+            marginBottom: 5
           }}
         >
           <Nav.Item>
@@ -95,7 +96,7 @@ export default function HistoryUse() {
             >
               {" "}
               <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ຄິດໄລ່ເງິນ
+              <div style={{ width: 8 }}></div> {t('calculate_money')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -112,7 +113,7 @@ export default function HistoryUse() {
               onClick={() => setFiltterModele("canceled")}
             >
               <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ປະຫວັດອາຫານ
+              <div style={{ width: 8 }}></div> {t('order_history')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -129,7 +130,7 @@ export default function HistoryUse() {
               onClick={() => setFiltterModele("print")}
             >
               <FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ປີນເຕີ
+              <div style={{ width: 8 }}></div> {t('printer')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -146,7 +147,7 @@ export default function HistoryUse() {
               onClick={() => setFiltterModele("resetBill")}
             >
               <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ແກ້ໄຂບີນ
+              <div style={{ width: 8 }}></div> {t('edit_bill')}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -163,7 +164,7 @@ export default function HistoryUse() {
               onClick={() => setFiltterModele("transferTable")}
             >
               <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ຍ້າຍລວມໂຕະ
+              <div style={{ width: 8 }}></div> {t('change_combine_table')}
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -175,12 +176,12 @@ export default function HistoryUse() {
           <table className="table table-hover">
             <thead className="thead-light">
               <tr>
-                <th scope="col">ລຳດັບ</th>
-                <th scope="col">ຊື່ຜູ້ຈັດການ</th>
+                <th scope="col">{t('no')}</th>
+                <th scope="col">{t('manager_name')}</th>
                 {/* <th scope="col">ສະຖານະ</th> */}
-                <th scope="col">ລາຍລະອຽດ</th>
-                <th scope="col">ເຫດຜົນ</th>
-                <th scope="col">ວັນທີ, ເດືອນ, ປີ (ເວລາ)</th>
+                <th scope="col">{t('detial')}</th>
+                <th scope="col">{t('cause')}</th>
+                <th scope="col">{t('date_time')}</th>
               </tr>
             </thead>
 
@@ -200,10 +201,10 @@ export default function HistoryUse() {
                     <td>{item?.eventDetail}</td>
                     <td>
                       {item?.reason === null ||
-                      item?.reason === "" ||
-                      item?.reason === undefined ||
-                      item?.reason === "undefined" ||
-                      item?.reason === "null"
+                        item?.reason === "" ||
+                        item?.reason === undefined ||
+                        item?.reason === "undefined" ||
+                        item?.reason === "null"
                         ? "-"
                         : item?.reason}
                     </td>

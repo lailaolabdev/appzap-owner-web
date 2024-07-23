@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../Box";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpChooseTableComponent({
     open,
@@ -9,6 +10,7 @@ export default function PopUpChooseTableComponent({
     tableList,
     setSelectedTable
 }) {
+    const { t } = useTranslation();
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [selectedTableIds, setSelectedTableIds] = useState([]);
 
@@ -35,7 +37,7 @@ export default function PopUpChooseTableComponent({
 
     return (
         <Modal show={open} onHide={onClose}>
-            <Modal.Header closeButton> <div>ລາຍການໂຕະ</div></Modal.Header>
+            <Modal.Header closeButton> <div>{t('table_list')}</div></Modal.Header>
             <Modal.Body>
                 <div style={{ textAlign: "center" }}>
                     <Box
@@ -134,7 +136,7 @@ export default function PopUpChooseTableComponent({
             </Modal.Body>
             <Modal.Footer>
                 <Button disabled={buttonDisabled} variant="secondary" onClick={onClose}>
-                    ຍົກເລີກ
+                    {t('cancel')}
                 </Button>
                 <Button
                     disabled={buttonDisabled}
@@ -146,7 +148,7 @@ export default function PopUpChooseTableComponent({
                         // onSubmit().then(() => setButtonDisabled(false));
                     }}
                 >
-                    ຢືນຢັນ
+                    {t('ok')}
                 </Button>
             </Modal.Footer>
         </Modal>

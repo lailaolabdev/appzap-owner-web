@@ -18,8 +18,10 @@ import { useParams } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
 import { END_POINT_WEB_CLIENT } from "../../constants/api";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
+import { useTranslation } from "react-i18next";
 
 export default function SettingTable() {
+  const { t } = useTranslation();
   const [data, setData] = useState("No result");
   const params = useParams();
   const { tableListCheck, setTableListCheck, getTableDataStoreList } =
@@ -57,13 +59,13 @@ export default function SettingTable() {
       });
       handleClose();
       if (createTable?.data?.message === "INVALID_NAME") {
-        warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
+        warningAlert(`${t('table_exist')}`);
       } else {
         getTableDataStoreList();
-        successAdd("ການເພີ່ມໂຕະສຳເລັດ");
+        successAdd(`${t('table_add_success')}`);
       }
     } catch (err) {
-      errorAdd("ການເພີ່ມໂຕະບໍ່ສຳເລັດ");
+      errorAdd(`${t('table_add_fail')}`);
     }
   };
   const [show4, setShow4] = useState(false);
@@ -77,7 +79,7 @@ export default function SettingTable() {
     };
     try {
       if (!selectTatle?.name) {
-        warningAlert("ກະລຸນາປ້ອນລະຫັດ");
+        warningAlert(`${t('p_fill_code')}`);
         return;
       }
       const createTable = await axios({
@@ -95,19 +97,19 @@ export default function SettingTable() {
       });
       setShow4(false);
       if (createTable?.data?.message === "INVALID_NAME") {
-        warningAlert("ໂຕະນີ້ໄດ້ມີແລ້ວ");
+        warningAlert(`${t('table_exist')}`);
       } else {
         getTableDataStoreList();
-        successAdd("ການແກ້ໄຂໂຕະສຳເລັດ");
+        successAdd(`${t('table_add_success')}`);
       }
     } catch (err) {
-      errorAdd("ການເພີ່ມໂຕະບໍ່ສຳເລັດ");
+      errorAdd(`${t('table_add_fail')}`);
     }
   };
   const _changeStatusTable = async (data) => {
     try {
       if (data?.isOpened) {
-        errorAdd("ບໍ່ສາມາດປິດໂຕະທີ່ມີແຂກໄດ້");
+        errorAdd(`${t('can_not_open_table')}`);
         return;
       }
       let header = await getHeaders();
@@ -159,7 +161,7 @@ export default function SettingTable() {
     };
     if (dateDelete?.isOpened === true) {
       handleClose3();
-      warningAlert("ລົບຂໍ້ມູນບໍ່ສຳເລັດເພາະກຳລັງໃຊ້ງານ");
+      warningAlert(t('delete_using_table_fail'));
       return;
     }
     const resData = await axios({
@@ -170,12 +172,12 @@ export default function SettingTable() {
     if (resData.status < 300) {
       handleClose3();
       setTableListCheck((prev) => prev.filter((e) => e._id != dateDelete?._id));
-      successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+      successAdd(t('delete_success'));
     }
   };
   return (
     <div style={{ padding: 10 }} className="col-sm-12">
-      <div style={{  padding: 10, borderRadius: 8 }}>
+      <div style={{ padding: 10, borderRadius: 8 }}>
         <div className="col-sm-12 text-right">
           <button
             className="col-sm-2"
@@ -187,7 +189,7 @@ export default function SettingTable() {
             }}
             onClick={handleShow}
           >
-            ເພີ່ມໂຕະ
+            {t('add_table')}
           </button>
         </div>
         <div style={{ height: 20 }}></div>
@@ -196,11 +198,11 @@ export default function SettingTable() {
             <thead>
               <tr>
                 {/* <th scope="col">#</th> */}
-                <th scope="col">ລະຫັດ</th>
+                <th scope="col">{t('code')}</th>
                 {/* <th scope="col">ການເປີດ/ປິດ</th> */}
                 {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
                 <th scope="col" style={{ textAlign: "right" }}>
-                  ຈັດການ
+                  {t('manage')}
                 </th>
               </tr>
             </thead>
@@ -288,52 +290,52 @@ export default function SettingTable() {
       </div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>ເພີ່ມໂຕະ</Modal.Title>
+          <Modal.Title>{t('add_table')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>ລຳດັບ</Form.Label>
+            <Form.Label>{t('no')}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="number"
-              placeholder="ກະລຸນາປ້ອນລຳດັບ"
+              placeholder={t('fill_table_no')}
               onChange={(e) => setSortNumber(e?.target?.value)}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>ລະຫັດ</Form.Label>
+            <Form.Label>{t('code')}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
-              placeholder="ກະລຸນາປ້ອນລະຫັດ"
+              placeholder={t('fill_code')}
               onChange={(e) => setTableNumber(e?.target?.value)}
             />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            ຍົກເລີກ
+            {t('cancel')}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _createTable()}
           >
-            ບັກທືກ
+            {t('save')}
           </Button>
         </Modal.Footer>
       </Modal>
       {/* ===== edit ===== */}
       <Modal show={show4} onHide={() => setShow4(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>ແກ້ໄຂໂຕະ</Modal.Title>
+          <Modal.Title>{t('edit_table')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>ລຳດັບ</Form.Label>
+            <Form.Label>{t()}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="number"
-              placeholder="ກະລຸນາປ້ອນລຳດັບ"
+              placeholder={t('fill_table_no')}
               value={selectTatle?.sort || 0}
               onChange={(e) =>
                 setSelectTatle({ ...selectTatle, sort: e.target.value || 0 })
@@ -341,18 +343,18 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>ລະຫັດ</Form.Label>
+            <Form.Label>{t('code')}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
-              placeholder="ກະລຸນາປ້ອນລະຫັດ"
+              placeholder={t('fill_code')}
               value={selectTatle?.name}
               onChange={(e) =>
                 setSelectTatle({ ...selectTatle, name: e?.target?.value })
               }
             />
           </Form.Group>
-          <div>ເປີດໃຊ້ງານ</div>
+          <div>{t('enable')}</div>
           <label className="switch">
             <input
               type="checkbox"
@@ -367,13 +369,13 @@ export default function SettingTable() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow4(false)}>
-            ຍົກເລີກ
+            {t("cancel")}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _updateTable()}
           >
-            ບັກທືກ
+            {t('save')}
           </Button>
         </Modal.Footer>
       </Modal>
