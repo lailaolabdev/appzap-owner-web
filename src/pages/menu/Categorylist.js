@@ -36,10 +36,13 @@ export default function Categorylist() {
   const handleClose2 = () => setShow2(false);
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
+  const [categorysType, setCategorysType] = useState([]);
+  const [updateType, setUpdateType] = useState();
 
-  console.log("Categorys::", Categorys)
+  console.log("Categorys::", Categorys);
 
   const handleShow2 = async (item) => {
+    // console.log("ITEM: ", item.categoryTypeId.name);
     setdataUpdate(item);
     setShow2(true);
   };
@@ -49,28 +52,30 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization,
+        Authorization: header.authorization
       };
       let _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
-        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`
-        , {
-          headers: headers,
-        });
+        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
+        {
+          headers: headers
+        }
+      );
       if (_resData?.data) {
         setCategorys(_resData?.data);
         handleClose3();
-        successAdd(`${t('delete_success')}`);
+        successAdd(`${t("delete_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
     }
   };
   const _createCategory = async (values) => {
+    console.log("DATA VALUES: ", values.categoryTypeId);
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
-      Authorization: header.authorization,
+      Authorization: header.authorization
     };
     const resData = await axios({
       method: "POST",
@@ -83,16 +88,17 @@ export default function Categorylist() {
         name_kr: values?.name_kr,
         note: values?.note,
         sort: values?.sort,
+        categoryTypeId: values?.categoryTypeId
       },
-      headers: headers,
+      headers: headers
     })
       .then(async function (response) {
         setCategorys(response?.data);
         handleClose();
-        successAdd(`${t('add_success')}}`);
+        successAdd(`${t("add_success")}}`);
       })
       .catch(function (error) {
-        errorAdd(`${t('add_fail')}`);
+        errorAdd(`${t("add_fail")}`);
       });
   };
   const _updateCategory = async (values) => {
@@ -100,9 +106,10 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization,
+        Authorization: header.authorization
       };
-      console.log("============>", values)
+      console.log("============>", values);
+
       const resData = await axios.put(
         END_POINT_SEVER + `/v3/category/update`,
         {
@@ -114,20 +121,21 @@ export default function Categorylist() {
             name_kr: values?.name_kr,
             note: values?.note,
             sort: values?.sort,
-          },
+            categoryTypeId: values?.categoryTypeId
+          }
         },
         {
-          headers: headers,
+          headers: headers
         }
       );
       if (resData?.data) {
         // setCategorys(resData?.data);
-        getData(getTokken?.DATA?.storeId)
+        getData(getTokken?.DATA?.storeId);
         setShow2(false);
-        successAdd(`${t('edit_success')}`);
+        successAdd(`${t("edit_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('edit_fail')}`);
+      errorAdd(`${t("edit_fail")}`);
     }
   };
   const [isLoading, setIsLoading] = useState(false);
@@ -138,6 +146,7 @@ export default function Categorylist() {
       if (_localData) {
         setgetTokken(_localData);
         getData(_localData?.DATA?.storeId);
+        getCategoryTypeData();
       }
     };
     fetchData();
@@ -147,34 +156,41 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
+      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`
     });
-    console.log("-----", _resCategory?.data)
+    console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
+    setIsLoading(false);
+  };
+
+  const getCategoryTypeData = async () => {
+    setIsLoading(true);
+    const _resCategoryType = await axios({
+      method: "get",
+      url: END_POINT_SEVER + `/v3/categoroy-type`
+    });
+    console.log("CATEGORYTYPE: ", _resCategoryType?.data.data);
+    setCategorysType(_resCategoryType?.data?.data);
     setIsLoading(false);
   };
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
   const _category = () => {
-    navigate(
-      `/settingStore/menu/category/limit/40/page/1/${params?.id}`
-    );
+    navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
-
-
 
   ////New Section Here
 
   const getCate = async (id) => {
     try {
       await fetch(CATEGORY + `/?storeId=${id}`, {
-        method: "GET",
+        method: "GET"
       })
         .then((response) => response.json())
         .then((json) => {
-          console.log(json)
-          setCATEGORY(json)
+          console.log(json);
+          setCATEGORY(json);
         });
     } catch (err) {
       console.log(err);
@@ -186,7 +202,7 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization,
+        Authorization: header.authorization
       };
 
       await axios({
@@ -196,23 +212,20 @@ export default function Categorylist() {
           id: id,
           data: {
             showForCustomer: !showForCustomer
-          },
+          }
         },
-        headers: headers,
+        headers: headers
       });
 
       let _newData = [...Categorys];
 
       _newData[index].showForCustomer = !showForCustomer;
-      setCategorys(_newData)
-
+      setCategorys(_newData);
     } catch (err) {
       console.log("err:", err);
     }
   };
   //New Section End Here
-
-
 
   return (
     <div style={BODY}>
@@ -220,7 +233,7 @@ export default function Categorylist() {
         <Nav variant="tabs" defaultActiveKey="/settingStore/category">
           <Nav.Item>
             <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              {t('menu')}
+              {t("menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -228,7 +241,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t('foodType')}
+              {t("foodType")}
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -240,7 +253,7 @@ export default function Categorylist() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
           >
-            {t('addFoodType')}
+            {t("addFoodType")}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>
@@ -249,14 +262,14 @@ export default function Categorylist() {
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
-                  <th scope="col">{t('no')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
-                  <th scope="col">{t('foodTypeName')}</th>
+                  <th scope="col">{t("no")}</th>
+                  <th scope="col">{t("foodTypeName")}</th>
+                  <th scope="col">{t("foodTypeName")}</th>
+                  <th scope="col">{t("foodTypeName")}</th>
+                  <th scope="col">{t("foodTypeName")}</th>
                   {/* <th scope="col">{t('note')}</th> */}
-                  <th scope="col">{t('manage')}</th>
-                  <th scope="col">{t('status')}</th>
+                  <th scope="col">{t("manage")}</th>
+                  <th scope="col">{t("status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -269,7 +282,7 @@ export default function Categorylist() {
                         <td>{data?.name_en ?? ""}</td>
                         <td>{data?.name_cn ?? ""}</td>
                         <td>{data?.name_kr ?? ""}</td>
-                        {/* <td>{data?.note}</td> */}
+                        <td>{data?.categoryTypeId?.name ?? ""}</td>
                         <td>
                           <FontAwesomeIcon
                             icon={faEdit}
@@ -283,12 +296,22 @@ export default function Categorylist() {
                           />
                         </td>
                         {/*adamHere*/}
-                        <td style={{ color: data?.showForCustomer ? "green" : "red" }}>
+                        <td
+                          style={{
+                            color: data?.showForCustomer ? "green" : "red"
+                          }}
+                        >
                           <label className="switch">
                             <input
                               type="checkbox"
                               checked={data?.showForCustomer}
-                              onClick={() => _changeStatusCate(data?._id, data?.showForCustomer, index)}
+                              onClick={() =>
+                                _changeStatusCate(
+                                  data?._id,
+                                  data?.showForCustomer,
+                                  index
+                                )
+                              }
                             />
                             <span className="slider round"></span>
                           </label>
@@ -309,12 +332,13 @@ export default function Categorylist() {
             name_cn: "",
             name_kr: "",
             note: "",
-            sort: ""
+            sort: "",
+            categoryTypeId: ""
           }}
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = `${t('file_type_name')}`
+              errors.name = `${t("file_type_name")}`;
             }
             return errors;
           }}
@@ -329,32 +353,32 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting,
+            isSubmitting
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>{t('add_food_type')}</Modal.Title>
+                <Modal.Title>{t("add_food_type")}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group>
-                  <Form.Label>{t('no')}</Form.Label>
+                  <Form.Label>{t("no")}</Form.Label>
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t('no')}
+                    placeholder={t("no")}
                     value={values?.sort}
                     onChange={handleChange}
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name')}</Form.Label>
+                  <Form.Label>{t("type_name")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder={t('type_name')}
+                    placeholder={t("type_name")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -362,42 +386,42 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_en')}</Form.Label>
+                  <Form.Label>{t("type_name_en")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_en"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder={t('type_name_en')}
+                    placeholder={t("type_name_en")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_cn')}</Form.Label>
+                  <Form.Label>{t("type_name_cn")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_cn"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder={t('type_name_cn')}
+                    placeholder={t("type_name_cn")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_cn && touched.name_cn && errors.name_cn}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_kr')}</Form.Label>
+                  <Form.Label>{t("type_name_kr")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_kr"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder={t('type_name_kr')}
+                    placeholder={t("type_name_kr")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -405,30 +429,48 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('note')}</Form.Label>
+                  <Form.Label>{t("note")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="note"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder={t('note')}
+                    placeholder={t("note")}
                   />
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>{t("categories")}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="categoryTypeId"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.categoryTypeId}
+                  >
+                    <option value="">ເລືອກປະເພດ</option>
+                    {categorysType &&
+                      categorysType.map((data, index) => (
+                        <option key={"categorytype" + index} value={data._id}>
+                          {data.name}
+                        </option>
+                      ))}
+                  </Form.Control>
                 </Form.Group>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose}>
-                  {t('cancel')}
+                  {t("cancel")}
                 </Button>
                 <Button
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0,
+                    border: 0
                   }}
                   onClick={() => handleSubmit()}
                 >
-                  {t('save')}
+                  {t("save")}
                 </Button>
               </Modal.Footer>
             </form>
@@ -438,18 +480,22 @@ export default function Categorylist() {
       <Modal show={show2} onHide={handleClose2}>
         <Formik
           initialValues={{
-            name: dataUpdate?.name,
+            name: dataUpdate?.name ?? "",
             name_en: dataUpdate?.name_en,
             name_cn: dataUpdate?.name_cn,
             name_kr: dataUpdate?.name_kr,
             note: dataUpdate?.note,
             sort: dataUpdate?.sort,
+            categoryTypeId: dataUpdate?.categoryTypeId
           }}
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = `${t('fill_type_name')}`;
+              errors.name = `${t("fill_type_name")}`;
             }
+
+            console.log("ERORR: ", values.categoryTypeId);
+
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -463,15 +509,15 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting,
+            isSubmitting
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>{t('edit_food_type')}</Modal.Title>
+                <Modal.Title>{t("edit_food_type")}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group>
-                  <Form.Label>{t('no')}</Form.Label>
+                  <Form.Label>{t("no")}</Form.Label>
                   <Form.Control
                     type="number"
                     name="sort"
@@ -481,14 +527,14 @@ export default function Categorylist() {
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('food_type')}</Form.Label>
+                  <Form.Label>{t("food_type")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder={t('food_type')}
+                    placeholder={t("food_type")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -496,73 +542,123 @@ export default function Categorylist() {
                 </div>
 
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_en')}</Form.Label>
+                  <Form.Label>{t("type_name_en")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_en"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder={t('type_name_en')}
+                    placeholder={t("type_name_en")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_en && touched.name_en && errors.name_en}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_cn')}</Form.Label>
+                  <Form.Label>{t("type_name_cn")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_cn"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder={t('type_name_cn')}
+                    placeholder={t("type_name_cn")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_cn && touched.name_cn && errors.name_cn}
                 </div>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('type_name_kr')}</Form.Label>
+                  <Form.Label>{t("type_name_kr")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name_kr"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder={t('type_name_kr')}
+                    placeholder={t("type_name_kr")}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
                   {errors.name_kr && touched.name_kr && errors.name_kr}
                 </div>
-
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t('note')}</Form.Label>
+                  <Form.Label>{t("note")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="note"
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder={t('note')}
+                    placeholder={t("note")}
                   />
                 </Form.Group>
+
+                {/* <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>categories</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="category"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values?.categoryTypeId?.name ?? ""}
+                    placeholder={t("note")}
+                  />
+                </Form.Group> */}
+                <Form.Group controlId="exampleForm.ControlInput1">
+                  <Form.Label>ຫົວຂໍປະເພດອາຫານ</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="categoryTypeId"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.categoryTypeId}
+                  >
+                    <option value="">
+                      {dataUpdate?.categoryTypeId?.name ?? "ເລືອກປະເພດ"}
+                    </option>
+                    {categorysType &&
+                      categorysType.map((data, index) => (
+                        <option key={"categorytype" + index} value={data._id}>
+                          {data.name}
+                        </option>
+                      ))}
+                  </Form.Control>
+                </Form.Group>
+                {/* <>
+                  <select>
+                    <option value="All">
+                      {dataUpdate?.categoryTypeId?.name ?? "ເລືອກປະເພດ"}
+                    </option>
+                    {categorysType &&
+                      categorysType?.map((data, index) => {
+                        return (
+                          <option
+                            key={"categorytype" + index}
+                            value={data?._id}
+                          >
+                            {data?.name}
+                          </option>
+                        );
+                      })}
+                  </select>
+                </> */}
+                {/* {dataUpdate?.categoryTypeId?.name ?? ""} */}
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="danger" onClick={handleClose2}>
-                  {t('cancel')}
+                  {t("cancel")}
                 </Button>
                 <Button
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0,
+                    border: 0
                   }}
                   onClick={() => handleSubmit()}
                 >
-                  {t('save')}
+                  {t("save")}
                 </Button>
               </Modal.Footer>
             </form>
@@ -573,19 +669,19 @@ export default function Categorylist() {
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            <div>{t('would_delete')}? </div>
+            <div>{t("would_delete")}? </div>
             <div style={{ color: "red" }}>{dateDelete?.name}</div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose3}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _confirmeDelete()}
           >
-            {t('approve_delete')}
+            {t("approve_delete")}
           </Button>
         </Modal.Footer>
       </Modal>
