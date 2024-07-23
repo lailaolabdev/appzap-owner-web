@@ -114,19 +114,34 @@ function AddOrder() {
     setConnectMenuId(e.target.value);
   };
 
-  function handleSetQuantity(int, data) {
+  const handleSetQuantity = (int, data) => {
     let dataArray = [];
+    const sortedDataOptionsForComparison = sortOptionsById([...data.options]);
+  
     for (const i of selectedMenu) {
       let _data = { ...i };
-      if (data?.id === i?.id) {
+      const sortedItemOptionsForComparison = sortOptionsById([...i.options]);
+  
+      if (data?.id === i?.id && JSON.stringify(sortedDataOptionsForComparison) === JSON.stringify(sortedItemOptionsForComparison)) {
         _data = { ..._data, quantity: _data?.quantity + int };
       }
+  
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
+  
     setSelectedMenu(dataArray);
-  }
+  };
+  
+  // Helper function to sort options by ID
+  const sortOptionsById = (options) => {
+    return options.sort((a, b) => {
+      if (!a._id || !b._id) return 0;
+      return a._id.localeCompare(b._id);
+    });
+  };
+  
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
   const [currency, setCurrency] = useState([]);
@@ -339,13 +354,6 @@ function AddOrder() {
   
     const filteredOptions = selectedOptionsArray[selectedItem._id]?.filter(option => option.quantity >= 1) || [];
   
-    // Safely sort options by checking if `id` exists
-    const sortOptionsById = (options) => {
-      return options.sort((a, b) => {
-        if (!a.id || !b.id) return 0;
-        return a.id.localeCompare(b.id);
-      });
-    };
   
     const sortedFilteredOptionsForComparison = sortOptionsById([...filteredOptions]);
   
