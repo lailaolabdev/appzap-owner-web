@@ -555,43 +555,43 @@ function AddOrder() {
 
       console.log("CreateOrder: ", _body)
 
-      axios
-        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
-          headers: headers,
-        })
-        .then(async (response) => {
-          if (response?.data) {
-            Swal.fire({
-              icon: "success",
-              title: "ເພີ່ມອໍເດີສໍາເລັດ",
-              showConfirmButton: false,
-              timer: 1800,
-            });
-            if (isPrinted) {
-              //  print
-              onPrintForCher().then(() => {
-                onSelectTable(selectedTable);
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-              });
-            } else {
-              onSelectTable(selectedTable);
-              navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: "warning",
-            title: "ອາຫານບໍ່ພຽງພໍ",
-            showConfirmButton: false,
-            timer: 1800,
-          });
-          setDisabledButton(false);
-        });
+      // axios
+      //   .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+      //     headers: headers,
+      //   })
+      //   .then(async (response) => {
+      //     if (response?.data) {
+      //       Swal.fire({
+      //         icon: "success",
+      //         title: "ເພີ່ມອໍເດີສໍາເລັດ",
+      //         showConfirmButton: false,
+      //         timer: 1800,
+      //       });
+      //       if (isPrinted) {
+      //         //  print
+      //         onPrintForCher().then(() => {
+      //           onSelectTable(selectedTable);
+      //           navigate(
+      //             `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+      //           );
+      //         });
+      //       } else {
+      //         onSelectTable(selectedTable);
+      //         navigate(
+      //           `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+      //         );
+      //       }
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     Swal.fire({
+      //       icon: "warning",
+      //       title: "ອາຫານບໍ່ພຽງພໍ",
+      //       showConfirmButton: false,
+      //       timer: 1800,
+      //     });
+      //     setDisabledButton(false);
+      //   });
     } catch (error) {
       console.log("error", error);
       Swal.fire({
@@ -834,11 +834,18 @@ function AddOrder() {
                   <tbody>
                     {selectedMenu &&
                       selectedMenu.map((data, index) => {
+                        // Create the options string if options exist
+                        const optionsString = data.options && data.options.length > 0
+                          ? data.options
+                              .map(option => (option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`))
+                              .join(" ")
+                          : "";
+
                         return (
                           <tr key={"selectMenu" + index}>
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{data.name}</p>
+                              <p>{`${data.name} ${optionsString}`}</p>
                               <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
                                 {data?.note ?? ""}
                               </p>
@@ -849,7 +856,7 @@ function AddOrder() {
                                 flexDirection: "row",
                                 justifyContent: "space-around",
                                 marginTop: "-.05em",
-                                alignItems:'center'
+                                alignItems: 'center'
                               }}
                             >
                               <button
@@ -862,7 +869,7 @@ function AddOrder() {
                               >
                                 -
                               </button>
-                              <p style={{ minWidth: 30, maxWidth:50 }}>{data.quantity}</p>
+                              <p style={{ minWidth: 30, maxWidth: 50 }}>{data.quantity}</p>
                               <button
                                 style={{
                                   color: "red",
@@ -875,16 +882,6 @@ function AddOrder() {
                               </button>
                             </td>
                             <td style={{ padding: 0, textAlign: "right" }}>
-                              {/* <i
-                                onClick={() => onRemoveFromCart(data.id)}
-                                className="fa fa-trash"
-                                aria-hidden="true"
-                                style={{
-                                  color: "#FB6E3B",
-                                  cursor: "pointer",
-                                }}
-                              ></i> */}
-
                               <div
                                 style={{
                                   display: "flex",
@@ -934,6 +931,7 @@ function AddOrder() {
                         );
                       })}
                   </tbody>
+
                 </Table>
               </div>
               <div className="col-12">
