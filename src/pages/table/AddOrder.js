@@ -331,19 +331,27 @@ function AddOrder() {
   };
   
 
-
   const handleConfirmOptions = () => {
     console.log("menuOptions: ", menuOptions);
     console.log("selectedItem: ", selectedItem);
     console.log("SelectedOptionsArray: ", selectedOptionsArray);
     console.log("selectedMenu: ", selectedMenu);
   
-    const filteredOptions = selectedOptionsArray[selectedItem._id].filter(option => option.quantity >= 1);
+    const filteredOptions = selectedOptionsArray[selectedItem._id]?.filter(option => option.quantity >= 1) || [];
+  
+    // Safely sort options by checking if `id` exists
+    const sortOptionsById = (options) => {
+      return options.sort((a, b) => {
+        if (!a.id || !b.id) return 0;
+        return a.id.localeCompare(b.id);
+      });
+    };
+  
+    const sortedFilteredOptionsForComparison = sortOptionsById([...filteredOptions]);
   
     const totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
     const quantity = 1;
-    
-    // the totalPrice is the totalOptionPrice + (price * quantity)
+  
     const data = {
       id: selectedItem._id,
       name: selectedItem.name,
@@ -357,7 +365,14 @@ function AddOrder() {
     };
   
     setSelectedMenu(prevMenu => {
-      const existingMenuIndex = prevMenu.findIndex(item => item.id === selectedItem._id);
+      // Check if the menu item with the same ID and options already exists
+      const existingMenuIndex = prevMenu.findIndex(item => {
+        const sortedItemOptionsForComparison = item.options ? sortOptionsById([...item.options]) : [];
+        return (
+          item.id === selectedItem._id &&
+          JSON.stringify(sortedItemOptionsForComparison) === JSON.stringify(sortedFilteredOptionsForComparison)
+        );
+      });
   
       if (existingMenuIndex !== -1) {
         // Menu is already in selectedMenu, increase the quantity and update options
@@ -365,7 +380,7 @@ function AddOrder() {
         updatedMenu[existingMenuIndex].quantity += 1;
         updatedMenu[existingMenuIndex].options = filteredOptions;
         updatedMenu[existingMenuIndex].totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
-        // updatedMenu[existingMenuIndex].totalPrice = (updatedMenu[existingMenuIndex].price * updatedMenu[existingMenuIndex].quantity) + updatedMenu[existingMenuIndex].totalOptionPrice;
+        updatedMenu[existingMenuIndex].totalPrice = (updatedMenu[existingMenuIndex].price * updatedMenu[existingMenuIndex].quantity) + updatedMenu[existingMenuIndex].totalOptionPrice;
         return updatedMenu;
       } else {
         // Menu is not in selectedMenu, add it
@@ -375,9 +390,6 @@ function AddOrder() {
   
     handleClose();
   };
-  
-  
-  
   
 
 
