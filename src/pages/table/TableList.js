@@ -655,12 +655,28 @@ export default function TableList() {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
       setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
