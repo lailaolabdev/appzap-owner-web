@@ -61,7 +61,6 @@ export default function ChildStores() {
     try {
       const data = await getBranchStore(DATA?.storeId);
       setBranchStore(data);
-      console.log("DATA: ", data);
     } catch (err) {
       console.error("Fetch failed: Exception occurred", err);
       setError(true);
@@ -72,7 +71,6 @@ export default function ChildStores() {
 
   useEffect(() => {
     fetchBranchStore();
-    console.log("status", branchStore?.checkChildStore);
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   const handleSelect = (e) => {
@@ -186,7 +184,7 @@ export default function ChildStores() {
               <div
                 style={{ display: "flex", gap: "10px", alignItems: "center" }}
               >
-                {branchStore?.checkChildStore === false ? (
+                {branchStore?.childStores?.length === 0 ? (
                   <Button onClick={() => setPopup({ popUpBranchStore: true })}>
                     ເພີ່ມເຂົ້າສາຂາຫຼັກ
                   </Button>
