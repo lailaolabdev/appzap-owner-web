@@ -14,6 +14,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
       </Modal.Header>
       <Formik
         initialValues={{
+          _id: data?._id,
           name: data?.name,
           adminName: data?.adminName,
           whatsapp: data?.whatsapp,
@@ -79,6 +80,16 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   value={values.name}
                   placeholder="ຊື່ຮ້ານ..."
                   isInvalid={errors.name && touched.name && errors.name}
+                />
+              </Form.Group>
+              <Form.Group controlId="exampleForm.ControlInput1">
+                <Form.Label>ໄອດີຮ້ານ</Form.Label>
+                <Form.Control
+                  readOnly
+                  type="text"
+                  name="name"
+                  value={values._id}
+                  isInvalid={errors._id && touched._id && errors._id}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">

@@ -6,7 +6,7 @@ import {
   Spinner,
   Breadcrumb,
   Button,
-  Card
+  Card,
 } from "react-bootstrap";
 import { moneyCurrency } from "../../helpers";
 import { useStore } from "../../store";
@@ -17,7 +17,7 @@ import {
   getPromotionReport,
   getReports,
   getSalesInformationReport,
-  getUserReport
+  getUserReport,
 } from "../../services/report";
 import { getLocalData } from "../../constants/api";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
@@ -26,7 +26,9 @@ import { COLOR_APP } from "../../constants";
 import moment from "moment";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
+import PopUpBranchStore from "../../components/popup/PopUpAddBranchStore";
 import { getManyTables } from "../../services/table";
+import { updateStore } from "../../services/store";
 import { useTranslation } from "react-i18next";
 
 export default function ChildStores() {
@@ -49,28 +51,32 @@ export default function ChildStores() {
   const [reportData, setReportData] = useState([]);
   const [categoryReport, setCategoryReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
-
   const { storeDetail } = useStore();
 
-  useEffect(() => {
-    const fetchBranchStore = async () => {
-      const { DATA } = await getLocalData();
-      try {
-        const data = await getBranchStore(DATA?.storeId);
-        setBranchStore(data);
-      } catch (err) {
-        console.error("Fetch failed: Exception occurred", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   fetchBranchStore();
+  // }, []);
+  const fetchBranchStore = async () => {
+    const { DATA } = await getLocalData();
+    try {
+      const data = await getBranchStore(DATA?.storeId);
+      setBranchStore(data);
+      console.log("DATA: ", data);
+    } catch (err) {
+      console.error("Fetch failed: Exception occurred", err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBranchStore();
+    console.log("status", branchStore?.checkChildStore);
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   const handleSelect = (e) => {
-    const selected = branchStore.childStores.find((store) => store._id === e);
+    const selected = branchStore?.childStores.find((store) => store._id === e);
     const childId = selected?._id;
 
     const getSalesInformationReportData = async () => {
@@ -126,11 +132,7 @@ export default function ChildStores() {
 
     const getMenuReportData = async () => {
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      const data = await getMenuReport(
-        childId,
-        findBy,
-        selectedTableIds
-      );
+      const data = await getMenuReport(childId, findBy, selectedTableIds);
       setMenuReport(data);
     };
 
@@ -146,6 +148,20 @@ export default function ChildStores() {
     setSelectedStore(selected);
   };
 
+  const handleAddBranch = async (values) => {
+    try {
+      const _localData = await getLocalData();
+      const id = _localData?.DATA?.storeId;
+      await updateStore(values, id);
+      // Handle the submission logic here, e.g., send data to API
+      console.log("Branch data submitted:", values);
+      setPopup({ popUpBranchStore: false });
+      fetchBranchStore();
+    } catch (error) {
+      console.error("Error adding branch:", error);
+    }
+  };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -158,31 +174,45 @@ export default function ChildStores() {
             </div>
           ) : error ? (
             <div>Failed to load branch store data.</div>
-          ) : branchStore.childStores.length > 0 ? (
+          ) : (
             <div>
               <Breadcrumb>
-                <Breadcrumb.Item>{t('sub_branch')}</Breadcrumb.Item>
-                <Breadcrumb.Item active>{t('sub_branch_report')}</Breadcrumb.Item>
+                <Breadcrumb.Item>{t("sub_branch")}</Breadcrumb.Item>
+                <Breadcrumb.Item active>
+                  {t("sub_branch_report")}
+                </Breadcrumb.Item>
               </Breadcrumb>
+
               <div
                 style={{ display: "flex", gap: "10px", alignItems: "center" }}
               >
-                <DropdownButton
-                  style={{ margin: 0 }}
-                  id="dropdown-basic-button"
-                  title={selectedStore ? selectedStore.name : `${t('select_branch')}`}
-                  onSelect={handleSelect}
-                >
-                  {branchStore.childStores.map((store, index) => (
-                    <Dropdown.Item key={index} eventKey={store._id}>
-                      {store.name}
-                    </Dropdown.Item>
-                  ))}
-                </DropdownButton>
+                {branchStore?.checkChildStore === false ? (
+                  <Button onClick={() => setPopup({ popUpBranchStore: true })}>
+                    ເພີ່ມເຂົ້າສາຂາຫຼັກ
+                  </Button>
+                ) : (
+                  <DropdownButton
+                    style={{ margin: 0 }}
+                    id="dropdown-basic-button"
+                    title={
+                      selectedStore
+                        ? selectedStore.name
+                        : `${t("select_branch")}`
+                    }
+                    onSelect={handleSelect}
+                  >
+                    {branchStore?.childStores?.map((store, index) => (
+                      <Dropdown.Item key={index} eventKey={store._id}>
+                        {store.name}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+                )}
+
                 <Button
                   onClick={() => setPopup({ popUpChooseTableComponent: true })}
                 >
-                  {t('chose_table')}
+                  {t("chose_table")}
                 </Button>
                 <Button
                   variant="outline-primary"
@@ -207,7 +237,7 @@ export default function ChildStores() {
                       display: "grid",
                       gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
                       gap: 20,
-                      gridTemplateRows: "masonry"
+                      gridTemplateRows: "masonry",
                     }}
                   >
                     <Card border="primary" style={{ margin: 0 }}>
@@ -216,18 +246,18 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('sales_info')}
+                        {t("sales_info")}
                       </Card.Header>
                       <Card.Body>
                         {[
                           {
-                            title: `${t('total_sales')}`,
+                            title: `${t("total_sales")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["totalSales"]
-                            )}${storeDetail?.firstCurrency}`
+                            )}${storeDetail?.firstCurrency}`,
                           },
 
                           // {
@@ -238,31 +268,31 @@ export default function ChildStores() {
                           // },
 
                           {
-                            title: `${t('sales_transaction')}`,
+                            title: `${t("sales_transaction")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["noOfSalesTransactions"]
-                            )}`
+                            )}`,
                           },
                           {
-                            title: `${t('avg_sale')}`,
+                            title: `${t("avg_sale")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.[
-                              "averageSales_Transaction"
+                                "averageSales_Transaction"
                               ]
-                            )}${storeDetail?.firstCurrency}`
+                            )}${storeDetail?.firstCurrency}`,
                           },
                           {
-                            title: `${t('paid_lak')}`,
+                            title: `${t("paid_lak")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["totalCostLAK"]
-                            )} ${t('lak')}`
+                            )} ${t("lak")}`,
                           },
                           {
-                            title: `${t('primary_profit')}`,
+                            title: `${t("primary_profit")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.["grossProfitLAK"]
-                            )}${storeDetail?.firstCurrency}`
-                          }
+                            )}${storeDetail?.firstCurrency}`,
+                          },
 
                           // {
                           //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
@@ -277,7 +307,7 @@ export default function ChildStores() {
                               gridTemplateColumns: "1fr auto",
                               gap: 10,
                               padding: "10px 0",
-                              borderBottom: `1px dotted ${COLOR_APP}`
+                              borderBottom: `1px dotted ${COLOR_APP}`,
                             }}
                           >
                             <div>{e?.title}</div>
@@ -292,10 +322,10 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('promotion')}
+                        {t("promotion")}
                       </Card.Header>
                       <Card.Body>
                         <div
@@ -304,10 +334,10 @@ export default function ChildStores() {
                             gridTemplateColumns: "1fr auto",
                             gap: 10,
                             padding: "10px 0",
-                            borderBottom: `1px dotted ${COLOR_APP}`
+                            borderBottom: `1px dotted ${COLOR_APP}`,
                           }}
                         >
-                          <div>{t('discount_bill')}</div>
+                          <div>{t("discount_bill")}</div>
                           <div>{promotionReport?.[0]?.count || 0}</div>
                         </div>
                         <div
@@ -316,10 +346,10 @@ export default function ChildStores() {
                             gridTemplateColumns: "1fr auto",
                             gap: 10,
                             padding: "10px 0",
-                            borderBottom: `1px dotted ${COLOR_APP}`
+                            borderBottom: `1px dotted ${COLOR_APP}`,
                           }}
                         >
-                          <div>{t('all_discount')}</div>
+                          <div>{t("all_discount")}</div>
                           <div>
                             {promotionReport?.[0]?.totalSaleAmount || 0}
                             {storeDetail?.firstCurrency}
@@ -333,36 +363,40 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('bill_info')}
+                        {t("bill_info")}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th>{t('bill_type')}</th>
-                            <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
-                            <th style={{ textAlign: "right" }}>{t('total_price')}</th>
+                            <th>{t("bill_type")}</th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("bill_amount")}
+                            </th>
+                            <th style={{ textAlign: "right" }}>
+                              {t("total_price")}
+                            </th>
                           </tr>
                           {[
                             {
-                              method: `${t('cash_bill')}`,
+                              method: `${t("cash_bill")}`,
                               qty: moneyReport?.cash?.count,
-                              amount: moneyReport?.cash?.totalBill
+                              amount: moneyReport?.cash?.totalBill,
                             },
                             {
-                              method: `${t('transfer_bill')}`,
+                              method: `${t("transfer_bill")}`,
                               qty: moneyReport?.transfer?.count,
-                              amount: moneyReport?.transfer?.totalBill
+                              amount: moneyReport?.transfer?.totalBill,
                             },
                             {
-                              method: `${t('transfer_cash')}`,
+                              method: `${t("transfer_cash")}`,
                               qty: moneyReport?.transferCash?.count,
-                              amount: moneyReport?.transferCash?.totalBill
+                              amount: moneyReport?.transferCash?.totalBill,
                             },
                             {
-                              method: `${t('include_bill')}`,
+                              method: `${t("include_bill")}`,
                               qty:
                                 (moneyReport?.cash?.count || 0) +
                                 (moneyReport?.transferCash?.count || 0) +
@@ -370,8 +404,8 @@ export default function ChildStores() {
                               amount:
                                 (moneyReport?.cash?.totalBill || 0) +
                                 (moneyReport?.transferCash?.totalBill || 0) +
-                                (moneyReport?.transfer?.totalBill || 0)
-                            }
+                                (moneyReport?.transfer?.totalBill || 0),
+                            },
                           ].map((e) => (
                             <tr>
                               <td style={{ textAlign: "left" }}>{e?.method}</td>
@@ -391,20 +425,26 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('staff_info')}
+                        {t("staff_info")}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>{t('user_name')}</th>
-                            <th style={{ textAlign: "center" }}>{t('order')}</th>
-                            <th style={{ textAlign: "center" }}>
-                              {t('order_cancel')}
+                            <th style={{ textAlign: "left" }}>
+                              {t("user_name")}
                             </th>
-                            <th style={{ textAlign: "right" }}>{t('total_balance')}</th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("order")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("order_cancel")}
+                            </th>
+                            <th style={{ textAlign: "right" }}>
+                              {t("total_balance")}
+                            </th>
                           </tr>
                           {userReport?.map((e) => (
                             <tr>
@@ -432,20 +472,30 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('dialy_sales')}
+                        {t("dialy_sales")}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>{t('date')}</th>
-                            <th style={{ textAlign: "center" }}>{t('orders')}</th>
-                            <th style={{ textAlign: "center" }}>{t('bill_balance')}</th>
-                            <th style={{ textAlign: "center" }}>{t('discount')}</th>
-                            <th style={{ textAlign: "center" }}>{t('last_balance')}</th>
-                            <th style={{ textAlign: "right" }}>{t('total_balance')}</th>
+                            <th style={{ textAlign: "left" }}>{t("date")}</th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("orders")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("bill_balance")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("discount")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("last_balance")}
+                            </th>
+                            <th style={{ textAlign: "right" }}>
+                              {t("total_balance")}
+                            </th>
                           </tr>
                           {reportData.map((e) => (
                             <tr>
@@ -475,18 +525,26 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('menu_type')}
+                        {t("menu_type")}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>{t('menu_type')}</th>
-                            <th style={{ textAlign: "center" }}>{t('order_cussess')}</th>
-                            <th style={{ textAlign: "center" }}>{t('cancel')}</th>
-                            <th style={{ textAlign: "right" }}>{t('total_sale')}</th>
+                            <th style={{ textAlign: "left" }}>
+                              {t("menu_type")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("order_cussess")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("cancel")}
+                            </th>
+                            <th style={{ textAlign: "right" }}>
+                              {t("total_sale")}
+                            </th>
                           </tr>
                           {categoryReport
                             ?.sort((x, y) => {
@@ -516,18 +574,22 @@ export default function ChildStores() {
                           backgroundColor: COLOR_APP,
                           color: "#fff",
                           fontSize: 18,
-                          fontWeight: "bold"
+                          fontWeight: "bold",
                         }}
                       >
-                        {t('menu_info')}
+                        {t("menu_info")}
                       </Card.Header>
                       <Card.Body>
                         <table style={{ width: "100%" }}>
                           <tr>
-                            <th style={{ textAlign: "left" }}>{t('menu')}</th>
-                            <th style={{ textAlign: "center" }}>{t('order_success')}</th>
-                            <th style={{ textAlign: "center" }}>{t('cancel')}</th>
-                            <th style={{ textAlign: "right" }}>{t('sales')}</th>
+                            <th style={{ textAlign: "left" }}>{t("menu")}</th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("order_success")}
+                            </th>
+                            <th style={{ textAlign: "center" }}>
+                              {t("cancel")}
+                            </th>
+                            <th style={{ textAlign: "right" }}>{t("sales")}</th>
                           </tr>
                           {menuReport
                             ?.sort((x, y) => {
@@ -555,8 +617,6 @@ export default function ChildStores() {
                 </div>
               )}
             </div>
-          ) : (
-            <div>No branch store data available.</div>
           )}
         </div>
       </Box>
@@ -577,6 +637,11 @@ export default function ChildStores() {
         onClose={() => setPopup()}
         tableList={tableList || []}
         setSelectedTable={setSelectedTableIds}
+      />
+      <PopUpBranchStore
+        open={popup?.popUpBranchStore}
+        onClose={() => setPopup()}
+        onSubmit={handleAddBranch}
       />
     </>
   );
