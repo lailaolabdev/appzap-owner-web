@@ -70,7 +70,7 @@ export default function MemberPage() {
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState();
   const [selectedMember, setSelectedMember] = useState();
-  const [searchMember, setSearchMember] = useState([]);
+  const [memberName, setMemberName] = useState("");
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedMemberOrders, setSelectedMemberOrders] = useState("");
   const [memberOrdersToTalMoney, setMemberOrdersToTalMoney] = useState([]);
@@ -682,6 +682,15 @@ export default function MemberPage() {
                 ))}
               </table>
             </Card.Body>
+            {memberName && (
+              <Card.Footer>
+                <div
+                  style={{ textAlign: "right", fontSize: 24, fontWeight: 700 }}
+                >
+                  ຍອດຂາຍເມນູຂອງ: {memberName}
+                </div>
+              </Card.Footer>
+            )}
           </Card>
           {/* <ReportCard title={"ກຣາຟ"} chart={<ReportChartWeek />} /> */}
         </div>
@@ -709,7 +718,7 @@ export default function MemberPage() {
         open={popup?.popupmemberorder}
         onClose={() => setPopup()}
         onSelectMember={handleSelectMember}
-        // setData={setSelectedMemberOrders}
+        setData={setMemberName}
       />
       <PopUpMemberOrderAll
         open={popup?.popupmemberorderall}
