@@ -1924,7 +1924,7 @@ export default function TableList() {
                           onClick={() => handleUpdateOrderStatus("SERVED")}
                           disabled={checkedBox}
                         >
-                          {t("served")}
+                          {t("servedBy")}
                         </ButtonCustom>
                       </div>
 
