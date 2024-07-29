@@ -17,7 +17,6 @@ const printFlutter = ({ imageBuffer, ip, type, port }, callback) => {
           resolve();
         })
         .catch(() => {
-          clg;
           callback()
             .then(() => {
               resolve();
