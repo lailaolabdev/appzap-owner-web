@@ -12,9 +12,12 @@ import { useTranslation } from "react-i18next";
 import { Form } from "react-bootstrap";
 import { createUser } from "../../services/user";
 import { useStore } from "../../store";
+
+
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 export default function PopUpCreateUser({ open, onClose, callback }) {
+  const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [formData, setFormData] = useState();
 
@@ -38,13 +41,13 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   };
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ເພີ່ມພະນັກງານ</Modal.Header>
+      <Modal.Header closeButton>{t('add_staff')}</Modal.Header>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div>
-            <Form.Label>ຊື່</Form.Label>
+            <Form.Label>{t('name')}</Form.Label>
             <Form.Control
-              placeholder="ຊື່"
+              placeholder={t('name')}
               value={formData?.firstname}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, firstname: e.target.value }))
@@ -52,9 +55,9 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>ນາມສະກຸນ</Form.Label>
+            <Form.Label>{t('l_name')}</Form.Label>
             <Form.Control
-              placeholder="ນາມສະກຸນ"
+              placeholder={t('l_name')}
               value={formData?.lastname}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, lastname: e.target.value }))
@@ -62,7 +65,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>ສິດການນຳໃຊ້ລະບົບ</Form.Label>
+            <Form.Label>{t('use_system_policy')}</Form.Label>
             <select
               className="form-control"
               value={formData?.role}
@@ -70,16 +73,16 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
                 setFormData((prev) => ({ ...prev, role: e.target.value }))
               }
             >
-              <option value="">ເລືອກປະເພດສິດ</option>
-              <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ(ສິດສູງສຸດ)</option>
-              <option value="APPZAP_STAFF">ພະນັກງານເສີບ</option>
-              <option value="APPZAP_COUNTER">ພະນັກງານເຄົາເຕີ້</option>
-              <option value="APPZAP_KITCHEN">ພໍ່ຄົວ / ແມ່ຄົວ</option>
-              <option value="APPZAP_CUSTOM_ROLE">ກຳນົດເອງ</option>
+              <option value="">{t('chose_policy_type')}</option>
+              <option value="APPZAP_ADMIN">{t('ceo')}</option>
+              <option value="APPZAP_STAFF">{t('server_staff')}</option>
+              <option value="APPZAP_COUNTER">{t('counter_staff')}</option>
+              <option value="APPZAP_KITCHEN">{t('chef')}</option>
+              <option value="APPZAP_CUSTOM_ROLE">{t('selft_define')}</option>
             </select>
           </div>
           <div>
-            <Form.Label>ເບີໂທ</Form.Label>
+            <Form.Label>{t('tel')}</Form.Label>
             <Form.Control
               placeholder="login username"
               value={formData?.phone}
@@ -89,7 +92,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>ຊື່ຜູ້ໃຊ້ (ໃຊ້ໃນການເຂົ້າລະບົບ)</Form.Label>
+            <Form.Label>{t('username')}</Form.Label>
             <Form.Control
               placeholder="login username"
               value={formData?.userId}
@@ -99,7 +102,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>ລະຫັດຜ່ານ</Form.Label>
+            <Form.Label>{t('password')}</Form.Label>
             <Form.Control
               placeholder="******"
               value={formData?.password}
@@ -124,7 +127,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             }
           }}
         >
-          ເພີ່ມພະນັກງານ
+          {t('save_add_staff')}
         </Button>
       </Modal.Footer>
     </Modal>

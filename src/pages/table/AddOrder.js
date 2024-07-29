@@ -698,7 +698,7 @@ function AddOrder() {
                         {t('amount')}
                       </th>
                       <th style={{ border: "none", textAlign: "right" }}>
-                        {t('manage')}
+                        {t('order_food')}
                       </th>
                     </tr>
                   </thead>

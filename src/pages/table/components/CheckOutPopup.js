@@ -23,6 +23,7 @@ import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
 
 import { BiTransfer } from "react-icons/bi";
+import { useTranslation } from "react-i18next";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -35,6 +36,7 @@ export default function CheckOutPopup({
   setDataBill,
   taxPercent = 0
 }) {
+  const { t } = useTranslation();
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
@@ -110,11 +112,10 @@ export default function CheckOutPopup({
     if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${
-      selectCurrency == "LAK"
-        ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
-        : moneyCurrency(parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    moneyReceived = `${selectCurrency == "LAK"
+      ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
+      : moneyCurrency(parseFloat(cashCurrency) || 0)
+      } ${selectCurrency}`;
     moneyChange = `${moneyCurrency(
       (parseFloat(cash) || 0) +
         (parseFloat(transfer) || 0) -
@@ -123,19 +124,19 @@ export default function CheckOutPopup({
             ? totalBill - dataBill?.discount
             : 0
           : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0) <=
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0) <=
         0
         ? 0
         : (parseFloat(cash) || 0) +
-            (parseFloat(transfer) || 0) -
-            (dataBill && dataBill?.discountType === "LAK"
-              ? totalBill - dataBill?.discount > 0
-                ? totalBill - dataBill?.discount
-                : 0
-              : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-              ? totalBill - (totalBill * dataBill?.discount) / 100
-              : 0)
+        (parseFloat(transfer) || 0) -
+        (dataBill && dataBill?.discountType === "LAK"
+          ? totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0)
     )} ${storeDetail?.firstCurrency}`;
 
     setDataBill((prev) => ({
@@ -246,13 +247,13 @@ export default function CheckOutPopup({
         onClose();
         Swal.fire({
           icon: "success",
-          title: "ສໍາເລັດການເຊັກບິນ",
+          title: `${t('checkbill_success')}`,
           showConfirmButton: false,
           timer: 1800
         });
       })
       .catch(function (error) {
-        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+        errorAdd(`${t('checkbill_fial')}`);
       });
   };
   const handleSubmit = () => {
@@ -345,21 +346,21 @@ export default function CheckOutPopup({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
 
   let totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? parseFloat(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
+        totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
+          : 0
+      )
       : parseFloat(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0
+      );
 
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -415,7 +416,7 @@ export default function CheckOutPopup({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          ຄິດໄລເງິນ ໂຕະ ({tableData?.tableName}) - ລະຫັດ {tableData?.code}
+          {t('check_out_table')} ({tableData?.tableName}) - {t('code')} {tableData?.code}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ padding: 0 }}>
@@ -433,19 +434,19 @@ export default function CheckOutPopup({
                 fontSize: 22
               }}
             >
-              <span>ລາຄາລວມ: </span>
+              <span>{t('bill_total')}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
-                    )
+                    totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                  )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0
+                  )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -462,14 +463,14 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) / rateCurrency
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
               <span style={{ fontSize: 14 }} hidden={selectCurrency === "LAK"}>
                 {" "}
-                (ອັດຕາແລກປ່ຽນ: {convertNumber(rateCurrency)})
+                ({t('exchange_rate')}: {convertNumber(rateCurrency)})
               </span>
             </div>
             <div
@@ -497,7 +498,7 @@ export default function CheckOutPopup({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>ເງິນສົດ</InputGroup.Text>
+                <InputGroup.Text>{t('cash')}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash" && tab !== "cash_transfer"}
                   type="text"
@@ -514,7 +515,7 @@ export default function CheckOutPopup({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>ເງິນໂອນ</InputGroup.Text>
+                <InputGroup.Text>{t('transfer')}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
@@ -531,7 +532,7 @@ export default function CheckOutPopup({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>ສະມາຊິກ</InputGroup.Text>
+                <InputGroup.Text>{t('member')}</InputGroup.Text>
                 <InputGroup.Text>+856 20</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -550,8 +551,8 @@ export default function CheckOutPopup({
                   <FaSearch />
                 </Button>
                 <div style={{ width: 30 }} />
-                <InputGroup.Text>ຊື່: {memberData?.name}</InputGroup.Text>
-                <InputGroup.Text>ຄະແນນ: {memberData?.point}</InputGroup.Text>
+                <InputGroup.Text>{t('name')}: {memberData?.name}</InputGroup.Text>
+                <InputGroup.Text>{t('point')}: {memberData?.point}</InputGroup.Text>
               </InputGroup>
             </div>
             <div
@@ -559,7 +560,7 @@ export default function CheckOutPopup({
                 marginBottom: 10
               }}
             >
-              ທອນ:{" "}
+              {t('return')}:{" "}
               {moneyCurrency(
                 (parseInt(cash) || 0) +
                   (parseInt(transfer) || 0) -
@@ -568,19 +569,19 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) <=
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
-                      (parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0)
+                  (parseInt(transfer) || 0) -
+                  (dataBill && dataBill?.discountType === "LAK"
+                    ? totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -601,7 +602,7 @@ export default function CheckOutPopup({
                   setForcus("CASH");
                 }}
               >
-                ເງິນສົດ
+                {t('cash')}
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
@@ -614,7 +615,7 @@ export default function CheckOutPopup({
                   setForcus("TRANSFER");
                 }}
               >
-                ໂອນ
+                {t('transfer')}
               </Button>
               <Button
                 variant={
@@ -630,7 +631,7 @@ export default function CheckOutPopup({
                   setForcus("TRANSFER_CASH");
                 }}
               >
-                ເງິນສົດ ແລະ ໂອນ
+                {t('cash_transfer')}
               </Button>
               <div style={{ flex: 1 }} />
               <Form.Control
@@ -701,7 +702,7 @@ export default function CheckOutPopup({
       <Modal.Footer>
         <div style={{ flex: 1 }}>
           <p>
-            ພະນັກງານເຊັກບິນ:{" "}
+            {t('cashier')}:{" "}
             <b>
               {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
             </b>
@@ -716,11 +717,11 @@ export default function CheckOutPopup({
           disabled={!canCheckOut}
         >
           <BiSolidPrinter />
-          ພິມບິນ ແລະ ໄລເງິນ
+          {t('print_checkbill')}
         </Button>
         <div style={{ width: "20%" }}></div>
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
-          ໄລເງິນ
+          {t('calculate')}
         </Button>
       </Modal.Footer>
     </Modal>

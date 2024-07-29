@@ -208,7 +208,7 @@ export default function BillForCheckOut80({
             <Row>
               <Col sm={8}>
                 <div style={{ textAlign: "right" }}>
-                  {t("total")} + {t("vat2")} {taxPercent}%:{" "}
+                  {t("total")} + {t("vat")} {taxPercent}%:{" "}
                 </div>
               </Col>
               <Col sm={4}>
@@ -218,7 +218,7 @@ export default function BillForCheckOut80({
                 </div>
               </Col>
             </Row>
-            {/* {t("total")} + {t("vat2")} {taxPercent}%:{" "}
+            {/* {t("total")} + {t("vat")} {taxPercent}%:{" "}
             {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency} */}
           </div>
           {currencyData?.map((item, index) => (
@@ -239,7 +239,7 @@ export default function BillForCheckOut80({
                     alignItems: "center"
                   }}
                 >
-                  {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}
+                  {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
                   ):
                 </div>
                 <div
@@ -264,7 +264,7 @@ export default function BillForCheckOut80({
                     border: "1px solid red"
                   }}
                 >
-                  {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}
+                  {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
                   ):
                 </Col>
                 <Col style={{ minWidth: 400 }}>
@@ -273,7 +273,7 @@ export default function BillForCheckOut80({
                   </div>
                 </Col>
               </Row> */}
-              {/* {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}):{" "}
+              {/* {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}):{" "}
               {moneyCurrency((total + taxAmount) / item?.sell)} */}
             </>
           ))}

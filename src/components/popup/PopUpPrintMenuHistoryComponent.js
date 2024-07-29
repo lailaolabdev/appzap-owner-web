@@ -17,12 +17,14 @@ import {
 } from "../../services/report";
 import _ from "lodash";
 import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpPrintMenuHistoryComponent({
   open,
   onClose,
   children,
 }) {
+  const { t } = useTranslation();
   let billRef = useRef(null);
   // state
   const [selectPrinter, setSelectPrinter] = useState();
@@ -79,7 +81,7 @@ export default function PopUpPrintMenuHistoryComponent({
       });
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t('print_success')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -87,7 +89,7 @@ export default function PopUpPrintMenuHistoryComponent({
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: "ປິນບໍ່ສຳເລັດ",
+        title: `${t('print_fail')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -112,7 +114,7 @@ export default function PopUpPrintMenuHistoryComponent({
       //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
       //   ຈ່າຍເງິນໂອນ: transferTotalBill,
       // });
-    } catch (err) {}
+    } catch (err) { }
   };
 
   return (
@@ -121,7 +123,7 @@ export default function PopUpPrintMenuHistoryComponent({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> ປິນ
+        <BsPrinter /> {t('print')}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -147,20 +149,20 @@ export default function PopUpPrintMenuHistoryComponent({
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              ລາຍງານຍອດຂາຍຕາເມນູ
+              {t('sale_report_by_menu')}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              ເລີ່ມ: {startDate} 00:00:00
+              {t('start')}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>ຫາ: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <TableComponent>
               <tr style={{ fontWeight: "bold" }}>
                 <td style={{ textAlign: "left" }}>#</td>
-                <td style={{ textAlign: "center" }}>ເມນູ</td>
-                <td style={{ textAlign: "center" }}>ອໍເດີສຳເລັດ</td>
-                <td style={{ textAlign: "center" }}>ຍົກເລີກ</td>
-                <td style={{ textAlign: "right" }}>ຍອດຂາຍ</td>
+                <td style={{ textAlign: "center" }}>{t('menu')}</td>
+                <td style={{ textAlign: "center" }}>{t('success_order')}</td>
+                <td style={{ textAlign: "center" }}>{t('cancel')}</td>
+                <td style={{ textAlign: "right" }}>{t('sale_price_amount')}</td>
               </tr>
               {menuReport?.map((e, i) => (
                 <tr>
