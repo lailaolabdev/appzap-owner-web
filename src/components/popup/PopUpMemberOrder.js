@@ -90,7 +90,7 @@ export default function PopUpMemberOrder({
           </Col>
         </Row>
         <Row className="p-2">
-          {membersData.map((e) => (
+          {membersData?.map((e) => (
             <div key={e.id} className="m-2">
               <Button
                 variant="outline-primary"
