@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 
 export const convertBillFarkStatus = (status, t) => {
-
   switch (status) {
     case "INSTOCK":
       return (

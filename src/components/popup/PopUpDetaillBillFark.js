@@ -10,13 +10,14 @@ import { URL_PHOTO_AW3 } from "../../constants";
 import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
-
+import { useTranslation } from "react-i18next";
 export default function PopUpDetaillBillFark({
   open,
   onClose,
   callback,
   billFarkData,
 }) {
+  const { t } = useTranslation();
   // state
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
@@ -100,7 +101,10 @@ export default function PopUpDetaillBillFark({
           <div>ລະຫັດ: {billFarkData?.code}</div>
           <div>ຊື່: {billFarkData?.customerName}</div>
           <div>ເບີໂທ: {billFarkData?.customerPhone}</div>
-          <div>ສະຖານາະ: {convertBillFarkStatus(billFarkData?.stockStatus)}</div>
+          <div>
+            ສະຖານາະ:{" "}
+            {t ? convertBillFarkStatus(billFarkData?.stockStatus, t) : ""}
+          </div>
           <div>
             ວັນທີສ້າງ: {moment(billFarkData?.createdAt).format("DD/MM/YYYY")}
           </div>
