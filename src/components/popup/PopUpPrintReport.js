@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import TimePicker from "react-bootstrap-time-picker";
 import { BsPrinter } from "react-icons/bs";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpPrintReport({ open, onClose, setPopup }) {
+  const { t } = useTranslation();
   // state
 
   // useEffect
@@ -15,7 +17,7 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> ເລືອກສິງທີຕ້ອງການປິນ
+        <BsPrinter /> {t('chose_print_product')}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -36,35 +38,35 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportSale: true })}
           >
-            <span>ປະຫວັດບິນ</span>
+            <span>{t('bill_history')}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportStaffSale: true })}
           >
-            <span>ປະຫວັດພະນັກງານ</span>
+            <span>{t('staff_history')}</span>
           </Button>
           <Button style={{ height: 100, padding: 20 }} disabled>
-            <span>ປະຫວັດສະແກນ</span>
+            <span>{t('sales_history')}</span>
           </Button>
 
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuSale: true })}
           >
-            <span>ລາຍງານເມນູ</span>
+            <span>{t('menu_list')}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuCategorySale: true })}
           >
-            <span>ລາຍງານປະເພດເມນູ</span>
+            <span>{t('menu_type_list')}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuAndCategorySale: true })}
           >
-            <span>ລາຍງານເມນູແລະປະເພດ</span>
+            <span>{t('menu_and_type_list')}</span>
           </Button>
         </div>
       </Modal.Body>

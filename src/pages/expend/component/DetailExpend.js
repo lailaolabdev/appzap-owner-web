@@ -36,8 +36,10 @@ import {
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 export default function DetailExpend() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   //useState
@@ -87,12 +89,12 @@ export default function DetailExpend() {
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend/${id}`,
         headers: headers,
       }).then(async () => {
-        await successAdd("ລຶບສຳເລັດ");
+        await successAdd(`${t('delete_success')}`);
         await navigate("/expends/limit/40/skip/1");
         await setIsLoading(false);
       });
     } catch (err) {
-      errorAdd("ລຶບບໍ່ສຳເລັດ");
+      errorAdd(`${t('delete_fail')}`);
       console.log("err:::", err);
     }
   };
@@ -111,7 +113,7 @@ export default function DetailExpend() {
 
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ລາຍລະອຽດ" />
+      <TitleComponent fontSize={"20px"} title={t('detail')} />
 
       {isLoading ? (
         <div>
@@ -124,7 +126,7 @@ export default function DetailExpend() {
           <Row>
             <Col xs={12} sm={12} md={6}>
               <Form.Group>
-                <Form.Label style={{ color: "gray" }}>ວັນທີຈ່າຍ</Form.Label>
+                <Form.Label style={{ color: "gray" }}>{t('paid_date')}</Form.Label>
 
                 <p style={{ fontWeight: 400 }}>
                   {formatDate(expendData?.dateExpend)}
@@ -133,7 +135,7 @@ export default function DetailExpend() {
 
               <Form.Group>
                 <Form.Label style={{ color: "gray" }}>
-                  ລາຍລະອຽດການຈ່າຍ
+                  {t('paid_detail')}
                 </Form.Label>
                 <p style={{ fontWeight: 400 }}>{expendData?.detail}</p>
               </Form.Group>
@@ -141,20 +143,20 @@ export default function DetailExpend() {
               <Row>
                 <Col xs={12} sm={4} md={4}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ຜູ້ຈ່າຍ</Form.Label>
+                    <Form.Label style={{ color: "gray" }}>{t('payer')}</Form.Label>
                     <p style={{ fontWeight: 400 }}>{expendData?.paidBy}</p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={4} md={4}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ຜູ້ຮັບ</Form.Label>
+                    <Form.Label style={{ color: "gray" }}>{t('reciver')}</Form.Label>
                     <p style={{ fontWeight: 400 }}>{expendData?.paidTo}</p>
                   </Form.Group>
                 </Col>
                 <Col xs={12} sm={4} md={4}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ຮູບແບບຈ່າຍ
+                      {t('paid_method')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {convertPayment(expendData?.payment)}
@@ -167,7 +169,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={3}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ຈຳນວນເງິນກີບ
+                      {t('price_amount_lak')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {moneyCurrency(expendData?.priceLAK)}
@@ -177,7 +179,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={3}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ຈຳນວນເງິນບາດ
+                      {t('price_amount_thb')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {moneyCurrency(expendData?.priceTHB)}
@@ -187,7 +189,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={3}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ຈຳນວນເງິນໂດລາ
+                      {t('price_amount_usd')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {moneyCurrency(expendData?.priceUSD)}
@@ -197,7 +199,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={3}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ຈຳນວນເງິນຢວນ
+                      {t('price_amount_cny')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {moneyCurrency(expendData?.priceCNY)}
@@ -207,14 +209,14 @@ export default function DetailExpend() {
               </Row>
 
               <Form.Group>
-                <Form.Label style={{ color: "gray" }}>ໝາຍເຫດ</Form.Label>
+                <Form.Label style={{ color: "gray" }}>{t('note')}</Form.Label>
                 <p style={{ fontWeight: 400 }}>{expendData?.note}</p>
               </Form.Group>
 
               <Row>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ວັນທີສ້າງ</Form.Label>
+                    <Form.Label style={{ color: "gray" }}>{t('create_date')}</Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {formatDateTime(expendData?.createdAt)}
                     </p>
@@ -222,7 +224,7 @@ export default function DetailExpend() {
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ຜູ້ສ້າງ</Form.Label>
+                    <Form.Label style={{ color: "gray" }}>{t('created_by')}</Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {expendData?.createdByName}
                     </p>
@@ -234,7 +236,7 @@ export default function DetailExpend() {
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
                     <Form.Label style={{ color: "gray" }}>
-                      ວັນທີແກ້ໄຂ
+                      {t('how_update')}
                     </Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {formatDateTime(expendData?.updatedAt)}
@@ -243,7 +245,7 @@ export default function DetailExpend() {
                 </Col>
                 <Col xs={12} sm={6} md={6}>
                   <Form.Group>
-                    <Form.Label style={{ color: "gray" }}>ຜູ້ແກ້ໄຂ</Form.Label>
+                    <Form.Label style={{ color: "gray" }}>{t('update_by')}</Form.Label>
                     <p style={{ fontWeight: 400 }}>
                       {expendData?.updatedByName}
                     </p>
@@ -260,16 +262,16 @@ export default function DetailExpend() {
                 }}
               >
                 <ButtonComponent
-                  title={"ກັບຄືນ"}
+                  title={`${t('back')}`}
                   width="150px"
                   icon={faArrowLeft}
                   colorbg={"lightgray"}
-                  handleClick={() => navigate(`/expends/limit/40/skip/1`,{replace:true})}
+                  handleClick={() => navigate(`/expends/limit/40/skip/1`, { replace: true })}
                   hoverbg={"gray"}
                 />
                 <ButtonComponent
                   type="button"
-                  title={"ແກ້ໄຂ"}
+                  title={`${t('edit')}`}
                   width="150px"
                   icon={faEdit}
                   handleClick={() =>
@@ -279,7 +281,7 @@ export default function DetailExpend() {
                   hoverbg={"darkorange"}
                 />
                 <ButtonComponent
-                  title={"ລຶບ"}
+                  title={`${t('delete')}`}
                   width="150px"
                   icon={faTrash}
                   colorbg={"#ff8585"}
@@ -293,7 +295,7 @@ export default function DetailExpend() {
               <Form.Group>
                 {expendData?.expendImages.length > 0 ? (
                   <Form.Label style={{ color: "gray" }}>
-                    ອັບໂຫລດຮູບໃບບິນ
+                    {t('upload_bill_image')}
                   </Form.Label>
                 ) : (
                   ""
@@ -302,26 +304,26 @@ export default function DetailExpend() {
                 <Row>
                   {expendData?.expendImages.length > 0
                     ? expendData?.expendImages.map((item, index) => (
-                        <Col xs="12" sm="3" md="6" key={index}>
-                          <a
-                            href={
-                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                              item
-                            }
-                            target="_blank"
-                          >
-                            <div className="show-img-upload mb-2">
-                              <img
-                                src={
-                                  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
-                                  item
-                                }
-                                alt={item}
-                              />
-                            </div>
-                          </a>
-                        </Col>
-                      ))
+                      <Col xs="12" sm="3" md="6" key={index}>
+                        <a
+                          href={
+                            "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                            item
+                          }
+                          target="_blank"
+                        >
+                          <div className="show-img-upload mb-2">
+                            <img
+                              src={
+                                "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/" +
+                                item
+                              }
+                              alt={item}
+                            />
+                          </div>
+                        </a>
+                      </Col>
+                    ))
                     : ""}
                 </Row>
               </Form.Group>

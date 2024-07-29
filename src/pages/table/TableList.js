@@ -317,7 +317,7 @@ export default function TableList() {
         successAdd(`${t("succes_update_amount")}`);
       }
     } catch (err) {
-      errorAdd("ແກ້ໄຂຈຳນວນບໍ່ສຳເລັດ");
+      errorAdd(`${t('fail_update_amount')}`);
     }
   };
 
@@ -1785,7 +1785,7 @@ export default function TableList() {
                                 e?.status != "FEEDBACK"
                             )?.length
                           }{" "}
-                          ອໍເດີຍັງບໍ່ທັນເສີບ !
+                          {t("itemNotServed")} !
                         </div>
                       </div>
                       <div
@@ -1886,7 +1886,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          ຍົກເລີກແລະພິມບິນໄປຄົວ
+                          {t('cancel_and_send_to_kitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
@@ -1912,7 +1912,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          ອັບເດດພິມໄປຄົວ
+                          {t('update_and_send_to_kitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
