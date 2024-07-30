@@ -47,7 +47,8 @@ export default function PopUpAddDiscount({
 
   useEffect(() => {
     if (selectedButtonCategory === "%") {
-      const totalDiscount = (categoryTotal * discountCategory) / 100;
+      const calculatedDiscount = (categoryTotal * discountCategory) / 100;
+      const totalDiscount = Math.floor(calculatedDiscount);
       setDiscountOrder(totalDiscount);
     } else {
       setDiscountOrder(discountCategory);
@@ -133,7 +134,7 @@ export default function PopUpAddDiscount({
     const _sumTotal = _.sumBy(data, (o) => o?.price * o?.quantity);
     setTotal(_sumTotal);
     setDiscount(dataBill?.discount);
-  }, [value, dataBill, open]);
+  }, [open]);
 
   const handleCategoryChange = (e) => {
     const selectedCategoryId = e.target.value;
