@@ -5,13 +5,14 @@ import html2canvas from "html2canvas";
 import {
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
-  USB_PRINTER_PORT
+  USB_PRINTER_PORT,
 } from "../../constants";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useStore } from "../../store";
 import { base64ToBlob } from "../../helpers";
 import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
 
   const [selectPrinter, setSelectPrinter] = useState();
 
-  const { printers } = useStore();
+  const { printerCounter, printers } = useStore();
 
   useEffect(() => {
     console.log("datas: ", datas);
@@ -29,12 +30,16 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
   const billPrint = async () => {
     try {
       let urlPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
 
       let imageFormater = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
-        scale: 1
+        scale: 1,
       });
 
       urlPrinter = USB_PRINTER_PORT;
@@ -58,25 +63,41 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
-      await axios({
-        method: "post",
-        url: urlPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      await printFlutter(
+        {
+          imageBuffer: imageFormater.toDataURL(),
+          ip: myPrinter?.ip,
+          type: myPrinter?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" }
+      // });
       await Swal.fire({
         icon: "success",
-        title: `${t('print_success')}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     } catch (error) {
       console.log(error);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fail')}`,
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     }
   };
@@ -91,13 +112,15 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                 style={{
                   height: 80,
                   width: 80,
-                  borderRadius: "50%"
+                  borderRadius: "50%",
                 }}
                 src={URL_PHOTO_AW3 + storeData?.image}
               />
             </div>
             <h2>{storeData?.name}</h2>
-            <p>{t('tel')}: {storeData?.phone}</p>
+            <p>
+              {t("tel")}: {storeData?.phone}
+            </p>
           </div>
           <div>
             <Table
@@ -109,23 +132,23 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                   <th
                     style={{
                       border: "1.5px solid #000",
-                      textAlign: "center"
+                      textAlign: "center",
                     }}
                   >
-                    {t('no')}
+                    {t("no")}
                   </th>
                   <th
                     style={{
                       border: "1.5px solid #000",
-                      textAlign: "center"
+                      textAlign: "center",
                     }}
                   >
-                    {t('type')}
+                    {t("type")}
                   </th>
                   <th
                     style={{
                       border: "1.5px solid #000",
-                      textAlign: "center"
+                      textAlign: "center",
                     }}
                   >
                     {t("product_name")}
@@ -133,26 +156,50 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                   <th
                     style={{
                       border: "1.5px solid #000",
-                      textAlign: "center"
+                      textAlign: "center",
                     }}
                   >
-                    {t('amount_unit')}
+                    {t("amount_unit")}
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {datas.map((item, index) => (
                   <tr key={index}>
-                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
+                    <td
+                      style={{
+                        padding: "4px 2px",
+                        textAlign: "center",
+                        border: "1.5px solid #000",
+                      }}
+                    >
                       {index + 1}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
+                    <td
+                      style={{
+                        padding: "4px 2px",
+                        textAlign: "center",
+                        border: "1.5px solid #000",
+                      }}
+                    >
                       {item?.stockCategoryId?.name}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
+                    <td
+                      style={{
+                        padding: "4px 2px",
+                        textAlign: "center",
+                        border: "1.5px solid #000",
+                      }}
+                    >
                       {item?.name}
                     </td>
-                    <td style={{ padding: "4px 2px", textAlign: "center", border: "1.5px solid #000", }}>
+                    <td
+                      style={{
+                        padding: "4px 2px",
+                        textAlign: "center",
+                        border: "1.5px solid #000",
+                      }}
+                    >
                       {item?.quantity} {item?.unit}
                     </td>
                   </tr>
@@ -180,7 +227,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
               onClose();
             }}
           >
-            {t('print_bill')}
+            {t("print_bill")}
           </Button>
         </Form.Group>
       </Modal.Footer>

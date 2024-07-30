@@ -18,6 +18,7 @@ import {
 import _ from "lodash";
 import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
 import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPrintMenuHistoryComponent({
   open,
@@ -32,7 +33,7 @@ export default function PopUpPrintMenuHistoryComponent({
   const [menuReport, setMenuReport] = useState([]);
 
   // provider
-  const { printers, storeDetail } = useStore();
+  const {printerCounter, printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     getMenuReportData(startDate);
@@ -42,6 +43,10 @@ export default function PopUpPrintMenuHistoryComponent({
   const onPrintBill = async () => {
     try {
       let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
 
       let dataImageForPrint = await html2canvas(billRef.current, {
         useCORS: true,
@@ -73,12 +78,28 @@ export default function PopUpPrintMenuHistoryComponent({
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
       await Swal.fire({
         icon: "success",
         title: `${t('print_success')}`,

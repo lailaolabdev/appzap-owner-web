@@ -5,8 +5,11 @@ import { base64ToBlob } from "../../helpers";
 import html2canvas from "html2canvas";
 import axios from "axios";
 import { USB_PRINTER_PORT } from "../../constants";
+import printFlutter from "../../helpers/printFlutter";
+import { useStore } from "../../store";
 
 export default function PrintTest() {
+  const { printerCounter, printers } = useStore();
   let bill80Ref = useRef(null);
   const [widthBill80, setWidthBill80] = useState(0);
   useLayoutEffect(() => {
@@ -15,6 +18,11 @@ export default function PrintTest() {
   const onPrintBill = async () => {
     try {
       let urlForPrinter = "";
+
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
 
       let dataImageForPrint = await html2canvas(bill80Ref.current, {
         useCORS: true,
@@ -32,12 +40,28 @@ export default function PrintTest() {
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",

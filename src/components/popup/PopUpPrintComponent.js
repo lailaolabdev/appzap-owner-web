@@ -17,6 +17,7 @@ import {
   USB_PRINTER_PORT
 } from "../../constants";
 import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter"
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
@@ -37,7 +38,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   });
 
   // provider
-  const { printers, storeDetail } = useStore();
+  const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
     console.log("printers: ", billRef.current)
@@ -49,6 +50,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     try {
       let urlForPrinter = "";
 
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
       let dataImageForPrint = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
@@ -79,12 +84,30 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" }
+      // });
+
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
