@@ -19,7 +19,7 @@ export default function PopUpAddDiscount({
   value,
   onClose,
   onSubmit,
-  dataBill
+  dataBill,
 }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -71,8 +71,8 @@ export default function PopUpAddDiscount({
         id: dataBill?._id,
         data: {
           discount: discountAmount,
-          discountType: discountType === "%" ? "PERCENT" : "LAK"
-        }
+          discountType: discountType === "%" ? "PERCENT" : "LAK",
+        },
       };
       console.log("BODY: ", _body);
       const _header = await getHeaders();
@@ -86,7 +86,7 @@ export default function PopUpAddDiscount({
     try {
       const res = await axios({
         method: "GET",
-        url: END_POINT_SEVER + `/v3/categoroy-type`
+        url: END_POINT_SEVER + `/v3/categoroy-type`,
       });
       console.log("CATEGORYTYPE: ", res.data.data);
       setCategorysType(res?.data?.data);
@@ -100,7 +100,7 @@ export default function PopUpAddDiscount({
       const response = await fetch(
         END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
         {
-          method: "GET"
+          method: "GET",
         }
       );
       const json = await response.json();
@@ -141,7 +141,7 @@ export default function PopUpAddDiscount({
     setSelectedCategory(selectedCategoryId);
     if (selectedCategoryId !== "All") {
       const filteredCategoriesType = filteredCategories.filter(
-        (category) => category?.categoryTypeId?._id === selectedCategoryId
+        (category) => category?.categoryTypeId === selectedCategoryId
       );
 
       const filteredOrders = value.filter((order) =>
@@ -203,7 +203,7 @@ export default function PopUpAddDiscount({
                             ? "green"
                             : orderItem?.status === "DOING"
                             ? ""
-                            : "red"
+                            : "red",
                       }}
                     >
                       {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
@@ -223,7 +223,7 @@ export default function PopUpAddDiscount({
           style={{
             padding: "10px 0",
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           <div>
@@ -244,7 +244,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -252,7 +252,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -271,7 +271,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -279,7 +279,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -337,7 +337,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -345,7 +345,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -366,7 +366,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -374,7 +374,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -400,7 +400,7 @@ export default function PopUpAddDiscount({
           style={{
             padding: "10px 0",
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           {t("total")}: {moneyCurrency(categoryTotal)}{" "}
@@ -409,7 +409,7 @@ export default function PopUpAddDiscount({
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           {t("discount_for_food")}: {moneyCurrency(discountOrder)}{" "}
@@ -440,17 +440,17 @@ const TableCustom = styled("table")({
   width: "100%",
   fontSize: 12,
   ["th,td"]: {
-    padding: 0
+    padding: 0,
   },
   ["th:first-child"]: {
     maxWidth: 40,
-    width: 40
+    width: 40,
   },
   ["td:first-child"]: {
     maxWidth: 40,
-    width: 40
+    width: 40,
   },
   thead: {
-    backgroundColor: "#e9e9e9"
-  }
+    backgroundColor: "#e9e9e9",
+  },
 });
