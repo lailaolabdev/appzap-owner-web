@@ -141,12 +141,12 @@ export default function PopUpAddDiscount({
     setSelectedCategory(selectedCategoryId);
     if (selectedCategoryId !== "All") {
       const filteredCategoriesType = filteredCategories.filter(
-        (category) => category.categoryTypeId._id === selectedCategoryId
+        (category) => category?.categoryTypeId?._id === selectedCategoryId
       );
 
       const filteredOrders = value.filter((order) =>
         filteredCategoriesType.some(
-          (category) => category._id === order.categoryId
+          (category) => category?._id === order?.categoryId
         )
       );
 
