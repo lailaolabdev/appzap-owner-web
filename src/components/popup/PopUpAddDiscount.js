@@ -19,7 +19,7 @@ export default function PopUpAddDiscount({
   value,
   onClose,
   onSubmit,
-  dataBill
+  dataBill,
 }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -28,12 +28,16 @@ export default function PopUpAddDiscount({
   const { storeDetail } = useStore();
   const [selectedButton, setSelectedButton] = useState("%");
   const [Categorys, setCategorys] = useState([]);
-  const [filterCategory, setFilterCategory] = useState("All");
+  const [categorysType, setCategorysType] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [discountCategory, setDiscountCategory] = useState(0);
+  const [discountOrder, setDiscountOrder] = useState(0);
   const [discountCategoryAmount, setDiscountCategoryAmount] = useState(0);
   const [adjustedTotal, setAdjustedTotal] = useState(0);
-  const [selectedButtonCategory, setSelectedButtonCategory] = useState();
+  const [selectedButtonCategory, setSelectedButtonCategory] = useState("%");
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
 
   const preventMinus = (e) => {
     if (e.code === "Minus") {
@@ -41,24 +45,54 @@ export default function PopUpAddDiscount({
     }
   };
 
+  useEffect(() => {
+    if (selectedButtonCategory === "%") {
+      const calculatedDiscount = (categoryTotal * discountCategory) / 100;
+      const totalDiscount = Math.floor(calculatedDiscount);
+      setDiscountOrder(totalDiscount);
+    } else {
+      setDiscountOrder(discountCategory);
+    }
+  }, [discountCategory]);
+
+  useEffect(() => {
+    getCategoryType();
+  }, [open]);
+
   const setDiscountBill = async () => {
     try {
       const url = END_POINT_SEVER + "/v3/bill-discount";
       const discountAmount =
-        filterCategory !== "All" ? discountCategoryAmount : discount;
+        selectedCategory !== "All" ? discountOrder : discount;
       const discountType =
-        filterCategory !== "All" ? selectedButtonCategory : selectedButton;
+        selectedCategory !== "All"
+          ? selectedButtonCategory === "LAK"
+          : selectedButton;
       const _body = {
         id: dataBill?._id,
         data: {
           discount: discountAmount,
-          discountType: discountType === "%" ? "PERCENT" : "LAK"
-        }
+          discountType: discountType === "%" ? "PERCENT" : "LAK",
+        },
       };
+      console.log("BODY: ", _body);
       const _header = await getHeaders();
       const res = await axios.put(url, _body, { headers: _header });
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const getCategoryType = async () => {
+    try {
+      const res = await axios({
+        method: "GET",
+        url: END_POINT_SEVER + `/v3/categoroy-type`,
+      });
+      console.log("CATEGORYTYPE: ", res.data.data);
+      setCategorysType(res?.data?.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -67,7 +101,7 @@ export default function PopUpAddDiscount({
       const response = await fetch(
         END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
         {
-          method: "GET"
+          method: "GET",
         }
       );
       const json = await response.json();
@@ -76,21 +110,11 @@ export default function PopUpAddDiscount({
       const filteredCategories = json.filter((category) =>
         orderCategoryIds.includes(category._id)
       );
-      setCategorys(filteredCategories);
+      console.log("filteredCategories", filteredCategories);
+      setFilteredCategories(filteredCategories);
     } catch (err) {
       console.log(err);
     }
-  };
-
-  const calculateCategorySum = (categoryId) => {
-    const filteredOrders = value.filter(
-      (order) => order.categoryId === categoryId
-    );
-    const categoryTotal = _.sumBy(
-      filteredOrders,
-      (order) => order.price * order.quantity
-    );
-    return categoryTotal;
   };
 
   useEffect(() => {
@@ -108,34 +132,45 @@ export default function PopUpAddDiscount({
     fetchData();
     const data = value.filter((e) => e?.status !== "CANCEL");
     const _sumTotal = _.sumBy(data, (o) => o?.price * o?.quantity);
-    console.log("_sumTotal: ", _sumTotal);
     setTotal(_sumTotal);
     setDiscount(dataBill?.discount);
-  }, [value, dataBill]);
+  }, [open]);
 
-  useEffect(() => {
-    if (filterCategory !== "All") {
-      const total = calculateCategorySum(filterCategory);
-      setCategoryTotal(total);
-    } else {
-      setCategoryTotal(0);
-    }
-  }, [filterCategory, value]);
+  const handleCategoryChange = (e) => {
+    const selectedCategoryId = e.target.value;
 
-  useEffect(() => {
-    if (filterCategory !== "All") {
-      const discountValue =
-        selectedButton === "%"
-          ? (categoryTotal * discountCategory) / 100
-          : discountCategory;
-      setDiscountCategoryAmount(discountValue);
-      const newTotal = total - discountValue;
-      setAdjustedTotal(newTotal);
+    setSelectedCategory(selectedCategoryId);
+    if (selectedCategoryId !== "All") {
+      const filteredCategoriesType = filteredCategories.filter(
+        (category) => category?.categoryTypeId === selectedCategoryId
+      );
+
+      const filteredOrders = value.filter((order) =>
+        filteredCategoriesType.some(
+          (category) => category?._id === order?.categoryId
+        )
+      );
+
+      setFilteredOrders(filteredOrders);
+
+      const totalForSelectedCategory = _.sumBy(
+        filteredOrders,
+        (o) => o.price * o.quantity
+      );
+      const totalDiscount = (totalForSelectedCategory * discountCategory) / 100;
+      setCategoryTotal(totalForSelectedCategory);
+      // setDiscountCategory(dataBill?.discount);
+      setDiscountOrder(totalDiscount);
+      console.log("OrderPrice: ", totalDiscount);
+      // if (discountCategory === "%") {
+
+      // }
     } else {
-      setDiscountCategoryAmount(0);
-      setAdjustedTotal(total);
+      const _sumTotal = _.sumBy(value, (o) => o.price * o.quantity);
+      setCategoryTotal(_sumTotal);
+      setDiscountOrder(0);
     }
-  }, [discountCategory, selectedButton, categoryTotal, total, filterCategory]);
+  };
 
   return (
     <Modal show={open} onHide={onClose}>
@@ -169,7 +204,7 @@ export default function PopUpAddDiscount({
                             ? "green"
                             : orderItem?.status === "DOING"
                             ? ""
-                            : "red"
+                            : "red",
                       }}
                     >
                       {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
@@ -189,7 +224,7 @@ export default function PopUpAddDiscount({
           style={{
             padding: "10px 0",
             display: "flex",
-            justifyContent: "flex-end"
+            justifyContent: "flex-end",
           }}
         >
           <div>
@@ -210,7 +245,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -218,7 +253,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -237,7 +272,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -245,7 +280,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -261,7 +296,7 @@ export default function PopUpAddDiscount({
             onChange={(e) => {
               setDiscount(e.target.value);
             }}
-            disabled={filterCategory !== "All"}
+            disabled={selectedCategory !== "All"}
           />
           <div>{selectedButton}</div>
         </div>
@@ -274,15 +309,15 @@ export default function PopUpAddDiscount({
           <label style={{ marginRight: "18px" }}>{t("type")}</label>
           <select
             className="form-control"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            value={selectedCategory}
+            onChange={handleCategoryChange}
             style={{ display: "inline-block", width: "auto" }}
           >
             <option value="All">{t("chose_type")}</option>
-            {Categorys &&
-              Categorys?.map((data, index) => {
+            {categorysType &&
+              categorysType?.map((data, index) => {
                 return (
-                  <option key={"category" + index} value={data?._id}>
+                  <option key={"categoryType" + index} value={data?._id}>
                     {data?.name}
                   </option>
                 );
@@ -293,17 +328,17 @@ export default function PopUpAddDiscount({
           <div>{t("discount")}</div>
           <div style={{ display: "flex", border: "1px solid #ccc" }}>
             <div
-              onClick={() => setSelectedButton("%")}
+              onClick={() => setSelectedButtonCategory("%")}
               style={
-                selectedButton !== ""
+                selectedButtonCategory !== ""
                   ? {
                       backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
+                        selectedButtonCategory === "%" ? COLOR_APP : "white",
                       width: 40,
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -311,26 +346,28 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
               %
             </div>
             <div
-              onClick={() => setSelectedButton(storeDetail?.firstCurrency)}
+              onClick={() =>
+                setSelectedButtonCategory(storeDetail?.firstCurrency)
+              }
               style={
-                selectedButton !== ""
+                setSelectedButtonCategory !== ""
                   ? {
                       backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
+                        selectedButtonCategory === storeDetail?.firstCurrency
                           ? COLOR_APP
                           : "white",
                       width: 40,
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
                   : {
                       backgroundColor: COLOR_APP,
@@ -338,7 +375,7 @@ export default function PopUpAddDiscount({
                       height: 40,
                       display: "flex",
                       justifyContent: "center",
-                      alignItems: "center"
+                      alignItems: "center",
                     }
               }
             >
@@ -353,26 +390,30 @@ export default function PopUpAddDiscount({
             value={discountCategory}
             min="0"
             style={{ height: 40 }}
-            onClick={() => setDiscountCategory(storeDetail?.firstCurrency)}
             onChange={(e) => {
               setDiscountCategory(e.target.value);
-              console.log(discountCategory);
             }}
-            disabled={filterCategory === "All"}
+            disabled={selectedCategory === "All"}
           />
-          <div>{storeDetail?.firstCurrency}</div>
+          <div>{selectedButtonCategory}</div>
         </div>
-
-        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          {t("total_price_of_chosen")}: {moneyCurrency(categoryTotal)}{" "}
+        <div
+          style={{
+            padding: "10px 0",
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          {t("total")}: {moneyCurrency(categoryTotal)}{" "}
           {storeDetail?.firstCurrency}
         </div>
-        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          {t("discount_of_chosen")}: {moneyCurrency(discountCategoryAmount)}{" "}
-          {storeDetail?.firstCurrency}
-        </div>
-        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          {t("total_after_discount")}: {moneyCurrency(adjustedTotal)}{" "}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          {t("discount_for_food")}: {moneyCurrency(discountOrder)}{" "}
           {storeDetail?.firstCurrency}
         </div>
       </Modal.Body>
@@ -400,17 +441,17 @@ const TableCustom = styled("table")({
   width: "100%",
   fontSize: 12,
   ["th,td"]: {
-    padding: 0
+    padding: 0,
   },
   ["th:first-child"]: {
     maxWidth: 40,
-    width: 40
+    width: 40,
   },
   ["td:first-child"]: {
     maxWidth: 40,
-    width: 40
+    width: 40,
   },
   thead: {
-    backgroundColor: "#e9e9e9"
-  }
+    backgroundColor: "#e9e9e9",
+  },
 });

@@ -31,6 +31,7 @@ import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 
+
 /**
  * const
  **/
@@ -313,10 +314,10 @@ export default function TableList() {
       if (updateTable?.status < 300) {
         setQuantity(false);
         reLoadData();
-        successAdd(`${t('succes_update_amount')}`);
+        successAdd(`${t("succes_update_amount")}`);
       }
     } catch (err) {
-      errorAdd("ແກ້ໄຂຈຳນວນບໍ່ສຳເລັດ");
+      errorAdd(`${t('fail_update_amount')}`);
     }
   };
 
@@ -327,7 +328,7 @@ export default function TableList() {
       handleClose();
       await Swal.fire({
         icon: "warning",
-        title: `${t('please_select_table')}`,
+        title: `${t("please_select_table")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -367,7 +368,7 @@ export default function TableList() {
         getTableDataStore();
         await Swal.fire({
           icon: "success",
-          title: `${t('change_table_success')}`,
+          title: `${t("change_table_success")}`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -376,7 +377,7 @@ export default function TableList() {
       console.log({ err });
       await Swal.fire({
         icon: "error",
-        title: `${t('change_table_fial')}`,
+        title: `${t("change_table_fial")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -393,7 +394,7 @@ export default function TableList() {
     try {
       if (tableOrderItems?.length > 0) {
         setOpenModalSetting(false);
-        warningAlert(`${t('can_not_close_table')}`);
+        warningAlert(`${t("can_not_close_table")}`);
         return;
       }
       let header = await getHeaders();
@@ -417,10 +418,10 @@ export default function TableList() {
       if (updateTable.status < 300) {
         setSelectedTable();
         getTableDataStore();
-        successAdd(`${t('close_table_success')}`);
+        successAdd(`${t("close_table_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('close_table_fial')}`);
+      errorAdd(`${t("close_table_fial")}`);
     }
   };
   const _checkStatusCode = (code) => {
@@ -546,13 +547,22 @@ export default function TableList() {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
-      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
 
       await Swal.fire({
         icon: "success",
@@ -569,7 +579,7 @@ export default function TableList() {
       console.log("err printer", err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fial')}`,
+        title: `${t("print_fial")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -645,16 +655,32 @@ export default function TableList() {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
       setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
-        title: `${t('print_success')}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -664,7 +690,7 @@ export default function TableList() {
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fial')}`,
+        title: `${t("print_fial")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -707,7 +733,7 @@ export default function TableList() {
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: `${t('open_drawer_fail')}`,
+        title: `${t("open_drawer_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -890,17 +916,38 @@ export default function TableList() {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
-        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await printFlutter(
+          {
+              imageBuffer: dataUrl.toDataURL(),
+              ip: _printer?.ip,
+              type: _printer?.type,
+              port: "9100",
+          },
+          async () => {
+            await axios({
+              method: "post",
+              url: urlForPrinter,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
+        );
+        // printFlutter({
+        //   imageBuffer: dataUrl.toDataURL(),
+        //   ip: _printer?.ip,
+        //   type: _printer?.type,
+        //   port: "9100",
+        // });
+        // await axios({
+        //   method: "post",
+        //   url: urlForPrinter,
+        //   data: bodyFormData,
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
-            title: `${t('print_success')}`,
+            title: `${t("print_success")}`,
             showConfirmButton: false,
             timer: 1500,
           });
@@ -910,7 +957,7 @@ export default function TableList() {
         if (_index === 0) {
           await Swal.fire({
             icon: "error",
-            title: `${t('print_fial')}`,
+            title: `${t("print_fial")}`,
             showConfirmButton: false,
             timer: 1500,
           });
@@ -988,17 +1035,38 @@ export default function TableList() {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
-        // printFlutter({imageBuffer:dataUrl.toDataURL(),ip:_printer?.ip,type:_printer?.type,port:"9100"});
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await printFlutter(
+          {
+              imageBuffer: dataUrl.toDataURL(),
+              ip: _printer?.ip,
+              type: _printer?.type,
+              port: "9100",
+          },
+          async () => {
+            await axios({
+              method: "post",
+              url: urlForPrinter,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
+        );
+        // printFlutter({
+        //   imageBuffer: dataUrl.toDataURL(),
+        //   ip: _printer?.ip,
+        //   type: _printer?.type,
+        //   port: "9100",
+        // });
+        // await axios({
+        //   method: "post",
+        //   url: urlForPrinter,
+        //   data: bodyFormData,
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
-            title: `${t('print_success')}`,
+            title: `${t("print_success")}`,
             showConfirmButton: false,
             timer: 1500,
           });
@@ -1090,7 +1158,7 @@ export default function TableList() {
       setCheckedBox(!checkedBox);
       Swal.fire({
         icon: "success",
-        title: `${t('update_order_status_success')}`,
+        title: `${t("update_order_status_success")}`,
         showConfirmButton: false,
         timer: 2000,
       });
@@ -1124,7 +1192,7 @@ export default function TableList() {
       setCheckedBox(!checkedBox);
       Swal.fire({
         icon: "success",
-        title: `${t('update_order_status_success')}`,
+        title: `${t("update_order_status_success")}`,
         showConfirmButton: false,
         timer: 2000,
       });
@@ -1165,7 +1233,7 @@ export default function TableList() {
       // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
-        title: `${t('update_order_status_success')}`,
+        title: `${t("update_order_status_success")}`,
         showConfirmButton: false,
         timer: 2000,
       });
@@ -1196,7 +1264,7 @@ export default function TableList() {
 
       const checkError = await callback();
       if (checkError?.error) {
-        throw new Error(`${t('print_fial')}`);
+        throw new Error(`${t("print_fial")}`);
       }
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
@@ -1213,7 +1281,7 @@ export default function TableList() {
         // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
         Swal.fire({
           icon: "success",
-          title: `${t('update_order_status_success')}`,
+          title: `${t("update_order_status_success")}`,
           showConfirmButton: false,
           timer: 2000,
         });
@@ -1222,7 +1290,7 @@ export default function TableList() {
         setCountOrderWaiting(count || 0);
       }
     } catch (err) {
-      errorAdd(`${t('fail')}`);
+      errorAdd(`${t("fail")}`);
     }
   };
 
@@ -1388,8 +1456,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "#FFE17B"
-                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                ? "#FFE17B"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1405,8 +1473,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1432,15 +1500,15 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? ""
-                                      : "bold"
+                                    ? ""
+                                    : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "#616161"
-                                      : "white"
+                                    ? "#616161"
+                                    : "white"
                                   : "#616161",
                               }}
                             >
@@ -1488,8 +1556,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1637,10 +1705,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId?.[0]?.updatedBy?.lastname
+                            dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1717,7 +1785,7 @@ export default function TableList() {
                                 e?.status != "FEEDBACK"
                             )?.length
                           }{" "}
-                          ອໍເດີຍັງບໍ່ທັນເສີບ !
+                          {t("itemNotServed")} !
                         </div>
                       </div>
                       <div
@@ -1752,7 +1820,9 @@ export default function TableList() {
                             /> */}
                           {t("closeTable")}
                         </ButtonCustom>
-                        <ButtonCustom onClick={handleShow}>{t('combine_table')}</ButtonCustom>
+                        <ButtonCustom onClick={handleShow}>
+                          {t("combine_table")}
+                        </ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
                             // _onAddDiscount();
@@ -1784,7 +1854,7 @@ export default function TableList() {
                         <ButtonCustom
                           onClick={() => setPopup({ PopUpTranferTable: true })}
                         >
-                          {t('move_order')}
+                          {t("move_order")}
                         </ButtonCustom>
                       </div>
                       <div
@@ -1816,7 +1886,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          ຍົກເລີກແລະພິມບິນໄປຄົວ
+                          {t('cancel_and_send_to_kitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
@@ -1842,7 +1912,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          ອັບເດດພິມໄປຄົວ
+                          {t('update_and_send_to_kitchen')}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
@@ -1854,7 +1924,7 @@ export default function TableList() {
                           onClick={() => handleUpdateOrderStatus("SERVED")}
                           disabled={checkedBox}
                         >
-                          {t("served")}
+                          {t("servedBy")}
                         </ButtonCustom>
                       </div>
 
@@ -1881,55 +1951,55 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => (
-                              <tr
-                                onClick={() => handleShowQuantity(orderItem)}
-                                key={"order" + index}
-                                style={{ borderBottom: "1px solid #eee" }}
-                              >
-                                <td onClick={(e) => e.stopPropagation()}>
-                                  <Checkbox
-                                    disabled={
-                                      orderItem?.status === "CANCELED"
-                                    }
-                                    name="checked"
-                                    checked={orderItem?.isChecked || false}
-                                    onChange={(e) => {
-                                      // e.stopPropagation()
-                                      onSelect({
-                                        ...orderItem,
-                                        isChecked: e.target.checked,
-                                      });
-                                    }}
-                                  />
-                                </td>
+                                <tr
+                                  onClick={() => handleShowQuantity(orderItem)}
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        // e.stopPropagation()
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
 
-                                <td>{index + 1}</td>
-                                <td>{orderItem?.name}</td>
-                                <td>{orderItem?.quantity}</td>
-                                <td
-                                  style={{
-                                    color:
-                                      orderItem?.status === `SERVED`
-                                        ? "green"
-                                        : orderItem?.status === "DOING"
+                                  <td>{index + 1}</td>
+                                  <td>{orderItem?.name}</td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
-                                  }}
-                                >
-                                  {orderItem?.status
-                                    ? orderStatus(orderItem?.status)
-                                    : "-"}
-                                </td>
-                                <td>{orderItem?.createdBy?.firstname}</td>
-                                <td>
-                                  {orderItem?.createdAt
-                                    ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
-                                    )
-                                    : "-"}
-                                </td>
-                              </tr>
-                            ))
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? orderStatus(orderItem?.status)
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                          "HH:mm A"
+                                        )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              ))
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2036,7 +2106,7 @@ export default function TableList() {
                     });
                   }}
                 >
-                  {t('open_table_with_qr')}
+                  {t("open_table_with_qr")}
                 </Button>
               </div>
             )}
@@ -2056,7 +2126,7 @@ export default function TableList() {
                 }}
               >
                 <p style={{ margin: 0, fontSize: 30 }}>
-                  {t('chose_table_for_order')}
+                  {t("chose_table_for_order")}
                 </p>
               </div>
             )}
@@ -2153,7 +2223,7 @@ export default function TableList() {
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
-      // editMode={select}
+        // editMode={select}
       />
 
       <OrderCheckOut
@@ -2229,14 +2299,16 @@ export default function TableList() {
       />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('combine_table')}</Modal.Title>
+          <Modal.Title>{t("combine_table")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
-            <Form.Label>{t('move_from')} : {selectedTable?.tableName}</Form.Label>
+            <Form.Label>
+              {t("move_from")} : {selectedTable?.tableName}
+            </Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>{t('to_table')} : </Form.Label>
+              <Form.Label>{t("to_table")} : </Form.Label>
               <div style={{ height: 10 }}></div>
               <select
                 className="form-select form-control"
@@ -2250,7 +2322,7 @@ export default function TableList() {
                 }}
               >
                 <option selected disabled>
-                  {t('chose_table')}
+                  {t("chose_table")}
                 </option>
                 {tableList?.map((item, index) => (
                   <option
@@ -2262,7 +2334,7 @@ export default function TableList() {
                         : false
                     }
                   >
-                    {t('table')} {item?.tableName}
+                    {t("table")} {item?.tableName}
                   </option>
                 ))}
               </select>
@@ -2271,17 +2343,17 @@ export default function TableList() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleClose()}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button variant="success" onClick={() => _changeTable()}>
-            {t('combine_table')}
+            {t("combine_table")}
           </Button>
         </Modal.Footer>
       </Modal>
 
       <Modal show={show1} onHide={handleClose1}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('cause_cancel_order')}</Modal.Title>
+          <Modal.Title>{t("cause_cancel_order")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -2294,62 +2366,62 @@ export default function TableList() {
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('wrong_serving')}
+                {t("wrong_serving")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('customer_cancel')}
+                {t("customer_cancel")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('wrong_cooking')}
+                {t("wrong_cooking")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('server_wrong_ordering')}
+                {t("server_wrong_ordering")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('wait_long')}
+                {t("wait_long")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('food_gone')}
+                {t("food_gone")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('drink_gone')}
+                {t("drink_gone")}
               </option>
               <option
                 style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
               >
-                {t('table_no_food')}
+                {t("table_no_food")}
               </option>
             </select>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleClose1()}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button
             variant="success"
             onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
           >
-            {t('save')}
+            {t("save")}
           </Button>
         </Modal.Footer>
       </Modal>
 
       <Modal show={quantity} onHide={handleCloseQuantity}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('edit_amount')}</Modal.Title>
+          <Modal.Title>{t("edit_amount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -2395,8 +2467,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                            ? ""
-                            : "red",
+                          ? ""
+                          : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2455,35 +2527,35 @@ export default function TableList() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => handleCloseQuantity()}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button
             disabled
             variant="success"
-          // onClick={() => {
-          //   _orderTableQunatity();
-          // }}
+            // onClick={() => {
+            //   _orderTableQunatity();
+            // }}
           >
-            {t('save')}
+            {t("save")}
           </Button>
         </Modal.Footer>
       </Modal>
 
       <Modal show={openModalSetting} onHide={() => setOpenModalSetting(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('setting_table')}</Modal.Title>
+          <Modal.Title>{t("setting_table")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            {t('would_you_like_to_close')} {dataSettingModal?.tableName}  ?
+            {t("would_you_like_to_close")} {dataSettingModal?.tableName} ?
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => setOpenModalSetting(false)}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button variant="success" onClick={() => _resetTable()}>
-            {t('close_table')}
+            {t("close_table")}
           </Button>
         </Modal.Footer>
       </Modal>

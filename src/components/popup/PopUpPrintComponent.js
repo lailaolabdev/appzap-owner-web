@@ -16,9 +16,12 @@ import {
   ETHERNET_PRINTER_PORT,
   USB_PRINTER_PORT
 } from "../../constants";
+import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter"
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
+  const { t } = useTranslation();
   // state
   const [selectPrinter, setSelectPrinter] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
@@ -35,10 +38,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   });
 
   // provider
-  const { printers, storeDetail } = useStore();
+  const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
-    console.log("printers: ",billRef.current)
+    console.log("printers: ", billRef.current)
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -47,6 +50,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     try {
       let urlForPrinter = "";
 
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
       let dataImageForPrint = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
@@ -77,12 +84,30 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" }
+      // });
+
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
@@ -141,7 +166,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ເງິນຄ້າງ: totalActiveBill
       });
       setBill(data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   return (
@@ -150,7 +175,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> ປິນ
+        <BsPrinter /> {t('print')}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -176,45 +201,45 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              ລາຍງານຍອດຂາຍ
+              {t('sale_amount_list')}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              ເລີ່ມ: {startDate} 00:00:00
+              {t('start')}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>ຫາ: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {[
               {
-                name: "ຈຳນວນບິນ:",
-                value: reportBill["ຈຳນວນບິນ"]
+                name: `${t('bill_amount')}:`,
+                value: reportBill[`${t('bill_amount')}`]
               },
               {
-                name: "ຍອດທັງຫມົດ:",
-                value: reportBill["ຍອດທັງຫມົດ"],
+                name: `${t('total_amount')}:`,
+                value: reportBill[`${t('total_amount')}`],
                 type: storeDetail?.firstCurrency
               },
               {
-                name: "ຈ່າຍເງິນສົດ:",
-                value: reportBill["ຈ່າຍເງິນສົດ"],
+                name: `${t('pay_cash')}:`,
+                value: reportBill[`${t('pay_cash')}`],
                 type: storeDetail?.firstCurrency
               },
               {
-                name: "ຈ່າຍເງິນໂອນ:",
-                value: reportBill["ຈ່າຍເງິນໂອນ"],
+                name: `${t('pay_transfer')}:`,
+                value: reportBill[`${t('pay_transfer')}`],
                 type: storeDetail?.firstCurrency
               },
               {
-                name: "ບິນສ່ວນຫຼຸດ:",
-                value: reportBill["ບິນສ່ວນຫຼຸດ"]
+                name: `${t('discount_bill')}:`,
+                value: reportBill[`${t('discount_bill')}`]
               },
               {
-                name: "ສ່ວນຫຼຸດ:",
-                value: reportBill["ສ່ວນຫຼຸດ"],
+                name: `${t('discount')}:`,
+                value: reportBill[`${t('discount')}`],
                 type: storeDetail?.firstCurrency
               },
               {
-                name: "ບິນຄ້າງ:",
-                value: reportBill["ບິນຄ້າງ"]
+                name: `${t('active_bill')}:`,
+                value: reportBill[`${t('active_bill')}`]
               }
               // {
               //   name: "ເງິນຄ້າງ:",
@@ -236,10 +261,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>ລະຫັດ</td>
-                  <td style={{ textAlign: "center" }}>ອໍເດີ</td>
-                  <td style={{ textAlign: "center" }}>ສ່ວນຫຼຸດ</td>
-                  <td style={{ textAlign: "right" }}>ບິນລວມ</td>
+                  <td style={{ textAlign: "center" }}>{t('no')}</td>
+                  <td style={{ textAlign: "center" }}>{t('order')}</td>
+                  <td style={{ textAlign: "center" }}>{t('discount')}</td>
+                  <td style={{ textAlign: "right" }}>{t('total_bill')}</td>
                 </tr>
                 {bills?.map((e, i) => (
                   <tr>

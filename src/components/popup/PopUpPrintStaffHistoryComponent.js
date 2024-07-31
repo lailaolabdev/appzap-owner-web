@@ -16,12 +16,14 @@ import {
 } from "../../services/report";
 import _ from "lodash";
 import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
-
+import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter";
 export default function PopUpPrintStaffHistoryComponent({
   open,
   onClose,
   children,
 }) {
+  const { t } = useTranslation();
   let billRef = useRef(null);
   // state
   const [selectPrinter, setSelectPrinter] = useState();
@@ -29,7 +31,7 @@ export default function PopUpPrintStaffHistoryComponent({
   const [userReport, setUserReport] = useState([]);
 
   // provider
-  const { printers, storeDetail } = useStore();
+  const {printerCounter, printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     getUserReportData(startDate);
@@ -39,7 +41,10 @@ export default function PopUpPrintStaffHistoryComponent({
   const onPrintBill = async () => {
     try {
       let urlForPrinter = "";
-
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
       let dataImageForPrint = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
@@ -70,15 +75,31 @@ export default function PopUpPrintStaffHistoryComponent({
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", myPrinter?.width === "58mm" ? 58 : 80);
 
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t('print_sucess')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -86,7 +107,7 @@ export default function PopUpPrintStaffHistoryComponent({
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: "ປິນບໍ່ສຳເລັດ",
+        title: `${t('print_fail')}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -111,7 +132,7 @@ export default function PopUpPrintStaffHistoryComponent({
       //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
       //   ຈ່າຍເງິນໂອນ: transferTotalBill,
       // });
-    } catch (err) {}
+    } catch (err) { }
   };
   // const getUserReportData = async () => {
   //   const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -125,7 +146,7 @@ export default function PopUpPrintStaffHistoryComponent({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> ປິນ
+        <BsPrinter /> {t('print')}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -150,17 +171,17 @@ export default function PopUpPrintStaffHistoryComponent({
           style={{ maxWidth: 330, width: "100%", minWidth: 330 }}
         >
           <Container>
-            <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍພະນັກງານ</div>
+            <div style={{ fontWeight: "bold", fontSize: 24 }}>{t('staff_sales_report')}</div>
             <div style={{ fontWeight: "bold" }}>
-              ເລີ່ມ: {startDate} 00:00:00
+              {t('start')}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>ຫາ: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
             {userReport?.map((e) => (
               <div>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 {[
                   {
-                    name: "ຊື່ພະນັກງານ:",
+                    name: `${t('staff_name')}:`,
                     value: e?.["userId"]?.["userId"],
                     type: "default",
                   },
@@ -169,7 +190,7 @@ export default function PopUpPrintStaffHistoryComponent({
                   //   value: e["ຈຳນວນອໍເດີທັງໝົດ"],
                   // },
                   {
-                    name: "ຈຳນວນອໍເດີທີ່ສຳເລັດ:",
+                    name: `${t('order_success_amount')}`,
                     value: e?.["served"],
                   },
                   // {
@@ -178,7 +199,7 @@ export default function PopUpPrintStaffHistoryComponent({
                   //   type: storeDetail?.firstCurrency,
                   // },
                   {
-                    name: "ຈຳນວນເງິນ (ອໍເດີທີສຳເລັດ):",
+                    name: `${t('total_success_order')}`,
                     value: e?.["totalSaleAmount"],
                     type: storeDetail?.firstCurrency,
                   },

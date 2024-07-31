@@ -9,6 +9,7 @@ import moment from "moment";
 import StatusComponent from "../StatusComponent";
 import Axios from "axios";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpTranferTable({
   open,
@@ -16,6 +17,7 @@ export default function PopUpTranferTable({
   onSubmit,
   tableList,
 }) {
+  const { t } = useTranslation()
   // state
 
   const [FromBillData, setFromBillData] = useState();
@@ -132,13 +134,13 @@ export default function PopUpTranferTable({
   return (
     <Modal show={open} onHide={onClose} keyboard={false} size="xl">
       <Modal.Header closeButton>
-        <Modal.Title>ຍ້າຍອໍເດີ</Modal.Title>
+        <Modal.Title>{t('transfer_table')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h5>ວິທີຍ້າຍອໍເດີ</h5>
-        <li>ເລືອກໂຕະທີຕ້ອງການຍ້າຍອໍເດີໄປ</li>
-        <li>ເລືອກອໍເດີທີຕ້ອງການຍ້າຍ</li>
-        <li>ກົດຍືນຍັນອໍເດີ</li>
+        <h5>{t('how_to_move')}</h5>
+        <li>{t('chose_move_table')}</li>
+        <li>{t('chose_move_order')}</li>
+        <li>{t('approve_move_order')}</li>
         <br />
         <div
           style={{
@@ -160,7 +162,7 @@ export default function PopUpTranferTable({
                   fontWeight: "bold",
                 }}
               >
-                ຈາກໂຕະ: {FromBillData?.tableId?.name}
+                {t('from_table')}: {FromBillData?.tableId?.name}
               </Card.Header>
               <Card.Body style={{ padding: 0 }}>
                 <Table>
@@ -168,9 +170,9 @@ export default function PopUpTranferTable({
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>ຊື່ອໍເດີ</th>
-                        <th>ຈຳນວນ</th>
-                        <th>ເວລາ</th>
+                        <th>{t('order_name')}</th>
+                        <th>{t('quantity')}</th>
+                        <th>{t('time')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -244,7 +246,7 @@ export default function PopUpTranferTable({
                 setFormData((prev) => ({ ...prev, toBillId: e.target.value }))
               }
             >
-              <option value="">ເລືອກໂຕະ</option>
+              <option value="">{t('chose_table')}</option>
               {tableList?.map((item, index) => (
                 <option
                   key={"talbe-" + index}
@@ -268,7 +270,7 @@ export default function PopUpTranferTable({
                   fontWeight: "bold",
                 }}
               >
-                ຍ້າຍໄປໂຕະ:{" "}
+                {t('move_to')}:{" "}
                 {tableList.find((e) => e?.billId == FormData?.toBillId)?.tableName}
               </Card.Header>
               <Card.Body style={{ padding: 0 }}>
@@ -277,9 +279,9 @@ export default function PopUpTranferTable({
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>ຊື່ອໍເດີທີຈະຍ້າຍ</th>
-                        <th>ຈຳນວນ</th>
-                        <th>ເວລາ</th>
+                        <th>{t('move_order_name')}</th>
+                        <th>{t('quantity')}</th>
+                        <th>{t('time')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -312,7 +314,7 @@ export default function PopUpTranferTable({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleSubmit}>
-          ຍືນຍັນຍ້າຍອໍເດີ
+          {t('approve_move_order')}
         </Button>
       </Modal.Footer>
     </Modal>

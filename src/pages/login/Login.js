@@ -297,7 +297,9 @@ function Login() {
                   >
                     <div
                       style={{ color: COLOR_APP, textDecoration: "underline" }}
-                      onClick={() => navigate("/privacy-policy")}
+                      onClick={() =>
+                        window.open("http://policy.appzap.la/", "_blank")
+                      }
                     >
                       ນະໂຍບາຍການນໍາໃຊ້
                     </div>

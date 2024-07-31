@@ -58,6 +58,7 @@ export default function PopUpMemberOrder({
 
   const handleMemberClick = async (member) => {
     onSelectMember(member._id);
+    setData(member.name);
     onClose();
   };
 
@@ -90,7 +91,7 @@ export default function PopUpMemberOrder({
           </Col>
         </Row>
         <Row className="p-2">
-          {membersData.map((e) => (
+          {membersData?.map((e) => (
             <div key={e.id} className="m-2">
               <Button
                 variant="outline-primary"
