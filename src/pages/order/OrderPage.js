@@ -27,6 +27,7 @@ import ServedOrderTab from "./ServedOrderTab";
 import CanceledOrderTab from "./CanceledOrderTab";
 import Loading from "../../components/Loading";
 import PopUpPin from "../../components/popup/PopUpPin";
+import printFlutter from "../../helpers/printFlutter";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -88,7 +89,7 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) { }
+    } catch (err) {}
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -152,12 +153,29 @@ export default function OrderPage() {
           bodyFormData.append("port", "9100");
           bodyFormData.append("image", _file);
           bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+
+          await printFlutter(
+            {
+              imageBuffer: dataUrl.toDataURL(),
+              ip: _printer?.ip,
+              type: _printer?.type,
+              port: "9100",
+            },
+            async () => {
+              await axios({
+                method: "post",
+                url: urlForPrinter,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" },
+              });
+            }
+          );
+          // await axios({
+          //   method: "post",
+          //   url: urlForPrinter,
+          //   data: bodyFormData,
+          //   headers: { "Content-Type": "multipart/form-data" },
+          // });
 
           if (_index === 0) {
             await Swal.fire({
@@ -254,7 +272,7 @@ export default function OrderPage() {
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}
-            {t('send_to_kitchen')}
+            {t("send_to_kitchen")}
           </Button>
         </div>
         <div style={{ width: "50px" }}></div>
@@ -280,7 +298,7 @@ export default function OrderPage() {
             }}
           >
             {/* ສົ່ງໄປຄົວ */}
-            {t("send_to_kitchen")}
+            {t("cooking")}
           </Button>
         </div>
         <div style={{ width: "10px" }}></div>

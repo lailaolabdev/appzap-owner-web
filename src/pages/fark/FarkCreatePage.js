@@ -32,6 +32,7 @@ import axios from "axios";
 import BillFark80 from "../../components/bill/BillFark80";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
+import printFlutter from "../../helpers/printFlutter";
 
 let limitData = 50;
 
@@ -224,12 +225,28 @@ export default function FarkCreatePage() {
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       console.log("check 4");
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
       console.log("check 5");
       // setCodeShortLink(null);
       await Swal.fire({

@@ -45,6 +45,7 @@ import BillForChef58 from "../../components/bill/BillForChef58";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import printFlutter from "../../helpers/printFlutter";
 
 function AddOrder() {
   const params = useParams();
@@ -203,12 +204,28 @@ function AddOrder() {
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
         console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData)
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await printFlutter(
+          {
+            imageBuffer: dataUrl.toDataURL(),
+            ip: _printer?.ip,
+            type: _printer?.type,
+            port: "9100",
+          },
+          async () => {
+            await axios({
+              method: "post",
+              url: urlForPrinter,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
+        );
+        // await axios({
+        //   method: "post",
+        //   url: urlForPrinter,
+        //   data: bodyFormData,
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
         // axios.post("http://localhost:9150/ethernet/text", {
         //   config: {
         //     ip: "192.168.100.236",
