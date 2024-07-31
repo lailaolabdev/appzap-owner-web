@@ -1,19 +1,23 @@
-import React, { useState, useEffect, useRef } from "react";
+/* eslint-disable no-loop-func */
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import styled from "styled-components";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
 import ReactToPrint from "react-to-print";
+import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
-import { base64ToBlob } from "../../helpers";
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { base64ToBlob } from "../../helpers";
 
 /**
  * const
  **/
+
 import {
   TITLE_HEADER,
   BODY,
@@ -30,23 +34,27 @@ import {
   END_POINT_SEVER,
   getLocalData,
   MENUS,
+  USERS,
+  END_POINT_APP,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
-import { BillForChef } from "./components/BillForChef";
+// import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, useNavigate, useParams } from "react-router-dom";
-import { getBills } from "../../services/bill";
+import { getBillCafe } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
+import { callCheckOutPrintBillOnly } from "../../services/code";
 
-function AddOrder() {
+function Homecafe() {
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
@@ -57,6 +65,7 @@ function AddOrder() {
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
   const [userData, setUserData] = useState({});
+  const [usersData, setUsersData] = useState({});
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
@@ -76,7 +85,12 @@ function AddOrder() {
   const inputRef = useRef(null); // Create a ref for the input element
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
-
+  const [dataBill, setDataBill] = useState();
+  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
+  const [taxPercent, setTaxPercent] = useState(0);
+  const [popup, setPopup] = useState({
+    CheckOutType: false,
+  });
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -123,10 +137,15 @@ function AddOrder() {
     }
     setSelectedMenu(dataArray);
   }
-
-  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
-  const [currency, setCurrency] = useState([]);
-
+  const {
+    storeDetail,
+    printerCounter,
+    printers,
+    selectedTable,
+    setSelectedTable,
+    getTableDataStore,
+    onSelectTable,
+  } = useStore();
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
     allSelectedMenu,
@@ -134,7 +153,7 @@ function AddOrder() {
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
-
+  // console.log("afterSearch",afterSearch)
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -237,8 +256,10 @@ function AddOrder() {
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
+
     // const ADMIN = profile;
     const _localJson = JSON.parse(ADMIN);
+
     setUserData(_localJson);
     const fetchData = async () => {
       const _localData = await getLocalData();
@@ -248,26 +269,29 @@ function AddOrder() {
       }
     };
     fetchData();
+    getUserData();
     // getcurrency();
   }, []);
-
-  useEffect(() => {
-    // TODO: check selectTable
-    if (!selectedTable) {
-      navigate("/tables");
-    }
-  }, [selectedTable]);
 
   useEffect(() => {
     (async () => {
       let findby = "?";
       findby += `storeId=${storeDetail?._id}`;
-      findby += `&code=${code}`;
-      const data = await getBills(findby);
-
+      // findby += `&code=${code}`;
+      const data = await getBillCafe(findby);
       setBillId(data?.[0]);
     })();
   }, []);
+
+  const getUserData = async () => {
+    // setIsLoading(true);
+    await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((json) => setUsersData(json));
+    // setIsLoading(false);
+  };
 
   // const getcurrency = async () => {
   //   try {
@@ -384,6 +408,30 @@ function AddOrder() {
     }
   };
 
+  const AlertMessage = () =>{
+    Swal.fire({
+          icon: "error",
+          title: "ກະລຸນາເລຶອກລາຍການສິນຄ້າກ່ອນ",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+  }
+
+  const TotalAmount = () => {
+    return selectedMenu.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.quantity;
+    }, 0);
+  };
+
+  const TotalPrice = () => {
+    return selectedMenu.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.price * nextValue.quantity;
+    }, 0);
+  };
+
+  // console.log("TotalAmount", TotalAmount());
+  // console.log("TotalPrice", TotalPrice());
+
   const onRemoveFromCart = (id) => {
     let selectedMenuCopied = [...selectedMenu];
     for (let i = 0; i < selectedMenuCopied.length; i++) {
@@ -395,111 +443,122 @@ function AddOrder() {
     setSelectedMenu([...selectedMenuCopied]);
     setIsRemoveItem(false);
   };
+  useEffect(() => {
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
+  }, []);
 
-  const createOrder = async (data, header, isPrinted) => {
-    try {
-      const _storeId = userData?.data?.storeId;
-      let findby = "?";
-      findby += `storeId=${_storeId}`;
-      findby += `&code=${code}`;
-      findby += `&tableId=${tableId}`;
-      const _bills = await getBills(findby);
-      const _billId = _bills?.[0]?._id;
-      if (!_billId) {
-        Swal.fire({
-          icon: "error",
-          title: `${t("not_success")}`,
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        setDisabledButton(false);
-        return;
-      }
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-      const _body = {
-        orders: data,
-        storeId: _storeId,
-        tableId: tableId,
-        code: code,
-        billId: _billId,
-      };
-      axios
-        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
-          headers: headers,
-        })
-        .then(async (response) => {
-          if (response?.data) {
-            Swal.fire({
-              icon: "success",
-              title: `${t("add_order_success")}`,
-              showConfirmButton: false,
-              timer: 1800,
-            });
-            if (isPrinted) {
-              //  print
-              onPrintForCher().then(() => {
-                onSelectTable(selectedTable);
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-              });
-            } else {
-              onSelectTable(selectedTable);
-              navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: "warning",
-            title: `${t("food_not_enouch")}`,
-            showConfirmButton: false,
-            timer: 1800,
-          });
-          setDisabledButton(false);
-        });
-    } catch (error) {
-      console.log("error", error);
-      Swal.fire({
-        icon: "error",
-        title: `${t("not_success")}`,
-        showConfirmButton: false,
-        timer: 1800,
-      });
-      setDisabledButton(false);
-    }
-  };
+  // const createOrder = async (data, header, isPrinted) => {
+  //   try {
+  //     const _storeId = userData?.data?.storeId;
+  //     let findby = "?";
+  //     findby += `storeId=${_storeId}`;
+  //     // findby += `&code=${code}`;
+  //     // findby += `&tableId=${tableId}`;
+  //     const _bills = await getBillCafe(findby);
 
-  const onSubmit = async (isPrinted) => {
-    try {
-      setIsLoading(true);
-      if (selectedMenu.length === 0) {
-        Swal.fire({
-          icon: "warning",
-          title: `${t("please_chose_order_first")}`,
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        setIsLoading(false);
-        setDisabledButton(false);
-        return;
-      }
-      let header = await getHeaders();
-      if (selectedMenu.length != 0) {
-        await createOrder(selectedMenu, header, isPrinted);
-      }
-      setIsLoading(false);
-    } catch (err) {
-      setDisabledButton(false);
-      setIsLoading(false);
-      console.log(err);
-    }
-  };
+  //     console.log("_bills", _bills);
+
+  //     const _billId = _bills?.[0]?._id;
+  //     if (!_billId) {
+  //       Swal.fire({
+  //         icon: "error",
+  //         title: `${t("not_success")}`,
+  //         showConfirmButton: false,
+  //         timer: 1800,
+  //       });
+  //       setDisabledButton(false);
+  //       return;
+  //     }
+  //     const headers = {
+  //       "Content-Type": "application/json",
+  //       Authorization: header.authorization,
+  //     };
+  //     const _body = {
+  //       orders: data,
+  //       storeId: _storeId,
+  //       // tableId: tableId,
+  //       // code: code,
+  //       billId: _billId,
+  //     };
+  //     axios
+  //       .post(END_POINT_SEVER + "/v3/admin/bill-cafe/create", _body, {
+  //         headers: headers,
+  //       })
+  //       .then(async (response) => {
+  //         if (response?.data) {
+  //           Swal.fire({
+  //             icon: "success",
+  //             title: `${t("add_order_success")}`,
+  //             showConfirmButton: false,
+  //             timer: 1800,
+  //           });
+  //           if (isPrinted) {
+  //             //  print
+  //             onPrintForCher().then(() => {
+  //               onSelectTable(selectedTable);
+  //               navigate(`/history-cafe-sale`);
+  //             });
+  //           } else {
+  //             onSelectTable(selectedTable);
+  //             navigate(`/history-cafe-sale`);
+  //           }
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         Swal.fire({
+  //           icon: "warning",
+  //           title: `${t("food_not_enouch")}`,
+  //           showConfirmButton: false,
+  //           timer: 1800,
+  //         });
+  //         setDisabledButton(false);
+  //       });
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: `${t("not_success")}`,
+  //       showConfirmButton: false,
+  //       timer: 1800,
+  //     });
+  //     setDisabledButton(false);
+  //   }
+  // };
+
+  // const onSubmit = async (isPrinted) => {
+  //   try {
+  //     setIsLoading(true);
+  //     if (selectedMenu.length === 0) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: `${t("please_chose_order")}`,
+  //         showConfirmButton: false,
+  //         timer: 1800,
+  //       });
+  //       setIsLoading(false);
+  //       setDisabledButton(false);
+  //       return;
+  //     }
+  //     let header = await getHeaders();
+  //     if (selectedMenu.length != 0) {
+  //       await createOrder(selectedMenu, header, isPrinted);
+  //     }
+  //     setDisabledButton(false);
+  //     setIsLoading(false);
+  //     setSelectedMenu([]);
+  //   } catch (err) {
+  //     setDisabledButton(false);
+  //     setIsLoading(false);
+  //     console.log(err);
+  //   }
+  // };
 
   const onAddCommentItems = (values) => {
     setIsPupup(true);
@@ -554,23 +613,189 @@ function AddOrder() {
     setIsRemoveItem(true);
     setItemDeleting(data);
   };
+  const onPrintDrawer = async () => {
+    try {
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = "http://localhost:9150/ethernet/drawer";
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = "http://localhost:9150/bluetooth/drawer";
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = "http://localhost:9150/usb/drawer";
+      }
+
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+
+      await axios.post(urlForPrinter, {
+        ip: printerBillData?.ip,
+        port: 9100,
+      });
+    } catch (err) {
+      console.log(err);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("open_drawer_fail")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const [widthBill80, setWidthBill80] = useState(0);
+  const [widthBill58, setWidthBill58] = useState(0);
+
+  let qrSmartOrder80Ref = useRef(null);
+
+  let bill80Ref = useRef(null);
+  let bill58Ref = useRef(null);
+
+  useLayoutEffect(() => {
+    setWidthBill80(bill80Ref.current.offsetWidth);
+    // setWidthBill58(bill58Ref.current.offsetWidth);
+  }, [bill80Ref, bill58Ref]);
+
+  // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
+  const _createHistoriesPrinter = async (data) => {
+    try {
+      let headers = await getHeaders();
+      const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
+      const updateTable = await axios({
+        method: "post",
+        url: _url,
+        data: data,
+        headers: headers,
+      });
+
+      if (updateTable?.status < 300) {
+        console.log("success create printer bil...");
+      }
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
+  // console.log("bill80Ref CaFe",bill80Ref)
+
+  const onPrintBill = async () => {
+    try {
+      let _dataBill = {
+        ...dataBill,
+        typePrint: "PRINT_BILL_CHECKOUT",
+      };
+      await _createHistoriesPrinter(_dataBill);
+
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      let dataImageForPrint;
+      if (printerBillData?.width === "80mm") {
+        dataImageForPrint = await html2canvas(bill80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (printerBillData?.width === "58mm") {
+        dataImageForPrint = await html2canvas(bill58Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 350 / widthBill58,
+        });
+      }
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+      await axios({
+        method: "post",
+        url: urlForPrinter,
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      await Swal.fire({
+        icon: "success",
+        title: "ປິນສຳເລັດ",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // update bill status to call check out
+      // callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      getTableDataStore();
+    } catch (err) {
+      console.log("err printer", err);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("print_fial")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return err;
+    }
+  };
+  
+
+  // const canCheckOut = !tableOrderItems.find(
+  //   (e) =>
+  //     e?.status === "DOING" ||
+  //     e?.status === "WAITING" ||
+  //     e?.tableOrderItems?.length === 0
+  // )?._id;
+
+  const _onCheckOut = async () => {
+    setMenuItemDetailModal(true);
+  };
 
   const { t } = useTranslation();
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            flexGrow: 1,
-            height: "90vh",
-            overflowY: "scroll",
-          }}
+      <CafeContent>
+        <CafeMenu
+        // style={{
+        //   flexGrow: 1,
+        //   height: "90vh",
+        //   overflowY: "scroll",
+        // }}
         >
           <div
             style={{
@@ -607,12 +832,18 @@ function AddOrder() {
               />
             </div>
           </div>
-          <div
-            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
+          <SubCafeMenu
           >
             {isLoading ? (
               <Loading />
             ) : (
+
+              afterSearch.length === 0 ? 
+              
+              <div className="container">
+                  <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+              </div>
+              :
               afterSearch?.map((data, index) => {
                 if (data?.type === "MENU")
                   return (
@@ -636,10 +867,14 @@ function AddOrder() {
                         }
                         style={{
                           width: "100%",
-                          height: 200,
+                          // height: 200,
+                          objectFit: "cover",
                           borderRadius: 5,
                         }}
+                        alt="images-menu"
+                        className="images-menu-cafe"
                       />
+
                       <div
                         style={{
                           backgroundColor: "#000",
@@ -657,10 +892,10 @@ function AddOrder() {
                           {/* {currency?.map(
                             (e) =>
                               " / " +
-                              (data?.price / e.sell).toFixed(2) +
-                              " " +
-                              e?.currencyCode
-                          )} */}
+                            (data?.price / e.sell).toFixed(2) +
+                            " " +
+                            e?.currencyCode
+                            )} */}
                         </span>
                         <br />
                         <span>
@@ -670,25 +905,19 @@ function AddOrder() {
                     </div>
                   );
               })
+
             )}
-          </div>
-        </div>
+          </SubCafeMenu>
+        </CafeMenu>
         {/* Detail Table */}
-        <div
-          style={{
-            minWidth: 500,
-            backgroundColor: "#FFF",
-            maxHeight: "90vh",
-            borderColor: "black",
-            overflowY: "scroll",
-            borderWidth: 1,
-            paddingLeft: 20,
-            paddingTop: 20,
-          }}
+        <CafeCart
+        // style={{
+        //   width: "70rem",
+        // }}
         >
           <div className="container">
             <div className="row">
-              <div className="col-12">
+              <div className="col-lg-12 col-md-12">
                 <Table responsive className="table">
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
                     <tr style={{ fontSize: "bold", border: "none" }}>
@@ -698,6 +927,9 @@ function AddOrder() {
                       </th>
                       <th style={{ border: "none", textAlign: "center" }}>
                         {t("amount")}
+                      </th>
+                      <th style={{ border: "none", textAlign: "center" }}>
+                        {t("prices")}
                       </th>
                       <th style={{ border: "none", textAlign: "right" }}>
                         {t("manage")}
@@ -712,6 +944,7 @@ function AddOrder() {
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
                               <p>{data.name}</p>
+
                               <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
                                 {data?.note ?? ""}
                               </p>
@@ -730,12 +963,19 @@ function AddOrder() {
                                   color: "blue",
                                   border: "none",
                                   width: 25,
+                                  marginTop: -15,
                                 }}
                                 onClick={() => handleSetQuantity(-1, data)}
                               >
                                 -
                               </button>
-                              <p style={{ minWidth: 30, maxWidth: 50 }}>
+                              <p
+                                style={{
+                                  minWidth: 30,
+                                  maxWidth: 50,
+                                  paddingLeft: 10,
+                                }}
+                              >
                                 {data.quantity}
                               </p>
                               <button
@@ -743,22 +983,18 @@ function AddOrder() {
                                   color: "red",
                                   border: "none",
                                   width: 25,
+                                  marginTop: -15,
                                 }}
                                 onClick={() => handleSetQuantity(1, data)}
                               >
                                 +
                               </button>
                             </td>
+                            <td>
+                              <p>{moneyCurrency(data.quantity * data.price)}</p>
+                            </td>
+
                             <td style={{ padding: 0, textAlign: "right" }}>
-                              {/* <i
-                                onClick={() => onRemoveFromCart(data.id)}
-                                className="fa fa-trash"
-                                aria-hidden="true"
-                                style={{
-                                  color: "#FB6E3B",
-                                  cursor: "pointer",
-                                }}
-                              ></i> */}
 
                               <div
                                 style={{
@@ -810,22 +1046,36 @@ function AddOrder() {
                       })}
                   </tbody>
                 </Table>
+                {selectedMenu.length > 0 ? (
+                  <div className="mb-3">
+                    <div>
+                      <span>{t("amountTotal")} : </span>
+                      <span>{TotalAmount()}</span>
+                    </div>
+                    <div>
+                      <span>{t("pricesTotal")} : </span>
+                      <span>
+                        {moneyCurrency(TotalPrice())} {t("nameCurrency")}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
               <div className="col-12">
                 <div className="row" style={{ margin: 0 }}>
                   <Button
                     variant="outline-warning"
+                    className="hover-me"
                     style={{
                       marginRight: 15,
                       border: "solid 1px #FB6E3B",
-                      color: "#FB6E3B",
                       fontWeight: "bold",
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
                     }}
-                    onClick={() =>
-                      navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                      )
-                    }
+                    onClick={() => setSelectedMenu([])}
                   >
                     {t("cancel")}
                   </Button>
@@ -839,22 +1089,20 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    disabled={disabledButton}
                     onClick={() => {
-                      setDisabledButton(true);
-                      onSubmit(false);
+                      selectedMenu.length === 0 ?
+                      AlertMessage()
+                      :
+                      setPopup({ CheckOutType: true });
                     }}
                   >
-                    {t("order_food")}
+                    {/* {t("print_bill")} */}
+                    CheckOut
                   </Button>
-                </div>
-                <div style={{ height: 10 }} />
-                <div className="row" style={{ margin: 0 }}>
                   <Button
                     variant="light"
                     className="hover-me"
                     style={{
-                      height: 60,
                       marginRight: 15,
                       backgroundColor: "#FB6E3B",
                       color: "#ffffff",
@@ -862,63 +1110,57 @@ function AddOrder() {
                       flex: 1,
                     }}
                     disabled={disabledButton}
-                    onClick={() => {
-                      // onPrint();
-                      setDisabledButton(true);
-                      onSubmit(true);
-                    }}
+                    onClick={() => navigate(`/history-cafe-sale`)}
                   >
-                    {t("order_and_send_to_kitchen")} +{" "}
-                    <FontAwesomeIcon
-                      icon={faCashRegister}
-                      style={{ color: "#fff" }}
-                    />{" "}
+                    {t("history_sales")}
                   </Button>
+
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      {selectedMenu?.map((val, i) => {
-        return (
-          <div
-            style={{
-              width: "80mm",
-              paddingRight: "20px",
-              paddingBottom: "10px",
-            }}
-            ref={(el) => (billForCher80.current[i] = el)}
-          >
-            <BillForChef80
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              // dataBill={dataBill}
-              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-            />
-          </div>
-        );
-      })}
-      {selectedMenu?.map((val, i) => {
-        return (
-          <div
-            style={{
-              width: "58mm",
-              paddingRight: "20px",
-              paddingBottom: "10px",
-            }}
-            ref={(el) => (billForCher58.current[i] = el)}
-          >
-            <BillForChef58
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              // dataBill={dataBill}
-              val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-            />
-          </div>
-        );
-      })}
-
+        </CafeCart>
+      </CafeContent>
+      {/* <div className="mt-3">
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => (billForCher80.current[i] = el)}
+            >
+              <BillForChef80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          );
+        })}
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{
+                width: "58mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => (billForCher58.current[i] = el)}
+            >
+              <BillForChef58
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          );
+        })}
+      </div> */}
       <Modal
         show={show}
         onHide={handleClose}
@@ -1075,8 +1317,69 @@ function AddOrder() {
         onClose={() => setIsRemoveItem(false)}
         onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
       />
+      <CheckOutPopupCafe
+        onPrintBill={onPrintBill}
+        onPrintDrawer={onPrintDrawer}
+        dataBill={selectedMenu}
+        setSelectedMenu={setSelectedMenu}
+        tableData={selectedTable}
+        open={popup?.CheckOutType}
+        onClose={() => setPopup()}
+        setDataBill={setDataBill}
+        taxPercent={taxPercent}
+      />
+      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+        <BillForCheckOutCafe80
+          storeDetail={storeDetail}
+          dataBill={selectedMenu}
+          taxPercent={taxPercent}
+          profile={profile}
+        />
+      </div>
     </div>
   );
 }
 
-export default AddOrder;
+const CafeContent = styled.div`
+  display: flex;
+  overflow: hidden;
+`;
+
+const CafeMenu = styled.div`
+  flex-grow: 1;
+  height: 90vh;
+  overflow-y: scroll;
+`;
+const SubCafeMenu = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  .images-menu-cafe {
+    height: 200px;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+
+    .images-menu-cafe {
+      height: 100px;
+    }
+  }
+`;
+const CafeCart = styled.div`
+  width: 70rem;
+  background-color: #fff;
+  max-height: 90vh;
+  border-color: black;
+  overflow-y: scroll;
+  border-width: 1;
+  padding-left: 20;
+  padding-top: 20;
+  margin-top : 15px;
+
+  @media (max-width: 768px) {
+    width: 40rem;
+    margin-top : 15px
+  }
+`;
+export default Homecafe;

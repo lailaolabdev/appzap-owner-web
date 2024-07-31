@@ -420,7 +420,6 @@ export default function DashboardFinance({
             ))}
           </tbody>
         </Table>
-
         <div
           style={{
             display: "flex",

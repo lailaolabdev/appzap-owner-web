@@ -26,3 +26,29 @@ export const updateSetting = async (settingId, dataUpdate) => {
     return error;
   }
 };
+
+export const getSettingCafe = async (storeId) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/store/`;
+    const res = await axios.get(url, storeId, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateSettingCafe = async (settingId, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/store-cafe/update`;
+    const res = await axios.put(
+      url,
+      { id: settingId, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

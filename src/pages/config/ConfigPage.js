@@ -11,20 +11,28 @@ import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import { BsExclamationDiamondFill } from "react-icons/bs";
-import { getSetting, updateSetting } from "../../services/setting";
+import {
+  getSetting,
+  updateSetting,
+  updateSettingCafe,
+  getSettingCafe
+} from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
-
+import { getStore } from "../../services/store";
 export default function ConfigPage() {
   // state
   const [setting, setSetting] = useState();
   const [switchState, setSwitchState] = useState({});
+  const [switchCafeState, setSwitchCafeState] = useState(false);
   const [tax, setTax] = useState(0);
   const [popup, setPopup] = useState();
 
   // provider
-  const { audioSetting, setAudioSetting, storeDetail } = useStore();
+  const { audioSetting, setAudioSetting,setStoreDetail, storeDetail, profile } = useStore();
+
+  // console.log(audioSetting)
 
   // useEffect
   useEffect(() => {
@@ -47,15 +55,28 @@ export default function ConfigPage() {
     const _res = await Axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
     setTax(_res?.data?.taxPercent);
   };
+
   const getSettingData = async () => {
     const data = await getSetting(storeDetail?._id);
     setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
     setSetting(data);
-    console.log(data?.smartMenu);
   };
+
+
   const changeSwitchData = async (dataUpdate) => {
     const data = await updateSetting(setting?._id, dataUpdate);
+    setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
   };
+
+  const changeCafe = async (e) => {
+    const isCafe = e.target.checked;
+    const _type = isCafe ? "CAFE" : "GENERAL"
+    await updateSettingCafe(profile?.data.storeId, { data: _type })
+    const dataStore = await getStore(storeDetail?._id);
+    setStoreDetail(dataStore);
+      
+  };
+
   const TooltipFunc = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
       <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
@@ -316,6 +337,57 @@ export default function ConfigPage() {
                           [item?.key]: e.target.checked,
                         }))
                       }
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຮ້ານຄາເຟ
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: "ເປີດໃຊ້ງານຮ້ານຄາເຟ",
+                  key: "fer",
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"switch-cafe-" + item?.key}>
+                      {storeDetail?.isRestuarant == "CAFE" ? "ເປີດ" : "ປິດ"}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isRestuarant == "CAFE"}
+                      id={"switch-cafe-" + item?.key}
+                      onChange={changeCafe}
                     />
                   </div>
                 </div>

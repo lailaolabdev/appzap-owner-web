@@ -76,6 +76,7 @@ export const STATUS_BEERFAK = (item) => {
     return "ຍົກເລີກ";
   }
 };
+
 export const base64ToBlob = (dataurl) => {
   const arr = dataurl.split(",");
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -213,11 +214,11 @@ export const numberFormat = (_number) => {
 
 export const convertImageToBase64 = async (imageUrl) => {
   try {
-      console.log("convertImage:---->", typeof(imageUrl));
+      // console.log("convertImage:---->", typeof(imageUrl));
       const response = await fetch(imageUrl);
-      console.log("convertResponse:---->", typeof(response));
+      // console.log("convertResponse:---->", typeof(response));
       const blob = await response.blob();
-      console.log("convertblob:---->", blob);
+      // console.log("convertblob:---->", blob);
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);

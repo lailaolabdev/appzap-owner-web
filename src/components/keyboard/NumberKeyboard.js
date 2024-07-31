@@ -120,7 +120,7 @@ export default function NumberKeyboard({
           <Button
             disabled={payType != "cash"}
             onClick={() => {
-              console.log(totalBill);
+              // console.log(totalBill);
               setSelectInput(totalBill + "");
             }}
           >

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -24,21 +25,21 @@ import convertNumberReverse from "../../../helpers/convertNumberReverse";
 
 import { BiTransfer } from "react-icons/bi";
 
-export default function CheckOutPopup({
+export default function CheckOutPopupCafe({
   onPrintDrawer,
   onPrintBill,
   open,
   onClose,
-  // onSubmit,
   dataBill,
-  tableData,
   setDataBill,
   taxPercent = 0,
+  setSelectedMenu,
 }) {
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail } = useStore();
+  const { storeDetail, profile } = useStore();
+  const navigate = useNavigate();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -58,11 +59,11 @@ export default function CheckOutPopup({
   const [textSearchMember, setTextSearchMember] = useState("");
 
   const [currencyList, setCurrencyList] = useState([]);
-
   const { setSelectedTable, getTableDataStore } = useStore();
 
   // val
   // console.log("tableData:=======abc======>", tableData);
+  // console.log("dataBill:=======abc======>", dataBill);
 
   useEffect(() => {
     setMemberData();
@@ -92,11 +93,12 @@ export default function CheckOutPopup({
   // console.log("tableData:=======abc======>", tableData)
 
   const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-    (e) => e?.price * e?.quantity
+    dataBill?.map((e) => e?.price * e?.quantity)
   );
-  const taxAmount = (totalBillDefualt * taxPercent) / 100;
+
+  const taxAmount = totalBillDefualt * taxPercent;
   const totalBill = totalBillDefualt + taxAmount;
+
   useEffect(() => {
     setCash();
     setTransfer();
@@ -117,23 +119,23 @@ export default function CheckOutPopup({
     moneyChange = `${moneyCurrency(
       (parseFloat(cash) || 0) +
         (parseFloat(transfer) || 0) -
-        (dataBill && dataBill?.discountType === "LAK"
-          ? totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
+        (dataBill
+          ? totalBill
+            ? totalBill
             : 0
-          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : totalBill > 0
+          ? totalBill
           : 0) <=
         0
         ? 0
         : (parseFloat(cash) || 0) +
             (parseFloat(transfer) || 0) -
-            (dataBill && dataBill?.discountType === "LAK"
-              ? totalBill - dataBill?.discount > 0
-                ? totalBill - dataBill?.discount
+            (dataBill
+              ? totalBill > 0
+                ? totalBill
                 : 0
-              : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-              ? totalBill - (totalBill * dataBill?.discount) / 100
+              : totalBill > 0
+              ? totalBill
               : 0)
     )} ${storeDetail?.firstCurrency}`;
 
@@ -173,7 +175,7 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (!open) return;
-    for (let i = 0; i < dataBill?.orderId?.length; i++) {
+    for (let i = 0; i < dataBill?.length; i++) {
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,13 +197,18 @@ export default function CheckOutPopup({
     }
   };
   const _checkBill = async () => {
+
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+
+    const Orders = dataBill.map((itemOrder) => itemOrder);
+    
     await axios
-      .put(
-        END_POINT + `/v3/bill-checkout`,
+      .post(
+        END_POINT + `/v3/admin/bill-cafe-checkout`,
         {
-          id: dataBill?._id,
           data: {
+            order: Orders,
+            storeId: profile.data.storeId,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -210,18 +217,15 @@ export default function CheckOutPopup({
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
-            customerId: selectDataOpption?._id,
-            userNanme: selectDataOpption?.username,
-            phone: selectDataOpption?.phone,
+            customerId: null,
+            userNanme: null,
+            phone: null,
             memberId: memberData?._id,
             memberName: memberData?.name,
             memberPhone: memberData?.phone,
-            billMode: tableData?.editBill,
-            tableName: tableData?.tableName,
-            tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
+              profile.data.firstname + " " + profile.data.lastname ?? "-",
+            staffCheckOutId: profile.data._id,
           },
         },
         {
@@ -240,7 +244,10 @@ export default function CheckOutPopup({
         setSelectInput("inputCash");
         setHasCRM(false);
         setTextSearchMember("");
+        setSelectedMenu([])
         localStorage.removeItem("STAFFCONFIRM_DATA");
+
+        // console.log("response",response)
 
         onClose();
         Swal.fire({
@@ -249,6 +256,7 @@ export default function CheckOutPopup({
           showConfirmButton: false,
           timer: 1800,
         });
+        navigate("/history-cafe-sale")
       })
       .catch(function (error) {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
@@ -262,9 +270,9 @@ export default function CheckOutPopup({
 
   const _calculateTotal = () => {
     let _total = 0;
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status === "SERVED") {
-        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
+    for (let i = 0; i < dataBill?.length; i++) {
+      if (dataBill[i]?.status === "SERVED") {
+        _total += dataBill[i]?.quantity * dataBill[i]?.price;
       }
     }
     setTotal(_total);
@@ -277,15 +285,15 @@ export default function CheckOutPopup({
   useEffect(() => {
     if (!open) return;
     if (forcus == "CASH") {
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
+      if (dataBill) {
+        if (dataBill) {
+          if (cash >= totalBill) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (cash >= totalBill - dataBill?.discount) {
+          if (cash >= totalBill) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -299,11 +307,11 @@ export default function CheckOutPopup({
         }
       }
     } else if (forcus == "TRANSFER") {
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
+      if (dataBill) {
+        if (dataBill) {
+          setTransfer(totalBill);
         } else {
-          setTransfer(totalBill - dataBill?.discount);
+          setTransfer(totalBill);
         }
       } else {
         setTransfer(totalBill);
@@ -314,15 +322,15 @@ export default function CheckOutPopup({
       console.log(_sum);
       console.log(transfer);
       console.log(cash);
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+      if (dataBill) {
+        if (dataBill) {
+          if (_sum >= totalBill) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (_sum >= totalBill - dataBill?.discount) {
+          if (_sum >= totalBill) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -338,27 +346,17 @@ export default function CheckOutPopup({
     }
   }, [cash, transfer, totalBill, forcus]);
 
-  let transferCal =
-    dataBill?.discountType === "PERCENT"
-      ? totalBill - dataBill?.discount > 0
-        ? totalBill - dataBill?.discount
-        : 0
-      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+  let transferCal = dataBill
+    ? totalBill > 0
+      ? totalBill
+      : 0
+    : totalBill > 0
+    ? totalBill
+    : 0;
 
-  let totalBillMoney =
-    dataBill && dataBill?.discountType === "LAK"
-      ? parseFloat(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
-      : parseFloat(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+  let totalBillMoney = dataBill
+    ? parseFloat(totalBill > 0 ? totalBill : 0)
+    : parseFloat(totalBill > 0 ? totalBill : 0);
 
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -412,11 +410,7 @@ export default function CheckOutPopup({
       keyboard={false}
       size="lg"
     >
-      <Modal.Header closeButton>
-        <Modal.Title>
-          ຄິດໄລເງິນ ໂຕະ ({tableData?.tableName}) - ລະຫັດ {tableData?.code}
-        </Modal.Title>
-      </Modal.Header>
+      <Modal.Header closeButton></Modal.Header>
       <Modal.Body style={{ padding: 0 }}>
         <Box
           style={{
@@ -434,17 +428,9 @@ export default function CheckOutPopup({
             >
               <span>ລາຄາລວມ: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {dataBill && dataBill?.discountType === "LAK"
-                  ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
-                    )
-                  : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                {dataBill
+                  ? moneyCurrency(totalBill ? totalBill : 0)
+                  : moneyCurrency(totalBill > 0 ? totalBill : 0)}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -456,12 +442,12 @@ export default function CheckOutPopup({
                 hidden={selectCurrency === "LAK"}
               >
                 {moneyCurrency(
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
+                  (dataBill
+                    ? totalBill > 0
+                      ? totalBill
                       : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : totalBill > 0
+                    ? totalBill
                     : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
@@ -562,23 +548,23 @@ export default function CheckOutPopup({
               {moneyCurrency(
                 (parseInt(cash) || 0) +
                   (parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
+                  (dataBill
+                    ? totalBill > 0
+                      ? totalBill
                       : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : totalBill > 0
+                    ? totalBill
                     : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
                       (parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
+                      (dataBill
+                        ? totalBill > 0
+                          ? totalBill
                           : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : totalBill > 0
+                        ? totalBill
                         : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
@@ -698,14 +684,14 @@ export default function CheckOutPopup({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <div style={{ flex: 1 }}>
+        {/* <div style={{ flex: 1 }}>
           <p>
             ພະນັກງານເຊັກບິນ:{" "}
             <b>
               {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
             </b>
           </p>
-        </div>
+        </div> */}
         <Button
           onClick={() => {
             onPrintBill().then(() => {

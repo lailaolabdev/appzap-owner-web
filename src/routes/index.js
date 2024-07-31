@@ -1,7 +1,6 @@
 import React from "react";
 import Login from "../pages/login/Login";
 import { useRoutes } from "react-router-dom";
-
 import MainLayout from "../layouts/MainLayout";
 
 // import CheckBill from "../pages/Notification/CheckBill";
@@ -15,6 +14,7 @@ import StoreDetail from "../pages/store/StoreDetail";
 import DoingOrder from "../pages/order/DoingOrderTab";
 import Table from "../pages/table/TableList";
 import AddOrder from "../pages/table/AddOrder";
+import Homecafe from "../pages/cafe_home/Homecafe";
 import Histories from "../pages/histories/Histories";
 import HistoryDetail from "../pages/histories/HistoryDetail";
 import Notification from "../pages/Notification/NotificationCheckBill";
@@ -64,6 +64,7 @@ import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
+import HistorySale from "../pages/cafe_home/HistorySale";
 
 function Router() {
   return useRoutes([
@@ -121,6 +122,14 @@ function Router() {
           element: <Table />,
         },
         // <------------------ ||
+        {
+          path: "/home-cafe",
+          element: <Homecafe />,
+        },
+        {
+          path: "/history-cafe-sale",
+          element: <HistorySale />,
+        },
         {
           path: "/addOrder/tableid/:tableId/code/:code",
           element: <AddOrder />,

@@ -19,8 +19,8 @@ const OrderCheckOut = ({
   show = false,
   hide,
   taxPercent = 0,
-  onPrintBill = () => { },
-  onSubmit = () => { },
+  onPrintBill = () => {},
+  onSubmit = () => {},
   staffData,
   // setDataBill
 }) => {
@@ -31,7 +31,7 @@ const OrderCheckOut = ({
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
 
-  console.log("storeDetail:---->", storeDetail, staffData?.users);
+  // console.log("storeDetail:---->", storeDetail, staffData?.users);
 
   useEffect(() => {
     // for (let i = 0; i < data?.orderId.length; i++) {
@@ -90,27 +90,27 @@ const OrderCheckOut = ({
         arialabelledby="contained-modal-title-vcenter"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t('order_detial')}</Modal.Title>
+          <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t('table')}:{tableData?.tableName}
+            {t("table")}:{tableData?.tableName}
           </pre>
           <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t('code')}:{tableData?.code}
+            {t("code")}:{tableData?.code}
           </pre>
           <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t('open_at')}:
+            {t("open_at")}:
             {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
           </pre>
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
-                <th>{t('no')}</th>
-                <th>{t('menu_name')}</th>
-                <th>{t('qty')}</th>
-                <th>{t('price')}</th>
-                <th>{t('total_price')}</th>
+                <th>{t("no")}</th>
+                <th>{t("menu_name")}</th>
+                <th>{t("qty")}</th>
+                <th>{t("price")}</th>
+                <th>{t("total_price")}</th>
               </tr>
             </thead>
             <tbody>
@@ -125,8 +125,8 @@ const OrderCheckOut = ({
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                            orderItem?.price * orderItem?.quantity
-                          )
+                              orderItem?.price * orderItem?.quantity
+                            )
                           : "-"}
                       </td>
                     </tr>
@@ -134,7 +134,7 @@ const OrderCheckOut = ({
                 })}
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  {t('discount')}:
+                  {t("discount")}:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(data?.discount)}{" "}
@@ -145,7 +145,7 @@ const OrderCheckOut = ({
               </tr>
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  {t('total_price')}:
+                  {t("total_price")}:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(total)} {storeDetail?.firstCurrency}
@@ -153,7 +153,7 @@ const OrderCheckOut = ({
               </tr>
               <tr>
                 <td colspan="4" style={{ textAlign: "center" }}>
-                  {t('total_price')} + {t('tax')} {taxPercent}%:
+                  {t("total_price")} + {t("tax")} {taxPercent}%:
                 </td>
                 <td colspan="1">
                   {moneyCurrency(total * (taxPercent * 0.01 + 1))}{" "}
@@ -188,19 +188,19 @@ const OrderCheckOut = ({
                   fontSize: 26,
                 }}
                 onClick={() => onPrintBill()}
-              // onClick={() => setIsBill(true)}
+                // onClick={() => setIsBill(true)}
               >
                 <FontAwesomeIcon
                   icon={faCashRegister}
                   style={{ color: "#fff" }}
                 />
-                {t('print_bill')}
+                {t("print_bill")}
               </Button>
               <div
                 className="p-2 col-example text-center"
                 style={{ fontSize: 26 }}
               >
-                {t('total_must_pay')}:
+                {t("total_must_pay")}:
               </div>
               <div
                 className="p-2 col-example text-center"
@@ -213,22 +213,22 @@ const OrderCheckOut = ({
                   <b>
                     {data && data?.discountType === "LAK"
                       ? moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) - data?.discount > 0
-                          ? total * (taxPercent * 0.01 + 1) - data?.discount
-                          : 0
-                      )
+                          total * (taxPercent * 0.01 + 1) - data?.discount > 0
+                            ? total * (taxPercent * 0.01 + 1) - data?.discount
+                            : 0
+                        )
                       : moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) -
-                          (total * (taxPercent * 0.01 + 1) * data?.discount) /
-                          100 >
-                          0
-                          ? total * (taxPercent * 0.01 + 1) -
-                          (total *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                          100
-                          : 0
-                      )}
+                          total * (taxPercent * 0.01 + 1) -
+                            (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                              100 >
+                            0
+                            ? total * (taxPercent * 0.01 + 1) -
+                                (total *
+                                  (taxPercent * 0.01 + 1) *
+                                  data?.discount) /
+                                  100
+                            : 0
+                        )}
                   </b>
                 </span>
               </div>
@@ -245,13 +245,13 @@ const OrderCheckOut = ({
                     fontSize: 26,
                   }}
                   onClick={onConfirmStaffToCheckBill}
-                // onClick={() => onSubmit()}
+                  // onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
                     icon={faCashRegister}
                     style={{ color: "#fff" }}
                   />{" "}
-                  {t('change_who_check_bill')}
+                  {t("change_who_check_bill")}
                 </Button>
                 <Button
                   className="ml-2 pl-4 pr-4"
@@ -269,7 +269,7 @@ const OrderCheckOut = ({
                     icon={faCashRegister}
                     style={{ color: "#fff" }}
                   />{" "}
-                  {t('check_bill')}
+                  {t("check_bill")}
                 </Button>
               </div>
             </div>
@@ -289,22 +289,22 @@ const OrderCheckOut = ({
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <b>{t('chose_staff_check_bill')}</b>
+            <b>{t("chose_staff_check_bill")}</b>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div style={{ display: "flex", gap: 20 }}>
             <Button onClick={() => setDefualtRoleUser("APPZAP_COUNTER")}>
-              {t('counter')}
+              {t("counter")}
             </Button>
             <Button onClick={() => setDefualtRoleUser("APPZAP_STAFF")}>
-              {t('server')}
+              {t("server")}
             </Button>
             <Button
               disabled={profile?.data?.role != "APPZAP_ADMIN"}
               onClick={() => setDefualtRoleUser("APPZAP_ADMIN")}
             >
-              {t('ceo')}
+              {t("ceo")}
             </Button>
           </div>
           <div
