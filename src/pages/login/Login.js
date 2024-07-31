@@ -303,13 +303,11 @@ function Login() {
                     >
                       ນະໂຍບາຍການນໍາໃຊ້
                     </div> */}
-                    <a
-                      href="/policy"
-                      target="_blank"
-                      style={{ color: COLOR_APP, textDecoration: "underline" }}
-                    >
+                    <div
+                      style={{ color: COLOR_APP, textDecoration: "underline", cursor: 'pointer' }}
+                      onClick={() => navigate('/policy')}>
                       ນະໂຍບາຍການນໍາໃຊ້
-                    </a>
+                    </div>
                     <div style={{ color: "#ccc" }}>v{packetJson?.version}</div>
                   </div>
                   <div style={{ height: 40 }} />
