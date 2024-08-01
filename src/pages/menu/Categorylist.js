@@ -244,6 +244,14 @@ export default function Categorylist() {
               {t("foodType")}
             </Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/category"
+              // onClick={() => _category()}
+            >
+              {t("category type")}
+            </Nav.Link>
+          </Nav.Item>
         </Nav>
       </div>
       <div>
@@ -298,7 +306,7 @@ export default function Categorylist() {
                         {/*adamHere*/}
                         <td
                           style={{
-                            color: data?.showForCustomer ? "green" : "red"
+                            color: data?.showForCustomer ? "green" : "red",
                           }}
                         >
                           <label className="switch">
@@ -333,7 +341,7 @@ export default function Categorylist() {
             name_kr: "",
             note: "",
             sort: "",
-            categoryTypeId: ""
+            categoryTypeId: "",
           }}
           validate={(values) => {
             const errors = {};
@@ -353,7 +361,7 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting
+            isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
@@ -466,7 +474,7 @@ export default function Categorylist() {
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0
+                    border: 0,
                   }}
                   onClick={() => handleSubmit()}
                 >
@@ -486,7 +494,7 @@ export default function Categorylist() {
             name_kr: dataUpdate?.name_kr,
             note: dataUpdate?.note,
             sort: dataUpdate?.sort,
-            categoryTypeId: dataUpdate?.categoryTypeId
+            categoryTypeId: dataUpdate?.categoryTypeId,
           }}
           validate={(values) => {
             const errors = {};
@@ -509,7 +517,7 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting
+            isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
@@ -654,7 +662,7 @@ export default function Categorylist() {
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0
+                    border: 0,
                   }}
                   onClick={() => handleSubmit()}
                 >
