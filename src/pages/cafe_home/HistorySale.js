@@ -53,7 +53,7 @@ function HistorySale() {
   const [historyCafe, setHistoryCafe] = useState([]);
 
   const [pagination, setPagination] = useState(1);
-  const limitData = 10
+  const limitData = 20
   const [totalPagination, setTotalPagination] = useState();
 
   // console.log("historyCafe" ,historyCafe)

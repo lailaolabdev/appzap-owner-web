@@ -92,12 +92,23 @@ export default function CheckOutPopupCafe({
   };
   // console.log("tableData:=======abc======>", tableData)
 
-  const totalBillDefualt = _.sumBy(
-    dataBill?.map((e) => e?.price * e?.quantity)
-  );
+  // const totalBillDefualt = _.sumBy(
+  //   dataBill?.map((e) => e?.price * e?.quantity)
+  // );
 
-  const taxAmount = totalBillDefualt * taxPercent;
-  const totalBill = totalBillDefualt + taxAmount;
+  const TotalPrice = () => {
+    return dataBill.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.price * nextValue.quantity;
+    }, 0);
+  };
+
+  // console.log(TotalPrice())
+  
+  // const taxAmount = TotalPrice() * taxPercent;
+
+  const totalBill = TotalPrice()
+
+  // console.log(totalBill)
 
   useEffect(() => {
     setCash();
@@ -215,7 +226,7 @@ export default function CheckOutPopupCafe({
             transferAmount: transfer,
             billAmount: totalBill,
             paymentMethod: forcus,
-            taxAmount: taxAmount,
+            taxAmount: null,
             taxPercent: taxPercent,
             customerId: null,
             userNanme: null,
@@ -256,7 +267,7 @@ export default function CheckOutPopupCafe({
           showConfirmButton: false,
           timer: 1800,
         });
-        navigate("/history-cafe-sale")
+        // navigate("/history-cafe-sale")
       })
       .catch(function (error) {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");

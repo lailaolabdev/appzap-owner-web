@@ -790,13 +790,7 @@ function Homecafe() {
   return (
     <div>
       <CafeContent>
-        <CafeMenu
-        // style={{
-        //   flexGrow: 1,
-        //   height: "90vh",
-        //   overflowY: "scroll",
-        // }}
-        >
+        <CafeMenu>
           <div
             style={{
               padding: 10,
@@ -909,11 +903,8 @@ function Homecafe() {
             )}
           </SubCafeMenu>
         </CafeMenu>
-        {/* Detail Table */}
+  
         <CafeCart
-        // style={{
-        //   width: "70rem",
-        // }}
         >
           <div className="container">
             <div className="row">
@@ -1327,6 +1318,7 @@ function Homecafe() {
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
+        TotalPrice={TotalPrice()}
       />
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
@@ -1346,9 +1338,11 @@ const CafeContent = styled.div`
 `;
 
 const CafeMenu = styled.div`
-  flex-grow: 1;
+  width : 80rem;
+  /* flex-grow: 1; */
   height: 90vh;
   overflow-y: scroll;
+
 `;
 const SubCafeMenu = styled.div`
   display: grid;
@@ -1358,6 +1352,20 @@ const SubCafeMenu = styled.div`
     height: 200px;
   }
 
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+
+    .images-menu-cafe {
+      height: 150px;
+    }
+  }
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+
+    .images-menu-cafe {
+      height: 100px;
+    }
+  }
   @media (max-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
 
@@ -1365,9 +1373,17 @@ const SubCafeMenu = styled.div`
       height: 100px;
     }
   }
+  @media (max-width: 820px) {
+    grid-template-columns: repeat(3, 1fr);
+
+    .images-menu-cafe {
+      height: 100px;
+    }
+  }
 `;
+
 const CafeCart = styled.div`
-  width: 70rem;
+  width: 60rem;
   background-color: #fff;
   max-height: 90vh;
   border-color: black;
@@ -1377,8 +1393,17 @@ const CafeCart = styled.div`
   padding-top: 20;
   margin-top : 15px;
 
+
   @media (max-width: 768px) {
-    width: 40rem;
+    width: 80rem;
+    margin-top : 15px
+  }
+  @media (max-width: 820px) {
+    width: 80rem;
+    margin-top : 15px
+  }
+  @media (max-width: 900px) {
+    width: 80rem;
     margin-top : 15px
   }
 `;
