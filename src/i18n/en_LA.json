@@ -65,6 +65,7 @@
     "currentQueueNumber": "ຈຳນວນຄິວປະຈຸບັນ",
     "lastUpdated": "ອັບເດດລ່າສຸດ",
     "foodType": "ປະເພດອາຫານ",
+    "categoryType": "ໝວດໝູ່ອາຫານ",
     "addFoodType": "ເພີ່ມປະເພດ",
     "foodTypeName": "ຊື່ປະເພດອາຫານ",
     "foodTypeNameLO": "ຊື່ (ລາວ)",

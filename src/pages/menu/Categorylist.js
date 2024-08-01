@@ -3,13 +3,14 @@ import { Formik } from "formik";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav } from "react-bootstrap";
+import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
 import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Box from "../../components/Box";
 
 export default function Categorylist() {
   const { t } = useTranslation();
@@ -52,13 +53,13 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
       let _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
         END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
         {
-          headers: headers
+          headers: headers,
         }
       );
       if (_resData?.data) {
@@ -75,7 +76,7 @@ export default function Categorylist() {
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
-      Authorization: header.authorization
+      Authorization: header.authorization,
     };
     const resData = await axios({
       method: "POST",
@@ -88,9 +89,9 @@ export default function Categorylist() {
         name_kr: values?.name_kr,
         note: values?.note,
         sort: values?.sort,
-        categoryTypeId: values?.categoryTypeId
+        categoryTypeId: values?.categoryTypeId,
       },
-      headers: headers
+      headers: headers,
     })
       .then(async function (response) {
         setCategorys(response?.data);
@@ -106,7 +107,7 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
       console.log("============>", values);
 
@@ -121,11 +122,11 @@ export default function Categorylist() {
             name_kr: values?.name_kr,
             note: values?.note,
             sort: values?.sort,
-            categoryTypeId: values?.categoryTypeId
-          }
+            categoryTypeId: values?.categoryTypeId,
+          },
         },
         {
-          headers: headers
+          headers: headers,
         }
       );
       if (resData?.data) {
@@ -156,7 +157,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`
+      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
     console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
@@ -167,7 +168,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categoroy-type`
+      url: END_POINT_SEVER + `/v3/categoroy-type`,
     });
     console.log("CATEGORYTYPE: ", _resCategoryType?.data.data);
     setCategorysType(_resCategoryType?.data?.data);
@@ -180,12 +181,16 @@ export default function Categorylist() {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
 
+  const _categoryType = () => {
+    navigate(`/settingStore/menu/category-type`);
+  };
+
   ////New Section Here
 
   const getCate = async (id) => {
     try {
       await fetch(CATEGORY + `/?storeId=${id}`, {
-        method: "GET"
+        method: "GET",
       })
         .then((response) => response.json())
         .then((json) => {
@@ -202,7 +207,7 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
 
       await axios({
@@ -211,10 +216,10 @@ export default function Categorylist() {
         data: {
           id: id,
           data: {
-            showForCustomer: !showForCustomer
-          }
+            showForCustomer: !showForCustomer,
+          },
         },
-        headers: headers
+        headers: headers,
       });
 
       let _newData = [...Categorys];
@@ -229,109 +234,119 @@ export default function Categorylist() {
 
   return (
     <div style={BODY}>
-      <div>
-        <Nav variant="tabs" defaultActiveKey="/settingStore/category">
-          <Nav.Item>
-            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              {t("menu")}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/category"
-              onClick={() => _category()}
-            >
-              {t("foodType")}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/category"
-              // onClick={() => _category()}
-            >
-              {t("category type")}
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
-      <div>
-        <div className="col-sm-12 text-right">
-          <Button
-            className="col-sm-2"
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={handleShow}
-          >
-            {t("addFoodType")}
-          </Button>{" "}
-        </div>
-        <div style={{ height: 20 }}></div>
+      <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <div>
-          <div className="col-sm-12">
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th scope="col">{t("no")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  {/* <th scope="col">{t('note')}</th> */}
-                  <th scope="col">{t("manage")}</th>
-                  <th scope="col">{t("status")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Categorys &&
-                  Categorys.map((data, index) => {
-                    return (
-                      <tr>
-                        <td>{index + 1}</td>
-                        <td>{data?.name ?? ""}</td>
-                        <td>{data?.name_en ?? ""}</td>
-                        <td>{data?.name_cn ?? ""}</td>
-                        <td>{data?.name_kr ?? ""}</td>
-                        {/* <td>{data?.categoryTypeId?.name ?? ""}</td> */}
-                        <td>
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            style={{ color: COLOR_APP }}
-                            onClick={() => handleShow2(data)}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{ marginLeft: 20, color: "red" }}
-                            onClick={() => handleShow3(data?._id, data?.name)}
-                          />
-                        </td>
-                        {/*adamHere*/}
-                        <td
-                          style={{
-                            color: data?.showForCustomer ? "green" : "red",
-                          }}
-                        >
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={data?.showForCustomer}
-                              onClick={() =>
-                                _changeStatusCate(
-                                  data?._id,
-                                  data?.showForCustomer,
-                                  index
-                                )
-                              }
+          <Breadcrumb>
+            <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+            <Breadcrumb.Item active>{t("menu")}</Breadcrumb.Item>
+          </Breadcrumb>
+          <Nav variant="tabs" defaultActiveKey="/settingStore/category">
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu"
+                onClick={() => _menuList()}
+              >
+                {t("menu")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category"
+                onClick={() => _category()}
+              >
+                {t("foodType")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category-type"
+                onClick={() => _categoryType()}
+              >
+                {t("categoryType")}
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </div>
+        <div>
+          <div className="col-sm-12 text-right">
+            <Button
+              className="col-sm-2"
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={handleShow}
+            >
+              {t("addFoodType")}
+            </Button>{" "}
+          </div>
+          <div style={{ height: 20 }}></div>
+          <div>
+            <div className="col-sm-12">
+              <table className="table table-hover">
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">{t("no")}</th>
+                    <th scope="col">{t("foodTypeName")}</th>
+                    <th scope="col">{t("foodTypeName")}</th>
+                    <th scope="col">{t("foodTypeName")}</th>
+                    <th scope="col">{t("foodTypeName")}</th>
+                    {/* <th scope="col">{t('note')}</th> */}
+                    <th scope="col">{t("manage")}</th>
+                    <th scope="col">{t("status")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Categorys &&
+                    Categorys.map((data, index) => {
+                      return (
+                        <tr>
+                          <td>{index + 1}</td>
+                          <td>{data?.name ?? ""}</td>
+                          <td>{data?.name_en ?? ""}</td>
+                          <td>{data?.name_cn ?? ""}</td>
+                          <td>{data?.name_kr ?? ""}</td>
+                          {/* <td>{data?.categoryTypeId?.name ?? ""}</td> */}
+                          <td>
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              style={{ color: COLOR_APP }}
+                              onClick={() => handleShow2(data)}
                             />
-                            <span className="slider round"></span>
-                          </label>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              style={{ marginLeft: 20, color: "red" }}
+                              onClick={() => handleShow3(data?._id, data?.name)}
+                            />
+                          </td>
+                          {/*adamHere*/}
+                          <td
+                            style={{
+                              color: data?.showForCustomer ? "green" : "red",
+                            }}
+                          >
+                            <label className="switch">
+                              <input
+                                type="checkbox"
+                                checked={data?.showForCustomer}
+                                onClick={() =>
+                                  _changeStatusCate(
+                                    data?._id,
+                                    data?.showForCustomer,
+                                    index
+                                  )
+                                }
+                              />
+                              <span className="slider round"></span>
+                            </label>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      </Box>
+
       <Modal show={show} onHide={handleClose}>
         <Formik
           initialValues={{

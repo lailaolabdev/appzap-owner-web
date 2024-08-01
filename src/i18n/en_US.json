@@ -141,6 +141,7 @@
     "currentQueueNumber": "Current queue number",
     "lastUpdated": "Last updated",
     "foodType": "Food type",
+    "categoryType": "category type",
     "addFoodType": "add food type",
     "foodTypeName": "Food type name",
     "manage": "Manage",
