@@ -65,6 +65,7 @@ import FarkRoutes from "./Fark.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
+import CategoryType from "../pages/menu/CategoryType"
 
 function Router() {
   return useRoutes([
@@ -157,6 +158,10 @@ function Router() {
         {
           path: "/settingStore/menu/category/limit/:limit/page/:page/:id",
           element: <Category />,
+        },
+        {
+          path: "/settingStore/menu/category-type",
+          element: <CategoryType />,
         },
         {
           path: "/settingStore/menu/limit/:limit/page/:page/:id",

@@ -106,10 +106,9 @@ export default function MenuList() {
 
           await fetch(
             MENUS +
-            `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
-              : `&categoryId=${filterCategory}`
-
-            }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+              `/?storeId=${_localData?.DATA?.storeId}${
+                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+              }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
             }
@@ -148,10 +147,13 @@ export default function MenuList() {
       setIsLoading(true);
       await fetch(
         MENUS +
-        `/?storeId=${id}${filterName && filterName !== "" ? `&name=${filterName}` : ""}${(categoryId && categoryId !== "All")
-          ? `&categoryId=${categoryId}`
-          : ""
-        }`,
+          `/?storeId=${id}${
+            filterName && filterName !== "" ? `&name=${filterName}` : ""
+          }${
+            categoryId && categoryId !== "All"
+              ? `&categoryId=${categoryId}`
+              : ""
+          }`,
         {
           method: "GET",
         }
@@ -261,7 +263,7 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
         setMenuType("MENU");
         setConnectMenuId("");
-        successAdd(`${t('add_success')}`);
+        successAdd(`${t("add_success")}`);
         values.name = "";
         values.name_en = "";
         values.name_cn = "";
@@ -273,7 +275,7 @@ export default function MenuList() {
         values.unit = "";
       }
     } catch (err) {
-      errorAdd(`${t('add_fail')}`);
+      errorAdd(`${t("add_fail")}`);
     }
   };
   // detele menu
@@ -303,10 +305,10 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
 
         handleClose3();
-        successAdd(`${t('delete_success')}`);
+        successAdd(`${t("delete_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
     }
   };
   // =======>
@@ -353,7 +355,7 @@ export default function MenuList() {
     });
     if (resData?.data) {
       handleClose2();
-      successAdd(`${t('edit_success')}`);
+      successAdd(`${t("edit_success")}`);
     }
   };
   const _updateQtyCategory = async (values) => {
@@ -369,14 +371,14 @@ export default function MenuList() {
     })
       .then(async function () {
         handleClose4();
-        successAdd(`${t('edd_amount_success')}`);
+        successAdd(`${t("edd_amount_success")}`);
         handleClose();
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
       .catch(function (error) {
-        errorAdd(`${t('add_amount_fail')}`);
+        errorAdd(`${t("add_amount_fail")}`);
       });
   };
 
@@ -537,7 +539,7 @@ export default function MenuList() {
   };
 
   const _categoryType = () => {
-
+    navigate(`/settingStore/menu/category-type`);
   };
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
@@ -582,7 +584,7 @@ export default function MenuList() {
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/category"
-                // onClick={() => _category()}
+                onClick={() => _categoryType()}
               >
                 {t("category type")}
               </Nav.Link>
