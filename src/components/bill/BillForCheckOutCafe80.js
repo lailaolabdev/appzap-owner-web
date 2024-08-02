@@ -199,17 +199,35 @@ export default function BillForCheckOutCafe80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <Row>
-            <Col></Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{t("total")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>
-                {moneyCurrency(TotalPrice())} {storeDetail?.firstCurrency}
-              </div>
-            </Col>
-          </Row>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("total")} :{" "}
+            </div>
+
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {moneyCurrency(TotalPrice())} {storeDetail?.firstCurrency}
+            </div>
+          </div>
           {/* {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency} */}
           {/* <div style={{ textAlign: "right" }}>
             

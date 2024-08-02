@@ -408,14 +408,14 @@ function Homecafe() {
     }
   };
 
-  const AlertMessage = () =>{
+  const AlertMessage = () => {
     Swal.fire({
-          icon: "error",
-          title: "ກະລຸນາເລຶອກລາຍການສິນຄ້າກ່ອນ",
-          showConfirmButton: false,
-          timer: 2500,
-        });
-  }
+      icon: "error",
+      title: "ກະລຸນາເລຶອກລາຍການສິນຄ້າກ່ອນ",
+      showConfirmButton: false,
+      timer: 2500,
+    });
+  };
 
   const TotalAmount = () => {
     return selectedMenu.reduce((currentValue, nextValue) => {
@@ -772,7 +772,6 @@ function Homecafe() {
       return err;
     }
   };
-  
 
   // const canCheckOut = !tableOrderItems.find(
   //   (e) =>
@@ -826,18 +825,14 @@ function Homecafe() {
               />
             </div>
           </div>
-          <SubCafeMenu
-          >
+          <SubCafeMenu>
             {isLoading ? (
               <Loading />
-            ) : (
-
-              afterSearch.length === 0 ? 
-              
+            ) : afterSearch.length === 0 ? (
               <div className="container">
-                  <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+                <p>ຍັງບໍ່ມີລາຍການນີ້</p>
               </div>
-              :
+            ) : (
               afterSearch?.map((data, index) => {
                 if (data?.type === "MENU")
                   return (
@@ -899,13 +894,11 @@ function Homecafe() {
                     </div>
                   );
               })
-
             )}
           </SubCafeMenu>
         </CafeMenu>
-  
-        <CafeCart
-        >
+
+        <CafeCart>
           <div className="container">
             <div className="row">
               <div className="col-lg-12 col-md-12">
@@ -986,7 +979,6 @@ function Homecafe() {
                             </td>
 
                             <td style={{ padding: 0, textAlign: "right" }}>
-
                               <div
                                 style={{
                                   display: "flex",
@@ -996,7 +988,7 @@ function Homecafe() {
                                   paddingTop: 5,
                                 }}
                               >
-                                {data?.note === "" ? (
+                                {/* {data?.note === "" ? (
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -1018,7 +1010,7 @@ function Homecafe() {
                                   >
                                     <MdMarkChatRead />
                                   </div>
-                                )}
+                                )} */}
 
                                 <div
                                   style={{
@@ -1041,7 +1033,7 @@ function Homecafe() {
                   <div className="mb-3">
                     <div>
                       <span>{t("amountTotal")} : </span>
-                      <span>{TotalAmount()}</span>
+                      <span>{TotalAmount()} </span>
                     </div>
                     <div>
                       <span>{t("pricesTotal")} : </span>
@@ -1056,40 +1048,45 @@ function Homecafe() {
               </div>
               <div className="col-12">
                 <div className="row" style={{ margin: 0 }}>
-                  <Button
-                    variant="outline-warning"
-                    className="hover-me"
-                    style={{
-                      marginRight: 15,
-                      border: "solid 1px #FB6E3B",
-                      fontWeight: "bold",
-                      backgroundColor: "#FB6E3B",
-                      color: "#ffffff",
-                    }}
-                    onClick={() => setSelectedMenu([])}
-                  >
-                    {t("cancel")}
-                  </Button>
-                  <Button
-                    variant="light"
-                    className="hover-me"
-                    style={{
-                      marginRight: 15,
-                      backgroundColor: "#FB6E3B",
-                      color: "#ffffff",
-                      fontWeight: "bold",
-                      flex: 1,
-                    }}
-                    onClick={() => {
-                      selectedMenu.length === 0 ?
-                      AlertMessage()
-                      :
-                      setPopup({ CheckOutType: true });
-                    }}
-                  >
-                    {/* {t("print_bill")} */}
-                    CheckOut
-                  </Button>
+                  {selectedMenu.length > 0 ? (
+                    <>
+                      <Button
+                        variant="outline-warning"
+                        className="hover-me"
+                        style={{
+                          marginRight: 15,
+                          border: "solid 1px #FB6E3B",
+                          fontWeight: "bold",
+                          backgroundColor: "#FB6E3B",
+                          color: "#ffffff",
+                        }}
+                        onClick={() => setSelectedMenu([])}
+                      >
+                        {t("cancel")}
+                      </Button>
+                      <Button
+                        variant="light"
+                        className="hover-me"
+                        style={{
+                          marginRight: 15,
+                          backgroundColor: "#FB6E3B",
+                          color: "#ffffff",
+                          fontWeight: "bold",
+                          flex: 1,
+                        }}
+                        onClick={() => {
+                          selectedMenu.length === 0
+                            ? AlertMessage()
+                            : setPopup({ CheckOutType: true });
+                        }}
+                      >
+                        {/* {t("print_bill")} */}
+                        CheckOut
+                      </Button>
+                    </>
+                  ) : (
+                    ""
+                  )}
                   <Button
                     variant="light"
                     className="hover-me"
@@ -1105,7 +1102,6 @@ function Homecafe() {
                   >
                     {t("history_sales")}
                   </Button>
-
                 </div>
               </div>
             </div>
@@ -1320,6 +1316,7 @@ function Homecafe() {
         taxPercent={taxPercent}
         TotalPrice={TotalPrice()}
       />
+
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
           storeDetail={storeDetail}
@@ -1338,11 +1335,10 @@ const CafeContent = styled.div`
 `;
 
 const CafeMenu = styled.div`
-  width : 80rem;
+  width: 80rem;
   /* flex-grow: 1; */
   height: 90vh;
   overflow-y: scroll;
-
 `;
 const SubCafeMenu = styled.div`
   display: grid;
@@ -1391,20 +1387,19 @@ const CafeCart = styled.div`
   border-width: 1;
   padding-left: 20;
   padding-top: 20;
-  margin-top : 15px;
-
+  margin-top: 15px;
 
   @media (max-width: 768px) {
     width: 80rem;
-    margin-top : 15px
+    margin-top: 15px;
   }
   @media (max-width: 820px) {
     width: 80rem;
-    margin-top : 15px
+    margin-top: 15px;
   }
   @media (max-width: 900px) {
     width: 80rem;
-    margin-top : 15px
+    margin-top: 15px;
   }
 `;
 export default Homecafe;

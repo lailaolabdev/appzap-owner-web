@@ -502,9 +502,6 @@ export default function TableList() {
 
 
   const onPrintBill = async () => {
-
-    console.log("dataBill",dataBill)
-
     try {
       let _dataBill = {
         ...dataBill,
@@ -2538,14 +2535,14 @@ const ButtonCustom = ({ children, ...etc }) => {
 const TableCustom = styled("table")({
   width: "100%",
   fontSize: 12,
-  ["th,td"]: {
+  "th,td": {
     padding: 0,
   },
-  ["th:first-child"]: {
+  "th:first-child": {
     maxWidth: 40,
     width: 40,
   },
-  ["td:first-child"]: {
+  "td:first-child": {
     maxWidth: 40,
     width: 40,
   },

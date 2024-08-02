@@ -164,12 +164,12 @@ function HistorySale() {
                 </div>
                 <div style={{ padding: 0 }}>
                   <div style={{ padding: 10 }}>
-                    <Table striped hover size="sm" style={{ fontSize: 15 }}>
-                      <thead>
+                    <Table striped hover size="sm" style={{ fontSize: 15}}>
+                      <thead >
                         <tr>
                           <th>ລຳດັບ</th>
                           <th>ລະຫັດສິນຄ້າ</th>
-                          <th>ຈຳນວນ</th>
+                          <th>ຈຳນວນລາຍການ</th>
                           <th>ລາຄາ</th>
                           <th>ວັນທີ</th>
                         </tr>
