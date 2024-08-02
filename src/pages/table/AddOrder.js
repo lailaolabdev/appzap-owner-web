@@ -368,6 +368,7 @@ function AddOrder() {
       categoryId: selectedItem?.categoryId,
       printer: selectedItem?.categoryId?.printer,
       note: "",
+      menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,
     };
@@ -435,6 +436,14 @@ function AddOrder() {
   const _checkMenuOption = (menu) => {
     try {
       return menu.menuOptions && menu.menuOptions.length > 0 ? menu.menuOptions : [];
+    } catch (error) {
+      return [];
+    }
+  };
+
+  const _checkSelectedMenuOption = (menu) => {
+    try {
+      return menu.options && menu.options.length > 0 ? menu.options : [];
     } catch (error) {
       return [];
     }
@@ -650,9 +659,29 @@ function AddOrder() {
     }
   };
 
-  const onAddCommentItems = (values) => {
-    setIsPupup(true);
-    setNoteItems(values);
+  const onEditOrder = (menu) => {
+    console.log("onEditOrder: ", menu);
+    const menuOptions = _checkMenuOption(menu);
+    console.log("menuOptions: ", menuOptions);
+  
+    // Get the selected options from the menu with their quantities
+    const selectedOptions = menu.options || [];
+  
+    // Menu has options, show popup
+    setMenuOptions(menuOptions);
+    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+  
+    setSelectedOptionsArray({
+      [menu._id]: menuOptions.map(option => {
+        const selectedOption = selectedOptions.find(opt => opt._id === option._id);
+        return { ...option, quantity: selectedOption ? selectedOption.quantity : 0 };
+      })
+    });
+  
+    handleShow();
+  
+    // setIsPupup(true);
+    // setNoteItems(menu);
   };
 
   const onEditCommentItems = (values) => {
@@ -911,18 +940,31 @@ function AddOrder() {
                                   paddingTop: 5,
                                 }}
                               >
-                                {data?.note === "" ? (
+
                                   <div
                                     style={{
                                       cursor: "pointer",
                                       fontSize: 25,
                                       color: "gray",
                                     }}
-                                    onClick={() => onAddCommentItems(data)}
+                                    onClick={() => onEditOrder(data)}
                                   >
                                     <RiChatNewFill />
                                   </div>
-                                ) : (
+
+                                {/* {data?.note === "" ? (
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "gray",
+                                    }}
+                                    onClick={() => onEditOrder(data)}
+                                  >
+                                    <RiChatNewFill />
+                                  </div>
+                                ) 
+                                : (
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -933,9 +975,9 @@ function AddOrder() {
                                   >
                                     <MdMarkChatRead />
                                   </div>
-                                )}
+                                )} */}
 
-                                <div
+                                {/* <div
                                   style={{
                                     cursor: "pointer",
                                     fontSize: 25,
@@ -944,7 +986,7 @@ function AddOrder() {
                                   onClick={() => onConfirmRemoveItem(data)}
                                 >
                                   <MdDelete />
-                                </div>
+                                </div> */}
                               </div>
                             </td>
                           </tr>
