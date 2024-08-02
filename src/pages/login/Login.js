@@ -295,12 +295,17 @@ function Login() {
                       width: "100%",
                     }}
                   >
-                    <div
+                    {/* <div
                       style={{ color: COLOR_APP, textDecoration: "underline" }}
                       onClick={() =>
                         window.open("http://policy.appzap.la/", "_blank")
                       }
                     >
+                      ນະໂຍບາຍການນໍາໃຊ້
+                    </div> */}
+                    <div
+                      style={{ color: COLOR_APP, textDecoration: "underline", cursor: 'pointer' }}
+                      onClick={() => navigate('/policy')}>
                       ນະໂຍບາຍການນໍາໃຊ້
                     </div>
                     <div style={{ color: "#ccc" }}>v{packetJson?.version}</div>

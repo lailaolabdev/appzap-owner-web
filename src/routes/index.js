@@ -64,6 +64,7 @@ import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
+import PolicyRoutes from "./Policy.routes";
 
 function Router() {
   return useRoutes([
@@ -265,6 +266,7 @@ function Router() {
     },
     ComponentRoutes,
     AuthRoutes,
+    PolicyRoutes,
     {
       path: "/testPrinter",
       element: <DoingOrder />,
