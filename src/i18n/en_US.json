@@ -732,7 +732,6 @@
     "marketing": "Marketing",
     "staff_salary": "Employee Salary",
     "welfare": "Welfare expenses",
-    "ORDER_CANCEL": "cancel",
     "operation_price": "Management",
     "other": "Others",
     "fill_paid_by": "Fill payer name...",
@@ -754,5 +753,6 @@
     "ORDER_PROCESSING": "cooking",
     "ORDER_SERVED": "served",
     "ORDER_CART": "on cart",
-    "ORDER_FEEDBACK": "feedback"
+    "ORDER_FEEDBACK": "feedback",
+    "ORDER_CANCEL": "cancel"
 }

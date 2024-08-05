@@ -6,7 +6,7 @@ import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
 import html2canvas from "html2canvas";
-import { base64ToBlob } from "../../helpers";
+import { base64ToBlob, orderStatusTranslate } from "../../helpers";
 import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
@@ -1987,7 +1987,7 @@ export default function TableList() {
                                     }}
                                   >
                                     {orderItem?.status
-                                      ? orderStatus(orderItem?.status)
+                                      ? t(orderStatusTranslate(orderItem?.status))
                                       : "-"}
                                   </td>
                                   <td>{orderItem?.createdBy?.firstname}</td>

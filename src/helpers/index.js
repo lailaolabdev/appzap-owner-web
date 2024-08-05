@@ -5,20 +5,38 @@ import moment from "moment"
 // import { useTranslation } from 'react-i18next';
 
 
-export const orderStatus = (status, t) => {
+export const orderStatus = (status) => {
   switch (status) {
     case "WAITING":
-      return `ordering`;
+      return "ອໍເດີເຂົ້າ";
     case "DOING":
-      return `cooking`;
+      return "ກໍາລັງຄົວ";
     case "SERVED":
-      return `served`;
+      return `ເສີບແລ້ວ`;
     case "CART":
-      return `on cart`;
+      return `ກຳລັງຈະສັງ`;
     case "FEEDBACK":
-      return `feedback`;
+      return `ສົ່ງຄືນ`;
     default:
-      return `cancel`;
+      return "ຍົກເລີກ";
+  }
+};
+
+export const orderStatusTranslate = (status) => {
+  // these return value use for i18n
+  switch (status) {
+    case "WAITING":
+      return "ORDER_IN";
+    case "DOING":
+      return "ORDER_PROCESSING";
+    case "SERVED":
+      return "ORDER_SERVED";
+    case "CART":
+      return "ORDER_CART";
+    case "FEEDBACK":
+      return "ORDER_FEEDBACK";
+    default:
+      return "ORDER_CANCEL";
   }
 };
 
