@@ -116,14 +116,23 @@ function AddOrder() {
 
   const handleSetQuantity = (int, data) => {
     let dataArray = [];
-    const sortedDataOptionsForComparison = sortOptionsById([...data.options]);
+  
+    // Ensure data.options is defined and is an array
+    const sortedDataOptionsForComparison = Array.isArray(data?.options) ? sortOptionsById([...data.options]) : [];
+  
+    console.log({ selectedMenu });
   
     for (const i of selectedMenu) {
       let _data = { ...i };
-      const sortedItemOptionsForComparison = sortOptionsById([...i.options]);
   
-      if (data?.id === i?.id && JSON.stringify(sortedDataOptionsForComparison) === JSON.stringify(sortedItemOptionsForComparison)) {
-        _data = { ..._data, quantity: _data?.quantity + int };
+      // Ensure i.options is defined and is an array
+      const sortedItemOptionsForComparison = Array.isArray(i?.options) ? sortOptionsById([...i.options]) : [];
+  
+      if (
+        data?.id === i?.id &&
+        JSON.stringify(sortedDataOptionsForComparison) === JSON.stringify(sortedItemOptionsForComparison)
+      ) {
+        _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
   
       if (_data.quantity > 0) {
@@ -133,6 +142,7 @@ function AddOrder() {
   
     setSelectedMenu(dataArray);
   };
+  
   
   // Helper function to sort options by ID
   const sortOptionsById = (options) => {
