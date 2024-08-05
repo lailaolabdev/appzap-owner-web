@@ -100,6 +100,8 @@
     "pending": "ຍັງຄ້າງ",
     "discount": "ສ່ວນຫຼຸດ",
     "getMoney": "ຮັບເງີນມາ",
+    "totalPrice": "ລາຄາລວມ",
+    "list": "ລາຍການ",
     "moneyWithdrawn": "ເງິນທອນ",
     "exchangeRate": "ອັດຕາແລກປ່ຽນ",
     "customerName": "ລູກຄ້າ",
