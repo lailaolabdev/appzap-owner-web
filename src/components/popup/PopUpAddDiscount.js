@@ -155,33 +155,33 @@ export default function PopUpAddDiscount({
           <tbody>
             {value
               ? value?.map((orderItem, index) => (
-                  <tr
-                    key={"order" + index}
-                    style={{ borderBottom: "1px solid #eee" }}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{orderItem?.name}</td>
-                    <td>{orderItem?.quantity}</td>
-                    <td
-                      style={{
-                        color:
-                          orderItem?.status === `SERVED`
-                            ? "green"
-                            : orderItem?.status === "DOING"
+                <tr
+                  key={"order" + index}
+                  style={{ borderBottom: "1px solid #eee" }}
+                >
+                  <td>{index + 1}</td>
+                  <td>{orderItem?.name}</td>
+                  <td>{orderItem?.quantity}</td>
+                  <td
+                    style={{
+                      color:
+                        orderItem?.status === `SERVED`
+                          ? "green"
+                          : orderItem?.status === "DOING"
                             ? ""
                             : "red"
-                      }}
-                    >
-                      {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
-                    </td>
-                    <td>{orderItem?.createdBy?.firstname}</td>
-                    <td>
-                      {orderItem?.createdAt
-                        ? moment(orderItem?.createdAt).format("HH:mm A")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))
+                    }}
+                  >
+                    {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
+                  </td>
+                  <td>{orderItem?.createdBy?.firstname}</td>
+                  <td>
+                    {orderItem?.createdAt
+                      ? moment(orderItem?.createdAt).format("HH:mm A")
+                      : "-"}
+                  </td>
+                </tr>
+              ))
               : ""}
           </tbody>
         </TableCustom>
@@ -204,22 +204,22 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === "%" ? COLOR_APP : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               %
@@ -229,24 +229,24 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === storeDetail?.firstCurrency
+                        ? COLOR_APP
+                        : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               {storeDetail?.firstCurrency}
@@ -297,22 +297,22 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === "%" ? COLOR_APP : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               %
@@ -322,24 +322,24 @@ export default function PopUpAddDiscount({
               style={
                 selectedButton !== ""
                   ? {
-                      backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor:
+                      selectedButton === storeDetail?.firstCurrency
+                        ? COLOR_APP
+                        : "white",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
                   : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }
+                    backgroundColor: COLOR_APP,
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }
               }
             >
               {storeDetail?.firstCurrency}

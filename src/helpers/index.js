@@ -1,21 +1,24 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
 import moment from "moment"
-//
-export const orderStatus = (status) => {
+
+// import { useTranslation } from 'react-i18next';
+
+
+export const orderStatus = (status, t) => {
   switch (status) {
     case "WAITING":
-      return "ອໍເດີເຂົ້າ";
+      return `ordering`;
     case "DOING":
-      return "ກໍາລັງຄົວ";
+      return `cooking`;
     case "SERVED":
-      return `ເສີບແລ້ວ`;
+      return `served`;
     case "CART":
-      return `ກຳລັງຈະສັງ`;
+      return `on cart`;
     case "FEEDBACK":
-      return `ສົ່ງຄືນ`;
+      return `feedback`;
     default:
-      return "ຍົກເລີກ";
+      return `cancel`;
   }
 };
 
@@ -213,11 +216,11 @@ export const numberFormat = (_number) => {
 
 export const convertImageToBase64 = async (imageUrl) => {
   try {
-      console.log("convertImage:---->", typeof(imageUrl));
-      const response = await fetch(imageUrl);
-      console.log("convertResponse:---->", typeof(response));
-      const blob = await response.blob();
-      console.log("convertblob:---->", blob);
+    console.log("convertImage:---->", typeof (imageUrl));
+    const response = await fetch(imageUrl);
+    console.log("convertResponse:---->", typeof (response));
+    const blob = await response.blob();
+    console.log("convertblob:---->", blob);
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
@@ -230,4 +233,3 @@ export const convertImageToBase64 = async (imageUrl) => {
   }
 };
 
- 
