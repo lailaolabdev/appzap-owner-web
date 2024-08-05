@@ -19,8 +19,8 @@ import {
   getUserReport,
 } from "../../services/report";
 import fileDownload from "js-file-download";
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
@@ -151,7 +151,7 @@ export default function DashboardPage() {
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
-      errorAdd(`${t('export_fail')}`);
+      errorAdd(`${t("export_fail")}`);
     }
   };
 
@@ -159,17 +159,22 @@ export default function DashboardPage() {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
-      const url = END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+      const url =
+        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
+
+      console.log("_res: " + _res?.data?.exportUrl);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: 'blob', // Important to get the response as a Blob
+          responseType: "blob", // Important to get the response as a Blob
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data)
-        const fileBlob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        console.log("response", response.data);
+        const fileBlob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
@@ -178,7 +183,7 @@ export default function DashboardPage() {
       setLoadingExportCsv(false);
     } catch (err) {
       setLoadingExportCsv(false);
-      errorAdd(`${t('export_fail')}`);
+      errorAdd(`${t("export_fail")}`);
     }
   };
   return (
@@ -208,7 +213,7 @@ export default function DashboardPage() {
             <Button
               onClick={() => setPopup({ popUpChooseTableComponent: true })}
             >
-              {t('chose_table')}
+              {t("chose_table")}
             </Button>
           </div>
           {/* <Button
@@ -253,12 +258,12 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('sales_info')}
+              {t("sales_info")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('total_sale')}`,
+                  title: `${t("total_sale")}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["totalSales"]
                   )}${storeDetail?.firstCurrency}`,
@@ -272,26 +277,26 @@ export default function DashboardPage() {
                 // },
 
                 {
-                  title: `${t('business_amount')}`,
+                  title: `${t("business_amount")}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["noOfSalesTransactions"]
                   )}`,
                 },
                 {
-                  title: `${t('per_bsn')}`,
+                  title: `${t("per_bsn")}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["averageSales_Transaction"]
                   )}${storeDetail?.firstCurrency}`,
                 },
 
                 {
-                  title: `${t('paid_lak')}`,
+                  title: `${t("paid_lak")}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["totalCostLAK"]
-                  )} ${t('lak')}`,
+                  )} ${t("lak")}`,
                 },
                 {
-                  title: `${t('defult_profit')}`,
+                  title: `${t("defult_profit")}`,
                   amount: `${moneyCurrency(
                     salesInformationReport?.["grossProfitLAK"]
                   )}${storeDetail?.firstCurrency}`,
@@ -328,7 +333,7 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('promotion')}
+              {t("promotion")}
             </Card.Header>
             <Card.Body>
               <div
@@ -340,7 +345,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>{t('discount_bill')}</div>
+                <div>{t("discount_bill")}</div>
                 <div>{promotionReport?.[0]?.count || 0}</div>
               </div>
               <div
@@ -352,7 +357,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>{t('all_discount')}</div>
+                <div>{t("all_discount")}</div>
                 <div>
                   {promotionReport?.[0]?.totalSaleAmount || 0}
                   {storeDetail?.firstCurrency}
@@ -369,34 +374,34 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('bill_detial')}
+              {t("bill_detial")}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th>{t('bill_type')}</th>
-                  <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
-                  <th style={{ textAlign: "right" }}>{t('total_price')}</th>
+                  <th>{t("bill_type")}</th>
+                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                  <th style={{ textAlign: "right" }}>{t("total_price")}</th>
                 </tr>
                 {[
                   {
-                    method: `${t('bill_crash')}`,
+                    method: `${t("bill_crash")}`,
                     qty: moneyReport?.cash?.count,
                     amount: moneyReport?.cash?.totalBill,
                   },
                   {
-                    method: `${t('tsf_bill')}`,
+                    method: `${t("tsf_bill")}`,
                     qty: moneyReport?.transfer?.count,
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
                     method: (
                       <div>
-                        {t('tsf_cash')}
+                        {t("tsf_cash")}
                         <br />
-                        {t('cash')}{" "}
+                        {t("cash")}{" "}
                         {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                        {t('transfer')}{" "}
+                        {t("transfer")}{" "}
                         {moneyCurrency(
                           moneyReport?.transferCash?.transfer || 0
                         )}
@@ -407,7 +412,7 @@ export default function DashboardPage() {
                   },
                   {
                     method: (
-                      <div style={{ fontWeight: 700 }}>{t('total_cash')}</div>
+                      <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
                     ),
                     qty:
                       (moneyReport?.transferCash?.count || 0) +
@@ -418,7 +423,7 @@ export default function DashboardPage() {
                   },
                   {
                     method: (
-                      <div style={{ fontWeight: 700 }}>{t('total_tsf')}</div>
+                      <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
                     ),
                     qty:
                       (moneyReport?.transferCash?.count || 0) +
@@ -428,7 +433,7 @@ export default function DashboardPage() {
                       (moneyReport?.transfer?.totalBill || 0),
                   },
                   {
-                    method: <div style={{ fontWeight: 700 }}>{t('total')}</div>,
+                    method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
                     qty:
                       (moneyReport?.cash?.count || 0) +
                       (moneyReport?.transferCash?.count || 0) +
@@ -460,15 +465,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('staf_info')}
+              {t("staf_info")}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t('user')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order_cancel')}</th>
-                  <th style={{ textAlign: "right" }}>{t('total')}</th>
+                  <th style={{ textAlign: "left" }}>{t("user")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
+                  <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {userReport?.map((e) => (
                   <tr>
@@ -493,17 +498,18 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('sales_info')}{t('every_day')}
+              {t("sales_info")}
+              {t("every_day")}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t('date')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order')}</th>
-                  <th style={{ textAlign: "center" }}>{t('bill_amount')}</th>
-                  <th style={{ textAlign: "center" }}>{t('discount')}</th>
-                  <th style={{ textAlign: "center" }}>{t('last_amount')}</th>
-                  <th style={{ textAlign: "right" }}>{t('total')}</th>
+                  <th style={{ textAlign: "left" }}>{t("date")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order")}</th>
+                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("discount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
+                  <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {reportData.map((e) => (
                   <tr>
@@ -536,15 +542,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('menu_type')}
+              {t("menu_type")}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t('menu_type')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order_success')}</th>
-                  <th style={{ textAlign: "center" }}>{t('cancel')}</th>
-                  <th style={{ textAlign: "right" }}>{t('sale_amount')}</th>
+                  <th style={{ textAlign: "left" }}>{t("menu_type")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_success")}</th>
+                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
                 </tr>
                 {categoryReport
                   ?.sort((x, y) => {
@@ -573,15 +579,15 @@ export default function DashboardPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('menu_info')}
+              {t("menu_info")}
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t('menu')}</th>
-                  <th style={{ textAlign: "center" }}>{t('order_success')}</th>
-                  <th style={{ textAlign: "center" }}>{t('cancel')}</th>
-                  <th style={{ textAlign: "right" }}>{t('sale_amount')}</th>
+                  <th style={{ textAlign: "left" }}>{t("menu")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_success")}</th>
+                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
                 </tr>
                 {menuReport
                   ?.sort((x, y) => {

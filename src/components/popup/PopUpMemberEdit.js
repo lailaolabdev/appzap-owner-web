@@ -7,12 +7,13 @@ export default function PopUpMemberEdit({
   open,
   onClose,
   memberData,
-  onUpdate
+  onUpdate,
 }) {
   const [name, setName] = useState();
   const [phone, setPhone] = useState();
   const [point, setPoint] = useState();
   const [bill, setBill] = useState();
+  const [note, setNote] = useState();
   const [createdAt, setCreatedAt] = useState();
 
   useEffect(() => {
@@ -21,6 +22,7 @@ export default function PopUpMemberEdit({
       setPhone(memberData.phone);
       setPoint(memberData.point);
       setBill(memberData.bill);
+      setNote(memberData.note);
       setCreatedAt(memberData.createdAt);
     }
   }, [memberData]);
@@ -32,7 +34,7 @@ export default function PopUpMemberEdit({
         name,
         phone,
         point,
-        bill
+        bill,
       };
 
       const response = await updateMember(memberData._id, updatedData, TOKEN);
@@ -76,6 +78,14 @@ export default function PopUpMemberEdit({
             placeholder="ຄະແນນສະສົມ"
             value={point}
             onChange={(e) => setPoint(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <Form.Label>Note</Form.Label>
+          <Form.Control
+            placeholder="something note"
+            value={note}
+            onChange={(e) => setBill(e.target.value)}
           />
         </div>
         {/* <div className="mb-3">

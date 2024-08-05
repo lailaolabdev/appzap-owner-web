@@ -223,7 +223,7 @@ export default function Dashboard() {
                 fontWeight: "bold",
               }}
             >
-              {t('all_amount')}
+              {t("all_amount")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -232,11 +232,11 @@ export default function Dashboard() {
                 {countAllBillReport?.count} ບິນ
               </div>
               <div>
-                {t('total_will_get')}
+                {t("total_will_get")}
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                  salesInformationReport?.totalSales
+                    salesInformationReport?.totalSales
                 )}
               </div>
               <div>
@@ -245,7 +245,7 @@ export default function Dashboard() {
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
               <div>
-                {t('money_crash')}
+                {t("money_crash")}
                 {" : "}
                 {convertNumber(totalBillActiveReport?.total)}
               </div>
@@ -260,7 +260,7 @@ export default function Dashboard() {
                 fontWeight: "bold",
               }}
             >
-              {t('success_amount')}
+              {t("success_amount")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -287,7 +287,7 @@ export default function Dashboard() {
                 {convertNumber(moneyReport?.transfer?.totalBill)}
               </div>
               <div>
-                {t('transfer_cash')}
+                {t("transfer_cash")}
                 {" : "}
                 {convertNumber(moneyReport?.transferCash?.totalBill)}
               </div>
@@ -308,7 +308,7 @@ export default function Dashboard() {
                 fontWeight: "bold",
               }}
             >
-              {t('bill_crash')}
+              {t("bill_crash")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -317,7 +317,7 @@ export default function Dashboard() {
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
               <div>
-                {t('money_crash')}
+                {t("money_crash")}
                 {" : "}
                 {convertNumber(totalBillActiveReport?.total)}
               </div>

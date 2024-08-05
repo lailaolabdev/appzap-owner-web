@@ -335,6 +335,7 @@ const OrderCheckOut = ({
                           border: "1px solid #ddd",
                         }}
                         src={URL_PHOTO_AW3 + data?.image}
+                        alt=""
                       />
                     ) : (
                       <FaUserCircle style={{ fontSize: 35 }} />

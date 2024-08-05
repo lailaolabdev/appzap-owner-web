@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import Select from "react-select";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -16,11 +17,12 @@ import { useStore } from "../../../store";
 import {
   END_POINT_SEVER,
   QUERY_CURRENCIES,
-  getLocalData
+  getLocalData,
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
+import { getMembers } from "../../../services/member.service";
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -34,7 +36,7 @@ export default function CheckOutPopup({
   dataBill,
   tableData,
   setDataBill,
-  taxPercent = 0
+  taxPercent = 0,
 }) {
   const { t } = useTranslation();
   // ref
@@ -60,6 +62,7 @@ export default function CheckOutPopup({
   const [textSearchMember, setTextSearchMember] = useState("");
 
   const [currencyList, setCurrencyList] = useState([]);
+  const [membersData, setMembersData] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
@@ -68,10 +71,15 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     setMemberData();
-    if (textSearchMember.length == 8) {
+    if (textSearchMember.length > 0) {
       handleSearchOne();
     }
   }, [textSearchMember]);
+
+  useEffect(() => {
+    getMembersData();
+  }, []);
+
   const handleSearchOne = async () => {
     try {
       let url =
@@ -84,14 +92,30 @@ export default function CheckOutPopup({
         ...prev,
         memberId: _res.data?._id,
         memberName: _res.data?.name,
-        memberPhone: _res.data?.phone
+        memberPhone: _res.data?.phone,
       }));
     } catch (err) {
       console.log(err);
       errorAdd("ບໍ່ພົບສະມາຊິກ");
     }
   };
+
+  const getMembersData = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      const _data = await getMembers(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMembersData(_data);
+    } catch (err) {
+      console.error("Error fetching members data", err);
+    }
+  };
+
   // console.log("tableData:=======abc======>", tableData)
+
+  console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -112,10 +136,11 @@ export default function CheckOutPopup({
     if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${selectCurrency == "LAK"
-      ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
-      : moneyCurrency(parseFloat(cashCurrency) || 0)
-      } ${selectCurrency}`;
+    moneyReceived = `${
+      selectCurrency == "LAK"
+        ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
+        : moneyCurrency(parseFloat(cashCurrency) || 0)
+    } ${selectCurrency}`;
     moneyChange = `${moneyCurrency(
       (parseFloat(cash) || 0) +
         (parseFloat(transfer) || 0) -
@@ -124,26 +149,26 @@ export default function CheckOutPopup({
             ? totalBill - dataBill?.discount
             : 0
           : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0) <=
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0) <=
         0
         ? 0
         : (parseFloat(cash) || 0) +
-        (parseFloat(transfer) || 0) -
-        (dataBill && dataBill?.discountType === "LAK"
-          ? totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0)
+            (parseFloat(transfer) || 0) -
+            (dataBill && dataBill?.discountType === "LAK"
+              ? totalBill - dataBill?.discount > 0
+                ? totalBill - dataBill?.discount
+                : 0
+              : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+              ? totalBill - (totalBill * dataBill?.discount) / 100
+              : 0)
     )} ${storeDetail?.firstCurrency}`;
 
     setDataBill((prev) => ({
       ...prev,
       moneyReceived: moneyReceived,
       moneyChange: moneyChange,
-      dataStaffConfirm: staffConfirm
+      dataStaffConfirm: staffConfirm,
     }));
   }, [cash, transfer, selectCurrency]);
   useEffect(() => {
@@ -223,11 +248,11 @@ export default function CheckOutPopup({
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
               staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id
-          }
+            staffCheckOutId: staffConfirm?.id,
+          },
         },
         {
-          headers: await getHeaders()
+          headers: await getHeaders(),
         }
       )
       .then(async function (response) {
@@ -247,13 +272,13 @@ export default function CheckOutPopup({
         onClose();
         Swal.fire({
           icon: "success",
-          title: `${t('checkbill_success')}`,
+          title: `${t("checkbill_success")}`,
           showConfirmButton: false,
-          timer: 1800
+          timer: 1800,
         });
       })
       .catch(function (error) {
-        errorAdd(`${t('checkbill_fial')}`);
+        errorAdd(`${t("checkbill_fial")}`);
       });
   };
   const handleSubmit = () => {
@@ -346,27 +371,27 @@ export default function CheckOutPopup({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-        ? (totalBill * dataBill?.discount) / 100
-        : 0;
+      ? (totalBill * dataBill?.discount) / 100
+      : 0;
 
   let totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? parseFloat(
-        totalBill - dataBill?.discount > 0
-          ? totalBill - dataBill?.discount
-          : 0
-      )
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+        )
       : parseFloat(
-        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0
-      );
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0
+        );
 
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
       ...prev,
-      dataCustomer: option
+      dataCustomer: option,
     }));
     // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
   };
@@ -403,6 +428,24 @@ export default function CheckOutPopup({
     });
   };
 
+  const optionsData = membersData.map((item) => {
+    console.log(item);
+    return {
+      value: item.phone,
+      label: `${item.name} (${item.phone})`,
+      phoneNumber: item.phone,
+      point: item.point,
+    };
+  });
+
+  console.log("optionsData", optionsData);
+
+  const handleSearchInput = (option) => {
+    setTextSearchMember(option.value);
+  };
+
+  console.log("textSearchMember", textSearchMember);
+
   return (
     <Modal
       show={open}
@@ -416,14 +459,15 @@ export default function CheckOutPopup({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          {t('check_out_table')} ({tableData?.tableName}) - {t('code')} {tableData?.code}
+          {t("check_out_table")} ({tableData?.tableName}) - {t("code")}{" "}
+          {tableData?.code}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ padding: 0 }}>
         <Box
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr"
+            gridTemplateColumns: "1fr",
           }}
         >
           {/* news---------------------------------------------------------------------------------------------------------------------- */}
@@ -431,22 +475,22 @@ export default function CheckOutPopup({
             <div
               style={{
                 marginBottom: 10,
-                fontSize: 22
+                fontSize: 22,
               }}
             >
-              <span>{t('bill_total')}: </span>
+              <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                    totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                  )
+                      totalBill - dataBill?.discount > 0
+                        ? totalBill - dataBill?.discount
+                        : 0
+                    )
                   : moneyCurrency(
-                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0
-                  )}{" "}
+                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -463,14 +507,14 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) / rateCurrency
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
               <span style={{ fontSize: 14 }} hidden={selectCurrency === "LAK"}>
                 {" "}
-                ({t('exchange_rate')}: {convertNumber(rateCurrency)})
+                ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
             </div>
             <div
@@ -478,7 +522,7 @@ export default function CheckOutPopup({
                 display: "flex",
                 flexDirection: "column",
                 gap: 10,
-                marginBottom: 10
+                marginBottom: 10,
               }}
             >
               <InputGroup hidden={selectCurrency == "LAK"}>
@@ -498,7 +542,7 @@ export default function CheckOutPopup({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>{t('cash')}</InputGroup.Text>
+                <InputGroup.Text>{t("cash")}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash" && tab !== "cash_transfer"}
                   type="text"
@@ -515,7 +559,7 @@ export default function CheckOutPopup({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>{t('transfer')}</InputGroup.Text>
+                <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
@@ -531,8 +575,8 @@ export default function CheckOutPopup({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
-              <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>{t('member')}</InputGroup.Text>
+              {/* <InputGroup hidden={!hasCRM}>
+                <InputGroup.Text>{t("member")}</InputGroup.Text>
                 <InputGroup.Text>+856 20</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -551,16 +595,33 @@ export default function CheckOutPopup({
                   <FaSearch />
                 </Button>
                 <div style={{ width: 30 }} />
-                <InputGroup.Text>{t('name')}: {memberData?.name}</InputGroup.Text>
-                <InputGroup.Text>{t('point')}: {memberData?.point}</InputGroup.Text>
-              </InputGroup>
+                <InputGroup.Text>
+                  {t("name")}: {memberData?.name}
+                </InputGroup.Text>
+                <InputGroup.Text>
+                  {t("point")}: {memberData?.point}
+                </InputGroup.Text>
+              </InputGroup> */}
+              <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
+                <div style={{ width: "30rem" }}>
+                  <Select options={optionsData} onChange={handleSearchInput} />
+                </div>
+                <div style={{ width: "9rem" }}>
+                  <InputGroup.Text>
+                    {t("name")}: {memberData?.name}
+                  </InputGroup.Text>
+                </div>
+                <InputGroup.Text>
+                  {t("point")}: {memberData?.point ? memberData?.point : "0"}
+                </InputGroup.Text>
+              </div>
             </div>
             <div
               style={{
-                marginBottom: 10
+                marginBottom: 10,
               }}
             >
-              {t('return')}:{" "}
+              {t("return")}:{" "}
               {moneyCurrency(
                 (parseInt(cash) || 0) +
                   (parseInt(transfer) || 0) -
@@ -569,19 +630,19 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) <=
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0)
+                      (parseInt(transfer) || 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -589,7 +650,7 @@ export default function CheckOutPopup({
               style={{
                 display: "flex",
                 gap: 10,
-                marginBottom: 30
+                marginBottom: 30,
               }}
             >
               <Button
@@ -602,7 +663,7 @@ export default function CheckOutPopup({
                   setForcus("CASH");
                 }}
               >
-                {t('cash')}
+                {t("cash")}
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
@@ -615,7 +676,7 @@ export default function CheckOutPopup({
                   setForcus("TRANSFER");
                 }}
               >
-                {t('transfer')}
+                {t("transfer")}
               </Button>
               <Button
                 variant={
@@ -631,7 +692,7 @@ export default function CheckOutPopup({
                   setForcus("TRANSFER_CASH");
                 }}
               >
-                {t('cash_transfer')}
+                {t("cash_transfer")}
               </Button>
               <div style={{ flex: 1 }} />
               <Form.Control
@@ -702,7 +763,7 @@ export default function CheckOutPopup({
       <Modal.Footer>
         <div style={{ flex: 1 }}>
           <p>
-            {t('cashier')}:{" "}
+            {t("cashier")}:{" "}
             <b>
               {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
             </b>
@@ -717,11 +778,11 @@ export default function CheckOutPopup({
           disabled={!canCheckOut}
         >
           <BiSolidPrinter />
-          {t('print_checkbill')}
+          {t("print_checkbill")}
         </Button>
         <div style={{ width: "20%" }}></div>
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
-          {t('calculate')}
+          {t("calculate")}
         </Button>
       </Modal.Footer>
     </Modal>
