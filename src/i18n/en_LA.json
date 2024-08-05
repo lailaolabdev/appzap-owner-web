@@ -801,7 +801,13 @@
     "money_cny": "ເງີນຢວນ",
     "print_money_cny": "ພິມເງິນຢວນ...",
     "chose_payment_method": "ເລືອກຮູບແບບຈ່າຍ",
-    "debt": "ຕິກໜີ້",
+    "debt": "ຕິດໜີ້",
     "fill_paid_detail": "ປ້ອນລາຍລະອຽດການຈ່າຍ",
-    "click_upload": "ຄລິກເພື່ອອັບໂຫລດ"
+    "click_upload": "ຄລິກເພື່ອອັບໂຫລດ",
+    "ORDER_IN": "ອໍເດີເຂົ້າ",
+    "ORDER_PROCESSING": "ກໍາລັງຄົວ",
+    "ORDER_SERVED": "ເສີບແລ້ວ",
+    "ORDER_CART": "ກຳລັງຈະສັງ",
+    "ORDER_FEEDBACK": "ສົ່ງຄືນ",
+    "ORDER_CANCEL": "ຍົກເລີກ"
 }
