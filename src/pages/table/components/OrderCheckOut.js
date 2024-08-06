@@ -32,9 +32,7 @@ const OrderCheckOut = ({
   console.log("storeDetail:---->", storeDetail, staffData?.users);
 
   useEffect(() => {
-    // for (let i = 0; i < data?.orderId.length; i++) {
     _calculateTotal();
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, data?.orderId]);
 
@@ -44,19 +42,18 @@ const OrderCheckOut = ({
     if (data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
         if (data?.orderId[i]?.status === "SERVED") {
-          _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+          _total +=
+            data?.orderId[i]?.quantity *
+              (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
         }
       }
     }
-    // alert(_total);
     setTotal(_total);
   };
 
   const onConfirmStaffToCheckBill = () => {
     setIsConFirmStaff(true);
     hide();
-    console.log("check confirm staff......");
-    // onsubmit()
   };
 
   const onCancelConfirmStaff = () => {
@@ -70,7 +67,6 @@ const OrderCheckOut = ({
       lastname: data?.lastname,
       phone: data?.phone,
     };
-    // console.log("_staffConfirm:=======>", _staffConfirm)
     await localStorage.setItem(
       "STAFFCONFIRM_DATA",
       JSON.stringify(_staffConfirm)
@@ -114,16 +110,29 @@ const OrderCheckOut = ({
             <tbody>
               {data &&
                 data?.orderId?.map((orderItem, index) => {
+                  const options =
+                    orderItem?.options
+                      ?.map((option) => `[${option.name}]`)
+                      .join(" ") || "";
                   return (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{orderItem?.name ?? "-"}</td>
+                      <td>
+                        {orderItem?.name ?? "-"} {options}
+                      </td>
                       <td>{orderItem?.quantity}</td>
-                      <td>{moneyCurrency(orderItem?.price)}</td>
+                      <td>
+                        {moneyCurrency(
+                          orderItem?.price +
+                            (orderItem?.totalOptionPrice ?? 0)
+                        )}
+                      </td>
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                              orderItem?.price * orderItem?.quantity
+                              (orderItem?.price +
+                                (orderItem?.totalOptionPrice ?? 0)) *
+                                orderItem?.quantity
                             )
                           : "-"}
                       </td>
@@ -178,7 +187,6 @@ const OrderCheckOut = ({
             >
               <Button
                 className="ml-2 pl-4 pr-4"
-                // onClick={hide}
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
@@ -186,7 +194,6 @@ const OrderCheckOut = ({
                   fontSize: 26,
                 }}
                 onClick={() => onPrintBill()}
-                // onClick={() => setIsBill(true)}
               >
                 <FontAwesomeIcon
                   icon={faCashRegister}
@@ -235,7 +242,6 @@ const OrderCheckOut = ({
               >
                 <Button
                   className="ml-2 pl-4 pr-4"
-                  // onClick={hide}
                   style={{
                     backgroundColor: "#FB6E3B",
                     color: "#ffff",
@@ -243,7 +249,6 @@ const OrderCheckOut = ({
                     fontSize: 26,
                   }}
                   onClick={onConfirmStaffToCheckBill}
-                  // onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
                     icon={faCashRegister}
@@ -253,14 +258,12 @@ const OrderCheckOut = ({
                 </Button>
                 <Button
                   className="ml-2 pl-4 pr-4"
-                  // onClick={hide}
                   style={{
                     backgroundColor: "#FB6E3B",
                     color: "#ffff",
                     border: "solid 1px #FB6E3B",
                     fontSize: 26,
                   }}
-                  // onClick={onConfirmStaffToCheckBill}
                   onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
@@ -274,10 +277,6 @@ const OrderCheckOut = ({
           </div>
         </Modal.Footer>
       </Modal>
-
-      {/* <Modal show={isBill} onHide={() => setIsBill(false)}>
-        <BillForCheckOut80 />
-      </Modal> */}
 
       <Modal
         size="lg"

@@ -1267,7 +1267,9 @@ export default function TableList() {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
       console.log({_data})
-      _total += _data?.quantity * _data?.price + (_data?.totalOptionPrice ?? 0);
+      _total += (_data?.price +
+        (_data?.totalOptionPrice ?? 0)) *
+        _data?.quantity
     }
     if (dataBill?.discount > 0) {
       if (
