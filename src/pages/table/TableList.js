@@ -1869,7 +1869,7 @@ export default function TableList() {
                                   .join(' ') || '';
                                 return (
                                   <tr
-                                    onClick={() => handleShowQuantity(orderItem)}
+                                    // onClick={() => handleShowQuantity(orderItem)}
                                     key={"order" + index}
                                     style={{ borderBottom: "1px solid #eee" }}
                                   >
