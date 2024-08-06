@@ -594,43 +594,43 @@ function AddOrder() {
 
       console.log("CreateOrder: ", _body)
 
-      // axios
-      //   .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
-      //     headers: headers,
-      //   })
-      //   .then(async (response) => {
-      //     if (response?.data) {
-      //       Swal.fire({
-      //         icon: "success",
-      //         title: "ເພີ່ມອໍເດີສໍາເລັດ",
-      //         showConfirmButton: false,
-      //         timer: 1800,
-      //       });
-      //       if (isPrinted) {
-      //         //  print
-      //         onPrintForCher().then(() => {
-      //           onSelectTable(selectedTable);
-      //           navigate(
-      //             `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-      //           );
-      //         });
-      //       } else {
-      //         onSelectTable(selectedTable);
-      //         navigate(
-      //           `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-      //         );
-      //       }
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     Swal.fire({
-      //       icon: "warning",
-      //       title: "ອາຫານບໍ່ພຽງພໍ",
-      //       showConfirmButton: false,
-      //       timer: 1800,
-      //     });
-      //     setDisabledButton(false);
-      //   });
+      axios
+        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+          headers: headers,
+        })
+        .then(async (response) => {
+          if (response?.data) {
+            Swal.fire({
+              icon: "success",
+              title: "ເພີ່ມອໍເດີສໍາເລັດ",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+            if (isPrinted) {
+              //  print
+              onPrintForCher().then(() => {
+                onSelectTable(selectedTable);
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              });
+            } else {
+              onSelectTable(selectedTable);
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "warning",
+            title: "ອາຫານບໍ່ພຽງພໍ",
+            showConfirmButton: false,
+            timer: 1800,
+          });
+          setDisabledButton(false);
+        });
     } catch (error) {
       console.log("error", error);
       Swal.fire({
@@ -885,9 +885,9 @@ function AddOrder() {
                       <th style={{ border: "none", textAlign: "center" }}>
                         ຈຳນວນ
                       </th>
-                      <th style={{ border: "none", textAlign: "right" }}>
+                      {/* <th style={{ border: "none", textAlign: "right" }}>
                         ຈັດການ
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -940,7 +940,8 @@ function AddOrder() {
                                 +
                               </button>
                             </td>
-                            <td style={{ padding: 0, textAlign: "right" }}>
+
+                            {/* <td style={{ padding: 0, textAlign: "right" }}>
                               <div
                                 style={{
                                   display: "flex",
@@ -949,9 +950,9 @@ function AddOrder() {
                                   paddingLeft: 10,
                                   paddingTop: 5,
                                 }}
-                              >
+                              > */}
 
-                                  <div
+                                  {/* <div
                                     style={{
                                       cursor: "pointer",
                                       fontSize: 25,
@@ -960,7 +961,7 @@ function AddOrder() {
                                     onClick={() => onEditOrder(data)}
                                   >
                                     <RiChatNewFill />
-                                  </div>
+                                  </div> */}
 
                                 {/* {data?.note === "" ? (
                                   <div
@@ -997,8 +998,8 @@ function AddOrder() {
                                 >
                                   <MdDelete />
                                 </div> */}
-                              </div>
-                            </td>
+                              {/* </div>
+                            </td> */}
                           </tr>
                         );
                       })}
