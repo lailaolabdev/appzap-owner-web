@@ -103,10 +103,10 @@ export default function CheckOutPopupCafe({
   };
 
   // console.log(TotalPrice())
-  
+
   // const taxAmount = TotalPrice() * taxPercent;
 
-  const totalBill = TotalPrice()
+  const totalBill = TotalPrice();
 
   // console.log(totalBill)
 
@@ -208,11 +208,10 @@ export default function CheckOutPopupCafe({
     }
   };
   const _checkBill = async () => {
-
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
     const Orders = dataBill.map((itemOrder) => itemOrder);
-    
+
     await axios
       .post(
         END_POINT + `/v3/admin/bill-cafe-checkout`,
@@ -255,7 +254,7 @@ export default function CheckOutPopupCafe({
         setSelectInput("inputCash");
         setHasCRM(false);
         setTextSearchMember("");
-        setSelectedMenu([])
+        setSelectedMenu([]);
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         // console.log("response",response)
@@ -293,6 +292,7 @@ export default function CheckOutPopupCafe({
   useEffect(() => {
     getDataCurrency();
   }, []);
+
   useEffect(() => {
     if (!open) return;
     if (forcus == "CASH") {
@@ -330,9 +330,6 @@ export default function CheckOutPopupCafe({
       setCanCheckOut(true);
     } else if (forcus == "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      console.log(_sum);
-      console.log(transfer);
-      console.log(cash);
       if (dataBill) {
         if (dataBill) {
           if (_sum >= totalBill) {
@@ -409,6 +406,9 @@ export default function CheckOutPopupCafe({
       setTransfer(value);
     });
   };
+
+  console.log(transfer);
+  console.log(cash);
 
   return (
     <Modal
