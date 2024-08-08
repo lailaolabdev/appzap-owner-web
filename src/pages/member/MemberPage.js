@@ -9,6 +9,7 @@ import {
   Alert,
   Pagination,
   Nav,
+  InputGroup,
 } from "react-bootstrap";
 import {
   faCertificate,
@@ -43,6 +44,7 @@ import {
   getMemberOrderMenu,
   getTotalPoint,
   getAllMoneys,
+  getMembersListTop,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
@@ -89,9 +91,14 @@ export default function MemberPage() {
   const [changeUi, setChangeUi] = useState("LIST_MEMBER");
 
   const [filterTopData, setFilterTopData] = useState([]);
-  const [filterBirthdaytData, setFilterBirthdayData] = useState([]);
+  const [filterBirthdaytData, setFilterBirthdaytData] = useState([]);
 
-  const { storeDetail } = useStore();
+  const [memberListTop, setMemberListTop] = useState();
+  const [memberListBirthday, setMemberListBirthday] = useState();
+
+  const { storeDetail, setStoreDetail } = useStore();
+
+  // console.log("storeDetail", storeDetail);
   // provider
 
   // useEffect
@@ -119,6 +126,7 @@ export default function MemberPage() {
 
   useEffect(() => {
     getMembersData();
+    getMemberListTop();
   }, [paginationMember]);
 
   useEffect(() => {
@@ -164,8 +172,30 @@ export default function MemberPage() {
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data);
+      setMemberListTop(_data);
+      setMemberListBirthday(_data);
     } catch (err) {}
   };
+
+  const getMemberListTop = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${limitData}&`;
+      if (filterValue) {
+        findby += `search=${filterValue}&`;
+      }
+      const _data = await getMembersListTop(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMemberListTop(_data);
+    } catch (err) {}
+  };
+
+  // console.log(memberListTop);
+
+  const getMemberListBirthday = async () => {};
 
   const getAllPoint = async () => {
     try {
@@ -251,48 +281,59 @@ export default function MemberPage() {
       TOKEN
     );
 
-    console.log("MEMBERID: ", selectedMemberOrders);
+    // console.log("MEMBERID: ", selectedMemberOrders);
 
     if (_data.error) return;
     setMemberTotalMoney(_data.totalMoney);
   };
 
-  const FilterTop = (e) => {
-    console.log(e);
-    const getFilterTopData = async () => {
-      try {
-        const { TOKEN, DATA } = await getLocalData();
-        let findby = "?";
-        findby += `storeId=${DATA?.storeId}&`;
-        findby += `skip=${(paginationMember - 1) * limitData}&`;
-        findby += `limit=${limitData}&`;
-        if (filterValue) {
-          findby += `search=${filterValue}&`;
-        }
-        const _data = await getMembers(findby, TOKEN);
-        if (_data.error) throw new Error("error");
-        setFilterTopData(_data);
-      } catch (err) {}
-    };
+  const FilterTop = async (valueTop) => {
+    setStoreDetail({ ...storeDetail, limitData: valueTop });
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${valueTop}&`;
+      if (filterValue) {
+        findby += `search=${filterValue}&`;
+      }
+      const _data = await getMembers(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMemberListTop(_data);
+    } catch (err) {}
   };
 
-  const FilterBirthday = (e) => {
-    console.log(e);
-    const getFilterBirthdayData = async () => {
-      try {
-        const { TOKEN, DATA } = await getLocalData();
-        let findby = "?";
-        findby += `storeId=${DATA?.storeId}&`;
-        findby += `skip=${(paginationMember - 1) * limitData}&`;
-        findby += `limit=${limitData}&`;
-        if (filterValue) {
-          findby += `search=${filterValue}&`;
-        }
-        const _data = await getMembers(findby, TOKEN);
-        if (_data.error) throw new Error("error");
-        setFilterBirthdayData(_data);
-      } catch (err) {}
-    };
+  // console.log("MEMBERLISTTOP", memberListTop);
+  const FilterBirthday = async (valueBirthday) => {
+    const newDay = new Date();
+    const startDay = moment(newDay).format("DD");
+    const month = moment(valueBirthday).format("MM");
+    const endDay = moment(valueBirthday).format("DD");
+
+    setStoreDetail({
+      ...storeDetail,
+      startDay: startDay,
+      endDay: endDay,
+      month: month,
+    });
+
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${limitData}&`;
+      findby += `startDay=${startDay}&`;
+      findby += `endDay=${endDay}&`;
+      findby += `month=${month}&`;
+      if (filterValue) {
+        findby += `search=${filterValue}&`;
+      }
+      const _data = await getMembers(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMemberListBirthday(_data);
+    } catch (err) {}
   };
 
   return (
@@ -465,14 +506,18 @@ export default function MemberPage() {
               eventKey="/listMember"
               style={{
                 color: "#FB6E3B",
-                backgroundColor: changeUi === "LIST_MEMBER" ? "#FFDBD0" : "",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_MEMBER" ? "#FFDBD0" : "",
                 border: "none",
                 height: 60,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setChangeUi("LIST_MEMBER")}
+              onClick={() => {
+                setChangeUi("LIST_MEMBER");
+                setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
+              }}
             >
               <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> <span>{t("member_list")}</span>
@@ -483,14 +528,18 @@ export default function MemberPage() {
               eventKey="/listTop"
               style={{
                 color: "#FB6E3B",
-                backgroundColor: changeUi === "LIST_TOP" ? "#FFDBD0" : "",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_TOP" ? "#FFDBD0" : "",
                 border: "none",
                 height: 60,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setChangeUi("LIST_TOP")}
+              onClick={() => {
+                setChangeUi("LIST_TOP");
+                setStoreDetail({ ...storeDetail, changeUi: "LIST_TOP" });
+              }}
             >
               <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div> <span>{t("lists_top")}</span>
@@ -501,14 +550,18 @@ export default function MemberPage() {
               eventKey="/listeBirthday"
               style={{
                 color: "#FB6E3B",
-                backgroundColor: changeUi === "LIST_BIRTHDAY" ? "#FFDBD0" : "",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_BIRTHDAY" ? "#FFDBD0" : "",
                 border: "none",
                 height: 60,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onClick={() => setChangeUi("LIST_BIRTHDAY")}
+              onClick={() => {
+                setChangeUi("LIST_BIRTHDAY");
+                setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
+              }}
             >
               <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div>{" "}
@@ -516,7 +569,7 @@ export default function MemberPage() {
             </Nav.Link>
           </Nav.Item>
         </Box>
-        {changeUi === "LIST_MEMBER" && (
+        {storeDetail.changeUi === "LIST_MEMBER" && (
           <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
               style={{
@@ -625,7 +678,7 @@ export default function MemberPage() {
             </div>
           </Card>
         )}
-        {changeUi === "LIST_TOP" && (
+        {storeDetail.changeUi === "LIST_TOP" && (
           <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
               style={{
@@ -683,7 +736,7 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
-                {membersData?.map((e) => (
+                {memberListTop?.map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.phone}</td>
@@ -740,7 +793,7 @@ export default function MemberPage() {
             </div>
           </Card>
         )}
-        {changeUi === "LIST_BIRTHDAY" && (
+        {storeDetail.changeUi === "LIST_BIRTHDAY" && (
           <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
               style={{
@@ -758,35 +811,54 @@ export default function MemberPage() {
             </Card.Header>
             <Card.Body>
               <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <div style={{ width: "30rem" }}>
-                    {/* <label>{t("chose_food_type")}</label> */}
-                    <select
-                      className="form-control"
-                      // value={filterCategory}
-                      onChange={(e) => FilterBirthday(e.target.value)}
+                <div style={{ display: "flex", gap: 15 }}>
+                  <div>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: { md: 20, xs: 10 },
+                        justifyContent: "space-between",
+                        // flexDirection: { md: "row", xs: "column" },
+                      }}
                     >
-                      <option value="All" selected disabled>
-                        {t("chose_day")}
-                      </option>
-                      <option value="today">{t("to_day")}</option>
-                      <option value="3">{t("3_more_day")}</option>
-                      <option value="5">{t("5_more_day")}</option>
-                      <option value="7">{t("7_more_day")}</option>
-                    </select>
+                      <InputGroup>
+                        <Form.Control
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                          }}
+                          max={endDate}
+                        />
+                      </InputGroup>
+                      <div style={{ textAlign: "center" }}> ຫາ </div>
+                      <InputGroup>
+                        <Form.Control
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                            FilterBirthday(e.target.value);
+                          }}
+                          min={startDate}
+                        />
+                      </InputGroup>
+                    </Box>
                   </div>
-                  <Form.Control
-                    placeholder={t("search_name")}
-                    value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
-                  />
-                  <Button
-                    onClick={() => getMembersData()}
-                    variant="primary"
-                    style={{ display: "flex", gap: 10, alignItems: "center" }}
-                  >
-                    <FaSearch /> {t("search")}
-                  </Button>
+                  <div style={{ display: "flex", width: "100%", gap: 10 }}>
+                    <Form.Control
+                      placeholder={t("search_name")}
+                      value={filterValue}
+                      onChange={(e) => setFilterValue(e.target.value)}
+                    />
+                    <Button
+                      onClick={() => getMembersData()}
+                      variant="primary"
+                      style={{ display: "flex", gap: 10, alignItems: "center" }}
+                    >
+                      <FaSearch /> {t("search")}
+                    </Button>
+                  </div>
                 </div>
               </div>
               <table style={{ width: "100%" }}>
@@ -798,7 +870,7 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
-                {membersData?.map((e) => (
+                {memberListBirthday?.map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.phone}</td>

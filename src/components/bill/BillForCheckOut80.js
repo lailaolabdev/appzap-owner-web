@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer
+  getLocalDataCustomer,
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
@@ -19,7 +19,7 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  taxPercent = 0
+  taxPercent = 0,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -106,7 +106,7 @@ export default function BillForCheckOut80({
           <Image
             style={{
               maxWidth: 120,
-              maxHeight: 120
+              maxHeight: 120,
               // border: "1px solid #ddd",
               // borderRadius: "10em",
               // overflow: "hidden",
@@ -153,10 +153,12 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
-        <div style={{ textAlign: "left" }}>ລຳດັບ </div>
-        <div style={{ textAlign: "center" }}>{t("list")} </div>
-        <div style={{ textAlign: "center" }}>{t("amount")}</div>
-        <div style={{ textAlign: "right" }}>{t("price")}</div>
+        <div style={{ textAlign: "left", width: "5px" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "left", marginLeft: "-20px" }}>
+          {t("list")}{" "}
+        </div>
+        <div style={{ textAlign: "center", width: "5px" }}>{t("amount")}</div>
+        <div style={{ textAlign: "left" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
@@ -166,14 +168,16 @@ export default function BillForCheckOut80({
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12
+                fontSize: 12,
               }}
               key={index}
             >
               <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "center" }}>{item?.name}</div>
+              <div style={{ textAlign: "left", marginLeft: "-20px" }}>
+                {item?.name}
+              </div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-              <div style={{ textAlign: "right" }}>
+              <div style={{ textAlign: "left" }}>
                 {item?.price ? moneyCurrency(item?.price) : "-"}
               </div>
               <div style={{ textAlign: "right" }}>
@@ -189,37 +193,65 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <div>
-          <Row>
-            <Col></Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{t("total")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total)} {storeDetail?.firstCurrency}
-              </div>
-            </Col>
-          </Row>
-          {/* {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency} */}
-          {/* <div style={{ textAlign: "right" }}>
-            
-          </div> */}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("total")} :{" "}
+            </div>
+
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {moneyCurrency(total)} {storeDetail?.firstCurrency}
+            </div>
+          </div>
           <div hidden={taxAmount <= 0}>
-            <Row>
-              <Col sm={8}>
-                <div style={{ textAlign: "right" }}>
-                  {t("total")} + {t("vat")} {taxPercent}%:{" "}
-                </div>
-              </Col>
-              <Col sm={4}>
-                <div style={{ textAlign: "right", fontSize: 13.5 }}>
-                  {moneyCurrency(total + taxAmount)}{" "}
-                  {storeDetail?.firstCurrency}
-                </div>
-              </Col>
-            </Row>
-            {/* {t("total")} + {t("vat")} {taxPercent}%:{" "}
-            {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency} */}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {t("total")} + {t("vat")} {taxPercent}%:{" "}
+              </div>
+
+              <div
+                style={{
+                  width: "60%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency}
+              </div>
+            </div>
           </div>
           {currencyData?.map((item, index) => (
             <>
@@ -228,7 +260,7 @@ export default function BillForCheckOut80({
                 style={{
                   width: "100%",
                   display: "flex",
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
               >
                 <div
@@ -236,7 +268,7 @@ export default function BillForCheckOut80({
                     width: "100%",
                     display: "flex",
                     justifyContent: "end",
-                    alignItems: "center"
+                    alignItems: "center",
                   }}
                 >
                   {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
@@ -247,73 +279,73 @@ export default function BillForCheckOut80({
                     width: "60%",
                     display: "flex",
                     justifyContent: "end",
-                    alignItems: "center"
+                    alignItems: "center",
                   }}
                 >
                   {moneyCurrency((total + taxAmount) / item?.sell)}
                 </div>
               </div>
-              {/* <Row>
-                <Col></Col>
-                <Col
-                  xs={8}
-                  style={{
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center",
-                    border: "1px solid red"
-                  }}
-                >
-                  {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
-                  ):
-                </Col>
-                <Col style={{ minWidth: 400 }}>
-                  <div style={{ textAlign: "right" }}>
-                    {moneyCurrency((total + taxAmount) / item?.sell)}
-                  </div>
-                </Col>
-              </Row> */}
-              {/* {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}):{" "}
-              {moneyCurrency((total + taxAmount) / item?.sell)} */}
             </>
           ))}
-
-          <div>
-            <Row>
-              <Col></Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>{t("discount")}:</div>
-              </Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>
-                  {dataBill?.discount}{" "}
-                  {dataBill?.discountType == "MONEY" ||
-                  dataBill?.discountType == "LAK"
-                    ? storeDetail?.firstCurrency
-                    : "%"}
-                </div>
-              </Col>
-            </Row>
-            {/* {t("discount")}:{dataBill?.discount}{" "}
-            {dataBill?.discountType == "MONEY" ||
-            dataBill?.discountType == "LAK"
-              ? storeDetail?.firstCurrency
-              : "%"} */}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("discount")}:
+            </div>
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {dataBill?.discount}{" "}
+              {dataBill?.discountType == "MONEY" ||
+              dataBill?.discountType == "LAK"
+                ? storeDetail?.firstCurrency
+                : "%"}
+            </div>
           </div>
-          <div>
-            <Row>
-              <Col></Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
-              </Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>
-                  {dataBill?.memberName} ( {dataBill?.memberPhone} )
-                </div>
-              </Col>
-            </Row>
-            {/* {t("customerName")} : {dataBill?.memberName} ({" "}
-            {dataBill?.memberPhone} ) */}
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("customerName")}:
+            </div>
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {dataBill?.memberName} ( {dataBill?.memberPhone} )
+            </div>
           </div>
         </div>
       </div>
@@ -362,7 +394,7 @@ export default function BillForCheckOut80({
       <div
         style={{
           display: "flex",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         {" "}
@@ -372,7 +404,7 @@ export default function BillForCheckOut80({
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10
+          padding: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
@@ -397,7 +429,9 @@ const Price = styled.div`
 `;
 const Container = styled.div`
   margin: 10px;
+  padding: 5px;
   width: 100%;
+  margin-left: -5px;
   /* maxwidth: 80mm; */
 `;
 const Img = styled.div`

@@ -752,11 +752,13 @@
   "chose_export_excel": "Chose item to export",
   "lists_top": "Lists top",
   "lists_birthday": "Lists birthday",
+  "lists_export_order": "Amount orders",
   "chose_day": "chose days",
   "to_day": "Today",
   "3_more_day": "3 more day",
   "5_more_day": "5 more day",
   "7_more_day": "7 more day",
   "chose_top": "Chose Top",
-  "report_member_updates_last": "lasted updated 04:00 (The report will be updated every day)"
+  "report_member_updates_last": "lasted updated 04:00 (The report will be updated every day)",
+  "updated": "Updated"
 }

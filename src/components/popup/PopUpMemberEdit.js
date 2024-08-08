@@ -2,6 +2,8 @@ import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
+import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2";
 
 export default function PopUpMemberEdit({
   open,
@@ -16,6 +18,8 @@ export default function PopUpMemberEdit({
   const [note, setNote] = useState();
   const [createdAt, setCreatedAt] = useState();
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (memberData) {
       setName(memberData.name);
@@ -27,6 +31,8 @@ export default function PopUpMemberEdit({
     }
   }, [memberData]);
 
+  console.log("memberData", memberData);
+
   const handleSave = async () => {
     try {
       const { TOKEN } = await getLocalData(); // Assuming you have this function to get the token
@@ -35,13 +41,27 @@ export default function PopUpMemberEdit({
         phone,
         point,
         bill,
+        note,
       };
 
       const response = await updateMember(memberData._id, updatedData, TOKEN);
+
       if (response.error) throw new Error("Cannot update member");
       onUpdate();
       onClose();
+      await Swal.fire({
+        icon: "success",
+        title: `${t("updated")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
     } catch (error) {
+      await Swal.fire({
+        icon: "success",
+        title: `${t("not_success")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
       console.error(error);
       // Handle error (show notification, etc.)
     }
@@ -83,9 +103,9 @@ export default function PopUpMemberEdit({
         <div className="mb-3">
           <Form.Label>Note</Form.Label>
           <Form.Control
-            placeholder="something note"
+            placeholder={`${t("note")}`}
             value={note}
-            onChange={(e) => setBill(e.target.value)}
+            onChange={(e) => setNote(e.target.value)}
           />
         </div>
         {/* <div className="mb-3">

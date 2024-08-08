@@ -807,11 +807,14 @@
   "chose_export_excel": "ເລຶອກລາຍການທີ່ຈະ Export",
   "lists_top": "ລາຍການທີ່ຕິດ Top",
   "lists_birthday": "ລາຍການວັນເກີດ",
+  "lists_export_order": "ຈຳນວນອໍເດິ",
   "chose_day": "ເລືອກມື້",
   "to_day": "ມື້ນີ້",
   "3_more_day": "ອີກ 3 ມື້",
   "5_more_day": "ອີກ 5 ມື້",
   "7_more_day": "ອີກ 7 ມື້",
   "chose_top": "ເລຶອກການຈັດ Top",
-  "report_member_updates_last": "ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)"
+  "report_member_updates_last": "ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)",
+  "list": "ລາຍການ",
+  "updated": "ອັບເດດສຳເລັດ"
 }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import TimePicker from "react-bootstrap-time-picker";
 import Box from "../Box";
+import { useStore } from "../../store";
 
 export default function PopUpSetStartAndEndDate({
   open,
@@ -21,6 +22,7 @@ export default function PopUpSetStartAndEndDate({
   const [valueEndDate, setValueEndDate] = useState(endDate);
   const [valueStartTime, setValueStartTime] = useState(startTime);
   const [valueEndTime, setValueEndTime] = useState(endTime);
+
   // useEffect
   useEffect(() => {
     setValueStartDate(startDate);
@@ -63,7 +65,7 @@ export default function PopUpSetStartAndEndDate({
         <Box
           sx={{
             display: "flex",
-            gap:{ md: 20, xs: 10 },
+            gap: { md: 20, xs: 10 },
             justifyContent: "space-between",
             flexDirection: { md: "row", xs: "column" },
           }}
@@ -87,7 +89,7 @@ export default function PopUpSetStartAndEndDate({
               max={valueEndDate}
             />
           </InputGroup>
-          <div style={{textAlign:"center"}}> ຫາ </div>
+          <div style={{ textAlign: "center" }}> ຫາ </div>
           <InputGroup>
             <Form.Control
               type="date"

@@ -10,26 +10,20 @@ import { useTranslation } from "react-i18next";
 import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
 import { useStore } from "../../store";
+import { getLocalData } from "../../constants/api";
 
 export default function PopUpExportExcel({ open, onClose, setPopup }) {
   // provider
-  const { storeDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
   const { t } = useTranslation();
-  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
-  const [startTime, setStartTime] = useState("00:00:00");
-  const [endTime, setEndTime] = useState("23:59:59");
 
-  // state
-
-  // useEffect
-
-  const exportTopTen = async () => {
+  const exportAllMember = async () => {
     setPopup({ printReportSale: true });
     try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+        END_POINT_EXPORT + "/export/member?storeId=" + storeDetail?._id;
+      // findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -50,12 +44,16 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
-  const exportBirthday = async () => {
-    setPopup({ printReportStaffSale: true });
+
+  const exportTopTen = async () => {
+    setPopup({ printReportSale: true });
     try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      const findBy = `&skip=0&limit=${storeDetail.limitData}`;
       const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+        END_POINT_EXPORT +
+        "/export/member?storeId=" +
+        storeDetail?._id +
+        findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -71,6 +69,39 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        setStoreDetail({ ...storeDetail, limitData: "" });
+      }
+    } catch (err) {
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
+  const exportOrders = async () => {
+    setPopup({ printReportStaffSale: true });
+    try {
+      const url =
+        END_POINT_EXPORT + "/export/member-order?storeId=" + storeDetail?._id;
+      const _res = await Axios.get(url);
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: "blob", // Important to get the response as a Blob
+        });
+
+        // Create a Blob from the response data
+        console.log("response", response.data);
+        const fileBlob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Use the file-saver library to save the file with a new name
+        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+
+        setStoreDetail({
+          ...storeDetail,
+          startDay: "",
+          endDay: "",
+          month: "",
+        });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -100,11 +131,17 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
             flexWrap: "wrap",
           }}
         >
-          <Button style={{ height: 100, padding: 20 }} onClick={exportTopTen}>
-            <span>Export Top 10</span>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={exportAllMember}
+          >
+            <span>{t("member_list")}</span>
           </Button>
-          <Button style={{ height: 100, padding: 20 }} onClick={exportBirthday}>
-            <span>Export birthday of customer</span>
+          <Button style={{ height: 100, padding: 20 }} onClick={exportTopTen}>
+            <span>{t("lists_top")}</span>
+          </Button>
+          <Button style={{ height: 100, padding: 20 }} onClick={exportOrders}>
+            <span>{t("lists_export_order")}</span>
           </Button>
         </div>
       </Modal.Body>
