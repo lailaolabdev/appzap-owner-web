@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 
@@ -20,6 +20,7 @@ export default function PopUpSetStartAndEndDate({
   const [valueEndDate, setValueEndDate] = useState(endDate);
   const [valueStartTime, setValueStartTime] = useState(startTime);
   const [valueEndTime, setValueEndTime] = useState(endTime);
+  const [selectedButton, setSelectedButton] = useState(null);
 
   // useEffect
   useEffect(() => {
@@ -33,12 +34,14 @@ export default function PopUpSetStartAndEndDate({
     const today = moment().format("YYYY-MM-DD");
     setValueStartDate(today);
     setValueEndDate(today);
+    setSelectedButton("today");
   };
 
   const onGetYesterday = () => {
     const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
     setValueStartDate(yesterday);
     setValueEndDate(yesterday);
+    setSelectedButton("yesterday");
   };
 
   const onGetThisMonth = () => {
@@ -46,6 +49,7 @@ export default function PopUpSetStartAndEndDate({
     const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
     setValueStartDate(startOfMonth);
     setValueEndDate(endOfMonth);
+    setSelectedButton("thisMonth");
   };
 
   const onGetLastMonth = () => {
@@ -53,6 +57,7 @@ export default function PopUpSetStartAndEndDate({
     const endOfLastMonth = moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD");
     setValueStartDate(startOfLastMonth);
     setValueEndDate(endOfLastMonth);
+    setSelectedButton("lastMonth");
   };
 
   const onGetThisYear = () => {
@@ -60,6 +65,7 @@ export default function PopUpSetStartAndEndDate({
     const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
     setValueStartDate(startOfYear);
     setValueEndDate(endOfYear);
+    setSelectedButton("thisYear");
   };
 
   const onGetLastYear = () => {
@@ -67,6 +73,7 @@ export default function PopUpSetStartAndEndDate({
     const endOfLastYear = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
     setValueStartDate(startOfLastYear);
     setValueEndDate(endOfLastYear);
+    setSelectedButton("lastYear");
   };
 
   return (
@@ -88,12 +95,42 @@ export default function PopUpSetStartAndEndDate({
             marginBottom: 10,
           }}
         >
-          <Button onClick={onGetToday}>ມື້ນີ້</Button>
-          <Button onClick={onGetYesterday}>ມື້ວານ</Button>
-          <Button onClick={onGetThisMonth}>ເດືອນນີ້</Button>
-          <Button onClick={onGetLastMonth}>ເດືອນກ່ອນ</Button>
-          <Button onClick={onGetThisYear}>ປີນີ້</Button>
-          <Button onClick={onGetLastYear}>ປີກ່ອນ</Button>
+          <Button
+            onClick={onGetToday}
+            variant={selectedButton === "today" ? "primary" : "outline-primary"}
+          >
+            ມື້ນີ້
+          </Button>
+          <Button
+            onClick={onGetYesterday}
+            variant={selectedButton === "yesterday" ? "primary" : "outline-primary"}
+          >
+            ມື້ວານ
+          </Button>
+          <Button
+            onClick={onGetThisMonth}
+            variant={selectedButton === "thisMonth" ? "primary" : "outline-primary"}
+          >
+            ເດືອນນີ້
+          </Button>
+          <Button
+            onClick={onGetLastMonth}
+            variant={selectedButton === "lastMonth" ? "primary" : "outline-primary"}
+          >
+            ເດືອນກ່ອນ
+          </Button>
+          <Button
+            onClick={onGetThisYear}
+            variant={selectedButton === "thisYear" ? "primary" : "outline-primary"}
+          >
+            ປີນີ້
+          </Button>
+          <Button
+            onClick={onGetLastYear}
+            variant={selectedButton === "lastYear" ? "primary" : "outline-primary"}
+          >
+            ປີກ່ອນ
+          </Button>
         </Box>
         <Box
           sx={{

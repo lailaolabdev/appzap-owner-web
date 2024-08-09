@@ -127,7 +127,7 @@ export default function Dashboard() {
 
     setTotalBillActiveReport(data);
   };
-  
+
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
       <Box
@@ -161,7 +161,7 @@ export default function Dashboard() {
             <div style={{ width: 8 }}></div> {t("tableStatus")}
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
+        {/* <Nav.Item>
           <Nav.Link
             eventKey="/finance"
             style={{
@@ -178,7 +178,7 @@ export default function Dashboard() {
             <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
             <div style={{ width: 8 }}></div> {t("financialStatic")}
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
       </Box>
       <div style={{ height: 10 }}></div>
       <div>
