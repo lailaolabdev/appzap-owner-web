@@ -28,7 +28,7 @@ export default function DashboardFinance({
   endTime,
   selectedCurrency,
 }) {
-  const [currency, setcurrency] = useState();
+  const [currency, setCurrency] = useState();
   const navigate = useNavigate();
   const { accessToken } = useQuery();
   const params = useParams();
@@ -41,7 +41,7 @@ export default function DashboardFinance({
   const [moneyCash, setMoneyCash] = useState(0);
   const [moneyAon, setMoneyAon] = useState(0);
   const [show, setShow] = useState(false);
-  const [dataModale, setDataModale] = useState([]);
+  const [dataModal, setDataModal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [disabledEditBill, setDisabledEditBill] = useState(false);
 
@@ -49,7 +49,7 @@ export default function DashboardFinance({
   const [totalPagination, setTotalPagination] = useState();
 
   const handleClose = () => setShow(false);
-  const { storeDetail,profile } = useStore();
+  const { storeDetail, profile } = useStore();
 
   const getPaginationCountData = async () => {
     try {
@@ -57,8 +57,6 @@ export default function DashboardFinance({
       let query =
         "?storeId=" +
         params?.storeId +
-        // "&currencyType=" +
-        // selectedCurrency +
         "&dateFrom=" +
         startDate +
         "&dateTo=" +
@@ -70,8 +68,11 @@ export default function DashboardFinance({
       const _data = await getCountBills(query, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPagination(Math.ceil(_data?.count / limitData));
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   };
+
   const handleEditBill = async () => {
     try {
       setDisabledEditBill(true);
@@ -91,12 +92,13 @@ export default function DashboardFinance({
       console.log(err);
     }
   };
+
   const handleShow = (item) => {
     setShow(true);
-    setDataModale(item);
+    setDataModal(item);
   };
 
-  const getcurrency = async () => {
+  const getCurrency = async () => {
     try {
       let x = await fetch(
         END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
@@ -105,7 +107,7 @@ export default function DashboardFinance({
         }
       )
         .then((response) => response.json())
-        .then((json) => setcurrency(json));
+        .then((json) => setCurrency(json));
     } catch (err) {
       console.log(err);
     }
@@ -138,27 +140,25 @@ export default function DashboardFinance({
   };
 
   useEffect(() => {
-    getcurrency();
+    getCurrency();
     _fetchFinanceData();
   }, []);
 
   useEffect(() => {
     getPaginationCountData();
   }, [endDate, startDate, selectedCurrency]);
+
   useEffect(() => {
     _fetchFinanceData();
   }, [endDate, startDate, selectedCurrency, pagination, totalPagination]);
+
   const _fetchFinanceData = async () => {
     setIsLoading(true);
-    // const url =
-    //   "/v3/bills?storeId=61d8019f9d14fc92d015ee8e&status=CHECKOUT&isCheckout=true&startDate=2023-01-06&endDate=2023-01-06";
     const headers = await getHeaders(accessToken);
     const getDataDashBoard = await axios.get(
       END_POINT_SEVER +
         "/v3/bills?storeId=" +
         params?.storeId +
-        // "&currencyType=" +
-        // selectedCurrency +
         "&startDate=" +
         startDate +
         "&endDate=" +
@@ -176,9 +176,6 @@ export default function DashboardFinance({
       }
     );
 
-    // const _checkOut = getDataDashBoard.data.filter(
-    //   (e) => e?.isCheckout && e?.status === "CHECKOUT"
-    // );
     const _checkOut = getDataDashBoard.data;
     const totalPrice = _.sumBy(_checkOut, function (o) {
       return o.billAmount;
@@ -238,25 +235,6 @@ export default function DashboardFinance({
               data?.checkOut[i]?.billAmount - data?.checkOut[i]?.payAmount;
             _checkBill.cash += data?.checkOut[i]?.payAmount;
           }
-          // if (data?.checkOut[i]?.paymentMethod !== "CASH") {
-          //   if (
-          //     data?.checkOut[i]?.transferAmount > data?.checkOut[i]?.billAmount
-          //   ) {
-          //     _checkBill.cash +=
-          //       data?.checkOut[i]?.billAmount -
-          //       data?.checkOut[i]?.transferAmount;
-          //   } else if (
-          //     data?.checkOut[i]?.transferAmount + data?.checkOut[i]?.payAmount >
-          //     data?.checkOut[i]?.billAmount
-          //   ) {
-          //     _checkBill.cash +=
-          //       data?.checkOut[i]?.billAmount -
-          //       data?.checkOut[i]?.transferAmount;
-          //   } else {
-          //     _checkBill.cash += data?.checkOut[i]?.payAmount;
-          //   }
-          //   _checkBill.transfer += data?.checkOut[i]?.transferAmount;
-          // }
         }
         if (data?.checkOut[i]?.discountType === "LAK")
           _disCountDataKib += data?.checkOut[i]?.discount;
@@ -275,6 +253,7 @@ export default function DashboardFinance({
     setDisCountDataKib(_disCountDataKib);
     setDisCountDataPercent(_disCountDataAon);
   }, [data]);
+
   const { t } = useTranslation();
 
   const _countOrder = (item) => {
@@ -295,11 +274,21 @@ export default function DashboardFinance({
     let _amount = 0;
     if (item?.length > 0) {
       for (let i = 0; i < item.length; i++) {
-        _amount += item[i]?.price * item[i]?.quantity;
+        const totalOptionPrice = item[i]?.totalOptionPrice ?? 0;
+        const totalPrice = item[i]?.totalPrice ?? (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
+        _amount += totalPrice;
       }
     }
     return _amount;
   };
+
+  const formatMenuName = (name, options) => {
+    const optionNames = options
+      ?.map(option => `[${option.name}]`)
+      .join(" ") || "";
+    return `${name} ${optionNames}`;
+  };
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -491,10 +480,10 @@ export default function DashboardFinance({
               </tr>
             </thead>
             <tbody>
-              {dataModale?.map((item, index) => (
+              {dataModal?.map((item, index) => (
                 <tr key={1 + index}>
                   <td>{index + 1}</td>
-                  <td>{item?.name ?? "-"}</td>
+                  <td>{formatMenuName(item?.name, item?.options)}</td>
                   <td>{item?.quantity}</td>
                   <td
                     style={{
@@ -517,7 +506,7 @@ export default function DashboardFinance({
                   <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
                   <td>
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                      item?.price
+                      item?.totalPrice ?? (item?.price + (item?.totalOptionPrice ?? 0)) * item?.quantity
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
