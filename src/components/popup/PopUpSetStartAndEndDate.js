@@ -1,7 +1,6 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
-import TimePicker from "react-bootstrap-time-picker";
 import Box from "../Box";
 
 export default function PopUpSetStartAndEndDate({
@@ -21,6 +20,7 @@ export default function PopUpSetStartAndEndDate({
   const [valueEndDate, setValueEndDate] = useState(endDate);
   const [valueStartTime, setValueStartTime] = useState(startTime);
   const [valueEndTime, setValueEndTime] = useState(endTime);
+
   // useEffect
   useEffect(() => {
     setValueStartDate(startDate);
@@ -28,6 +28,46 @@ export default function PopUpSetStartAndEndDate({
     setValueStartTime(startTime);
     setValueEndTime(endTime);
   }, [startDate, endDate, startTime, endTime]);
+
+  const onGetToday = () => {
+    const today = moment().format("YYYY-MM-DD");
+    setValueStartDate(today);
+    setValueEndDate(today);
+  };
+
+  const onGetYesterday = () => {
+    const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
+    setValueStartDate(yesterday);
+    setValueEndDate(yesterday);
+  };
+
+  const onGetThisMonth = () => {
+    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+    setValueStartDate(startOfMonth);
+    setValueEndDate(endOfMonth);
+  };
+
+  const onGetLastMonth = () => {
+    const startOfLastMonth = moment().subtract(1, "months").startOf("month").format("YYYY-MM-DD");
+    const endOfLastMonth = moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD");
+    setValueStartDate(startOfLastMonth);
+    setValueEndDate(endOfLastMonth);
+  };
+
+  const onGetThisYear = () => {
+    const startOfYear = moment().startOf("year").format("YYYY-MM-DD");
+    const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
+    setValueStartDate(startOfYear);
+    setValueEndDate(endOfYear);
+  };
+
+  const onGetLastYear = () => {
+    const startOfLastYear = moment().subtract(1, "years").startOf("year").format("YYYY-MM-DD");
+    const endOfLastYear = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
+    setValueStartDate(startOfLastYear);
+    setValueEndDate(endOfLastYear);
+  };
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
@@ -48,22 +88,17 @@ export default function PopUpSetStartAndEndDate({
             marginBottom: 10,
           }}
         >
-          <Button
-            disabled
-            // onClick={onGetToday}
-          >
-            ມື້ນີ້
-          </Button>
-          <Button disabled>ມື້ວານ</Button>
-          <Button disabled>ເດືອນນີ້</Button>
-          <Button disabled>ເດືອນກ່ອນ</Button>
-          <Button disabled>ປີນີ້</Button>
-          <Button disabled>ປີກ່ອນ</Button>
+          <Button onClick={onGetToday}>ມື້ນີ້</Button>
+          <Button onClick={onGetYesterday}>ມື້ວານ</Button>
+          <Button onClick={onGetThisMonth}>ເດືອນນີ້</Button>
+          <Button onClick={onGetLastMonth}>ເດືອນກ່ອນ</Button>
+          <Button onClick={onGetThisYear}>ປີນີ້</Button>
+          <Button onClick={onGetLastYear}>ປີກ່ອນ</Button>
         </Box>
         <Box
           sx={{
             display: "flex",
-            gap:{ md: 20, xs: 10 },
+            gap: { md: 20, xs: 10 },
             justifyContent: "space-between",
             flexDirection: { md: "row", xs: "column" },
           }}
@@ -87,7 +122,7 @@ export default function PopUpSetStartAndEndDate({
               max={valueEndDate}
             />
           </InputGroup>
-          <div style={{textAlign:"center"}}> ຫາ </div>
+          <div style={{ textAlign: "center" }}> ຫາ </div>
           <InputGroup>
             <Form.Control
               type="date"

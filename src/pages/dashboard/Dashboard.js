@@ -122,8 +122,12 @@ export default function Dashboard() {
   const getTotalBillActiveReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
+
+    console.log("getTotalBillActiveReportData: ", data)
+
     setTotalBillActiveReport(data);
   };
+  
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
       <Box

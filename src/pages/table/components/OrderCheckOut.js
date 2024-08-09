@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Modal, Table, Button, Form } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
-// import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
-import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3 } from "../../../constants";
-// import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -21,7 +18,6 @@ const OrderCheckOut = ({
   onPrintBill = () => {},
   onSubmit = () => {},
   staffData,
-  // setDataBill
 }) => {
   const { storeDetail, profile } = useStore();
   const [total, setTotal] = useState();
@@ -31,9 +27,10 @@ const OrderCheckOut = ({
 
   console.log("storeDetail:---->", storeDetail, staffData?.users);
 
+  console.log("data.orderId: ", data.orderId)
+
   useEffect(() => {
     _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, data?.orderId]);
 
   const _calculateTotal = () => {
@@ -44,7 +41,7 @@ const OrderCheckOut = ({
         if (data?.orderId[i]?.status === "SERVED") {
           _total +=
             data?.orderId[i]?.quantity *
-              (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
+            (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
         }
       }
     }
@@ -73,6 +70,13 @@ const OrderCheckOut = ({
     );
     onSubmit();
     setIsConFirmStaff(false);
+  };
+
+  const getOrderItemKey = (orderItem) => {
+    const options = orderItem?.options
+      ?.map((option) => `${option.name}:${option.value}`)
+      .join(",") || "";
+    return `${orderItem?.id}-${options}`;
   };
 
   return (
@@ -115,7 +119,7 @@ const OrderCheckOut = ({
                       ?.map((option) => `[${option.name}]`)
                       .join(" ") || "";
                   return (
-                    <tr key={index}>
+                    <tr key={getOrderItemKey(orderItem)}>
                       <td>{index + 1}</td>
                       <td>
                         {orderItem?.name ?? "-"} {options}
@@ -348,9 +352,11 @@ const OrderCheckOut = ({
     </>
   );
 };
+
 OrderCheckOut.propTypes = {
   show: PropTypes.bool,
   hide: PropTypes.func,
   data: PropTypes.array,
 };
+
 export default OrderCheckOut;

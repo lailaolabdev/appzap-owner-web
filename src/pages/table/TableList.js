@@ -290,7 +290,7 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      console.log("logBill_80:------>", _resBill?.data);
+      console.log("_resBill?.data:------>", _resBill?.data);
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
