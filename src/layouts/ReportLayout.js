@@ -104,14 +104,14 @@ export default function ReportLayout() {
                 <strong>{t('stoke_report')}</strong>
               </div>
 
-              <div
+              {/* <div
                 className="menu-report-stocks mt-1"
                 disabled
               // onClick={() => navigate("/reports/members-report")}
               >
                 {t('rp_build')} <br />
                 ({t('dping')})
-              </div>
+              </div> */}
               <div
                 className="menu-report-stocks mt-1"
                 style={{

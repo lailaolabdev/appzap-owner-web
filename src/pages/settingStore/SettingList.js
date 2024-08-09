@@ -47,16 +47,16 @@ export default function SettingList() {
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/user`,
     },
-    {
-      id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
-      title: t("Promotion"),
-      subTitle: t('promotion_desc'),
-      icon: (
-        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faFolderOpen} />
-      ),
-      // path: `/settingStore/users/limit/40/page/1/${params?.id}`,
-      path: `/settingStore/settingPromotion/${params?.id}`,
-    },
+    // {
+    //   id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
+    //   title: t("Promotion"),
+    //   subTitle: t('promotion_desc'),
+    //   icon: (
+    //     <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faFolderOpen} />
+    //   ),
+    //   // path: `/settingStore/users/limit/40/page/1/${params?.id}`,
+    //   path: `/settingStore/settingPromotion/${params?.id}`,
+    // },
     {
       id: "ab2dd4fe-617d-48f7-afa6-645fa3b8e04e",
       title: t("menuManage"),

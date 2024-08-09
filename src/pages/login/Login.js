@@ -81,7 +81,8 @@ function Login() {
     }
   };
 
-  let _imgaeSlide = ["/images/slide/pro1.png", "/images/slide/pro2.png"];
+  // let _imgaeSlide = ["/images/slide/pro1.png", "/images/slide/pro2.png"];
+  let _imgaeSlide = ["/images/slide/pro2.png"];
 
   return (
     <div>
