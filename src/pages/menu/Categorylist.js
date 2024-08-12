@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav } from "react-bootstrap";
+import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
 import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
@@ -176,6 +176,9 @@ export default function Categorylist() {
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
+  const _menuOptionList = () => {
+    navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
+  };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
@@ -229,23 +232,39 @@ export default function Categorylist() {
 
   return (
     <div style={BODY}>
+      <Breadcrumb>
+          <Breadcrumb.Item>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
+          <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
+        </Breadcrumb>
       <div>
-        <Nav variant="tabs" defaultActiveKey="/settingStore/category">
-          <Nav.Item>
-            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              {t("menu")}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/category"
-              onClick={() => _category()}
-            >
-              {t("foodType")}
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
+          <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu"
+                onClick={() => _menuList()}
+              >
+                ເມນູອາຫານ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu-option"
+                onClick={() => _menuOptionList()}
+              >
+                ອ໋ອບຊັນ
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category"
+                onClick={() => _category()}
+              >
+                ປະເພດອາຫານ
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </div>
+
       <div>
         <div className="col-sm-12 text-right">
           <Button
