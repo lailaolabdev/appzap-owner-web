@@ -1,6 +1,6 @@
 import { React, useState } from "react";
 import Box from "../../components/Box";
-import { BODY } from "../../constants";
+import { BODY, COLOR_APP } from "../../constants";
 import { Breadcrumb, Nav, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
@@ -51,10 +51,31 @@ export default function CategoryType() {
             </Nav.Link>
           </Nav.Item>
         </Nav>
-        <div style={{ marginTop: 20 }}>
-          <Button onClick={() => setPopup({ popUpAddCategoryType: true })}>
+        <div className="col-sm-12 text-right">
+          <Button
+            className="col-sm-2"
+            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+            onClick={() => setPopup({ popUpAddCategoryType: true })}
+          >
             ສ້າງໝວດໝູ່
-          </Button>
+          </Button>{" "}
+        </div>
+        <div style={{ height: 20 }}></div>
+        <div>
+          <div className="col-sm-12">
+            <table className="table table-hover">
+              <thead className="thead-light">
+                <tr>
+                  <th scope="col">12</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </Box>
       <PopUpAddCategoryType
