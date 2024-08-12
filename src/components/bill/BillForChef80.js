@@ -5,6 +5,7 @@ import { moneyCurrency } from "../../helpers";
 
 export default function BillForChef80({ selectedTable, dataBill, val }) {
   const options = val?.options?.map(option => `[${option.name}]`).join(' ') || '';
+  const totalPrice = (val?.price + (val?.totalOptionPrice ?? 0)) * val?.quantity;
 
   return (
     <div style={{ background: "#fff" }}>
@@ -15,7 +16,6 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
             borderCollapse: "collapse",
             width: "100%",
             lineHeight: 0,
-            // padding: 0 10px;
           }}
         >
           <tr>
@@ -43,14 +43,12 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
           </tr>
           <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontWeight: "bold",
                 fontSize: 20,
                 lineHeight: 1.2,
-                // lineHeight: "100%",
-                // wordWrap: "break-word",
                 textAlign: "left",
                 padding: 5,
               }}
@@ -60,13 +58,11 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
           </tr>
           <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontSize: 18,
                 lineHeight: 1.2,
-                // lineHeight: "100%",
-                // wordWrap: "break-word",
                 textAlign: "left",
                 padding: 5,
               }}
@@ -74,20 +70,20 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
               {val?.note}
             </td>
           </tr>
-          {/* <tr>
+          <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontSize: 14,
                 textAlign: "left",
               }}
             >
-              {moneyCurrency(val?.price)} x {val?.quantity}
+              {moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x {val?.quantity}
             </td>
-          </tr> */}
+          </tr>
           <tr>
-            <td colspan={2} style={{ borderTop: "1px dotted #000" }}>
+            <td colSpan={2} style={{ borderTop: "1px dotted #000" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div
                   style={{
@@ -122,6 +118,4 @@ const Container = styled("div")({
   maxWidth: "260px",
   border: "1px solid #000",
   backgroundColor: "#fff",
-  // marginL: "10px",
-  // padding: 10,
 });
