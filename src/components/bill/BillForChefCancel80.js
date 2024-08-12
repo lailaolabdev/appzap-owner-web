@@ -4,6 +4,10 @@ import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
 export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
+  const optionsNames = val?.options?.map(option => `[${option.name}]`).join('') || '';
+  const totalOptionPrice = val?.totalOptionPrice || 0;
+  const itemPrice = val?.price + totalOptionPrice;
+
   return (
     <div style={{ background: "#fff" }}>
       <div style={{ fontSize: 24, fontWeight: 700 }}>{">>ບິນຍົກເລີກ<<"}</div>
@@ -14,7 +18,6 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
             borderCollapse: "collapse",
             width: "100%",
             lineHeight: 0,
-            // padding: 0 10px;
           }}
         >
           <tr>
@@ -41,7 +44,7 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
           </tr>
           <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontWeight: "bold",
@@ -52,12 +55,12 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
                 padding: 5,
               }}
             >
-              {val?.name} ({val?.quantity})
+              {val?.name} {optionsNames} ({val?.quantity})
             </td>
           </tr>
           <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontSize: 18,
@@ -72,18 +75,18 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
           </tr>
           <tr>
             <td
-              colspan={2}
+              colSpan={2}
               style={{
                 color: "#000",
                 fontSize: 14,
                 textAlign: "left",
               }}
             >
-              {moneyCurrency(val?.price)} x {val?.quantity}
+              {moneyCurrency(itemPrice)} x {val?.quantity}
             </td>
           </tr>
           <tr>
-            <td colspan={2} style={{ borderTop: "1px dotted #000" }}>
+            <td colSpan={2} style={{ borderTop: "1px dotted #000" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div
                   style={{
@@ -118,6 +121,4 @@ const Container = styled("div")({
   maxWidth: "260px",
   border: "1px solid #000",
   backgroundColor: "#fff",
-  // marginL: "10px",
-  // padding: 10,
 });
