@@ -92,7 +92,10 @@ function AddOrder() {
   const handleShow = () => {
     setShow(true);
   };
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setAddComments("")
+    setShow(false)
+  };
 
   const handleChangeMenuType = async (e) => {
     setMenuType(e.target.value);
@@ -394,7 +397,7 @@ function AddOrder() {
       price: selectedItem.price,
       categoryId: selectedItem?.categoryId,
       printer: selectedItem?.categoryId?.printer,
-      note: "",
+      note: addComments,
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,

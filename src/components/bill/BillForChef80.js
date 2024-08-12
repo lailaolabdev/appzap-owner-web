@@ -6,7 +6,8 @@ import { moneyCurrency } from "../../helpers";
 export default function BillForChef80({ selectedTable, dataBill, val }) {
   const options = val?.options?.map(option => `[${option.name}]`).join(' ') || '';
   const totalPrice = (val?.price + (val?.totalOptionPrice ?? 0)) * val?.quantity;
-
+  console.log({val})
+  
   return (
     <div style={{ background: "#fff" }}>
       <Container>
