@@ -28,9 +28,10 @@ import profileImage from "../../image/profile.png";
 import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Upload from "../../components/Upload";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Box from "../../components/Box";
 import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
+import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
 import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
 
@@ -40,6 +41,9 @@ export default function MenuList() {
   const params = useParams();
 
   const [showSetting, setShowSetting] = useState(false);
+  const [showOptionSetting, setShowOptionSetting] = useState(false);
+
+  
 
   const [isOpened, setIsOpened] = useState(true);
   const [show, setShow] = useState(false);
@@ -75,9 +79,21 @@ export default function MenuList() {
 
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
+  const [detailMenuOption, setDetailMenuOption] = useState();
+  const [menuOptionsCount, setMenuOptionsCount] = useState({});
+
+  const [allMenuOptions, setAllMenuOptions] = useState([]);
+  const [menuSpecificOptions, setMenuSpecificOptions] = useState([]);
+
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
+
+  const location = useLocation();
+  const pathParts = location.pathname.split('/');
+  const defaultActiveKey = `/settingStore/${pathParts[2]}`;
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -143,6 +159,10 @@ export default function MenuList() {
     }
   };
 
+  const handleUpdateMenuOptionsCount = (menuId, count) => {
+    setMenuOptionsCount(prev => ({ ...prev, [menuId]: count }));
+  };
+
   const getMenu = async (id, categoryId) => {
     try {
       setIsLoading(true);
@@ -166,6 +186,8 @@ export default function MenuList() {
       setIsLoading(false);
     }
   };
+
+  
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -532,6 +554,9 @@ export default function MenuList() {
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
+  const _menuOptionList = () => {
+    navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
+  };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
@@ -558,13 +583,21 @@ export default function MenuList() {
           <Breadcrumb.Item active>{t('menu')}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
-          <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
+          <Nav variant="tabs" defaultActiveKey={defaultActiveKey}>
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
                 {t('menu')}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu-option"
+                onClick={() => _menuOptionList()}
+              >
+                ອ໋ອບເຊິນ
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -662,6 +695,7 @@ export default function MenuList() {
                   <th scope="col">{t('food_name')}</th>
                   <th scope="col">{t('price')}</th>
                   <th scope="col">{t('setting_show')}</th>
+                  <th scope="col">{t('options')}</th>
                   <th scope="col">{t('manage_data')}</th>
                 </tr>
               </thead>
@@ -727,6 +761,19 @@ export default function MenuList() {
                             }}
                           >
                             {t('define')}
+                          </button>
+                        </td>
+
+                        <td>
+                          <button
+                            type="button"
+                            className="menuSetting"
+                            onClick={() => {
+                              setShowOptionSetting(true);
+                              setDetailMenuOption({ data, index });
+                            }}
+                          >
+                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data.menuOptions.length || 0})
                           </button>
                         </td>
 
@@ -1702,6 +1749,19 @@ export default function MenuList() {
             _onOpenMenuStaff(id, isOpenMenuStaff, index)
           }
         />
+
+      <PopUpAddMenuOption
+          showSetting={showOptionSetting}
+          detailMenu={detailMenuOption}
+          handleClose={() => {
+              setShowOptionSetting(false);
+              setDetailMenuOption(null);
+          }}
+          getTokken={getTokken}
+          updateMenuOptionsCount={handleUpdateMenuOptionsCount}
+      />
+
+
       </Box>
     </div>
   );

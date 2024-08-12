@@ -95,57 +95,52 @@ export default function CheckOutPopup({
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-    (e) => e?.price * e?.quantity
+    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBill = totalBillDefualt + taxAmount;
 
-  useEffect(() => {
-    setCash();
-    setTransfer();
-    setTab("cash");
-    setSelectInput("inputCash");
-    setForcus("CASH");
-    setCanCheckOut(false);
-  }, [open]);
+  console.log({totalBillDefualt, taxAmount, totalBill})
+  
+
   useEffect(() => {
     if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${selectCurrency == "LAK"
-      ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
-      : moneyCurrency(parseFloat(cashCurrency) || 0)
-      } ${selectCurrency}`;
-    moneyChange = `${moneyCurrency(
-      (parseFloat(cash) || 0) +
-        (parseFloat(transfer) || 0) -
-        (dataBill && dataBill?.discountType === "LAK"
-          ? totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0) <=
-        0
-        ? 0
-        : (parseFloat(cash) || 0) +
-        (parseFloat(transfer) || 0) -
-        (dataBill && dataBill?.discountType === "LAK"
-          ? totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-          : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0)
-    )} ${storeDetail?.firstCurrency}`;
-
+    const discountedTotalBill =
+      dataBill?.discountType === "LAK"
+        ? totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
+          : 0
+        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : 0;
+  
+    const cashAmount = parseFloat(cash) || 0;
+    const transferAmount = parseFloat(transfer) || 0;
+    const totalReceived = cashAmount + transferAmount;
+  
+    moneyReceived = `${
+      selectCurrency == "LAK"
+        ? moneyCurrency(totalReceived)
+        : moneyCurrency(parseFloat(cashCurrency) || 0)
+    } ${selectCurrency}`;
+  
+    const changeAmount = totalReceived - discountedTotalBill;
+    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
+      storeDetail?.firstCurrency
+    }`;
+  
     setDataBill((prev) => ({
       ...prev,
       moneyReceived: moneyReceived,
       moneyChange: moneyChange,
-      dataStaffConfirm: staffConfirm
+      dataStaffConfirm: staffConfirm,
     }));
   }, [cash, transfer, selectCurrency]);
+  
+  
+
   useEffect(() => {
     if (!open) return;
     if (selectCurrency != "LAK") {
@@ -208,7 +203,6 @@ export default function CheckOutPopup({
             status: "CHECKOUT",
             payAmount: cash,
             transferAmount: transfer,
-            billAmount: totalBill,
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,

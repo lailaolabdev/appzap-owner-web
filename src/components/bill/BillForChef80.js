@@ -4,6 +4,8 @@ import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
 export default function BillForChef80({ selectedTable, dataBill, val }) {
+  const options = val?.options?.map(option => `[${option.name}]`).join(' ') || '';
+
   return (
     <div style={{ background: "#fff" }}>
       <Container>
@@ -53,7 +55,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 padding: 5,
               }}
             >
-              {val?.name} ({val?.quantity})
+              {val?.name} {options} ({val?.quantity})
             </td>
           </tr>
           <tr>
@@ -72,7 +74,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
               {val?.note}
             </td>
           </tr>
-          <tr>
+          {/* <tr>
             <td
               colspan={2}
               style={{
@@ -83,7 +85,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
             >
               {moneyCurrency(val?.price)} x {val?.quantity}
             </td>
-          </tr>
+          </tr> */}
           <tr>
             <td colspan={2} style={{ borderTop: "1px dotted #000" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>

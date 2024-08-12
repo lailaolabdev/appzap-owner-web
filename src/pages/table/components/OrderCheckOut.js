@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Modal, Table, Button, Form } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
-// import socketIOClient from "socket.io-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
@@ -11,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3 } from "../../../constants";
-// import { useStore } from "../../../store";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -22,7 +20,6 @@ const OrderCheckOut = ({
   onPrintBill = () => { },
   onSubmit = () => { },
   staffData,
-  // setDataBill
 }) => {
   const { t } = useTranslation();
   const { storeDetail, profile } = useStore();
@@ -33,11 +30,10 @@ const OrderCheckOut = ({
 
   console.log("storeDetail:---->", storeDetail, staffData?.users);
 
+  console.log("data.orderId: ", data.orderId)
+
   useEffect(() => {
-    // for (let i = 0; i < data?.orderId.length; i++) {
     _calculateTotal();
-    // }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, data?.orderId]);
 
   const _calculateTotal = () => {
@@ -46,19 +42,18 @@ const OrderCheckOut = ({
     if (data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
         if (data?.orderId[i]?.status === "SERVED") {
-          _total += data?.orderId[i]?.quantity * data?.orderId[i]?.price;
+          _total +=
+            data?.orderId[i]?.quantity *
+            (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
         }
       }
     }
-    // alert(_total);
     setTotal(_total);
   };
 
   const onConfirmStaffToCheckBill = () => {
     setIsConFirmStaff(true);
     hide();
-    console.log("check confirm staff......");
-    // onsubmit()
   };
 
   const onCancelConfirmStaff = () => {
@@ -72,13 +67,19 @@ const OrderCheckOut = ({
       lastname: data?.lastname,
       phone: data?.phone,
     };
-    // console.log("_staffConfirm:=======>", _staffConfirm)
     await localStorage.setItem(
       "STAFFCONFIRM_DATA",
       JSON.stringify(_staffConfirm)
     );
     onSubmit();
     setIsConFirmStaff(false);
+  };
+
+  const getOrderItemKey = (orderItem) => {
+    const options = orderItem?.options
+      ?.map((option) => `${option.name}:${option.value}`)
+      .join(",") || "";
+    return `${orderItem?.id}-${options}`;
   };
 
   return (
@@ -116,17 +117,30 @@ const OrderCheckOut = ({
             <tbody>
               {data &&
                 data?.orderId?.map((orderItem, index) => {
+                  const options =
+                    orderItem?.options
+                      ?.map((option) => `[${option.name}]`)
+                      .join(" ") || "";
                   return (
-                    <tr key={index}>
+                    <tr key={getOrderItemKey(orderItem)}>
                       <td>{index + 1}</td>
-                      <td>{orderItem?.name ?? "-"}</td>
+                      <td>
+                        {orderItem?.name ?? "-"} {options}
+                      </td>
                       <td>{orderItem?.quantity}</td>
-                      <td>{moneyCurrency(orderItem?.price)}</td>
+                      <td>
+                        {moneyCurrency(
+                          orderItem?.price +
+                            (orderItem?.totalOptionPrice ?? 0)
+                        )}
+                      </td>
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                            orderItem?.price * orderItem?.quantity
-                          )
+                              (orderItem?.price +
+                                (orderItem?.totalOptionPrice ?? 0)) *
+                                orderItem?.quantity
+                            )
                           : "-"}
                       </td>
                     </tr>
@@ -180,7 +194,6 @@ const OrderCheckOut = ({
             >
               <Button
                 className="ml-2 pl-4 pr-4"
-                // onClick={hide}
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
@@ -188,7 +201,6 @@ const OrderCheckOut = ({
                   fontSize: 26,
                 }}
                 onClick={() => onPrintBill()}
-              // onClick={() => setIsBill(true)}
               >
                 <FontAwesomeIcon
                   icon={faCashRegister}
@@ -237,7 +249,6 @@ const OrderCheckOut = ({
               >
                 <Button
                   className="ml-2 pl-4 pr-4"
-                  // onClick={hide}
                   style={{
                     backgroundColor: "#FB6E3B",
                     color: "#ffff",
@@ -245,7 +256,6 @@ const OrderCheckOut = ({
                     fontSize: 26,
                   }}
                   onClick={onConfirmStaffToCheckBill}
-                // onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
                     icon={faCashRegister}
@@ -255,14 +265,12 @@ const OrderCheckOut = ({
                 </Button>
                 <Button
                   className="ml-2 pl-4 pr-4"
-                  // onClick={hide}
                   style={{
                     backgroundColor: "#FB6E3B",
                     color: "#ffff",
                     border: "solid 1px #FB6E3B",
                     fontSize: 26,
                   }}
-                  // onClick={onConfirmStaffToCheckBill}
                   onClick={() => onSubmit()}
                 >
                   <FontAwesomeIcon
@@ -276,10 +284,6 @@ const OrderCheckOut = ({
           </div>
         </Modal.Footer>
       </Modal>
-
-      {/* <Modal show={isBill} onHide={() => setIsBill(false)}>
-        <BillForCheckOut80 />
-      </Modal> */}
 
       <Modal
         size="lg"
@@ -351,9 +355,11 @@ const OrderCheckOut = ({
     </>
   );
 };
+
 OrderCheckOut.propTypes = {
   show: PropTypes.bool,
   hide: PropTypes.func,
   data: PropTypes.array,
 };
+
 export default OrderCheckOut;

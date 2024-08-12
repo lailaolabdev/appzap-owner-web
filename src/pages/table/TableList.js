@@ -291,7 +291,7 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      console.log("logBill_80:------>", _resBill?.data);
+      console.log("_resBill?.data:------>", _resBill?.data);
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -1334,7 +1334,10 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      _total += _data?.quantity * _data?.price;
+      console.log({_data})
+      _total += (_data?.price +
+        (_data?.totalOptionPrice ?? 0)) *
+        _data?.quantity
     }
     if (dataBill?.discount > 0) {
       if (
@@ -1950,58 +1953,58 @@ export default function TableList() {
                         </thead>
                         <tbody>
                           {isCheckedOrderItem
-                            ? isCheckedOrderItem?.map((orderItem, index) => (
-                                <tr
-                                  onClick={() => handleShowQuantity(orderItem)}
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                      disabled={
-                                        orderItem?.status === "CANCELED"
-                                      }
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) => {
-                                        // e.stopPropagation()
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        });
-                                      }}
-                                    />
-                                  </td>
-
-                                  <td>{index + 1}</td>
-                                  <td>{orderItem?.name}</td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
-                                          ? ""
-                                          : "red",
-                                    }}
+                            ? isCheckedOrderItem?.map((orderItem, index) => {
+                                const options = orderItem?.options
+                                  ?.map(option => `[${option.name}]`)
+                                  .join(' ') || '';
+                                return (
+                                  <tr
+                                    // onClick={() => handleShowQuantity(orderItem)}
+                                    key={"order" + index}
+                                    style={{ borderBottom: "1px solid #eee" }}
                                   >
-                                    {orderItem?.status
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                      <Checkbox
+                                        disabled={orderItem?.status === "CANCELED"}
+                                        name="checked"
+                                        checked={orderItem?.isChecked || false}
+                                        onChange={(e) => {
+                                          onSelect({
+                                            ...orderItem,
+                                            isChecked: e.target.checked,
+                                          });
+                                        }}
+                                      />
+                                    </td>
+                                    <td>{index + 1}</td>
+                                    <td>{orderItem?.name} {options}</td>
+                                    <td>{orderItem?.quantity}</td>
+                                    <td
+                                      style={{
+                                        color:
+                                          orderItem?.status === `SERVED`
+                                            ? "green"
+                                            : orderItem?.status === "DOING"
+                                            ? ""
+                                            : "red",
+                                      }}
+                                    >
+                                      {orderItem?.status
                                       ? t(orderStatusTranslate(orderItem?.status))
                                       : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              ))
+                                    </td>
+                                    <td>{orderItem?.createdBy?.firstname}</td>
+                                    <td>
+                                      {orderItem?.createdAt
+                                        ? moment(orderItem?.createdAt).format("HH:mm A")
+                                        : "-"}
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             : ""}
                         </tbody>
+
                       </TableCustom>
                       {tableOrderItems?.length === 0 && (
                         <div className="text-center">
@@ -2439,7 +2442,12 @@ export default function TableList() {
               <tbody>
                 <tr>
                   <td>{seletedOrderItem?.tableId?.name}</td>
-                  <td>{seletedOrderItem?.name}</td>
+                  <td>
+                    {seletedOrderItem?.name}{" "}
+                    {seletedOrderItem?.options
+                      ?.map((option) => `[${option.name}]`)
+                      .join(" ")}
+                  </td>
                   <td
                     style={{
                       display: "flex",
@@ -2482,45 +2490,6 @@ export default function TableList() {
                       : "-"}
                   </td>
                 </tr>
-                {/* {isCheckedOrderItem
-                  ? isCheckedOrderItem?.map((orderItem, index) => (
-                    <tr
-                      key={"order" + index}
-                      style={{ borderBottom: "1px solid #eee" }}
-                    >
-
-                      <td>{orderItem?.tableId?.name}</td>
-                      <td>{orderItem?.name}</td>
-                      <td style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <button style={{ color: "blue", border: "none", width: 25 }} onClick={() => handleSetQuantity(-1, orderItem)}>-</button>
-                        {orderItem?.quantity}
-                        <button style={{ color: "red", border: "none", width: 25 }} onClick={() => handleSetQuantity(1, orderItem)}>+</button>
-                      </td>
-                      <td
-                        style={{
-                          color:
-                            orderItem?.status === `SERVED`
-                              ? "green"
-                              : orderItem?.status === "DOING"
-                                ? ""
-                                : "red",
-                        }}
-                      >
-                        {orderItem?.status
-                          ? orderStatus(orderItem?.status)
-                          : "-"}
-                      </td>
-                      <td>{orderItem?.createdBy?.firstname}</td>
-                      <td>
-                        {orderItem?.createdAt
-                          ? moment(orderItem?.createdAt).format(
-                            "HH:mm A"
-                          )
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))
-                  : ""} */}
               </tbody>
             </TableCustom>
           </Form.Group>
@@ -2540,6 +2509,7 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
+
 
       <Modal show={openModalSetting} onHide={() => setOpenModalSetting(false)}>
         <Modal.Header closeButton>

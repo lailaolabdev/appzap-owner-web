@@ -37,6 +37,7 @@ import Loading from "../../components/Loading";
 import { BillForChef } from "./components/BillForChef";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
@@ -78,6 +79,9 @@ function AddOrder() {
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
 
+  const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
+  const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] = useState(0);
+
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -111,19 +115,44 @@ function AddOrder() {
     setConnectMenuId(e.target.value);
   };
 
-  function handleSetQuantity(int, data) {
+  const handleSetQuantity = (int, data) => {
     let dataArray = [];
+  
+    // Ensure data.options is defined and is an array
+    const sortedDataOptionsForComparison = Array.isArray(data?.options) ? sortOptionsById([...data.options]) : [];
+  
+    console.log({ selectedMenu });
+  
     for (const i of selectedMenu) {
       let _data = { ...i };
-      if (data?.id === i?.id) {
-        _data = { ..._data, quantity: _data?.quantity + int };
+  
+      // Ensure i.options is defined and is an array
+      const sortedItemOptionsForComparison = Array.isArray(i?.options) ? sortOptionsById([...i.options]) : [];
+  
+      if (
+        data?.id === i?.id &&
+        JSON.stringify(sortedDataOptionsForComparison) === JSON.stringify(sortedItemOptionsForComparison)
+      ) {
+        _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
+  
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
+  
     setSelectedMenu(dataArray);
-  }
+  };
+  
+  
+  // Helper function to sort options by ID
+  const sortOptionsById = (options) => {
+    return options.sort((a, b) => {
+      if (!a._id || !b._id) return 0;
+      return a._id.localeCompare(b._id);
+    });
+  };
+  
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
   const [currency, setCurrency] = useState([]);
@@ -286,22 +315,120 @@ function AddOrder() {
     })();
   }, []);
 
-  // const getcurrency = async () => {
-  //   try {
-  //     let x = await axios.get(
-  //       END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
-  //       {
-  //         headers: {
-  //           Accept: "application/json",
-  //           "Content-Type": "application/json;charset=UTF-8",
-  //         },
-  //       }
-  //     );
-  //     setCurrency(x.data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+
+  const handleAddOption = (menuId, option) => {
+    console.log({option})
+    setSelectedOptionsArray(prevOptions => {
+      const menuOptions = prevOptions[menuId] || [];
+      const existingOption = menuOptions.find(opt => opt._id === option._id);
+  
+      if (existingOption) {
+        return {
+          ...prevOptions,
+          [menuId]: menuOptions.map(opt =>
+            opt._id === option._id ? { ...opt, quantity: opt.quantity + 1 } : opt
+          )
+        };
+      }
+  
+      return {
+        ...prevOptions,
+        [menuId]: [...menuOptions, { ...option, quantity: 1 }]
+      };
+    });
+  };
+  
+  const handleRemoveOption = (menuId, option) => {
+    setSelectedOptionsArray(prevOptions => {
+      const menuOptions = prevOptions[menuId] || [];
+      const existingOption = menuOptions.find(opt => opt._id === option._id);
+  
+      if (existingOption && existingOption.quantity > 1) {
+        return {
+          ...prevOptions,
+          [menuId]: menuOptions.map(opt =>
+            opt._id === option._id ? { ...opt, quantity: opt.quantity - 1 } : opt
+          )
+        };
+      }
+  
+      return {
+        ...prevOptions,
+        [menuId]: menuOptions.filter(opt => opt._id !== option._id)
+      };
+    });
+  };
+  
+  
+
+  const calculateTotalPrice = (menu, selectedOptionsArray) => {
+    console.log({menu})
+    if (!menu || !menu._id) {
+      return 0;
+    }
+    
+    const menuOptions = selectedOptionsArray[menu._id] || [];
+    const optionsTotalPrice = menuOptions.reduce((sum, option) => sum + (option.price * option.quantity), 0);
+    return menu.price + optionsTotalPrice;
+  };
+  
+
+  const handleConfirmOptions = () => {
+    console.log("menuOptions: ", menuOptions);
+    console.log("selectedItem: ", selectedItem);
+    console.log("SelectedOptionsArray: ", selectedOptionsArray);
+    console.log("selectedMenu: ", selectedMenu);
+  
+    const filteredOptions = selectedOptionsArray[selectedItem._id]?.filter(option => option.quantity >= 1) || [];
+  
+  
+    const sortedFilteredOptionsForComparison = sortOptionsById([...filteredOptions]);
+  
+    const totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
+    const quantity = 1;
+  
+    const data = {
+      id: selectedItem._id,
+      name: selectedItem.name,
+      quantity: quantity,
+      price: selectedItem.price,
+      categoryId: selectedItem?.categoryId,
+      printer: selectedItem?.categoryId?.printer,
+      note: "",
+      menuOptions: selectedItem.menuOptions,
+      options: filteredOptions,
+      totalOptionPrice: totalOptionPrice,
+    };
+  
+    setSelectedMenu(prevMenu => {
+      // Check if the menu item with the same ID and options already exists
+      const existingMenuIndex = prevMenu.findIndex(item => {
+        const sortedItemOptionsForComparison = item.options ? sortOptionsById([...item.options]) : [];
+        return (
+          item.id === selectedItem._id &&
+          JSON.stringify(sortedItemOptionsForComparison) === JSON.stringify(sortedFilteredOptionsForComparison)
+        );
+      });
+  
+      if (existingMenuIndex !== -1) {
+        // Menu is already in selectedMenu, increase the quantity and update options
+        const updatedMenu = [...prevMenu];
+        updatedMenu[existingMenuIndex].quantity += 1;
+        updatedMenu[existingMenuIndex].options = filteredOptions;
+        updatedMenu[existingMenuIndex].totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
+        updatedMenu[existingMenuIndex].totalPrice = (updatedMenu[existingMenuIndex].price * updatedMenu[existingMenuIndex].quantity) + updatedMenu[existingMenuIndex].totalOptionPrice;
+        return updatedMenu;
+      } else {
+        // Menu is not in selectedMenu, add it
+        return [...prevMenu, data];
+      }
+    });
+  
+    handleClose();
+  };
+  
+
+
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -332,73 +459,110 @@ function AddOrder() {
       });
   };
 
-  const _checkMenuOption = async (menuId) => {
+  const _checkMenuOption = (menu) => {
     try {
-      var _menuOptions = [];
-      // await fetch(
-      //   MENUS +
-      //   `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
-      //   {
-      //     method: "GET",
-      //   }
-      // )
-      //   .then((response) => response.json())
-      //   .then((json) => {
-      //     _menuOptions = json;
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-      _menuOptions = _.filter(
-        allSelectedMenu,
-        (e) => e?.menuId?._id === menuId
-      );
-      return _menuOptions;
+      return menu.menuOptions && menu.menuOptions.length > 0 ? menu.menuOptions : [];
     } catch (error) {
       return [];
     }
   };
 
-  const addToCart = async (menu) => {
-    const _menuOptions = await _checkMenuOption(menu?._id);
-    if (_menuOptions.length >= 1) {
-      setMenuOptions(_menuOptions);
-      handleShow();
-      return;
-    }
-    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-    let allowToAdd = true;
-    let itemIndexInSelectedMenu = 0;
-    let data = {
-      id: menu._id,
-      name: menu.name,
-      quantity: 1,
-      price: menu.price,
-      categoryId: menu?.categoryId,
-      printer: menu?.categoryId?.printer,
-      note: "",
-    };
-    if (selectedMenu.length === 0) {
-      setSelectedMenu([...selectedMenu, data]);
-    } else {
-      let thisSelectedMenu = [...selectedMenu];
-      for (let index in thisSelectedMenu) {
-        if (thisSelectedMenu[index]?.id === menu?._id) {
-          allowToAdd = false;
-          itemIndexInSelectedMenu = index;
-        }
-      }
-      if (allowToAdd) {
-        setSelectedMenu([...selectedMenu, data]);
-      } else {
-        let copySelectedMenu = [...selectedMenu];
-        let currentData = copySelectedMenu[itemIndexInSelectedMenu];
-        currentData.quantity += 1;
-        copySelectedMenu[itemIndexInSelectedMenu] = currentData;
-        setSelectedMenu(copySelectedMenu);
-      }
+  const _checkSelectedMenuOption = (menu) => {
+    try {
+      return menu.options && menu.options.length > 0 ? menu.options : [];
+    } catch (error) {
+      return [];
     }
   };
+  
+
+  // const addToCart = async (menu) => {
+  //   const _menuOptions = await _checkMenuOption(menu?._id);
+  //   if (_menuOptions.length >= 1) {
+  //     setMenuOptions(_menuOptions);
+  //     handleShow();
+  //     return;
+  //   }
+  //   setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+  //   let allowToAdd = true;
+  //   let itemIndexInSelectedMenu = 0;
+  //   let data = {
+  //     id: menu._id,
+  //     name: menu.name,
+  //     quantity: 1,
+  //     price: menu.price,
+  //     categoryId: menu?.categoryId,
+  //     printer: menu?.categoryId?.printer,
+  //     note: "",
+  //   };
+  //   if (selectedMenu.length === 0) {
+  //     setSelectedMenu([...selectedMenu, data]);
+  //   } else {
+  //     let thisSelectedMenu = [...selectedMenu];
+  //     for (let index in thisSelectedMenu) {
+  //       if (thisSelectedMenu[index]?.id === menu?._id) {
+  //         allowToAdd = false;
+  //         itemIndexInSelectedMenu = index;
+  //       }
+  //     }
+  //     if (allowToAdd) {
+  //       setSelectedMenu([...selectedMenu, data]);
+  //     } else {
+  //       let copySelectedMenu = [...selectedMenu];
+  //       let currentData = copySelectedMenu[itemIndexInSelectedMenu];
+  //       currentData.quantity += 1;
+  //       copySelectedMenu[itemIndexInSelectedMenu] = currentData;
+  //       setSelectedMenu(copySelectedMenu);
+  //     }
+  //   }
+  // };
+
+  const addToCart = async (menu) => {
+    console.log("addToCart: ", menu);
+  
+    const _menuOptions = _checkMenuOption(menu);
+  
+    // If there is no menu options in the selected menu
+    if (_menuOptions.length === 0) {
+      // Menu has no options, add to cart immediately
+      const data = {
+        id: menu._id,
+        name: menu.name,
+        quantity: 1,
+        price: menu.price,
+        categoryId: menu?.categoryId,
+        printer: menu?.categoryId?.printer,
+        note: "",
+      };
+  
+      const existingMenuIndex = selectedMenu.findIndex(item => item.id === menu._id);
+  
+      if (existingMenuIndex !== -1) {
+        // Menu is already in selectedMenu, increase the quantity
+        const updatedMenu = [...selectedMenu];
+        updatedMenu[existingMenuIndex].quantity += 1;
+        setSelectedMenu(updatedMenu);
+      } else {
+        // Menu is not in selectedMenu, add it
+        setSelectedMenu([...selectedMenu, data]);
+      }
+  
+      // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+      return;
+    }
+  
+    // Menu has options, show popup
+    setMenuOptions(_menuOptions);
+    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+    setSelectedOptionsArray({
+      [menu._id]: _menuOptions.map(option => ({ ...option, quantity: 0 }))
+    });
+    handleShow();
+  };
+  
+  
+  
+  
 
   const onRemoveFromCart = (id) => {
     let selectedMenuCopied = [...selectedMenu];
@@ -443,6 +607,9 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
+
+      console.log("CreateOrder: ", _body)
+
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
           headers: headers,
@@ -518,9 +685,29 @@ function AddOrder() {
     }
   };
 
-  const onAddCommentItems = (values) => {
-    setIsPupup(true);
-    setNoteItems(values);
+  const onEditOrder = (menu) => {
+    console.log("onEditOrder: ", menu);
+    const menuOptions = _checkMenuOption(menu);
+    console.log("menuOptions: ", menuOptions);
+  
+    // Get the selected options from the menu with their quantities
+    const selectedOptions = menu.options || [];
+  
+    // Menu has options, show popup
+    setMenuOptions(menuOptions);
+    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+  
+    setSelectedOptionsArray({
+      [menu._id]: menuOptions.map(option => {
+        const selectedOption = selectedOptions.find(opt => opt._id === option._id);
+        return { ...option, quantity: selectedOption ? selectedOption.quantity : 0 };
+      })
+    });
+  
+    handleShow();
+  
+    // setIsPupup(true);
+    // setNoteItems(menu);
   };
 
   const onEditCommentItems = (values) => {
@@ -714,19 +901,23 @@ function AddOrder() {
                       <th style={{ border: "none", textAlign: "center" }}>
                         {t('amount')}
                       </th>
-                      <th style={{ border: "none", textAlign: "right" }}>
-                        {t('order_food')}
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {selectedMenu &&
                       selectedMenu.map((data, index) => {
+                        // Create the options string if options exist
+                        const optionsString = data.options && data.options.length > 0
+                          ? data.options
+                              .map(option => (option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`))
+                              .join(" ")
+                          : "";
+
                         return (
                           <tr key={"selectMenu" + index}>
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{data.name}</p>
+                              <p>{`${data.name} ${optionsString}`}</p>
                               <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
                                 {data?.note ?? ""}
                               </p>
@@ -762,17 +953,8 @@ function AddOrder() {
                                 +
                               </button>
                             </td>
-                            <td style={{ padding: 0, textAlign: "right" }}>
-                              {/* <i
-                                onClick={() => onRemoveFromCart(data.id)}
-                                className="fa fa-trash"
-                                aria-hidden="true"
-                                style={{
-                                  color: "#FB6E3B",
-                                  cursor: "pointer",
-                                }}
-                              ></i> */}
 
+                            {/* <td style={{ padding: 0, textAlign: "right" }}>
                               <div
                                 style={{
                                   display: "flex",
@@ -781,19 +963,32 @@ function AddOrder() {
                                   paddingLeft: 10,
                                   paddingTop: 5,
                                 }}
-                              >
-                                {data?.note === "" ? (
+                              > */}
+
+                                  {/* <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "gray",
+                                    }}
+                                    onClick={() => onEditOrder(data)}
+                                  >
+                                    <RiChatNewFill />
+                                  </div> */}
+
+                                {/* {data?.note === "" ? (
                                   <div
                                     style={{
                                       cursor: "pointer",
                                       fontSize: 25,
                                       color: "gray",
                                     }}
-                                    onClick={() => onAddCommentItems(data)}
+                                    onClick={() => onEditOrder(data)}
                                   >
                                     <RiChatNewFill />
                                   </div>
-                                ) : (
+                                ) 
+                                : (
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -804,9 +999,9 @@ function AddOrder() {
                                   >
                                     <MdMarkChatRead />
                                   </div>
-                                )}
+                                )} */}
 
-                                <div
+                                {/* <div
                                   style={{
                                     cursor: "pointer",
                                     fontSize: 25,
@@ -815,13 +1010,14 @@ function AddOrder() {
                                   onClick={() => onConfirmRemoveItem(data)}
                                 >
                                   <MdDelete />
-                                </div>
-                              </div>
-                            </td>
+                                </div> */}
+                              {/* </div>
+                            </td> */}
                           </tr>
                         );
                       })}
                   </tbody>
+
                 </Table>
               </div>
               <div className="col-12">
@@ -932,104 +1128,74 @@ function AddOrder() {
         );
       })}
 
-      <Modal
-        show={show}
-        onHide={handleClose}
-        // backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>{t('menu_option')}</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{
-            name: menuOptions?.name,
-            name_en: menuOptions?.name_en,
-            images: menuOptions?.images,
-            quantity: menuOptions?.quantity,
-            menuOptionId: menuOptions?.menuOptions,
-            categoryId: menuOptions?.categoryId?._id,
-            price: menuOptions?.price,
-            detail: menuOptions?.detail,
-            unit: menuOptions?.unit,
-            isOpened: menuOptions?.isOpened,
-            type: menuOptions?.type,
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.name) {
-              errors.name = `${t('please_fill_menu_name')}`;
-            }
-            // if (!values.name_en) {
-            //   errors.name_en = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
-            // }
-            if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-              errors.price = `${t('please_fill_price')}`;
-            }
-            return errors;
-          }}
-        // onSubmit={(values, { setSubmitting }) => {
-        //   const getData = async () => {
-        //     await _updateCategory(values);
-        //     const _localData = await getLocalData();
-        //     if (_localData) {
-        //       setgetTokken(_localData);
-        //       getMenu(_localData?.DATA?.storeId);
-        //       // getMenu(getTokken?.DATA?.storeId);
-        //     }
-        //   };
-        //   getData();
-        // }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <Form.Group controlId="exampleForm.ControlSelect1">
-                  {menuOptions.map((item) => (
-                    <button
-                      className="form-control mb-2"
-                      key=""
-                      onClick={() => {
-                        setselectedOptions(item);
-                      }}
-                    >
-                      {item?.name} {t('price')} {item?.price} LAK
-                    </button>
-                  ))}
-                  {/* </Form.Control> */}
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="danger" onClick={handleClose}>
-                  {t('cancel')}
-                </Button>
-                <Button
-                  style={{
-                    backgroundColor: "orange",
-                    color: "#ffff",
-                    border: 0,
-                  }}
-                  onClick={() => {
-                    addToCart(selectedOptions);
-                    handleClose();
-                  }}
-                >
-                  {t('save')}
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
+    <Modal show={show} onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <div style={{ fontSize: 24 }}>
+            {selectedItem?.name} ({moneyCurrency(selectedItem?.price)} LAK)
+          </div>
+          <div style={{ fontSize: 18 }}>
+            {t('menu_option')}: 
+            {selectedOptionsArray[selectedItem?._id]?.map((option) => (
+              option.quantity > 0 && (
+                <span key={option._id} style={{ marginRight: '5px' }}>
+                  {option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`}
+                </span>
+              )
+            ))}
+          </div>
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Group>
+          {menuOptions.map((option, index) => (
+            <div
+              key={index}
+              className="d-flex justify-content-between align-items-center mb-2"
+              style={
+                selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity >= 1
+                  ? { backgroundColor: "#fd8b66", borderRadius: '5px', padding: 5 }
+                  : {}
+              }
+            >
+              <div>
+                <strong>{option.name}</strong> - {moneyCurrency(option.price)} LAK
+              </div>
+              <div className="d-flex align-items-center">
+                <Button variant="outline-secondary" size="sm" onClick={() => handleRemoveOption(selectedItem?._id, option)}>-</Button>
+                <span className="mx-2">{selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity || 0}</span>
+                <Button variant="outline-secondary" size="sm" onClick={() => handleAddOption(selectedItem?._id, option)}>+</Button>
+              </div>
+            </div>
+          ))}
+        </Form.Group>
+        <div className="mt-3">
+          <strong>ລາຄາລວມອ໋ອບຊັນ: {moneyCurrency(calculateTotalPrice(selectedItem, selectedOptionsArray))} LAK</strong>
+        </div>
+        <Form.Group className="mt-3">
+          <Form.Label>
+            {selectedItem?.note === "" ? "ຄອມເມັ້ນລົດຊາດອາຫານ" : "ແກ້ໄຂຄອມເມັ້ນ"}
+          </Form.Label>
+          <Form.Control
+            ref={selectedItem?.note === "" ? inputRef : null}
+            as="textarea"
+            rows={3}
+            value={addComments}
+            onChange={(e) => setAddComments(e.target.value)}
+            placeholder="ປ້ອນຄຳອະທິບາຍ..."
+            className="w-100"
+          />
+        </Form.Group>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+        <Button variant="primary" onClick={handleConfirmOptions}>Confirm</Button>
+      </Modal.Footer>
+    </Modal>
+
+
+
+
 
       {/* modal comment of items   */}
       <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>

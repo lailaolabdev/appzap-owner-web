@@ -325,7 +325,7 @@ export default function CheckOutType({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          ຄິດໄລເງິນ ໂຕະ ({tableData?.tableName}) - ລະຫັດ {tableData?.code}
+          ຄິດໄລ່ເງິນ ໂຕະ ({tableData?.tableName}) - ລະຫັດ {tableData?.code}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ padding: 0 }}>
@@ -766,7 +766,7 @@ export default function CheckOutType({
           disabled={!canCheckOut}
         >
           <BiSolidPrinter />
-          ພິມບິນ ແລະ ໄລເງິນ
+          ພິມບິນ ແລະ ໄລ່ເງິນ
         </ButtonPrimary>
         <div style={{ width: "20%" }}></div>
         <ButtonPrimary
@@ -774,7 +774,7 @@ export default function CheckOutType({
           onClick={handleSubmit}
           disabled={!canCheckOut}
         >
-          ໄລເງິນ
+          ໄລ່ເງິນ
         </ButtonPrimary>
       </Modal.Footer>
       {/* <PopUpSelectMemberData open /> */}
