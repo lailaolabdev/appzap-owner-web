@@ -13,7 +13,6 @@ import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-// import emptyLogo from "/public/images/emptyLogo.jpeg";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -47,7 +46,9 @@ export default function BillForCheckOut80({
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      _total += _data?.quantity * _data?.price;
+      const totalOptionPrice = _data?.totalOptionPrice || 0;
+      const itemPrice = _data?.price + totalOptionPrice;
+      _total += _data?.totalPrice || (_data?.quantity * itemPrice);
     }
     if (dataBill?.discount > 0) {
       if (
@@ -88,9 +89,6 @@ export default function BillForCheckOut80({
 
   const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
-  // const myUrl = " https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/8cdca155-d983-415e-86a4-99b9d0be7ef6.jpeg";
-
-  // console.log("check storeDetail--->", storeDetail);
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
@@ -107,9 +105,6 @@ export default function BillForCheckOut80({
             style={{
               maxWidth: 120,
               maxHeight: 120
-              // border: "1px solid #ddd",
-              // borderRadius: "10em",
-              // overflow: "hidden",
             }}
             src={base64Image}
             alt="logo"
@@ -117,8 +112,6 @@ export default function BillForCheckOut80({
         ) : (
           ""
         )}
-
-        {/* <Image style={{width: 60, height:60,border:'1px solid gray', borderRadius:"10em"}} src={URL_PHOTO_AW3 + storeDetail?.image} roundedCircle /> */}
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
@@ -161,6 +154,11 @@ export default function BillForCheckOut80({
       </Name>
       <Order>
         {dataBill?.orderId?.map((item, index) => {
+          const optionsNames = item?.options?.map(option => `[${option.name}]`).join('') || '';
+          const totalOptionPrice = item?.totalOptionPrice || 0;
+          const itemPrice = item?.price + totalOptionPrice;
+          const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+
           return (
             <div
               style={{
@@ -171,15 +169,13 @@ export default function BillForCheckOut80({
               key={index}
             >
               <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "center" }}>{item?.name}</div>
+              <div style={{ textAlign: "center" }}>{item?.name} {optionsNames}</div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
               <div style={{ textAlign: "right" }}>
-                {item?.price ? moneyCurrency(item?.price) : "-"}
+                {itemPrice ? moneyCurrency(itemPrice) : "-"}
               </div>
               <div style={{ textAlign: "right" }}>
-                {item?.price
-                  ? moneyCurrency(item?.price * item?.quantity)
-                  : "-"}
+                {itemTotal ? moneyCurrency(itemTotal) : "-"}
               </div>
             </div>
           );
@@ -200,10 +196,6 @@ export default function BillForCheckOut80({
               </div>
             </Col>
           </Row>
-          {/* {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency} */}
-          {/* <div style={{ textAlign: "right" }}>
-            
-          </div> */}
           <div hidden={taxAmount <= 0}>
             <Row>
               <Col sm={8}>
@@ -218,64 +210,38 @@ export default function BillForCheckOut80({
                 </div>
               </Col>
             </Row>
-            {/* {t("total")} + {t("vat")} {taxPercent}%:{" "}
-            {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency} */}
           </div>
           {currencyData?.map((item, index) => (
-            <>
+            <div
+              key={index}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between"
+              }}
+            >
               <div
-                key={index}
                 style={{
                   width: "100%",
                   display: "flex",
-                  justifyContent: "space-between"
+                  justifyContent: "end",
+                  alignItems: "center"
                 }}
               >
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center"
-                  }}
-                >
-                  {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
-                  ):
-                </div>
-                <div
-                  style={{
-                    width: "60%",
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center"
-                  }}
-                >
-                  {moneyCurrency((total + taxAmount) / item?.sell)}
-                </div>
+                {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
+                ):
               </div>
-              {/* <Row>
-                <Col></Col>
-                <Col
-                  xs={8}
-                  style={{
-                    display: "flex",
-                    justifyContent: "end",
-                    alignItems: "center",
-                    border: "1px solid red"
-                  }}
-                >
-                  {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
-                  ):
-                </Col>
-                <Col style={{ minWidth: 400 }}>
-                  <div style={{ textAlign: "right" }}>
-                    {moneyCurrency((total + taxAmount) / item?.sell)}
-                  </div>
-                </Col>
-              </Row> */}
-              {/* {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}):{" "}
-              {moneyCurrency((total + taxAmount) / item?.sell)} */}
-            </>
+              <div
+                style={{
+                  width: "60%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center"
+                }}
+              >
+                {moneyCurrency((total + taxAmount) / item?.sell)}
+              </div>
+            </div>
           ))}
 
           <div>
@@ -294,11 +260,6 @@ export default function BillForCheckOut80({
                 </div>
               </Col>
             </Row>
-            {/* {t("discount")}:{dataBill?.discount}{" "}
-            {dataBill?.discountType == "MONEY" ||
-            dataBill?.discountType == "LAK"
-              ? storeDetail?.firstCurrency
-              : "%"} */}
           </div>
           <div>
             <Row>
@@ -312,8 +273,6 @@ export default function BillForCheckOut80({
                 </div>
               </Col>
             </Row>
-            {/* {t("customerName")} : {dataBill?.memberName} ({" "}
-            {dataBill?.memberPhone} ) */}
           </div>
         </div>
       </div>
@@ -379,7 +338,7 @@ export default function BillForCheckOut80({
         <Img>
           <img
             src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
-            style={{ wifth: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%" }}
             alt=""
           />
         </Img>
@@ -398,7 +357,6 @@ const Price = styled.div`
 const Container = styled.div`
   margin: 10px;
   width: 100%;
-  /* maxwidth: 80mm; */
 `;
 const Img = styled.div`
   width: 200px;
@@ -410,3 +368,4 @@ const Order = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
