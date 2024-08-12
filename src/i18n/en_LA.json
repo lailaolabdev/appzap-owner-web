@@ -710,6 +710,7 @@
     "update_and_send_to_kitchen": "ອັບເດດພິມໄປຄົວ",
     "sendToKitchen": "ສົ່ງໄປຫາຄົວ",
     "served": "ເສີບ",
+    "menu": "ເມນູ",
     "checkbill_success": "ສໍາເລັດການເຊັກບິນ",
     "checkbill_fial": "ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ",
     "check_out_table": "ຄິດໄລເງິນ ໂຕະ",
@@ -812,5 +813,6 @@
     "ORDER_SERVED": "ເສີບແລ້ວ",
     "ORDER_CART": "ກຳລັງຈະສັງ",
     "ORDER_FEEDBACK": "ສົ່ງຄືນ",
-    "ORDER_CANCEL": "ຍົກເລີກ"
+    "ORDER_CANCEL": "ຍົກເລີກ",
+    "option_menu": "ອ໋ອບຊັນ"
 }

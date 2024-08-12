@@ -755,5 +755,6 @@
     "ORDER_SERVED": "served",
     "ORDER_CART": "on cart",
     "ORDER_FEEDBACK": "feedback",
-    "ORDER_CANCEL": "cancel"
+    "ORDER_CANCEL": "cancel",
+    "option_menu": "Option Menu"
 }

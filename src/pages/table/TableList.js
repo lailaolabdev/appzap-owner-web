@@ -187,6 +187,8 @@ export default function TableList() {
       setShow1(true);
     }
     if (workAfterPin == "cancle_order_and_print") {
+      setPopup();
+      setShow1(true);
     }
 
     getUserData();
@@ -1876,13 +1878,8 @@ export default function TableList() {
                       >
                         <ButtonCustom
                           onClick={() => {
-                            handleUpdateOrderStatusAndCallback(
-                              "CANCELED",
-                              async () => {
-                                const data = await onPrintForCherCancel();
-                                return data;
-                              }
-                            ).then();
+                            setWorkAfterPin("cancle_order_and_print");
+                            setPopup({ PopUpPin: true });
                           }}
                           disabled={checkedBox || onPrinting}
                         >
@@ -2415,7 +2412,25 @@ export default function TableList() {
           </Button>
           <Button
             variant="success"
-            onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
+            // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
+            onClick={() => {
+              if (workAfterPin == "cancle_order_and_print") {
+                console.log("cancle_order_and_print")
+                handleUpdateOrderStatusAndCallback(
+                  "CANCELED",
+                  async () => {
+                    const data = await onPrintForCherCancel();
+                    return data;
+                  }
+                ).then(resp => {
+                  setWorkAfterPin("")
+                  handleUpdateOrderStatuscancel("CANCELED");
+                });
+              } else {
+                console.log("cancle")
+                handleUpdateOrderStatuscancel("CANCELED");
+              }
+            }}
           >
             {t("save")}
           </Button>

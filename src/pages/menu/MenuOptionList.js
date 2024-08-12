@@ -25,6 +25,7 @@ import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
+import { useTranslation } from "react-i18next";
 
 const OPTION_PRICE_CURRENCY = {
     LAK: "LAK",
@@ -33,6 +34,7 @@ const OPTION_PRICE_CURRENCY = {
 };
 
 export default function MenuListOption() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -257,17 +259,17 @@ export default function MenuListOption() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
+          <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t('option_menu')}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
-          <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
+          <Nav variant="tabs" defaultActiveKey='/settingStore/menu-option'>
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                ເມນູອາຫານ
+                {t('menu')}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -275,7 +277,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                ອ໋ອບຊັນ
+                {t('option_menu')}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -283,7 +285,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                ປະເພດອາຫານ
+                {t('food_type')}
               </Nav.Link>
             </Nav.Item>
           </Nav>

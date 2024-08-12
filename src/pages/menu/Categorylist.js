@@ -233,37 +233,37 @@ export default function Categorylist() {
   return (
     <div style={BODY}>
       <Breadcrumb>
-          <Breadcrumb.Item>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
-        </Breadcrumb>
+        <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
+        <Breadcrumb.Item active>{t('food_type')}</Breadcrumb.Item>
+      </Breadcrumb>
       <div>
-          <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
-            <Nav.Item>
-              <Nav.Link
-                eventKey="/settingStore/menu"
-                onClick={() => _menuList()}
-              >
-                ເມນູອາຫານ
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="/settingStore/menu-option"
-                onClick={() => _menuOptionList()}
-              >
-                ອ໋ອບຊັນ
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                eventKey="/settingStore/category"
-                onClick={() => _category()}
-              >
-                ປະເພດອາຫານ
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </div>
+        <Nav variant="tabs" defaultActiveKey='/settingStore/category'>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/menu"
+              onClick={() => _menuList()}
+            >
+              {t('menu')}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/menu-option"
+              onClick={() => _menuOptionList()}
+            >
+              {t('option_menu')}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/category"
+              onClick={() => _category()}
+            >
+              {t('food_type')}
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+      </div>
 
       <div>
         <div className="col-sm-12 text-right">

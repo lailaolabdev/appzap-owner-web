@@ -597,7 +597,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                ອ໋ອບເຊິນ
+                {t('option_menu')}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
