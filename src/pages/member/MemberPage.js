@@ -45,6 +45,7 @@ import {
   getTotalPoint,
   getAllMoneys,
   getMembersListTop,
+  getMembersListBirthday,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
@@ -58,6 +59,7 @@ import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
 import PopUpMemberOrderAll from "../../components/popup/PopUpMemberOrderAll";
 import { use } from "i18next";
+
 let limitData = 10;
 
 export default function MemberPage() {
@@ -82,6 +84,9 @@ export default function MemberPage() {
   const [filterValue, setFilterValue] = useState("");
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState();
+  const [totalPaginationMemberTop, setTotalPaginationMemberTop] = useState();
+  const [totalPaginationMemberBirthday, setTotalPaginationMemberBirthday] =
+    useState();
   const [selectedMember, setSelectedMember] = useState();
   const [memberName, setMemberName] = useState("");
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
@@ -113,7 +118,11 @@ export default function MemberPage() {
     getMemberOrderMenus();
     getAllMoney();
     getTotalPoints();
+    getMemberListBirthday();
+    getMemberListTop();
+    setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
   }, []);
+
   useEffect(() => {
     getMemberCountByfilterData();
     getMemberBillCountData();
@@ -127,6 +136,7 @@ export default function MemberPage() {
   useEffect(() => {
     getMembersData();
     getMemberListTop();
+    getMemberListBirthday();
   }, [paginationMember]);
 
   useEffect(() => {
@@ -171,9 +181,8 @@ export default function MemberPage() {
       }
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data);
-      setMemberListTop(_data);
-      setMemberListBirthday(_data);
+      setMembersData(_data.data.data);
+      setTotalPaginationMember(Math.ceil(_data?.data?.memberCount / limitData));
     } catch (err) {}
   };
 
@@ -184,18 +193,40 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
-      if (filterValue) {
-        findby += `search=${filterValue}&`;
-      }
       const _data = await getMembersListTop(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberListTop(_data);
+      setMemberListTop(_data.data.data);
+      setTotalPaginationMemberTop(
+        storeDetail.limitData
+          ? 1
+          : Math.ceil(_data?.data?.memberCount / limitData)
+      );
     } catch (err) {}
   };
 
+  console.log("storeDetail.valueTop", parseInt(storeDetail.limitData));
+  console.log("totalPaginationMemberTop", totalPaginationMemberTop);
+
   // console.log(memberListTop);
 
-  const getMemberListBirthday = async () => {};
+  const getMemberListBirthday = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${limitData}&`;
+      // findby += `startDay=${startDay}&`;
+      // findby += `endDay=${endDay}&`;
+      // findby += `month=${month}&`;
+      const _data = await getMembersListBirthday(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMemberListBirthday(_data.data.data);
+      setTotalPaginationMemberBirthday(
+        Math.ceil(_data?.data?.memberCount / limitData)
+      );
+    } catch (err) {}
+  };
 
   const getAllPoint = async () => {
     try {
@@ -254,9 +285,10 @@ export default function MemberPage() {
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberAllCount(_data.count);
-      setTotalPaginationMember(Math.ceil(_data?.count / limitData));
+      // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
   };
+
   const getMemberCountByfilterData = async () => {
     const { TOKEN, DATA } = await getLocalData();
     const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -295,12 +327,16 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${valueTop}&`;
-      if (filterValue) {
-        findby += `search=${filterValue}&`;
-      }
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberListTop(_data);
+      setMemberListTop(_data.data.data);
+      setTotalPaginationMemberTop(
+        Math.ceil(
+          storeDetail.limitData
+            ? 1
+            : Math.ceil(_data?.data?.memberCount / limitData)
+        )
+      );
     } catch (err) {}
   };
 
@@ -327,12 +363,12 @@ export default function MemberPage() {
       findby += `startDay=${startDay}&`;
       findby += `endDay=${endDay}&`;
       findby += `month=${month}&`;
-      if (filterValue) {
-        findby += `search=${filterValue}&`;
-      }
-      const _data = await getMembers(findby, TOKEN);
+      const _data = await getMembersListBirthday(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberListBirthday(_data);
+      setMemberListBirthday(_data.data.data);
+      setTotalPaginationMemberBirthday(
+        Math.ceil(_data?.data?.memberCount / limitData)
+      );
     } catch (err) {}
   };
 
@@ -537,7 +573,6 @@ export default function MemberPage() {
                 alignItems: "center",
               }}
               onClick={() => {
-                setChangeUi("LIST_TOP");
                 setStoreDetail({ ...storeDetail, changeUi: "LIST_TOP" });
               }}
             >
@@ -559,7 +594,6 @@ export default function MemberPage() {
                 alignItems: "center",
               }}
               onClick={() => {
-                setChangeUi("LIST_BIRTHDAY");
                 setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
               }}
             >
@@ -569,6 +603,7 @@ export default function MemberPage() {
             </Nav.Link>
           </Nav.Item>
         </Box>
+
         {storeDetail.changeUi === "LIST_MEMBER" && (
           <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
@@ -695,37 +730,20 @@ export default function MemberPage() {
               <span>{t("lists_top")}</span>
             </Card.Header>
             <Card.Body>
-              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <div style={{ width: "30rem" }}>
-                    {/* <label>{t("chose_food_type")}</label> */}
-                    <select
-                      className="form-control"
-                      // value={filterCategory}
-                      onChange={(e) => FilterTop(e.target.value)}
-                    >
-                      <option selected disabled>
-                        {t("chose_top")}
-                      </option>
-                      <option value="10">10</option>
-                      <option value="5">5</option>
-                      <option value="3">3</option>
-                      <option value="1">1</option>
-                    </select>
-                  </div>
-                  <Form.Control
-                    placeholder={t("search_name")}
-                    value={filterValue}
-                    onChange={(e) => setFilterValue(e.target.value)}
-                  />
-                  <Button
-                    onClick={() => getMembersData()}
-                    variant="primary"
-                    style={{ display: "flex", gap: 10, alignItems: "center" }}
-                  >
-                    <FaSearch /> {t("search")}
-                  </Button>
-                </div>
+              <div style={{ width: "100%" }}>
+                <select
+                  className="form-control"
+                  // value={filterCategory}
+                  onChange={(e) => FilterTop(e.target.value)}
+                >
+                  <option selected disabled>
+                    {t("chose_top")}
+                  </option>
+                  <option value="10">10</option>
+                  <option value="5">5</option>
+                  <option value="3">3</option>
+                  <option value="1">1</option>
+                </select>
               </div>
               <table style={{ width: "100%" }}>
                 <tr>
@@ -733,7 +751,7 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{t("point")}</th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
-                  <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
+                  <th style={{ textAlign: "center" }}>{t("money_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
                 {memberListTop?.map((e) => (
@@ -743,7 +761,7 @@ export default function MemberPage() {
                     <td style={{ textAlign: "center" }}>{e?.point}</td>
                     <td style={{ textAlign: "center" }}>{e?.bill}</td>
                     <td style={{ textAlign: "center" }}>
-                      {moment(e?.createdAt).format("DD/MM/YYYY")}
+                      {moneyCurrency(e?.money)}
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <Button
@@ -774,7 +792,7 @@ export default function MemberPage() {
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
-                pageCount={totalPaginationMember} // Replace with the actual number of pages
+                pageCount={totalPaginationMemberTop} // Replace with the actual number of pages
                 marginPagesDisplayed={1}
                 pageRangeDisplayed={3}
                 onPageChange={(e) => {
@@ -810,8 +828,8 @@ export default function MemberPage() {
               <span>{t("lists_birthday")}</span>
             </Card.Header>
             <Card.Body>
-              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-                <div style={{ display: "flex", gap: 15 }}>
+              <div style={{ width: "100%" }}>
+                <div>
                   <div>
                     <Box
                       sx={{
@@ -845,20 +863,6 @@ export default function MemberPage() {
                       </InputGroup>
                     </Box>
                   </div>
-                  <div style={{ display: "flex", width: "100%", gap: 10 }}>
-                    <Form.Control
-                      placeholder={t("search_name")}
-                      value={filterValue}
-                      onChange={(e) => setFilterValue(e.target.value)}
-                    />
-                    <Button
-                      onClick={() => getMembersData()}
-                      variant="primary"
-                      style={{ display: "flex", gap: 10, alignItems: "center" }}
-                    >
-                      <FaSearch /> {t("search")}
-                    </Button>
-                  </div>
                 </div>
               </div>
               <table style={{ width: "100%" }}>
@@ -867,7 +871,7 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{t("point")}</th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
-                  <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
+                  <th style={{ textAlign: "center" }}>{t("birth_day")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
                 {memberListBirthday?.map((e) => (
@@ -877,7 +881,7 @@ export default function MemberPage() {
                     <td style={{ textAlign: "center" }}>{e?.point}</td>
                     <td style={{ textAlign: "center" }}>{e?.bill}</td>
                     <td style={{ textAlign: "center" }}>
-                      {moment(e?.createdAt).format("DD/MM/YYYY")}
+                      {moment(e?.birthday).format("DD/MM/YYYY")}
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <Button
@@ -908,7 +912,7 @@ export default function MemberPage() {
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
-                pageCount={totalPaginationMember} // Replace with the actual number of pages
+                pageCount={totalPaginationMemberBirthday} // Replace with the actual number of pages
                 marginPagesDisplayed={1}
                 pageRangeDisplayed={3}
                 onPageChange={(e) => {

@@ -107,7 +107,7 @@ export default function CheckOutPopup({
       findby += `storeId=${DATA?.storeId}&`;
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data);
+      setMembersData(_data?.data?.data);
     } catch (err) {
       console.error("Error fetching members data", err);
     }

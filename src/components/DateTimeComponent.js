@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-
-export default function DateTimeComponent({ onChange }) {
+import moment from "moment";
+export default function DateTimeComponent({ onChange, value }) {
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
@@ -9,14 +9,28 @@ export default function DateTimeComponent({ onChange }) {
     if (!day) return;
     if (!month) return;
     if (!year) return;
-
-    const date = `${day}/${month}/${year}`;
+    const date = `${year}-${month}-${day}`;
     onChange(date);
-  }, [day,year,month]);
+  }, [day, year, month]);
+
+  useEffect(() => {
+    if (value) {
+      setDay(moment(value).format("D"));
+      setMonth(moment(value).format("MM"));
+      setYear(moment(value).format("YYYY"));
+    }
+  }, [value]);
+
+  // console.log({ day, month, year });
+
   return (
     <div style={{ display: "flex", gap: 10 }}>
-      <select className="form-control" onChange={(e) => setDay(e.target.value)}>
-        <option value="">ວັນ</option>
+      <select
+        className="form-control"
+        onChange={(e) => setDay(e.target.value)}
+        value={day}
+      >
+        <option value="">{day ? day : "ວັນ"}</option>
         {[...new Array(31)].map((e, i) => (
           <option value={i + 1}>{i + 1}</option>
         ))}
@@ -24,8 +38,9 @@ export default function DateTimeComponent({ onChange }) {
       <select
         className="form-control"
         onChange={(e) => setMonth(e.target.value)}
+        value={month}
       >
-        <option value="">ເດືອນ</option>
+        <option value="">{month ? month : "ເດືອນ"}</option>
         {[...new Array(12)].map((e, i) => (
           <option value={i + 1}>{i + 1}</option>
         ))}
@@ -33,8 +48,9 @@ export default function DateTimeComponent({ onChange }) {
       <select
         className="form-control"
         onChange={(e) => setYear(e.target.value)}
+        value={year}
       >
-        <option value="">ປີ</option>
+        <option value="">{year ? year : "ປີ"}</option>
         {[...new Array(150)].map((e, i) => (
           <option value={2024 - i}>{2024 - i}</option>
         ))}

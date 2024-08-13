@@ -1,9 +1,10 @@
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
 import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
-import { useTranslation } from "react-i18next";
-import Swal from "sweetalert2";
+import DateTimeComponent from "../DateTimeComponent";
 
 export default function PopUpMemberEdit({
   open,
@@ -16,35 +17,37 @@ export default function PopUpMemberEdit({
   const [point, setPoint] = useState();
   const [bill, setBill] = useState();
   const [note, setNote] = useState();
-  const [createdAt, setCreatedAt] = useState();
+  const [birthday, setBirthday] = useState();
+  const [formData, setFormData] = useState();
 
   const { t } = useTranslation();
 
   useEffect(() => {
     if (memberData) {
-      setName(memberData.name);
-      setPhone(memberData.phone);
-      setPoint(memberData.point);
-      setBill(memberData.bill);
-      setNote(memberData.note);
-      setCreatedAt(memberData.createdAt);
+      setFormData(memberData);
     }
   }, [memberData]);
 
-  console.log("memberData", memberData);
+  // console.log("birthdary", birthday);
+
+  // console.log("memberData", memberData);
 
   const handleSave = async () => {
     try {
       const { TOKEN } = await getLocalData(); // Assuming you have this function to get the token
-      const updatedData = {
-        name,
-        phone,
-        point,
-        bill,
-        note,
-      };
+      // const updatedData = {
+      //   name,
+      //   phone,
+      //   point,
+      //   bill,
+      //   note,
+      //   birthday: formData,
+      // };
+      const finalData = { ...formData, ...birthday };
 
-      const response = await updateMember(memberData._id, updatedData, TOKEN);
+      // console.log("finalData", finalData);
+
+      const response = await updateMember(memberData._id, finalData, TOKEN);
 
       if (response.error) throw new Error("Cannot update member");
       onUpdate();
@@ -67,6 +70,12 @@ export default function PopUpMemberEdit({
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // console.log("formData", formData);
+
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>ເລືອກໝວດໝູ່</Modal.Header>
@@ -75,8 +84,9 @@ export default function PopUpMemberEdit({
           <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
           <Form.Control
             placeholder="ຊື່ສະມາຊິກ"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData?.name}
+            onChange={handleChange}
+            name="name"
           />
         </div>
         <div className="mb-3">
@@ -87,8 +97,9 @@ export default function PopUpMemberEdit({
               placeholder="XXXX-XXXX"
               aria-describedby="phone-addon1"
               maxLength={8}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={formData?.phone}
+              onChange={handleChange}
+              name="phone"
             />
           </InputGroup>
         </div>
@@ -96,16 +107,31 @@ export default function PopUpMemberEdit({
           <Form.Label>ຄະແນນສະສົມ</Form.Label>
           <Form.Control
             placeholder="ຄະແນນສະສົມ"
-            value={point}
-            onChange={(e) => setPoint(e.target.value)}
+            value={formData?.point}
+            onChange={handleChange}
+            name="point"
+          />
+        </div>
+        <div className="mb-3">
+          <Form.Label>{t("birth_date")}</Form.Label>
+          <DateTimeComponent
+            value={formData?.birthday}
+            name="birthday"
+            onChange={(birthday) => {
+              setBirthday((prev) => ({
+                ...prev,
+                birthday: birthday,
+              }));
+            }}
           />
         </div>
         <div className="mb-3">
           <Form.Label>Note</Form.Label>
           <Form.Control
             placeholder={`${t("note")}`}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
+            value={formData?.note}
+            onChange={handleChange}
+            name="note"
           />
         </div>
         {/* <div className="mb-3">

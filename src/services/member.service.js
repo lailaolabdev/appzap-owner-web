@@ -19,6 +19,15 @@ export const getMembersListTop = async (findBy, TOKEN) => {
     return error;
   }
 };
+export const getMembersListBirthday = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getMemberAllCount = async (storeId, TOKEN) => {
   try {

@@ -386,7 +386,7 @@
   "stoke_report": "ລາຍງານສະຕ໋ອກ",
   "rp_build": "ລາຍງານການພະລິດ",
   "dping": "ກຳລັງພັດທະນາ",
-  "member_report": "ລະງານສະມາຊິກ",
+  "member_report": "ລາຍງານສະມາຊິກ",
   "report_sub": "ສາຂາຍ່ອຍ",
   "export_fail": "Export ບໍ່ສຳເລັດ",
   "sales_info": "ຂໍ້ມູນການຂາຍ",
@@ -816,5 +816,7 @@
   "chose_top": "ເລຶອກການຈັດ Top",
   "report_member_updates_last": "ອັບເດດຄັ້ງລາສຸດ 04:00 (ລາຍງານຈະອັບເດດທຸກໆມື້)",
   "list": "ລາຍການ",
-  "updated": "ອັບເດດສຳເລັດ"
+  "updated": "ອັບເດດສຳເລັດ",
+  "money_amount": "ຈຳນວນເງິນ",
+  "birth_day": "ວັນເດືອນປີເກີດ"
 }
