@@ -122,10 +122,9 @@ export default function MenuList() {
 
           await fetch(
             MENUS +
-            `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
-              : `&categoryId=${filterCategory}`
-
-            }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+              `/?storeId=${_localData?.DATA?.storeId}${
+                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+              }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
             }
@@ -168,10 +167,13 @@ export default function MenuList() {
       setIsLoading(true);
       await fetch(
         MENUS +
-        `/?storeId=${id}${filterName && filterName !== "" ? `&name=${filterName}` : ""}${(categoryId && categoryId !== "All")
-          ? `&categoryId=${categoryId}`
-          : ""
-        }`,
+          `/?storeId=${id}${
+            filterName && filterName !== "" ? `&name=${filterName}` : ""
+          }${
+            categoryId && categoryId !== "All"
+              ? `&categoryId=${categoryId}`
+              : ""
+          }`,
         {
           method: "GET",
         }
@@ -283,7 +285,7 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
         setMenuType("MENU");
         setConnectMenuId("");
-        successAdd(`${t('add_success')}`);
+        successAdd(`${t("add_success")}`);
         values.name = "";
         values.name_en = "";
         values.name_cn = "";
@@ -295,7 +297,7 @@ export default function MenuList() {
         values.unit = "";
       }
     } catch (err) {
-      errorAdd(`${t('add_fail')}`);
+      errorAdd(`${t("add_fail")}`);
     }
   };
   // detele menu
@@ -325,10 +327,10 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
 
         handleClose3();
-        successAdd(`${t('delete_success')}`);
+        successAdd(`${t("delete_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
     }
   };
   // =======>
@@ -375,7 +377,7 @@ export default function MenuList() {
     });
     if (resData?.data) {
       handleClose2();
-      successAdd(`${t('edit_success')}`);
+      successAdd(`${t("edit_success")}`);
     }
   };
   const _updateQtyCategory = async (values) => {
@@ -391,14 +393,14 @@ export default function MenuList() {
     })
       .then(async function () {
         handleClose4();
-        successAdd(`${t('edd_amount_success')}`);
+        successAdd(`${t("edd_amount_success")}`);
         handleClose();
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
       .catch(function (error) {
-        errorAdd(`${t('add_amount_fail')}`);
+        errorAdd(`${t("add_amount_fail")}`);
       });
   };
 
@@ -561,6 +563,10 @@ export default function MenuList() {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
 
+  const _categoryType = () => {
+    navigate(`/settingStore/menu/category-type`);
+  };
+
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
 
   const getCategory = async () => {
@@ -579,8 +585,8 @@ export default function MenuList() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('menu')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("menu")}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey={defaultActiveKey}>
@@ -589,7 +595,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                {t('menu')}
+                {t("menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -605,7 +611,15 @@ export default function MenuList() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t('food_type')}
+                {t("food_type")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category"
+                onClick={() => _categoryType()}
+              >
+                {t("categoryType")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -615,13 +629,13 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>{t('chose_food_type')}</label>
+                <label>{t("chose_food_type")}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
                 >
-                  <option value="All">{t('all')}</option>
+                  <option value="All">{t("all")}</option>
                   {Categorys &&
                     Categorys?.map((data, index) => {
                       return (
@@ -633,10 +647,10 @@ export default function MenuList() {
                 </select>
               </Col>
               <Col md="4">
-                <label>{t('search')}</label>
+                <label>{t("search")}</label>
                 <Form.Control
                   type="text"
-                  placeholder={t('search_food_name')}
+                  placeholder={t("search_food_name")}
                   value={filterName}
                   onChange={(e) => {
                     setFilterName(e.target.value);
@@ -678,7 +692,7 @@ export default function MenuList() {
                   }}
                   onClick={handleShow}
                 >
-                  + {t('add_menu')}
+                  + {t("add_menu")}
                 </Button>
               </Col>
             </Row>
@@ -760,7 +774,20 @@ export default function MenuList() {
                               setDetailMenu({ data, index });
                             }}
                           >
-                            {t('define')}
+                            {t("define")}
+                          </button>
+                        </td>
+
+                        <td>
+                          <button
+                            type="button"
+                            className="menuSetting"
+                            onClick={() => {
+                              setShowOptionSetting(true);
+                              setDetailMenuOption({ data, index });
+                            }}
+                          >
+                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
                           </button>
                         </td>
 
@@ -831,13 +858,13 @@ export default function MenuList() {
           open={showAddMenus}
           onClose={handleCloseAddMenus}
           categoriesRestaurant={categoriesRestaurant}
-        // onSubmit={_confirmeDelete}
+          // onSubmit={_confirmeDelete}
         />
 
         {/* add menu */}
         <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>{t('add_menu')}</Modal.Title>
+            <Modal.Title>{t("add_menu")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -859,22 +886,21 @@ export default function MenuList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = `${t('fill_food_name')}`;
+                errors.name = `${t("fill_food_name")}`;
               }
-
 
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = `${t('fill_price')}`;
+                errors.price = `${t("fill_price")}`;
               }
               if (!values.categoryId) {
-                errors.categoryId = `${t('please_fill')}`;
+                errors.categoryId = `${t("please_fill")}`;
               }
               for (let i = 0; i < dataMenuOption?.length; i++) {
                 if (dataMenuOption[i]?.name === "") {
-                  errors.menuOptionName = `${t('fill_food_name')}`;
+                  errors.menuOptionName = `${t("fill_food_name")}`;
                 }
                 if (!dataMenuOption[i]?.price) {
-                  errors.menuOptionPrice = `${t('fill_price')}`;
+                  errors.menuOptionPrice = `${t("fill_price")}`;
                 }
               }
               return errors;
@@ -907,7 +933,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t('close_open_status')}</label>
+                    <label>{t("close_open_status")}</label>
                     <input
                       type="checkbox"
                       id="isOpened"
@@ -917,13 +943,13 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? `${t('open')}` : `${t('close')}`}
+                      {values?.isOpened ? `${t("open")}` : `${t("close")}`}
                     </label>
                   </div>
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t('sg_menu')}</label>
+                    <label>{t("sg_menu")}</label>
                     <input
                       type="checkbox"
                       id="recommended"
@@ -933,21 +959,21 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? `${t('open')}` : `${t('close')}`}
+                      {values?.recommended ? `${t("open")}` : `${t("close")}`}
                     </label>
                   </div>
                   <Form.Group>
-                    <Form.Label>{t('sequence')}</Form.Label>
+                    <Form.Label>{t("sequence")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder={t('sequence')}
+                      placeholder={t("sequence")}
                       value={values.sort}
                       onChange={handleChange}
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>{t('food_type')}</Form.Label>
+                    <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"
                       name="categoryId"
@@ -957,14 +983,14 @@ export default function MenuList() {
                       style={{
                         border:
                           errors.categoryId &&
-                            touched.categoryId &&
-                            errors.categoryId
+                          touched.categoryId &&
+                          errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
                     >
                       <option selected={true} disabled={true} value="">
-                        {t('chose_food_type')}
+                        {t("chose_food_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -973,21 +999,21 @@ export default function MenuList() {
                   </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>{t('type')}</Form.Label>
+                    <Form.Label>{t("type")}</Form.Label>
                     <Form.Control
                       as="select"
                       name="menuType"
                       onChange={handleChangeMenuType}
                       value={menuType}
                     >
-                      <option value={"MENU"}>{t('menu')}</option>
-                      <option value={"MENUOPTION"}>{t('sub_menu')}</option>
+                      <option value={"MENU"}>{t("menu")}</option>
+                      <option value={"MENUOPTION"}>{t("sub_menu")}</option>
                     </Form.Control>
                   </Form.Group>
 
                   {menuType === "MENUOPTION" && (
                     <Form.Group controlId="exampleForm.ControlSelect1">
-                      <Form.Label>{t('menu_hide')}</Form.Label>
+                      <Form.Label>{t("menu_hide")}</Form.Label>
                       <Form.Control
                         as="select"
                         name="connectMenuId"
@@ -995,7 +1021,7 @@ export default function MenuList() {
                         value={connectMenuId}
                       >
                         <option selected={true} disabled={true} value="">
-                          {t('chose_mune_hide')}
+                          {t("chose_mune_hide")}
                         </option>
                         {connectMenues.map((item, index) => (
                           <option key={index} value={item?._id}>
@@ -1009,14 +1035,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')}</Form.Label>
+                        <Form.Label>{t("food_name")}</Form.Label>
                         <Form.Control
                           type="text"
                           name="name"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name && touched.name && errors.name
@@ -1028,14 +1054,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (en)</Form.Label>
+                        <Form.Label>{t("food_name")} (en)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_en}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_en && touched.name && errors.name_en
@@ -1049,14 +1075,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (cn)</Form.Label>
+                        <Form.Label>{t("food_name")} (cn)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_cn}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_cn && touched.name && errors.name_cn
@@ -1068,14 +1094,14 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (kr)</Form.Label>
+                        <Form.Label>{t("food_name")} (kr)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name_kr}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_kr && touched.name && errors.name_kr
@@ -1087,14 +1113,14 @@ export default function MenuList() {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('price')}</Form.Label>
+                    <Form.Label>{t("price")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values?.price}
-                      placeholder={t('food_name')}
+                      placeholder={t("food_name")}
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -1104,7 +1130,7 @@ export default function MenuList() {
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('order_add')}</Form.Label>
+                    <Form.Label>{t("order_add")}</Form.Label>
                     {dataMenuOption?.length > 0 &&
                       dataMenuOption?.map((item, index) => (
                         <div key={index}>
@@ -1113,7 +1139,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')}</Form.Label>
+                                    <Form.Label>{t("food_name")}</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name"
@@ -1125,14 +1151,16 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                       isInvalid={!item?.name}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (en)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (en)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_en"
@@ -1144,7 +1172,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_en}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1152,7 +1180,9 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (cn)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (cn)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_cn"
@@ -1164,13 +1194,15 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_cn}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (kr)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (kr)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_kr"
@@ -1182,7 +1214,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_kr}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1190,7 +1222,7 @@ export default function MenuList() {
                               <Row>
                                 <Col xs={6}>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('price')}</Form.Label>
+                                    <Form.Label>{t("price")}</Form.Label>
                                     <Form.Control
                                       type="number"
                                       name="price"
@@ -1202,7 +1234,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.price}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                       min="0"
                                       isInvalid={!item?.price ? "required" : ""}
                                     />
@@ -1231,19 +1263,19 @@ export default function MenuList() {
                         }}
                         onClick={() => _addMenuOption()}
                       >
-                        + {t('order_add')}
+                        + {t("order_add")}
                       </Button>
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('note')}</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t('note')}
+                      placeholder={t("note")}
                     />
                   </Form.Group>
                 </Modal.Body>
@@ -1255,7 +1287,7 @@ export default function MenuList() {
                       setDataMenuOption([]);
                     }}
                   >
-                    {t('cancel')}
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -1265,7 +1297,7 @@ export default function MenuList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    {t('save')}
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -1281,7 +1313,7 @@ export default function MenuList() {
           size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t('update-menu')}</Modal.Title>
+            <Modal.Title>{t("update-menu")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -1304,10 +1336,10 @@ export default function MenuList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = `${t('fill_food_name')}`;
+                errors.name = `${t("fill_food_name")}`;
               }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = `${t('fill_price')}`;
+                errors.price = `${t("fill_price")}`;
               }
               return errors;
             }}
@@ -1345,7 +1377,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t('close_open_status')}</label>
+                    <label>{t("close_open_status")}</label>
                     <input
                       type="checkbox"
                       id="isOpened"
@@ -1355,13 +1387,13 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? `${t('open')}` : `${t('close')}`}
+                      {values?.isOpened ? `${t("open")}` : `${t("close")}`}
                     </label>
                   </div>
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t('sg_menu')}</label>
+                    <label>{t("sg_menu")}</label>
                     <input
                       type="checkbox"
                       id="recommended"
@@ -1371,15 +1403,15 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? `${t('open')}` : `${t('close')}`}
+                      {values?.recommended ? `${t("open")}` : `${t("close")}`}
                     </label>
                   </div>
                   <Form.Group>
-                    <Form.Label>{t('sequence')}</Form.Label>
+                    <Form.Label>{t("sequence")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder={t('menu_no')}
+                      placeholder={t("menu_no")}
                       value={values.sort}
                       onChange={handleChange}
                     />
@@ -1394,7 +1426,7 @@ export default function MenuList() {
                       value={values.categoryId}
                     >
                       <option selected={true} disabled={true}>
-                        {t('chose_food_type')}
+                        {t("chose_food_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -1402,21 +1434,21 @@ export default function MenuList() {
                     </Form.Control>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>{t('type')}</Form.Label>
+                    <Form.Label>{t("type")}</Form.Label>
                     <Form.Control
                       as="select"
                       name="menuType"
                       onChange={handleChangeMenuType}
                       value={menuType}
                     >
-                      <option value={"MENU"}>{t('menu')}</option>
-                      <option value={"MENUOPTION"}>{t('sub_menu')}</option>
+                      <option value={"MENU"}>{t("menu")}</option>
+                      <option value={"MENUOPTION"}>{t("sub_menu")}</option>
                     </Form.Control>
                   </Form.Group>
 
                   {menuType === "MENUOPTION" && (
                     <Form.Group controlId="exampleForm.ControlSelect1">
-                      <Form.Label>{t('menu_hide')}</Form.Label>
+                      <Form.Label>{t("menu_hide")}</Form.Label>
                       <Form.Control
                         as="select"
                         name="connectMenuId"
@@ -1424,7 +1456,7 @@ export default function MenuList() {
                         value={connectMenuId}
                       >
                         <option selected={true} disabled={true} value="">
-                          {t('chose_menu_hide')}
+                          {t("chose_menu_hide")}
                         </option>
                         {connectMenues.map((item, index) => (
                           <option key={index} value={item?._id}>
@@ -1437,14 +1469,14 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')}</Form.Label>
+                        <Form.Label>{t("food_name")}</Form.Label>
                         <Form.Control
                           type="text"
                           name="name"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values.name}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name && touched.name && errors.name
@@ -1456,19 +1488,19 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (en)</Form.Label>
+                        <Form.Label>{t("food_name")} (en)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_en}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_en &&
-                                touched.name_en &&
-                                errors.name_en
+                              touched.name_en &&
+                              errors.name_en
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1479,19 +1511,19 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (cn)</Form.Label>
+                        <Form.Label>{t("food_name")} (cn)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_cn}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_cn &&
-                                touched.name_cn &&
-                                errors.name_cn
+                              touched.name_cn &&
+                              errors.name_cn
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1500,19 +1532,19 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t('food_name')} (kr)</Form.Label>
+                        <Form.Label>{t("food_name")} (kr)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
                           onChange={handleChange}
                           onBlur={handleBlur}
                           value={values?.name_kr}
-                          placeholder={t('food_name')}
+                          placeholder={t("food_name")}
                           style={{
                             border:
                               errors.name_kr &&
-                                touched.name_kr &&
-                                errors.name_kr
+                              touched.name_kr &&
+                              errors.name_kr
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1521,14 +1553,14 @@ export default function MenuList() {
                     </Col>
                   </Row>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('price')}</Form.Label>
+                    <Form.Label>{t("price")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.price}
-                      placeholder={t('food_name')}
+                      placeholder={t("food_name")}
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -1538,7 +1570,7 @@ export default function MenuList() {
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('order_add')}</Form.Label>
+                    <Form.Label>{t("order_add")}</Form.Label>
                     {dataUpdateMenuOption?.length > 0 &&
                       dataUpdateMenuOption?.map((item, index) => (
                         <div key={index}>
@@ -1547,7 +1579,7 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')}</Form.Label>
+                                    <Form.Label>{t("food_name")}</Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name"
@@ -1559,14 +1591,16 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                       isInvalid={!item?.name}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (en)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (en)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_en"
@@ -1578,7 +1612,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_en}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1586,7 +1620,9 @@ export default function MenuList() {
                               <Row>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (cn)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (cn)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_cn"
@@ -1598,13 +1634,15 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_cn}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('food_name')} (kr)</Form.Label>
+                                    <Form.Label>
+                                      {t("food_name")} (kr)
+                                    </Form.Label>
                                     <Form.Control
                                       type="text"
                                       name="name_kr"
@@ -1616,7 +1654,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_kr}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1624,7 +1662,7 @@ export default function MenuList() {
                               <Row>
                                 <Col xs={6}>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t('price')}</Form.Label>
+                                    <Form.Label>{t("price")}</Form.Label>
                                     <Form.Control
                                       type="number"
                                       name="price"
@@ -1636,7 +1674,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.price}
-                                      placeholder={t('food_name')}
+                                      placeholder={t("food_name")}
                                       min="0"
                                       isInvalid={!item?.price ? "required" : ""}
                                     />
@@ -1665,25 +1703,25 @@ export default function MenuList() {
                         }}
                         onClick={() => _addUpdateMenuOption()}
                       >
-                        + {t('order_add')}
+                        + {t("order_add")}
                       </Button>
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t('note')}</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t('note')}
+                      placeholder={t("note")}
                     />
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
-                    {t('cancel')}
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -1693,7 +1731,7 @@ export default function MenuList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    {t('save')}
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -1705,7 +1743,7 @@ export default function MenuList() {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <div style={{ textAlign: "center" }}>
-              <div>{t('file_prod_amount')} </div>
+              <div>{t("file_prod_amount")} </div>
               <div style={{ height: 20 }}></div>
               <input
                 type="number"
@@ -1716,14 +1754,14 @@ export default function MenuList() {
           </Modal.Body>
           <Modal.Footer>
             <Button type="button" variant="secondary" onClick={handleClose4}>
-              {t('cancel')}
+              {t("cancel")}
             </Button>
             <Button
               type="button"
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={() => _updateQtyCategory()}
             >
-              {t('approve_add')}
+              {t("approve_add")}
             </Button>
           </Modal.Footer>
         </Modal>

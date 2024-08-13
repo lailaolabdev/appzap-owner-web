@@ -10,6 +10,7 @@ import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Box from "../../components/Box";
 
 export default function Categorylist() {
   const { t } = useTranslation();
@@ -52,13 +53,13 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
       let _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
         END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
         {
-          headers: headers
+          headers: headers,
         }
       );
       if (_resData?.data) {
@@ -75,7 +76,7 @@ export default function Categorylist() {
     let header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
-      Authorization: header.authorization
+      Authorization: header.authorization,
     };
     const resData = await axios({
       method: "POST",
@@ -88,9 +89,9 @@ export default function Categorylist() {
         name_kr: values?.name_kr,
         note: values?.note,
         sort: values?.sort,
-        categoryTypeId: values?.categoryTypeId
+        categoryTypeId: values?.categoryTypeId,
       },
-      headers: headers
+      headers: headers,
     })
       .then(async function (response) {
         setCategorys(response?.data);
@@ -106,7 +107,7 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
       console.log("============>", values);
 
@@ -121,11 +122,11 @@ export default function Categorylist() {
             name_kr: values?.name_kr,
             note: values?.note,
             sort: values?.sort,
-            categoryTypeId: values?.categoryTypeId
-          }
+            categoryTypeId: values?.categoryTypeId,
+          },
         },
         {
-          headers: headers
+          headers: headers,
         }
       );
       if (resData?.data) {
@@ -156,7 +157,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`
+      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
     console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
@@ -167,7 +168,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categoroy-type`
+      url: END_POINT_SEVER + `/v3/categoroy-type`,
     });
     console.log("CATEGORYTYPE: ", _resCategoryType?.data.data);
     setCategorysType(_resCategoryType?.data?.data);
@@ -183,12 +184,16 @@ export default function Categorylist() {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
 
+  const _categoryType = () => {
+    navigate(`/settingStore/menu/category-type`);
+  };
+
   ////New Section Here
 
   const getCate = async (id) => {
     try {
       await fetch(CATEGORY + `/?storeId=${id}`, {
-        method: "GET"
+        method: "GET",
       })
         .then((response) => response.json())
         .then((json) => {
@@ -205,7 +210,7 @@ export default function Categorylist() {
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
-        Authorization: header.authorization
+        Authorization: header.authorization,
       };
 
       await axios({
@@ -214,10 +219,10 @@ export default function Categorylist() {
         data: {
           id: id,
           data: {
-            showForCustomer: !showForCustomer
-          }
+            showForCustomer: !showForCustomer,
+          },
         },
-        headers: headers
+        headers: headers,
       });
 
       let _newData = [...Categorys];
@@ -260,6 +265,14 @@ export default function Categorylist() {
               onClick={() => _category()}
             >
               {t('food_type')}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/category-type"
+              onClick={() => _categoryType()}
+            >
+              {t("categoryType")}
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -352,7 +365,7 @@ export default function Categorylist() {
             name_kr: "",
             note: "",
             sort: "",
-            categoryTypeId: ""
+            categoryTypeId: "",
           }}
           validate={(values) => {
             const errors = {};
@@ -372,7 +385,7 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting
+            isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
@@ -485,7 +498,7 @@ export default function Categorylist() {
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0
+                    border: 0,
                   }}
                   onClick={() => handleSubmit()}
                 >
@@ -505,7 +518,7 @@ export default function Categorylist() {
             name_kr: dataUpdate?.name_kr,
             note: dataUpdate?.note,
             sort: dataUpdate?.sort,
-            categoryTypeId: dataUpdate?.categoryTypeId
+            categoryTypeId: dataUpdate?.categoryTypeId,
           }}
           validate={(values) => {
             const errors = {};
@@ -528,7 +541,7 @@ export default function Categorylist() {
             handleChange,
             handleBlur,
             handleSubmit,
-            isSubmitting
+            isSubmitting,
           }) => (
             <form onSubmit={handleSubmit}>
               <Modal.Header closeButton>
@@ -673,7 +686,7 @@ export default function Categorylist() {
                   style={{
                     backgroundColor: COLOR_APP,
                     color: "#ffff",
-                    border: 0
+                    border: 0,
                   }}
                   onClick={() => handleSubmit()}
                 >
