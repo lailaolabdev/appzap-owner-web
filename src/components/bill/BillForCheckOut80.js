@@ -48,7 +48,8 @@ export default function BillForCheckOut80({
     for (let _data of dataBill?.orderId || []) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
-      _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      _total += _data?.quantity * itemPrice;
     }
     if (dataBill?.discount > 0) {
       if (
@@ -157,7 +158,8 @@ export default function BillForCheckOut80({
           const optionsNames = item?.options?.map(option => `[${option.name}]`).join('') || '';
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
-          const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+          const itemTotal = itemPrice * item?.quantity;
 
           return (
             <div
