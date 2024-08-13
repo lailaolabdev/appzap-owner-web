@@ -78,7 +78,7 @@
     "react-qrcode-logo": "^2.2.1",
     "react-router-dom": "^6.4.3",
     "react-scripts": "^5.0.0",
-    "react-select": "^3.1.0",
+    "react-select": "^3.2.0",
     "react-serialize": "^0.2.1",
     "react-star-ratings": "^2.3.0",
     "react-time-picker": "^6.2.0",

@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer
+  getLocalDataCustomer,
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
@@ -18,7 +18,7 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  taxPercent = 0
+  taxPercent = 0,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -147,10 +147,12 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
-        <div style={{ textAlign: "left" }}>ລຳດັບ </div>
-        <div style={{ textAlign: "center" }}>{t("list")} </div>
-        <div style={{ textAlign: "center" }}>{t("amount")}</div>
-        <div style={{ textAlign: "right" }}>{t("price")}</div>
+        <div style={{ textAlign: "left", width: "5px" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "left", marginLeft: "-20px" }}>
+          {t("list")}{" "}
+        </div>
+        <div style={{ textAlign: "center", width: "5px" }}>{t("amount")}</div>
+        <div style={{ textAlign: "left" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
@@ -166,12 +168,12 @@ export default function BillForCheckOut80({
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12
+                fontSize: 12,
               }}
               key={index}
             >
               <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "center" }}>{item?.name} {optionsNames}</div>
+              <div style={{ textAlign: "left" }}>{item?.name} {optionsNames}</div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
               <div style={{ textAlign: "right" }}>
                 {itemPrice ? moneyCurrency(itemPrice) : "-"}
@@ -323,7 +325,7 @@ export default function BillForCheckOut80({
       <div
         style={{
           display: "flex",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         {" "}
@@ -333,7 +335,7 @@ export default function BillForCheckOut80({
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10
+          padding: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
@@ -358,6 +360,7 @@ const Price = styled.div`
 `;
 const Container = styled.div`
   margin: 10px;
+  padding: 5px;
   width: 100%;
 `;
 const Img = styled.div`

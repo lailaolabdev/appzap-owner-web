@@ -31,7 +31,6 @@ import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 
-
 /**
  * const
  **/
@@ -117,6 +116,7 @@ export default function TableList() {
   };
 
   const { printerCounter, printers } = useStore();
+
   // provider
   const {
     isTableOrderLoading,
@@ -319,7 +319,7 @@ export default function TableList() {
         successAdd(`${t("succes_update_amount")}`);
       }
     } catch (err) {
-      errorAdd(`${t('fail_update_amount')}`);
+      errorAdd(`${t("fail_update_amount")}`);
     }
   };
 
@@ -920,10 +920,10 @@ export default function TableList() {
         }
         await printFlutter(
           {
-              imageBuffer: dataUrl.toDataURL(),
-              ip: _printer?.ip,
-              type: _printer?.type,
-              port: "9100",
+            imageBuffer: dataUrl.toDataURL(),
+            ip: _printer?.ip,
+            type: _printer?.type,
+            port: "9100",
           },
           async () => {
             await axios({
@@ -1039,10 +1039,10 @@ export default function TableList() {
         }
         await printFlutter(
           {
-              imageBuffer: dataUrl.toDataURL(),
-              ip: _printer?.ip,
-              type: _printer?.type,
-              port: "9100",
+            imageBuffer: dataUrl.toDataURL(),
+            ip: _printer?.ip,
+            type: _printer?.type,
+            port: "9100",
           },
           async () => {
             await axios({
@@ -1886,7 +1886,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          {t('cancel_and_send_to_kitchen')}
+                          {t("cancel_and_send_to_kitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
@@ -1912,7 +1912,7 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          {t('update_and_send_to_kitchen')}
+                          {t("update_and_send_to_kitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}

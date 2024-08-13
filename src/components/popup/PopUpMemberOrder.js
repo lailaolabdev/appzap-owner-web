@@ -7,21 +7,18 @@ import {
   Row,
   Col,
   Card,
-  Pagination
+  Pagination,
 } from "react-bootstrap";
 import ReactPaginate from "react-paginate";
 import { FaUser } from "react-icons/fa";
 import { getLocalData } from "../../constants/api";
-import {
-  getMembers,
-  getMemberAllCount,
-} from "../../services/member.service";
+import { getMembers, getMemberAllCount } from "../../services/member.service";
 
 export default function PopUpMemberOrder({
   open,
   onClose,
   onSelectMember,
-  setData
+  setData,
 }) {
   const [membersData, setMembersData] = useState([]);
   const [filterValue, setFilterValue] = useState("");
@@ -41,7 +38,8 @@ export default function PopUpMemberOrder({
       }
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data);
+      setMembersData(_data?.data?.data);
+      setTotalPaginationMember(Math.ceil(_data?.data?.memberCount / limitData));
     } catch (err) {
       console.error("Error fetching members data", err);
     }
@@ -52,7 +50,7 @@ export default function PopUpMemberOrder({
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setTotalPaginationMember(Math.ceil(_data?.count / limitData));
+      // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
   };
 

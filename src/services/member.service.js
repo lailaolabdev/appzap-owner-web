@@ -10,6 +10,24 @@ export const getMembers = async (findBy, TOKEN) => {
     return error;
   }
 };
+export const getMembersListTop = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getMembersListBirthday = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getMemberAllCount = async (storeId, TOKEN) => {
   try {
@@ -24,9 +42,9 @@ export const getMemberAllCount = async (storeId, TOKEN) => {
 export const getMemberBillCount = async (memberId, findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/total-bill?memberId=${memberId}${findBy}`;
-    
+
     const res = await axios.get(url, { headers: TOKEN });
-    
+
     return res.data;
   } catch (error) {
     return { error: true };
@@ -57,7 +75,7 @@ export const addMember = async (data, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/create`;
     const _category = await axios.post(url, data, {
-      headers: TOKEN
+      headers: TOKEN,
     });
     return _category;
   } catch (error) {
@@ -157,7 +175,7 @@ export const updateMember = async (id, data, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/update/${id}`;
     const response = await axios.put(url, data, {
-      headers: TOKEN
+      headers: TOKEN,
     });
     return response.data;
   } catch (error) {

@@ -68,7 +68,7 @@ export default function ConfigPage() {
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
           <Breadcrumb.Item active>POS config</Breadcrumb.Item>
         </Breadcrumb>
         <Box
@@ -88,7 +88,7 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('tax')}
+              {t("tax")}
             </Card.Header>
             <Card.Body>
               <div
@@ -100,7 +100,9 @@ export default function ConfigPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>{t('tax')}: {tax}%</div>
+                <div>
+                  {t("tax")}: {tax}%
+                </div>
                 <div
                   style={{
                     display: "flex",
@@ -110,7 +112,7 @@ export default function ConfigPage() {
                   }}
                 >
                   <Button onClick={() => setPopup({ PopUpEditTax: true })}>
-                    {t('edit')}
+                    {t("edit")}
                   </Button>
                 </div>
               </div>
@@ -131,26 +133,26 @@ export default function ConfigPage() {
             <Card.Body>
               {[
                 {
-                  title: `${t('oppen_smart_menu')}`,
+                  title: `${t("oppen_smart_menu")}`,
                   key: "open",
-                  tooltip: `${t('close_oppen_for_work')}`,
+                  tooltip: `${t("close_oppen_for_work")}`,
                   disabled: true,
                   default: true,
                 },
                 {
-                  title: `${t('oppen_table_first')}`,
+                  title: `${t("oppen_table_first")}`,
                   key: "shouldOpenTableForSelfOrdering",
                   tooltip: "",
                   disabled: true,
                 },
                 {
-                  title: `${t('auto_oppen')}`,
+                  title: `${t("auto_oppen")}`,
                   key: "autoOpenTable",
                   tooltip: "",
                   disabled: true,
                 },
                 {
-                  title: `${t('table_qr')}`,
+                  title: `${t("table_qr")}`,
                   key: "tableQrEveryoneCanSelfOrdering",
                   tooltip: "",
                   disabled: true,
@@ -180,8 +182,8 @@ export default function ConfigPage() {
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
                       {switchState?.[item?.key] || item?.default
-                        ? `${t('oppen')}`
-                        : `${t('close')}`}
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
@@ -213,12 +215,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('stock_system')}
+              {t("stock_system")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('enable_stock')}`,
+                  title: `${t("enable_stock")}`,
                   key: "sang",
                   default: false,
                   disabled: true,
@@ -245,8 +247,8 @@ export default function ConfigPage() {
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
                       {audioSetting?.[item?.key] || item?.default
-                        ? `${t('oppen')}`
-                        : `${t('close')}`}
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
@@ -275,12 +277,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('booking')}
+              {t("booking")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('enable_booking')}`,
+                  title: `${t("enable_booking")}`,
                   key: "fer",
                   disabled: true,
                 },
@@ -305,7 +307,9 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
+                      {audioSetting?.[item?.key]
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
