@@ -444,7 +444,7 @@ export default function CheckOutPopup({
     setTextSearchMember(option.value);
   };
 
-  console.log("textSearchMember", textSearchMember);
+  // console.log("textSearchMember", textSearchMember);
 
   return (
     <Modal
@@ -603,8 +603,12 @@ export default function CheckOutPopup({
                 </InputGroup.Text>
               </InputGroup> */}
               <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
-                <div style={{ width: "30rem" }}>
-                  <Select options={optionsData} onChange={handleSearchInput} />
+                <div style={{ width: "100%" }}>
+                  <Select
+                    placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
                 </div>
                 <div style={{ width: "9rem" }}>
                   <InputGroup.Text>
