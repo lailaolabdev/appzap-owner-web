@@ -711,7 +711,7 @@ export default function MenuList() {
                         <td>{index + 1}</td>
                         <td>{data?.sort ?? 0}</td>
                         <td>
-                          {data?.images.length > 0 ? (
+                          {data?.images?.length > 0 ? (
                             <center>
                               <Image
                                 src={URL_PHOTO_AW3 + data?.images[0]}
@@ -773,7 +773,7 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data.menuOptions.length || 0})
+                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
                           </button>
                         </td>
 
@@ -869,7 +869,7 @@ export default function MenuList() {
               if (!values.categoryId) {
                 errors.categoryId = `${t('please_fill')}`;
               }
-              for (let i = 0; i < dataMenuOption.length; i++) {
+              for (let i = 0; i < dataMenuOption?.length; i++) {
                 if (dataMenuOption[i]?.name === "") {
                   errors.menuOptionName = `${t('fill_food_name')}`;
                 }

@@ -713,6 +713,11 @@ function AddOrder() {
     // setNoteItems(menu);
   };
 
+  const onAddCommentItems = (values) => {
+    setIsPupup(true);
+    setNoteItems(values);
+  };
+
   const onEditCommentItems = (values) => {
     setIsPupup(true);
     setNoteItems(values);
@@ -904,6 +909,9 @@ function AddOrder() {
                       <th style={{ border: "none", textAlign: "center" }}>
                         {t('amount')}
                       </th>
+                      <th style={{ border: "none", textAlign: "right" }}>
+                        {t('order_food')}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -957,7 +965,17 @@ function AddOrder() {
                               </button>
                             </td>
 
-                            {/* <td style={{ padding: 0, textAlign: "right" }}>
+                            <td style={{ padding: 0, textAlign: "right" }}>
+                              {/* <i
+                                onClick={() => onRemoveFromCart(data.id)}
+                                className="fa fa-trash"
+                                aria-hidden="true"
+                                style={{
+                                  color: "#FB6E3B",
+                                  cursor: "pointer",
+                                }}
+                              ></i> */}
+
                               <div
                                 style={{
                                   display: "flex",
@@ -966,32 +984,19 @@ function AddOrder() {
                                   paddingLeft: 10,
                                   paddingTop: 5,
                                 }}
-                              > */}
-
-                                  {/* <div
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: 25,
-                                      color: "gray",
-                                    }}
-                                    onClick={() => onEditOrder(data)}
-                                  >
-                                    <RiChatNewFill />
-                                  </div> */}
-
-                                {/* {data?.note === "" ? (
+                              >
+                                {data?.note === "" ? (
                                   <div
                                     style={{
                                       cursor: "pointer",
                                       fontSize: 25,
                                       color: "gray",
                                     }}
-                                    onClick={() => onEditOrder(data)}
+                                    onClick={() => onAddCommentItems(data)}
                                   >
                                     <RiChatNewFill />
                                   </div>
-                                ) 
-                                : (
+                                ) : (
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -1002,9 +1007,9 @@ function AddOrder() {
                                   >
                                     <MdMarkChatRead />
                                   </div>
-                                )} */}
+                                )}
 
-                                {/* <div
+                                <div
                                   style={{
                                     cursor: "pointer",
                                     fontSize: 25,
@@ -1013,9 +1018,9 @@ function AddOrder() {
                                   onClick={() => onConfirmRemoveItem(data)}
                                 >
                                   <MdDelete />
-                                </div> */}
-                              {/* </div>
-                            </td> */}
+                                </div>
+                              </div>
+                            </td>
                           </tr>
                         );
                       })}
