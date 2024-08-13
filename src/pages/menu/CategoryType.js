@@ -1,16 +1,20 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import Box from "../../components/Box";
+import axios from "axios";
 import { BODY, COLOR_APP } from "../../constants";
 import { Breadcrumb, Nav, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import PopUpAddCategoryType from "../../components/popup/PopUpAddCategoryType";
 
 export default function CategoryType() {
   const { t } = useTranslation();
   const [popup, setPopup] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const params = useParams();
+  const [categoryTypes, setCategoryTypes] = useState([]);
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
@@ -19,6 +23,40 @@ export default function CategoryType() {
   };
   const _categoryType = () => {
     navigate(`/settingStore/menu/category-type`);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const _localData = await getLocalData();
+      if (_localData) {
+        fetchCategoryTypes(_localData?.DATA?.storeId);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const fetchCategoryTypes = async () => {
+    setIsLoading(true);
+    const _resCategory = await axios({
+      method: "get",
+      url: END_POINT_SEVER + `/v3/categoroy-type`,
+    });
+    console.log("-----", _resCategory?.data.data);
+    setCategoryTypes(_resCategory?.data.data);
+    setIsLoading(false);
+  };
+
+  const createCategoryType = async (values) => {
+    setIsLoading(true);
+    try {
+      await axios.post(`${END_POINT_SEVER}/v3/categoroy-type`, values);
+      const _localData = await getLocalData();
+      fetchCategoryTypes(_localData?.DATA?.storeId);
+    } catch (error) {
+      console.error("Error creating category type:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,15 +102,19 @@ export default function CategoryType() {
         <div>
           <div className="col-sm-12">
             <table className="table table-hover">
-              <thead className="thead-light">
+              <thead>
                 <tr>
-                  <th scope="col">12</th>
+                  <th scope="col">{t("no")}</th>
+                  <th scope="col">ຊື່ໝວດອາຫານ</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                </tr>
+                {categoryTypes.map((categoryType, index) => (
+                  <tr key={categoryType.id}>
+                    <td>{index + 1}</td>
+                    <td>{categoryType.name}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -81,6 +123,7 @@ export default function CategoryType() {
       <PopUpAddCategoryType
         open={popup?.popUpAddCategoryType}
         onClose={() => setPopup()}
+        onSubmit={createCategoryType}
       />
     </div>
   );
