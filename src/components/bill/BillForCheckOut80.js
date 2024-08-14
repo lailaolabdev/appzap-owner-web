@@ -267,13 +267,14 @@ export default function BillForCheckOut80({
 
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ margin: "10px" }}></div>
-      <div style={{ fontSize: 12, display: "flex", justifyContent: "center"}}>
-        {t("exchangeRate")}=
+      
+      <div style={{ fontSize: 12, textAlign: 'center' }}>
+        <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
-          <div key={index} style={{ marginLeft: 2 }}>
+          <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.buy)}
             {index + 1 < currencyData?.length ? <span style={{ marginLeft: 10, marginRight: 10 }}>|</span> : ''}
-          </div>
+          </span>
         ))}
       </div>
       {/* <Price>
