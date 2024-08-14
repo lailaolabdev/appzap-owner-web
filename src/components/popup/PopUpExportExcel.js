@@ -47,8 +47,9 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
   const exportTopTen = async () => {
     setPopup({ printReportSale: true });
+    let listTop = storeDetail.limitData ? storeDetail.limitData : 10;
     try {
-      const findBy = `&skip=0&limit=${storeDetail.limitData}`;
+      const findBy = `&skip=0&limit=${listTop}`;
       const url =
         END_POINT_EXPORT +
         "/export/member?storeId=" +
