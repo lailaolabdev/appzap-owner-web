@@ -235,7 +235,7 @@ export default function BillForCheckOut80({
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>
+            <div style={{ textAlign: "right", fontSize: 16, fontWeight: 'bold' }}>
               {moneyCurrency(totalAfterDiscount + taxAmount)}
             </div>
           </Col>
