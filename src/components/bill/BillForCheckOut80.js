@@ -262,8 +262,8 @@ export default function BillForCheckOut80({
         {t("exchangeRate")}=
         {currencyData?.map((item, index) => (
           <div key={index} style={{ marginLeft: 2 }}>
-            {item?.currencyCode}: {item?.buy}
-            {index + 1 < currencyData?.length ? ' | ' : ''}
+            {item?.currencyCode}: {moneyCurrency(item?.buy)}
+            {index + 1 < currencyData?.length ? <span style={{ marginLeft: 10, marginRight: 10 }}>|</span> : ''}
           </div>
         ))}
       </div>

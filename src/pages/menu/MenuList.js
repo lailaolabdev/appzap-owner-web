@@ -792,19 +792,6 @@ export default function MenuList() {
                         </td>
 
                         <td>
-                          <button
-                            type="button"
-                            className="menuSetting"
-                            onClick={() => {
-                              setShowOptionSetting(true);
-                              setDetailMenuOption({ data, index });
-                            }}
-                          >
-                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
-                          </button>
-                        </td>
-
-                        <td>
                           <FontAwesomeIcon
                             icon={faEdit}
                             onClick={() => handleShow2(data)}
