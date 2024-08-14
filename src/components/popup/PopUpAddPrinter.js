@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import { useTranslation } from "react-i18next";
 import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store/useStore";
-import { useTranslation } from "react-i18next";
 
 export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
   const { t } = useTranslation();
