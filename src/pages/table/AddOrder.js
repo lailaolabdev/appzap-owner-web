@@ -7,6 +7,7 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
+import { printItems } from './printItems';
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
@@ -23,6 +24,9 @@ import {
   USB_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
+  NOCUT_ETHERNET_PRINTER_PORT,
+  NOCUT_BLUETOOTH_PRINTER_PORT,
+  NOCUT_USB_PRINTER_PORT
 } from "../../constants/index";
 
 import {
@@ -43,6 +47,8 @@ import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
+
+import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
@@ -81,6 +87,15 @@ function AddOrder() {
 
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
   const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] = useState(0);
+
+  const [combinedBillRefs, setCombinedBillRefs] = useState({});
+  const [groupedItems, setGroupedItems] = useState({});
+
+
+
+
+
+
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -171,6 +186,10 @@ function AddOrder() {
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
+
+
+
+
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
     billForCher80.current = Array(arrLength)
@@ -183,6 +202,10 @@ function AddOrder() {
       .fill()
       .map((_, i) => billForCher58?.current[i]);
   }
+
+
+
+
   const onPrintForCher = async () => {
     const orderSelect = selectedMenu;
     let _index = 0;
@@ -283,6 +306,36 @@ function AddOrder() {
       _index++;
     }
   };
+
+  /**
+   * Group Items By Printer
+   */
+  useEffect(() => {
+    const refs = {};
+    const grouped = groupItemsByPrinter(selectedMenu);
+    // Create refs for each printer IP
+    Object.keys(grouped).forEach((printerIp) => {
+      refs[printerIp] = React.createRef();
+    });
+    console.log("refs: ", refs)
+    setCombinedBillRefs(refs);
+    setGroupedItems(grouped);
+  }, [selectedMenu]);
+  
+  // Function to group items by printer
+  const groupItemsByPrinter = (items) => {
+    return items.reduce((groups, item) => {
+      const printer = printers.find((e) => e?._id === item.printer);
+      const printerIp = printer?.ip || "unknown";
+      if (!groups[printerIp]) {
+        groups[printerIp] = [];
+      }
+      groups[printerIp].push(item);
+      return groups;
+    }, {});
+  };
+  
+
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -581,6 +634,7 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
+    console.log({data, header, isPrinted})
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -625,15 +679,30 @@ function AddOrder() {
               showConfirmButton: false,
               timer: 1800,
             });
+
+            // Send print command
             if (isPrinted) {
-              //  print
-              onPrintForCher().then(() => {
-                onSelectTable(selectedTable);
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-              });
-            } else {
+              const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+            
+              if (hasNoCut) {
+                // Print with no cut
+                printItems(groupedItems, combinedBillRefs, printers).then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                  );
+                });
+              } else {
+                // Print with cut
+                onPrintForCher().then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                  );
+                });
+              }
+            }
+             else {
               onSelectTable(selectedTable);
               navigate(
                 `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
@@ -768,6 +837,8 @@ function AddOrder() {
   };
 
   const { t } = useTranslation();
+
+
 
   return (
     <div>
@@ -1101,6 +1172,8 @@ function AddOrder() {
           </div>
         </div>
       </div>
+
+      {/* Bill Print for each item (Cut) */}
       {selectedMenu?.map((val, i) => {
         return (
           <div
@@ -1139,6 +1212,52 @@ function AddOrder() {
           </div>
         );
       })}
+
+        {/* Render the combined bill for 80mm */}
+        <div>
+          {Object.entries(groupedItems).map(([printerIp, items]) => (
+            <div key={printerIp}>
+              <div
+                style={{
+                  width: "80mm",
+                  paddingRight: "20px",
+                }}
+                ref={combinedBillRefs[printerIp]}
+              >
+                <CombinedBillForChefNoCut
+                  storeDetail={storeDetail}
+                  selectedTable={selectedTable}
+                  selectedMenu={items}
+                  table={{ tableId: { name: selectedTable?.tableName } }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+
+
+        {/* Render the combined bill for 58mm (if needed)
+        <div>
+          {Object.entries(groupedItems).map(([printerIp, items]) => (
+            <div key={printerIp}>
+              <div
+                style={{
+                  width: "58mm",
+                  paddingRight: "20px",
+                }}
+                ref={combinedBillRefs[printerIp]}
+              >
+                <CombinedBillForChefNoCut
+                  storeDetail={storeDetail}
+                  selectedTable={selectedTable}
+                  selectedMenu={items}
+                  table={{ tableId: { name: selectedTable?.tableName } }}
+                />
+              </div>
+            </div>
+          ))}
+        </div> */}
 
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>

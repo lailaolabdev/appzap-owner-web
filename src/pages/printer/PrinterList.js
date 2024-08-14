@@ -32,11 +32,13 @@ export default function PrinterList() {
 
   // function
   const handleAddPrinter = async (value) => {
+    
     const data = await addPrinter(value);
     getPrintersState();
     setPopup();
   };
   const handleEditPrinter = async (value) => {
+    console.log("value edit printer: ", value)
     const data = await updatePrinter(value, selectPrinter?._id);
     getPrintersState();
     setPopup();
