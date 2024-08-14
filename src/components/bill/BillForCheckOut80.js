@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer
+  getLocalDataCustomer,
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
@@ -18,7 +18,7 @@ export default function BillForCheckOut80({
   storeDetail,
   selectedTable,
   dataBill,
-  taxPercent = 0
+  taxPercent = 0,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -29,12 +29,15 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
+  console.log("storeDetail", storeDetail);
+  console.log("dataBill", dataBill);
+
   // useEffect
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
-    console.log("currencyData: ", currencyData);
+    // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
+    // console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent]);
 
   useEffect(() => {
@@ -93,14 +96,20 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
-      console.log("base64:==>", { base64 });
+      // console.log("base64:==>", { base64 });
       setBase64Image(base64);
     });
   }, [imageUrl2]);
 
   return (
     <Container>
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         {base64Image ? (
           <Image
             style={{
@@ -148,9 +157,9 @@ export default function BillForCheckOut80({
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
         <div style={{ textAlign: "left" }}>ລຳດັບ </div>
-        <div style={{ textAlign: "center" }}>{t("list")} </div>
+        <div style={{ textAlign: "left" }}>{t("list")}</div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
-        <div style={{ textAlign: "right" }}>{t("price")}</div>
+        <div style={{ textAlign: "left" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
@@ -166,14 +175,14 @@ export default function BillForCheckOut80({
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12
+                fontSize: 12,
               }}
               key={index}
             >
               <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "center" }}>{item?.name} {optionsNames}</div>
+              <div style={{ textAlign: "left" }}>{item?.name} {optionsNames}</div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-              <div style={{ textAlign: "right" }}>
+              <div style={{ textAlign: "left" }}>
                 {itemPrice ? moneyCurrency(itemPrice) : "-"}
               </div>
               <div style={{ textAlign: "right" }}>
@@ -184,123 +193,90 @@ export default function BillForCheckOut80({
         })}
       </Order>
       <div style={{ height: 10 }}></div>
-      <hr style={{ border: "1px solid #000", margin: 0 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
-        <div>
+        <Row>
+          <Col xs={8}>
+            <div style={{ textAlign: "right" }}>{t("total")} ({storeDetail?.firstCurrency}): </div>
+          </Col>
+          <Col>
+            <div style={{ textAlign: "right" }}>
+              {moneyCurrency(total)}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={8}>
+            <div style={{ textAlign: "right" }}>
+              {t("discount")}{' '}
+              ({dataBill?.discountType == "MONEY" ||
+              dataBill?.discountType == "LAK"
+                ? storeDetail?.firstCurrency
+                : "%"}):
+            </div>
+          </Col>
+          <Col>
+            <div style={{ textAlign: "right" }}>
+              {dataBill?.discount}
+            </div>
+          </Col>
+        </Row>
+        {dataBill?.memberName ? (
           <Row>
-            <Col></Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{t("total")}: </div>
+            <Col xs={8}>
+              <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                {dataBill?.memberName} ( {dataBill?.memberPhone} )
               </div>
             </Col>
           </Row>
-          <div hidden={taxAmount <= 0}>
-            <Row>
-              <Col sm={8}>
-                <div style={{ textAlign: "right" }}>
-                  {t("total")} + {t("vat")} {taxPercent}%:{" "}
-                </div>
-              </Col>
-              <Col sm={4}>
-                <div style={{ textAlign: "right", fontSize: 13.5 }}>
-                  {moneyCurrency(total + taxAmount)}{" "}
-                  {storeDetail?.firstCurrency}
-                </div>
-              </Col>
-            </Row>
-          </div>
-          {currencyData?.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between"
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center"
-                }}
-              >
-                {t("total")} + {t("vat")} {taxPercent}% ({item?.currencyCode}
-                ):
-              </div>
-              <div
-                style={{
-                  width: "60%",
-                  display: "flex",
-                  justifyContent: "end",
-                  alignItems: "center"
-                }}
-              >
-                {moneyCurrency((total + taxAmount) / item?.sell)}
-              </div>
-            </div>
-          ))}
-
-          <div>
-            <Row>
-              <Col></Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>{t("discount")}:</div>
-              </Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>
-                  {dataBill?.discount}{" "}
-                  {dataBill?.discountType == "MONEY" ||
-                  dataBill?.discountType == "LAK"
-                    ? storeDetail?.firstCurrency
-                    : "%"}
-                </div>
-              </Col>
-            </Row>
-          </div>
-          <div>
-            <Row>
-              <Col></Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
-              </Col>
-              <Col>
-                <div style={{ textAlign: "right" }}>
-                  {dataBill?.memberName} ( {dataBill?.memberPhone} )
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </div>
+          ) : ('')
+        }
       </div>
-      <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ margin: "10px" }}></div>
-      <Price>
-        <div style={{ flexGrow: 1 }}></div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <h6>
-            {t("aPriceHasToPay")}{" "}
-            {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
-            {storeDetail?.firstCurrency}
-          </h6>
-        </div>
-      </Price>
-      <Price>
-        <div style={{ flexGrow: 1, display: "flex", gap: 10 }}></div>
-        <div style={{ fontSize: 12 }}>
-          {currencyData?.map((item, index) => (
-            <div key={index}>
-              {t("exchangeRate")} ({item?.currencyCode}): {item?.buy}
+      <div style={{ fontSize: 14, marginTop: 20 }}>
+        <Row>
+          <Col xs={8}>
+            <div style={{ textAlign: "right", fontSize: 16, fontWeight: 'bold' }}>
+              {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
+              {t("total")} + {t("vat")} {taxPercent}%{" "}{storeDetail?.firstCurrency}:
             </div>
-          ))}
-        </div>
-      </Price>
-      <Price>
+          </Col>
+          <Col>
+            <div style={{ textAlign: "right", fontSize: 16, fontWeight: 'bold' }}>
+              {moneyCurrency(totalAfterDiscount + taxAmount)}
+            </div>
+          </Col>
+        </Row>
+        {currencyData?.map((item, index) => (
+          <Row key={index}>
+            <Col xs={8}>
+              <div style={{ textAlign: "right" }}>
+                {item?.currencyCode}:
+              </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency((total + taxAmount) / item?.buy)}
+              </div>
+            </Col>
+          </Row>
+        ))}
+      </div>
+
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
+      <div style={{ margin: "10px" }}></div>
+      <div style={{ fontSize: 12, display: "flex", justifyContent: "center"}}>
+        {t("exchangeRate")}=
+        {currencyData?.map((item, index) => (
+          <div key={index} style={{ marginLeft: 2 }}>
+            {item?.currencyCode}: {moneyCurrency(item?.buy)}
+            {index + 1 < currencyData?.length ? <span style={{ marginLeft: 10, marginRight: 10 }}>|</span> : ''}
+          </div>
+        ))}
+      </div>
+      {/* <Price>
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
           <div>
@@ -319,21 +295,21 @@ export default function BillForCheckOut80({
             {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
           </div>
         </div>
-      </Price>
-      <div
+      </Price> */}
+      {/* <div
         style={{
           display: "flex",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         {" "}
         ໂອນເງີນສຳລະ{" "}
-      </div>
+      </div> */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10
+          padding: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
