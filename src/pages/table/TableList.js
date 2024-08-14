@@ -197,6 +197,7 @@ export default function TableList() {
   useEffect(() => {
     getUserData();
   }, []);
+
   const getUserData = async () => {
     // setIsLoading(true);
     await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
@@ -479,6 +480,8 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
+  console.log("bill80Ref",bill80Ref)
+
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
     try {
@@ -498,6 +501,8 @@ export default function TableList() {
       console.log({ err });
     }
   };
+
+
 
   const onPrintBill = async () => {
     try {
@@ -588,6 +593,9 @@ export default function TableList() {
       return err;
     }
   };
+
+
+
   async function delay(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
@@ -598,6 +606,7 @@ export default function TableList() {
       onPrintQR(codeShortLink);
     }
   }, [codeShortLink]);
+
   const onPrintQR = async (tokenQR) => {
     try {
       if (!tokenQR) {
@@ -698,6 +707,7 @@ export default function TableList() {
       });
     }
   };
+
   const onPrintDrawer = async () => {
     try {
       let urlForPrinter = "";
@@ -741,6 +751,7 @@ export default function TableList() {
       });
     }
   };
+
   // const onPrintQR = async (tokenQR) => {
   //   try {
   //     if (!tokenQR) {
@@ -2241,6 +2252,7 @@ export default function TableList() {
           setPopup({ CheckOutType: true });
         }}
       />
+
       <PopUpPin
         open={popup?.PopUpPin}
         onClose={() => setPopup()}
@@ -2544,6 +2556,7 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <PopUpTranferTable
         open={popup?.PopUpTranferTable}
         onClose={() => setPopup({ PopUpTranferTable: false })}
@@ -2575,14 +2588,14 @@ const ButtonCustom = ({ children, ...etc }) => {
 const TableCustom = styled("table")({
   width: "100%",
   fontSize: 12,
-  ["th,td"]: {
+  "th,td": {
     padding: 0,
   },
-  ["th:first-child"]: {
+  "th:first-child": {
     maxWidth: 40,
     width: 40,
   },
-  ["td:first-child"]: {
+  "td:first-child": {
     maxWidth: 40,
     width: 40,
   },

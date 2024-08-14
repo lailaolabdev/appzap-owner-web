@@ -222,9 +222,9 @@ function AddOrder() {
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
-        console.log("dataUrl=5555==========>", dataUrl)
+        console.log("dataUrl=5555==========>", dataUrl);
         const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("_file===========>", _file)
+        console.log("_file===========>", _file);
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
@@ -289,7 +289,6 @@ function AddOrder() {
     // const ADMIN = profile;
     const _localJson = JSON.parse(ADMIN);
     setUserData(_localJson);
-
     const fetchData = async () => {
       const _localData = await getLocalData();
       if (_localData) {
@@ -300,6 +299,7 @@ function AddOrder() {
     fetchData();
     // getcurrency();
   }, []);
+
   useEffect(() => {
     // TODO: check selectTable
     if (!selectedTable) {
@@ -444,8 +444,9 @@ function AddOrder() {
     setIsLoading(true);
     await fetch(
       MENUS +
-      `?storeId=${id}&${selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-      }`,
+        `?storeId=${id}&${
+          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
+        }`,
       {
         method: "GET",
       }
@@ -576,13 +577,12 @@ function AddOrder() {
       }
     }
     setSelectedMenu([...selectedMenuCopied]);
-    setIsRemoveItem(false)
+    setIsRemoveItem(false);
   };
 
   const createOrder = async (data, header, isPrinted) => {
     try {
       const _storeId = userData?.data?.storeId;
-
       let findby = "?";
       findby += `storeId=${_storeId}`;
       findby += `&code=${code}`;
@@ -592,7 +592,7 @@ function AddOrder() {
       if (!_billId) {
         Swal.fire({
           icon: "error",
-          title: `${t('not_success')}`,
+          title: `${t("not_success")}`,
           showConfirmButton: false,
           timer: 1800,
         });
@@ -621,7 +621,7 @@ function AddOrder() {
           if (response?.data) {
             Swal.fire({
               icon: "success",
-              title: `${t('add_order_success')}`,
+              title: `${t("add_order_success")}`,
               showConfirmButton: false,
               timer: 1800,
             });
@@ -644,7 +644,7 @@ function AddOrder() {
         .catch((error) => {
           Swal.fire({
             icon: "warning",
-            title: `${t('food_not_enouch')}`,
+            title: `${t("food_not_enouch")}`,
             showConfirmButton: false,
             timer: 1800,
           });
@@ -654,7 +654,7 @@ function AddOrder() {
       console.log("error", error);
       Swal.fire({
         icon: "error",
-        title: `${t('not_success')}`,
+        title: `${t("not_success")}`,
         showConfirmButton: false,
         timer: 1800,
       });
@@ -668,7 +668,7 @@ function AddOrder() {
       if (selectedMenu.length === 0) {
         Swal.fire({
           icon: "warning",
-          title: `${t('please_chose_order_first')}`,
+          title: `${t("please_chose_order_first")}`,
           showConfirmButton: false,
           timer: 1800,
         });
@@ -793,12 +793,12 @@ function AddOrder() {
             }}
           >
             <div>
-              <label>{t('chose_food_type')}</label>
+              <label>{t("chose_food_type")}</label>
               <select
                 className="form-control"
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <option value="All">{t('all')}</option>
+                <option value="All">{t("all")}</option>
                 {Categorys &&
                   Categorys?.map((data, index) => {
                     return (
@@ -810,9 +810,9 @@ function AddOrder() {
               </select>
             </div>
             <div>
-              <label>{t('search')}</label>
+              <label>{t("search")}</label>
               <input
-                placeholder={t('search')}
+                placeholder={t("search")}
                 className="form-control"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -875,7 +875,9 @@ function AddOrder() {
                           )} */}
                         </span>
                         <br />
-                        <span>{t('amount_exist')} : {data?.quantity}</span>
+                        <span>
+                          {t("amount_exist")} : {data?.quantity}
+                        </span>
                       </div>
                     </div>
                   );
@@ -904,10 +906,10 @@ function AddOrder() {
                     <tr style={{ fontSize: "bold", border: "none" }}>
                       <th style={{ border: "none" }}>#</th>
                       <th style={{ border: "none", textAlign: "left" }}>
-                        {t('menu_name')}
+                        {t("menu_name")}
                       </th>
                       <th style={{ border: "none", textAlign: "center" }}>
-                        {t('amount')}
+                        {t("amount")}
                       </th>
                       <th style={{ border: "none", textAlign: "right" }}>
                         {t('order_food')}
@@ -939,7 +941,7 @@ function AddOrder() {
                                 flexDirection: "row",
                                 justifyContent: "space-around",
                                 marginTop: "-.05em",
-                                alignItems: 'center'
+                                alignItems: "center",
                               }}
                             >
                               <button
@@ -952,7 +954,9 @@ function AddOrder() {
                               >
                                 -
                               </button>
-                              <p style={{ minWidth: 30, maxWidth: 50 }}>{data.quantity}</p>
+                              <p style={{ minWidth: 30, maxWidth: 50 }}>
+                                {data.quantity}
+                              </p>
                               <button
                                 style={{
                                   color: "red",
@@ -1044,7 +1048,7 @@ function AddOrder() {
                       )
                     }
                   >
-                    {t('cancel')}
+                    {t("cancel")}
                   </Button>
                   <Button
                     variant="light"
@@ -1062,7 +1066,7 @@ function AddOrder() {
                       onSubmit(false);
                     }}
                   >
-                    {t('order_food')}
+                    {t("order_food")}
                   </Button>
                 </div>
                 <div style={{ height: 10 }} />
@@ -1085,7 +1089,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t('order_and_send_to_kitchen')} +{" "}
+                    {t("order_and_send_to_kitchen")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}
@@ -1214,8 +1218,8 @@ function AddOrder() {
           <Form.Group>
             <Form.Label>
               {noteItems?.note === ""
-                ? `${t('commend_how_is_food')}`
-                : `${t('edit_commend')}`}
+                ? `${t("commend_how_is_food")}`
+                : `${t("edit_commend")}`}
             </Form.Label>
             <Form.Control
               ref={noteItems?.note === "" ? inputRef : null}
@@ -1227,7 +1231,7 @@ function AddOrder() {
                   ? setAddComments(e.target.value)
                   : setEditComments(e.target.value)
               }
-              placeholder={t('fill_desc')}
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>
@@ -1238,16 +1242,16 @@ function AddOrder() {
                 className="w-100 p-2"
                 onClick={handleUpdateCommentInCart}
               >
-                {t('delete_all')}
+                {t("delete_all")}
               </Button>
             )}
             <Button className="w-100 p-2" onClick={handleAddCommentInCart}>
               {noteItems?.note !== "" ? (
-                `${t('edit')}`
+                `${t("edit")}`
               ) : (
                 <>
                   <MdAdd style={{ fontSize: 28 }} />
-                  {t('add_new')}
+                  {t("add_new")}
                 </>
               )}
             </Button>

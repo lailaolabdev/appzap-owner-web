@@ -29,12 +29,15 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
+  console.log("storeDetail", storeDetail);
+  console.log("dataBill", dataBill);
+
   // useEffect
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
-    console.log("currencyData: ", currencyData);
+    // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
+    // console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent]);
 
   useEffect(() => {
@@ -93,14 +96,20 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
-      console.log("base64:==>", { base64 });
+      // console.log("base64:==>", { base64 });
       setBase64Image(base64);
     });
   }, [imageUrl2]);
 
   return (
     <Container>
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
         {base64Image ? (
           <Image
             style={{

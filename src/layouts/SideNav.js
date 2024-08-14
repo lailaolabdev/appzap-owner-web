@@ -26,6 +26,7 @@ import {
   faBox,
   faBoxes,
   faLayerGroup,
+  faStoreAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -75,6 +76,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const { t } = useTranslation();
   const { profile } = useStore();
   const { user } = useStore();
+
   const itemList = [
     {
       title: `${t('table_status')}`,
@@ -99,6 +101,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   typeStore: "",
     //   system: "reportManagement",
     // },
+    {
+      title: `${t('isCafe')}`,
+      key: "home-cafe",
+      icon: faStoreAlt,
+      typeStore: storeDetail?.isRestuarant,
+      hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
+    },
     {
       title: `${t('paid_manage')}`,
       key: "expends",
@@ -130,6 +140,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   icon: faUser,
     //   system: "orderManagement",
     // },
+
     {
       title: `${t('menu_manage')}`,
       key: "menu",
@@ -138,6 +149,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
+
     // {
     //   title: "ລາຍງານ (ໃໝ່)",
     //   key: "reports/sales-report",
@@ -171,7 +183,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   hidden: !storeDetail?.hasPOS,
     //   system: "settingManagement",
     // },
-  ];
+  ].filter((e) => e.title) // Filter out items with empty title
+
+  .filter((e) => {
+    const verify = role(profile?.data?.role, profile?.data);
+    return verify?.[e?.system] ?? false;
+  })
+  .filter((e) => !e?.hidden)
+  .filter((e) =>e.typeStore != "GENERAL")
+
   const itemReports = [
     {
       title: `${t('statistic_money')}`,
@@ -196,7 +216,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     })
     .filter((e) => !e?.hidden);
 
-
   const settingNavItem = [
     {
       title: `${t('shop_setting')}`,
@@ -220,6 +239,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
+
 
   const listForRole = itemList.filter((e) => {
     const verify = role(profile?.data?.role, profile?.data);
