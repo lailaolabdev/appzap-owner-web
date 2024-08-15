@@ -294,7 +294,6 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      console.log("_resBill?.data:------>", _resBill?.data);
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -1219,7 +1218,6 @@ export default function TableList() {
     // getOrderItemsStore(CANCEL_STATUS);
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
-    console.log("selectedTable:==8888=>", selectedTable);
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -1261,7 +1259,6 @@ export default function TableList() {
       // getOrderItemsStore(CANCEL_STATUS);
       const storeId = storeDetail?._id;
       // let previousStatus = orderItems[0].status;
-      console.log("selectedTable:==8888=>", selectedTable);
       let menuId;
       let _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked)
@@ -1347,7 +1344,6 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      console.log({_data})
       _total += (_data?.price +
         (_data?.totalOptionPrice ?? 0)) *
         _data?.quantity
@@ -2427,7 +2423,6 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                console.log("cancle_order_and_print")
                 handleUpdateOrderStatusAndCallback(
                   "CANCELED",
                   async () => {

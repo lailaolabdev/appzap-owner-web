@@ -66,9 +66,6 @@ export default function CheckOutPopup({
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
-  // val
-  // console.log("tableData:=======abc======>", tableData);
-
   useEffect(() => {
     setMemberData();
     if (textSearchMember.length > 0) {
@@ -123,9 +120,6 @@ export default function CheckOutPopup({
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBill = totalBillDefualt + taxAmount;
-
-  console.log({totalBillDefualt, taxAmount, totalBill})
-  
 
   useEffect(() => {
     if (!open) return;
@@ -253,13 +247,14 @@ export default function CheckOutPopup({
         getTableDataStore();
         setCashCurrency();
         setTab("cash");
-        setCash();
         setSelectCurrency("LAK");
-        setRateCurrency(1);
-        setTransfer();
         setSelectInput("inputCash");
+        setForcus("CASH");
+        setRateCurrency(1);
         setHasCRM(false);
         setTextSearchMember("");
+        setCash();
+        setTransfer();
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
@@ -274,6 +269,7 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
+  console.log('transfer', transfer)
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();
@@ -331,9 +327,6 @@ export default function CheckOutPopup({
       setCanCheckOut(true);
     } else if (forcus == "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      console.log(_sum);
-      console.log(transfer);
-      console.log(cash);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
