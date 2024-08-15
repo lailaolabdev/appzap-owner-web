@@ -29,9 +29,6 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  console.log("storeDetail", storeDetail);
-  console.log("dataBill", dataBill);
-
   // useEffect
   useEffect(() => {
     _calculateTotal();

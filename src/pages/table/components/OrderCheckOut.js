@@ -28,10 +28,6 @@ const OrderCheckOut = ({
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
 
-  console.log("storeDetail:---->", storeDetail, staffData?.users);
-
-  console.log("data.orderId: ", data.orderId)
-
   useEffect(() => {
     _calculateTotal();
   }, [data, data?.orderId]);
