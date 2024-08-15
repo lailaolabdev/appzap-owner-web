@@ -64,6 +64,8 @@ import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
+import { printItems } from "./printItems";
+import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -165,6 +167,33 @@ export default function TableList() {
   const [userData, setuserData] = useState(null);
 
   const [isBillTest, setIsBillTest] = useState(true);
+
+  const [combinedBillRefs, setCombinedBillRefs] = useState({});
+  const [groupedItems, setGroupedItems] = useState({});
+
+  useEffect(() => {
+    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    const refs = {};
+    const grouped = groupItemsByPrinter(orderSelect);
+    // Create refs for each printer IP
+    Object.keys(grouped).forEach((printerIp) => {
+      refs[printerIp] = React.createRef();
+    });
+    setCombinedBillRefs(refs);
+    setGroupedItems(grouped);
+  }, [isCheckedOrderItem]);
+
+  const groupItemsByPrinter = (items) => {
+    return items?.reduce((groups, item) => {
+      const printer = printers.find((e) => e?._id === item.printer);
+      const printerIp = printer?.ip || "unknown";
+      if (!groups[printerIp]) {
+        groups[printerIp] = [];
+      }
+      groups[printerIp].push(item);
+      return groups;
+    }, {});
+  };
 
   // console.log("shopId==========>", storeDetail?._id)
   // console.log("userData==========>", userData)
@@ -861,6 +890,19 @@ export default function TableList() {
   }
 
   const [onPrinting, setOnPrinting] = useState(false);
+
+  const onPrintToKitchen = async () => {
+    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+
+    if (hasNoCut) {
+      // Print with no cut
+      printItems(groupedItems, combinedBillRefs, printers)
+    } else {
+      // Print with cut
+      onPrintForCher();
+    }
+  }
+
   const onPrintForCher = async () => {
     setOnPrinting(true);
 
@@ -1815,7 +1857,8 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom
-                          onClick={() => onPrintForCher()}
+                          // onClick={() => onPrintForCher()}
+                          onClick={() => onPrintToKitchen()}
                           disabled={onPrinting}
                         >
                           {onPrinting && (
@@ -1909,7 +1952,8 @@ export default function TableList() {
                             handleUpdateOrderStatusAndCallback(
                               "DOING",
                               async () => {
-                                const data = await onPrintForCher();
+                                // const data = await onPrintForCher();
+                                const data = await onPrintToKitchen();
                                 return data;
                               }
                             ).then();
@@ -2219,6 +2263,28 @@ export default function TableList() {
               </div>
             );
           })}
+      </div>
+
+      {/* Render the combined bill for 80mm */}
+      <div>
+        {Object.entries(groupedItems).map(([printerIp, items]) => (
+          <div key={printerIp}>
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+              }}
+              ref={combinedBillRefs[printerIp]}
+            >
+              <CombinedBillForChefNoCut
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                selectedMenu={items}
+                table={{ tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          </div>
+        ))}
       </div>
 
       <CheckOutPopup
