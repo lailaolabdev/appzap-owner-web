@@ -349,7 +349,7 @@ export default function ConfigPage() {
               ))}
             </Card.Body>
           </Card>
-          <Card border="primary" style={{ margin: 0 }}>
+          {/* <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
                 backgroundColor: COLOR_APP,
@@ -399,7 +399,7 @@ export default function ConfigPage() {
                 </div>
               ))}
             </Card.Body>
-          </Card>
+          </Card> */}
         </Box>
       </Box>
       {/* popup */}
