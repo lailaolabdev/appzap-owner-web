@@ -161,6 +161,8 @@ export default function MemberPage() {
 
   const handleUpdate = () => {
     getMembersData(); // Refresh the members data
+    getMemberListTop();
+    getMemberListBirthday();
   };
 
   const handleSelectMember = (memberOrders) => {
@@ -197,15 +199,10 @@ export default function MemberPage() {
       if (_data.error) throw new Error("error");
       setMemberListTop(_data.data.data);
       setTotalPaginationMemberTop(
-        storeDetail.limitData
-          ? 1
-          : Math.ceil(_data?.data?.memberCount / limitData)
+        storeDetail.limitData ? 1 : Math.ceil(10 / limitData)
       );
     } catch (err) {}
   };
-
-  console.log("storeDetail.valueTop", parseInt(storeDetail.limitData));
-  console.log("totalPaginationMemberTop", totalPaginationMemberTop);
 
   // console.log(memberListTop);
 
@@ -216,9 +213,9 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
-      // findby += `startDay=${startDay}&`;
-      // findby += `endDay=${endDay}&`;
-      // findby += `month=${month}&`;
+      findby += `startDay=${storeDetail.startDay}&`;
+      findby += `endDay=${storeDetail.endDay}&`;
+      findby += `month=${storeDetail.month}&`;
       const _data = await getMembersListBirthday(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberListBirthday(_data.data.data);
@@ -331,38 +328,22 @@ export default function MemberPage() {
       if (_data.error) throw new Error("error");
       setMemberListTop(_data.data.data);
       setTotalPaginationMemberTop(
-        Math.ceil(
-          storeDetail.limitData
-            ? 1
-            : Math.ceil(_data?.data?.memberCount / limitData)
-        )
+        Math.ceil(storeDetail.limitData ? 1 : Math.ceil(10 / limitData))
       );
     } catch (err) {}
   };
 
   // console.log("MEMBERLISTTOP", memberListTop);
-  const FilterBirthday = async (valueBirthday) => {
-    const newDay = new Date();
-    const startDay = moment(newDay).format("DD");
-    const month = moment(valueBirthday).format("MM");
-    const endDay = moment(valueBirthday).format("DD");
-
-    setStoreDetail({
-      ...storeDetail,
-      startDay: startDay,
-      endDay: endDay,
-      month: month,
-    });
-
+  const getMemberListBirthdayFilter = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
       let findby = "?";
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
-      findby += `startDay=${startDay}&`;
-      findby += `endDay=${endDay}&`;
-      findby += `month=${month}&`;
+      findby += `startDay=${storeDetail.startDay}&`;
+      findby += `endDay=${storeDetail.endDay}&`;
+      findby += `month=${storeDetail.month}&`;
       const _data = await getMembersListBirthday(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberListBirthday(_data.data.data);
@@ -552,7 +533,14 @@ export default function MemberPage() {
               }}
               onClick={() => {
                 setChangeUi("LIST_MEMBER");
-                setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
+                getMembersData();
+                setStoreDetail({
+                  ...storeDetail,
+                  changeUi: "LIST_MEMBER",
+                  startDay: "",
+                  endDay: "",
+                  month: "",
+                });
               }}
             >
               <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
@@ -573,7 +561,14 @@ export default function MemberPage() {
                 alignItems: "center",
               }}
               onClick={() => {
-                setStoreDetail({ ...storeDetail, changeUi: "LIST_TOP" });
+                getMemberListTop();
+                setStoreDetail({
+                  ...storeDetail,
+                  changeUi: "LIST_TOP",
+                  startDay: "",
+                  endDay: "",
+                  month: "",
+                });
               }}
             >
               <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
@@ -594,6 +589,7 @@ export default function MemberPage() {
                 alignItems: "center",
               }}
               onClick={() => {
+                getMemberListBirthday();
                 setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
               }}
             >
@@ -845,8 +841,13 @@ export default function MemberPage() {
                           value={startDate}
                           onChange={(e) => {
                             setStartDate(e.target.value);
+                            setStoreDetail({
+                              ...storeDetail,
+                              startDay: moment(e.target.value).format("DD"),
+                              month: moment(e.target.value).format("MM"),
+                            });
                           }}
-                          max={endDate}
+                          // max={endDate}
                         />
                       </InputGroup>
                       <div style={{ textAlign: "center" }}> ຫາ </div>
@@ -856,11 +857,28 @@ export default function MemberPage() {
                           value={endDate}
                           onChange={(e) => {
                             setEndDate(e.target.value);
-                            FilterBirthday(e.target.value);
+                            // FilterBirthday(e.target.value);
+                            setStoreDetail({
+                              ...storeDetail,
+                              endDay: moment(e.target.value).format("DD"),
+                            });
                           }}
-                          min={startDate}
+                          // min={startDate}
                         />
                       </InputGroup>
+                      <Button
+                        onClick={() => {
+                          getMemberListBirthdayFilter();
+                        }}
+                        variant="primary"
+                        style={{
+                          display: "flex",
+                          gap: 10,
+                          alignItems: "center",
+                        }}
+                      >
+                        <FaSearch /> {t("search")}
+                      </Button>
                     </Box>
                   </div>
                 </div>
@@ -961,7 +979,7 @@ export default function MemberPage() {
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ popupmemberorder: true })}
           >
-            <AiFillPrinter /> {t("all_member")}
+            <FaUser /> {t("all_member")}
           </Button>
           <Button
             disabled
