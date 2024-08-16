@@ -5,7 +5,7 @@ import moment from "moment";
 import {
   QUERY_CURRENCIES,
   getLocalData,
-  getLocalDataCustomer
+  getLocalDataCustomer,
 } from "../../constants/api";
 import Axios from "axios";
 import QRCode from "react-qr-code";
@@ -20,7 +20,7 @@ export default function BillForCheckOutCafe80({
   selectedTable,
   dataBill,
   taxPercent = 0,
-  profile
+  profile,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -34,12 +34,6 @@ export default function BillForCheckOutCafe80({
   // console.log("storeDetail",storeDetail)
   // console.log("profile",profile)
   // console.log("dataBill",dataBill)
-
-  const TotalPrice = () => {
-    return dataBill.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.price * nextValue.quantity;
-    }, 0);
-  };
 
   // useEffect
   useEffect(() => {
@@ -58,21 +52,24 @@ export default function BillForCheckOutCafe80({
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill || []) {
-      _total += _data?.quantity * _data?.price;
+      const totalOptionPrice = _data?.totalOptionPrice || 0;
+      const itemPrice = _data?.price + totalOptionPrice;
+      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      _total += _data?.quantity * itemPrice;
     }
-    if (dataBill?.discount > 0) {
-      if (
-        dataBill?.discountType == "LAK" ||
-        dataBill?.discountType == "MONEY"
-      ) {
-        setTotalAfterDiscount(_total);
-      } else {
-        const ddiscount = parseInt(_total);
-        setTotalAfterDiscount(_total - ddiscount);
-      }
-    } else {
-      setTotalAfterDiscount(_total);
-    }
+    // if (dataBill?.discount > 0) {
+    //   if (
+    //     dataBill?.discountType == "LAK" ||
+    //     dataBill?.discountType == "MONEY"
+    //   ) {
+    //     setTotalAfterDiscount(_total - dataBill?.discount);
+    //   } else {
+    //     const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+    //     setTotalAfterDiscount(_total - ddiscount);
+    //   }
+    // } else {
+    //   setTotalAfterDiscount(_total);
+    // }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
   };
@@ -155,8 +152,7 @@ export default function BillForCheckOutCafe80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {profile?.data?.firstname ?? "-"}{" "}
-              {profile?.data?.lastname ?? "-"}
+              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
         </div>
@@ -164,32 +160,54 @@ export default function BillForCheckOutCafe80({
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
         <div style={{ textAlign: "left" }}>ລຳດັບ </div>
-        <div style={{ textAlign: "center" }}>{t("list")} </div>
-        <div style={{ textAlign: "center" }}>{t("amount")}</div>
+        <div style={{ textAlign: "left", marginLeft: "-20px" }}>
+          {t("list")}{" "}
+        </div>
+        <div style={{ textAlign: "center", marginLeft: "2rem" }}>
+          {t("amount")}
+        </div>
         <div style={{ textAlign: "right" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
         {dataBill?.map((item, index) => {
+          const optionsNames =
+            item?.options
+              ?.map((option) =>
+                option.quantity > 1
+                  ? `[${option.quantity} x ${option.name}]`
+                  : `[${option.name}]`
+              )
+              .join("") || "";
+          const totalOptionPrice = item?.totalOptionPrice || 0;
+          const itemPrice = item?.price + totalOptionPrice;
+          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+          const itemTotal = itemPrice * item?.quantity;
           return (
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12
+                fontSize: 12,
               }}
               key={index}
             >
               <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "center" }}>{item?.name}</div>
+              <div
+                style={{
+                  textAlign: "left",
+                  marginLeft: "-20px",
+                  width: "6rem",
+                }}
+              >
+                {item?.name} {optionsNames}
+              </div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
               <div style={{ textAlign: "right" }}>
-                {item?.price ? moneyCurrency(item?.price) : "-"}
+                {itemPrice ? moneyCurrency(itemPrice) : "-"}
               </div>
               <div style={{ textAlign: "right" }}>
-                {item?.price
-                  ? moneyCurrency(item?.price * item?.quantity)
-                  : "-"}
+                {itemTotal ? moneyCurrency(itemTotal) : "-"}
               </div>
             </div>
           );
@@ -225,14 +243,14 @@ export default function BillForCheckOutCafe80({
                 alignItems: "center",
               }}
             >
-              {moneyCurrency(TotalPrice())} {storeDetail?.firstCurrency}
+              {moneyCurrency(total)} {storeDetail?.firstCurrency}
             </div>
           </div>
           {/* {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency} */}
           {/* <div style={{ textAlign: "right" }}>
             
           </div> */}
-           {/*<div hidden={taxAmount <= 0}>
+          {/*<div hidden={taxAmount <= 0}>
             <Row>
               <Col sm={8}>
                 <div style={{ textAlign: "right" }}>
@@ -249,7 +267,7 @@ export default function BillForCheckOutCafe80({
             {t("total")} + {t("vat2")} {taxPercent}%:{" "}
             {moneyCurrency(total + taxAmount)} {storeDetail?.firstCurrency} 
           </div>*/}
-          
+
           {/*{currencyData?.map((item, index) => (
             <>
               <div
@@ -302,7 +320,7 @@ export default function BillForCheckOutCafe80({
                   </div>
                 </Col>
               </Row> */}
-              {/* {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}):{" "}
+          {/* {t("total")} + {t("vat2")} {taxPercent}% ({item?.currencyCode}):{" "}
               {moneyCurrency((total + taxAmount) / item?.sell)}
             </>
           ))}
@@ -329,7 +347,7 @@ export default function BillForCheckOutCafe80({
               : "%"}
           </div>*/}
 
-         {/* <div>
+          {/* <div>
             <Row>
               <Col></Col>
               <Col>
@@ -344,9 +362,8 @@ export default function BillForCheckOutCafe80({
              {t("customerName")} : {dataBill?.memberName} ({" "}
             {dataBill?.memberPhone} ) 
           </div>*/}
-
         </div>
-      </div> 
+      </div>
 
       {/* <hr style={{ border: "1px solid #000", margin: 0 }} />
       <div style={{ margin: "10px" }}></div>
@@ -399,12 +416,12 @@ export default function BillForCheckOutCafe80({
         {" "}
         ໂອນເງີນສຳລະ{" "}
       </div> */}
-      
+
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          padding: 10
+          padding: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
@@ -430,6 +447,7 @@ const Price = styled.div`
 const Container = styled.div`
   margin: 10px;
   width: 100%;
+  margin-left: -8px;
   /* maxwidth: 80mm; */
 `;
 const Img = styled.div`

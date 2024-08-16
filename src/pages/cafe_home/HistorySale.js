@@ -42,7 +42,8 @@ function HistorySale() {
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [Categorys, setCategorys] = useState();
-  const [Menus, setMenus] = useState();
+  const [total, setTotal] = useState();
+  const [totalHistoryPrices, setTotalHistoryPrices] = useState();
   const [userData, setUserData] = useState({});
 
   const [show, setShow] = useState(false);
@@ -53,7 +54,7 @@ function HistorySale() {
   const [historyCafe, setHistoryCafe] = useState([]);
 
   const [pagination, setPagination] = useState(1);
-  const limitData = 20
+  const limitData = 20;
   const [totalPagination, setTotalPagination] = useState();
 
   // console.log("historyCafe" ,historyCafe)
@@ -70,13 +71,33 @@ function HistorySale() {
     setDataModale(item);
   };
 
+  useEffect(() => {
+    _calculateTotal();
+  }, [dataModale]);
+
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let _data of dataModale || []) {
+      const totalOptionPrice = _data?.totalOptionPrice || 0;
+      const itemPrice = _data?.price + totalOptionPrice;
+      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      _total += _data?.quantity * itemPrice;
+    }
+    setTotal(_total);
+  };
+
+  // console.log("dataModale", dataModale);
+
+  // console.log("historyCafe", historyCafe.orderId);
+  // console.log("totalHistoryPrices", totalHistoryPrices);
+
   const handleClose = () => setShow(false);
 
-  const TotalPrice = () => {
-    return dataModale.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.price * nextValue.quantity;
-    }, 0);
-  };
+  // const TotalPrice = () => {
+  //   return dataModale.reduce((currentValue, nextValue) => {
+  //     return currentValue + nextValue.price * nextValue.quantity;
+  //   }, 0);
+  // };
 
   const { storeDetail } = useStore();
 
@@ -106,27 +127,38 @@ function HistorySale() {
   }, []);
 
   const getHistoryCafe = async () => {
+    setIsLoading(true);
     try {
-      let data = await axios.get(END_POINT_SEVER + `/v3/bills?skip=${(pagination - 1) * limitData}&limit=${limitData}`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-      });
-      let billCount = await axios.get(END_POINT_SEVER + `/v3/bills/count`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json;charset=UTF-8",
-        },
-      });
+      let data = await axios.get(
+        END_POINT_SEVER +
+          `/v3/bills?skip=${(pagination - 1) * limitData}&limit=${limitData}`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+        }
+      );
+      let billCount = await axios.get(
+        END_POINT_SEVER + `/v3/bills/count/cafe`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+        }
+      );
       setHistoryCafe(data.data);
-      setTotalPagination(Math.ceil(billCount.data.count / limitData));
+      setTotalPagination(
+        Math.ceil(billCount.data.countCafeHistory / limitData)
+      );
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
 
-  
+  // console.log("historyCafe", historyCafe);
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -164,35 +196,39 @@ function HistorySale() {
                 </div>
                 <div style={{ padding: 0 }}>
                   <div style={{ padding: 10 }}>
-                    <Table striped hover size="sm" style={{ fontSize: 15}}>
-                      <thead >
+                    <Table striped hover size="sm" style={{ fontSize: 15 }}>
+                      <thead>
                         <tr>
                           <th>ລຳດັບ</th>
                           <th>ລະຫັດສິນຄ້າ</th>
                           <th>ຈຳນວນລາຍການ</th>
-                          <th>ລາຄາ</th>
+                          <th>ລາຄາລວມ</th>
                           <th>ວັນທີ</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {historyCafe.map((item, index) => (
-                          <tr
-                            onClick={() => {
-                              handleShow(item.orderId);
-                            }}
-                            key={index}
-                          >
-                            <td>{(pagination - 1) * limitData + index + 1}</td>
-                            <td>{item.code}</td>
-                            <td>{item.orderId.length}</td>
-                            <td>{moneyCurrency(item.billAmount)}</td>
-                            <td>
-                              {moment(item.createdAt).format(
-                                "YYYY-MM-DD, h:mm:ss a"
-                              )}
-                            </td>
-                          </tr>
-                        ))}
+                        {historyCafe
+                          .filter((e) => e.saveCafe == true)
+                          .map((item, index) => (
+                            <tr
+                              onClick={() => {
+                                handleShow(item.orderId);
+                              }}
+                              key={index}
+                            >
+                              <td>
+                                {(pagination - 1) * limitData + index + 1}
+                              </td>
+                              <td>{item.code}</td>
+                              <td>{item.orderId.length}</td>
+                              <td>{moneyCurrency(item.billAmount)}</td>
+                              <td>
+                                {moment(item.createdAt).format(
+                                  "YYYY-MM-DD, h:mm:ss a"
+                                )}
+                              </td>
+                            </tr>
+                          ))}
                       </tbody>
                     </Table>
                     <div
@@ -251,17 +287,38 @@ function HistorySale() {
                               <th>ຊື່</th>
                               <th>ຈຳນວນ</th>
                               <th>ລາຄາ</th>
+                              <th>ລາຄາລວມ</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {dataModale?.map((item, index) => (
-                              <tr>
-                                <td>{index + 1}</td>
-                                <th>{item.name}</th>
-                                <td>{item.quantity}</td>
-                                <td>{moneyCurrency(item.price)}</td>
-                              </tr>
-                            ))}
+                            {dataModale?.map((item, index) => {
+                              // console.log("options", item?.options);
+
+                              const optionsNames =
+                                item?.options
+                                  ?.map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join("") || "";
+                              const totalOptionPrice =
+                                item?.totalOptionPrice || 0;
+                              const itemPrice = item?.price + totalOptionPrice;
+                              // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+                              const itemTotal = itemPrice * item?.quantity;
+                              return (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <th>
+                                    {item.name} {optionsNames}
+                                  </th>
+                                  <td>{item.quantity}</td>
+                                  <td>{moneyCurrency(itemPrice)}</td>
+                                  <td>{moneyCurrency(itemTotal)}</td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </Table>
                       ) : (
@@ -270,18 +327,20 @@ function HistorySale() {
                         </div>
                       )}
 
-                      { dataModale.length > 0 && <div className="container my-3 row d-flex justify-content-between">
-                        <div>
-                          {/* <span>{t("date")} </span>
+                      {dataModale.length > 0 && (
+                        <div className="container my-3 row d-flex justify-content-between">
+                          <div>
+                            {/* <span>{t("date")} </span>
                           <span>24-07-2024 17:08</span> */}
+                          </div>
+                          <div>
+                            <span>{t("pricesTotal")} </span>
+                            <span>
+                              {moneyCurrency(total)} {t("nameCurrency")}
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <span>{t("pricesTotal")} </span>
-                          <span>
-                            {moneyCurrency(TotalPrice())} {t("nameCurrency")}
-                          </span>
-                        </div>
-                      </div>}
+                      )}
                     </Modal.Body>
                     <Modal.Footer>
                       <Button variant="danger" onClick={handleClose}>

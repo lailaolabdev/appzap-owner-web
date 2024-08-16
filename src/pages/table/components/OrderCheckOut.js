@@ -28,9 +28,9 @@ const OrderCheckOut = ({
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
 
-  console.log("storeDetail:---->", storeDetail, staffData?.users);
+  // console.log("storeDetail:---->", storeDetail, staffData?.users);
 
-  console.log("data.orderId: ", data.orderId)
+  // console.log("data.orderId: ", data.orderId)
 
   useEffect(() => {
     _calculateTotal();
@@ -44,7 +44,8 @@ const OrderCheckOut = ({
         if (data?.orderId[i]?.status === "SERVED") {
           _total +=
             data?.orderId[i]?.quantity *
-            (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
+            (data?.orderId[i]?.price +
+              (data?.orderId[i]?.totalOptionPrice ?? 0));
         }
       }
     }
@@ -76,9 +77,10 @@ const OrderCheckOut = ({
   };
 
   const getOrderItemKey = (orderItem) => {
-    const options = orderItem?.options
-      ?.map((option) => `${option.name}:${option.value}`)
-      .join(",") || "";
+    const options =
+      orderItem?.options
+        ?.map((option) => `${option.name}:${option.value}`)
+        .join(",") || "";
     return `${orderItem?.id}-${options}`;
   };
 
@@ -119,7 +121,11 @@ const OrderCheckOut = ({
                 data?.orderId?.map((orderItem, index) => {
                   const options =
                     orderItem?.options
-                      ?.map((option) => `[${option.name}]`)
+                      ?.map((option) =>
+                        option.quantity > 1
+                          ? `[${option.quantity} x ${option.name}]`
+                          : `[${option.name}]`
+                      )
                       .join(" ") || "";
                   return (
                     <tr key={getOrderItemKey(orderItem)}>
@@ -130,8 +136,7 @@ const OrderCheckOut = ({
                       <td>{orderItem?.quantity}</td>
                       <td>
                         {moneyCurrency(
-                          orderItem?.price +
-                            (orderItem?.totalOptionPrice ?? 0)
+                          orderItem?.price + (orderItem?.totalOptionPrice ?? 0)
                         )}
                       </td>
                       <td>
@@ -181,73 +186,64 @@ const OrderCheckOut = ({
           <div
             style={{
               display: "flex",
-              justifyContent: "center",
+              justifyContent: "flex-start",
               alignItems: "center",
             }}
           >
-            <div
+            <Button
+              className="ml-2 pl-4 pr-4"
               style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
+                backgroundColor: "#FB6E3B",
+                color: "#ffff",
+                border: "solid 1px #FB6E3B",
+                fontSize: 26,
+              }}
+              onClick={() => onPrintBill()}
+            >
+              <FontAwesomeIcon
+                icon={faCashRegister}
+                style={{ color: "#fff" }}
+              />
+              {t("print_bill")}
+            </Button>
+            <div
+              className="p-2 col-example text-center"
+              style={{ fontSize: 26 }}
+            >
+              {t("total_must_pay")}:
+            </div>
+            <div
+              className="p-2 col-example text-center"
+              style={{
+                backgroundColor: "#F1F1F1",
+                fontSize: 26,
               }}
             >
-              <Button
-                className="ml-2 pl-4 pr-4"
-                style={{
-                  backgroundColor: "#FB6E3B",
-                  color: "#ffff",
-                  border: "solid 1px #FB6E3B",
-                  fontSize: 26,
-                }}
-                onClick={() => onPrintBill()}
-              >
-                <FontAwesomeIcon
-                  icon={faCashRegister}
-                  style={{ color: "#fff" }}
-                />
-                {t("print_bill")}
-              </Button>
-              <div
-                className="p-2 col-example text-center"
-                style={{ fontSize: 26 }}
-              >
-                {t("total_must_pay")}:
-              </div>
-              <div
-                className="p-2 col-example text-center"
-                style={{
-                  backgroundColor: "#F1F1F1",
-                  fontSize: 26,
-                }}
-              >
-                <span style={{ justifyContent: "flex-end", display: "row" }}>
-                  <b>
-                    {data && data?.discountType === "LAK"
-                      ? moneyCurrency(
-                          total * (taxPercent * 0.01 + 1) - data?.discount > 0
-                            ? total * (taxPercent * 0.01 + 1) - data?.discount
-                            : 0
-                        )
-                      : moneyCurrency(
-                          total * (taxPercent * 0.01 + 1) -
-                            (total * (taxPercent * 0.01 + 1) * data?.discount) /
-                              100 >
-                            0
-                            ? total * (taxPercent * 0.01 + 1) -
-                                (total *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100
-                            : 0
-                        )}
-                  </b>
-                </span>
-              </div>
-              <div
-                style={{ display: "flex", gap: 20, flexDirection: "column" }}
-              >
-                <Button
+              <span style={{ justifyContent: "flex-end", display: "row" }}>
+                <b>
+                  {data && data?.discountType === "LAK"
+                    ? moneyCurrency(
+                        total * (taxPercent * 0.01 + 1) - data?.discount > 0
+                          ? total * (taxPercent * 0.01 + 1) - data?.discount
+                          : 0
+                      )
+                    : moneyCurrency(
+                        total * (taxPercent * 0.01 + 1) -
+                          (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                            100 >
+                          0
+                          ? total * (taxPercent * 0.01 + 1) -
+                              (total *
+                                (taxPercent * 0.01 + 1) *
+                                data?.discount) /
+                                100
+                          : 0
+                      )}
+                </b>
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
+              {/* <Button
                   className="ml-2 pl-4 pr-4"
                   style={{
                     backgroundColor: "#FB6E3B",
@@ -262,30 +258,29 @@ const OrderCheckOut = ({
                     style={{ color: "#fff" }}
                   />{" "}
                   {t("change_who_check_bill")}
-                </Button>
-                <Button
-                  className="ml-2 pl-4 pr-4"
-                  style={{
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffff",
-                    border: "solid 1px #FB6E3B",
-                    fontSize: 26,
-                  }}
-                  onClick={() => onSubmit()}
-                >
-                  <FontAwesomeIcon
-                    icon={faCashRegister}
-                    style={{ color: "#fff" }}
-                  />{" "}
-                  {t("check_bill")}
-                </Button>
-              </div>
+                </Button> */}
+              <Button
+                className="ml-2 pl-4 pr-4"
+                style={{
+                  backgroundColor: "#FB6E3B",
+                  color: "#ffff",
+                  border: "solid 1px #FB6E3B",
+                  fontSize: 26,
+                }}
+                onClick={() => onSubmit()}
+              >
+                <FontAwesomeIcon
+                  icon={faCashRegister}
+                  style={{ color: "#fff" }}
+                />{" "}
+                {t("check_bill")}
+              </Button>
             </div>
           </div>
         </Modal.Footer>
       </Modal>
 
-      <Modal
+      {/* <Modal
         size="lg"
         centered
         show={isConfirmStaff}
@@ -352,7 +347,7 @@ const OrderCheckOut = ({
               })}
           </div>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

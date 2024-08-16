@@ -7,7 +7,7 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
-import { printItems } from './printItems';
+import { printItems } from "./printItems";
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
@@ -26,7 +26,7 @@ import {
   ETHERNET_PRINTER_PORT,
   NOCUT_ETHERNET_PRINTER_PORT,
   NOCUT_BLUETOOTH_PRINTER_PORT,
-  NOCUT_USB_PRINTER_PORT
+  NOCUT_USB_PRINTER_PORT,
 } from "../../constants/index";
 
 import {
@@ -86,16 +86,11 @@ function AddOrder() {
   const [itemDeleting, setItemDeleting] = useState();
 
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
-  const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] = useState(0);
+  const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] =
+    useState(0);
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
-
-
-
-
-
-
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -108,8 +103,8 @@ function AddOrder() {
     setShow(true);
   };
   const handleClose = () => {
-    setAddComments("")
-    setShow(false)
+    setAddComments("");
+    setShow(false);
   };
 
   const handleChangeMenuType = async (e) => {
@@ -135,34 +130,38 @@ function AddOrder() {
 
   const handleSetQuantity = (int, data) => {
     let dataArray = [];
-  
+
     // Ensure data.options is defined and is an array
-    const sortedDataOptionsForComparison = Array.isArray(data?.options) ? sortOptionsById([...data.options]) : [];
-  
+    const sortedDataOptionsForComparison = Array.isArray(data?.options)
+      ? sortOptionsById([...data.options])
+      : [];
+
     console.log({ selectedMenu });
-  
+
     for (const i of selectedMenu) {
       let _data = { ...i };
-  
+
       // Ensure i.options is defined and is an array
-      const sortedItemOptionsForComparison = Array.isArray(i?.options) ? sortOptionsById([...i.options]) : [];
-  
+      const sortedItemOptionsForComparison = Array.isArray(i?.options)
+        ? sortOptionsById([...i.options])
+        : [];
+
       if (
         data?.id === i?.id &&
-        JSON.stringify(sortedDataOptionsForComparison) === JSON.stringify(sortedItemOptionsForComparison)
+        JSON.stringify(sortedDataOptionsForComparison) ===
+          JSON.stringify(sortedItemOptionsForComparison)
       ) {
         _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
-  
+
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
-  
+
     setSelectedMenu(dataArray);
   };
-  
-  
+
   // Helper function to sort options by ID
   const sortOptionsById = (options) => {
     return options.sort((a, b) => {
@@ -170,7 +169,6 @@ function AddOrder() {
       return a._id.localeCompare(b._id);
     });
   };
-  
 
   const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
   const [currency, setCurrency] = useState([]);
@@ -187,9 +185,6 @@ function AddOrder() {
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
 
-
-
-
   if (billForCher80.current.length !== arrLength) {
     // add or remove refs
     billForCher80.current = Array(arrLength)
@@ -202,9 +197,6 @@ function AddOrder() {
       .fill()
       .map((_, i) => billForCher58?.current[i]);
   }
-
-
-
 
   const onPrintForCher = async () => {
     const orderSelect = selectedMenu;
@@ -258,7 +250,7 @@ function AddOrder() {
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
-        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData)
+        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData);
         await printFlutter(
           {
             imageBuffer: dataUrl.toDataURL(),
@@ -317,11 +309,11 @@ function AddOrder() {
     Object.keys(grouped).forEach((printerIp) => {
       refs[printerIp] = React.createRef();
     });
-    console.log("refs: ", refs)
+    console.log("refs: ", refs);
     setCombinedBillRefs(refs);
     setGroupedItems(grouped);
   }, [selectedMenu]);
-  
+
   // Function to group items by printer
   const groupItemsByPrinter = (items) => {
     return items.reduce((groups, item) => {
@@ -334,8 +326,6 @@ function AddOrder() {
       return groups;
     }, {});
   };
-  
-
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -371,78 +361,88 @@ function AddOrder() {
     })();
   }, []);
 
-
   const handleAddOption = (menuId, option) => {
-    console.log({option})
-    setSelectedOptionsArray(prevOptions => {
+    console.log({ option });
+    setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find(opt => opt._id === option._id);
-  
+      const existingOption = menuOptions.find((opt) => opt._id === option._id);
+
       if (existingOption) {
         return {
           ...prevOptions,
-          [menuId]: menuOptions.map(opt =>
-            opt._id === option._id ? { ...opt, quantity: opt.quantity + 1 } : opt
-          )
+          [menuId]: menuOptions.map((opt) =>
+            opt._id === option._id
+              ? { ...opt, quantity: opt.quantity + 1 }
+              : opt
+          ),
         };
       }
-  
+
       return {
         ...prevOptions,
-        [menuId]: [...menuOptions, { ...option, quantity: 1 }]
+        [menuId]: [...menuOptions, { ...option, quantity: 1 }],
       };
     });
   };
-  
+
   const handleRemoveOption = (menuId, option) => {
-    setSelectedOptionsArray(prevOptions => {
+    setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find(opt => opt._id === option._id);
-  
+      const existingOption = menuOptions.find((opt) => opt._id === option._id);
+
       if (existingOption && existingOption.quantity > 1) {
         return {
           ...prevOptions,
-          [menuId]: menuOptions.map(opt =>
-            opt._id === option._id ? { ...opt, quantity: opt.quantity - 1 } : opt
-          )
+          [menuId]: menuOptions.map((opt) =>
+            opt._id === option._id
+              ? { ...opt, quantity: opt.quantity - 1 }
+              : opt
+          ),
         };
       }
-  
+
       return {
         ...prevOptions,
-        [menuId]: menuOptions.filter(opt => opt._id !== option._id)
+        [menuId]: menuOptions.filter((opt) => opt._id !== option._id),
       };
     });
   };
-  
-  
 
   const calculateTotalPrice = (menu, selectedOptionsArray) => {
-    console.log({menu})
+    console.log({ menu });
     if (!menu || !menu._id) {
       return 0;
     }
-    
+
     const menuOptions = selectedOptionsArray[menu._id] || [];
-    const optionsTotalPrice = menuOptions.reduce((sum, option) => sum + (option.price * option.quantity), 0);
+    const optionsTotalPrice = menuOptions.reduce(
+      (sum, option) => sum + option.price * option.quantity,
+      0
+    );
     return menu.price + optionsTotalPrice;
   };
-  
 
   const handleConfirmOptions = () => {
     console.log("menuOptions: ", menuOptions);
     console.log("selectedItem: ", selectedItem);
     console.log("SelectedOptionsArray: ", selectedOptionsArray);
     console.log("selectedMenu: ", selectedMenu);
-  
-    const filteredOptions = selectedOptionsArray[selectedItem._id]?.filter(option => option.quantity >= 1) || [];
-  
-  
-    const sortedFilteredOptionsForComparison = sortOptionsById([...filteredOptions]);
-  
-    const totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
+
+    const filteredOptions =
+      selectedOptionsArray[selectedItem._id]?.filter(
+        (option) => option.quantity >= 1
+      ) || [];
+
+    const sortedFilteredOptionsForComparison = sortOptionsById([
+      ...filteredOptions,
+    ]);
+
+    const totalOptionPrice = filteredOptions.reduce(
+      (total, option) => total + option.price * option.quantity,
+      0
+    );
     const quantity = 1;
-  
+
     const data = {
       id: selectedItem._id,
       name: selectedItem.name,
@@ -455,36 +455,43 @@ function AddOrder() {
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,
     };
-  
-    setSelectedMenu(prevMenu => {
+
+    setSelectedMenu((prevMenu) => {
       // Check if the menu item with the same ID and options already exists
-      const existingMenuIndex = prevMenu.findIndex(item => {
-        const sortedItemOptionsForComparison = item.options ? sortOptionsById([...item.options]) : [];
+      const existingMenuIndex = prevMenu.findIndex((item) => {
+        const sortedItemOptionsForComparison = item.options
+          ? sortOptionsById([...item.options])
+          : [];
         return (
           item.id === selectedItem._id &&
-          JSON.stringify(sortedItemOptionsForComparison) === JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedItemOptionsForComparison) ===
+            JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
-  
+
       if (existingMenuIndex !== -1) {
         // Menu is already in selectedMenu, increase the quantity and update options
         const updatedMenu = [...prevMenu];
         updatedMenu[existingMenuIndex].quantity += 1;
         updatedMenu[existingMenuIndex].options = filteredOptions;
-        updatedMenu[existingMenuIndex].totalOptionPrice = filteredOptions.reduce((total, option) => total + (option.price * option.quantity), 0);
-        updatedMenu[existingMenuIndex].totalPrice = (updatedMenu[existingMenuIndex].price * updatedMenu[existingMenuIndex].quantity) + updatedMenu[existingMenuIndex].totalOptionPrice;
+        updatedMenu[existingMenuIndex].totalOptionPrice =
+          filteredOptions.reduce(
+            (total, option) => total + option.price * option.quantity,
+            0
+          );
+        updatedMenu[existingMenuIndex].totalPrice =
+          updatedMenu[existingMenuIndex].price *
+            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].totalOptionPrice;
         return updatedMenu;
       } else {
         // Menu is not in selectedMenu, add it
         return [...prevMenu, data];
       }
     });
-  
+
     handleClose();
   };
-  
-
-
 
   const getData = async (id) => {
     await fetch(CATEGORY + `?storeId=${id}`, {
@@ -518,7 +525,9 @@ function AddOrder() {
 
   const _checkMenuOption = (menu) => {
     try {
-      return menu.menuOptions && menu.menuOptions.length > 0 ? menu.menuOptions : [];
+      return menu.menuOptions && menu.menuOptions.length > 0
+        ? menu.menuOptions
+        : [];
     } catch (error) {
       return [];
     }
@@ -531,7 +540,6 @@ function AddOrder() {
       return [];
     }
   };
-  
 
   // const addToCart = async (menu) => {
   //   const _menuOptions = await _checkMenuOption(menu?._id);
@@ -576,9 +584,11 @@ function AddOrder() {
 
   const addToCart = async (menu) => {
     console.log("addToCart: ", menu);
-  
+
     const _menuOptions = _checkMenuOption(menu);
-  
+
+    console.log("menuOptions: ", _menuOptions);
+
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
       // Menu has no options, add to cart immediately
@@ -591,9 +601,11 @@ function AddOrder() {
         printer: menu?.categoryId?.printer,
         note: "",
       };
-  
-      const existingMenuIndex = selectedMenu.findIndex(item => item.id === menu._id);
-  
+
+      const existingMenuIndex = selectedMenu.findIndex(
+        (item) => item.id === menu._id
+      );
+
       if (existingMenuIndex !== -1) {
         // Menu is already in selectedMenu, increase the quantity
         const updatedMenu = [...selectedMenu];
@@ -603,23 +615,19 @@ function AddOrder() {
         // Menu is not in selectedMenu, add it
         setSelectedMenu([...selectedMenu, data]);
       }
-  
+
       // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
       return;
     }
-  
+
     // Menu has options, show popup
     setMenuOptions(_menuOptions);
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     setSelectedOptionsArray({
-      [menu._id]: _menuOptions.map(option => ({ ...option, quantity: 0 }))
+      [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
     });
     handleShow();
   };
-  
-  
-  
-  
 
   const onRemoveFromCart = (id) => {
     let selectedMenuCopied = [...selectedMenu];
@@ -634,7 +642,7 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    console.log({data, header, isPrinted})
+    console.log({ data, header, isPrinted });
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -665,7 +673,7 @@ function AddOrder() {
         billId: _billId,
       };
 
-      console.log("CreateOrder: ", _body)
+      console.log("CreateOrder: ", _body);
 
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
@@ -682,16 +690,20 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
-            
+              const hasNoCut = printers.some(
+                (printer) => printer.cutPaper === "not_cut"
+              );
+
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers).then(() => {
-                  onSelectTable(selectedTable);
-                  navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                  );
-                });
+                printItems(groupedItems, combinedBillRefs, printers).then(
+                  () => {
+                    onSelectTable(selectedTable);
+                    navigate(
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                    );
+                  }
+                );
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
@@ -701,8 +713,7 @@ function AddOrder() {
                   );
                 });
               }
-            }
-             else {
+            } else {
               onSelectTable(selectedTable);
               navigate(
                 `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
@@ -761,23 +772,28 @@ function AddOrder() {
     console.log("onEditOrder: ", menu);
     const menuOptions = _checkMenuOption(menu);
     console.log("menuOptions: ", menuOptions);
-  
+
     // Get the selected options from the menu with their quantities
     const selectedOptions = menu.options || [];
-  
+
     // Menu has options, show popup
     setMenuOptions(menuOptions);
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  
+
     setSelectedOptionsArray({
-      [menu._id]: menuOptions.map(option => {
-        const selectedOption = selectedOptions.find(opt => opt._id === option._id);
-        return { ...option, quantity: selectedOption ? selectedOption.quantity : 0 };
-      })
+      [menu._id]: menuOptions.map((option) => {
+        const selectedOption = selectedOptions.find(
+          (opt) => opt._id === option._id
+        );
+        return {
+          ...option,
+          quantity: selectedOption ? selectedOption.quantity : 0,
+        };
+      }),
     });
-  
+
     handleShow();
-  
+
     // setIsPupup(true);
     // setNoteItems(menu);
   };
@@ -837,8 +853,6 @@ function AddOrder() {
   };
 
   const { t } = useTranslation();
-
-
 
   return (
     <div>
@@ -983,7 +997,7 @@ function AddOrder() {
                         {t("amount")}
                       </th>
                       <th style={{ border: "none", textAlign: "right" }}>
-                        {t('order_food')}
+                        {t("order_food")}
                       </th>
                     </tr>
                   </thead>
@@ -991,11 +1005,16 @@ function AddOrder() {
                     {selectedMenu &&
                       selectedMenu.map((data, index) => {
                         // Create the options string if options exist
-                        const optionsString = data.options && data.options.length > 0
-                          ? data.options
-                              .map(option => (option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`))
-                              .join(" ")
-                          : "";
+                        const optionsString =
+                          data.options && data.options.length > 0
+                            ? data.options
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
+                            : "";
 
                         return (
                           <tr key={"selectMenu" + index}>
@@ -1100,7 +1119,6 @@ function AddOrder() {
                         );
                       })}
                   </tbody>
-
                 </Table>
               </div>
               <div className="col-12">
@@ -1213,31 +1231,29 @@ function AddOrder() {
         );
       })}
 
-        {/* Render the combined bill for 80mm */}
-        <div>
-          {Object.entries(groupedItems).map(([printerIp, items]) => (
-            <div key={printerIp}>
-              <div
-                style={{
-                  width: "80mm",
-                  paddingRight: "20px",
-                }}
-                ref={combinedBillRefs[printerIp]}
-              >
-                <CombinedBillForChefNoCut
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  selectedMenu={items}
-                  table={{ tableId: { name: selectedTable?.tableName } }}
-                />
-              </div>
+      {/* Render the combined bill for 80mm */}
+      <div>
+        {Object.entries(groupedItems).map(([printerIp, items]) => (
+          <div key={printerIp}>
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+              }}
+              ref={combinedBillRefs[printerIp]}
+            >
+              <CombinedBillForChefNoCut
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                selectedMenu={items}
+                table={{ tableId: { name: selectedTable?.tableName } }}
+              />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
-
-
-        {/* Render the combined bill for 58mm (if needed)
+      {/* Render the combined bill for 58mm (if needed)
         <div>
           {Object.entries(groupedItems).map(([printerIp, items]) => (
             <div key={printerIp}>
@@ -1259,74 +1275,110 @@ function AddOrder() {
           ))}
         </div> */}
 
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <div style={{ fontSize: 24 }}>
-            {selectedItem?.name} ({moneyCurrency(selectedItem?.price)} LAK)
-          </div>
-          <div style={{ fontSize: 18 }}>
-            {t('menu_option')}: 
-            {selectedOptionsArray[selectedItem?._id]?.map((option) => (
-              option.quantity > 0 && (
-                <span key={option._id} style={{ marginRight: '5px' }}>
-                  {option.quantity > 1 ? `[${option.quantity} x ${option.name}]` : `[${option.name}]`}
-                </span>
-              )
-            ))}
-          </div>
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form.Group>
-          {menuOptions.map((option, index) => (
-            <div
-              key={index}
-              className="d-flex justify-content-between align-items-center mb-2"
-              style={
-                selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity >= 1
-                  ? { backgroundColor: "#fd8b66", borderRadius: '5px', padding: 5 }
-                  : {}
-              }
-            >
-              <div>
-                <strong>{option.name}</strong> - {moneyCurrency(option.price)} LAK
-              </div>
-              <div className="d-flex align-items-center">
-                <Button variant="outline-secondary" size="sm" onClick={() => handleRemoveOption(selectedItem?._id, option)}>-</Button>
-                <span className="mx-2">{selectedOptionsArray[selectedItem?._id]?.find((selectedOption) => selectedOption._id === option._id)?.quantity || 0}</span>
-                <Button variant="outline-secondary" size="sm" onClick={() => handleAddOption(selectedItem?._id, option)}>+</Button>
-              </div>
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <div style={{ fontSize: 24 }}>
+              {selectedItem?.name} ({moneyCurrency(selectedItem?.price)} LAK)
             </div>
-          ))}
-        </Form.Group>
-        <div className="mt-3">
-          <strong>ລາຄາລວມອ໋ອບຊັນ: {moneyCurrency(calculateTotalPrice(selectedItem, selectedOptionsArray))} LAK</strong>
-        </div>
-        <Form.Group className="mt-3">
-          <Form.Label>
-            {selectedItem?.note === "" ? "ຄອມເມັ້ນລົດຊາດອາຫານ" : "ແກ້ໄຂຄອມເມັ້ນ"}
-          </Form.Label>
-          <Form.Control
-            ref={selectedItem?.note === "" ? inputRef : null}
-            as="textarea"
-            rows={3}
-            value={addComments}
-            onChange={(e) => setAddComments(e.target.value)}
-            placeholder="ປ້ອນຄຳອະທິບາຍ..."
-            className="w-100"
-          />
-        </Form.Group>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-        <Button variant="primary" onClick={handleConfirmOptions}>Confirm</Button>
-      </Modal.Footer>
-    </Modal>
-
-
-
-
+            <div style={{ fontSize: 18 }}>
+              {t("menu_option")}:
+              {selectedOptionsArray[selectedItem?._id]?.map(
+                (option) =>
+                  option.quantity > 0 && (
+                    <span key={option._id} style={{ marginRight: "5px" }}>
+                      {option.quantity > 1
+                        ? `[${option.quantity} x ${option.name}]`
+                        : `[${option.name}]`}
+                    </span>
+                  )
+              )}
+            </div>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            {menuOptions.map((option, index) => (
+              <div
+                key={index}
+                className="d-flex justify-content-between align-items-center mb-2"
+                style={
+                  selectedOptionsArray[selectedItem?._id]?.find(
+                    (selectedOption) => selectedOption._id === option._id
+                  )?.quantity >= 1
+                    ? {
+                        backgroundColor: "#fd8b66",
+                        borderRadius: "5px",
+                        padding: 5,
+                      }
+                    : {}
+                }
+              >
+                <div>
+                  <strong>{option.name}</strong> - {moneyCurrency(option.price)}{" "}
+                  LAK
+                </div>
+                <div className="d-flex align-items-center">
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() =>
+                      handleRemoveOption(selectedItem?._id, option)
+                    }
+                  >
+                    -
+                  </Button>
+                  <span className="mx-2">
+                    {selectedOptionsArray[selectedItem?._id]?.find(
+                      (selectedOption) => selectedOption._id === option._id
+                    )?.quantity || 0}
+                  </span>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => handleAddOption(selectedItem?._id, option)}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </Form.Group>
+          <div className="mt-3">
+            <strong>
+              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {moneyCurrency(
+                calculateTotalPrice(selectedItem, selectedOptionsArray)
+              )}{" "}
+              LAK
+            </strong>
+          </div>
+          <Form.Group className="mt-3">
+            <Form.Label>
+              {selectedItem?.note === ""
+                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
+                : "ແກ້ໄຂຄອມເມັ້ນ"}
+            </Form.Label>
+            <Form.Control
+              ref={selectedItem?.note === "" ? inputRef : null}
+              as="textarea"
+              rows={3}
+              value={addComments}
+              onChange={(e) => setAddComments(e.target.value)}
+              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              className="w-100"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleConfirmOptions}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* modal comment of items   */}
       <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>

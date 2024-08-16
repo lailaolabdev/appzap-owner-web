@@ -42,7 +42,7 @@ export default function CheckOutPopup({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail } = useStore();
+  const { storeDetail, profile } = useStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -115,7 +115,7 @@ export default function CheckOutPopup({
 
   // console.log("tableData:=======abc======>", tableData)
 
-  console.log("membersData", membersData);
+  // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -124,8 +124,7 @@ export default function CheckOutPopup({
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBill = totalBillDefualt + taxAmount;
 
-  console.log({totalBillDefualt, taxAmount, totalBill})
-  
+  console.log({ totalBillDefualt, taxAmount, totalBill });
 
   useEffect(() => {
     if (!open) return;
@@ -139,22 +138,22 @@ export default function CheckOutPopup({
         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
         ? totalBill - (totalBill * dataBill?.discount) / 100
         : 0;
-  
+
     const cashAmount = parseFloat(cash) || 0;
     const transferAmount = parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
-  
+
     moneyReceived = `${
       selectCurrency == "LAK"
         ? moneyCurrency(totalReceived)
         : moneyCurrency(parseFloat(cashCurrency) || 0)
     } ${selectCurrency}`;
-  
+
     const changeAmount = totalReceived - discountedTotalBill;
     moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
       storeDetail?.firstCurrency
     }`;
-  
+
     setDataBill((prev) => ({
       ...prev,
       moneyReceived: moneyReceived,
@@ -162,8 +161,6 @@ export default function CheckOutPopup({
       dataStaffConfirm: staffConfirm,
     }));
   }, [cash, transfer, selectCurrency]);
-  
-  
 
   useEffect(() => {
     if (!open) return;
@@ -762,7 +759,7 @@ export default function CheckOutPopup({
           <p>
             {t("cashier")}:{" "}
             <b>
-              {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
+              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </b>
           </p>
         </div>
