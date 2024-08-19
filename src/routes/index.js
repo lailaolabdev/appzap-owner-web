@@ -66,7 +66,7 @@ import FarkRoutes from "./Fark.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
-import CategoryType from "../pages/menu/CategoryType"
+import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 
 function Router() {
@@ -126,7 +126,7 @@ function Router() {
         },
         // <------------------ ||
         {
-          path: "/home-cafe",
+          path: "/cafe",
           element: <Homecafe />,
         },
         {

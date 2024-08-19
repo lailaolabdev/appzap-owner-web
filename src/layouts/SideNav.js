@@ -26,7 +26,7 @@ import {
   faBox,
   faBoxes,
   faLayerGroup,
-  faStoreAlt
+  faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -79,7 +79,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const itemList = [
     {
-      title: `${t('table_status')}`,
+      title: `${t("table_status")}`,
       key: "tables",
       icon: faHome,
       typeStore: "",
@@ -87,7 +87,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "tableManagement",
     },
     {
-      title: `${t('order_list')}`,
+      title: `${t("order_list")}`,
       key: "orders",
       typeStore: "",
       icon: faAddressCard,
@@ -102,22 +102,22 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "reportManagement",
     // },
     {
-      title: `${t('isCafe')}`,
-      key: "home-cafe",
+      title: `${t("isCafe")}`,
+      key: "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
       hidden: !storeDetail?.hasPOS,
       system: "tableManagement",
     },
     {
-      title: `${t('paid_manage')}`,
+      title: `${t("paid_manage")}`,
       key: "expends",
       icon: faBook,
       typeStore: "",
       system: "reportManagement",
     },
     {
-      title: `${t('booking_manage')}`,
+      title: `${t("booking_manage")}`,
       key: "reservations",
       icon: faList,
       typeStore: "",
@@ -142,7 +142,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     // },
 
     {
-      title: `${t('menu_manage')}`,
+      title: `${t("menu_manage")}`,
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
@@ -183,25 +183,26 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   hidden: !storeDetail?.hasPOS,
     //   system: "settingManagement",
     // },
-  ].filter((e) => e.title) // Filter out items with empty title
+  ]
+    .filter((e) => e.title) // Filter out items with empty title
 
-  .filter((e) => {
-    const verify = role(profile?.data?.role, profile?.data);
-    return verify?.[e?.system] ?? false;
-  })
-  .filter((e) => !e?.hidden)
-  .filter((e) =>e.typeStore != "GENERAL")
+    .filter((e) => {
+      const verify = role(profile?.data?.role, profile?.data);
+      return verify?.[e?.system] ?? false;
+    })
+    .filter((e) => !e?.hidden)
+    .filter((e) => e.typeStore != "GENERAL");
 
   const itemReports = [
     {
-      title: `${t('statistic_money')}`,
+      title: `${t("statistic_money")}`,
       key: "report",
       icon: faLayerGroup,
       typeStore: "",
       system: "reportManagement",
     },
     {
-      title: `${t('report_new')}`,
+      title: `${t("report_new")}`,
       key: "reports/sales-report",
       typeStore: "",
       icon: faChartLine,
@@ -218,7 +219,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const settingNavItem = [
     {
-      title: `${t('shop_setting')}`,
+      title: `${t("shop_setting")}`,
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
@@ -226,7 +227,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "settingManagement",
     },
     {
-      title: `${t('deposit_goods')}`,
+      title: `${t("deposit_goods")}`,
       key: "fark",
       typeStore: "",
       icon: faBeer,
@@ -239,7 +240,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
-
 
   const listForRole = itemList.filter((e) => {
     const verify = role(profile?.data?.role, profile?.data);
@@ -305,11 +305,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "depositBeer") {
           selected = selected + `/${storeDetail?._id}`;
         }
+        if (selected === "cafe") {
+          selected = selected;
+        }
         if (selected === "songlist") {
           window
             .open(
               "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-              `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -319,7 +322,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window
             .open(
               "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-              `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -428,10 +431,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   color: UN_SELECTED_TAB_TEXT,
                 }}
               >
-                {t('report')}
+                {t("report")}
               </b>
             </NavText>
-
 
             {itemReports.map((elm, index) => (
               <NavItem key={index} eventKey={elm?.key}>
@@ -448,7 +450,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   >
                     <div>
                       <FontAwesomeIcon
-                        className={openTableData.length > 0 ? "scale-animation" : ""}
+                        className={
+                          openTableData.length > 0 ? "scale-animation" : ""
+                        }
                         icon={elm?.icon}
                         style={{
                           color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
@@ -480,18 +484,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 className={openTableData.length > 0 ? "scale-animation" : ""}
                 icon={e?.icon}
                 style={{
-                  color: isPathInclude([e?.key])
-                    ? COLOR_APP
-                    : COLOR_GRAY,
+                  color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
                 }}
               />
             </NavIcon>
             <NavText>
               <b
                 style={{
-                  color: isPathInclude([e?.key])
-                    ? COLOR_APP
-                    : COLOR_GRAY,
+                  color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
                 }}
               >
                 {e?.title}
@@ -540,7 +540,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 color: UN_SELECTED_TAB_TEXT,
               }}
             >
-              {t('require_music')}
+              {t("require_music")}
             </b>
           </NavText>
         </NavItem>

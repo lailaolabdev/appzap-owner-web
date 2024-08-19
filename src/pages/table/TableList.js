@@ -144,6 +144,7 @@ export default function TableList() {
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
+    profile,
   } = useStore();
 
   const reLoadData = () => {
@@ -508,7 +509,7 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  console.log("bill80Ref",bill80Ref)
+  console.log("bill80Ref", bill80Ref);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
@@ -529,8 +530,6 @@ export default function TableList() {
       console.log({ err });
     }
   };
-
-
 
   const onPrintBill = async () => {
     try {
@@ -621,8 +620,6 @@ export default function TableList() {
       return err;
     }
   };
-
-
 
   async function delay(ms) {
     return new Promise((resolve) => {
@@ -1386,9 +1383,9 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      _total += (_data?.price +
-        (_data?.totalOptionPrice ?? 0)) *
-        _data?.quantity
+      console.log({ _data });
+      _total +=
+        (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
     if (dataBill?.discount > 0) {
       if (
@@ -2002,9 +1999,14 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                                const options = orderItem?.options
-                                  ?.map(option => `[${option.name}]`)
-                                  .join(' ') || '';
+                                const options =
+                                  orderItem?.options
+                                    ?.map((option) =>
+                                      option.quantity > 1
+                                        ? `[${option.quantity} x ${option.name}]`
+                                        : `[${option.name}]`
+                                    )
+                                    .join(" ") || "";
                                 return (
                                   <tr
                                     // onClick={() => handleShowQuantity(orderItem)}
@@ -2013,7 +2015,9 @@ export default function TableList() {
                                   >
                                     <td onClick={(e) => e.stopPropagation()}>
                                       <Checkbox
-                                        disabled={orderItem?.status === "CANCELED"}
+                                        disabled={
+                                          orderItem?.status === "CANCELED"
+                                        }
                                         name="checked"
                                         checked={orderItem?.isChecked || false}
                                         onChange={(e) => {
@@ -2025,7 +2029,9 @@ export default function TableList() {
                                       />
                                     </td>
                                     <td>{index + 1}</td>
-                                    <td>{orderItem?.name} {options}</td>
+                                    <td>
+                                      {orderItem?.name} {options}
+                                    </td>
                                     <td>{orderItem?.quantity}</td>
                                     <td
                                       style={{
@@ -2038,13 +2044,19 @@ export default function TableList() {
                                       }}
                                     >
                                       {orderItem?.status
-                                      ? t(orderStatusTranslate(orderItem?.status))
-                                      : "-"}
+                                        ? t(
+                                            orderStatusTranslate(
+                                              orderItem?.status
+                                            )
+                                          )
+                                        : "-"}
                                     </td>
                                     <td>{orderItem?.createdBy?.firstname}</td>
                                     <td>
                                       {orderItem?.createdAt
-                                        ? moment(orderItem?.createdAt).format("HH:mm A")
+                                        ? moment(orderItem?.createdAt).format(
+                                            "HH:mm A"
+                                          )
                                         : "-"}
                                     </td>
                                   </tr>
@@ -2052,7 +2064,6 @@ export default function TableList() {
                               })
                             : ""}
                         </tbody>
-
                       </TableCustom>
                       {tableOrderItems?.length === 0 && (
                         <div className="text-center">
@@ -2190,6 +2201,7 @@ export default function TableList() {
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
+          profile={profile}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -2500,7 +2512,7 @@ export default function TableList() {
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {
-                console.log("cancle")
+                console.log("cancle");
                 handleUpdateOrderStatuscancel("CANCELED");
               }
             }}
@@ -2533,7 +2545,7 @@ export default function TableList() {
                   <td>
                     {seletedOrderItem?.name}{" "}
                     {seletedOrderItem?.options
-                      ?.map((option) => `[${option.name}]`)
+                      ?.map((option) => `[${option.quantity} x ${option.name}]`)
                       .join(" ")}
                   </td>
                   <td
@@ -2597,7 +2609,6 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
-
 
       <Modal show={openModalSetting} onHide={() => setOpenModalSetting(false)}>
         <Modal.Header closeButton>

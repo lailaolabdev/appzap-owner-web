@@ -24,6 +24,9 @@ import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
 
 import { BiTransfer } from "react-icons/bi";
+import { useTranslation } from "react-i18next";
+
+import Loading from "../../../components/Loading";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
@@ -34,6 +37,7 @@ export default function CheckOutPopupCafe({
   setDataBill,
   taxPercent = 0,
   setSelectedMenu,
+  setIsLoading,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -51,6 +55,7 @@ export default function CheckOutPopupCafe({
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
+  const [totalBill, setTotalBill] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
@@ -61,6 +66,7 @@ export default function CheckOutPopupCafe({
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
 
+  const { t } = useTranslation();
   // val
   // console.log("tableData:=======abc======>", tableData);
   // console.log("dataBill:=======abc======>", dataBill);
@@ -96,17 +102,27 @@ export default function CheckOutPopupCafe({
   //   dataBill?.map((e) => e?.price * e?.quantity)
   // );
 
-  const TotalPrice = () => {
-    return dataBill.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.price * nextValue.quantity;
-    }, 0);
-  };
+  // const TotalPrice = () => {
+  //   return dataBill.reduce((currentValue, nextValue) => {
+  //     return currentValue + nextValue.price * nextValue.quantity;
+  //   }, 0);
+  // };
+
+  const totalBillDefualt = _.sumBy(
+    dataBill?.filter(
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    )
+  );
+  const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  const totalBills = totalBillDefualt + taxAmount;
+
+  console.log({ totalBillDefualt, taxAmount, totalBills });
 
   // console.log(TotalPrice())
 
   // const taxAmount = TotalPrice() * taxPercent;
 
-  const totalBill = TotalPrice();
+  // const totalBill = TotalPrice();
 
   // console.log(totalBill)
 
@@ -189,8 +205,26 @@ export default function CheckOutPopupCafe({
     for (let i = 0; i < dataBill?.length; i++) {
       _calculateTotal();
     }
+    _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
+
+  useEffect(() => {
+    _calculateTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataBill]);
+
+  const _calculateTotal = () => {
+    let _total = 0;
+    for (let _data of dataBill || []) {
+      const totalOptionPrice = _data?.totalOptionPrice || 0;
+      const itemPrice = _data?.price + totalOptionPrice;
+      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      _total += _data?.quantity * itemPrice;
+    }
+    setTotal(_total);
+    setTotalBill(_total);
+  };
   // function
   const getDataCurrency = async () => {
     try {
@@ -208,35 +242,39 @@ export default function CheckOutPopupCafe({
     }
   };
   const _checkBill = async () => {
+    setIsLoading(true);
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
     const Orders = dataBill.map((itemOrder) => itemOrder);
+
+    const datas = {
+      order: Orders,
+      storeId: profile.data.storeId,
+      isCheckout: "true",
+      status: "CHECKOUT",
+      payAmount: cash,
+      transferAmount: transfer,
+      billAmount: totalBill,
+      paymentMethod: forcus,
+      taxAmount: null,
+      taxPercent: taxPercent,
+      customerId: null,
+      userNanme: null,
+      saveCafe: true,
+      phone: null,
+      memberId: memberData?._id,
+      memberName: memberData?.name,
+      memberPhone: memberData?.phone,
+      fullnameStaffCheckOut:
+        profile.data.firstname + " " + profile.data.lastname ?? "-",
+      staffCheckOutId: profile.data._id,
+    };
 
     await axios
       .post(
         END_POINT + `/v3/admin/bill-cafe-checkout`,
         {
-          data: {
-            order: Orders,
-            storeId: profile.data.storeId,
-            isCheckout: "true",
-            status: "CHECKOUT",
-            payAmount: cash,
-            transferAmount: transfer,
-            billAmount: totalBill,
-            paymentMethod: forcus,
-            taxAmount: null,
-            taxPercent: taxPercent,
-            customerId: null,
-            userNanme: null,
-            phone: null,
-            memberId: memberData?._id,
-            memberName: memberData?.name,
-            memberPhone: memberData?.phone,
-            fullnameStaffCheckOut:
-              profile.data.firstname + " " + profile.data.lastname ?? "-",
-            staffCheckOutId: profile.data._id,
-          },
+          data: datas,
         },
         {
           headers: await getHeaders(),
@@ -256,9 +294,8 @@ export default function CheckOutPopupCafe({
         setTextSearchMember("");
         setSelectedMenu([]);
         localStorage.removeItem("STAFFCONFIRM_DATA");
-
+        setIsLoading(false);
         // console.log("response",response)
-
         onClose();
         Swal.fire({
           icon: "success",
@@ -278,15 +315,18 @@ export default function CheckOutPopupCafe({
     // console.log("valueConfirm:------>", valueConfirm)
   };
 
-  const _calculateTotal = () => {
-    let _total = 0;
-    for (let i = 0; i < dataBill?.length; i++) {
-      if (dataBill[i]?.status === "SERVED") {
-        _total += dataBill[i]?.quantity * dataBill[i]?.price;
-      }
-    }
-    setTotal(_total);
-  };
+  // const _calculateTotals = () => {
+  //   let _total = 0;
+  //   for (let i = 0; i < dataBill?.length; i++) {
+  //     if (dataBill[i]?.status === "SERVED") {
+  //       _total += dataBill[i]?.quantity * dataBill[i]?.price;
+  //     }
+  //   }
+  //   setTotal(_total);
+  // };
+  // useEffect
+
+  // console.log("Total on Checkout", total);
 
   // useEffect
   useEffect(() => {
@@ -407,8 +447,8 @@ export default function CheckOutPopupCafe({
     });
   };
 
-  console.log(transfer);
-  console.log(cash);
+  // console.log(transfer);
+  // console.log(cash);
 
   return (
     <Modal
@@ -695,14 +735,14 @@ export default function CheckOutPopupCafe({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        {/* <div style={{ flex: 1 }}>
+        <div style={{ flex: 1 }}>
           <p>
-            ພະນັກງານເຊັກບິນ:{" "}
+            {t("cashier")}:{" "}
             <b>
-              {staffConfirm?.firstname ?? "-"} {staffConfirm?.lastname ?? "-"}
+              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </b>
           </p>
-        </div> */}
+        </div>
         <Button
           onClick={() => {
             onPrintBill().then(() => {
@@ -712,11 +752,11 @@ export default function CheckOutPopupCafe({
           disabled={!canCheckOut}
         >
           <BiSolidPrinter />
-          ພິມບິນ ແລະ ໄລເງິນ
+          {t("print_checkbill")}
         </Button>
         <div style={{ width: "20%" }}></div>
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
-          ໄລເງິນ
+          {t("calculate")}
         </Button>
       </Modal.Footer>
     </Modal>

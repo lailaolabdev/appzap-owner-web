@@ -19,6 +19,7 @@ export default function BillForCheckOut80({
   selectedTable,
   dataBill,
   taxPercent = 0,
+  profile,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -29,8 +30,8 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  console.log("storeDetail", storeDetail);
-  console.log("dataBill", dataBill);
+  // console.log("storeDetail", storeDetail);
+  // console.log("dataBill", dataBill);
 
   // useEffect
   useEffect(() => {
@@ -114,7 +115,7 @@ export default function BillForCheckOut80({
           <Image
             style={{
               maxWidth: 120,
-              maxHeight: 120
+              maxHeight: 120,
             }}
             src={base64Image}
             alt="logo"
@@ -148,15 +149,14 @@ export default function BillForCheckOut80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {dataBill?.dataStaffConfirm?.firstname ?? "-"}{" "}
-              {dataBill?.dataStaffConfirm?.lastname ?? "-"}
+              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
         </div>
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
-        <div style={{ textAlign: "left" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "left", width: "10px" }}>ລຳດັບ </div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
         <div style={{ textAlign: "left" }}>{t("price")}</div>
@@ -164,7 +164,14 @@ export default function BillForCheckOut80({
       </Name>
       <Order>
         {dataBill?.orderId?.map((item, index) => {
-          const optionsNames = item?.options?.map(option => `[${option.name}]`).join('') || '';
+          const optionsNames =
+            item?.options
+              ?.map((option) =>
+                option.quantity > 1
+                  ? `[${option.quantity} x ${option.name}]`
+                  : `[${option.name}]`
+              )
+              .join("") || "";
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
           // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
@@ -179,8 +186,18 @@ export default function BillForCheckOut80({
               }}
               key={index}
             >
-              <div style={{ textAlign: "left" }}>{index + 1}</div>
-              <div style={{ textAlign: "left" }}>{item?.name} {optionsNames}</div>
+              <div style={{ textAlign: "left", width: "10px" }}>
+                {index + 1}
+              </div>
+              <div
+                style={{
+                  textAlign: "left",
+                  marginLeft: "-20px",
+                  width: "6rem",
+                }}
+              >
+                {item?.name} {optionsNames}
+              </div>
               <div style={{ textAlign: "center" }}>{item?.quantity}</div>
               <div style={{ textAlign: "left" }}>
                 {itemPrice ? moneyCurrency(itemPrice) : "-"}
@@ -197,28 +214,27 @@ export default function BillForCheckOut80({
       <div style={{ fontSize: 14 }}>
         <Row>
           <Col xs={8}>
-            <div style={{ textAlign: "right" }}>{t("total")} ({storeDetail?.firstCurrency}): </div>
+            <div style={{ textAlign: "right" }}>
+              {t("total")} ({storeDetail?.firstCurrency}):{" "}
+            </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>
-              {moneyCurrency(total)}
-            </div>
+            <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
           </Col>
         </Row>
         <Row>
           <Col xs={8}>
             <div style={{ textAlign: "right" }}>
-              {t("discount")}{' '}
-              ({dataBill?.discountType == "MONEY" ||
+              {t("discount")} (
+              {dataBill?.discountType == "MONEY" ||
               dataBill?.discountType == "LAK"
                 ? storeDetail?.firstCurrency
-                : "%"}):
+                : "%"}
+              ):
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>
-              {dataBill?.discount}
-            </div>
+            <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
         {dataBill?.memberName ? (
@@ -232,19 +248,25 @@ export default function BillForCheckOut80({
               </div>
             </Col>
           </Row>
-          ) : ('')
-        }
+        ) : (
+          ""
+        )}
       </div>
       <div style={{ fontSize: 14, marginTop: 20 }}>
         <Row>
           <Col xs={8}>
-            <div style={{ textAlign: "right", fontSize: 16, fontWeight: 'bold' }}>
+            <div
+              style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
+            >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-              {t("total")} + {t("vat")} {taxPercent}%{" "}{storeDetail?.firstCurrency}:
+              {t("total")} + {t("vat")} {taxPercent}%{" "}
+              {storeDetail?.firstCurrency}:
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right", fontSize: 16, fontWeight: 'bold' }}>
+            <div
+              style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
+            >
               {moneyCurrency(totalAfterDiscount + taxAmount)}
             </div>
           </Col>
@@ -252,9 +274,7 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={8}>
-              <div style={{ textAlign: "right" }}>
-                {item?.currencyCode}:
-              </div>
+              <div style={{ textAlign: "right" }}>{item?.currencyCode}:</div>
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
@@ -336,6 +356,7 @@ const Price = styled.div`
 const Container = styled.div`
   margin: 10px;
   width: 100%;
+  margin-left: -8px;
 `;
 const Img = styled.div`
   width: 200px;
@@ -347,4 +368,3 @@ const Order = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
