@@ -37,7 +37,7 @@ import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
 export default function FarkPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  let limitData = 5;
+  let limitData = 50;
   // state
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState(1);
