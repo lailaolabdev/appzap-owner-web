@@ -63,6 +63,7 @@ import BannerList from "../pages/banner/BannerList";
 
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
+import DebtRoutes from "./Debt.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
@@ -279,6 +280,7 @@ function Router() {
         ConfigRoutes,
         SelfOrderingOrderRoutes,
         FarkRoutes,
+        DebtRoutes,
         UserRoutes,
         PinRoutes,
       ],

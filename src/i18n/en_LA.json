@@ -848,7 +848,6 @@
   "money_cny": "ເງີນຢວນ",
   "print_money_cny": "ພິມເງິນຢວນ...",
   "chose_payment_method": "ເລືອກຮູບແບບຈ່າຍ",
-  "debt": "ຕິດໜີ້",
   "fill_paid_detail": "ປ້ອນລາຍລະອຽດການຈ່າຍ",
   "click_upload": "ຄລິກເພື່ອອັບໂຫລດ",
   "ORDER_IN": "ອໍເດີເຂົ້າ",
@@ -877,5 +876,15 @@
   "isCafe": "ຮ້ານເຄເຟ",
   "amountTotal": "ຈຳນວນທັງໝົດ",
   "pricesTotal": "ຈຳນວນເງິນ",
-  "nameCurrency": "ກິບ"
+  "nameCurrency": "ກິບ",
+  "debt": "ຕິດໜີ້",
+  "debt_deposit": "ຟັງຊັ້ນຕິດໜີ້",
+  "debt_list": "ລາຍການຕິດໜີ້",
+  "debt_list_all": "ລາຍການຕິດໜີ້ທັງໝົດ",
+  "debt_list_history": "ປະຫວັດລາຍການຕິດໜີ້",
+  "debt_create": "ສ້າງລາຍການຕິດໜີ້",
+  "start_date_debt": "ວັນທີເລີ່ມ",
+  "end_date_debt": "ວັນທີສິນສຸດ",
+  "expire_date_debt": "ວັນໝົດອາຍຸ",
+  "payment_date_debt": "ວັນທີຊຳລະ"
 }

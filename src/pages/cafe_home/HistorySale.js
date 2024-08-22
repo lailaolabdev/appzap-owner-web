@@ -33,6 +33,7 @@ import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers";
+import { Spinner } from "react-bootstrap";
 
 function HistorySale() {
   const params = useParams();
@@ -126,12 +127,18 @@ function HistorySale() {
     })();
   }, []);
 
+  useEffect(() => {
+    getHistoryCafe();
+  }, [pagination]);
+
   const getHistoryCafe = async () => {
     setIsLoading(true);
     try {
       let data = await axios.get(
         END_POINT_SEVER +
-          `/v3/bills?skip=${(pagination - 1) * limitData}&limit=${limitData}`,
+          `/v3/bills?skip=${
+            (pagination - 1) * limitData
+          }&limit=${limitData}&saveCafe=true`,
         {
           headers: {
             Accept: "application/json",
@@ -186,171 +193,169 @@ function HistorySale() {
           }}
         >
           <div>
-            {isLoading ? (
-              <Loading />
-            ) : (
-              <>
-                <div className="m-2" style={{ marginBottom: 20 }}>
-                  <h5>{t("history_sales")}</h5>
-                  <div style={{ flex: 1 }} />
-                </div>
-                <div style={{ padding: 0 }}>
-                  <div style={{ padding: 10 }}>
-                    <Table striped hover size="sm" style={{ fontSize: 15 }}>
-                      <thead>
-                        <tr>
-                          <th>ລຳດັບ</th>
-                          <th>ລະຫັດສິນຄ້າ</th>
-                          <th>ຈຳນວນລາຍການ</th>
-                          <th>ລາຄາລວມ</th>
-                          <th>ວັນທີ</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {historyCafe
-                          .filter((e) => e.saveCafe == true)
-                          .map((item, index) => (
-                            <tr
-                              onClick={() => {
-                                handleShow(item.orderId);
-                              }}
-                              key={index}
-                            >
-                              <td>
-                                {(pagination - 1) * limitData + index + 1}
-                              </td>
-                              <td>{item.code}</td>
-                              <td>{item.orderId.length}</td>
-                              <td>{moneyCurrency(item.billAmount)}</td>
-                              <td>
-                                {moment(item.createdAt).format(
-                                  "YYYY-MM-DD, h:mm:ss a"
-                                )}
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </Table>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        width: "100%",
-                        bottom: 20,
-                      }}
-                    >
-                      <ReactPaginate
-                        previousLabel={
-                          <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
-                        }
-                        nextLabel={
-                          <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
-                        }
-                        breakLabel={
-                          <Pagination.Item disabled>...</Pagination.Item>
-                        }
-                        breakClassName={"break-me"}
-                        pageCount={totalPagination} // Replace with the actual number of pages
-                        marginPagesDisplayed={1}
-                        pageRangeDisplayed={3}
-                        onPageChange={(e) => {
-                          // console.log("onPageChange",e);
-                          setPagination(e?.selected + 1);
-                        }}
-                        containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
-                        pageClassName={"page-item"}
-                        pageLinkClassName={"page-link"}
-                        activeClassName={"active"}
-                        previousClassName={"page-item"}
-                        nextClassName={"page-item"}
-                        previousLinkClassName={"page-link"}
-                        nextLinkClassName={"page-link"}
-                      />
-                    </div>
-                  </div>
-                  <Modal show={show} onHide={handleClose} size="lg">
-                    <Modal.Header closeButton>
-                      <Modal.Title>{t("menuModal")}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {dataModale.length > 0 ? (
-                        <Table
-                          striped
-                          bordered
-                          hover
-                          size="sm"
-                          style={{ fontSize: 15 }}
-                        >
-                          <thead>
-                            <tr>
-                              <th>ລຳດັບ</th>
-                              <th>ຊື່</th>
-                              <th>ຈຳນວນ</th>
-                              <th>ລາຄາ</th>
-                              <th>ລາຄາລວມ</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {dataModale?.map((item, index) => {
-                              // console.log("options", item?.options);
-
-                              const optionsNames =
-                                item?.options
-                                  ?.map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join("") || "";
-                              const totalOptionPrice =
-                                item?.totalOptionPrice || 0;
-                              const itemPrice = item?.price + totalOptionPrice;
-                              // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
-                              const itemTotal = itemPrice * item?.quantity;
-                              return (
-                                <tr>
-                                  <td>{index + 1}</td>
-                                  <th>
-                                    {item.name} {optionsNames}
-                                  </th>
-                                  <td>{item.quantity}</td>
-                                  <td>{moneyCurrency(itemPrice)}</td>
-                                  <td>{moneyCurrency(itemTotal)}</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </Table>
+            <>
+              <div className="m-2" style={{ marginBottom: 20 }}>
+                <h5>{t("history_sales")}</h5>
+                <div style={{ flex: 1 }} />
+              </div>
+              <div style={{ padding: 0 }}>
+                <div style={{ padding: 10 }}>
+                  <Table striped hover size="sm" style={{ fontSize: 15 }}>
+                    <thead>
+                      <tr>
+                        <th>ລຳດັບ</th>
+                        <th>ລະຫັດສິນຄ້າ</th>
+                        <th>ຈຳນວນລາຍການ</th>
+                        <th>ລາຄາລວມ</th>
+                        <th>ວັນທີ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {isLoading ? (
+                        <td colSpan={9} style={{ textAlign: "center" }}>
+                          <Spinner animation="border" variant="warning" />
+                        </td>
                       ) : (
-                        <div className="my-3 row d-flex justify-content-center">
-                          ບໍ່ມີລາຍການ
-                        </div>
+                        historyCafe.map((item, index) => (
+                          <tr
+                            onClick={() => {
+                              handleShow(item.orderId);
+                            }}
+                            key={index}
+                          >
+                            <td>{(pagination - 1) * limitData + index + 1}</td>
+                            <td>{item.code}</td>
+                            <td>{item.orderId.length}</td>
+                            <td>{moneyCurrency(item.billAmount)}</td>
+                            <td>
+                              {moment(item.createdAt).format(
+                                "YYYY-MM-DD, h:mm:ss a"
+                              )}
+                            </td>
+                          </tr>
+                        ))
                       )}
-
-                      {dataModale.length > 0 && (
-                        <div className="container my-3 row d-flex justify-content-between">
-                          <div>
-                            {/* <span>{t("date")} </span>
-                          <span>24-07-2024 17:08</span> */}
-                          </div>
-                          <div>
-                            <span>{t("pricesTotal")} </span>
-                            <span>
-                              {moneyCurrency(total)} {t("nameCurrency")}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                      <Button variant="danger" onClick={handleClose}>
-                        {t("close")}
-                      </Button>
-                    </Modal.Footer>
-                  </Modal>
+                    </tbody>
+                  </Table>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                      bottom: 20,
+                    }}
+                  >
+                    <ReactPaginate
+                      previousLabel={
+                        <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                      }
+                      nextLabel={
+                        <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                      }
+                      breakLabel={
+                        <Pagination.Item disabled>...</Pagination.Item>
+                      }
+                      breakClassName={"break-me"}
+                      pageCount={totalPagination} // Replace with the actual number of pages
+                      marginPagesDisplayed={1}
+                      pageRangeDisplayed={3}
+                      onPageChange={(e) => {
+                        // console.log("onPageChange",e);
+                        setPagination(e?.selected + 1);
+                      }}
+                      containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+                      pageClassName={"page-item"}
+                      pageLinkClassName={"page-link"}
+                      activeClassName={"active"}
+                      previousClassName={"page-item"}
+                      nextClassName={"page-item"}
+                      previousLinkClassName={"page-link"}
+                      nextLinkClassName={"page-link"}
+                    />
+                  </div>
                 </div>
-              </>
-            )}
+                <Modal show={show} onHide={handleClose} size="lg">
+                  <Modal.Header closeButton>
+                    <Modal.Title>{t("menuModal")}</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {dataModale.length > 0 ? (
+                      <Table
+                        striped
+                        bordered
+                        hover
+                        size="sm"
+                        style={{ fontSize: 15 }}
+                      >
+                        <thead>
+                          <tr>
+                            <th>ລຳດັບ</th>
+                            <th>ຊື່</th>
+                            <th>ຈຳນວນ</th>
+                            <th>ລາຄາ</th>
+                            <th>ລາຄາລວມ</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {dataModale?.map((item, index) => {
+                            // console.log("options", item?.options);
+
+                            const optionsNames =
+                              item?.options
+                                ?.map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join("") || "";
+                            const totalOptionPrice =
+                              item?.totalOptionPrice || 0;
+                            const itemPrice = item?.price + totalOptionPrice;
+                            // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+                            const itemTotal = itemPrice * item?.quantity;
+                            return (
+                              <tr>
+                                <td>{index + 1}</td>
+                                <th>
+                                  {item.name} {optionsNames}
+                                </th>
+                                <td>{item.quantity}</td>
+                                <td>{moneyCurrency(itemPrice)}</td>
+                                <td>{moneyCurrency(itemTotal)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    ) : (
+                      <div className="my-3 row d-flex justify-content-center">
+                        ບໍ່ມີລາຍການ
+                      </div>
+                    )}
+
+                    {dataModale.length > 0 && (
+                      <div className="container my-3 row d-flex justify-content-between">
+                        <div>
+                          {/* <span>{t("date")} </span>
+                          <span>24-07-2024 17:08</span> */}
+                        </div>
+                        <div>
+                          <span>{t("pricesTotal")} </span>
+                          <span>
+                            {moneyCurrency(total)} {t("nameCurrency")}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="danger" onClick={handleClose}>
+                      {t("close")}
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
+            </>
           </div>
         </div>
         {/* Detail Table */}

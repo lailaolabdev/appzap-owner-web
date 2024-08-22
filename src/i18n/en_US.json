@@ -751,7 +751,7 @@
   "money_cny": "CNY",
   "print_money_cny": "Print CNY...",
   "chose_payment_method": "Select expence type",
-  "debt": "Debt",
+
   "fill_paid_detail": "Fill paid detail",
   "click_upload": "Click for upload",
   "ORDER_IN": "order in",
@@ -780,5 +780,15 @@
   "isCafe": "Cafe",
   "amountTotal": "Total amount",
   "pricesTotal": "Price amount",
-  "nameCurrency": "Kip"
+  "nameCurrency": "Kip",
+  "debt": "Debt",
+  "debt_list": "List debt",
+  "debt_create": "Create Debt",
+  "debt_deposit": "debt layer",
+  "debt_list_all": "List debt all",
+  "debt_list_history": "List debt history",
+  "start_date_debt": "Start date",
+  "end_date_debt": "End date",
+  "expire_date_debt": "Expire day debt",
+  "payment_date_debt": "Debt payment day "
 }
