@@ -99,8 +99,8 @@ export default function OrderPage() {
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
-      console.log(billForCher80.current);
-      console.log(printDate.length);
+      // console.log(billForCher80.current);
+      // console.log(printDate.length);
       let dataUrls = [];
       for (const _ref of printDate) {
         const dataUrl = await html2canvas(_ref, {
@@ -268,7 +268,11 @@ export default function OrderPage() {
         <div>
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={() => onPrintForCher()}
+            onClick={async () => {
+              await onPrintForCher();
+              await handleUpdateOrderStatus("DOING");
+              getOrderWaitingAndDoingByStore();
+            }}
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}

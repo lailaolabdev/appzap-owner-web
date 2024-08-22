@@ -107,6 +107,7 @@ export default function TableList() {
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
+  const [loadingCheckOut, setLoadingCheckOut] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -143,7 +144,10 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    setStoreDetail,
   } = useStore();
+
+  // console.log("storeDetail?.statusPrintBill", storeDetail?.statusPrintBill);
 
   const reLoadData = () => {
     setReload(true);
@@ -295,7 +299,7 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      console.log("_resBill?.data:------>", _resBill?.data);
+      // console.log("_resBill?.data:------>", _resBill?.data);
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -454,6 +458,7 @@ export default function TableList() {
     }
     return _empty;
   };
+
   const _checkStatusCodeB = (code) => {
     let _checkBill = 0;
     for (let i = 0; i < code?.length; i++) {
@@ -481,7 +486,7 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  console.log("bill80Ref", bill80Ref);
+  // console.log("bill80Ref", bill80Ref);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
@@ -504,13 +509,14 @@ export default function TableList() {
   };
 
   const onPrintBill = async () => {
+    // setLoadingCheckOut(true);
+    getTableDataStore();
     try {
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
       await _createHistoriesPrinter(_dataBill);
-
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
@@ -570,19 +576,25 @@ export default function TableList() {
         }
       );
 
-      await Swal.fire({
-        icon: "success",
-        title: "ປິນສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
       // update bill status to call check out
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
+      // setLoadingCheckOut(false);
+      // setMenuItemDetailModal(false);
+      // setPopup({ CheckOutType: false });
+
+      setStoreDetail({ ...storeDetail, statusPrintBill: true });
+
+      await Swal.fire({
+        icon: "success",
+        title: `${t("checkbill_success")}`,
+        showConfirmButton: false,
+        timer: 1800,
+      });
       getTableDataStore();
     } catch (err) {
       console.log("err printer", err);
+      // setLoadingCheckOut(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -593,11 +605,16 @@ export default function TableList() {
     }
   };
 
+  useEffect(() => {
+    getTableDataStore();
+  }, [storeDetail?.statusPrintBill]);
+
   async function delay(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
+
   useEffect(() => {
     if (codeShortLink) {
       onPrintQR(codeShortLink);
@@ -609,6 +626,7 @@ export default function TableList() {
       if (!tokenQR) {
         return;
       }
+
       // alert(tokenQR);
       // setTokenForSmartOrder(tokenQR, (ee) => {
       //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
@@ -621,11 +639,15 @@ export default function TableList() {
       // if (!tokenForSmartOrder) {
       //   return;
       // }
+
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
+
+      // console.log("printerBillData", printerBillData);
+
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
         dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
@@ -644,6 +666,7 @@ export default function TableList() {
           scale: 350 / widthBill58,
         });
       }
+
       if (printerBillData?.type === "ETHERNET") {
         urlForPrinter = ETHERNET_PRINTER_PORT;
       }
@@ -668,7 +691,7 @@ export default function TableList() {
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
           type: printerBillData?.type,
-          port: "9100",
+          port: "9000",
         },
         async () => {
           await axios({
@@ -679,12 +702,14 @@ export default function TableList() {
           });
         }
       );
+
       // await axios({
       //   method: "post",
       //   url: urlForPrinter,
       //   data: bodyFormData,
       //   headers: { "Content-Type": "multipart/form-data" },
       // });
+
       setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
@@ -1344,7 +1369,7 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      console.log({ _data });
+      // console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
@@ -1371,6 +1396,8 @@ export default function TableList() {
       setPopup({ qrToken: true });
     }
   };
+
+  // console.log({ tableList });
 
   return (
     <div
@@ -1432,6 +1459,7 @@ export default function TableList() {
                   },
                 }}
               >
+                {loadingCheckOut && <Loading />}
                 {tableList &&
                   tableList?.map((table, index) => (
                     <div
@@ -2120,7 +2148,7 @@ export default function TableList() {
                   onClick={() => {
                     // openTableAndReturnTokenOfBill().then((e) => {
                     //   setTokenForSmartOrder(e);
-                    //   // onPrintQR(e);
+                    //   onPrintQR(e);
                     // });
                     openTableAndReturnCodeShortLink().then((e) => {
                       setCodeShortLink(e);

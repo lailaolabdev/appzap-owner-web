@@ -69,6 +69,7 @@ export default function FarkPage() {
       if (searchCode) {
         findby += `code=${searchCode}&`;
       }
+
       findby += `skip=${(pagination - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
       findby += `storeId=${storeDetail?._id}`;

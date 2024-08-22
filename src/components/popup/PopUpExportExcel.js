@@ -32,7 +32,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -44,7 +44,6 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
-
   const exportTopTen = async () => {
     setPopup({ printReportSale: true });
     try {

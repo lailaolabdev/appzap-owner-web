@@ -39,6 +39,7 @@ import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
 import { useTranslation } from "react-i18next";
+import PopUpExcelExportReport from "./../../components/popup/PopUpExcelExportReport";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -95,6 +96,9 @@ export default function DashboardPage() {
     );
     setSalesInformationReport(data);
   };
+
+  // console.log({ salesInformationReport });
+
   const getUserReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getUserReport(
@@ -132,7 +136,7 @@ export default function DashboardPage() {
     setMoneyReport(data);
   };
 
-  console.log("moneyReport", moneyReport);
+  // console.log("moneyReport", moneyReport);
 
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -238,7 +242,9 @@ export default function DashboardPage() {
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             // onClick={downloadCsv}
-            onClick={downloadExcel}
+            // onClick={downloadExcel}
+
+            onClick={() => setPopup({ exportReport: true })}
             disabled={loadingExportCsv}
           >
             <MdOutlineCloudDownload /> EXPORT
@@ -292,18 +298,19 @@ export default function DashboardPage() {
                   )}${storeDetail?.firstCurrency}`,
                 },
 
-                {
-                  title: `${t("paid_lak")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["totalCostLAK"]
-                  )} ${t("lak")}`,
-                },
-                {
-                  title: `${t("defult_profit")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfitLAK"]
-                  )}${storeDetail?.firstCurrency}`,
-                },
+                // {
+                //   title: `${t("paid_lak")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["totalCostLAK"]
+                //   )} ${t("lak")}`,
+                // },
+
+                // {
+                //   title: `${t("defult_profit")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["grossProfitLAK"]
+                //   )}${storeDetail?.firstCurrency}`,
+                // },
                 // {
                 //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
                 //   amount: `${moneyCurrency(
@@ -647,6 +654,13 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuAndCategoryHistoryComponent>
+
+      <PopUpExcelExportReport
+        open={popup?.exportReport}
+        setPopup={setPopup}
+        onClose={() => setPopup()}
+      />
+
       <PopUpPrintReport
         open={popup?.printReport}
         setPopup={setPopup}

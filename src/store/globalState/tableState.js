@@ -13,7 +13,7 @@ import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
 
-export const useTableState = (storeDetail) => {
+export const useTableState = () => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -42,17 +42,23 @@ export const useTableState = (storeDetail) => {
         .then((response) => {
           if (response.message === "server error") return;
           setTableList(response);
+
           let _openTable = response.filter((table) => {
             return table.isOpened && !table.isStaffConfirm;
           });
+
           setOpenTableData(_openTable);
         })
         .catch((err) => {});
     },
     []
-  ); // useEffect(() => {
+  );
+
+  // useEffect(() => {
   //   getTableDataStore();
-  // }, []);
+  //   console.log("UseEffect", storeDetail?.statusPrintBill);
+  // }, [storeDetail?.statusPrintBill !== undefined]);
+
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();

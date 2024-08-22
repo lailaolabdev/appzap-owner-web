@@ -204,8 +204,8 @@ export default function MemberPage() {
     } catch (err) {}
   };
 
-  console.log("storeDetail.valueTop", parseInt(storeDetail.limitData));
-  console.log("totalPaginationMemberTop", totalPaginationMemberTop);
+  // console.log("storeDetail.valueTop", parseInt(storeDetail.limitData));
+  // console.log("totalPaginationMemberTop", totalPaginationMemberTop);
 
   // console.log(memberListTop);
 

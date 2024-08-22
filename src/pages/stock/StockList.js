@@ -36,9 +36,15 @@ import { FaSearch } from "react-icons/fa";
 import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
 import { useTranslation } from "react-i18next";
 
+import { useStore } from "../../store";
+import { saveAs } from "file-saver";
+import { END_POINT_EXPORT } from "../../constants/api";
+import Axios from "axios";
+
 // ------------------------------------------------------------------------------- //
 
 export default function MenuList() {
+  const { storeDetail } = useStore();
   const { t } = useTranslation();
   // state
   const [popup, setPopup] = useState();
@@ -71,7 +77,6 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => {
-
     const getData = async () => {
       getCategory();
     };
@@ -127,7 +132,7 @@ export default function MenuList() {
       }
     } catch (err) {
       console.log("err:", err);
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
     }
   };
 
@@ -234,7 +239,7 @@ export default function MenuList() {
       setPrepaDatas(updatedProducts);
     }
   };
-  // console.log("prepaDatas updated666:", prepaDatas);
+  // console.log("prepaDatas updated:", prepaDatas);
 
   // filter sort quantitys stocks
   useEffect(() => {
@@ -247,7 +252,7 @@ export default function MenuList() {
       sorted = [...stocks]; // Default or 'All' case, not sorted
     }
 
-    console.log("sorted:======>", sorted);
+    // console.log("sorted:======>", sorted);
     setSortedData(sorted);
   }, [stocks, sortOrder]);
 
@@ -266,9 +271,37 @@ export default function MenuList() {
     getCountStocks();
   }, [page, filterName, selectCategories]);
 
-  console.log("selectCategories:---->", selectCategories);
+  // console.log("selectCategories:---->", selectCategories);
 
   // ------------------------------------------------------------ //
+
+  const exportToExcel = async () => {
+    try {
+      const findBy = `&skip=${
+        page * rowsPerPage
+      }&limit=${rowsPerPage}&search=${filterName}&stockCategoryId=${selectCategories}`;
+      const url =
+        END_POINT_EXPORT + "/export/stock?storeId=" + storeDetail?._id + findBy;
+      const _res = await Axios.get(url);
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: "blob", // Important to get the response as a Blob
+        });
+
+        // Create a Blob from the response data
+        // console.log("response", response.data);
+        const fileBlob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Use the file-saver library to save the file with a new name
+        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+      }
+    } catch (err) {
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
 
   return (
     <div style={BODY}>
@@ -283,7 +316,7 @@ export default function MenuList() {
       >
         <div style={{ display: "flex", gap: 10 }}>
           <Form.Control
-            placeholder={t('member_name')}
+            placeholder={t("member_name")}
             value={filterName}
             onChange={(e) => setFilterName(e?.target?.value)}
           />
@@ -291,33 +324,36 @@ export default function MenuList() {
             variant="primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
           >
-            <FaSearch /> {t('search')}
+            <FaSearch /> {t("search")}
           </Button>
         </div>
         <Button
           variant="outline-primary"
           onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
         >
-          {t('chose_type')}
+          {t("chose_type")}
         </Button>
         <select
           className="btn btn-outline-primary"
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
         >
-          <option value="All">{t('arranged')}</option>
-          <option value="asc">{t('ascend')}</option>
-          <option value="desc">{t('descend')}</option>
+          <option value="All">{t("arranged")}</option>
+          <option value="asc">{t("ascend")}</option>
+          <option value="desc">{t("descend")}</option>
         </select>
         <div style={{ flex: 1 }} />
         <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
-          {t('create_stock')}
+          {t("create_stock")}
         </Button>
         <Button
           variant="success"
           onClick={() => setPopup({ PopUpPreViewsPage: true })}
         >
           Print
+        </Button>
+        <Button variant="warning" onClick={() => exportToExcel()}>
+          Export
         </Button>
       </div>
       <div>
@@ -331,17 +367,17 @@ export default function MenuList() {
                   <th scope="col" style={{ width: 50 }}>
                     <Form.Check
                       onClick={() => onSelectStocksAll()}
-                      label={t('no')}
-                      id={t('no')}
+                      label={t("no")}
+                      id={t("no")}
                     />
                   </th>
                   <th scope="col" style={{ textAlign: "start" }}>
-                    {t('product_name')}
+                    {t("product_name")}
                   </th>
-                  <th scope="col">{t('product_type')}</th>
-                  <th scope="col">{t('stock_amount')}</th>
+                  <th scope="col">{t("product_type")}</th>
+                  <th scope="col">{t("stock_amount")}</th>
                   <th scope="col" style={{ textAlign: "end" }}>
-                    {t('manage_data')}
+                    {t("manage_data")}
                   </th>
                 </tr>
               </thead>

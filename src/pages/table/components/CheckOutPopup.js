@@ -124,7 +124,7 @@ export default function CheckOutPopup({
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBill = totalBillDefualt + taxAmount;
 
-  console.log({ totalBillDefualt, taxAmount, totalBill });
+  // console.log({ totalBillDefualt, taxAmount, totalBill });
 
   useEffect(() => {
     if (!open) return;
@@ -328,9 +328,9 @@ export default function CheckOutPopup({
       setCanCheckOut(true);
     } else if (forcus == "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      console.log(_sum);
-      console.log(transfer);
-      console.log(cash);
+      // console.log(_sum);
+      // console.log(transfer);
+      // console.log(cash);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -419,7 +419,7 @@ export default function CheckOutPopup({
   };
 
   const optionsData = membersData.map((item) => {
-    console.log(item);
+    // console.log(item);
     return {
       value: item.phone,
       label: `${item.name} (${item.phone})`,
@@ -428,7 +428,7 @@ export default function CheckOutPopup({
     };
   });
 
-  console.log("optionsData", optionsData);
+  // console.log("optionsData", optionsData);
 
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
