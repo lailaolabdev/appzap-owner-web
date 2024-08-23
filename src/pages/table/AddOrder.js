@@ -159,6 +159,8 @@ function AddOrder() {
       }
     }
 
+    console.log("ORDER DATA: ", dataArray);
+
     setSelectedMenu(dataArray);
   };
 
@@ -241,6 +243,7 @@ function AddOrder() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         console.log("_file===========>", _file);
         var bodyFormData = new FormData();
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         if (_index === 0) {

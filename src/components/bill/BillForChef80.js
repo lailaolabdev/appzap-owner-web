@@ -4,6 +4,7 @@ import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
 export default function BillForChef80({ selectedTable, dataBill, val }) {
+  console.log("VAL :", selectedTable);
   const options =
     val?.options
       ?.map((option) => `[${option.quantity} x ${option.name}]`)
@@ -40,7 +41,8 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 fontSize: 14,
               }}
             >
-              {val?.code}
+              {val?.code || selectedTable?.code} | #
+              {val?.queue || selectedTable?.queue}
             </td>
           </tr>
           <tr>

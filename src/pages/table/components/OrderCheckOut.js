@@ -194,7 +194,7 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
-              onClick={() => onPrintBill()}
+              onClick={() => onPrintBill(false)}
             >
               <FontAwesomeIcon
                 icon={faCashRegister}

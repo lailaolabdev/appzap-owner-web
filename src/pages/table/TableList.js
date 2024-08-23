@@ -66,6 +66,7 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -531,7 +532,7 @@ export default function TableList() {
     }
   };
 
-  const onPrintBill = async () => {
+  const onPrintBill = async (isPrintBill) => {
     try {
       let _dataBill = {
         ...dataBill,
@@ -576,6 +577,7 @@ export default function TableList() {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", isPrintBill);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -684,6 +686,7 @@ export default function TableList() {
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
@@ -889,16 +892,16 @@ export default function TableList() {
   const [onPrinting, setOnPrinting] = useState(false);
 
   const onPrintToKitchen = async () => {
-    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers)
+      printItems(groupedItems, combinedBillRefs, printers);
     } else {
       // Print with cut
       onPrintForCher();
     }
-  }
+  };
 
   const onPrintForCher = async () => {
     setOnPrinting(true);
@@ -2501,14 +2504,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {
