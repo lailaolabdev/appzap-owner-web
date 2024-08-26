@@ -388,7 +388,7 @@ function HistorySale() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    onClick={() => navigate(`/home-cafe`)}
+                    onClick={() => navigate(`/cafe`)}
                   >
                     {t("product_sales")}
                   </Button>

@@ -37,6 +37,7 @@ import ReservationDashboard from "../pages/reservation_dashboard/ReservationDash
 // import SettingTheme from "../pages/setting_theme/SettingTheme";
 import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
+import CreateMemberPageWithDebt from "../pages/member/CreateMemberPageWithDebt";
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
@@ -95,6 +96,10 @@ function Router() {
     {
       path: "/public/reservation/:storeId",
       element: <ReservationList />,
+    },
+    {
+      path: "/create/members",
+      element: <CreateMemberPageWithDebt />,
     },
     {
       path: "/",

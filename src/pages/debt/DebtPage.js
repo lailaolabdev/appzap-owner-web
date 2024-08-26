@@ -127,7 +127,7 @@ export default function DebtPage() {
                   bg="dark"
                   onClick={() => navigate("/debt/create")}
                 >
-                  <MdAssignmentAdd /> {t("debt_list")}
+                  <MdAssignmentAdd /> {t("debt_create")}
                 </Button>
               </Card.Header>
               <Card.Body>
@@ -139,7 +139,7 @@ export default function DebtPage() {
                     <th>{t("status")}</th>
                     <th>{t("date_add")}</th>
                     <th>{t("expired")}</th>
-                    <th>{t("date_pick_up")}</th>
+                    <th>{t("payment_date_debt")}</th>
                   </tr>
                   {isLoading ? (
                     <td colSpan={9} style={{ textAlign: "center" }}>
@@ -172,7 +172,7 @@ export default function DebtPage() {
                         <td style={{ textAlign: "start" }}>
                           {e?.outStockDate
                             ? moment(e?.outStockDate).format("DD/MM/YYYY")
-                            : ""}
+                            : t("avaliable")}
                         </td>
                       </tr>
                     ))

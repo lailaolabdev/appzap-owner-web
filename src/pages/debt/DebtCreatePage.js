@@ -24,14 +24,14 @@ import { getBanners } from "../../services/banner";
 import Upload from "../../components/Upload";
 import { IoBeerOutline } from "react-icons/io5";
 import ReactPaginate from "react-paginate";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import {
   createBillFark,
   getBillFarks,
   getMenuFarks,
 } from "../../services/fark";
 import { useStore } from "../../store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PopUpAddMenuForBillFark from "../../components/popup/PopUpAddMenuForBillFark";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
@@ -41,12 +41,17 @@ import BillFark80 from "../../components/bill/BillFark80";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
+import { getMembers } from "./../../services/member.service";
 
-let limitData = 50;
+// let limitData = 100;
 
 export default function DebtCreatePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  console.log(state?.key);
+
   // state
   const [isLoading, setIsLoading] = useState(true);
   const [loanDataList, setLoanDataList] = useState([]);
@@ -64,19 +69,27 @@ export default function DebtCreatePage() {
   const [endDate, setEndDate] = useState();
 
   const [printCode, setPrintCode] = useState();
+  const [membersData, setMembersData] = useState([]);
 
   const [widthBill80, setWidthBill80] = useState(0);
   let billFark80Ref = useRef();
   // store
   const { storeDetail } = useStore();
   const { printerCounter, printers } = useStore();
+
   // useEffect
   useEffect(() => {
     getData();
+    getMembersData();
   }, []);
+
+  useEffect(() => {
+    getMembersData();
+  }, [state?.key]);
+
   useEffect(() => {
     const element = billFark80Ref.current;
-    console.log(element); // 👈️ element here
+    // console.log(element); // 👈️ element here
   }, []);
   useLayoutEffect(() => {
     setWidthBill80(billFark80Ref.current.offsetWidth);
@@ -211,8 +224,8 @@ export default function DebtCreatePage() {
           scale: 530 / widthBill80,
         });
       }
-      console.log("dataImageForPrint", dataImageForPrint);
-      console.log("check 2");
+      // console.log("dataImageForPrint", dataImageForPrint);
+      // console.log("check 2");
 
       if (printerBillData?.type === "ETHERNET") {
         urlForPrinter = ETHERNET_PRINTER_PORT;
@@ -280,12 +293,28 @@ export default function DebtCreatePage() {
       });
     }
   };
+  const getMembersData = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      // findby += `skip=${(pagination - 1) * limitData}&`;
+      // findby += `limit=${limitData}&`;
+      const _data = await getMembers(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMembersData(_data.data.data);
+    } catch (err) {}
+  };
 
-  const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+  const options = membersData.map((data) => {
+    return {
+      id: data?._id,
+      value: data?.name,
+      label: data?.name,
+      tel: data?.phone,
+    };
+  });
+
   return (
     <>
       <div
@@ -299,7 +328,11 @@ export default function DebtCreatePage() {
         <div
           style={{
             width: "calc(100% - 50%)",
-            boxShadow: "0px -3px 5px 5px rgba(0,0,0,0.05)",
+            height: "calc(100%)",
+            boxShadow: "0px 2px 8px 2px rgba(0,0,0,0.05)",
+            borderBottom: "2px solid rgba(0,0,0,0.05)",
+            borderRadius: 10,
+            marginTop: "15px",
           }}
         >
           <div
@@ -323,16 +356,36 @@ export default function DebtCreatePage() {
             }}
           >
             <Form.Label>{t("customer_name")}</Form.Label>
-            <Select
-              options={options}
-              placeholder={t("customer_name")}
-              onChange={(e) => setCustomerName(e.value)}
-            />
-            <Form.Control
-              placeholder={t("customer_name")}
-              value={customerName}
-              onChange={(e) => setCustomerName(e?.target.value)}
-            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: "5px",
+              }}
+            >
+              <div style={{ width: "calc(100% - 115px)" }}>
+                <Select
+                  options={options}
+                  placeholder={t("customer_name")}
+                  onChange={(e) => {
+                    setCustomerPhone(e.tel);
+                    setCustomerName(e.value);
+                  }}
+                />
+              </div>
+              <button
+                className="btn btn-primary"
+                onClick={
+                  () => window.open("/create/members", "_blank").focus()
+                  // navigate("/reports/members-report/create-member", "_blank", {
+                  //   state: { key: "create-debt" },
+                  // })
+                }
+              >
+                ເພີ່ມລາຍຊື່ໃໝ່
+              </button>
+            </div>
+
             <Form.Label>{t("ctm_tel")}</Form.Label>
             <Form.Control
               placeholder={t("ctm_tel")}
@@ -354,7 +407,7 @@ export default function DebtCreatePage() {
               onChange={(e) => setEndDate(e?.target.value)}
             />
             <div style={{ flex: 1 }}>
-              <table style={{ width: "100%" }}>
+              {/* <table style={{ width: "100%" }}>
                 <tr>
                   <th>{t("name")}</th>
                   <th style={{ textAlign: "center" }}>{t("amount")}</th>
@@ -384,7 +437,7 @@ export default function DebtCreatePage() {
                       </td>
                     </tr>
                   ))}
-              </table>
+              </table> */}
               <div
                 style={{
                   width: "80mm",
@@ -396,7 +449,7 @@ export default function DebtCreatePage() {
                   expirDate={endDate}
                   customerPhone={customerPhone}
                   customerName={customerName}
-                  menuFarkData={menuFarkData?.filter((e) => e?.addToCart)}
+                  // menuFarkData={menuFarkData?.filter((e) => e?.addToCart)}
                   code={printCode}
                 />
               </div>

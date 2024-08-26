@@ -25,7 +25,7 @@ import DateTimeComponent from "../../components/DateTimeComponent";
 import { useTranslation } from "react-i18next";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 
-export default function CreateMemberPage() {
+export default function CreateMemberPageWithDebt() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -47,11 +47,12 @@ export default function CreateMemberPage() {
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
-      successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
-      if (state?.key) {
-        navigate("/debt/create");
-      } else {
-        navigate("/reports/members-report");
+      if (_data) {
+        successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
+        setTimeout(() => {
+          window.close();
+        }, 1000);
+        navigate("/debt/create", { state: { key: "create-debt" } });
       }
     } catch (err) {
       errorAdd(`${t("add_fail")}`);
