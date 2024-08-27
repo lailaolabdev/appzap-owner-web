@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
-
+import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
@@ -69,10 +69,13 @@ import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefN
 
 export default function TableList() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
+
+  // console.log({ state });
 
   // state
   const [show, setShow] = useState(false);
@@ -146,6 +149,8 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
   } = useStore();
+
+  // console.log("actions", storeDetail?.actions);
 
   const reLoadData = () => {
     setReload(true);
@@ -226,6 +231,9 @@ export default function TableList() {
 
   useEffect(() => {
     getUserData();
+    if (window.opener) {
+      window.opener.location.reload();
+    }
   }, []);
 
   const getUserData = async () => {
@@ -509,7 +517,7 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  console.log("bill80Ref", bill80Ref);
+  // console.log("bill80Ref", bill80Ref);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
@@ -889,16 +897,16 @@ export default function TableList() {
   const [onPrinting, setOnPrinting] = useState(false);
 
   const onPrintToKitchen = async () => {
-    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers)
+      printItems(groupedItems, combinedBillRefs, printers);
     } else {
       // Print with cut
       onPrintForCher();
     }
-  }
+  };
 
   const onPrintForCher = async () => {
     setOnPrinting(true);
@@ -1383,7 +1391,7 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      console.log({ _data });
+      // console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
@@ -2501,14 +2509,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {

@@ -10,6 +10,7 @@ import {
   Pagination,
   Nav,
   InputGroup,
+  Spinner,
 } from "react-bootstrap";
 import {
   faCertificate,
@@ -59,6 +60,11 @@ import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
 import PopUpMemberOrderAll from "../../components/popup/PopUpMemberOrderAll";
 import { use } from "i18next";
+import PopUpSetStartAndEndDateBirthDay from "../../components/popup/PopUpSetStartAndEndDateBirthDay";
+import PopUpSetStartAndEndDateTop from "../../components/popup/PopUpSetStartAndEndDateTop";
+import { set } from "lodash";
+
+import EmptyImage from "../../image/empty-removebg.png";
 
 let limitData = 10;
 
@@ -74,6 +80,20 @@ export default function MemberPage() {
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
+  const [startDateTop, setStartDateTop] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDateTop, setEndDateTop] = useState(moment().format("YYYY-MM-DD"));
+  const [startTimeTop, setStartTimeTop] = useState("00:00:00");
+  const [endTimeTop, setEndTimeTop] = useState("23:59:59");
+  const [startDateBirthDay, setStartDateBirthDay] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDateBirthDay, setEndDateBirthDay] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [startTimeBirthDay, setStartTimeBirthDay] = useState("00:00:00");
+  const [endTimeBirthDay, setEndTimeBirthDay] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [membersData, setMembersData] = useState();
   const [allPoints, setallPoints] = useState();
@@ -96,12 +116,16 @@ export default function MemberPage() {
   const [changeUi, setChangeUi] = useState("LIST_MEMBER");
 
   const [filterTopData, setFilterTopData] = useState([]);
-  const [filterBirthdaytData, setFilterBirthdaytData] = useState([]);
+
+  const [loading, setLoading] = useState([]);
 
   const [memberListTop, setMemberListTop] = useState();
   const [memberListBirthday, setMemberListBirthday] = useState();
+  const [valueTopList, setValueTopList] = useState();
 
   const { storeDetail, setStoreDetail } = useStore();
+
+  // console.log("valueTopList", valueTopList);
 
   // console.log("storeDetail", storeDetail);
   // provider
@@ -146,6 +170,14 @@ export default function MemberPage() {
     getTotalPoints();
   }, [selectedMemberOrders]);
 
+  useEffect(() => {
+    getMemberListTop();
+  }, [endDateTop, startDateTop, endTimeTop, startTimeTop, valueTopList]);
+
+  useEffect(() => {
+    getMemberListBirthday();
+  }, [endDateBirthDay, startDateBirthDay, endTimeBirthDay, startTimeBirthDay]);
+
   // useEffect(() => {
   //   console.log(object)
   // }, [selectedMenuIds]);
@@ -172,6 +204,7 @@ export default function MemberPage() {
 
   // function
   const getMembersData = async () => {
+    setLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
       let findby = "?";
@@ -185,44 +218,65 @@ export default function MemberPage() {
       if (_data.error) throw new Error("error");
       setMembersData(_data.data.data);
       setTotalPaginationMember(Math.ceil(_data?.data?.memberCount / limitData));
-    } catch (err) {}
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   };
 
   const getMemberListTop = async () => {
+    setLoading(true);
+    const start = moment(startDateTop).format("DD");
+    const end = moment(endDateTop).format("DD");
+    const month = moment(startDateTop).format("MM");
+
     try {
       const { TOKEN, DATA } = await getLocalData();
       let findby = "?";
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
-      findby += `limit=${limitData}&`;
+      findby += `limit=${valueTopList ? valueTopList : 10}&`;
+      findby += `startDate=${start}&`;
+      findby += `endDate=${end}&`;
+      findby += `month=${month}&`;
       const _data = await getMembersListTop(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberListTop(_data.data.data);
       setTotalPaginationMemberTop(
         storeDetail.limitData ? 1 : Math.ceil(10 / limitData)
       );
-    } catch (err) {}
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   };
 
   // console.log(memberListTop);
 
   const getMemberListBirthday = async () => {
+    setLoading(true);
+    const start = moment(startDateBirthDay).format("DD");
+    const end = moment(endDateBirthDay).format("DD");
+    const month = moment(startDateBirthDay).format("MM");
     try {
       const { TOKEN, DATA } = await getLocalData();
       let findby = "?";
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
-      findby += `startDay=${storeDetail.startDay}&`;
-      findby += `endDay=${storeDetail.endDay}&`;
-      findby += `month=${storeDetail.month}&`;
+      findby += `startDay=${start}&`;
+      findby += `endDay=${end}&`;
+      findby += `month=${month}&`;
       const _data = await getMembersListBirthday(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMemberListBirthday(_data.data.data);
       setTotalPaginationMemberBirthday(
         Math.ceil(_data?.data?.memberCount / limitData)
       );
-    } catch (err) {}
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
   };
 
   const getAllPoint = async () => {
@@ -316,24 +370,6 @@ export default function MemberPage() {
     setMemberTotalMoney(_data.totalMoney);
   };
 
-  const FilterTop = async (valueTop) => {
-    setStoreDetail({ ...storeDetail, limitData: valueTop });
-    try {
-      const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      findby += `skip=${(paginationMember - 1) * limitData}&`;
-      findby += `limit=${valueTop}&`;
-      const _data = await getMembers(findby, TOKEN);
-      if (_data.error) throw new Error("error");
-      setMemberListTop(_data.data.data);
-      setTotalPaginationMemberTop(
-        Math.ceil(storeDetail.limitData ? 1 : Math.ceil(10 / limitData))
-      );
-    } catch (err) {}
-  };
-
-  // console.log("MEMBERLISTTOP", memberListTop);
   const getMemberListBirthdayFilter = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -541,6 +577,7 @@ export default function MemberPage() {
                   endDay: "",
                   month: "",
                 });
+                setValueTopList("");
               }}
             >
               <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
@@ -591,6 +628,7 @@ export default function MemberPage() {
               onClick={() => {
                 getMemberListBirthday();
                 setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
+                setValueTopList("");
               }}
             >
               <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "}
@@ -652,25 +690,35 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
-                {membersData?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.name}</td>
-                    <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                    <td style={{ textAlign: "center" }}>{e?.point}</td>
-                    <td style={{ textAlign: "center" }}>{e?.bill}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {moment(e?.createdAt).format("DD/MM/YYYY")}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => handleEditClick(e)}
-                      >
-                        {t("edit")}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {loading ? (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : membersData.length > 0 ? (
+                  membersData?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moment(e?.createdAt).format("DD/MM/YYYY")}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleEditClick(e)}
+                        >
+                          {t("edit")}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <img src={EmptyImage} alt="" width={300} height={200} />
+                  </td>
+                )}
               </table>
             </Card.Body>
             <div
@@ -726,11 +774,18 @@ export default function MemberPage() {
               <span>{t("lists_top")}</span>
             </Card.Header>
             <Card.Body>
-              <div style={{ width: "100%" }}>
+              <div style={{ width: "100%", display: "flex", gap: 10 }}>
                 <select
                   className="form-control"
                   // value={filterCategory}
-                  onChange={(e) => FilterTop(e.target.value)}
+                  style={{ width: "calc(100% - 40%)" }}
+                  onChange={(e) => {
+                    setValueTopList(e.target.value);
+                    setStoreDetail({
+                      ...storeDetail,
+                      limitData: e.target.value,
+                    });
+                  }}
                 >
                   <option selected disabled>
                     {t("chose_top")}
@@ -740,7 +795,23 @@ export default function MemberPage() {
                   <option value="3">3</option>
                   <option value="1">1</option>
                 </select>
+                <Button
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setPopup({ popupfiltterTop: true })}
+                >
+                  <BsFillCalendarWeekFill />
+                  <div>
+                    {startDateTop} {startTimeTop}
+                  </div>{" "}
+                  ~{" "}
+                  <div>
+                    {endDateTop} {endTimeTop}
+                  </div>
+                </Button>
               </div>
+
               <table style={{ width: "100%" }}>
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
@@ -750,25 +821,36 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("money_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
-                {memberListTop?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.name}</td>
-                    <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                    <td style={{ textAlign: "center" }}>{e?.point}</td>
-                    <td style={{ textAlign: "center" }}>{e?.bill}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {moneyCurrency(e?.money)}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => handleEditClick(e)}
-                      >
-                        {t("edit")}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {loading ? (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : memberListTop?.length > 0 ? (
+                  memberListTop?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.money)}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleEditClick(e)}
+                        >
+                          {t("edit")}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    {" "}
+                    <img src={EmptyImage} alt="" width={300} height={200} />
+                  </td>
+                )}
               </table>
             </Card.Body>
             <div
@@ -824,64 +906,30 @@ export default function MemberPage() {
               <span>{t("lists_birthday")}</span>
             </Card.Header>
             <Card.Body>
-              <div style={{ width: "100%" }}>
-                <div>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <div>ເລືອກວັນທີ :</div>
+                <Button
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setPopup({ popupfiltterBD: true })}
+                >
+                  <BsFillCalendarWeekFill />
                   <div>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        gap: { md: 20, xs: 10 },
-                        justifyContent: "space-between",
-                        // flexDirection: { md: "row", xs: "column" },
-                      }}
-                    >
-                      <InputGroup>
-                        <Form.Control
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => {
-                            setStartDate(e.target.value);
-                            setStoreDetail({
-                              ...storeDetail,
-                              startDay: moment(e.target.value).format("DD"),
-                              month: moment(e.target.value).format("MM"),
-                            });
-                          }}
-                          // max={endDate}
-                        />
-                      </InputGroup>
-                      <div style={{ textAlign: "center" }}> ຫາ </div>
-                      <InputGroup>
-                        <Form.Control
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => {
-                            setEndDate(e.target.value);
-                            // FilterBirthday(e.target.value);
-                            setStoreDetail({
-                              ...storeDetail,
-                              endDay: moment(e.target.value).format("DD"),
-                            });
-                          }}
-                          // min={startDate}
-                        />
-                      </InputGroup>
-                      <Button
-                        onClick={() => {
-                          getMemberListBirthdayFilter();
-                        }}
-                        variant="primary"
-                        style={{
-                          display: "flex",
-                          gap: 10,
-                          alignItems: "center",
-                        }}
-                      >
-                        <FaSearch /> {t("search")}
-                      </Button>
-                    </Box>
+                    {startDateBirthDay} {startTimeBirthDay}
+                  </div>{" "}
+                  ~{" "}
+                  <div>
+                    {endDateBirthDay} {endTimeBirthDay}
                   </div>
-                </div>
+                </Button>
               </div>
               <table style={{ width: "100%" }}>
                 <tr>
@@ -892,25 +940,35 @@ export default function MemberPage() {
                   <th style={{ textAlign: "center" }}>{t("birth_day")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
                 </tr>
-                {memberListBirthday?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.name}</td>
-                    <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                    <td style={{ textAlign: "center" }}>{e?.point}</td>
-                    <td style={{ textAlign: "center" }}>{e?.bill}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {moment(e?.birthday).format("DD/MM/YYYY")}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      <Button
-                        variant="outline-primary"
-                        onClick={() => handleEditClick(e)}
-                      >
-                        {t("edit")}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {loading ? (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : memberListBirthday?.length > 0 ? (
+                  memberListBirthday?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moment(e?.birthday).format("DD/MM/YYYY")}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleEditClick(e)}
+                        >
+                          {t("edit")}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <img src={EmptyImage} alt="" width={300} height={200} />
+                  </td>
+                )}
               </table>
             </Card.Body>
             <div
@@ -1174,6 +1232,31 @@ export default function MemberPage() {
         endTime={endTime}
         endDate={endDate}
       />
+      <PopUpSetStartAndEndDateTop
+        open={popup?.popupfiltterTop}
+        onClose={() => setPopup()}
+        startDateTop={startDateTop}
+        setStartDateTop={setStartDateTop}
+        setStartTimeTop={setStartTimeTop}
+        startTimeTop={startTimeTop}
+        setEndDateTop={setEndDateTop}
+        setEndTimeTop={setEndTimeTop}
+        endTimeTop={endTimeTop}
+        endDateTop={endDateTop}
+      />
+      <PopUpSetStartAndEndDateBirthDay
+        open={popup?.popupfiltterBD}
+        onClose={() => setPopup()}
+        startDateBirthDay={startDateBirthDay}
+        setStartDateBirthDay={setStartDateBirthDay}
+        setStartTimeBirthDay={setStartTimeBirthDay}
+        startTimeBirthDay={startTimeBirthDay}
+        setEndDateBirthDay={setEndDateBirthDay}
+        setEndTimeBirthDay={setEndTimeBirthDay}
+        endTimeBirthDay={endTimeBirthDay}
+        endDateBirthDay={endDateBirthDay}
+      />
+
       <PopUpMemberEdit
         open={popup?.PopUpMemberEdit}
         onClose={() => setPopup()}

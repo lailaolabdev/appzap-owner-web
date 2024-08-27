@@ -4,32 +4,34 @@ import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
 
-export default function PopUpSetStartAndEndDate({
+export default function PopUpSetStartAndEndDateTop({
   open,
   onClose,
-  startDate,
-  setStartDate,
-  setEndDate,
-  setStartTime,
-  setEndTime,
-  startTime,
-  endTime,
-  endDate,
+  startDateTop,
+  setStartDateTop,
+  setEndDateTop,
+  setStartTimeTop,
+  setEndTimeTop,
+  startTimeTop,
+  endTimeTop,
+  endDateTop,
 }) {
   // state
-  const [valueStartDate, setValueStartDate] = useState(startDate);
-  const [valueEndDate, setValueEndDate] = useState(endDate);
-  const [valueStartTime, setValueStartTime] = useState(startTime);
-  const [valueEndTime, setValueEndTime] = useState(endTime);
+  const [valueStartDate, setValueStartDate] = useState(startDateTop);
+  const [valueEndDate, setValueEndDate] = useState(endDateTop);
+  const [valueStartTime, setValueStartTime] = useState(startTimeTop);
+  const [valueEndTime, setValueEndTime] = useState(endTimeTop);
   const [selectedButton, setSelectedButton] = useState(null);
+
+  const { storeDetail, setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {
-    setValueStartDate(startDate);
-    setValueEndDate(endDate);
-    setValueStartTime(startTime);
-    setValueEndTime(endTime);
-  }, [startDate, endDate, startTime, endTime]);
+    setValueStartDate(startDateTop);
+    setValueEndDate(endDateTop);
+    setValueStartTime(startTimeTop);
+    setValueEndTime(endTimeTop);
+  }, [startDateTop, endDateTop, startTimeTop, endTimeTop]);
 
   const onGetToday = () => {
     const today = moment().format("YYYY-MM-DD");
@@ -91,7 +93,7 @@ export default function PopUpSetStartAndEndDate({
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
-      <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
+      <Modal.Header closeButton>ເລືອກວັນທີ Top</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",
@@ -210,10 +212,17 @@ export default function PopUpSetStartAndEndDate({
         </Button>
         <Button
           onClick={() => {
-            setStartDate(valueStartDate);
-            setEndDate(valueEndDate);
-            setStartTime(valueStartTime);
-            setEndTime(valueEndTime);
+            setStartDateTop(valueStartDate);
+            setEndDateTop(valueEndDate);
+            setStartTimeTop(valueStartTime);
+            setEndTimeTop(valueEndTime);
+
+            setStoreDetail({
+              ...storeDetail,
+              startDateTop: moment(valueStartDate).format("DD"),
+              endDateTop: moment(valueEndDate).format("DD"),
+              monthTop: moment(valueStartDate).format("MM"),
+            });
             onClose();
           }}
         >

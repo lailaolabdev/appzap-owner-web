@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import Select from "react-select";
 import Box from "../../../components/Box";
@@ -65,6 +66,8 @@ export default function CheckOutPopup({
   const [membersData, setMembersData] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMemberData();
@@ -267,7 +270,7 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log('transfer', transfer)
+  // console.log('transfer', transfer)
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();
@@ -413,7 +416,7 @@ export default function CheckOutPopup({
   };
 
   const optionsData = membersData.map((item) => {
-    console.log(item);
+    // console.log(item);
     return {
       value: item.phone,
       label: `${item.name} (${item.phone})`,
@@ -422,7 +425,7 @@ export default function CheckOutPopup({
     };
   });
 
-  console.log("optionsData", optionsData);
+  // console.log("optionsData", optionsData);
 
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
@@ -586,14 +589,25 @@ export default function CheckOutPopup({
                   {t("point")}: {memberData?.point}
                 </InputGroup.Text>
               </InputGroup> */}
-              <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
-                <div style={{ width: "100%" }}>
+              <div style={{ display: "flex", gap: "5px" }} hidden={!hasCRM}>
+                <div style={{ width: "calc(100% - 48%)" }}>
                   <Select
                     placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
                     options={optionsData}
                     onChange={handleSearchInput}
                   />
                 </div>
+                <Button
+                  className="primary"
+                  onClick={() => {
+                    // navigate("/add/newMembers", {
+                    //   state: { key: "newMembers" },
+                    // });
+                    window.open("/add/newMembers");
+                  }}
+                >
+                  ເພີ່ມໃໝ່{" "}
+                </Button>
                 <div style={{ width: "9rem" }}>
                   <InputGroup.Text>
                     {t("name")}: {memberData?.name}

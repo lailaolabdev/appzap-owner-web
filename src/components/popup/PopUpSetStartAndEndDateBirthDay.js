@@ -4,32 +4,32 @@ import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
 
-export default function PopUpSetStartAndEndDate({
+export default function PopUpSetStartAndEndDateBirthDay({
   open,
   onClose,
-  startDate,
-  setStartDate,
-  setEndDate,
-  setStartTime,
-  setEndTime,
-  startTime,
-  endTime,
-  endDate,
+  startDateBirthDay,
+  setStartDateBirthDay,
+  setEndDateBirthDay,
+  setStartTimeBirthDay,
+  setEndTimeBirthDay,
+  startTimeBirthDay,
+  endTimeBirthDay,
+  endDateBirthDay,
 }) {
   // state
-  const [valueStartDate, setValueStartDate] = useState(startDate);
-  const [valueEndDate, setValueEndDate] = useState(endDate);
-  const [valueStartTime, setValueStartTime] = useState(startTime);
-  const [valueEndTime, setValueEndTime] = useState(endTime);
+  const [valueStartDate, setValueStartDate] = useState(startDateBirthDay);
+  const [valueEndDate, setValueEndDate] = useState(endDateBirthDay);
+  const [valueStartTime, setValueStartTime] = useState(startTimeBirthDay);
+  const [valueEndTime, setValueEndTime] = useState(endTimeBirthDay);
   const [selectedButton, setSelectedButton] = useState(null);
 
   // useEffect
   useEffect(() => {
-    setValueStartDate(startDate);
-    setValueEndDate(endDate);
-    setValueStartTime(startTime);
-    setValueEndTime(endTime);
-  }, [startDate, endDate, startTime, endTime]);
+    setValueStartDate(startDateBirthDay);
+    setValueEndDate(endDateBirthDay);
+    setValueStartTime(startTimeBirthDay);
+    setValueEndTime(endTimeBirthDay);
+  }, [startDateBirthDay, endDateBirthDay, startTimeBirthDay, endTimeBirthDay]);
 
   const onGetToday = () => {
     const today = moment().format("YYYY-MM-DD");
@@ -91,7 +91,7 @@ export default function PopUpSetStartAndEndDate({
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
-      <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
+      <Modal.Header closeButton>ເລືອກວັນທີ BD</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",
@@ -210,10 +210,10 @@ export default function PopUpSetStartAndEndDate({
         </Button>
         <Button
           onClick={() => {
-            setStartDate(valueStartDate);
-            setEndDate(valueEndDate);
-            setStartTime(valueStartTime);
-            setEndTime(valueEndTime);
+            setStartDateBirthDay(valueStartDate);
+            setEndDateBirthDay(valueEndDate);
+            setStartTimeBirthDay(valueStartTime);
+            setEndTimeBirthDay(valueEndTime);
             onClose();
           }}
         >
