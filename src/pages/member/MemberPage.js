@@ -28,6 +28,7 @@ import {
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
+import styled from "styled-components";
 import Box from "../../components/Box";
 import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
 import moment from "moment";
@@ -65,6 +66,7 @@ import PopUpSetStartAndEndDateTop from "../../components/popup/PopUpSetStartAndE
 import { set } from "lodash";
 
 import EmptyImage from "../../image/empty-removebg.png";
+import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartAndEndDateMember";
 
 let limitData = 10;
 
@@ -94,6 +96,14 @@ export default function MemberPage() {
   );
   const [startTimeBirthDay, setStartTimeBirthDay] = useState("00:00:00");
   const [endTimeBirthDay, setEndTimeBirthDay] = useState("23:59:59");
+  const [startDateMember, setStartDateMember] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDateMember, setEndDateMember] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [startTimeMember, setStartTimeMember] = useState("00:00:00");
+  const [endTimeMember, setEndTimeMember] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [membersData, setMembersData] = useState();
   const [allPoints, setallPoints] = useState();
@@ -171,6 +181,16 @@ export default function MemberPage() {
   }, [selectedMemberOrders]);
 
   useEffect(() => {
+    getMembersData();
+  }, [
+    endDateMember,
+    startDateMember,
+    endTimeMember,
+    startTimeMember,
+    // filterValue,
+  ]);
+
+  useEffect(() => {
     getMemberListTop();
   }, [endDateTop, startDateTop, endTimeTop, startTimeTop, valueTopList]);
 
@@ -204,6 +224,10 @@ export default function MemberPage() {
 
   // function
   const getMembersData = async () => {
+    const start = moment(startDateMember).format("DD");
+    const end = moment(endDateMember).format("DD");
+    const month = moment(startDateMember).format("MM");
+
     setLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -214,6 +238,10 @@ export default function MemberPage() {
       if (filterValue) {
         findby += `search=${filterValue}&`;
       }
+      findby += `startDate=${start}&`;
+      findby += `endDate=${end}&`;
+      findby += `month=${month}&`;
+
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data.data.data);
@@ -665,12 +693,13 @@ export default function MemberPage() {
               </Button>
             </Card.Header>
             <Card.Body>
-              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-                <div style={{ display: "flex", gap: 10 }}>
+              <CardHeader>
+                <div className="box-search">
                   <Form.Control
                     placeholder={t("search_name")}
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
+                    className="input-search"
                   />
                   <Button
                     onClick={() => getMembersData()}
@@ -680,7 +709,27 @@ export default function MemberPage() {
                     <FaSearch /> {t("search")}
                   </Button>
                 </div>
-              </div>
+
+                <div className="box-date-filter">
+                  <div>ເລືອກວັນທີ : </div>
+                  <Button
+                    variant="outline-primary"
+                    size="small"
+                    className="btn-filter"
+                    onClick={() => setPopup({ popupfiltterMember: true })}
+                  >
+                    <BsFillCalendarWeekFill />
+                    <div>
+                      {startDateMember} {startTimeMember}
+                    </div>{" "}
+                    ~{" "}
+                    <div>
+                      {endDateMember} {endTimeMember}
+                    </div>
+                  </Button>
+                </div>
+              </CardHeader>
+
               <table style={{ width: "100%" }}>
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
@@ -774,11 +823,10 @@ export default function MemberPage() {
               <span>{t("lists_top")}</span>
             </Card.Header>
             <Card.Body>
-              <div style={{ width: "100%", display: "flex", gap: 10 }}>
+              <CardHeader>
                 <select
                   className="form-control"
-                  // value={filterCategory}
-                  style={{ width: "calc(100% - 40%)" }}
+                  id="form-control"
                   onChange={(e) => {
                     setValueTopList(e.target.value);
                     setStoreDetail({
@@ -798,7 +846,7 @@ export default function MemberPage() {
                 <Button
                   variant="outline-primary"
                   size="small"
-                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  className="btn-fill-date"
                   onClick={() => setPopup({ popupfiltterTop: true })}
                 >
                   <BsFillCalendarWeekFill />
@@ -810,7 +858,7 @@ export default function MemberPage() {
                     {endDateTop} {endTimeTop}
                   </div>
                 </Button>
-              </div>
+              </CardHeader>
 
               <table style={{ width: "100%" }}>
                 <tr>
@@ -1232,6 +1280,18 @@ export default function MemberPage() {
         endTime={endTime}
         endDate={endDate}
       />
+      <PopUpSetStartAndEndDateMember
+        open={popup?.popupfiltterMember}
+        onClose={() => setPopup()}
+        startDateMember={startDateMember}
+        setStartDateMember={setStartDateMember}
+        setStartTimeMember={setStartTimeMember}
+        startTimeMember={startTimeMember}
+        setEndDateMember={setEndDateMember}
+        setEndTimeMember={setEndTimeMember}
+        endTimeMember={endTimeMember}
+        endDateMember={endDateMember}
+      />
       <PopUpSetStartAndEndDateTop
         open={popup?.popupfiltterTop}
         onClose={() => setPopup()}
@@ -1338,3 +1398,144 @@ function ReportCard({ title, chart }) {
     </Card>
   );
 }
+
+const CardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  .box-search {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    .input-search {
+      width: 100%;
+    }
+  }
+  .box-date-filter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10;
+    .btn-filter {
+      display: flex;
+      gap: 10;
+      align-items: "center";
+      width: 82%;
+      margin-left: 5px;
+    }
+  }
+
+  #form-control {
+    width: calc(100% - 40%);
+  }
+  .btn-fill-date {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+    .box-search {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      .input-search {
+        width: 100%;
+      }
+    }
+    .box-date-filter {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10;
+      .btn-filter {
+        margin-left: 5px;
+        display: flex;
+        gap: 10;
+        align-items: center;
+        width: 75%;
+      }
+    }
+    #form-control {
+      width: calc(100%);
+      margin-bottom: 8px;
+    }
+    .btn-fill-date {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+  }
+  @media (max-width: 820px) {
+    .box-search {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      .input-search {
+        width: 100%;
+      }
+    }
+    .box-date-filter {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10;
+      .btn-filter {
+        margin-left: 5px;
+        display: flex;
+        gap: 10;
+        align-items: center;
+        width: 75%;
+      }
+    }
+    #form-control {
+      width: calc(100%);
+      margin-bottom: 8px;
+    }
+    .btn-fill-date {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+  }
+  @media (max-width: 900px) {
+    .box-search {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      .input-search {
+        width: 100%;
+      }
+    }
+    .box-date-filter {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10;
+      .btn-filter {
+        margin-left: 5px;
+        display: flex;
+        gap: 10;
+        align-items: center;
+        width: 75%;
+      }
+    }
+    #form-control {
+      width: calc(100%);
+      margin-bottom: 8px;
+    }
+    .btn-fill-date {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+  }
+`;

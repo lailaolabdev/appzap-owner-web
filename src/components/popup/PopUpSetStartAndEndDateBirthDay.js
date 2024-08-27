@@ -91,7 +91,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
-      <Modal.Header closeButton>ເລືອກວັນທີ BD</Modal.Header>
+      <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",

@@ -93,7 +93,7 @@ export default function PopUpSetStartAndEndDateTop({
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
-      <Modal.Header closeButton>ເລືອກວັນທີ Top</Modal.Header>
+      <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",

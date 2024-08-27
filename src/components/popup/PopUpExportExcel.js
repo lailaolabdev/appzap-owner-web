@@ -20,10 +20,12 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportAllMember = async () => {
     setPopup({ printReportSale: true });
     try {
-      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      const findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&month=${storeDetail?.monthMember}`;
       const url =
-        END_POINT_EXPORT + "/export/member?storeId=" + storeDetail?._id;
-      // findBy;
+        END_POINT_EXPORT +
+        "/export/member?storeId=" +
+        storeDetail?._id +
+        findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -32,7 +34,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -63,7 +65,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -89,7 +91,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });

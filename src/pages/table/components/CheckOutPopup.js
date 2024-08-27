@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import styled from "styled-components";
 import Select from "react-select";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
@@ -504,6 +505,7 @@ export default function CheckOutPopup({
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
             </div>
+
             <div
               style={{
                 display: "flex",
@@ -589,35 +591,44 @@ export default function CheckOutPopup({
                   {t("point")}: {memberData?.point}
                 </InputGroup.Text>
               </InputGroup> */}
-              <div style={{ display: "flex", gap: "5px" }} hidden={!hasCRM}>
-                <div style={{ width: "calc(100% - 48%)" }}>
-                  <Select
-                    placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
+
+              <BoxMember hidden={!hasCRM}>
+                <div className="box-left">
+                  <div className="box-search">
+                    <Select
+                      placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
+                      options={optionsData}
+                      onChange={handleSearchInput}
+                    />
+                  </div>
+                  <Button
+                    className="primary"
+                    onClick={() => {
+                      // navigate("/add/newMembers", {
+                      //   state: { key: "newMembers" },
+                      // });
+                      window.open("/add/newMembers");
+                    }}
+                  >
+                    ເພີ່ມໃໝ່{" "}
+                  </Button>
                 </div>
-                <Button
-                  className="primary"
-                  onClick={() => {
-                    // navigate("/add/newMembers", {
-                    //   state: { key: "newMembers" },
-                    // });
-                    window.open("/add/newMembers");
-                  }}
-                >
-                  ເພີ່ມໃໝ່{" "}
-                </Button>
-                <div style={{ width: "9rem" }}>
-                  <InputGroup.Text>
-                    {t("name")}: {memberData?.name}
-                  </InputGroup.Text>
+                <div className="box-right">
+                  <div className="box-name">
+                    <InputGroup.Text>
+                      {t("name")}: {memberData?.name}
+                    </InputGroup.Text>
+                  </div>
+                  <div className="box-name">
+                    <InputGroup.Text>
+                      {t("point")}:{" "}
+                      {memberData?.point ? memberData?.point : "0"}
+                    </InputGroup.Text>
+                  </div>
                 </div>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point ? memberData?.point : "0"}
-                </InputGroup.Text>
-              </div>
+              </BoxMember>
             </div>
+
             <div
               style={{
                 marginBottom: 10,
@@ -790,3 +801,54 @@ export default function CheckOutPopup({
     </Modal>
   );
 }
+
+const BoxMember = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+
+  .box-left {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+
+    .box-search {
+      width: calc(100% - 25%);
+    }
+  }
+
+  .box-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 10px;
+    .box-name {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+
+    .box-left {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      margin-bottom: 10px;
+      .box-search {
+        width: calc(100% - 18%);
+      }
+    }
+
+    .box-right {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+      gap: 10px;
+      .box-name {
+        width: 100%;
+      }
+    }
+  }
+`;
