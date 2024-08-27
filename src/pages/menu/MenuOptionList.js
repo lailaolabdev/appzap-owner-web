@@ -14,11 +14,7 @@ import {
   Breadcrumb,
 } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import {
-  MENUS,
-  getLocalData,
-  END_POINT_SEVER,
-} from "../../constants/api";
+import { MENUS, getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
@@ -28,9 +24,9 @@ import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 
 const OPTION_PRICE_CURRENCY = {
-    LAK: "LAK",
+  LAK: "LAK",
   THB: "THB",
-  USD: "USD"
+  USD: "USD",
 };
 
 export default function MenuListOption() {
@@ -52,7 +48,9 @@ export default function MenuListOption() {
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
-  const [optionPriceCurrency, setOptionPriceCurrency] = useState(OPTION_PRICE_CURRENCY.LAK);
+  const [optionPriceCurrency, setOptionPriceCurrency] = useState(
+    OPTION_PRICE_CURRENCY.LAK
+  );
   const [dataMenuOption, setDataMenuOption] = useState([]);
   const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([]);
   const [detailMenu, setDetailMenu] = useState();
@@ -86,8 +84,8 @@ export default function MenuListOption() {
           setIsLoading(true);
           await fetch(
             MENUS +
-            `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
-              : `&categoryId=${filterCategory}`
+              `/?storeId=${_localData?.DATA?.storeId}${
+                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
               }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
@@ -135,7 +133,6 @@ export default function MenuListOption() {
       setIsLoading(false);
     }
   };
-  
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -173,7 +170,8 @@ export default function MenuListOption() {
       };
 
       const resData = await axios.post(
-        END_POINT_SEVER + `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
+        END_POINT_SEVER +
+          `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
         createData,
         { headers: headers }
       );
@@ -203,7 +201,8 @@ export default function MenuListOption() {
       };
 
       const resData = await axios.put(
-        END_POINT_SEVER + `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
+        END_POINT_SEVER +
+          `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
         updateData,
         { headers: headers }
       );
@@ -254,22 +253,25 @@ export default function MenuListOption() {
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
+  const _categoryType = () => {
+    navigate(`/settingStore/menu/category-type`);
+  };
 
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('option_menu')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("option_menu")}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
-          <Nav variant="tabs" defaultActiveKey='/settingStore/menu-option'>
+          <Nav variant="tabs" defaultActiveKey="/settingStore/menu-option">
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                {t('menu')}
+                {t("menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -277,7 +279,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t('option_menu')}
+                {t("option_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -285,7 +287,15 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t('food_type')}
+                {t("food_type")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category-type"
+                onClick={() => _categoryType()}
+              >
+                {t("categoryType")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -293,7 +303,13 @@ export default function MenuListOption() {
 
         <Row>
           <Col sm="12">
-            <Row style={{ marginTop: 14, marginBottom: 14, justifyContent: "flex-end" }}>
+            <Row
+              style={{
+                marginTop: 14,
+                marginBottom: 14,
+                justifyContent: "flex-end",
+              }}
+            >
               <Col
                 md="10"
                 style={{
@@ -392,7 +408,7 @@ export default function MenuListOption() {
             initialValues={{
               name: "",
               price: 0,
-              currency: OPTION_PRICE_CURRENCY.LAK
+              currency: OPTION_PRICE_CURRENCY.LAK,
             }}
             validate={(values) => {
               const errors = {};
@@ -487,12 +503,7 @@ export default function MenuListOption() {
           </Formik>
         </Modal>
         {/* update menu */}
-        <Modal
-          show={show2}
-          onHide={handleClose2}
-          keyboard={false}
-          size="lg"
-        >
+        <Modal show={show2} onHide={handleClose2} keyboard={false} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>ອັບເດດອ໋ອບຊັນ</Modal.Title>
           </Modal.Header>
@@ -594,7 +605,6 @@ export default function MenuListOption() {
             )}
           </Formik>
         </Modal>
-        
       </Box>
     </div>
   );

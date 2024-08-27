@@ -1,6 +1,7 @@
 import { END_POINT_SEVER } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
+import { Store } from "@material-ui/icons";
 
 export const getMenus = async (findby) => {
   try {
@@ -48,6 +49,16 @@ export const addMenu = async (data) => {
       headers: await getHeaders(),
     });
     return _category;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getCategoryType = async (storeId) => {
+  try {
+    const url = `${END_POINT_SEVER}/v3/categoroy-type?storeId=${storeId}`;
+    const res = await axios.get(url);
+    return res.data?.data;
   } catch (error) {
     return error;
   }

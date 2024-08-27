@@ -1,29 +1,26 @@
-import Axios from "axios";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { BsPrinter } from "react-icons/bs";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 
-export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
+export default function PopUpEditServiceCharge({
+  open,
+  onClose,
+  onSubmit,
+  prevServiceCharge,
+}) {
   const { t } = useTranslation();
-  // state
-  const [tax, setTax] = useState(0);
+  const [serviceCharge, setServiceCharge] = useState(0);
 
-  // useEffect
   useEffect(() => {
-    setTax(prevTax);
-  }, [prevTax]);
-  // functions
-
+    setServiceCharge(prevServiceCharge);
+  }, [prevServiceCharge]);
   return (
     <Modal show={open} onHide={onClose} size="md">
       <Modal.Header
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        {t("edit_tax")}
+        {t("edit_service_charge")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -34,12 +31,12 @@ export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
       >
         <Form.Control
           type="number"
-          value={tax}
-          onChange={(e) => setTax(e.target.value)}
+          value={serviceCharge}
+          onChange={(e) => setServiceCharge(e.target.value)}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => onSubmit(tax)}>{t("save")}</Button>
+        <Button onClick={() => onSubmit(serviceCharge)}>{t("save")}</Button>
       </Modal.Footer>
     </Modal>
   );

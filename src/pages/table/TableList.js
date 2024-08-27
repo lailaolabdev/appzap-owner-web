@@ -163,6 +163,7 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
+  const [serviceChargePercent, setServiceChargePercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
@@ -247,6 +248,17 @@ export default function TableList() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
+  }, []);
+
+  useEffect(() => {
+    const getDataServiceCharge = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+      `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+    );
+    setServiceChargePercent(_res?.data?.serviceCharge);
+    };
+    getDataServiceCharge();
   }, []);
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
@@ -2221,6 +2233,7 @@ export default function TableList() {
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
+          serviceCharge={serviceChargePercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2320,6 +2333,7 @@ export default function TableList() {
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
+        serviceCharge={serviceChargePercent}
         taxPercent={taxPercent}
         onSubmit={() => {
           setMenuItemDetailModal(false);
@@ -2501,14 +2515,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {

@@ -589,6 +589,8 @@
   "enable_stock": "Enable inventory system",
   "enable_booking": "Enable booking",
   "edit_tax": "Edit tax",
+  "edit_service_charge": "Edit service charge",
+  "service_charge": "service charge",
   "edit_data_fail": "Data correction failed. Please double-check the data and try again!",
   "edit_fail": "Edit success",
   "delete_data_success": "Delete success",
