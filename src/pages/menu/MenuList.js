@@ -43,8 +43,6 @@ export default function MenuList() {
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
 
-  
-
   const [isOpened, setIsOpened] = useState(true);
   const [show, setShow] = useState(false);
   const [showAddMenus, setShowAddMenus] = useState(false);
@@ -90,9 +88,8 @@ export default function MenuList() {
   const [Menus, setMenus] = useState();
 
   const location = useLocation();
-  const pathParts = location.pathname.split('/');
+  const pathParts = location.pathname.split("/");
   const defaultActiveKey = `/settingStore/${pathParts[2]}`;
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,7 +156,7 @@ export default function MenuList() {
   };
 
   const handleUpdateMenuOptionsCount = (menuId, count) => {
-    setMenuOptionsCount(prev => ({ ...prev, [menuId]: count }));
+    setMenuOptionsCount((prev) => ({ ...prev, [menuId]: count }));
   };
 
   const getMenu = async (id, categoryId) => {
@@ -188,8 +185,6 @@ export default function MenuList() {
       setIsLoading(false);
     }
   };
-
-  
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -603,7 +598,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t('option_menu')}
+                {t("option_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -702,15 +697,25 @@ export default function MenuList() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">{t('no_show')}</th>
-                  <th scope="col">{t('picture')}</th>
-                  <th scope="col">{t('type_name')}</th>
-                  <th scope="col">{t('menu_type')}</th>
-                  <th scope="col">{t('food_name')}</th>
-                  <th scope="col">{t('price')}</th>
-                  <th scope="col">{t('setting_show')}</th>
-                  <th scope="col">{t('options')}</th>
-                  <th scope="col">{t('manage_data')}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no_show")}
+                  </th>
+                  <th scope="col">{t("picture")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("type_name")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("menu_type")}
+                  </th>
+                  <th scope="col">{t("food_name")}</th>
+                  <th scope="col">{t("price")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("setting_show")}
+                  </th>
+                  <th scope="col">{t("options")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("manage_data")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -787,11 +792,22 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
+                            +ອ໋ອບຊັນເສີມ (
+                            {menuOptionsCount[data._id] ||
+                              data?.menuOptions?.length ||
+                              0}
+                            )
                           </button>
                         </td>
-
-                        <td>
+                        {/* manage icon */}
+                        <td
+                          className="manage"
+                          // style={{
+                          //   display: "flex",
+                          //   grid: "none",
+                          //   alignItems: "center",
+                          // }}
+                        >
                           <FontAwesomeIcon
                             icon={faEdit}
                             onClick={() => handleShow2(data)}
@@ -1775,18 +1791,16 @@ export default function MenuList() {
           }
         />
 
-      <PopUpAddMenuOption
+        <PopUpAddMenuOption
           showSetting={showOptionSetting}
           detailMenu={detailMenuOption}
           handleClose={() => {
-              setShowOptionSetting(false);
-              setDetailMenuOption(null);
+            setShowOptionSetting(false);
+            setDetailMenuOption(null);
           }}
           getTokken={getTokken}
           updateMenuOptionsCount={handleUpdateMenuOptionsCount}
-      />
-
-
+        />
       </Box>
     </div>
   );
