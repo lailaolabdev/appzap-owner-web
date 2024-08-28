@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
+import ImageEmpty from "../../image/empty.png";
 
 export default function DebtPage() {
   const { t } = useTranslation();
@@ -135,7 +136,9 @@ export default function DebtPage() {
                   <tr>
                     <th>#</th>
                     <th>{t("bill_no")}</th>
-                    {/* <th>{t('order_anount')}</th> */}
+                    <th>{t("name")}</th>
+                    <th>{t("phoneNumber")}</th>
+                    <th>{t("money_amount")}</th>
                     <th>{t("status")}</th>
                     <th>{t("date_add")}</th>
                     <th>{t("expired")}</th>
@@ -145,7 +148,7 @@ export default function DebtPage() {
                     <td colSpan={9} style={{ textAlign: "center" }}>
                       <Spinner animation="border" variant="warning" />
                     </td>
-                  ) : (
+                  ) : billFarkData?.length > 0 ? (
                     billFarkData?.map((e, i) => (
                       <tr
                         onClick={() => {
@@ -176,6 +179,14 @@ export default function DebtPage() {
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    <td colSpan={9} style={{ textAlign: "center" }}>
+                      <img
+                        src={ImageEmpty}
+                        alt=""
+                        style={{ width: 300, height: 200 }}
+                      />
+                    </td>
                   )}
                 </table>
               </Card.Body>

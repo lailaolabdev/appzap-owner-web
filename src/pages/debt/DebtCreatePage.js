@@ -7,8 +7,9 @@ import {
   URL_PHOTO_AW3,
   USB_PRINTER_PORT,
 } from "../../constants";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAl } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, Modal, Card, Pagination } from "react-bootstrap";
 import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
@@ -16,7 +17,7 @@ import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
-import { MdAssignmentAdd } from "react-icons/md";
+import { MdAssignmentAdd, MdRefresh } from "react-icons/md";
 import { BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import ImageSlider from "../../components/ImageSlider";
@@ -50,7 +51,7 @@ export default function DebtCreatePage() {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  console.log(state?.key);
+  // console.log(state?.key);
 
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -310,7 +311,7 @@ export default function DebtCreatePage() {
     return {
       id: data?._id,
       value: data?.name,
-      label: data?.name,
+      label: data?.phone,
       tel: data?.phone,
     };
   });
@@ -355,41 +356,58 @@ export default function DebtCreatePage() {
               marginBottom: "200px",
             }}
           >
-            <Form.Label>{t("customer_name")}</Form.Label>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                gap: "5px",
-              }}
-            >
-              <div style={{ width: "calc(100% - 115px)" }}>
+            <Form.Label>{t("ctm_tel")}</Form.Label>
+            <BoxInput>
+              <div className="debt-input">
                 <Select
                   options={options}
-                  placeholder={t("customer_name")}
+                  placeholder={t("ctm_tel")}
                   onChange={(e) => {
                     setCustomerPhone(e.tel);
                     setCustomerName(e.value);
                   }}
                 />
               </div>
-              <button
-                className="btn btn-primary"
-                onClick={
-                  () => window.open("/create/members", "_blank").focus()
-                  // navigate("/reports/members-report/create-member", "_blank", {
-                  //   state: { key: "create-debt" },
-                  // })
-                }
-              >
-                ເພີ່ມລາຍຊື່ໃໝ່
-              </button>
-            </div>
+              <div className="debt-btn-group">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => getMembersData()}
+                >
+                  <MdRefresh />
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={
+                    () => window.open("/create/members", "_blank").focus()
+                    // navigate("/reports/members-report/create-member", "_blank", {
+                    //   state: { key: "create-debt" },
+                    // })
+                  }
+                >
+                  ເພີ່ມໃໝ່
+                </button>
+              </div>
+            </BoxInput>
 
-            <Form.Label>{t("ctm_tel")}</Form.Label>
+            <Form.Label>{t("customer_name")}</Form.Label>
             <Form.Control
               placeholder={t("ctm_tel")}
-              value={customerPhone}
+              value={customerName}
+              onChange={(e) => setCustomerPhone(e?.target.value)}
+            />
+            <Form.Label>ລະຫັດບິນ</Form.Label>
+            <Select
+              options={options}
+              placeholder={t("ctm_tel")}
+              onChange={(e) => {
+                setCustomerPhone(e.tel);
+                setCustomerName(e.value);
+              }}
+            />
+            <Form.Label>{t("money_amount")}</Form.Label>
+            <Form.Control
+              placeholder={t("money_amount")}
+              value={customerName}
               onChange={(e) => setCustomerPhone(e?.target.value)}
             />
             <Form.Label>{t("start_date_debt")}</Form.Label>
@@ -473,3 +491,26 @@ export default function DebtCreatePage() {
     </>
   );
 }
+
+const BoxInput = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  gap: 5px;
+
+  .debt-input {
+    width: calc(100% - 23%);
+  }
+  .debt-btn-group {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 768px) {
+    .debt-input {
+      width: calc(100% - 40%);
+    }
+  }
+`;
