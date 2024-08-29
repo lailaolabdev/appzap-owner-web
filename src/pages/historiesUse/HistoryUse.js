@@ -7,11 +7,11 @@ import { END_POINT_SEVER } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCertificate,
-  faCoins,
-  faPeopleArrows,
-  faPrint,
-  faTable,
+	faCertificate,
+	faCoins,
+	faPeopleArrows,
+	faPrint,
+	faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -20,211 +20,231 @@ import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
 
 export default function HistoryUse() {
-  const { t } = useTranslation();
-  // const { history, location, match } = useReactRouter();
-  const params = useParams();
-  const [data, setData] = useState([]);
-  const [totalLogs, setTotalLogs] = useState();
-  const [filtterModele, setFiltterModele] = useState("checkBill");
+	const { t } = useTranslation();
+	// const { history, location, match } = useReactRouter();
+	const params = useParams();
+	const [data, setData] = useState([]);
+	const [totalLogs, setTotalLogs] = useState();
+	const [filtterModele, setFiltterModele] = useState("checkBill");
 
-  const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
-  const rowsPerPage = 100;
-  const [page, setPage] = useState(0);
-  const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
-  const handleChangePage = useCallback((newPage) => {
-    setPage(newPage);
-  }, []);
+	const rowsPerPage = 100;
+	const [page, setPage] = useState(0);
+	const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+	const handleChangePage = useCallback((newPage) => {
+		setPage(newPage);
+	}, []);
 
-  useEffect(() => {
-    _getdataHistories();
-  }, []);
-  useEffect(() => {
-    _getdataHistories();
-  }, [page]);
+	useEffect(() => {
+		_getdataHistories();
+	}, []);
+	useEffect(() => {
+		_getdataHistories();
+	}, [page]);
 
-  useEffect(() => {
-    _getdataHistories();
-  }, [filtterModele]);
-  const _getdataHistories = async () => {
-    try {
-      const headers = await getHeaders();
-      setIsLoading(true);
-      const res = await axios.get(
-        END_POINT_SEVER +
-        `/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${params?.id
-        }&modele=${filtterModele}`,
-        { headers }
-      );
-      if (res?.status < 300) {
-        setData(res?.data?.data);
-        setTotalLogs(res?.data?.total);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setIsLoading(false);
-  };
+	useEffect(() => {
+		_getdataHistories();
+	}, [filtterModele]);
+	const _getdataHistories = async () => {
+		try {
+			const headers = await getHeaders();
+			setIsLoading(true);
+			const res = await axios.get(
+				END_POINT_SEVER +
+					`/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
+						params?.id
+					}&modele=${filtterModele}`,
+				{ headers },
+			);
+			if (res?.status < 300) {
+				setData(res?.data?.data);
+				setTotalLogs(res?.data?.total);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+		setIsLoading(false);
+	};
 
-  return (
-    <div>
-      <div>
-        <Nav
-          fill
-          variant="tabs"
-          defaultActiveKey="/checkBill"
-          style={{
-            fontWeight: "bold",
-            backgroundColor: "#f8f8f8",
-            border: "none",
-            height: 60,
-            marginBottom: 5
-          }}
-        >
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/checkBill"
-              style={{
-                color: "#FB6E3B",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => setFiltterModele("checkBill")}
-            >
-              {" "}
-              <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> {t('calculate_money')}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/canceled"
-              style={{
-                color: "#FB6E3B",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => setFiltterModele("canceled")}
-            >
-              <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> {t('order_history')}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/print"
-              style={{
-                color: "#FB6E3B",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => setFiltterModele("print")}
-            >
-              <FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> {t('printer')}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/resetBill"
-              style={{
-                color: "#FB6E3B",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => setFiltterModele("resetBill")}
-            >
-              <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> {t('edit_bill')}
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/transferTable"
-              style={{
-                color: "#FB6E3B",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => setFiltterModele("transferTable")}
-            >
-              <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> {t('change_combine_table')}
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
-      {isLoading ? (
-        <LoadingAppzap />
-      ) : (
-        <div className="col-sm-12">
-          <table className="table table-hover">
-            <thead className="thead-light">
-              <tr>
-                <th scope="col">{t('no')}</th>
-                <th scope="col">{t('manager_name')}</th>
-                {/* <th scope="col">ສະຖານະ</th> */}
-                <th scope="col">{t('detial')}</th>
-                <th scope="col">{t('cause')}</th>
-                <th scope="col">{t('date_time')}</th>
-              </tr>
-            </thead>
+	return (
+		<div>
+			<div>
+				<Nav
+					fill
+					variant="tabs"
+					defaultActiveKey="/checkBill"
+					style={{
+						fontWeight: "bold",
+						backgroundColor: "#f8f8f8",
+						border: "none",
+						// height: 60,
+						marginBottom: 5,
+						overflowX: "scroll",
+						display: "flex",
+					}}
+				>
+					<Nav.Item>
+						<Nav.Link
+							eventKey="/checkBill"
+							style={{
+								color: "#FB6E3B",
+								border: "none",
+								height: 60,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={() => setFiltterModele("checkBill")}
+						>
+							{" "}
+							<FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
+							<div style={{ width: 8 }}></div> {t("calculate_money")}
+						</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link
+							eventKey="/canceled"
+							style={{
+								color: "#FB6E3B",
+								border: "none",
+								height: 60,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={() => setFiltterModele("canceled")}
+						>
+							<FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
+							<div style={{ width: 8 }}></div> {t("order_history")}
+						</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link
+							eventKey="/print"
+							style={{
+								color: "#FB6E3B",
+								border: "none",
+								height: 60,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={() => setFiltterModele("print")}
+						>
+							<FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
+							<div style={{ width: 8 }}></div> {t("printer")}
+						</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link
+							eventKey="/resetBill"
+							style={{
+								color: "#FB6E3B",
+								border: "none",
+								height: 60,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={() => setFiltterModele("resetBill")}
+						>
+							<FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
+							<div style={{ width: 8 }}></div> {t("edit_bill")}
+						</Nav.Link>
+					</Nav.Item>
+					<Nav.Item>
+						<Nav.Link
+							eventKey="/transferTable"
+							style={{
+								color: "#FB6E3B",
+								border: "none",
+								height: 60,
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+							onClick={() => setFiltterModele("transferTable")}
+						>
+							<FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
+							<div style={{ width: 8 }}></div> {t("change_combine_table")}
+						</Nav.Link>
+					</Nav.Item>
+				</Nav>
+			</div>
+			{isLoading ? (
+				<LoadingAppzap />
+			) : (
+				<div
+					className="col-sm-12"
+					style={{
+						overflowX: "auto",
+					}}
+				>
+					<table className="table table-hover">
+						<thead className="thead-light">
+							<tr>
+								<th style={{ textWrap: "nowrap" }} scope="col">
+									{t("no")}
+								</th>
+								<th style={{ textWrap: "nowrap" }} scope="col">
+									{t("manager_name")}
+								</th>
+								{/* <th scope="col">ສະຖານະ</th> */}
+								<th style={{ textWrap: "nowrap" }} scope="col">
+									{t("detial")}
+								</th>
+								<th style={{ textWrap: "nowrap" }} scope="col">
+									{t("cause")}
+								</th>
+								<th style={{ textWrap: "nowrap" }} scope="col">
+									{t("date_time")}
+								</th>
+							</tr>
+						</thead>
 
-            <tbody>
-              {data?.map((item, index) => {
-                return (
-                  <tr>
-                    <td>{page * rowsPerPage + index + 1}</td>
-                    <td>{item?.user}</td>
-                    {/* <td
+						<tbody>
+							{data?.map((item, index) => {
+								return (
+									<tr key={index}>
+										<td style={{ textWrap: "nowrap" }}>
+											{page * rowsPerPage + index + 1}
+										</td>
+										<td style={{ textWrap: "nowrap" }}>{item?.user}</td>
+										{/* <td
                       style={{
                         color: item?.event === "INFO" ? "green" : "red",
                       }}
                     >
                       {item?.event}
                     </td> */}
-                    <td>{item?.eventDetail}</td>
-                    <td>
-                      {item?.reason === null ||
-                        item?.reason === "" ||
-                        item?.reason === undefined ||
-                        item?.reason === "undefined" ||
-                        item?.reason === "null"
-                        ? "-"
-                        : item?.reason}
-                    </td>
-                    <td>
-                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+										<td style={{ textWrap: "nowrap" }}>{item?.eventDetail}</td>
+										<td style={{ textWrap: "nowrap" }}>
+											{item?.reason === null ||
+											item?.reason === "" ||
+											item?.reason === undefined ||
+											item?.reason === "undefined" ||
+											item?.reason === "null"
+												? "-"
+												: item?.reason}
+										</td>
+										<td style={{ textWrap: "nowrap" }}>
+											{moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
 
-          <PaginationAppzap
-            rowsPerPage={rowsPerPage}
-            page={page}
-            pageAll={pageAll}
-            onPageChange={handleChangePage}
-          />
-        </div>
-      )}
-    </div>
-  );
+					<PaginationAppzap
+						rowsPerPage={rowsPerPage}
+						page={page}
+						pageAll={pageAll}
+						onPageChange={handleChangePage}
+					/>
+				</div>
+			)}
+		</div>
+	);
 }
