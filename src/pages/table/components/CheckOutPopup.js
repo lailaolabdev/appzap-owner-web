@@ -10,7 +10,7 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
-import { BiSolidPrinter } from "react-icons/bi";
+import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
@@ -24,7 +24,10 @@ import {
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import { getMembers } from "../../../services/member.service";
+import {
+  getMembers,
+  getMemberAllCount,
+} from "../../../services/member.service";
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -92,8 +95,10 @@ export default function CheckOutPopup({
       setDataBill((prev) => ({
         ...prev,
         memberId: _res.data?._id,
-        memberName: _res.data?.name,
         memberPhone: _res.data?.phone,
+        memberName: _res.data?.name,
+        Name: _res.data?.name,
+        Point: _res.data?.point,
       }));
     } catch (err) {
       console.log(err);
@@ -104,14 +109,10 @@ export default function CheckOutPopup({
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      const _data = await getMembers(findby, TOKEN);
+      const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data?.data);
-    } catch (err) {
-      console.error("Error fetching members data", err);
-    }
+    } catch (err) {}
   };
 
   // console.log("tableData:=======abc======>", tableData)
@@ -564,34 +565,6 @@ export default function CheckOutPopup({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
-              {/* <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>{t("member")}</InputGroup.Text>
-                <InputGroup.Text>+856 20</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="xxxx xxxx"
-                  maxLength={8}
-                  value={textSearchMember}
-                  // onClick={() => {
-                  //   setSelectInput("inputTransfer");
-                  // }}
-                  onChange={(e) => {
-                    setTextSearchMember(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <Button>
-                  <FaSearch />
-                </Button>
-                <div style={{ width: 30 }} />
-                <InputGroup.Text>
-                  {t("name")}: {memberData?.name}
-                </InputGroup.Text>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point}
-                </InputGroup.Text>
-              </InputGroup> */}
-
               <BoxMember hidden={!hasCRM}>
                 <div className="box-left">
                   <div className="box-search">
@@ -601,6 +574,9 @@ export default function CheckOutPopup({
                       onChange={handleSearchInput}
                     />
                   </div>
+                  <Button className="primary" onClick={() => getMembersData()}>
+                    <BiRotateRight />
+                  </Button>
                   <Button
                     className="primary"
                     onClick={() => {
@@ -616,13 +592,12 @@ export default function CheckOutPopup({
                 <div className="box-right">
                   <div className="box-name">
                     <InputGroup.Text>
-                      {t("name")}: {memberData?.name}
+                      {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
                     </InputGroup.Text>
                   </div>
                   <div className="box-name">
                     <InputGroup.Text>
-                      {t("point")}:{" "}
-                      {memberData?.point ? memberData?.point : "0"}
+                      {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
                     </InputGroup.Text>
                   </div>
                 </div>
@@ -814,14 +789,14 @@ const BoxMember = styled.div`
     gap: 10px;
 
     .box-search {
-      width: calc(100% - 25%);
+      width: calc(100% - 35%);
     }
   }
 
   .box-right {
     display: flex;
     justify-content: flex-end;
-    width: 100%;
+    width: 50%;
     gap: 10px;
     .box-name {
       width: 100%;

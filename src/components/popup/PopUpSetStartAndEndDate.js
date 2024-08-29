@@ -23,6 +23,8 @@ export default function PopUpSetStartAndEndDate({
   const [valueEndTime, setValueEndTime] = useState(endTime);
   const [selectedButton, setSelectedButton] = useState(null);
 
+  const { storeDetail, setStoreDetail } = useStore();
+
   // useEffect
   useEffect(() => {
     setValueStartDate(startDate);
@@ -214,6 +216,13 @@ export default function PopUpSetStartAndEndDate({
             setEndDate(valueEndDate);
             setStartTime(valueStartTime);
             setEndTime(valueEndTime);
+            setStoreDetail({
+              ...storeDetail,
+              startDayFilter: valueStartDate,
+              endDayFilter: valueEndDate,
+              startTimeFilter: valueStartTime,
+              endTimeFilter: valueEndTime,
+            });
             onClose();
           }}
         >

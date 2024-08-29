@@ -20,7 +20,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportAllMember = async () => {
     setPopup({ printReportSale: true });
     try {
-      const findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&month=${storeDetail?.monthMember}`;
+      const findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&&startTime=${storeDetail?.startTimeMember}&endTime=${storeDetail?.endTimeMember}`;
       const url =
         END_POINT_EXPORT +
         "/export/member?storeId=" +
@@ -81,8 +81,8 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportOrders = async () => {
     setPopup({ printReportStaffSale: true });
     try {
-      const url =
-        END_POINT_EXPORT + "/export/member-order?storeId=" + storeDetail?._id;
+      let findBy = `memberid=${storeDetail?.selectedMemberID}&storeId=${storeDetail?._id}&startDate=${storeDetail?.startDayFilter}&endDate=${storeDetail?.endDayFilter}&endTime=${storeDetail?.startTimeFilter}&startTime=${storeDetail?.endTimeFilter}`;
+      const url = END_POINT_EXPORT + "/export/member-order-customer?" + findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -101,9 +101,11 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         setStoreDetail({
           ...storeDetail,
-          startDay: "",
-          endDay: "",
-          month: "",
+          startDayFilter: "",
+          endDayFilter: "",
+          startTimeFilter: "",
+          endTimeFilter: "",
+          selectedMemberID: "",
         });
       }
     } catch (err) {

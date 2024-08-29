@@ -224,10 +224,6 @@ export default function MemberPage() {
 
   // function
   const getMembersData = async () => {
-    const start = moment(startDateMember).format("DD");
-    const end = moment(endDateMember).format("DD");
-    const month = moment(startDateMember).format("MM");
-
     setLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -238,9 +234,10 @@ export default function MemberPage() {
       if (filterValue) {
         findby += `search=${filterValue}&`;
       }
-      findby += `startDate=${start}&`;
-      findby += `endDate=${end}&`;
-      findby += `month=${month}&`;
+      findby += `startDate=${startDateMember}&`;
+      findby += `endDate=${endDateMember}&`;
+      findby += `startTime=${startTimeMember}&`;
+      findby += `endTime=${endTimeMember}`;
 
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
@@ -254,9 +251,6 @@ export default function MemberPage() {
 
   const getMemberListTop = async () => {
     setLoading(true);
-    const start = moment(startDateTop).format("DD");
-    const end = moment(endDateTop).format("DD");
-    const month = moment(startDateTop).format("MM");
 
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -264,12 +258,16 @@ export default function MemberPage() {
       findby += `storeId=${DATA?.storeId}&`;
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${valueTopList ? valueTopList : 10}&`;
-      findby += `startDate=${start}&`;
-      findby += `endDate=${end}&`;
-      findby += `month=${month}&`;
+      findby += `startDate=${startDateTop}&`;
+      findby += `endDate=${endDateTop}&`;
+      findby += `startTime=${startTimeTop}&`;
+      findby += `endTime=${endTimeTop}&`;
       const _data = await getMembersListTop(findby, TOKEN);
+
+      // console.log("Data Top", _data.data);
+
       if (_data.error) throw new Error("error");
-      setMemberListTop(_data.data.data);
+      setMemberListTop(_data.data);
       setTotalPaginationMemberTop(
         storeDetail.limitData ? 1 : Math.ceil(10 / limitData)
       );
@@ -347,6 +345,9 @@ export default function MemberPage() {
   const getMemberOrderMenus = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
+
+      // console.log({ TOKEN });
+
       const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
       const _data = await getMemberOrderMenu(
         selectedMemberOrders,
@@ -363,7 +364,7 @@ export default function MemberPage() {
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberAllCount(_data.count);
+      setMemberAllCount(_data.data.count);
       // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
   };
@@ -374,7 +375,7 @@ export default function MemberPage() {
 
     const _data = await getMemberCount(findBy, TOKEN);
     if (_data.error) return;
-    setMemberCount(_data.count);
+    setMemberCount(_data.data.count);
   };
   const getMemberBillCountData = async () => {
     const { TOKEN, DATA } = await getLocalData();
@@ -743,7 +744,7 @@ export default function MemberPage() {
                   <td colSpan={9} style={{ textAlign: "center" }}>
                     <Spinner animation="border" variant="warning" />
                   </td>
-                ) : membersData.length > 0 ? (
+                ) : membersData?.length > 0 ? (
                   membersData?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>

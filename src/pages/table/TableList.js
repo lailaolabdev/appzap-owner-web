@@ -229,12 +229,12 @@ export default function TableList() {
     getUserData();
   }, [pinStatus]);
 
-  useEffect(() => {
-    getUserData();
-    if (window.opener) {
-      window.opener.location.reload();
-    }
-  }, []);
+  // useEffect(() => {
+  //   getUserData();
+  //   if (window.opener) {
+  //     window.opener.location.reload();
+  //   }
+  // }, []);
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -2313,7 +2313,14 @@ export default function TableList() {
         dataBill={dataBill}
         tableData={selectedTable}
         open={popup?.CheckOutType}
-        onClose={() => setPopup()}
+        onClose={() => {
+          setPopup();
+          setDataBill((prev) => ({
+            ...prev,
+            Name: "",
+            Point: "",
+          }));
+        }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         // editMode={select}

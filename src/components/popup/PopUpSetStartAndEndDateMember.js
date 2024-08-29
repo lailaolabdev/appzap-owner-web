@@ -218,9 +218,10 @@ export default function PopUpSetStartAndEndDateMember({
             setEndTimeMember(valueEndTime);
             setStoreDetail({
               ...storeDetail,
-              startDateMember: moment(valueStartDate).format("DD"),
-              endDateMember: moment(valueEndDate).format("DD"),
-              monthMember: moment(valueStartDate).format("MM"),
+              startDateMember: valueStartDate,
+              endDateMember: valueEndDate,
+              startTimeMember: valueStartTime,
+              endTimeMember: valueEndTime,
             });
             onClose();
           }}
