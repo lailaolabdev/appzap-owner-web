@@ -37,8 +37,8 @@ import { Spinner } from "react-bootstrap";
 
 function HistorySale() {
   const params = useParams();
-  const navigate = useNavigate();
   const code = params?.code;
+  const navigate = useNavigate();
   const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);

@@ -68,75 +68,82 @@ export default function CreateMemberPageWithDebt() {
           <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("add_member")}</Breadcrumb.Item>
         </Breadcrumb>
-
-        <Card border="primary" style={{ maxWidth: 500 }}>
-          <Card.Header
-            style={{
-              backgroundColor: COLOR_APP,
-              color: "#fff",
-              fontSize: 18,
-              fontWeight: "bold",
-            }}
-          >
-            {t("add_member_form")}
-          </Card.Header>
-          <Card.Body>
-            <div>
-              <div className="mb-3">
-                <Form.Label>{t("member_name")}</Form.Label>
-                <Form.Control
-                  placeholder={t("member_name")}
-                  value={formData?.name}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      name: e.target.value,
-                    }));
-                  }}
-                />
-              </div>
-              <div className="mb-3">
-                <Form.Label>{t("tel")}</Form.Label>
-                <InputGroup>
-                  <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Card border="primary" style={{ width: "calc(100% - 50%)" }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("add_member_form")}
+            </Card.Header>
+            <Card.Body>
+              <div>
+                <div className="mb-3">
+                  <Form.Label>{t("member_name")}</Form.Label>
                   <Form.Control
-                    placeholder="XXXX-XXXX"
-                    aria-describedby="phone-addon1"
-                    maxLength={8}
-                    value={formData?.phone}
+                    placeholder={t("member_name")}
+                    value={formData?.name}
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        phone: e.target.value,
+                        name: e.target.value,
                       }));
                     }}
                   />
-                </InputGroup>
+                </div>
+                <div className="mb-3">
+                  <Form.Label>{t("tel")}</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
+                    <Form.Control
+                      placeholder="XXXX-XXXX"
+                      aria-describedby="phone-addon1"
+                      maxLength={8}
+                      value={formData?.phone}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }));
+                      }}
+                    />
+                  </InputGroup>
+                </div>
+                <div className="mb-3">
+                  <Form.Label>{t("birth_date")}</Form.Label>
+                  <DateTimeComponent
+                    value={formData?.birthday}
+                    onChange={(birthday) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        birthday: birthday,
+                      }));
+                    }}
+                  />
+                </div>
+                <div>
+                  <Button
+                    style={{ width: "100%" }}
+                    disabled={disabledButton}
+                    onClick={createMember}
+                  >
+                    {t("add")}
+                  </Button>
+                </div>
               </div>
-              <div className="mb-3">
-                <Form.Label>{t("birth_date")}</Form.Label>
-                <DateTimeComponent
-                  value={formData?.birthday}
-                  onChange={(birthday) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      birthday: birthday,
-                    }));
-                  }}
-                />
-              </div>
-              <div>
-                <Button
-                  style={{ width: "100%" }}
-                  disabled={disabledButton}
-                  onClick={createMember}
-                >
-                  {t("add")}
-                </Button>
-              </div>
-            </div>
-          </Card.Body>
-        </Card>
+            </Card.Body>
+          </Card>
+        </div>
       </div>
       {/* popup */}
     </>

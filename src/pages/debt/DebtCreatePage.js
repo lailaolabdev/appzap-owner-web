@@ -10,7 +10,14 @@ import {
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAl } from "@fortawesome/free-solid-svg-icons";
-import { Button, Form, Modal, Card, Pagination } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Modal,
+  Card,
+  Pagination,
+  Spinner,
+} from "react-bootstrap";
 import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
@@ -31,18 +38,22 @@ import {
   getBillFarks,
   getMenuFarks,
 } from "../../services/fark";
+
+import { createBilldebt, getMenuDebt } from "../../services/debt";
+
 import { useStore } from "../../store";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import PopUpAddMenuForBillFark from "../../components/popup/PopUpAddMenuForBillFark";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import axios from "axios";
-import BillFark80 from "../../components/bill/BillFark80";
+import BillDebt80 from "../../components/bill/BillDebt80";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
-import { getMembers } from "./../../services/member.service";
+import { getMembersAll } from "./../../services/member.service";
+import { getBillsNolimit } from "../../services/bill";
 
 // let limitData = 100;
 
@@ -50,6 +61,8 @@ export default function DebtCreatePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const params = useParams();
+  const code = params?.code;
 
   // console.log(state?.key);
 
@@ -62,249 +75,107 @@ export default function DebtCreatePage() {
   const [filterStatus, setFilterStatus] = useState("");
   const [totalDataList, setTotalDataList] = useState(0);
   const [backupFormData, setBackupFormData] = useState();
-  const [menuFarkData, setMenuFarkData] = useState();
+  const [billId, setBillId] = useState();
+  const [amount, setAmount] = useState();
+  const [menuDebtData, setMenuDebtData] = useState();
   const [popup, setPopup] = useState();
   const [customerName, setCustomerName] = useState();
   const [customerPhone, setCustomerPhone] = useState();
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
+  const [startDate, setStartDate] = useState(
+    moment(moment()).format("YYYY-MM-DD")
+  );
+  const [expirtDate, setExpirtDate] = useState(
+    moment(moment()).add(7, "days").format("YYYY-MM-DD")
+  );
 
   const [printCode, setPrintCode] = useState();
   const [membersData, setMembersData] = useState([]);
 
-  const [widthBill80, setWidthBill80] = useState(0);
-  let billFark80Ref = useRef();
   // store
   const { storeDetail } = useStore();
   const { printerCounter, printers } = useStore();
+  const [bills, setBills] = useState([]);
 
   // useEffect
   useEffect(() => {
+    getMembersData();
+    getBillsLits();
+  }, []);
+
+  useEffect(() => {
     getData();
-    getMembersData();
-  }, []);
+  }, [billId]);
 
-  useEffect(() => {
-    getMembersData();
-  }, [state?.key]);
-
-  useEffect(() => {
-    const element = billFark80Ref.current;
-    // console.log(element); // 👈️ element here
-  }, []);
-  useLayoutEffect(() => {
-    setWidthBill80(billFark80Ref.current.offsetWidth);
-  }, [billFark80Ref]);
-  useEffect(() => {
-    if (printCode) {
-      onPrintBillFark();
-    }
-  }, [printCode]);
   // function
   const getData = async () => {
     try {
       const { DATA, TOKEN } = await getLocalData();
       let findby = "?";
-      findby += `storeId=${storeDetail?._id}`;
-      const data = await getMenuFarks(findby, TOKEN);
-      setMenuFarkData(data);
+      findby += `storeId=${storeDetail?._id}&`;
+      findby += `billDebtId=${billId}`;
+      const data = await getMenuDebt(findby, TOKEN);
+      setMenuDebtData(data);
     } catch (err) {
       console.log("err", err);
     }
   };
-  const addCartCount = (menuId) => {
-    const _menu = menuFarkData.map((e) => {
-      if (e?._id == menuId) {
-        let cartCount = e?.cartCount || 0;
-        cartCount += 1;
-        if (cartCount <= 0) {
-          return { ...e, cartCount: 0, addToCart: false };
-        }
-        return { ...e, cartCount };
-      } else {
-        return e;
-      }
-    });
-    setMenuFarkData(_menu);
-  };
-  const minCartCount = (menuId) => {
-    const _menu = menuFarkData.map((e) => {
-      if (e?._id == menuId) {
-        let cartCount = e?.cartCount || 0;
-        cartCount -= 1;
-        if (cartCount <= 0) {
-          return { ...e, cartCount: 0, addToCart: false };
-        }
-        return { ...e, cartCount };
-      } else {
-        return e;
-      }
-    });
-    setMenuFarkData(_menu);
-  };
 
-  const addToCart = (menuId) => {
-    const _menu = menuFarkData.map((e) => {
-      if (e?._id == menuId) {
-        return { ...e, cartCount: 1, addToCart: true };
-      } else {
-        return e;
-      }
-    });
-    setMenuFarkData(_menu);
-  };
-
-  const handleClickCreateBillFark = async () => {
+  const handleClickCreateDebt = async () => {
     try {
       const { DATA, TOKEN } = await getLocalData();
-      console.log("DATA", DATA);
-      let menus = menuFarkData.filter((e) => e?.addToCart);
-      let menusFormat = menus.map((e) => ({
-        menuId: e?._id,
-        amount: e?.cartCount,
-      }));
       const _body = {
-        menus: menusFormat,
         customerName: customerName,
         customerPhone: customerPhone,
+        billId: billId,
+        amount: amount,
+        status: "DEBT",
         startDate: startDate,
-        endDate: endDate,
+        endDate: expirtDate,
         storeId: DATA?.storeId,
       };
-      const data = await createBillFark(_body, TOKEN);
+      const data = await createBilldebt(_body, TOKEN);
       if (data.error) {
         errorAdd(`${t("save_fail")}`);
         return;
       }
       setPrintCode(data.code);
       // await onPrintBillFark();
-      // navigate("../", { replace: true });
+      navigate("/debt");
       successAdd(`${t("save_success")}`);
     } catch (err) {
       console.log(err);
     }
   };
-  const onPrintBillFark = async () => {
-    try {
-      // if (!tokenQR) {
-      //   return;
-      // }
-      // alert(tokenQR);
-      // setTokenForSmartOrder(tokenQR, (ee) => {
-      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
-      // });
-      // if (!tokenForSmartOrder) {
-      //   setTokenForSmartOrder(tokenQR);
-      //   await delay(1000);
-      //   return;
-      // }
-      // if (!tokenForSmartOrder) {
-      //   return;
-      // }
-      let urlForPrinter = "";
-      const _printerCounters = JSON.parse(printerCounter?.prints);
-      const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
-      );
-      let dataImageForPrint;
-      console.log("check 1");
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(billFark80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-      }
 
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(billFark80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-      }
-      // console.log("dataImageForPrint", dataImageForPrint);
-      // console.log("check 2");
-
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
-      console.log(dataImageForPrint.toDataURL());
-      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      console.log("check 3");
-      var bodyFormData = new FormData();
-
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", _file);
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-
-      console.log("check 4");
-      await printFlutter(
-        {
-          imageBuffer: dataImageForPrint.toDataURL(),
-          ip: printerBillData?.ip,
-          type: printerBillData?.type,
-          port: "9100",
-        },
-        async () => {
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
-      );
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-      console.log("check 5");
-      // setCodeShortLink(null);
-      await Swal.fire({
-        icon: "success",
-        title: `${t("print_success")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      setPrintCode();
-      navigate("../", { replace: true });
-      // setCodeShortLink(null);
-    } catch (err) {
-      // setCodeShortLink(null);
-      console.log("onprint:", err);
-      await Swal.fire({
-        icon: "error",
-        title: `${t("print_fail")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    }
-  };
   const getMembersData = async () => {
+    setIsLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
       let findby = "?";
       findby += `storeId=${DATA?.storeId}&`;
       // findby += `skip=${(pagination - 1) * limitData}&`;
       // findby += `limit=${limitData}&`;
-      const _data = await getMembers(findby, TOKEN);
+      const _data = await getMembersAll(findby, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data.data.data);
-    } catch (err) {}
+      setMembersData(_data.data);
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      console.log("err", err);
+    }
+  };
+  const getBillsLits = async () => {
+    try {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}`;
+      // findby += `&code=${code}`;
+      const data = await getBillsNolimit(findby);
+      // console.log({ data });
+      if (data.error) throw new Error("error");
+      setBills(data);
+    } catch (err) {
+      console.log("err", err);
+    }
   };
 
   const options = membersData.map((data) => {
@@ -313,6 +184,13 @@ export default function DebtCreatePage() {
       value: data?.name,
       label: data?.phone,
       tel: data?.phone,
+    };
+  });
+  const optionsBills = bills.map((data) => {
+    return {
+      id: data?._id,
+      value: data?.code,
+      label: data?.code,
     };
   });
 
@@ -354,9 +232,12 @@ export default function DebtCreatePage() {
               flexDirection: "column",
               flex: 1,
               marginBottom: "200px",
+              marginTop: "20px",
             }}
           >
-            <Form.Label>{t("ctm_tel")}</Form.Label>
+            <Form.Label>
+              {t("ctm_tel")} <span style={{ color: "red" }}>*</span>
+            </Form.Label>
             <BoxInput>
               <div className="debt-input">
                 <Select
@@ -373,7 +254,11 @@ export default function DebtCreatePage() {
                   className="btn btn-primary"
                   onClick={() => getMembersData()}
                 >
-                  <MdRefresh />
+                  {isLoading ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    <MdRefresh />
+                  )}
                 </button>
                 <button
                   className="btn btn-primary"
@@ -391,24 +276,25 @@ export default function DebtCreatePage() {
 
             <Form.Label>{t("customer_name")}</Form.Label>
             <Form.Control
-              placeholder={t("ctm_tel")}
+              placeholder={t("customer_name")}
               value={customerName}
               onChange={(e) => setCustomerPhone(e?.target.value)}
+            />
+            <Form.Label>
+              {t("money_amount")} <span style={{ color: "red" }}>*</span>
+            </Form.Label>
+            <Form.Control
+              placeholder={t("money_amount")}
+              value={amount}
+              onChange={(e) => setAmount(e?.target.value)}
             />
             <Form.Label>ລະຫັດບິນ</Form.Label>
             <Select
-              options={options}
-              placeholder={t("ctm_tel")}
+              options={optionsBills}
+              placeholder={t("bills_code")}
               onChange={(e) => {
-                setCustomerPhone(e.tel);
-                setCustomerName(e.value);
+                setBillId(e.id);
               }}
-            />
-            <Form.Label>{t("money_amount")}</Form.Label>
-            <Form.Control
-              placeholder={t("money_amount")}
-              value={customerName}
-              onChange={(e) => setCustomerPhone(e?.target.value)}
             />
             <Form.Label>{t("start_date_debt")}</Form.Label>
             <Form.Control
@@ -421,60 +307,12 @@ export default function DebtCreatePage() {
             <Form.Control
               placeholder={t("exp_date")}
               type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e?.target.value)}
+              value={expirtDate}
+              onChange={(e) => setExpirtDate(e?.target.value)}
             />
-            <div style={{ flex: 1 }}>
-              {/* <table style={{ width: "100%" }}>
-                <tr>
-                  <th>{t("name")}</th>
-                  <th style={{ textAlign: "center" }}>{t("amount")}</th>
-                </tr>
-                {menuFarkData
-                  ?.filter((e) => e?.addToCart)
-                  .map((e) => (
-                    <tr>
-                      <td style={{ textAlign: "start" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: 10,
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Button onClick={() => minCartCount(e?._id)}>
-                            -
-                          </Button>
-                          {e?.cartCount || 0}
-                          <Button onClick={() => addCartCount(e?._id)}>
-                            +
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-              </table> */}
-              <div
-                style={{
-                  width: "80mm",
-                  padding: 10,
-                }}
-                ref={billFark80Ref}
-              >
-                <BillFark80
-                  expirDate={endDate}
-                  customerPhone={customerPhone}
-                  customerName={customerName}
-                  // menuFarkData={menuFarkData?.filter((e) => e?.addToCart)}
-                  code={printCode}
-                />
-              </div>
-            </div>
             <Button
-              style={{ width: "100%", height: 60 }}
-              onClick={() => handleClickCreateBillFark()}
+              style={{ width: "100%", height: 60, marginTop: 25 }}
+              onClick={() => handleClickCreateDebt()}
             >
               {t("save_print")}
             </Button>

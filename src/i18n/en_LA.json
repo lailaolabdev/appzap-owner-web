@@ -878,6 +878,7 @@
   "pricesTotal": "ຈຳນວນເງິນ",
   "nameCurrency": "ກິບ",
   "debt": "ຕິດໜີ້",
+  "debt_pay": "ຊຳລະແລ້ວ",
   "debt_deposit": "ຟັງຊັ້ນຕິດໜີ້",
   "debt_list": "ລາຍການຕິດໜີ້",
   "debt_list_all": "ລາຍການຕິດໜີ້ທັງໝົດ",
@@ -886,5 +887,6 @@
   "start_date_debt": "ວັນທີເລີ່ມ",
   "end_date_debt": "ວັນທີສິນສຸດ",
   "expire_date_debt": "ວັນໝົດອາຍຸ",
-  "payment_date_debt": "ວັນທີຊຳລະ"
+  "payment_date_debt": "ວັນທີຊຳລະ",
+  "bills_code": "ລະຫັດບິນ"
 }

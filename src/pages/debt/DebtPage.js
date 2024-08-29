@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import moment from "moment";
 import {
   Button,
   Form,
@@ -16,6 +18,7 @@ import {
 } from "react-bootstrap";
 import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { getBilldebts } from "../../services/debt";
 import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import Box from "../../components/Box";
@@ -29,10 +32,9 @@ import { IoBeerOutline } from "react-icons/io5";
 import ReactPaginate from "react-paginate";
 import { getBillFarks } from "../../services/fark";
 import { useStore } from "../../store";
-import { useNavigate } from "react-router-dom";
-import moment from "moment";
-import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
-import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
+import { moneyCurrency } from "../../helpers";
+import PopUpDetaillBillDebt from "../../components/popup/PopUpDetaillBillDebt";
+import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 import ImageEmpty from "../../image/empty.png";
 
 export default function DebtPage() {
@@ -44,10 +46,10 @@ export default function DebtPage() {
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
   const [searchCode, setSearchCode] = useState("");
-  const [billFarkData, setBillFarkData] = useState();
-  const [selectBillFark, setSelectBillFark] = useState();
+  const [billDebtData, setBillDebtData] = useState();
+  const [selectBillDebt, setSelectBillDebt] = useState();
   const [popup, setPopup] = useState();
-  console.log("totalPagination", totalPagination);
+  // console.log("totalPagination", totalPagination);
   // store
   const { storeDetail } = useStore();
 
@@ -73,10 +75,10 @@ export default function DebtPage() {
       findby += `skip=${(pagination - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
       findby += `storeId=${storeDetail?._id}`;
-      const data = await getBillFarks(findby, TOKEN);
-      setBillFarkData(data?.data);
+      const data = await getBilldebts(findby, TOKEN);
+      setBillDebtData(data?.data);
       // console.log(data);
-      setTotalPagination(Math.ceil(data?.total / limitData));
+      setTotalPagination(Math.ceil(data?.totalCount / limitData));
       setIsLoading(false);
     } catch (err) {
       console.log("err", err);
@@ -148,22 +150,30 @@ export default function DebtPage() {
                     <td colSpan={9} style={{ textAlign: "center" }}>
                       <Spinner animation="border" variant="warning" />
                     </td>
-                  ) : billFarkData?.length > 0 ? (
-                    billFarkData?.map((e, i) => (
+                  ) : billDebtData?.length > 0 ? (
+                    billDebtData?.map((e, i) => (
                       <tr
                         onClick={() => {
-                          setPopup({ PopUpDetaillBillFark: true });
-                          setSelectBillFark(e);
+                          setPopup({ PopUpDetaillBillDebt: true });
+                          setSelectBillDebt(e);
                         }}
                       >
                         <td style={{ textAlign: "start" }}>
                           {(pagination - 1) * limitData + i + 1}
                         </td>
                         <td style={{ textAlign: "start" }}>{e?.code}</td>
-                        {/* <td style={{ textAlign: "start" }}>0</td> */}
+                        <td style={{ textAlign: "start" }}>
+                          {e?.customerName}
+                        </td>
+                        <td style={{ textAlign: "start" }}>
+                          {e?.customerPhone}
+                        </td>
+                        <td style={{ textAlign: "start" }}>
+                          {moneyCurrency(e?.amount)}
+                        </td>
                         <td style={{ textAlign: "start" }}>
                           <div>
-                            {t ? convertBillFarkStatus(e?.stockStatus, t) : ""}
+                            {t ? convertBillDebtStatus(e?.status, t) : ""}
                           </div>
                         </td>
                         <td style={{ textAlign: "start" }}>
@@ -175,7 +185,7 @@ export default function DebtPage() {
                         <td style={{ textAlign: "start" }}>
                           {e?.outStockDate
                             ? moment(e?.outStockDate).format("DD/MM/YYYY")
-                            : t("avaliable")}
+                            : ""}
                         </td>
                       </tr>
                     ))
@@ -286,16 +296,16 @@ export default function DebtPage() {
           </Tab>
         </Tabs>
       </div>
-      <PopUpDetaillBillFark
-        open={popup?.PopUpDetaillBillFark}
+      <PopUpDetaillBillDebt
+        open={popup?.PopUpDetaillBillDebt}
         onClose={() => {
           setPopup();
-          setSelectBillFark();
+          setSelectBillDebt();
         }}
-        billFarkData={selectBillFark}
+        billDebtData={selectBillDebt}
         callback={() => {
           setPopup();
-          setSelectBillFark();
+          setSelectBillDebt();
           getData();
         }}
       />
