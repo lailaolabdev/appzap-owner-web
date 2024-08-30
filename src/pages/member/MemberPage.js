@@ -26,7 +26,11 @@ import {
   BsFillCalendarWeekFill,
   BsInfoCircle,
 } from "react-icons/bs";
-import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
+import {
+  MdAssignmentAdd,
+  MdOutlineCloudDownload,
+  MdRotateRight,
+} from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
 import styled from "styled-components";
 import Box from "../../components/Box";
@@ -137,7 +141,7 @@ export default function MemberPage() {
 
   // console.log("valueTopList", valueTopList);
 
-  // console.log("storeDetail", storeDetail);
+  // console.log({ startDate, endDate, startTime, endTime });
   // provider
 
   // useEffect
@@ -1062,17 +1066,27 @@ export default function MemberPage() {
           <Button
             variant="outline-primary"
             size="small"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            style={{
+              display: "flex",
+              gap: 10,
+              alignItems: "center",
+            }}
             onClick={() => setPopup({ popupfiltter: true })}
           >
             <BsFillCalendarWeekFill />
-            <div>
-              {startDate} {startTime}
-            </div>{" "}
-            ~{" "}
-            <div>
-              {endDate} {endTime}
-            </div>
+            {startDate !== "" && endDate !== "" ? (
+              <>
+                <div>
+                  {startDate} {startTime}
+                </div>{" "}
+                ~{" "}
+                <div>
+                  {endDate} {endTime}
+                </div>
+              </>
+            ) : (
+              "ເລືອກວັນທີ ແລະ ເວລາ "
+            )}
           </Button>
           {/* <Button
             variant="outline-primary"
@@ -1087,6 +1101,26 @@ export default function MemberPage() {
             onClick={() => setPopup({ popupmemberorder: true })}
           >
             <FaUser /> {t("all_member")}
+          </Button>
+          <Button
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => {
+              setStoreDetail({
+                ...storeDetail,
+                startDayFilter: "",
+                endDayFilter: "",
+                startTimeFilter: "",
+                endTimeFilter: "",
+                selectedMemberID: "",
+              });
+              setStartDate("");
+              setEndDate("");
+              setStartTime("");
+              setEndTime("");
+              getMemberOrderMenus();
+            }}
+          >
+            <MdRotateRight /> {t("clear")}
           </Button>
           <Button
             disabled

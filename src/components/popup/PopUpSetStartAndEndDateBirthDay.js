@@ -3,7 +3,7 @@ import moment from "moment";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
-
+import { useTranslation } from "react-i18next";
 export default function PopUpSetStartAndEndDateBirthDay({
   open,
   onClose,
@@ -22,7 +22,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
   const [valueStartTime, setValueStartTime] = useState(startTimeBirthDay);
   const [valueEndTime, setValueEndTime] = useState(endTimeBirthDay);
   const [selectedButton, setSelectedButton] = useState(null);
-
+  const { t } = useTranslation();
   // useEffect
   useEffect(() => {
     setValueStartDate(startDateBirthDay);
@@ -43,6 +43,27 @@ export default function PopUpSetStartAndEndDateBirthDay({
     setValueStartDate(yesterday);
     setValueEndDate(yesterday);
     setSelectedButton("yesterday");
+  };
+
+  const onGetthreeDays = () => {
+    const threeDays = moment().add(3, "days").format("YYYY-MM-DD");
+    setValueStartDate(threeDays);
+    setValueEndDate(threeDays);
+    setSelectedButton("threeDays");
+  };
+
+  const onGetfiveDays = () => {
+    const fiveDays = moment().add(5, "days").format("YYYY-MM-DD");
+    setValueStartDate(fiveDays);
+    setValueEndDate(fiveDays);
+    setSelectedButton("fiveDays");
+  };
+
+  const onGetSevenDays = () => {
+    const sevenDays = moment().add(7, "days").format("YYYY-MM-DD");
+    setValueStartDate(sevenDays);
+    setValueEndDate(sevenDays);
+    setSelectedButton("sevenDays");
   };
 
   const onGetThisMonth = () => {
@@ -67,27 +88,55 @@ export default function PopUpSetStartAndEndDateBirthDay({
     setSelectedButton("lastMonth");
   };
 
-  const onGetThisYear = () => {
-    const startOfYear = moment().startOf("year").format("YYYY-MM-DD");
-    const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
-    setValueStartDate(startOfYear);
-    setValueEndDate(endOfYear);
-    setSelectedButton("thisYear");
+  const onGetMoreMonth = () => {
+    const startOfLastMonth = moment()
+      .add(1, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfLastMonth = moment()
+      .add(1, "months")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    setValueStartDate(startOfLastMonth);
+    setValueEndDate(endOfLastMonth);
+    setSelectedButton("moreMonth");
   };
 
-  const onGetLastYear = () => {
-    const startOfLastYear = moment()
-      .subtract(1, "years")
-      .startOf("year")
+  const onGetMoreThreeMonth = () => {
+    const startOfLastMonth = moment()
+      .add(3, "months")
+      .startOf("month")
       .format("YYYY-MM-DD");
-    const endOfLastYear = moment()
-      .subtract(1, "years")
-      .endOf("year")
+    const endOfLastMonth = moment()
+      .add(3, "months")
+      .endOf("month")
       .format("YYYY-MM-DD");
-    setValueStartDate(startOfLastYear);
-    setValueEndDate(endOfLastYear);
-    setSelectedButton("lastYear");
+    setValueStartDate(startOfLastMonth);
+    setValueEndDate(endOfLastMonth);
+    setSelectedButton("moreThreeMonth");
   };
+
+  // const onGetThisYear = () => {
+  //   const startOfYear = moment().startOf("year").format("YYYY-MM-DD");
+  //   const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
+  //   setValueStartDate(startOfYear);
+  //   setValueEndDate(endOfYear);
+  //   setSelectedButton("thisYear");
+  // };
+
+  // const onGetLastYear = () => {
+  //   const startOfLastYear = moment()
+  //     .subtract(1, "years")
+  //     .startOf("year")
+  //     .format("YYYY-MM-DD");
+  //   const endOfLastYear = moment()
+  //     .subtract(1, "years")
+  //     .endOf("year")
+  //     .format("YYYY-MM-DD");
+  //   setValueStartDate(startOfLastYear);
+  //   setValueEndDate(endOfLastYear);
+  //   setSelectedButton("lastYear");
+  // };
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
@@ -112,7 +161,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
             onClick={onGetToday}
             variant={selectedButton === "today" ? "primary" : "outline-primary"}
           >
-            ມື້ນີ້
+            {t("today")}
           </Button>
           <Button
             onClick={onGetYesterday}
@@ -120,7 +169,34 @@ export default function PopUpSetStartAndEndDateBirthDay({
               selectedButton === "yesterday" ? "primary" : "outline-primary"
             }
           >
-            ມື້ວານ
+            {t("yester_day")}
+          </Button>
+
+          <Button
+            onClick={onGetthreeDays}
+            variant={
+              selectedButton === "threeDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("3_more_day")}
+          </Button>
+
+          <Button
+            onClick={onGetfiveDays}
+            variant={
+              selectedButton === "fiveDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("5_more_day")}
+          </Button>
+
+          <Button
+            onClick={onGetSevenDays}
+            variant={
+              selectedButton === "sevenDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("7_more_day")}
           </Button>
           <Button
             onClick={onGetThisMonth}
@@ -128,7 +204,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
               selectedButton === "thisMonth" ? "primary" : "outline-primary"
             }
           >
-            ເດືອນນີ້
+            {t("this_month")}
           </Button>
           <Button
             onClick={onGetLastMonth}
@@ -136,23 +212,25 @@ export default function PopUpSetStartAndEndDateBirthDay({
               selectedButton === "lastMonth" ? "primary" : "outline-primary"
             }
           >
-            ເດືອນກ່ອນ
+            {t("last_month")}
           </Button>
           <Button
-            onClick={onGetThisYear}
+            onClick={onGetMoreMonth}
             variant={
-              selectedButton === "thisYear" ? "primary" : "outline-primary"
+              selectedButton === "moreMonth" ? "primary" : "outline-primary"
             }
           >
-            ປີນີ້
+            {t("1_more_month")}
           </Button>
           <Button
-            onClick={onGetLastYear}
+            onClick={onGetMoreThreeMonth}
             variant={
-              selectedButton === "lastYear" ? "primary" : "outline-primary"
+              selectedButton === "moreThreeMonth"
+                ? "primary"
+                : "outline-primary"
             }
           >
-            ປີກ່ອນ
+            {t("3_more_month")}
           </Button>
         </Box>
         <Box
@@ -206,7 +284,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onClose}>
-          ຍົກເລີກ
+          {t("cancel")}
         </Button>
         <Button
           onClick={() => {
@@ -217,7 +295,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
             onClose();
           }}
         >
-          ຍືນຢັນ
+          {t("confirm")}
         </Button>
       </Modal.Footer>
     </Modal>
