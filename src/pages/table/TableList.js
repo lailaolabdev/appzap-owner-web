@@ -132,6 +132,7 @@ export default function TableList() {
     onSelectTable,
     resetTableOrder,
     storeDetail,
+    setStoreDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -261,12 +262,6 @@ export default function TableList() {
       e?.status === "WAITING" ||
       e?.tableOrderItems?.length === 0
   )?._id;
-
-  useEffect(() => {
-    // initialTableSocket();
-    // getTableDataStoreList();
-    getTableDataStore();
-  }, []);
 
   /**
    * Modify Order Status
@@ -509,7 +504,7 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  console.log("bill80Ref", bill80Ref);
+  // console.log("bill80Ref", bill80Ref);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
@@ -597,6 +592,10 @@ export default function TableList() {
           });
         }
       );
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
       await Swal.fire({
         icon: "success",
@@ -604,10 +603,6 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1500,
       });
-
-      // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
-      setSelectedTable();
       getTableDataStore();
     } catch (err) {
       console.log("err printer", err);
@@ -620,6 +615,10 @@ export default function TableList() {
       return err;
     }
   };
+
+  useEffect(() => {
+    getTableDataStore();
+  }, [storeDetail?.ChangeColorTable]);
 
   async function delay(ms) {
     return new Promise((resolve) => {
@@ -889,16 +888,16 @@ export default function TableList() {
   const [onPrinting, setOnPrinting] = useState(false);
 
   const onPrintToKitchen = async () => {
-    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers)
+      printItems(groupedItems, combinedBillRefs, printers);
     } else {
       // Print with cut
       onPrintForCher();
     }
-  }
+  };
 
   const onPrintForCher = async () => {
     setOnPrinting(true);
@@ -2501,14 +2500,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {
