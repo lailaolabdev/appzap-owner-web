@@ -120,7 +120,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     setPopup({ exportReport: false });
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
-      const url = END_POINT_EXPORT + "/export/report-category/" + findBy;
+      const url = END_POINT_EXPORT + "/export/report-daily/" + findBy;
       const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
@@ -149,6 +149,39 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     }
   };
   const exportMenuType = async () => {
+    setPopup({ exportReport: false });
+    alert("exportMenuType");
+    // try {
+    //   const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
+    //   const url = END_POINT_EXPORT + "/export/report-menu-detail/" + findBy;
+    //   const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+
+    //   if (_res?.data?.exportUrl) {
+    //     const response = await Axios.get(_res?.data?.exportUrl, {
+    //       responseType: "blob", // Important to get the response as a Blob
+    //     });
+
+    //     const fileBlob = new Blob([response.data], {
+    //       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //     });
+
+    //     // Use the file-saver library to save the file with a new name
+    //     saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+
+    //     await setStoreDetail({
+    //       ...storeDetail,
+    //       start_date: "",
+    //       end_date: "",
+    //       start_time: "",
+    //       end_time: "",
+    //       selectedTableIds: "",
+    //     });
+    //   }
+    // } catch (err) {
+    //   errorAdd(`${t("export_fail")}`);
+    // }
+  };
+  const exportMenu = async () => {
     setPopup({ exportReport: false });
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
@@ -245,7 +278,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
-            onClick={() => setPopup({ printReportMenuAndCategorySale: true })}
+            onClick={() => exportMenu()}
           >
             <span>{t("menu_info")}</span>
           </Button>
