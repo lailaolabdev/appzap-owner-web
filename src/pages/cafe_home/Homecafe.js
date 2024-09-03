@@ -52,7 +52,7 @@ import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
-import { callCheckOutPrintBillOnly } from "../../services/code";
+import printFlutter from "../../helpers/printFlutter";
 
 function Homecafe() {
   const params = useParams();
@@ -955,12 +955,24 @@ function Homecafe() {
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 350 : 550,
+          beep: 1,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
 
       await Swal.fire({
         icon: "success",

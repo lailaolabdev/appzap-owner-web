@@ -587,6 +587,8 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -697,6 +699,8 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -889,16 +893,16 @@ export default function TableList() {
   const [onPrinting, setOnPrinting] = useState(false);
 
   const onPrintToKitchen = async () => {
-    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers)
+      printItems(groupedItems, combinedBillRefs, printers);
     } else {
       // Print with cut
       onPrintForCher();
     }
-  }
+  };
 
   const onPrintForCher = async () => {
     setOnPrinting(true);
@@ -973,6 +977,8 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1092,6 +1098,8 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -2501,14 +2509,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {

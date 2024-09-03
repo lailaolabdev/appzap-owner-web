@@ -15,7 +15,11 @@ import {
   getUserReport,
 } from "../../services/report";
 import _ from "lodash";
-import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 export default function PopUpPrintStaffHistoryComponent({
@@ -31,7 +35,7 @@ export default function PopUpPrintStaffHistoryComponent({
   const [userReport, setUserReport] = useState([]);
 
   // provider
-  const {printerCounter, printers, storeDetail } = useStore();
+  const { printerCounter, printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     getUserReportData(startDate);
@@ -87,6 +91,8 @@ export default function PopUpPrintStaffHistoryComponent({
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: myPrinter?.width === "58mm" ? 350 : 550,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -99,7 +105,7 @@ export default function PopUpPrintStaffHistoryComponent({
       );
       await Swal.fire({
         icon: "success",
-        title: `${t('print_sucess')}`,
+        title: `${t("print_sucess")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -107,7 +113,7 @@ export default function PopUpPrintStaffHistoryComponent({
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fail')}`,
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -132,7 +138,7 @@ export default function PopUpPrintStaffHistoryComponent({
       //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
       //   ຈ່າຍເງິນໂອນ: transferTotalBill,
       // });
-    } catch (err) { }
+    } catch (err) {}
   };
   // const getUserReportData = async () => {
   //   const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -146,7 +152,7 @@ export default function PopUpPrintStaffHistoryComponent({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('print')}
+        <BsPrinter /> {t("print")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -171,17 +177,21 @@ export default function PopUpPrintStaffHistoryComponent({
           style={{ maxWidth: 330, width: "100%", minWidth: 330 }}
         >
           <Container>
-            <div style={{ fontWeight: "bold", fontSize: 24 }}>{t('staff_sales_report')}</div>
-            <div style={{ fontWeight: "bold" }}>
-              {t('start')}: {startDate} 00:00:00
+            <div style={{ fontWeight: "bold", fontSize: 24 }}>
+              {t("staff_sales_report")}
             </div>
-            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("start")}: {startDate} 00:00:00
+            </div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("to")}: {startDate} 23:59:59
+            </div>
             {userReport?.map((e) => (
               <div>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 {[
                   {
-                    name: `${t('staff_name')}:`,
+                    name: `${t("staff_name")}:`,
                     value: e?.["userId"]?.["userId"],
                     type: "default",
                   },
@@ -190,7 +200,7 @@ export default function PopUpPrintStaffHistoryComponent({
                   //   value: e["ຈຳນວນອໍເດີທັງໝົດ"],
                   // },
                   {
-                    name: `${t('order_success_amount')}`,
+                    name: `${t("order_success_amount")}`,
                     value: e?.["served"],
                   },
                   // {
@@ -199,7 +209,7 @@ export default function PopUpPrintStaffHistoryComponent({
                   //   type: storeDetail?.firstCurrency,
                   // },
                   {
-                    name: `${t('total_success_order')}`,
+                    name: `${t("total_success_order")}`,
                     value: e?.["totalSaleAmount"],
                     type: storeDetail?.firstCurrency,
                   },

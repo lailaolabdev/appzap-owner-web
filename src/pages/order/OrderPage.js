@@ -160,6 +160,8 @@ export default function OrderPage() {
               ip: _printer?.ip,
               type: _printer?.type,
               port: "9100",
+              beep: 1,
+              width: _printer?.width === "58mm" ? 350 : 550,
             },
             async () => {
               await axios({
