@@ -166,6 +166,8 @@ export default function TableList() {
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
+  const [zoneData, setZoneData] = useState();
+  const [zoneId, setZoneId] = useState();
 
   const [isBillTest, setIsBillTest] = useState(true);
 
@@ -226,6 +228,13 @@ export default function TableList() {
 
   useEffect(() => {
     getUserData();
+    getDataZone();
+
+    const localZone = localStorage.getItem("selectedZone");
+    if (localZone) {
+      setZoneId(localZone);
+      getTableDataStore({zone: localZone})
+    }
   }, []);
 
   const getUserData = async () => {
@@ -262,11 +271,11 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  useEffect(() => {
-    // initialTableSocket();
-    // getTableDataStoreList();
-    getTableDataStore();
-  }, []);
+  // useEffect(() => {
+  //   // initialTableSocket();
+  //   // getTableDataStoreList();
+  //   getTableDataStore();
+  // }, []);
 
   /**
    * Modify Order Status
@@ -306,6 +315,22 @@ export default function TableList() {
       setDataBill();
     }
   }, [tableOrderItems]);
+
+  useEffect(() => {
+    if (zoneId) {
+      getTableDataStore({zone: zoneId})
+    } else {
+      getTableDataStore()
+    }
+  }, [zoneId]);
+
+  const onSelectedZone = (value) => {
+    localStorage.setItem("selectedZone", value);
+    setZoneId(value);
+    if (!value) {
+      getTableDataStore();
+    }
+  }
 
   const getData = async (code) => {
     try {
@@ -397,7 +422,12 @@ export default function TableList() {
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        getTableDataStore();
+        // getTableDataStore();
+        if (zoneId) {
+          getTableDataStore({zone: zoneId})
+        } else {
+          getTableDataStore()
+        }
         await Swal.fire({
           icon: "success",
           title: `${t("change_table_success")}`,
@@ -449,7 +479,12 @@ export default function TableList() {
       setOpenModalSetting(false);
       if (updateTable.status < 300) {
         setSelectedTable();
-        getTableDataStore();
+        // getTableDataStore();
+        if (zoneId) {
+          getTableDataStore({zone: zoneId})
+        } else {
+          getTableDataStore()
+        }
         successAdd(`${t("close_table_success")}`);
       }
     } catch (err) {
@@ -608,7 +643,12 @@ export default function TableList() {
       // update bill status to call check out
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
-      getTableDataStore();
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({zone: zoneId})
+      } else {
+        getTableDataStore()
+      }
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -1369,7 +1409,12 @@ export default function TableList() {
 
   useEffect(() => {
     if (newTableTransaction) {
-      getTableDataStore();
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({zone: zoneId})
+      } else {
+        getTableDataStore()
+      }
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
@@ -1408,6 +1453,30 @@ export default function TableList() {
     if (data?.token) {
       setQrToken(data?.token);
       setPopup({ qrToken: true });
+    }
+  };
+
+  const getDataZone = async () => {
+    try {
+        let header = await getHeaders();
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: header.authorization,
+        };
+        const data = await axios({
+          method: "get",
+          url: END_POINT_SEVER + `/v3/zones`,
+          params: {
+            storeId: params?.id,
+            limit: 100,
+          },
+          headers: headers,
+        });
+        if (data?.status == 200) {
+            setZoneData(data?.data?.data);
+        }
+    } catch (err) {
+        console.log("err:", err);
     }
   };
 
@@ -1458,6 +1527,21 @@ export default function TableList() {
               {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div>
+
+            <div style={{ padding: "5px 15px" }}>
+              <Form.Label>{t('show_by_zone')}</Form.Label>
+              <Form.Control 
+                as='select'
+                value={zoneId}
+                onChange={(e) => onSelectedZone(e?.target?.value)}
+              >
+                <option value="">{t('show_all_zone')}</option>
+                {zoneData?.map((item, index) => (
+                  <option key={index} value={item?._id}>{item?.name}</option>
+                ))}
+              </Form.Control>
+            </div>
+
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
               <Box

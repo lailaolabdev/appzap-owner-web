@@ -14,6 +14,7 @@ import {
   faDollarSign,
   faImages,
   faDatabase,
+  faTh,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -65,6 +66,13 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUtensils} />
       ),
       path: `/settingStore/menu/limit/40/page/1/${params?.id}`,
+    },
+    {
+      id: "ab2dd4fe-d0e2-4808-89d1-ae6307b8abce",
+      title: t("zone_setting"),
+      subTitle: t('zone_setting_desc'),
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
+      path: `/settingStore/settingZone/${params?.id}`,
     },
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",

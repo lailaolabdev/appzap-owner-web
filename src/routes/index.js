@@ -68,6 +68,7 @@ import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
+import ZoneList from "../pages/zone/ZoneList";
 
 function Router() {
   return useRoutes([
@@ -264,6 +265,10 @@ function Router() {
         {
           path: "detail-expend/:id",
           element: <DetailExpend />,
+        },
+        {
+          path: "/settingStore/settingZone/:id",
+          element: <ZoneList />,
         },
         OrderRoutes,
         PrinterRoutes,
