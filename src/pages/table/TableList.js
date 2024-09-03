@@ -1528,6 +1528,7 @@ export default function TableList() {
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div>
 
+            {zoneData?.length > 0 ?
             <div style={{ padding: "5px 15px" }}>
               <Form.Label>{t('show_by_zone')}</Form.Label>
               <Form.Control 
@@ -1541,6 +1542,8 @@ export default function TableList() {
                 ))}
               </Form.Control>
             </div>
+            : ''
+            }
 
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
