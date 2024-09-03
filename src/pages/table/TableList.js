@@ -580,23 +580,29 @@ export default function TableList() {
         (e) => e?._id === _printerCounters?.BILL
       );
       let dataImageForPrint;
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(bill80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-      }
+      dataImageForPrint = await html2canvas(bill80Ref.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      // if (printerBillData?.width === "80mm") {
+      //   dataImageForPrint = await html2canvas(bill80Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 530 / widthBill80,
+      //   });
+      // }
 
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(bill58Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 350 / widthBill58,
-        });
-      }
+      // if (printerBillData?.width === "58mm") {
+      //   dataImageForPrint = await html2canvas(bill58Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 350 / widthBill58,
+      //   });
+      // }
       if (printerBillData?.type === "ETHERNET") {
         urlForPrinter = ETHERNET_PRINTER_PORT;
       }
