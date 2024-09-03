@@ -961,7 +961,7 @@ function Homecafe() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          width: printerBillData?.width === "58mm" ? 350 : 550,
+          width: printerBillData?.width === "58mm" ? 400 : 580,
           beep: 1,
         },
         async () => {

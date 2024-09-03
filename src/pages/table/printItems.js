@@ -6,7 +6,6 @@ import {
   BLUETOOTH_PRINTER_PORT,
   USB_PRINTER_PORT,
 } from "../../constants/index"; // Adjust the import path based on your project structure
-import printFlutter from "../../helpers/printFlutter";
 
 export const printItems = async (groupedItems, combinedBillRefs, printers) => {
   for (const [printerIp, items] of Object.entries(groupedItems)) {

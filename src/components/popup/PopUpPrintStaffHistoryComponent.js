@@ -91,7 +91,7 @@ export default function PopUpPrintStaffHistoryComponent({
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          width: myPrinter?.width === "58mm" ? 350 : 550,
+          width: myPrinter?.width === "58mm" ? 400 : 580,
           beep: 1,
         },
         async () => {

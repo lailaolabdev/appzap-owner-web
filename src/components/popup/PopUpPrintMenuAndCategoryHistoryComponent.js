@@ -118,7 +118,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
           type: printerBillData?.type,
           port: "9100",
           beep: 1,
-          width: myPrinter?.width === "58mm" ? 350 : 550,
+          width: myPrinter?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({

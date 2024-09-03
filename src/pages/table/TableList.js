@@ -727,7 +727,7 @@ export default function TableList() {
       setCodeShortLink(null);
     } catch (err) {
       setCodeShortLink(null);
-      console.log(err);
+      console.log("");
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,

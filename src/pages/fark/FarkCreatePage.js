@@ -241,7 +241,7 @@ export default function FarkCreatePage() {
           type: printerBillData?.type,
           port: "9100",
           beep: 1,
-          width: printerBillData?.width === "58mm" ? 350 : 550,
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
