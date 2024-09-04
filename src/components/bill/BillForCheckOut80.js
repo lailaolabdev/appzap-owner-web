@@ -105,24 +105,31 @@ export default function BillForCheckOut80({
   return (
     <Container>
       <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
+        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
       >
-        {base64Image ? (
-          <Image
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {base64Image ? (
+            <Image
+              style={{
+                maxWidth: 120,
+                maxHeight: 120,
+              }}
+              src={base64Image}
+              alt="logo"
+            />
+          ) : (
+            ""
+          )}
+          <span
             style={{
-              maxWidth: 120,
-              maxHeight: 120,
+              fontSize: "24px",
+              fontWeight: "bold",
+              marginRight: "10px",
             }}
-            src={base64Image}
-            alt="logo"
-          />
-        ) : (
-          ""
-        )}
+          >
+            # {dataBill?.queue}
+          </span>
+        </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
@@ -287,13 +294,17 @@ export default function BillForCheckOut80({
 
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ margin: "10px" }}></div>
-      
-      <div style={{ fontSize: 12, textAlign: 'center' }}>
+
+      <div style={{ fontSize: 12, textAlign: "center" }}>
         <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.buy)}
-            {index + 1 < currencyData?.length ? <span style={{ marginLeft: 10, marginRight: 10 }}>|</span> : ''}
+            {index + 1 < currencyData?.length ? (
+              <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
+            ) : (
+              ""
+            )}
           </span>
         ))}
       </div>
