@@ -145,11 +145,13 @@ export default function OrderPage() {
           }
           const _file = await base64ToBlob(await dataUrl.toDataURL());
           var bodyFormData = new FormData();
+
           bodyFormData.append("ip", _printer?.ip);
           if (_index === 0) {
             bodyFormData.append("beep1", 1);
             bodyFormData.append("beep2", 9);
           }
+          bodyFormData.append("isdrawer", false);
           bodyFormData.append("port", "9100");
           bodyFormData.append("image", _file);
           bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
