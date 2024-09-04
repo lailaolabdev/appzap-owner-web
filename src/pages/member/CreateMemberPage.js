@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle
+  BsInfoCircle,
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -17,7 +18,7 @@ import { FaSearch } from "react-icons/fa";
 import {
   addMember,
   getMemberCount,
-  getMembers
+  getMembers,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import { useNavigate } from "react-router-dom";
@@ -32,9 +33,9 @@ export default function CreateMemberPage() {
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
 
-  // provider
+  const { state } = useLocation();
 
-  // useEffect
+  console.log(" State ", state?.key);
 
   // function
   const createMember = async () => {
@@ -47,7 +48,7 @@ export default function CreateMemberPage() {
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
       navigate("/reports/members-report");
     } catch (err) {
-      errorAdd(`${t('add_fail')}`);
+      errorAdd(`${t("add_fail")}`);
       setDisabledButton(false);
       console.error(err);
     }
@@ -57,8 +58,8 @@ export default function CreateMemberPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('add_member')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("add_member")}</Breadcrumb.Item>
         </Breadcrumb>
 
         <Card border="primary" style={{ maxWidth: 500 }}>
@@ -67,28 +68,28 @@ export default function CreateMemberPage() {
               backgroundColor: COLOR_APP,
               color: "#fff",
               fontSize: 18,
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           >
-            {t('add_member_form')}
+            {t("add_member_form")}
           </Card.Header>
           <Card.Body>
             <div>
               <div className="mb-3">
-                <Form.Label>{t('member_name')}</Form.Label>
+                <Form.Label>{t("member_name")}</Form.Label>
                 <Form.Control
-                  placeholder={t('member_name')}
+                  placeholder={t("member_name")}
                   value={formData?.name}
                   onChange={(e) => {
                     setFormData((prev) => ({
                       ...prev,
-                      name: e.target.value
+                      name: e.target.value,
                     }));
                   }}
                 />
               </div>
               <div className="mb-3">
-                <Form.Label>{t('tel')}</Form.Label>
+                <Form.Label>{t("tel")}</Form.Label>
                 <InputGroup>
                   <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
                   <Form.Control
@@ -99,20 +100,20 @@ export default function CreateMemberPage() {
                     onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
-                        phone: e.target.value
+                        phone: e.target.value,
                       }));
                     }}
                   />
                 </InputGroup>
               </div>
               <div className="mb-3">
-                <Form.Label>{t('birth_date')}</Form.Label>
+                <Form.Label>{t("birth_date")}</Form.Label>
                 <DateTimeComponent
                   value={formData?.birthday}
                   onChange={(birthday) => {
                     setFormData((prev) => ({
                       ...prev,
-                      birthday: birthday
+                      birthday: birthday,
                     }));
                   }}
                 />
@@ -123,7 +124,7 @@ export default function CreateMemberPage() {
                   disabled={disabledButton}
                   onClick={createMember}
                 >
-                  {t('add')}
+                  {t("add")}
                 </Button>
               </div>
             </div>

@@ -440,7 +440,6 @@
   "price_amount": "Balance",
   "chose_one_prod": "Select one product",
   "compare": "Compare",
-  "last_month": "Last month",
   "bg_year": "Beging of year",
   "point_setting_form": "Point setting form",
   "bill_total_price": "Bill total price",
@@ -769,9 +768,16 @@
   "lists_export_order": "Amount orders",
   "chose_day": "chose days",
   "to_day": "Today",
+  "yester_day": "Yesterday",
+  "this_month": "This Month",
+  "last_month": "Last month",
   "3_more_day": "3 more day",
   "5_more_day": "5 more day",
   "7_more_day": "7 more day",
+  "1_more_month": "1 more month",
+  "3_more_month": "3 more month",
+  "this_years": "This years",
+  "last_years": "Last years",
   "chose_top": "Chose Top",
   "report_member_updates_last": "lasted updated 04:00 (The report will be updated every day)",
   "updated": "Updated",
@@ -782,5 +788,6 @@
   "isCafe": "Cafe",
   "amountTotal": "Total amount",
   "pricesTotal": "Price amount",
-  "nameCurrency": "Kip"
+  "nameCurrency": "Kip",
+  "clear": "clear"
 }

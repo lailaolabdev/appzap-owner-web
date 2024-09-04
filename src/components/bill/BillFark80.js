@@ -9,7 +9,7 @@ export default function BillFark80({
   expirDate,
   customerName,
   customerPhone,
-  code
+  code,
 }) {
   const { storeDetail } = useStore();
   return (
@@ -45,7 +45,7 @@ export default function BillFark80({
         <div>ຊື່ລູກຄ້າ: {customerName}</div>
         <div>ເບີໂທລູກຄ້າ: {customerPhone}</div>
         <div>ມື້ຝາກ: {moment(moment()).format("DD-MM-YYYY")}</div>
-        <div>ມື້ໝົດກຳນົດ: {expirDate}</div>
+        <div>ມື້ໝົດກຳນົດ: {moment(expirDate).format("DD-MM-YYYY")}</div>
         <div style={{ marginBottom: 5 }}>
           ລະຫັດບິນ:
           <span

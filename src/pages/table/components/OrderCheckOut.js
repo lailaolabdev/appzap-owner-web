@@ -9,7 +9,10 @@ import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
+
 import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
+import styled from "styled-components";
+
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -228,14 +231,8 @@ const OrderCheckOut = ({
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+        <CardFooterModal>
+          <Modal.Footer>
             <Button
               className="ml-2 pl-4 pr-4"
               style={{
@@ -314,8 +311,8 @@ const OrderCheckOut = ({
                 {t("check_bill")}
               </Button>
             </div>
-          </div>
-        </Modal.Footer>
+          </Modal.Footer>
+        </CardFooterModal>
       </Modal>
     </>
   );
@@ -326,5 +323,12 @@ OrderCheckOut.propTypes = {
   hide: PropTypes.func,
   data: PropTypes.array,
 };
+
+const CardFooterModal = styled.div`
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  margin-bottom: 20px;
+`;
 
 export default OrderCheckOut;
