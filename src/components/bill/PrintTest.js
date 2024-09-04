@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect  } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import BillForReport80 from "./BillForReport80";
 import Swal from "sweetalert2";
 import { base64ToBlob } from "../../helpers";
@@ -52,6 +52,8 @@ export default function PrintTest() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData.width === "58" ? 400 : 580,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -80,7 +82,7 @@ export default function PrintTest() {
   };
   return (
     <div>
-      <div ref={bill80Ref} style={{maxWidth:330,width:330}}>
+      <div ref={bill80Ref} style={{ maxWidth: 330, width: 330 }}>
         <BillForReport80 />
       </div>
       <button onClick={onPrintBill}>Print</button>

@@ -659,6 +659,8 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -784,6 +786,8 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+          beep: 1,
         },
         async () => {
           await axios({
@@ -810,7 +814,7 @@ export default function TableList() {
       setCodeShortLink(null);
     } catch (err) {
       setCodeShortLink(null);
-      console.log(err);
+      console.log("");
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -1060,6 +1064,8 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1179,6 +1185,8 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
