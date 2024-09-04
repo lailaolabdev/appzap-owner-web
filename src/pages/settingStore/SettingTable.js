@@ -7,9 +7,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTrashAlt,
-  faEdit,
-  faQrcode,
+	faTrashAlt,
+	faEdit,
+	faQrcode,
 } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
@@ -262,7 +262,7 @@ export default function SettingTable() {
                         <span className="slider round"></span>
                       </label>
                     </td> */}
-                    {/* <td
+										{/* <td
                       style={{
                         color: table?.isOpened === true ? "green" : "red",
                       }}
@@ -448,39 +448,39 @@ export default function SettingTable() {
       />
       {/* ===== qr ===== */}
 
-      <Modal show={popup?.qr} onHide={() => setPopup()}>
-        <Modal.Header closeButton>
-          <Modal.Title>QR </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <QrReader
-            onResult={(result, error) => {
-              console.log(result)
-              if (!!result) {
-                axios
-                  .put(result?.text, {
-                    type: "LINK",
-                    "details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
-                  })
-                  .then(() => {
-                    setPopup();
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }
+			<Modal show={popup?.qr} onHide={() => setPopup()} centered>
+				<Modal.Header closeButton>
+					<Modal.Title>QR </Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<QrReader
+						onResult={(result, error) => {
+							console.log(result);
+							if (!!result) {
+								axios
+									.put(result?.text, {
+										type: "LINK",
+										"details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
+									})
+									.then(() => {
+										setPopup();
+									})
+									.catch((err) => {
+										console.log(err);
+									});
+							}
 
-              // if (!!error) {
-              //   console.info(error);
-              // }
-            }}
-            constraints={{
-              facingMode: "environment",
-            }}
-            style={{ width: "100%" }}
-          />
-        </Modal.Body>
-      </Modal>
-    </div>
-  );
+							// if (!!error) {
+							//   console.info(error);
+							// }
+						}}
+						constraints={{
+							facingMode: "environment",
+						}}
+						style={{ width: "100%" }}
+					/>
+				</Modal.Body>
+			</Modal>
+		</div>
+	);
 }
