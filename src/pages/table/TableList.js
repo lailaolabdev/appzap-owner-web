@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
-
+import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
@@ -66,13 +66,17 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 export default function TableList() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
+
+  // console.log({ state });
 
   // state
   const [show, setShow] = useState(false);
@@ -132,6 +136,7 @@ export default function TableList() {
     onSelectTable,
     resetTableOrder,
     storeDetail,
+    setStoreDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -146,6 +151,8 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
   } = useStore();
+
+  // console.log("actions", storeDetail?.actions);
 
   const reLoadData = () => {
     setReload(true);
@@ -163,6 +170,7 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
+  const [serviceChargePercent, setServiceChargePercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
@@ -226,6 +234,7 @@ export default function TableList() {
     getUserData();
   }, [pinStatus]);
 
+
   useEffect(() => {
     getUserData();
     getDataZone();
@@ -236,6 +245,14 @@ export default function TableList() {
       getTableDataStore({zone: localZone})
     }
   }, []);
+
+  // useEffect(() => {
+  //   getUserData();
+  //   if (window.opener) {
+  //     window.opener.location.reload();
+  //   }
+  // }, []);
+
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -257,6 +274,17 @@ export default function TableList() {
     };
     getDataTax();
   }, []);
+
+  useEffect(() => {
+    const getDataServiceCharge = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+      `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+    );
+    setServiceChargePercent(_res?.data?.serviceCharge);
+    };
+    getDataServiceCharge();
+  }, []);
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
@@ -271,11 +299,13 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
+
   // useEffect(() => {
   //   // initialTableSocket();
   //   // getTableDataStoreList();
   //   getTableDataStore();
   // }, []);
+
 
   /**
    * Modify Order Status
@@ -544,7 +574,7 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  console.log("bill80Ref", bill80Ref);
+  // console.log("bill80Ref", bill80Ref);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
@@ -566,7 +596,7 @@ export default function TableList() {
     }
   };
 
-  const onPrintBill = async () => {
+  const onPrintBill = async (isPrintBill) => {
     try {
       let _dataBill = {
         ...dataBill,
@@ -617,6 +647,7 @@ export default function TableList() {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", isPrintBill);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -638,6 +669,10 @@ export default function TableList() {
           });
         }
       );
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
       await Swal.fire({
         icon: "success",
@@ -655,6 +690,7 @@ export default function TableList() {
       } else {
         getTableDataStore()
       }
+
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -666,6 +702,10 @@ export default function TableList() {
       return err;
     }
   };
+
+  useEffect(() => {
+    getTableDataStore();
+  }, [storeDetail?.ChangeColorTable]);
 
   async function delay(ms) {
     return new Promise((resolve) => {
@@ -730,6 +770,7 @@ export default function TableList() {
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
@@ -935,16 +976,16 @@ export default function TableList() {
   const [onPrinting, setOnPrinting] = useState(false);
 
   const onPrintToKitchen = async () => {
-    const hasNoCut = printers.some(printer => printer.cutPaper === "not_cut");
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers)
+      printItems(groupedItems, combinedBillRefs, printers);
     } else {
       // Print with cut
       onPrintForCher();
     }
-  }
+  };
 
   const onPrintForCher = async () => {
     setOnPrinting(true);
@@ -1434,7 +1475,7 @@ export default function TableList() {
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      console.log({ _data });
+      // console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
@@ -2314,6 +2355,7 @@ export default function TableList() {
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
+          serviceCharge={serviceChargePercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2398,7 +2440,14 @@ export default function TableList() {
         dataBill={dataBill}
         tableData={selectedTable}
         open={popup?.CheckOutType}
-        onClose={() => setPopup()}
+        onClose={() => {
+          setPopup();
+          setDataBill((prev) => ({
+            ...prev,
+            Name: "",
+            Point: "",
+          }));
+        }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         // editMode={select}
@@ -2413,6 +2462,7 @@ export default function TableList() {
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
+        serviceCharge={serviceChargePercent}
         taxPercent={taxPercent}
         onSubmit={() => {
           setMenuItemDetailModal(false);
@@ -2594,14 +2644,11 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback(
-                  "CANCELED",
-                  async () => {
-                    const data = await onPrintForCherCancel();
-                    return data;
-                  }
-                ).then(resp => {
-                  setWorkAfterPin("")
+                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
+                  const data = await onPrintForCherCancel();
+                  return data;
+                }).then((resp) => {
+                  setWorkAfterPin("");
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {

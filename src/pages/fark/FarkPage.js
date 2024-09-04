@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
+import EmptyImage from "../../image/empty-removebg.png";
 
 export default function FarkPage() {
   const { t } = useTranslation();
@@ -46,9 +47,10 @@ export default function FarkPage() {
   const [billFarkData, setBillFarkData] = useState();
   const [selectBillFark, setSelectBillFark] = useState();
   const [popup, setPopup] = useState();
-  console.log("totalPagination", totalPagination);
   // store
   const { storeDetail } = useStore();
+
+  console.log("billFarkData", billFarkData);
 
   // useEffect
   useEffect(() => {
@@ -73,6 +75,9 @@ export default function FarkPage() {
       findby += `limit=${limitData}&`;
       findby += `storeId=${storeDetail?._id}`;
       const data = await getBillFarks(findby, TOKEN);
+
+      console.log("getBillFarks", data);
+
       setBillFarkData(data?.data);
       // console.log(data);
       setTotalPagination(Math.ceil(data?.total / limitData));
@@ -145,7 +150,7 @@ export default function FarkPage() {
                     <td colSpan={9} style={{ textAlign: "center" }}>
                       <Spinner animation="border" variant="warning" />
                     </td>
-                  ) : (
+                  ) : billFarkData?.length > 0 ? (
                     billFarkData?.map((e, i) => (
                       <tr
                         onClick={() => {
@@ -176,6 +181,10 @@ export default function FarkPage() {
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    <td colSpan={9} style={{ textAlign: "center" }}>
+                      <img src={EmptyImage} alt="" width={300} height={200} />
+                    </td>
                   )}
                 </table>
               </Card.Body>

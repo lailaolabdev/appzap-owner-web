@@ -954,6 +954,8 @@ function Homecafe() {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
+      console.log("URL: ", urlForPrinter);
+
       // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
       await axios({
         method: "post",

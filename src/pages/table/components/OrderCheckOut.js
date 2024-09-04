@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Modal, Table, Button, Form } from "react-bootstrap";
+import { Modal, Table, Button, Form, Row, Card } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
@@ -9,10 +9,14 @@ import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
-import { URL_PHOTO_AW3 } from "../../../constants";
+
+import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
+import styled from "styled-components";
+
 
 const OrderCheckOut = ({
   data = { orderId: [] },
+  serviceCharge = 0,
   tableData = {},
   show = false,
   hide,
@@ -22,18 +26,25 @@ const OrderCheckOut = ({
   staffData,
 }) => {
   const { t } = useTranslation();
-  const { storeDetail, profile } = useStore();
-  const [total, setTotal] = useState();
+  const {
+    storeDetail,
+    setStoreDetail,
+    profile,
+    audioSetting,
+    setAudioSetting,
+  } = useStore();
+  const [total, setTotal] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
+  const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
+  const [serviceAmount, setServiceAmount] = useState(0);
 
   useEffect(() => {
     _calculateTotal();
-  }, [data, data?.orderId]);
+  }, [data, isServiceChargeEnabled]);
 
   const _calculateTotal = () => {
-    setTotal();
     let _total = 0;
     if (data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
@@ -45,6 +56,10 @@ const OrderCheckOut = ({
         }
       }
     }
+
+    // Calculate service charge
+    const serviceChargeAmount = isServiceChargeEnabled ? _total * 0.1 : 0; // 10% if enabled
+    setServiceAmount(serviceChargeAmount);
     setTotal(_total);
   };
 
@@ -80,28 +95,55 @@ const OrderCheckOut = ({
     return `${orderItem?.id}-${options}`;
   };
 
+  const getToggleServiceCharge = (e) => {
+    setIsServiceChargeEnabled(e.target.checked);
+    setStoreDetail({ ...storeDetail, serviceChargePer: serviceCharge });
+  };
+
+  console.log("STORE DETAIL: ", storeDetail?.serviceChargePer);
+
   return (
     <>
       <Modal
         show={show}
         size={"lg"}
         onHide={hide}
-        arialabelledby="contained-modal-title-vcenter"
+        aria-labelledby="contained-modal-title-vcenter"
       >
         <Modal.Header closeButton>
           <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t("table")}:{tableData?.tableName}
-          </pre>
-          <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("code")}:{tableData?.code}
-          </pre>
-          <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("open_at")}:
+          <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
+            {t("table")}: {tableData?.tableName}
+          </div>
+          <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+            {t("code")}: {tableData?.code}
+          </div>
+          <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+            {t("open_at")}:{" "}
             {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
-          </pre>
+          </div>
+          <Row>
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 16,
+                marginRight: 8,
+              }}
+            >
+              {t("service_charge")}
+            </div>
+            <Form.Check
+              style={{ margin: 2 }}
+              type="switch"
+              checked={isServiceChargeEnabled}
+              id={"switch-audio"}
+              onChange={(e) => getToggleServiceCharge(e)}
+            />
+          </Row>
+          <div style={{ margin: 8 }}></div>
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
@@ -148,44 +190,49 @@ const OrderCheckOut = ({
                   );
                 })}
               <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
+                <td colSpan="4" style={{ textAlign: "center" }}>
                   {t("discount")}:
                 </td>
-                <td colspan="1">
+                <td colSpan="1">
                   {moneyCurrency(data?.discount)}{" "}
                   {data?.discountType !== "LAK"
                     ? "%"
                     : storeDetail?.firstCurrency}
                 </td>
               </tr>
+              {isServiceChargeEnabled && (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("service_charge")}:
+                  </td>
+                  <td colSpan="1">{serviceCharge}%</td>
+                </tr>
+              )}
               <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
+                <td colSpan="4" style={{ textAlign: "center" }}>
                   {t("total_price")}:
                 </td>
-                <td colspan="1">
+                <td colSpan="1">
                   {moneyCurrency(total)} {storeDetail?.firstCurrency}
                 </td>
               </tr>
+
               <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
+                <td colSpan="4" style={{ textAlign: "center" }}>
                   {t("total_price")} + {t("tax")} {taxPercent}%:
                 </td>
-                <td colspan="1">
-                  {moneyCurrency(total * (taxPercent * 0.01 + 1))}{" "}
+                <td colSpan="1">
+                  {moneyCurrency(
+                    total * (taxPercent * 0.01 + 1) + serviceAmount
+                  )}{" "}
                   {storeDetail?.firstCurrency}
                 </td>
               </tr>
             </tbody>
           </Table>
         </Modal.Body>
-        <Modal.Footer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+        <CardFooterModal>
+          <Modal.Footer>
             <Button
               className="ml-2 pl-4 pr-4"
               style={{
@@ -194,7 +241,7 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
-              onClick={() => onPrintBill()}
+              onClick={() => onPrintBill(false)}
             >
               <FontAwesomeIcon
                 icon={faCashRegister}
@@ -219,17 +266,25 @@ const OrderCheckOut = ({
                 <b>
                   {data && data?.discountType === "LAK"
                     ? moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) - data?.discount > 0
-                          ? total * (taxPercent * 0.01 + 1) - data?.discount
+                        total * (taxPercent * 0.01 + 1) +
+                          serviceAmount -
+                          data?.discount >
+                          0
+                          ? (total + serviceAmount) * (taxPercent * 0.01 + 1) -
+                              data?.discount
                           : 0
                       )
                     : moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) -
-                          (total * (taxPercent * 0.01 + 1) * data?.discount) /
+                        total * (taxPercent * 0.01 + 1) +
+                          serviceAmount -
+                          ((total + serviceAmount) *
+                            (taxPercent * 0.01 + 1) *
+                            data?.discount) /
                             100 >
                           0
-                          ? total * (taxPercent * 0.01 + 1) -
-                              (total *
+                          ? total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              ((total + serviceAmount) *
                                 (taxPercent * 0.01 + 1) *
                                 data?.discount) /
                                 100
@@ -239,22 +294,6 @@ const OrderCheckOut = ({
               </span>
             </div>
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
-              {/* <Button
-                  className="ml-2 pl-4 pr-4"
-                  style={{
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffff",
-                    border: "solid 1px #FB6E3B",
-                    fontSize: 26,
-                  }}
-                  onClick={onConfirmStaffToCheckBill}
-                >
-                  <FontAwesomeIcon
-                    icon={faCashRegister}
-                    style={{ color: "#fff" }}
-                  />{" "}
-                  {t("change_who_check_bill")}
-                </Button> */}
               <Button
                 className="ml-2 pl-4 pr-4"
                 style={{
@@ -272,78 +311,9 @@ const OrderCheckOut = ({
                 {t("check_bill")}
               </Button>
             </div>
-          </div>
-        </Modal.Footer>
+          </Modal.Footer>
+        </CardFooterModal>
       </Modal>
-
-      {/* <Modal
-        size="lg"
-        centered
-        show={isConfirmStaff}
-        onHide={onCancelConfirmStaff}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <b>{t("chose_staff_check_bill")}</b>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div style={{ display: "flex", gap: 20 }}>
-            <Button onClick={() => setDefualtRoleUser("APPZAP_COUNTER")}>
-              {t("counter")}
-            </Button>
-            <Button onClick={() => setDefualtRoleUser("APPZAP_STAFF")}>
-              {t("server")}
-            </Button>
-            <Button
-              disabled={profile?.data?.role != "APPZAP_ADMIN"}
-              onClick={() => setDefualtRoleUser("APPZAP_ADMIN")}
-            >
-              {t("ceo")}
-            </Button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 15,
-              padding: "1em 0",
-            }}
-          >
-            {staffData?.users
-              ?.filter((e) => e?.role == defualtRoleUser)
-              ?.map((data, index) => {
-                return (
-                  <Button
-                    onClick={() => onConfirmToCheckOut(data)}
-                    variant="outline-danger"
-                    key={index}
-                    style={{ width: "100%", padding: "1em 0" }}
-                  >
-                    {data?.image ? (
-                      <img
-                        style={{
-                          width: 35,
-                          height: 35,
-                          background: "#ffffff",
-                          borderRadius: "50em",
-                          border: "1px solid #ddd",
-                        }}
-                        src={URL_PHOTO_AW3 + data?.image}
-                        alt=""
-                      />
-                    ) : (
-                      <FaUserCircle style={{ fontSize: 35 }} />
-                    )}
-                    <p>
-                      {data?.firstname ?? "-"} {data?.lastname ?? "-"}
-                    </p>
-                  </Button>
-                );
-              })}
-          </div>
-        </Modal.Body>
-      </Modal> */}
     </>
   );
 };
@@ -353,5 +323,12 @@ OrderCheckOut.propTypes = {
   hide: PropTypes.func,
   data: PropTypes.array,
 };
+
+const CardFooterModal = styled.div`
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  margin-bottom: 20px;
+`;
 
 export default OrderCheckOut;

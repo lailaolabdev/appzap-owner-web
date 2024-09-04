@@ -19,11 +19,13 @@ export default function BillForCheckOut80({
   selectedTable,
   dataBill,
   taxPercent = 0,
+  serviceCharge = 0,
   profile,
 }) {
   // state
   const [total, setTotal] = useState();
   const [taxAmount, setTaxAmount] = useState(0);
+  const [serviceChargeAmount, setServiceChargeAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
   const [rateCurrency, setRateCurrency] = useState();
@@ -70,6 +72,7 @@ export default function BillForCheckOut80({
     }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
+    setServiceChargeAmount((_total * storeDetail?.serviceChargePer) / 100);
   };
 
   const getDataCurrency = async () => {
@@ -105,24 +108,31 @@ export default function BillForCheckOut80({
   return (
     <Container>
       <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-        }}
+        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
       >
-        {base64Image ? (
-          <Image
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {base64Image ? (
+            <Image
+              style={{
+                maxWidth: 120,
+                maxHeight: 120,
+              }}
+              src={base64Image}
+              alt="logo"
+            />
+          ) : (
+            ""
+          )}
+          <span
             style={{
-              maxWidth: 120,
-              maxHeight: 120,
+              fontSize: "24px",
+              fontWeight: "bold",
+              marginRight: "10px",
             }}
-            src={base64Image}
-            alt="logo"
-          />
-        ) : (
-          ""
-        )}
+          >
+            # {dataBill?.queue}
+          </span>
+        </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
@@ -252,6 +262,18 @@ export default function BillForCheckOut80({
           ""
         )}
       </div>
+      <Row>
+        <Col xs={8}>
+          <div style={{ textAlign: "right" }}>
+            {t("service_charge")} {storeDetail?.serviceChargePer}% :
+          </div>
+        </Col>
+        <Col>
+          <div style={{ textAlign: "right" }}>
+            {moneyCurrency(serviceChargeAmount)}
+          </div>
+        </Col>
+      </Row>
       <div style={{ fontSize: 14, marginTop: 20 }}>
         <Row>
           <Col xs={8}>
@@ -267,10 +289,13 @@ export default function BillForCheckOut80({
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
-              {moneyCurrency(totalAfterDiscount + taxAmount)}
+              {moneyCurrency(
+                totalAfterDiscount + taxAmount + serviceChargeAmount
+              )}
             </div>
           </Col>
         </Row>
+
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={8}>
@@ -287,13 +312,17 @@ export default function BillForCheckOut80({
 
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ margin: "10px" }}></div>
-      
-      <div style={{ fontSize: 12, textAlign: 'center' }}>
+
+      <div style={{ fontSize: 12, textAlign: "center" }}>
         <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.buy)}
-            {index + 1 < currencyData?.length ? <span style={{ marginLeft: 10, marginRight: 10 }}>|</span> : ''}
+            {index + 1 < currencyData?.length ? (
+              <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
+            ) : (
+              ""
+            )}
           </span>
         ))}
       </div>
