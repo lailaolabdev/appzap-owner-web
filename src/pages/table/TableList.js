@@ -136,6 +136,7 @@ export default function TableList() {
     onSelectTable,
     resetTableOrder,
     storeDetail,
+    setStoreDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -282,12 +283,6 @@ export default function TableList() {
       e?.status === "WAITING" ||
       e?.tableOrderItems?.length === 0
   )?._id;
-
-  useEffect(() => {
-    // initialTableSocket();
-    // getTableDataStoreList();
-    getTableDataStore();
-  }, []);
 
   /**
    * Modify Order Status
@@ -619,6 +614,10 @@ export default function TableList() {
           });
         }
       );
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
       await Swal.fire({
         icon: "success",
@@ -626,10 +625,6 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1500,
       });
-
-      // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
-      setSelectedTable();
       getTableDataStore();
     } catch (err) {
       console.log("err printer", err);
@@ -642,6 +637,10 @@ export default function TableList() {
       return err;
     }
   };
+
+  useEffect(() => {
+    getTableDataStore();
+  }, [storeDetail?.ChangeColorTable]);
 
   async function delay(ms) {
     return new Promise((resolve) => {
