@@ -19,11 +19,13 @@ export default function BillForCheckOut80({
   selectedTable,
   dataBill,
   taxPercent = 0,
+  serviceCharge = 0,
   profile,
 }) {
   // state
   const [total, setTotal] = useState();
   const [taxAmount, setTaxAmount] = useState(0);
+  const [serviceChargeAmount, setServiceChargeAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
   const [rateCurrency, setRateCurrency] = useState();
@@ -70,6 +72,7 @@ export default function BillForCheckOut80({
     }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
+    setServiceChargeAmount((_total * storeDetail?.serviceChargePer) / 100);
   };
 
   const getDataCurrency = async () => {
@@ -259,6 +262,18 @@ export default function BillForCheckOut80({
           ""
         )}
       </div>
+      <Row>
+        <Col xs={8}>
+          <div style={{ textAlign: "right" }}>
+            {t("service_charge")} {storeDetail?.serviceChargePer}% :
+          </div>
+        </Col>
+        <Col>
+          <div style={{ textAlign: "right" }}>
+            {moneyCurrency(serviceChargeAmount)}
+          </div>
+        </Col>
+      </Row>
       <div style={{ fontSize: 14, marginTop: 20 }}>
         <Row>
           <Col xs={8}>
@@ -274,10 +289,13 @@ export default function BillForCheckOut80({
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
-              {moneyCurrency(totalAfterDiscount + taxAmount)}
+              {moneyCurrency(
+                totalAfterDiscount + taxAmount + serviceChargeAmount
+              )}
             </div>
           </Col>
         </Row>
+
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={8}>

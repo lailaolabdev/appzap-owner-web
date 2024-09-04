@@ -7,16 +7,21 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import PopUpAddCategoryType from "../../components/popup/PopUpAddCategoryType";
+import { getCategoryType } from "../../services/menu";
 
 export default function CategoryType() {
   const { t } = useTranslation();
   const [popup, setPopup] = useState();
+  const [storeId, setStoreId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const params = useParams();
   const [categoryTypes, setCategoryTypes] = useState([]);
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
+  };
+  const _menuOptionList = () => {
+    navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
   };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
@@ -29,20 +34,18 @@ export default function CategoryType() {
     const fetchData = async () => {
       const _localData = await getLocalData();
       if (_localData) {
+        setStoreId(_localData.DATA.storeId);
         fetchCategoryTypes(_localData?.DATA?.storeId);
       }
     };
     fetchData();
   }, []);
 
-  const fetchCategoryTypes = async () => {
+  const fetchCategoryTypes = async (storeId) => {
     setIsLoading(true);
-    const _resCategory = await axios({
-      method: "get",
-      url: END_POINT_SEVER + `/v3/categoroy-type`,
-    });
-    console.log("-----", _resCategory?.data.data);
-    setCategoryTypes(_resCategory?.data.data);
+    const data = await getCategoryType(storeId);
+    console.log("-----", data);
+    setCategoryTypes(data);
     setIsLoading(false);
   };
 
@@ -70,6 +73,14 @@ export default function CategoryType() {
           <Nav.Item>
             <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
               {t("menu")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/settingStore/menu-option"
+              onClick={() => _menuOptionList()}
+            >
+              {t("option_menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -124,6 +135,7 @@ export default function CategoryType() {
         open={popup?.popUpAddCategoryType}
         onClose={() => setPopup()}
         onSubmit={createCategoryType}
+        storeId={storeId}
       />
     </div>
   );

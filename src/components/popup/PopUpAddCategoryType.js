@@ -2,14 +2,14 @@ import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 
-const PopUpAddCategoryType = ({ open, onClose, onSubmit }) => {
+const PopUpAddCategoryType = ({ open, onClose, onSubmit, storeId }) => {
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>
         <Modal.Title>ສ້າງໝວດໝູ່</Modal.Title>
       </Modal.Header>
       <Formik
-        initialValues={{ name: "" }}
+        initialValues={{ name: "", storeId: storeId }}
         validate={(values) => {
           const errors = {};
           if (!values.name) {
