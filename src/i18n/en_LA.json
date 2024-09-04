@@ -887,5 +887,17 @@
   "amountTotal": "ຈຳນວນທັງໝົດ",
   "pricesTotal": "ຈຳນວນເງິນ",
   "nameCurrency": "ກິບ",
+  "zone_setting": "ຕັ້ງຄ່າໂຊນ",
+  "zone_setting_desc": "ຈັດການໂຊນໃນຮ້ານ",
+  "zone_list": "ລາຍການໂຊນ",
+  "add_zone": "ເພີ່ມໂຊນ",
+  "edit_zone": "ແກ້ໄຂໂຊນ",
+  "sure_to_delete_zone": "ທ່ານຕ້ອງການລົບໂຊນ",
+  "fill_zone": "ໂຊນ",
+  "zone": "ໂຊນ",
+  "choose_zone": "ເລືອກໂຊນ",
+  "show_by_zone": "ສະແດງຕາມໂຊນ",
+  "show_all_zone": "ທັງໝົດ",
   "clear": "ລ້າງຄ່າ"
+
 }

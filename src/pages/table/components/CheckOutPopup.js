@@ -247,7 +247,12 @@ export default function CheckOutPopup({
       )
       .then(async function (response) {
         setSelectedTable();
-        getTableDataStore();
+        const localZone = localStorage.getItem("selectedZone");
+        if (localZone) {
+          getTableDataStore({zone: localZone})
+        } else {
+          getTableDataStore();
+        }
         setCashCurrency();
         setTab("cash");
         setSelectCurrency("LAK");

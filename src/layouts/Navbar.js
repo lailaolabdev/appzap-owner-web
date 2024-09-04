@@ -47,6 +47,7 @@ export default function NavBar() {
   const _onLogout = () => {
     setProfile({});
     setStoreDetail({});
+    localStorage.removeItem("selectedZone");
     // localStorage.clear();
     // sessionStorage.clear();
     navigate(`/`);

@@ -789,5 +789,16 @@
   "amountTotal": "Total amount",
   "pricesTotal": "Price amount",
   "nameCurrency": "Kip",
-  "clear": "clear"
+  "zone_setting": "Zone Setting",
+  "zone_setting_desc": "Manage Zone",
+  "zone_list": "Zone List",
+  "add_zone": "Add Zone",
+  "edit_zone": "Edit Zone",
+  "sure_to_delete_zone": "Are you sure to delete zone",
+  "fill_zone": "Zone",
+  "zone": "Zone",
+  "choose_zone": "Choose zone",
+  "show_by_zone": "Show by zone",
+  "show_all_zone": "All",
+   "clear": "clear"
 }
