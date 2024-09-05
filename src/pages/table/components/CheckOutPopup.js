@@ -249,7 +249,7 @@ export default function CheckOutPopup({
         setSelectedTable();
         const localZone = localStorage.getItem("selectedZone");
         if (localZone) {
-          getTableDataStore({zone: localZone})
+          getTableDataStore({ zone: localZone });
         } else {
           getTableDataStore();
         }
@@ -422,7 +422,7 @@ export default function CheckOutPopup({
     });
   };
 
-  const optionsData = membersData.map((item) => {
+  const optionsData = membersData?.map((item) => {
     // console.log(item);
     return {
       value: item.phone,

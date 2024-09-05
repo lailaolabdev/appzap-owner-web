@@ -234,7 +234,6 @@ export default function TableList() {
     getUserData();
   }, [pinStatus]);
 
-
   useEffect(() => {
     getUserData();
     getDataZone();
@@ -242,7 +241,7 @@ export default function TableList() {
     const localZone = localStorage.getItem("selectedZone");
     if (localZone) {
       setZoneId(localZone);
-      getTableDataStore({zone: localZone})
+      getTableDataStore({ zone: localZone });
     }
   }, []);
 
@@ -252,7 +251,6 @@ export default function TableList() {
   //     window.opener.location.reload();
   //   }
   // }, []);
-
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -279,9 +277,9 @@ export default function TableList() {
     const getDataServiceCharge = async () => {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-      `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
-    );
-    setServiceChargePercent(_res?.data?.serviceCharge);
+        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+      );
+      setServiceChargePercent(_res?.data?.serviceCharge);
     };
     getDataServiceCharge();
   }, []);
@@ -299,13 +297,11 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-
   // useEffect(() => {
   //   // initialTableSocket();
   //   // getTableDataStoreList();
   //   getTableDataStore();
   // }, []);
-
 
   /**
    * Modify Order Status
@@ -348,9 +344,9 @@ export default function TableList() {
 
   useEffect(() => {
     if (zoneId) {
-      getTableDataStore({zone: zoneId})
+      getTableDataStore({ zone: zoneId });
     } else {
-      getTableDataStore()
+      getTableDataStore();
     }
   }, [zoneId]);
 
@@ -360,7 +356,7 @@ export default function TableList() {
     if (!value) {
       getTableDataStore();
     }
-  }
+  };
 
   const getData = async (code) => {
     try {
@@ -454,9 +450,9 @@ export default function TableList() {
         setSelectedTable();
         // getTableDataStore();
         if (zoneId) {
-          getTableDataStore({zone: zoneId})
+          getTableDataStore({ zone: zoneId });
         } else {
-          getTableDataStore()
+          getTableDataStore();
         }
         await Swal.fire({
           icon: "success",
@@ -511,9 +507,9 @@ export default function TableList() {
         setSelectedTable();
         // getTableDataStore();
         if (zoneId) {
-          getTableDataStore({zone: zoneId})
+          getTableDataStore({ zone: zoneId });
         } else {
-          getTableDataStore()
+          getTableDataStore();
         }
         successAdd(`${t("close_table_success")}`);
       }
@@ -659,8 +655,6 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          width: printerBillData?.width === "58mm" ? 400 : 580,
-          beep: 1,
         },
         async () => {
           await axios({
@@ -688,11 +682,10 @@ export default function TableList() {
       setSelectedTable();
       // getTableDataStore();
       if (zoneId) {
-        getTableDataStore({zone: zoneId})
+        getTableDataStore({ zone: zoneId });
       } else {
-        getTableDataStore()
+        getTableDataStore();
       }
-
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -786,8 +779,6 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          width: printerBillData?.width === "58mm" ? 400 : 580,
-          beep: 1,
         },
         async () => {
           await axios({
@@ -814,7 +805,7 @@ export default function TableList() {
       setCodeShortLink(null);
     } catch (err) {
       setCodeShortLink(null);
-      console.log("");
+      console.log(err);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -1064,8 +1055,6 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
-            beep: 1,
-            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1185,8 +1174,6 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
-            beep: 1,
-            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1466,9 +1453,9 @@ export default function TableList() {
     if (newTableTransaction) {
       // getTableDataStore();
       if (zoneId) {
-        getTableDataStore({zone: zoneId})
+        getTableDataStore({ zone: zoneId });
       } else {
-        getTableDataStore()
+        getTableDataStore();
       }
       setNewTableTransaction(false);
     }
@@ -1513,25 +1500,25 @@ export default function TableList() {
 
   const getDataZone = async () => {
     try {
-        let header = await getHeaders();
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: header.authorization,
-        };
-        const data = await axios({
-          method: "get",
-          url: END_POINT_SEVER + `/v3/zones`,
-          params: {
-            storeId: params?.id,
-            limit: 100,
-          },
-          headers: headers,
-        });
-        if (data?.status == 200) {
-            setZoneData(data?.data?.data);
-        }
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const data = await axios({
+        method: "get",
+        url: END_POINT_SEVER + `/v3/zones`,
+        params: {
+          storeId: params?.id,
+          limit: 100,
+        },
+        headers: headers,
+      });
+      if (data?.status == 200) {
+        setZoneData(data?.data?.data);
+      }
     } catch (err) {
-        console.log("err:", err);
+      console.log("err:", err);
     }
   };
 
@@ -1583,22 +1570,25 @@ export default function TableList() {
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div>
 
-            {zoneData?.length > 0 ?
-            <div style={{ padding: "5px 15px" }}>
-              <Form.Label>{t('show_by_zone')}</Form.Label>
-              <Form.Control 
-                as='select'
-                value={zoneId}
-                onChange={(e) => onSelectedZone(e?.target?.value)}
-              >
-                <option value="">{t('show_all_zone')}</option>
-                {zoneData?.map((item, index) => (
-                  <option key={index} value={item?._id}>{item?.name}</option>
-                ))}
-              </Form.Control>
-            </div>
-            : ''
-            }
+            {zoneData?.length > 0 ? (
+              <div style={{ padding: "5px 15px" }}>
+                <Form.Label>{t("show_by_zone")}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={zoneId}
+                  onChange={(e) => onSelectedZone(e?.target?.value)}
+                >
+                  <option value="">{t("show_all_zone")}</option>
+                  {zoneData?.map((item, index) => (
+                    <option key={index} value={item?._id}>
+                      {item?.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </div>
+            ) : (
+              ""
+            )}
 
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
