@@ -186,6 +186,7 @@ export default function DebtCreatePage() {
       tel: data?.phone,
     };
   });
+
   const optionsBills = bills.map((data) => {
     return {
       id: data?._id,
@@ -283,6 +284,7 @@ export default function DebtCreatePage() {
             <Form.Label>
               {t("money_amount")} <span style={{ color: "red" }}>*</span>
             </Form.Label>
+
             <Form.Control
               placeholder={t("money_amount")}
               value={amount}
@@ -296,6 +298,7 @@ export default function DebtCreatePage() {
                 setBillId(e.id);
               }}
             />
+
             <Form.Label>{t("start_date_debt")}</Form.Label>
             <Form.Control
               placeholder={t("exp_date")}
@@ -310,6 +313,7 @@ export default function DebtCreatePage() {
               value={expirtDate}
               onChange={(e) => setExpirtDate(e?.target.value)}
             />
+
             <Button
               style={{ width: "100%", height: 60, marginTop: 25 }}
               onClick={() => handleClickCreateDebt()}

@@ -32,7 +32,7 @@ export default function CheckOutPopup({
   onPrintBill,
   open,
   onClose,
-  // onSubmit,
+  onSubmit = () => {},
   dataBill,
   tableData,
   setDataBill,
@@ -267,10 +267,10 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log('transfer', transfer)
+  console.log("transfer", transfer);
   const handleSubmit = () => {
     _checkBill();
-    // onSubmit();
+    onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
 
@@ -772,6 +772,7 @@ export default function CheckOutPopup({
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
+        <Button onClick={() => onSubmit()}>{t("debt")}</Button>
       </Modal.Footer>
     </Modal>
   );
