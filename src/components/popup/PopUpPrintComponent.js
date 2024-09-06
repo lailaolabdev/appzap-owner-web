@@ -14,10 +14,10 @@ import _ from "lodash";
 import {
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
-  USB_PRINTER_PORT
+  USB_PRINTER_PORT,
 } from "../../constants";
 import { useTranslation } from "react-i18next";
-import printFlutter from "../../helpers/printFlutter"
+import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
@@ -34,14 +34,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     ບິນສ່ວນຫຼຸດ: 0,
     ສ່ວນຫຼຸດ: 0,
     ບິນຄ້າງ: 0,
-    ເງິນຄ້າງ: 0
+    ເງິນຄ້າງ: 0,
   });
 
   // provider
   const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
-    console.log("printers: ", billRef.current)
+    // console.log("printers: ", billRef.current)
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -58,7 +58,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
-        scale: 1
+        scale: 1,
       });
 
       urlForPrinter = USB_PRINTER_PORT;
@@ -107,12 +107,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           });
         }
       );
-      
+
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     } catch (err) {
       console.log(err);
@@ -120,7 +120,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         icon: "error",
         title: "ປິນບໍ່ສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     }
   };
@@ -163,10 +163,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ບິນສ່ວນຫຼຸດ: countDiscountBill,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
-        ເງິນຄ້າງ: totalActiveBill
+        ເງິນຄ້າງ: totalActiveBill,
       });
       setBill(data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   return (
@@ -175,7 +175,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('print')}
+        <BsPrinter /> {t("print")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -185,14 +185,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <div>
           <Form.Control
             type="date"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            // onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
         <div
@@ -201,46 +201,48 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              {t('sale_amount_list')}
+              {t("sale_amount_list")}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t('start')}: {startDate} 00:00:00
+              {t("start")}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("to")}: {startDate} 23:59:59
+            </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {[
               {
-                name: `${t('bill_amount')}:`,
-                value: reportBill[`${t('bill_amount')}`]
+                name: `${t("bill_amount")}:`,
+                value: reportBill[`${t("bill_amount")}`],
               },
               {
-                name: `${t('total_amount')}:`,
-                value: reportBill[`${t('total_amount')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("total_amount")}:`,
+                value: reportBill[`${t("total_amount")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('pay_cash')}:`,
-                value: reportBill[`${t('pay_cash')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("pay_cash")}:`,
+                value: reportBill[`${t("pay_cash")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('pay_transfer')}:`,
-                value: reportBill[`${t('pay_transfer')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("pay_transfer")}:`,
+                value: reportBill[`${t("pay_transfer")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('discount_bill')}:`,
-                value: reportBill[`${t('discount_bill')}`]
+                name: `${t("discount_bill")}:`,
+                value: reportBill[`${t("discount_bill")}`],
               },
               {
-                name: `${t('discount')}:`,
-                value: reportBill[`${t('discount')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("discount")}:`,
+                value: reportBill[`${t("discount")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('active_bill')}:`,
-                value: reportBill[`${t('active_bill')}`]
-              }
+                name: `${t("active_bill")}:`,
+                value: reportBill[`${t("active_bill")}`],
+              },
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],
@@ -261,10 +263,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>{t('no')}</td>
-                  <td style={{ textAlign: "center" }}>{t('order')}</td>
-                  <td style={{ textAlign: "center" }}>{t('discount')}</td>
-                  <td style={{ textAlign: "right" }}>{t('total_bill')}</td>
+                  <td style={{ textAlign: "center" }}>{t("no")}</td>
+                  <td style={{ textAlign: "center" }}>{t("order")}</td>
+                  <td style={{ textAlign: "center" }}>{t("discount")}</td>
+                  <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
                 {bills?.map((e, i) => (
                   <tr>
@@ -321,8 +323,8 @@ const TableComponent = styled("table")({
   color: "#000",
   td: {
     padding: 0,
-    color: "#000"
-  }
+    color: "#000",
+  },
 });
 const Price = styled.div`
   display: flex;
