@@ -254,7 +254,7 @@ export default function DashboardPage() {
               variant="outline-primary"
               style={{ display: "flex", gap: 10, alignItems: "center" }}
               // onClick={downloadCsv}
-              onClick={downloadExcel}
+              onClick={() => setPopup({ exportReport: true })}
               disabled={loadingExportCsv}
             >
               <MdOutlineCloudDownload /> EXPORT
