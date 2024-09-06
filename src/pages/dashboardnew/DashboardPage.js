@@ -97,7 +97,7 @@ export default function DashboardPage() {
     setSalesInformationReport(data);
   };
 
-  // console.log({ salesInformationReport });
+  console.log({ salesInformationReport });
 
   const getUserReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;

@@ -354,6 +354,7 @@ function HistorySale() {
           </div>
         </div>
         {/* Detail Table */}
+
         <div
           style={{
             minWidth: 380,
