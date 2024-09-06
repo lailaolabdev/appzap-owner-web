@@ -2,21 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button } from "react-bootstrap";
 import { COLOR_APP, END_POINT } from "../../constants";
 import {
-  BsFillCalendarWeekFill,
-  BsFillCalendarEventFill,
+	BsFillCalendarWeekFill,
+	BsFillCalendarEventFill,
 } from "react-icons/bs";
 import { MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import {
-  getCategoryReport,
-  getMenuReport,
-  getMoneyReport,
-  getPromotionReport,
-  getReports,
-  getSalesInformationReport,
-  getUserReport,
+	getCategoryReport,
+	getMenuReport,
+	getMoneyReport,
+	getPromotionReport,
+	getReports,
+	getSalesInformationReport,
+	getUserReport,
 } from "../../services/report";
 import fileDownload from "js-file-download";
 import * as XLSX from "xlsx";
@@ -42,40 +42,41 @@ import { useTranslation } from "react-i18next";
 import PopUpExcelExportReport from "./../../components/popup/PopUpExcelExportReport";
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
-  // state
-  const [reportData, setReportData] = useState([]);
-  const [salesInformationReport, setSalesInformationReport] = useState();
-  const [userReport, setUserReport] = useState();
-  const [menuReport, setMenuReport] = useState();
-  const [categoryReport, setCategoryReport] = useState();
-  const [moneyReport, setMoneyReport] = useState();
-  const [promotionReport, setPromotionReport] = useState();
-  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
-  const [startTime, setStartTime] = useState("00:00:00");
-  const [endTime, setEndTime] = useState("23:59:59");
-  const [popup, setPopup] = useState();
-  const [tableList, setTableList] = useState([]);
-  const [selectedTableIds, setSelectedTableIds] = useState([]);
-  const [loadingExportCsv, setLoadingExportCsv] = useState(false);
+	const { t } = useTranslation();
+	// state
+	const [reportData, setReportData] = useState([]);
+	const [salesInformationReport, setSalesInformationReport] = useState();
+	const [userReport, setUserReport] = useState();
+	const [menuReport, setMenuReport] = useState();
+	const [categoryReport, setCategoryReport] = useState();
+	const [moneyReport, setMoneyReport] = useState();
+	const [promotionReport, setPromotionReport] = useState();
+	const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+	const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+	const [startTime, setStartTime] = useState("00:00:00");
+	const [endTime, setEndTime] = useState("23:59:59");
+	const [popup, setPopup] = useState();
+	const [tableList, setTableList] = useState([]);
+	const [selectedTableIds, setSelectedTableIds] = useState([]);
+	const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
-  // provider
-  const { storeDetail } = useStore();
+	// provider
+	const { storeDetail } = useStore();
 
-  // useEffect
-  useEffect(() => {
-    getTable();
-  }, []);
-  useEffect(() => {
-    getReportData();
-    getSalesInformationReportData();
-    getUserReportData();
-    getMenuReportData();
-    getMoneyReportData();
-    getPromotionReportData();
-    getCategoryReportData();
-  }, [endDate, startDate, endTime, startTime, selectedTableIds]);
+	// useEffect
+	useEffect(() => {
+		getTable();
+	}, []);
+	useEffect(() => {
+		getReportData();
+		getSalesInformationReportData();
+		getUserReportData();
+		getMenuReportData();
+		getMoneyReportData();
+		getPromotionReportData();
+		getCategoryReportData();
+	}, [endDate, startDate, endTime, startTime, selectedTableIds]);
+
 
   // function
   const getTable = async () => {
@@ -138,98 +139,109 @@ export default function DashboardPage() {
 
   // console.log("moneyReport", moneyReport);
 
-  const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(
-      storeDetail?._id,
-      findBy,
-      selectedTableIds
-    );
-    setPromotionReport(data);
-  };
-  const downloadCsv = async () => {
-    try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
-      // fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
 
-  const downloadExcel = async () => {
-    try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
+	const getPromotionReportData = async () => {
+		const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+		const data = await getPromotionReport(
+			storeDetail?._id,
+			findBy,
+			selectedTableIds,
+		);
+		setPromotionReport(data);
+	};
+	const downloadCsv = async () => {
+		try {
+			const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+			setLoadingExportCsv(true);
+			const url =
+				END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+			const _res = await Axios.get(url);
+			// fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
+			setLoadingExportCsv(false);
+		} catch (err) {
+			setLoadingExportCsv(false);
+			errorAdd(`${t("export_fail")}`);
+		}
+	};
 
-      console.log("_res: " + _res?.data?.exportUrl);
+	const downloadExcel = async () => {
+		try {
+			const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+			setLoadingExportCsv(true);
+			const url =
+				END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+			const _res = await Axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
+			console.log("_res: " + _res?.data?.exportUrl);
 
-        // Create a Blob from the response data
-        console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+			if (_res?.data?.exportUrl) {
+				const response = await Axios.get(_res?.data?.exportUrl, {
+					responseType: "blob", // Important to get the response as a Blob
+				});
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      }
+				// Create a Blob from the response data
+				console.log("response", response.data);
+				const fileBlob = new Blob([response.data], {
+					type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				});
 
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
-  return (
-    <>
-      <Box sx={{ padding: { md: 20, xs: 10 } }}>
-        {/* <Breadcrumb>
+				// Use the file-saver library to save the file with a new name
+				saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+			}
+
+			setLoadingExportCsv(false);
+		} catch (err) {
+			setLoadingExportCsv(false);
+			errorAdd(`${t("export_fail")}`);
+		}
+	};
+	return (
+		<>
+			<Box sx={{ padding: { md: 20, xs: 10 } }}>
+				{/* <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
         </Breadcrumb> */}
-        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-          <div style={{ display: "flex", gap: 10 }}>
-            <Button
-              variant="outline-primary"
-              size="small"
-              style={{ display: "flex", gap: 10, alignItems: "center" }}
-              onClick={() => setPopup({ popupfiltter: true })}
-            >
-              <BsFillCalendarWeekFill />
-              <div>
-                {startDate} {startTime}
-              </div>{" "}
-              ~{" "}
-              <div>
-                {endDate} {endTime}
-              </div>
-            </Button>
-            <Button
-              onClick={() => setPopup({ popUpChooseTableComponent: true })}
-            >
-              {t("chose_table")}
-            </Button>
-          </div>
-          {/* <Button
+				<div
+					style={{
+						marginBottom: 20,
+						display: "flex",
+						gap: 10,
+						alignItems: "center",
+						justifyContent: "space-between",
+						flexWrap: "wrap",
+					}}
+				>
+					<div style={{ display: "flex", gap: 10 }}>
+						<Button
+							variant="outline-primary"
+							size="small"
+							style={{ display: "flex", gap: 10, alignItems: "center" }}
+							onClick={() => setPopup({ popupfiltter: true })}
+						>
+							<BsFillCalendarWeekFill />
+							<div>
+								{startDate} {startTime}
+							</div>{" "}
+							~{" "}
+							<div>
+								{endDate} {endTime}
+							</div>
+						</Button>
+						<Button
+							onClick={() => setPopup({ popUpChooseTableComponent: true })}
+						>
+							{t("chose_table")}
+						</Button>
+					</div>
+					{/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ PopupDaySplitView: true })}
           >
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
           </Button> */}
+
           <div style={{ flex: 1 }} />
           <Button
             variant="outline-primary"
@@ -278,25 +290,78 @@ export default function DashboardPage() {
                   )}${storeDetail?.firstCurrency}`,
                 },
 
-                // {
-                //   title: "ລາຍຈ່າຍທັງໝົດ",
-                //   amount: `${moneyCurrency(
-                //     salesInformationReport?.["totalCost"]
-                //   )}${storeDetail?.firstCurrency}`,
-                // },
 
-                {
-                  title: `${t("business_amount")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["noOfSalesTransactions"]
-                  )}`,
-                },
-                {
-                  title: `${t("per_bsn")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["averageSales_Transaction"]
-                  )}${storeDetail?.firstCurrency}`,
-                },
+					<div
+						className="d-flex align-items-center"
+						style={{
+							gap: 4,
+						}}
+					>
+						<Button
+							variant="outline-primary"
+							style={{ display: "flex", gap: 10, alignItems: "center" }}
+							onClick={() => setPopup({ printReport: true })}
+						>
+							<AiFillPrinter /> PRINT
+						</Button>
+						<Button
+							variant="outline-primary"
+							style={{ display: "flex", gap: 10, alignItems: "center" }}
+							// onClick={downloadCsv}
+							onClick={downloadExcel}
+							disabled={loadingExportCsv}
+						>
+							<MdOutlineCloudDownload /> EXPORT
+						</Button>
+					</div>
+				</div>
+				<Box
+					sx={{
+						display: "grid",
+						gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
+						gap: 20,
+						gridTemplateRows: "masonry",
+					}}
+				>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("sales_info")}
+						</Card.Header>
+						<Card.Body>
+							{[
+								{
+									title: `${t("total_sale")}`,
+									amount: `${moneyCurrency(
+										salesInformationReport?.["totalSales"],
+									)}${storeDetail?.firstCurrency}`,
+								},
+
+								// {
+								//   title: "ລາຍຈ່າຍທັງໝົດ",
+								//   amount: `${moneyCurrency(
+								//     salesInformationReport?.["totalCost"]
+								//   )}${storeDetail?.firstCurrency}`,
+								// },
+
+								{
+									title: `${t("business_amount")}`,
+									amount: `${moneyCurrency(
+										salesInformationReport?.["noOfSalesTransactions"],
+									)}`,
+								},
+								{
+									title: `${t("per_bsn")}`,
+									amount: `${moneyCurrency(
+										salesInformationReport?.["averageSales_Transaction"],
+									)}${storeDetail?.firstCurrency}`,
+								},
 
                 // {
                 //   title: `${t("paid_lak")}`,
@@ -334,307 +399,324 @@ export default function DashboardPage() {
             </Card.Body>
           </Card>
 
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("promotion")}
-            </Card.Header>
-            <Card.Body>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr auto",
-                  gap: 10,
-                  padding: "10px 0",
-                  borderBottom: `1px dotted ${COLOR_APP}`,
-                }}
-              >
-                <div>{t("discount_bill")}</div>
-                <div>{promotionReport?.[0]?.count || 0}</div>
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr auto",
-                  gap: 10,
-                  padding: "10px 0",
-                  borderBottom: `1px dotted ${COLOR_APP}`,
-                }}
-              >
-                <div>{t("all_discount")}</div>
-                <div>
-                  {promotionReport?.[0]?.totalSaleAmount || 0}
-                  {storeDetail?.firstCurrency}
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("bill_detial")}
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th>{t("bill_type")}</th>
-                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
-                  <th style={{ textAlign: "right" }}>{t("total_price")}</th>
-                </tr>
-                {[
-                  {
-                    method: `${t("bill_crash")}`,
-                    qty: moneyReport?.cash?.count,
-                    amount: moneyReport?.cash?.totalBill,
-                  },
-                  {
-                    method: `${t("tsf_bill")}`,
-                    qty: moneyReport?.transfer?.count,
-                    amount: moneyReport?.transfer?.totalBill,
-                  },
-                  {
-                    method: (
-                      <div>
-                        {t("tsf_cash")}
-                        <br />
-                        {t("cash")}{" "}
-                        {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                        {t("transfer")}{" "}
-                        {moneyCurrency(
-                          moneyReport?.transferCash?.transfer || 0
-                        )}
-                      </div>
-                    ),
-                    qty: moneyReport?.transferCash?.count,
-                    amount: moneyReport?.transferCash?.totalBill,
-                  },
-                  {
-                    method: (
-                      <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
-                    ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.cash?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.cash || 0) +
-                      (moneyReport?.cash?.totalBill || 0),
-                  },
-                  {
-                    method: (
-                      <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
-                    ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.transfer || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
-                  },
-                  {
-                    method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
-                    qty:
-                      (moneyReport?.cash?.count || 0) +
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.cash?.totalBill || 0) +
-                      (moneyReport?.transferCash?.totalBill || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
-                  },
-                ].map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.method}</td>
-                    <td>{moneyCurrency(e?.qty)}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.amount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("staf_info")}
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>{t("user")}</th>
-                  <th style={{ textAlign: "center" }}>{t("order")}</th>
-                  <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
-                  <th style={{ textAlign: "right" }}>{t("total")}</th>
-                </tr>
-                {userReport?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                    <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("sales_info")}
-              {t("every_day")}
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>{t("date")}</th>
-                  <th style={{ textAlign: "center" }}>{t("order")}</th>
-                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
-                  <th style={{ textAlign: "center" }}>{t("discount")}</th>
-                  <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
-                  <th style={{ textAlign: "right" }}>{t("total")}</th>
-                </tr>
-                {reportData.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.date}</td>
-                    <td>{e?.order}</td>
-                    <td>{e?.bill}</td>
-                    <td>
-                      {moneyCurrency(e?.discount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                    <td>
-                      {moneyCurrency(e?.billBefore)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("menu_type")}
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>{t("menu_type")}</th>
-                  <th style={{ textAlign: "center" }}>{t("order_success")}</th>
-                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
-                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
-                </tr>
-                {categoryReport
-                  ?.sort((x, y) => {
-                    return y.served - x.served;
-                  })
-                  ?.map((e) => (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))}
-              </table>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("menu_info")}
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>{t("menu")}</th>
-                  <th style={{ textAlign: "center" }}>{t("order_success")}</th>
-                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
-                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
-                </tr>
-                {menuReport
-                  ?.sort((x, y) => {
-                    return y.served - x.served;
-                  })
-                  ?.map((e) => (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {e?.canceled || 0}
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))}
-              </table>
-            </Card.Body>
-          </Card>
-        </Box>
-      </Box>
-      {/* popup */}
-      <PopUpPrintComponent
-        open={popup?.printReportSale}
-        onClose={() => setPopup()}
-      >
-        <BillForReport80 />
-      </PopUpPrintComponent>
 
-      <PopUpPrintStaffHistoryComponent
-        open={popup?.printReportStaffSale}
-        onClose={() => setPopup()}
-      >
-        <BillForReport80 />
-      </PopUpPrintStaffHistoryComponent>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("promotion")}
+						</Card.Header>
+						<Card.Body>
+							<div
+								style={{
+									display: "grid",
+									gridTemplateColumns: "1fr auto",
+									gap: 10,
+									padding: "10px 0",
+									borderBottom: `1px dotted ${COLOR_APP}`,
+								}}
+							>
+								<div>{t("discount_bill")}</div>
+								<div>{promotionReport?.[0]?.count || 0}</div>
+							</div>
+							<div
+								style={{
+									display: "grid",
+									gridTemplateColumns: "1fr auto",
+									gap: 10,
+									padding: "10px 0",
+									borderBottom: `1px dotted ${COLOR_APP}`,
+								}}
+							>
+								<div>{t("all_discount")}</div>
+								<div>
+									{promotionReport?.[0]?.totalSaleAmount || 0}
+									{storeDetail?.firstCurrency}
+								</div>
+							</div>
+						</Card.Body>
+					</Card>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("bill_detial")}
+						</Card.Header>
+						<Card.Body style={{ overflowX: "auto" }}>
+							<table style={{ width: "100%" }}>
+								<tr>
+									<th>{t("bill_type")}</th>
+									<th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+									<th style={{ textAlign: "right" }}>{t("total_price")}</th>
+								</tr>
+								{[
+									{
+										method: `${t("bill_crash")}`,
+										qty: moneyReport?.cash?.count,
+										amount: moneyReport?.cash?.totalBill,
+									},
+									{
+										method: `${t("tsf_bill")}`,
+										qty: moneyReport?.transfer?.count,
+										amount: moneyReport?.transfer?.totalBill,
+									},
+									{
+										method: (
+											<div>
+												{t("tsf_cash")}
+												<br />
+												{t("cash")}{" "}
+												{moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
+												{t("transfer")}{" "}
+												{moneyCurrency(
+													moneyReport?.transferCash?.transfer || 0,
+												)}
+											</div>
+										),
+										qty: moneyReport?.transferCash?.count,
+										amount: moneyReport?.transferCash?.totalBill,
+									},
+									{
+										method: (
+											<div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
+										),
+										qty:
+											(moneyReport?.transferCash?.count || 0) +
+											(moneyReport?.cash?.count || 0),
+										amount:
+											(moneyReport?.transferCash?.cash || 0) +
+											(moneyReport?.cash?.totalBill || 0),
+									},
+									{
+										method: (
+											<div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
+										),
+										qty:
+											(moneyReport?.transferCash?.count || 0) +
+											(moneyReport?.transfer?.count || 0),
+										amount:
+											(moneyReport?.transferCash?.transfer || 0) +
+											(moneyReport?.transfer?.totalBill || 0),
+									},
+									{
+										method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
+										qty:
+											(moneyReport?.cash?.count || 0) +
+											(moneyReport?.transferCash?.count || 0) +
+											(moneyReport?.transfer?.count || 0),
+										amount:
+											(moneyReport?.cash?.totalBill || 0) +
+											(moneyReport?.transferCash?.totalBill || 0) +
+											(moneyReport?.transfer?.totalBill || 0),
+									},
+								].map((e) => (
+									<tr>
+										<td style={{ textAlign: "left" }}>{e?.method}</td>
+										<td>{moneyCurrency(e?.qty)}</td>
+										<td style={{ textAlign: "right" }}>
+											{moneyCurrency(e?.amount)}
+											{storeDetail?.firstCurrency}
+										</td>
+									</tr>
+								))}
+							</table>
+						</Card.Body>
+					</Card>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("staf_info")}
+						</Card.Header>
+						<Card.Body>
+							<table style={{ width: "100%" }}>
+								<tr>
+									<th style={{ textAlign: "left" }}>{t("user")}</th>
+									<th style={{ textAlign: "center" }}>{t("order")}</th>
+									<th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
+									<th style={{ textAlign: "right" }}>{t("total")}</th>
+								</tr>
+								{userReport?.map((e) => (
+									<tr>
+										<td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
+										<td style={{ textAlign: "center" }}>{e?.served}</td>
+										<td style={{ textAlign: "center" }}>{e?.canceled}</td>
+										<td style={{ textAlign: "right" }}>
+											{moneyCurrency(e?.totalSaleAmount)}
+											{storeDetail?.firstCurrency}
+										</td>
+									</tr>
+								))}
+							</table>
+						</Card.Body>
+					</Card>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("sales_info")}
+							{t("every_day")}
+						</Card.Header>
+						<Card.Body
+							style={{
+								overflowX: "auto",
+							}}
+						>
+							<table style={{ width: "100%" }}>
+								<tr>
+									<th style={{ textAlign: "left", textWrap: "nowrap" }}>
+										{t("date")}
+									</th>
+									<th style={{ textAlign: "center", textWrap: "nowrap" }}>
+										{t("order")}
+									</th>
+									<th style={{ textAlign: "center", textWrap: "nowrap" }}>
+										{t("bill_amount")}
+									</th>
+									<th style={{ textAlign: "center", textWrap: "nowrap" }}>
+										{t("discount")}
+									</th>
+									<th style={{ textAlign: "center", textWrap: "nowrap" }}>
+										{t("last_amount")}
+									</th>
+									<th style={{ textAlign: "right", textWrap: "nowrap" }}>
+										{t("total")}
+									</th>
+								</tr>
+								{reportData.map((e) => (
+									<tr>
+										<td style={{ textAlign: "left" }}>{e?.date}</td>
+										<td>{e?.order}</td>
+										<td>{e?.bill}</td>
+										<td>
+											{moneyCurrency(e?.discount)}
+											{storeDetail?.firstCurrency}
+										</td>
+										<td>
+											{moneyCurrency(e?.billBefore)}
+											{storeDetail?.firstCurrency}
+										</td>
+										<td style={{ textAlign: "right" }}>
+											{moneyCurrency(e?.billAmount)}
+											{storeDetail?.firstCurrency}
+										</td>
+									</tr>
+								))}
+							</table>
+						</Card.Body>
+					</Card>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("menu_type")}
+						</Card.Header>
+						<Card.Body>
+							<table style={{ width: "100%" }}>
+								<tr>
+									<th style={{ textAlign: "left" }}>{t("menu_type")}</th>
+									<th style={{ textAlign: "center" }}>{t("order_success")}</th>
+									<th style={{ textAlign: "center" }}>{t("cancel")}</th>
+									<th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
+								</tr>
+								{categoryReport
+									?.sort((x, y) => {
+										return y.served - x.served;
+									})
+									?.map((e) => (
+										<tr>
+											<td style={{ textAlign: "left" }}>{e?.name}</td>
+											<td style={{ textAlign: "center" }}>{e?.served}</td>
+											<td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+											<td style={{ textAlign: "right" }}>
+												{moneyCurrency(e?.totalSaleAmount)}
+												{storeDetail?.firstCurrency}
+											</td>
+										</tr>
+									))}
+							</table>
+						</Card.Body>
+					</Card>
+					<Card border="primary" style={{ margin: 0 }}>
+						<Card.Header
+							style={{
+								backgroundColor: COLOR_APP,
+								color: "#fff",
+								fontSize: 18,
+								fontWeight: "bold",
+							}}
+						>
+							{t("menu_info")}
+						</Card.Header>
+						<Card.Body>
+							<table style={{ width: "100%" }}>
+								<tr>
+									<th style={{ textAlign: "left" }}>{t("menu")}</th>
+									<th style={{ textAlign: "center" }}>{t("order_success")}</th>
+									<th style={{ textAlign: "center" }}>{t("cancel")}</th>
+									<th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
+								</tr>
+								{menuReport
+									?.sort((x, y) => {
+										return y.served - x.served;
+									})
+									?.map((e) => (
+										<tr>
+											<td style={{ textAlign: "left" }}>{e?.name}</td>
+											<td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+											<td style={{ textAlign: "center" }}>
+												{e?.canceled || 0}
+											</td>
+											<td style={{ textAlign: "right" }}>
+												{moneyCurrency(e?.totalSaleAmount)}
+												{storeDetail?.firstCurrency}
+											</td>
+										</tr>
+									))}
+							</table>
+						</Card.Body>
+					</Card>
+				</Box>
+			</Box>
+			{/* popup */}
+			<PopUpPrintComponent
+				open={popup?.printReportSale}
+				onClose={() => setPopup()}
+			>
+				<BillForReport80 />
+			</PopUpPrintComponent>
+
+			<PopUpPrintStaffHistoryComponent
+				open={popup?.printReportStaffSale}
+				onClose={() => setPopup()}
+			>
+				<BillForReport80 />
+			</PopUpPrintStaffHistoryComponent>
 
       <PopUpPrintMenuHistoryComponent
         open={popup?.printReportMenuSale}
@@ -686,4 +768,5 @@ export default function DashboardPage() {
       />
     </>
   );
+
 }

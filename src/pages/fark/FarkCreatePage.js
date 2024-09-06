@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { BLUETOOTH_PRINTER_PORT, COLOR_APP, COLOR_APP_CANCEL, ETHERNET_PRINTER_PORT, URL_PHOTO_AW3, USB_PRINTER_PORT } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  COLOR_APP,
+  COLOR_APP_CANCEL,
+  ETHERNET_PRINTER_PORT,
+  URL_PHOTO_AW3,
+  USB_PRINTER_PORT,
+} from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, Modal, Card, Pagination } from "react-bootstrap";
@@ -33,11 +40,13 @@ import BillFark80 from "../../components/bill/BillFark80";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
+import useWindowDimensions from "../../helpers/useWindowDimension2";
+import { RiListOrdered2 } from "react-icons/ri";
 
-let limitData = 50;
+const limitData = 50;
 
 export default function FarkCreatePage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -52,24 +61,29 @@ export default function FarkCreatePage() {
   const [popup, setPopup] = useState();
   const [customerName, setCustomerName] = useState();
   const [customerPhone, setCustomerPhone] = useState();
-  const [expirDate, setexpirDate] = useState(moment(moment()).add(5, 'days').format("YYYY-MM-DD"));
+  const [expirDate, setexpirDate] = useState(
+    moment(moment()).add(5, "days").format("YYYY-MM-DD")
+  );
   const [printCode, setPrintCode] = useState();
 
   const [widthBill80, setWidthBill80] = useState(0);
-  let billFark80Ref = useRef();
+  const billFark80Ref = useRef();
   // store
   const { storeDetail } = useStore();
   const { printerCounter, printers } = useStore();
+  const { width } = useWindowDimensions();
+  const [cartModal, setCartModal] = useState(false);
+
   // useEffect
   useEffect(() => {
     getData();
   }, []);
   useEffect(() => {
-    const element = billFark80Ref.current;
+    const element = billFark80Ref?.current;
     console.log(element); // 👈️ element here
   }, []);
   useLayoutEffect(() => {
-    setWidthBill80(billFark80Ref.current.offsetWidth);
+    setWidthBill80(billFark80Ref?.current?.offsetWidth);
   }, [billFark80Ref]);
   useEffect(() => {
     if (printCode) {
@@ -148,13 +162,13 @@ export default function FarkCreatePage() {
       };
       const data = await createBillFark(_body, TOKEN);
       if (data.error) {
-        errorAdd(`${t('save_fail')}`);
+        errorAdd(`${t("save_fail")}`);
         return;
       }
       setPrintCode(data.code);
       // await onPrintBillFark();
       // navigate("../", { replace: true });
-      successAdd(`${t('save_success')}`);
+      successAdd(`${t("save_success")}`);
     } catch (err) {
       console.log(err);
     }
@@ -231,6 +245,8 @@ export default function FarkCreatePage() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          beep: 1,
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -251,7 +267,7 @@ export default function FarkCreatePage() {
       // setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
-        title: `${t('print_success')}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -263,7 +279,7 @@ export default function FarkCreatePage() {
       console.log("onprint:", err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fail')}`,
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -281,8 +297,8 @@ export default function FarkCreatePage() {
       >
         <div style={{ padding: 20 }}>
           <Breadcrumb>
-            <Breadcrumb.Item>{t('bury_deposit_layer')}</Breadcrumb.Item>
-            <Breadcrumb.Item active>{t('add_list')}</Breadcrumb.Item>
+            <Breadcrumb.Item>{t("bury_deposit_layer")}</Breadcrumb.Item>
+            <Breadcrumb.Item active>{t("add_list")}</Breadcrumb.Item>
           </Breadcrumb>
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
@@ -298,14 +314,14 @@ export default function FarkCreatePage() {
               }}
             >
               <span>
-                <IoBeerOutline /> {t('dps_list')}
+                <IoBeerOutline /> {t("dps_list")}
               </span>
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpAddMenuForBillFark: true })}
               >
-                <MdAssignmentAdd /> {t('add_dps')}
+                <MdAssignmentAdd /> {t("add_dps")}
               </Button>
             </Card.Header>
             <Card.Body style={{ padding: 5 }}>
@@ -347,7 +363,7 @@ export default function FarkCreatePage() {
                         disabled={e?.addToCart}
                         onClick={() => addToCart(e?._id)}
                       >
-                        {t('add')}
+                        {t("add")}
                       </Button>
                     </div>
                   </div>
@@ -375,7 +391,7 @@ export default function FarkCreatePage() {
               padding: 20,
             }}
           >
-            {t('create_dps_list')}
+            {t("create_dps_list")}
           </div>
           <div
             style={{
@@ -386,21 +402,21 @@ export default function FarkCreatePage() {
               marginBottom: "200px",
             }}
           >
-            <Form.Label>{t('customer_name')}</Form.Label>
+            <Form.Label>{t("customer_name")}</Form.Label>
             <Form.Control
-              placeholder={t('customer_name')}
+              placeholder={t("customer_name")}
               value={customerName}
               onChange={(e) => setCustomerName(e?.target.value)}
             />
-            <Form.Label>{t('ctm_tel')}</Form.Label>
+            <Form.Label>{t("ctm_tel")}</Form.Label>
             <Form.Control
-              placeholder={t('ctm_tel')}
+              placeholder={t("ctm_tel")}
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e?.target.value)}
             />
-            <Form.Label>{t('exp_date')}</Form.Label>
+            <Form.Label>{t("exp_date")}</Form.Label>
             <Form.Control
-              placeholder={t('exp_date')}
+              placeholder={t("exp_date")}
               type="date"
               value={expirDate}
               onChange={(e) => setexpirDate(e?.target.value)}
@@ -408,8 +424,8 @@ export default function FarkCreatePage() {
             <div style={{ flex: 1 }}>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th>{t('name')}</th>
-                  <th style={{ textAlign: "center" }}>{t('amount')}</th>
+                  <th>{t("name")}</th>
+                  <th style={{ textAlign: "center" }}>{t("amount")}</th>
                 </tr>
                 {menuFarkData
                   ?.filter((e) => e?.addToCart)
@@ -468,7 +484,7 @@ export default function FarkCreatePage() {
               style={{ width: "100%", height: 60 }}
               onClick={() => handleClickCreateBillFark()}
             >
-              {t('save_print')}
+              {t("save_print")}
             </Button>
           </div>
         </div>

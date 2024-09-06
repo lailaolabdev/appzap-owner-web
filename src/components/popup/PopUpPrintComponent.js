@@ -41,7 +41,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
-    // console.log("printers: ", billRef.current)
+
+    console.log("printers: ", billRef.current);
+
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -97,6 +99,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          beep: 1,
+          width: myPrinter?.width === "58" ? 400 : 580,
         },
         async () => {
           await axios({

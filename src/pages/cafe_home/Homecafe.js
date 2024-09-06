@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
+import { RiListOrdered2 } from "react-icons/ri";
 
 /**
  * const
@@ -52,7 +53,7 @@ import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
-import { callCheckOutPrintBillOnly } from "../../services/code";
+import printFlutter from "../../helpers/printFlutter";
 
 function Homecafe() {
   const params = useParams();
@@ -94,6 +95,25 @@ function Homecafe() {
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
   const [total, setTotal] = useState();
 
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia("(max-width: 767px)").matches
+  );
+
+  const [cartModal, setCartModal] = useState(false);
+
+  useEffect(() => {
+    // Function to update state on window resize
+    const handleResize = () => {
+      setIsMobile(window.matchMedia("(max-width: 767px)").matches);
+    };
+
+    // Add event listener for resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup function to remove event listener when the component unmounts
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -128,7 +148,7 @@ function Homecafe() {
   };
 
   function handleSetQuantity(int, data) {
-    let dataArray = [];
+    const dataArray = [];
     for (const i of selectedMenu) {
       let _data = { ...i };
       if (data?.id === i?.id) {
@@ -381,7 +401,7 @@ function Homecafe() {
     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
     let allowToAdd = true;
     let itemIndexInSelectedMenu = 0;
-    let data = {
+    const data = {
       id: menu._id,
       name: menu.name,
       quantity: 1,
@@ -393,8 +413,8 @@ function Homecafe() {
     if (selectedMenu.length === 0) {
       setSelectedMenu([...selectedMenu, data]);
     } else {
-      let thisSelectedMenu = [...selectedMenu];
-      for (let index in thisSelectedMenu) {
+      const thisSelectedMenu = [...selectedMenu];
+      for (const index in thisSelectedMenu) {
         if (thisSelectedMenu[index]?.id === menu?._id) {
           allowToAdd = false;
           itemIndexInSelectedMenu = index;
@@ -403,8 +423,8 @@ function Homecafe() {
       if (allowToAdd) {
         setSelectedMenu([...selectedMenu, data]);
       } else {
-        let copySelectedMenu = [...selectedMenu];
-        let currentData = copySelectedMenu[itemIndexInSelectedMenu];
+        const copySelectedMenu = [...selectedMenu];
+        const currentData = copySelectedMenu[itemIndexInSelectedMenu];
         currentData.quantity += 1;
         copySelectedMenu[itemIndexInSelectedMenu] = currentData;
         setSelectedMenu(copySelectedMenu);
@@ -418,7 +438,7 @@ function Homecafe() {
 
   const _calculateTotal = () => {
     let _total = 0;
-    for (let _data of selectedMenu || []) {
+    for (const _data of selectedMenu || []) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
@@ -645,7 +665,7 @@ function Homecafe() {
   // console.log("TotalPrice", TotalPrice());
 
   const onRemoveFromCart = (id) => {
-    let selectedMenuCopied = [...selectedMenu];
+    const selectedMenuCopied = [...selectedMenu];
     for (let i = 0; i < selectedMenuCopied.length; i++) {
       var obj = selectedMenuCopied[i];
       if (obj.id === id) {
@@ -784,7 +804,7 @@ function Homecafe() {
   };
 
   const handleAddCommentInCart = () => {
-    let dataArray = [];
+    const dataArray = [];
     for (const i of selectedMenu) {
       let _data = { ...i };
       if (noteItems?.id === i?.id) {
@@ -803,7 +823,7 @@ function Homecafe() {
   };
 
   const handleUpdateCommentInCart = () => {
-    let dataArray = [];
+    const dataArray = [];
     for (const i of selectedMenu) {
       let _data = { ...i };
       if (noteItems?.id === i?.id) {
@@ -872,10 +892,10 @@ function Homecafe() {
   const [widthBill80, setWidthBill80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
 
-  let qrSmartOrder80Ref = useRef(null);
+  const qrSmartOrder80Ref = useRef(null);
 
-  let bill80Ref = useRef(null);
-  let bill58Ref = useRef(null);
+  const bill80Ref = useRef(null);
+  const bill58Ref = useRef(null);
 
   useLayoutEffect(() => {
     setWidthBill80(bill80Ref.current.offsetWidth);
@@ -885,7 +905,7 @@ function Homecafe() {
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
     try {
-      let headers = await getHeaders();
+      const headers = await getHeaders();
       const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
       const updateTable = await axios({
         method: "post",
@@ -906,7 +926,7 @@ function Homecafe() {
 
   const onPrintBill = async () => {
     try {
-      let _dataBill = {
+      const _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
@@ -955,12 +975,24 @@ function Homecafe() {
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
       // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
-      await axios({
-        method: "post",
-        url: urlForPrinter,
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+          beep: 1,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
 
       await Swal.fire({
         icon: "success",
@@ -1000,7 +1032,11 @@ function Homecafe() {
 
   return (
     <div>
-      <CafeContent>
+      <CafeContent
+        style={{
+          position: "relative",
+        }}
+      >
         <CafeMenu>
           <div
             style={{
@@ -1110,109 +1146,114 @@ function Homecafe() {
           </SubCafeMenu>
         </CafeMenu>
 
-        <CafeCart>
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-12 col-md-12">
-                <Table responsive className="table">
-                  <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: "bold", border: "none" }}>
-                      <th style={{ border: "none" }}>#</th>
-                      <th style={{ border: "none", textAlign: "left" }}>
-                        {t("menu_name")}
-                      </th>
-                      <th style={{ border: "none", textAlign: "center" }}>
-                        {t("amount")}
-                      </th>
-                      <th style={{ border: "none", textAlign: "center" }}>
-                        {t("price")}
-                      </th>
-                      <th style={{ border: "none", textAlign: "right" }}>
-                        {t("manage")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedMenu &&
-                      selectedMenu.map((data, index) => {
-                        // Create the options string if options exist
-                        const optionsString =
-                          data.options && data.options.length > 0
-                            ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
-                            : "";
-                        const totalOptionPrice = data?.totalOptionPrice || 0;
-                        const itemPrice = data?.price + totalOptionPrice;
-                        return (
-                          <tr key={"selectMenu" + index}>
-                            <td style={{ width: 20 }}>{index + 1}</td>
-                            <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{`${data.name} ${optionsString}`}</p>
-                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
-                                {data?.note ?? ""}
-                              </p>
-                            </td>
-                            <td
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-around",
-                                marginTop: "-.05em",
-                                alignItems: "center",
-                              }}
-                            >
-                              <button
-                                style={{
-                                  color: "blue",
-                                  border: "none",
-                                  width: 25,
-                                  marginTop: -15,
-                                }}
-                                onClick={() => handleSetQuantity(-1, data)}
+        {!isMobile ? (
+          <CafeCart>
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-12 col-md-12">
+                  <Table responsive className="table">
+                    <thead style={{ backgroundColor: "#F1F1F1" }}>
+                      <tr style={{ fontSize: "bold", border: "none" }}>
+                        <th style={{ border: "none" }}>#</th>
+                        <th style={{ border: "none", textAlign: "left" }}>
+                          {t("menu_name")}
+                        </th>
+                        <th style={{ border: "none", textAlign: "center" }}>
+                          {t("amount")}
+                        </th>
+                        <th style={{ border: "none", textAlign: "center" }}>
+                          {t("price")}
+                        </th>
+                        <th style={{ border: "none", textAlign: "right" }}>
+                          {t("manage")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedMenu &&
+                        selectedMenu.map((data, index) => {
+                          // Create the options string if options exist
+                          const optionsString =
+                            data.options && data.options.length > 0
+                              ? data.options
+                                  .map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ")
+                              : "";
+                          const totalOptionPrice = data?.totalOptionPrice || 0;
+                          const itemPrice = data?.price + totalOptionPrice;
+                          return (
+                            <tr key={"selectMenu" + index}>
+                              <td style={{ width: 20 }}>{index + 1}</td>
+                              <td
+                                style={{ textAlign: "left", paddingBottom: 0 }}
                               >
-                                -
-                              </button>
-                              <p
-                                style={{
-                                  minWidth: 30,
-                                  maxWidth: 50,
-                                  paddingLeft: 10,
-                                }}
-                              >
-                                {data.quantity}
-                              </p>
-                              <button
-                                style={{
-                                  color: "red",
-                                  border: "none",
-                                  width: 25,
-                                  marginTop: -15,
-                                }}
-                                onClick={() => handleSetQuantity(1, data)}
-                              >
-                                +
-                              </button>
-                            </td>
-                            <td>
-                              <p>{moneyCurrency(itemPrice)}</p>
-                            </td>
-
-                            <td style={{ padding: 0, textAlign: "right" }}>
-                              <div
+                                <p>{`${data.name} ${optionsString}`}</p>
+                                <p
+                                  style={{ fontSize: 12, marginTop: "-1.5em" }}
+                                >
+                                  {data?.note ?? ""}
+                                </p>
+                              </td>
+                              <td
                                 style={{
                                   display: "flex",
-                                  justifyContent: "end",
-                                  gap: 10,
-                                  paddingLeft: 10,
-                                  paddingTop: 5,
+                                  flexDirection: "row",
+                                  justifyContent: "space-around",
+                                  marginTop: "-.05em",
+                                  alignItems: "center",
                                 }}
                               >
-                                {/* {data?.note === "" ? (
+                                <button
+                                  style={{
+                                    color: "blue",
+                                    border: "none",
+                                    width: 25,
+                                    marginTop: -15,
+                                  }}
+                                  onClick={() => handleSetQuantity(-1, data)}
+                                >
+                                  -
+                                </button>
+                                <p
+                                  style={{
+                                    minWidth: 30,
+                                    maxWidth: 50,
+                                    paddingLeft: 10,
+                                  }}
+                                >
+                                  {data.quantity}
+                                </p>
+                                <button
+                                  style={{
+                                    color: "red",
+                                    border: "none",
+                                    width: 25,
+                                    marginTop: -15,
+                                  }}
+                                  onClick={() => handleSetQuantity(1, data)}
+                                >
+                                  +
+                                </button>
+                              </td>
+                              <td>
+                                <p>{moneyCurrency(itemPrice)}</p>
+                              </td>
+
+                              <td style={{ padding: 0, textAlign: "right" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "end",
+                                    gap: 10,
+                                    paddingLeft: 10,
+                                    paddingTop: 5,
+                                  }}
+                                >
+                                  {/* {data?.note === "" ? (
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -1236,23 +1277,348 @@ function Homecafe() {
                                   </div>
                                 )} */}
 
-                                <div
-                                  style={{
-                                    cursor: "pointer",
-                                    fontSize: 25,
-                                    color: "#FB6E3B",
-                                  }}
-                                  onClick={() => onConfirmRemoveItem(data)}
-                                >
-                                  <MdDelete />
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "#FB6E3B",
+                                    }}
+                                    onClick={() => onConfirmRemoveItem(data)}
+                                  >
+                                    <MdDelete />
+                                  </div>
                                 </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </Table>
+                  {selectedMenu.length > 0 ? (
+                    <div className="mb-3">
+                      <div>
+                        <span>{t("amountTotal")} : </span>
+                        <span>{TotalAmount()} </span>
+                      </div>
+                      <div>
+                        <span>{t("pricesTotal")} : </span>
+                        <span>
+                          {moneyCurrency(total)} {t("nameCurrency")}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+                <div className="col-12">
+                  <div className="row" style={{ margin: 0 }}>
+                    {selectedMenu.length > 0 ? (
+                      <>
+                        <Button
+                          variant="outline-warning"
+                          className="hover-me"
+                          style={{
+                            marginRight: 15,
+                            border: "solid 1px #FB6E3B",
+                            fontWeight: "bold",
+                            backgroundColor: "#FB6E3B",
+                            color: "#ffffff",
+                          }}
+                          onClick={() => setSelectedMenu([])}
+                        >
+                          {t("cancel")}
+                        </Button>
+                        <Button
+                          variant="light"
+                          className="hover-me"
+                          style={{
+                            marginRight: 15,
+                            backgroundColor: "#FB6E3B",
+                            color: "#ffffff",
+                            fontWeight: "bold",
+                            flex: 1,
+                          }}
+                          onClick={() => {
+                            selectedMenu.length === 0
+                              ? AlertMessage()
+                              : setPopup({ CheckOutType: true });
+                          }}
+                        >
+                          {/* {t("print_bill")} */}
+                          CheckOut
+                        </Button>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                    <Button
+                      variant="light"
+                      className="hover-me"
+                      style={{
+                        marginRight: 15,
+                        backgroundColor: "#FB6E3B",
+                        color: "#ffffff",
+                        fontWeight: "bold",
+                        flex: 1,
+                      }}
+                      disabled={disabledButton}
+                      onClick={() => navigate(`/history-cafe-sale`)}
+                    >
+                      {t("history_sales")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CafeCart>
+        ) : null}
+      </CafeContent>
+      {/* <div className="mt-3">
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => (billForCher80.current[i] = el)}
+            >
+              <BillForChef80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          );
+        })}
+        {selectedMenu?.map((val, i) => {
+          return (
+            <div
+              style={{
+                width: "58mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => (billForCher58.current[i] = el)}
+            >
+              <BillForChef58
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                // dataBill={dataBill}
+                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          );
+        })}
+      </div> */}
+
+      {isMobile ? (
+        <button
+          className="d-flex justify-content-center align-items-center"
+          type="button"
+          style={{
+            position: "absolute",
+            bottom: "5%",
+            display: "fixed",
+            right: "5%",
+            backgroundColor: "#FB6E3B",
+            color: "#ffffff",
+            fontWeight: "bold",
+            border: "none",
+            padding: "10px 20px",
+            fontSize: 20,
+          }}
+          onClick={() => setCartModal(true)}
+        >
+          <RiListOrdered2 />
+          ກະຕ່າລາຍການ
+          <span style={{ marginLeft: "5px" }}>({selectedMenu.length})</span>
+        </button>
+      ) : null}
+
+      <Modal
+        show={cartModal}
+        centered
+        size="lg"
+        onHide={() => setCartModal(false)}
+      >
+        <Modal.Body>
+          <div className="container">
+            <div className="row">
+              <div
+                className="col-lg-12 col-md-12"
+                style={{
+                  maxHeight: 500,
+                  overflow: "auto",
+                }}
+              >
+                <Table responsive className="table">
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr style={{ fontSize: "bold", border: "none" }}>
+                      <th style={{ border: "none", textWrap: "nowrap" }}>#</th>
+                      <th
+                        style={{
+                          border: "none",
+                          textWrap: "nowrap",
+                          textAlign: "left",
+                        }}
+                      >
+                        {t("menu_name")}
+                      </th>
+                      <th
+                        style={{
+                          border: "none",
+                          textWrap: "nowrap",
+                          textAlign: "center",
+                        }}
+                      >
+                        {t("amount")}
+                      </th>
+                      <th
+                        style={{
+                          border: "none",
+                          textWrap: "nowrap",
+                          textAlign: "center",
+                        }}
+                      >
+                        {t("price")}
+                      </th>
+                      <th
+                        style={{
+                          border: "none",
+                          textWrap: "nowrap",
+                          textAlign: "right",
+                        }}
+                      >
+                        {t("manage")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedMenu?.map((data, index) => {
+                      // Create the options string if options exist
+                      const optionsString =
+                        data.options && data.options.length > 0
+                          ? data.options
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
+                          : "";
+                      const totalOptionPrice = data?.totalOptionPrice || 0;
+                      const itemPrice = data?.price + totalOptionPrice;
+                      return (
+                        <tr key={"selectMenu" + index}>
+                          <td style={{ width: 20 }}>{index + 1}</td>
+                          <td style={{ textAlign: "left", paddingBottom: 0 }}>
+                            <p>{`${data.name} ${optionsString}`}</p>
+                            <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
+                              {data?.note ?? ""}
+                            </p>
+                          </td>
+                          <td
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-around",
+                              marginTop: "-.05em",
+                              alignItems: "center",
+                            }}
+                          >
+                            <button
+                              style={{
+                                color: "blue",
+                                border: "none",
+                                width: 25,
+                                marginTop: -15,
+                              }}
+                              onClick={() => handleSetQuantity(-1, data)}
+                            >
+                              -
+                            </button>
+                            <p
+                              style={{
+                                minWidth: 30,
+                                maxWidth: 50,
+                                paddingLeft: 10,
+                              }}
+                            >
+                              {data.quantity}
+                            </p>
+                            <button
+                              style={{
+                                color: "red",
+                                border: "none",
+                                width: 25,
+                                marginTop: -15,
+                              }}
+                              onClick={() => handleSetQuantity(1, data)}
+                            >
+                              +
+                            </button>
+                          </td>
+                          <td>
+                            <p>{moneyCurrency(itemPrice)}</p>
+                          </td>
+
+                          <td style={{ padding: 0, textAlign: "right" }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "end",
+                                gap: 10,
+                                paddingLeft: 10,
+                                paddingTop: 5,
+                              }}
+                            >
+                              {/* {data?.note === "" ? (
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "gray",
+                                    }}
+                                    onClick={() => onAddCommentItems(data)}
+                                  >
+                                    <RiChatNewFill />
+                                  </div>
+                                ) : (
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: "green",
+                                    }}
+                                    onClick={() => onEditCommentItems(data)}
+                                  >
+                                    <MdMarkChatRead />
+                                  </div>
+                                )} */}
+
+                              <div
+                                style={{
+                                  cursor: "pointer",
+                                  fontSize: 25,
+                                  color: "#FB6E3B",
+                                }}
+                                onClick={() => onConfirmRemoveItem(data)}
+                              >
+                                <MdDelete />
                               </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </Table>
+              </div>
+              <div className="col-12">
                 {selectedMenu.length > 0 ? (
                   <div className="mb-3">
                     <div>
@@ -1269,8 +1635,6 @@ function Homecafe() {
                 ) : (
                   ""
                 )}
-              </div>
-              <div className="col-12">
                 <div className="row" style={{ margin: 0 }}>
                   {selectedMenu.length > 0 ? (
                     <>
@@ -1330,48 +1694,8 @@ function Homecafe() {
               </div>
             </div>
           </div>
-        </CafeCart>
-      </CafeContent>
-      {/* <div className="mt-3">
-        {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "80mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher80.current[i] = el)}
-            >
-              <BillForChef80
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
-        {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "58mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher58.current[i] = el)}
-            >
-              <BillForChef58
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
-      </div> */}
+        </Modal.Body>
+      </Modal>
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>

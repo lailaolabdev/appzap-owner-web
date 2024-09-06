@@ -59,9 +59,9 @@ export default function OrderPage() {
 
   const handleUpdateOrderStatus = async (status) => {
     try {
-      let previousStatus = orderItems[0].status;
+      const previousStatus = orderItems[0].status;
       let menuId;
-      let _updateItems = orderItems
+      const _updateItems = orderItems
         .filter((item) => item.isChecked)
         .map((i) => {
           return {
@@ -70,7 +70,7 @@ export default function OrderPage() {
             menuId: i?.menuId,
           };
         });
-      let _resOrderUpdate = await updateOrderItem(
+      const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeDetail?._id,
         menuId
@@ -99,9 +99,11 @@ export default function OrderPage() {
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
-      // console.log(billForCher80.current);
-      // console.log(printDate.length);
-      let dataUrls = [];
+
+      console.log(billForCher80.current);
+      console.log(printDate.length);
+      const dataUrls = [];
+
       for (const _ref of printDate) {
         const dataUrl = await html2canvas(_ref, {
           useCORS: true,
@@ -118,7 +120,7 @@ export default function OrderPage() {
 
         try {
           let urlForPrinter = "";
-          let dataUrl = dataUrls[_index];
+          const dataUrl = dataUrls[_index];
           // if (_printer?.width === "80mm") {
           //   dataUrl = await html2canvas(printDate[_index], {
           //     useCORS: true,
@@ -145,11 +147,13 @@ export default function OrderPage() {
           }
           const _file = await base64ToBlob(await dataUrl.toDataURL());
           var bodyFormData = new FormData();
+
           bodyFormData.append("ip", _printer?.ip);
           if (_index === 0) {
             bodyFormData.append("beep1", 1);
             bodyFormData.append("beep2", 9);
           }
+          bodyFormData.append("isdrawer", false);
           bodyFormData.append("port", "9100");
           bodyFormData.append("image", _file);
           bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
@@ -160,6 +164,8 @@ export default function OrderPage() {
               ip: _printer?.ip,
               type: _printer?.type,
               port: "9100",
+              beep: 1,
+              width: _printer?.width === "58mm" ? 400 : 580,
             },
             async () => {
               await axios({
@@ -263,9 +269,17 @@ export default function OrderPage() {
         style={{
           display: "flex",
           padding: "10px",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        <div>
+        <div
+          className="d-flex align-items-center"
+          style={{
+            gap: "6px",
+            flexWrap: "wrap",
+          }}
+        >
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
@@ -278,9 +292,7 @@ export default function OrderPage() {
             {onPrinting && <Spinner animation="border" size="sm" />}
             {t("send_to_kitchen")}
           </Button>
-        </div>
-        <div style={{ width: "50px" }}></div>
-        <div>
+
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
@@ -291,9 +303,7 @@ export default function OrderPage() {
             {/* ຍົກເລີກ */}
             {t("cancel")}
           </Button>
-        </div>
-        <div style={{ width: "10px" }}></div>
-        <div>
+
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
@@ -304,9 +314,7 @@ export default function OrderPage() {
             {/* ສົ່ງໄປຄົວ */}
             {t("cooking")}
           </Button>
-        </div>
-        <div style={{ width: "10px" }}></div>
-        <div>
+
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
@@ -318,7 +326,7 @@ export default function OrderPage() {
             {t("served")}
           </Button>
         </div>
-        <div style={{ flex: 1 }} />
+
         <div>ປຸ່ມພິມບິນອັດຕະໂນມັດ</div>
       </div>
     );

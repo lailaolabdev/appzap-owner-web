@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
-
+import { useLocation } from "react-router-dom";
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
@@ -64,13 +64,19 @@ import CheckOutPopup from "./components/CheckOutPopup";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
+import { printItems } from "./printItems";
+import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 export default function TableList() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
+
+  // console.log({ state });
 
   // state
   const [show, setShow] = useState(false);
@@ -131,6 +137,7 @@ export default function TableList() {
     onSelectTable,
     resetTableOrder,
     storeDetail,
+    setStoreDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -147,7 +154,9 @@ export default function TableList() {
     setStoreDetail,
   } = useStore();
 
-  // console.log("storeDetail?.statusPrintBill", storeDetail?.statusPrintBill);
+
+  // console.log("actions", storeDetail?.actions);
+
 
   const reLoadData = () => {
     setReload(true);
@@ -165,11 +174,41 @@ export default function TableList() {
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
+  const [serviceChargePercent, setServiceChargePercent] = useState(0);
   const [dataCustomer, setDataCustomer] = useState();
   const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
+  const [zoneData, setZoneData] = useState();
+  const [zoneId, setZoneId] = useState();
 
   const [isBillTest, setIsBillTest] = useState(true);
+
+  const [combinedBillRefs, setCombinedBillRefs] = useState({});
+  const [groupedItems, setGroupedItems] = useState({});
+
+  useEffect(() => {
+    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    const refs = {};
+    const grouped = groupItemsByPrinter(orderSelect);
+    // Create refs for each printer IP
+    Object.keys(grouped).forEach((printerIp) => {
+      refs[printerIp] = React.createRef();
+    });
+    setCombinedBillRefs(refs);
+    setGroupedItems(grouped);
+  }, [isCheckedOrderItem]);
+
+  const groupItemsByPrinter = (items) => {
+    return items?.reduce((groups, item) => {
+      const printer = printers.find((e) => e?._id === item.printer);
+      const printerIp = printer?.ip || "unknown";
+      if (!groups[printerIp]) {
+        groups[printerIp] = [];
+      }
+      groups[printerIp].push(item);
+      return groups;
+    }, {});
+  };
 
   // console.log("shopId==========>", storeDetail?._id)
   // console.log("userData==========>", userData)
@@ -201,7 +240,21 @@ export default function TableList() {
 
   useEffect(() => {
     getUserData();
+    getDataZone();
+
+    const localZone = localStorage.getItem("selectedZone");
+    if (localZone) {
+      setZoneId(localZone);
+      getTableDataStore({ zone: localZone });
+    }
   }, []);
+
+  // useEffect(() => {
+  //   getUserData();
+  //   if (window.opener) {
+  //     window.opener.location.reload();
+  //   }
+  // }, []);
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -223,6 +276,17 @@ export default function TableList() {
     };
     getDataTax();
   }, []);
+
+  useEffect(() => {
+    const getDataServiceCharge = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+      );
+      setServiceChargePercent(_res?.data?.serviceCharge);
+    };
+    getDataServiceCharge();
+  }, []);
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
@@ -237,11 +301,11 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  useEffect(() => {
-    // initialTableSocket();
-    // getTableDataStoreList();
-    getTableDataStore();
-  }, []);
+  // useEffect(() => {
+  //   // initialTableSocket();
+  //   // getTableDataStoreList();
+  //   getTableDataStore();
+  // }, []);
 
   /**
    * Modify Order Status
@@ -282,6 +346,22 @@ export default function TableList() {
     }
   }, [tableOrderItems]);
 
+  useEffect(() => {
+    if (zoneId) {
+      getTableDataStore({ zone: zoneId });
+    } else {
+      getTableDataStore();
+    }
+  }, [zoneId]);
+
+  const onSelectedZone = (value) => {
+    localStorage.setItem("selectedZone", value);
+    setZoneId(value);
+    if (!value) {
+      getTableDataStore();
+    }
+  };
+
   const getData = async (code) => {
     try {
       setDataBill();
@@ -299,7 +379,8 @@ export default function TableList() {
         url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
         headers: headers,
       });
-      // console.log("_resBill?.data:------>", _resBill?.data);
+
+
       setDataBill(_resBill?.data);
     } catch (err) {
       setDataBill();
@@ -373,7 +454,12 @@ export default function TableList() {
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        getTableDataStore();
+        // getTableDataStore();
+        if (zoneId) {
+          getTableDataStore({ zone: zoneId });
+        } else {
+          getTableDataStore();
+        }
         await Swal.fire({
           icon: "success",
           title: `${t("change_table_success")}`,
@@ -425,7 +511,12 @@ export default function TableList() {
       setOpenModalSetting(false);
       if (updateTable.status < 300) {
         setSelectedTable();
-        getTableDataStore();
+        // getTableDataStore();
+        if (zoneId) {
+          getTableDataStore({ zone: zoneId });
+        } else {
+          getTableDataStore();
+        }
         successAdd(`${t("close_table_success")}`);
       }
     } catch (err) {
@@ -508,9 +599,9 @@ export default function TableList() {
     }
   };
 
-  const onPrintBill = async () => {
-    // setLoadingCheckOut(true);
-    getTableDataStore();
+
+  const onPrintBill = async (isPrintBill) => {
+
     try {
       let _dataBill = {
         ...dataBill,
@@ -523,23 +614,29 @@ export default function TableList() {
         (e) => e?._id === _printerCounters?.BILL
       );
       let dataImageForPrint;
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(bill80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-      }
+      dataImageForPrint = await html2canvas(bill80Ref.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      // if (printerBillData?.width === "80mm") {
+      //   dataImageForPrint = await html2canvas(bill80Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 530 / widthBill80,
+      //   });
+      // }
 
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(bill58Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 350 / widthBill58,
-        });
-      }
+      // if (printerBillData?.width === "58mm") {
+      //   dataImageForPrint = await html2canvas(bill58Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 350 / widthBill58,
+      //   });
+      // }
       if (printerBillData?.type === "ETHERNET") {
         urlForPrinter = ETHERNET_PRINTER_PORT;
       }
@@ -554,6 +651,7 @@ export default function TableList() {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", isPrintBill);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -575,6 +673,10 @@ export default function TableList() {
           });
         }
       );
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
       // update bill status to call check out
       callCheckOutPrintBillOnly(selectedTable?._id);
@@ -591,7 +693,18 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1800,
       });
-      getTableDataStore();
+
+
+      // update bill status to call check out
+      callCheckOutPrintBillOnly(selectedTable?._id);
+      setSelectedTable();
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({ zone: zoneId });
+      } else {
+        getTableDataStore();
+      }
+
     } catch (err) {
       console.log("err printer", err);
       // setLoadingCheckOut(false);
@@ -607,7 +720,9 @@ export default function TableList() {
 
   useEffect(() => {
     getTableDataStore();
-  }, [storeDetail?.statusPrintBill]);
+
+  }, [storeDetail?.ChangeColorTable]);
+
 
   async function delay(ms) {
     return new Promise((resolve) => {
@@ -679,6 +794,7 @@ export default function TableList() {
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
@@ -884,6 +1000,19 @@ export default function TableList() {
   }
 
   const [onPrinting, setOnPrinting] = useState(false);
+
+  const onPrintToKitchen = async () => {
+    const hasNoCut = printers.some((printer) => printer.cutPaper === "not_cut");
+
+    if (hasNoCut) {
+      // Print with no cut
+      printItems(groupedItems, combinedBillRefs, printers);
+    } else {
+      // Print with cut
+      onPrintForCher();
+    }
+  };
+
   const onPrintForCher = async () => {
     setOnPrinting(true);
 
@@ -1241,7 +1370,6 @@ export default function TableList() {
     // getOrderItemsStore(CANCEL_STATUS);
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
-    console.log("selectedTable:==8888=>", selectedTable);
     let menuId;
     let _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
@@ -1283,7 +1411,6 @@ export default function TableList() {
       // getOrderItemsStore(CANCEL_STATUS);
       const storeId = storeDetail?._id;
       // let previousStatus = orderItems[0].status;
-      console.log("selectedTable:==8888=>", selectedTable);
       let menuId;
       let _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked)
@@ -1355,7 +1482,12 @@ export default function TableList() {
 
   useEffect(() => {
     if (newTableTransaction) {
-      getTableDataStore();
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({ zone: zoneId });
+      } else {
+        getTableDataStore();
+      }
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
@@ -1397,7 +1529,31 @@ export default function TableList() {
     }
   };
 
-  // console.log({ tableList });
+
+  const getDataZone = async () => {
+    try {
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const data = await axios({
+        method: "get",
+        url: END_POINT_SEVER + `/v3/zones`,
+        params: {
+          storeId: params?.id,
+          limit: 100,
+        },
+        headers: headers,
+      });
+      if (data?.status == 200) {
+        setZoneData(data?.data?.data);
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
 
   return (
     <div
@@ -1446,6 +1602,27 @@ export default function TableList() {
               {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div>
+
+            {zoneData?.length > 0 ? (
+              <div style={{ padding: "5px 15px" }}>
+                <Form.Label>{t("show_by_zone")}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={zoneId}
+                  onChange={(e) => onSelectedZone(e?.target?.value)}
+                >
+                  <option value="">{t("show_all_zone")}</option>
+                  {zoneData?.map((item, index) => (
+                    <option key={index} value={item?._id}>
+                      {item?.name}
+                    </option>
+                  ))}
+                </Form.Control>
+              </div>
+            ) : (
+              ""
+            )}
+
             <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
               <Box
@@ -1843,7 +2020,8 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom
-                          onClick={() => onPrintForCher()}
+                          // onClick={() => onPrintForCher()}
+                          onClick={() => onPrintToKitchen()}
                           disabled={onPrinting}
                         >
                           {onPrinting && (
@@ -1937,7 +2115,8 @@ export default function TableList() {
                             handleUpdateOrderStatusAndCallback(
                               "DOING",
                               async () => {
-                                const data = await onPrintForCher();
+                                // const data = await onPrintForCher();
+                                const data = await onPrintToKitchen();
                                 return data;
                               }
                             ).then();
@@ -2208,6 +2387,7 @@ export default function TableList() {
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
+          serviceCharge={serviceChargePercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2264,13 +2444,42 @@ export default function TableList() {
           })}
       </div>
 
+      {/* Render the combined bill for 80mm */}
+      <div>
+        {Object.entries(groupedItems).map(([printerIp, items]) => (
+          <div key={printerIp}>
+            <div
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+              }}
+              ref={combinedBillRefs[printerIp]}
+            >
+              <CombinedBillForChefNoCut
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                selectedMenu={items}
+                table={{ tableId: { name: selectedTable?.tableName } }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
         tableData={selectedTable}
         open={popup?.CheckOutType}
-        onClose={() => setPopup()}
+        onClose={() => {
+          setPopup();
+          setDataBill((prev) => ({
+            ...prev,
+            Name: "",
+            Point: "",
+          }));
+        }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         // editMode={select}
@@ -2285,6 +2494,7 @@ export default function TableList() {
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
+        serviceCharge={serviceChargePercent}
         taxPercent={taxPercent}
         onSubmit={() => {
           setMenuItemDetailModal(false);
@@ -2466,7 +2676,6 @@ export default function TableList() {
             // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
-                console.log("cancle_order_and_print");
                 handleUpdateOrderStatusAndCallback("CANCELED", async () => {
                   const data = await onPrintForCherCancel();
                   return data;

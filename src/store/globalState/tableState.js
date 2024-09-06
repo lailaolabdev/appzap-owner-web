@@ -12,6 +12,7 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
+import Axios from "axios";
 
 export const useTableState = () => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
@@ -32,24 +33,35 @@ export const useTableState = () => {
   }, [tableOrders]);
 
   const getTableDataStore = useMemo(
-    () => async () => {
-      let _userData = await getLocalData();
-      const url =
-        END_POINT +
-        `/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
-      await fetch(url)
-        .then((response) => response.json())
+    () => async (query) => {
+      try {
+        let _userData = await getLocalData();
+        let params = {
+          status: true,
+          isCheckout: false, 
+          storeId: _userData?.DATA?.storeId
+        }
+        if (query) {
+          params = { ...params, ...query }
+        }
+        
+        await Axios.get(`${END_POINT}/v3/codes`, {
+          params: params
+        })
         .then((response) => {
-          if (response.message === "server error") return;
-          setTableList(response);
 
-          let _openTable = response.filter((table) => {
+          if (response?.status !== 200) return;
+          setTableList(response?.data);
+          let _openTable = response?.data?.filter((table) => {
+
             return table.isOpened && !table.isStaffConfirm;
           });
 
           setOpenTableData(_openTable);
         })
-        .catch((err) => {});
+      } catch (error) {
+        console.log('error', error)
+      }
     },
     []
   );

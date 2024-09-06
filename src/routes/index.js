@@ -34,6 +34,10 @@ import StockHistory from "../pages/stock/HistoryList";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
+
+// add new
+import CreateMembers from "../pages/member/CreateMembers";
+
 // import SettingTheme from "../pages/setting_theme/SettingTheme";
 import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
@@ -68,6 +72,7 @@ import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
+import ZoneList from "../pages/zone/ZoneList";
 
 function Router() {
   return useRoutes([
@@ -95,6 +100,12 @@ function Router() {
       path: "/public/reservation/:storeId",
       element: <ReservationList />,
     },
+
+    {
+      path: "/add/newMembers",
+      element: <CreateMembers />,
+    },
+
     {
       path: "/",
       element: <MainLayout />,
@@ -119,6 +130,7 @@ function Router() {
           path: "/tables",
           element: <Table />,
         },
+
         // ຢຸດໃຊ້ເວຊັ້ນ v6^--------->
         {
           path: "/tables/pagenumber/:number/tableid/:tableId/:storeId",
@@ -264,6 +276,10 @@ function Router() {
         {
           path: "detail-expend/:id",
           element: <DetailExpend />,
+        },
+        {
+          path: "/settingStore/settingZone/:id",
+          element: <ZoneList />,
         },
         OrderRoutes,
         PrinterRoutes,

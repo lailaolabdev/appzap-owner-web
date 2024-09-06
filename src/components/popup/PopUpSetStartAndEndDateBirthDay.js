@@ -4,43 +4,32 @@ import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
-export default function PopUpSetStartAndEndDate({
+export default function PopUpSetStartAndEndDateBirthDay({
   open,
   onClose,
-  startDate,
-  setStartDate,
-  setEndDate,
-  setStartTime,
-  setEndTime,
-  startTime,
-  endTime,
-  endDate,
+  startDateBirthDay,
+  setStartDateBirthDay,
+  setEndDateBirthDay,
+  setStartTimeBirthDay,
+  setEndTimeBirthDay,
+  startTimeBirthDay,
+  endTimeBirthDay,
+  endDateBirthDay,
 }) {
   // state
-  const [valueStartDate, setValueStartDate] = useState(startDate);
-  const [valueEndDate, setValueEndDate] = useState(endDate);
-  const [valueStartTime, setValueStartTime] = useState(startTime);
-  const [valueEndTime, setValueEndTime] = useState(endTime);
+  const [valueStartDate, setValueStartDate] = useState(startDateBirthDay);
+  const [valueEndDate, setValueEndDate] = useState(endDateBirthDay);
+  const [valueStartTime, setValueStartTime] = useState(startTimeBirthDay);
+  const [valueEndTime, setValueEndTime] = useState(endTimeBirthDay);
   const [selectedButton, setSelectedButton] = useState(null);
-
-  const { storeDetail, setStoreDetail } = useStore();
-
   const { t } = useTranslation();
-
   // useEffect
   useEffect(() => {
-    setValueStartDate(startDate);
-    setValueEndDate(endDate);
-    setValueStartTime(startTime);
-    setValueEndTime(endTime);
-    setStoreDetail({
-      ...storeDetail,
-      start_date: startDate,
-      end_date: endDate,
-      start_time: startTime,
-      end_time: endTime,
-    });
-  }, [startDate, endDate, startTime, endTime]);
+    setValueStartDate(startDateBirthDay);
+    setValueEndDate(endDateBirthDay);
+    setValueStartTime(startTimeBirthDay);
+    setValueEndTime(endTimeBirthDay);
+  }, [startDateBirthDay, endDateBirthDay, startTimeBirthDay, endTimeBirthDay]);
 
   const onGetToday = () => {
     const today = moment().format("YYYY-MM-DD");
@@ -54,6 +43,27 @@ export default function PopUpSetStartAndEndDate({
     setValueStartDate(yesterday);
     setValueEndDate(yesterday);
     setSelectedButton("yesterday");
+  };
+
+  const onGetthreeDays = () => {
+    const threeDays = moment().add(3, "days").format("YYYY-MM-DD");
+    setValueStartDate(threeDays);
+    setValueEndDate(threeDays);
+    setSelectedButton("threeDays");
+  };
+
+  const onGetfiveDays = () => {
+    const fiveDays = moment().add(5, "days").format("YYYY-MM-DD");
+    setValueStartDate(fiveDays);
+    setValueEndDate(fiveDays);
+    setSelectedButton("fiveDays");
+  };
+
+  const onGetSevenDays = () => {
+    const sevenDays = moment().add(7, "days").format("YYYY-MM-DD");
+    setValueStartDate(sevenDays);
+    setValueEndDate(sevenDays);
+    setSelectedButton("sevenDays");
   };
 
   const onGetThisMonth = () => {
@@ -78,27 +88,55 @@ export default function PopUpSetStartAndEndDate({
     setSelectedButton("lastMonth");
   };
 
-  const onGetThisYear = () => {
-    const startOfYear = moment().startOf("year").format("YYYY-MM-DD");
-    const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
-    setValueStartDate(startOfYear);
-    setValueEndDate(endOfYear);
-    setSelectedButton("thisYear");
+  const onGetMoreMonth = () => {
+    const startOfLastMonth = moment()
+      .add(1, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfLastMonth = moment()
+      .add(1, "months")
+      .endOf("month")
+      .format("YYYY-MM-DD");
+    setValueStartDate(startOfLastMonth);
+    setValueEndDate(endOfLastMonth);
+    setSelectedButton("moreMonth");
   };
 
-  const onGetLastYear = () => {
-    const startOfLastYear = moment()
-      .subtract(1, "years")
-      .startOf("year")
+  const onGetMoreThreeMonth = () => {
+    const startOfLastMonth = moment()
+      .add(3, "months")
+      .startOf("month")
       .format("YYYY-MM-DD");
-    const endOfLastYear = moment()
-      .subtract(1, "years")
-      .endOf("year")
+    const endOfLastMonth = moment()
+      .add(3, "months")
+      .endOf("month")
       .format("YYYY-MM-DD");
-    setValueStartDate(startOfLastYear);
-    setValueEndDate(endOfLastYear);
-    setSelectedButton("lastYear");
+    setValueStartDate(startOfLastMonth);
+    setValueEndDate(endOfLastMonth);
+    setSelectedButton("moreThreeMonth");
   };
+
+  // const onGetThisYear = () => {
+  //   const startOfYear = moment().startOf("year").format("YYYY-MM-DD");
+  //   const endOfYear = moment().endOf("year").format("YYYY-MM-DD");
+  //   setValueStartDate(startOfYear);
+  //   setValueEndDate(endOfYear);
+  //   setSelectedButton("thisYear");
+  // };
+
+  // const onGetLastYear = () => {
+  //   const startOfLastYear = moment()
+  //     .subtract(1, "years")
+  //     .startOf("year")
+  //     .format("YYYY-MM-DD");
+  //   const endOfLastYear = moment()
+  //     .subtract(1, "years")
+  //     .endOf("year")
+  //     .format("YYYY-MM-DD");
+  //   setValueStartDate(startOfLastYear);
+  //   setValueEndDate(endOfLastYear);
+  //   setSelectedButton("lastYear");
+  // };
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
@@ -133,6 +171,33 @@ export default function PopUpSetStartAndEndDate({
           >
             {t("yester_day")}
           </Button>
+
+          <Button
+            onClick={onGetthreeDays}
+            variant={
+              selectedButton === "threeDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("3_more_day")}
+          </Button>
+
+          <Button
+            onClick={onGetfiveDays}
+            variant={
+              selectedButton === "fiveDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("5_more_day")}
+          </Button>
+
+          <Button
+            onClick={onGetSevenDays}
+            variant={
+              selectedButton === "sevenDays" ? "primary" : "outline-primary"
+            }
+          >
+            {t("7_more_day")}
+          </Button>
           <Button
             onClick={onGetThisMonth}
             variant={
@@ -150,20 +215,22 @@ export default function PopUpSetStartAndEndDate({
             {t("last_month")}
           </Button>
           <Button
-            onClick={onGetThisYear}
+            onClick={onGetMoreMonth}
             variant={
-              selectedButton === "thisYear" ? "primary" : "outline-primary"
+              selectedButton === "moreMonth" ? "primary" : "outline-primary"
             }
           >
-            {t("last_month")}
+            {t("1_more_month")}
           </Button>
           <Button
-            onClick={onGetLastYear}
+            onClick={onGetMoreThreeMonth}
             variant={
-              selectedButton === "lastYear" ? "primary" : "outline-primary"
+              selectedButton === "moreThreeMonth"
+                ? "primary"
+                : "outline-primary"
             }
           >
-            {t("last_years")}
+            {t("3_more_month")}
           </Button>
         </Box>
         <Box
@@ -221,24 +288,10 @@ export default function PopUpSetStartAndEndDate({
         </Button>
         <Button
           onClick={() => {
-            setStartDate(valueStartDate);
-            setEndDate(valueEndDate);
-            setStartTime(valueStartTime);
-            setEndTime(valueEndTime);
-            setStoreDetail({
-              ...storeDetail,
-
-              start_date: valueStartDate,
-              end_date: valueEndDate,
-              start_time: valueStartTime,
-              end_time: valueEndTime,
-
-              startDayFilter: valueStartDate,
-              endDayFilter: valueEndDate,
-              startTimeFilter: valueStartTime,
-              endTimeFilter: valueEndTime,
-
-            });
+            setStartDateBirthDay(valueStartDate);
+            setEndDateBirthDay(valueEndDate);
+            setStartTimeBirthDay(valueStartTime);
+            setEndTimeBirthDay(valueEndTime);
             onClose();
           }}
         >

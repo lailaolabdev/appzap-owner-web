@@ -20,10 +20,21 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportAllMember = async () => {
     setPopup({ printReportSale: true });
     try {
-      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      // const findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&&startTime=${storeDetail?.startTimeMember}&endTime=${storeDetail?.endTimeMember}`;
+      let findBy;
+      if (
+        storeDetail?.startDateMember &&
+        storeDetail?.endDateMember &&
+        storeDetail?.startTimeMember &&
+        storeDetail?.endTimeMember
+      ) {
+        findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&&startTime=${storeDetail?.startTimeMember}&endTime=${storeDetail?.endTimeMember}`;
+      }
       const url =
-        END_POINT_EXPORT + "/export/member?storeId=" + storeDetail?._id;
-      // findBy;
+        END_POINT_EXPORT +
+        "/export/member?storeId=" +
+        storeDetail?._id +
+        findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -46,11 +57,12 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   };
   const exportTopTen = async () => {
     setPopup({ printReportSale: true });
+    let listTop = storeDetail.limitData ? storeDetail.limitData : 10;
     try {
-      const findBy = `&skip=0&limit=${storeDetail.limitData}`;
+      const findBy = `&skip=0&limit=${listTop}`;
       const url =
         END_POINT_EXPORT +
-        "/export/member?storeId=" +
+        "/export/member-top-award?storeId=" +
         storeDetail?._id +
         findBy;
       const _res = await Axios.get(url);
@@ -61,7 +73,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -77,8 +89,26 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportOrders = async () => {
     setPopup({ printReportStaffSale: true });
     try {
-      const url =
-        END_POINT_EXPORT + "/export/member-order?storeId=" + storeDetail?._id;
+      // let findBy = `&storeId=${storeDetail?._id}&startDate=${storeDetail?.startDayFilter}&endDate=${storeDetail?.endDayFilter}&startTime=${storeDetail?.startTimeFilter}&endTime=${storeDetail?.endTimeFilter}`;
+      let findBy = "?";
+      findBy += `storeId=${storeDetail?._id}&`;
+      if (storeDetail?.selectedMemberID) {
+        findBy += `memberid=${storeDetail?.selectedMemberID}&`;
+      }
+
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+      }
+
+      const url = END_POINT_EXPORT + "/export/member-order-customer" + findBy;
       const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -87,7 +117,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -95,12 +125,14 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        setStoreDetail({
-          ...storeDetail,
-          startDay: "",
-          endDay: "",
-          month: "",
-        });
+        // setStoreDetail({
+        //   ...storeDetail,
+        //   startDayFilter: "",
+        //   endDayFilter: "",
+        //   startTimeFilter: "",
+        //   endTimeFilter: "",
+        //   selectedMemberID: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

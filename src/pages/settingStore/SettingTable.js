@@ -7,16 +7,16 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTrashAlt,
-  faEdit,
-  faQrcode,
+	faTrashAlt,
+	faEdit,
+	faQrcode,
 } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { useParams } from "react-router-dom";
 import { QrReader } from "react-qr-reader";
-import { END_POINT_WEB_CLIENT } from "../../constants/api";
+import { END_POINT_SEVER, END_POINT_WEB_CLIENT } from "../../constants/api";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { useTranslation } from "react-i18next";
 
@@ -28,6 +28,7 @@ export default function SettingTable() {
     useStore();
   useEffect(() => {
     getTableDataStoreList();
+    getDataZone()
   }, []);
 
   const [show, setShow] = useState(false);
@@ -35,7 +36,34 @@ export default function SettingTable() {
   const handleShow = () => setShow(true);
   const [tableNumber, setTableNumber] = useState();
   const [sortNumber, setSortNumber] = useState(0);
+  const [zoneData, setZoneData] = useState();
+  const [zoneId, setZoneId] = useState();
   const [selectTatle, setSelectTatle] = useState();
+
+  const getDataZone = async () => {
+    try {
+        let header = await getHeaders();
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: header.authorization,
+        };
+        const data = await axios({
+          method: "get",
+          url: END_POINT_SEVER + `/v3/zones`,
+          params: {
+            storeId: params?.id,
+            limit: 100,
+          },
+          headers: headers,
+        });
+        if (data?.status == 200) {
+            setZoneData(data?.data?.data);
+        }
+    } catch (err) {
+        console.log("err:", err);
+    }
+};
+
   const _createTable = async () => {
     let header = await getHeaders();
     const headers = {
@@ -53,6 +81,7 @@ export default function SettingTable() {
         data: {
           sort: sortNumber,
           name: tableNumber,
+          zone: zoneId,
           storeId: params?.id,
         },
         headers: headers,
@@ -91,6 +120,7 @@ export default function SettingTable() {
             sort: selectTatle?.sort || 0,
             name: selectTatle?.name || "null",
             codeId: selectTatle?.codeId,
+            zone: selectTatle?.zone,
           },
         },
         headers: headers,
@@ -150,6 +180,7 @@ export default function SettingTable() {
       name: item?.tableName || "",
       sort: item?.sort || 0,
       codeId: item?._id,
+      zone: item?.zone?._id,
     });
     setShow4(true);
   };
@@ -199,6 +230,7 @@ export default function SettingTable() {
               <tr>
                 {/* <th scope="col">#</th> */}
                 <th scope="col">{t('code')}</th>
+                <th scope="col">{t('zone')}</th>
                 {/* <th scope="col">ການເປີດ/ປິດ</th> */}
                 {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
                 <th scope="col" style={{ textAlign: "right" }}>
@@ -219,6 +251,7 @@ export default function SettingTable() {
                         <span style={{ color: "red" }}> - (ປິດ)</span>
                       )} */}
                     </td>
+                    <td>{table?.zone?.name ?? '-'}</td>
                     {/* <td>
                       <label className="switch">
                         <input
@@ -229,7 +262,7 @@ export default function SettingTable() {
                         <span className="slider round"></span>
                       </label>
                     </td> */}
-                    {/* <td
+										{/* <td
                       style={{
                         color: table?.isOpened === true ? "green" : "red",
                       }}
@@ -311,6 +344,19 @@ export default function SettingTable() {
               onChange={(e) => setTableNumber(e?.target?.value)}
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t('fill_zone')}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              as='select'
+              onChange={(e) => setZoneId(e?.target?.value)}
+            >
+              <option value="">{t('choose_zone')}</option>
+              {zoneData?.map((item, index) => (
+                <option key={index} value={item?._id}>{item?.name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -354,6 +400,20 @@ export default function SettingTable() {
               }
             />
           </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>{t('fill_zone')}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              as='select'
+              value={selectTatle?.zone}
+              onChange={(e) => setSelectTatle({ ...selectTatle, zone: e?.target?.value })}
+            >
+              <option value="">{t('choose_zone')}</option>
+              {zoneData?.map((item, index) => (
+                <option key={index} value={item?._id}>{item?.name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
           <div>{t('enable')}</div>
           <label className="switch">
             <input
@@ -384,43 +444,43 @@ export default function SettingTable() {
         open={show3}
         onClose={() => setShow3(false)}
         onSubmit={_confirmeDelete}
-        text={dateDelete?.code}
+        text={dateDelete?.tableName}
       />
       {/* ===== qr ===== */}
 
-      <Modal show={popup?.qr} onHide={() => setPopup()}>
-        <Modal.Header closeButton>
-          <Modal.Title>QR </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <QrReader
-            onResult={(result, error) => {
-              console.log(result)
-              if (!!result) {
-                axios
-                  .put(result?.text, {
-                    type: "LINK",
-                    "details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
-                  })
-                  .then(() => {
-                    setPopup();
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }
+			<Modal show={popup?.qr} onHide={() => setPopup()} centered>
+				<Modal.Header closeButton>
+					<Modal.Title>QR </Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<QrReader
+						onResult={(result, error) => {
+							console.log(result);
+							if (!!result) {
+								axios
+									.put(result?.text, {
+										type: "LINK",
+										"details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
+									})
+									.then(() => {
+										setPopup();
+									})
+									.catch((err) => {
+										console.log(err);
+									});
+							}
 
-              // if (!!error) {
-              //   console.info(error);
-              // }
-            }}
-            constraints={{
-              facingMode: "environment",
-            }}
-            style={{ width: "100%" }}
-          />
-        </Modal.Body>
-      </Modal>
-    </div>
-  );
+							// if (!!error) {
+							//   console.info(error);
+							// }
+						}}
+						constraints={{
+							facingMode: "environment",
+						}}
+						style={{ width: "100%" }}
+					/>
+				</Modal.Body>
+			</Modal>
+		</div>
+	);
 }

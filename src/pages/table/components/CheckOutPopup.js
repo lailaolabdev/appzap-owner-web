@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import styled from "styled-components";
 import Select from "react-select";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
@@ -8,7 +10,7 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
-import { BiSolidPrinter } from "react-icons/bi";
+import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
@@ -22,7 +24,10 @@ import {
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import { getMembers } from "../../../services/member.service";
+import {
+  getMembers,
+  getMemberAllCount,
+} from "../../../services/member.service";
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -66,8 +71,7 @@ export default function CheckOutPopup({
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
-  // val
-  // console.log("tableData:=======abc======>", tableData);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMemberData();
@@ -91,8 +95,10 @@ export default function CheckOutPopup({
       setDataBill((prev) => ({
         ...prev,
         memberId: _res.data?._id,
-        memberName: _res.data?.name,
         memberPhone: _res.data?.phone,
+        memberName: _res.data?.name,
+        Name: _res.data?.name,
+        Point: _res.data?.point,
       }));
     } catch (err) {
       console.log(err);
@@ -103,14 +109,10 @@ export default function CheckOutPopup({
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      const _data = await getMembers(findby, TOKEN);
+      const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data?.data);
-    } catch (err) {
-      console.error("Error fetching members data", err);
-    }
+    } catch (err) {}
   };
 
   // console.log("tableData:=======abc======>", tableData)
@@ -124,7 +126,6 @@ export default function CheckOutPopup({
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBill = totalBillDefualt + taxAmount;
 
-  // console.log({ totalBillDefualt, taxAmount, totalBill });
 
   useEffect(() => {
     if (!open) return;
@@ -247,16 +248,22 @@ export default function CheckOutPopup({
       )
       .then(async function (response) {
         setSelectedTable();
-        getTableDataStore();
+        const localZone = localStorage.getItem("selectedZone");
+        if (localZone) {
+          getTableDataStore({ zone: localZone });
+        } else {
+          getTableDataStore();
+        }
         setCashCurrency();
         setTab("cash");
-        setCash();
         setSelectCurrency("LAK");
-        setRateCurrency(1);
-        setTransfer();
         setSelectInput("inputCash");
+        setForcus("CASH");
+        setRateCurrency(1);
         setHasCRM(false);
         setTextSearchMember("");
+        setCash();
+        setTransfer();
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
@@ -271,6 +278,7 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
+  // console.log('transfer', transfer)
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();
@@ -328,9 +336,7 @@ export default function CheckOutPopup({
       setCanCheckOut(true);
     } else if (forcus == "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      // console.log(_sum);
-      // console.log(transfer);
-      // console.log(cash);
+
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -418,7 +424,9 @@ export default function CheckOutPopup({
     });
   };
 
-  const optionsData = membersData.map((item) => {
+
+  const optionsData = membersData?.map((item) => {
+
     // console.log(item);
     return {
       value: item.phone,
@@ -507,6 +515,7 @@ export default function CheckOutPopup({
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
             </div>
+
             <div
               style={{
                 display: "flex",
@@ -565,51 +574,45 @@ export default function CheckOutPopup({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
-              {/* <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>{t("member")}</InputGroup.Text>
-                <InputGroup.Text>+856 20</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="xxxx xxxx"
-                  maxLength={8}
-                  value={textSearchMember}
-                  // onClick={() => {
-                  //   setSelectInput("inputTransfer");
-                  // }}
-                  onChange={(e) => {
-                    setTextSearchMember(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <Button>
-                  <FaSearch />
-                </Button>
-                <div style={{ width: 30 }} />
-                <InputGroup.Text>
-                  {t("name")}: {memberData?.name}
-                </InputGroup.Text>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point}
-                </InputGroup.Text>
-              </InputGroup> */}
-              <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
-                <div style={{ width: "100%" }}>
-                  <Select
-                    placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
+              <BoxMember hidden={!hasCRM}>
+                <div className="box-left">
+                  <div className="box-search">
+                    <Select
+                      placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
+                      options={optionsData}
+                      onChange={handleSearchInput}
+                    />
+                  </div>
+                  <Button className="primary" onClick={() => getMembersData()}>
+                    <BiRotateRight />
+                  </Button>
+                  <Button
+                    className="primary"
+                    onClick={() => {
+                      // navigate("/add/newMembers", {
+                      //   state: { key: "newMembers" },
+                      // });
+                      window.open("/add/newMembers");
+                    }}
+                  >
+                    ເພີ່ມໃໝ່{" "}
+                  </Button>
                 </div>
-                <div style={{ width: "9rem" }}>
-                  <InputGroup.Text>
-                    {t("name")}: {memberData?.name}
-                  </InputGroup.Text>
+                <div className="box-right">
+                  <div className="box-name">
+                    <InputGroup.Text>
+                      {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
+                    </InputGroup.Text>
+                  </div>
+                  <div className="box-name">
+                    <InputGroup.Text>
+                      {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
+                    </InputGroup.Text>
+                  </div>
                 </div>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point ? memberData?.point : "0"}
-                </InputGroup.Text>
-              </div>
+              </BoxMember>
             </div>
+
             <div
               style={{
                 marginBottom: 10,
@@ -782,3 +785,54 @@ export default function CheckOutPopup({
     </Modal>
   );
 }
+
+const BoxMember = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+
+  .box-left {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+
+    .box-search {
+      width: calc(100% - 35%);
+    }
+  }
+
+  .box-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 50%;
+    gap: 10px;
+    .box-name {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+
+    .box-left {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      margin-bottom: 10px;
+      .box-search {
+        width: calc(100% - 18%);
+      }
+    }
+
+    .box-right {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+      gap: 10px;
+      .box-name {
+        width: 100%;
+      }
+    }
+  }
+`;

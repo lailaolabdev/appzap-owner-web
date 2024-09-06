@@ -159,6 +159,8 @@ function AddOrder() {
       }
     }
 
+    console.log("ORDER DATA: ", dataArray);
+
     setSelectedMenu(dataArray);
   };
 
@@ -241,6 +243,7 @@ function AddOrder() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         console.log("_file===========>", _file);
         var bodyFormData = new FormData();
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("port", "9100");
         if (_index === 0) {
@@ -251,12 +254,15 @@ function AddOrder() {
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
         console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData);
+        console.log("onPrintFlutter: =======");
         await printFlutter(
           {
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -713,6 +719,13 @@ function AddOrder() {
                   );
                 });
               }
+              // print for flutter
+              onPrintForCher().then(() => {
+                onSelectTable(selectedTable);
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              });
             } else {
               onSelectTable(selectedTable);
               navigate(

@@ -106,7 +106,9 @@ export default function ExpendList() {
       filterByPayment: filterByPayment,
     };
 
-    // console.log("parame?.skip:::", parame?.skip);
+
+    console.log("parame?.skip:::", parame?.skip);
+
 
     fetchExpend(
       filterByYear,
@@ -249,7 +251,9 @@ export default function ExpendList() {
       })
         .then((res) => {
           setTotalReport(res?.data?.data);
-          // console.log(res?.data?.data);
+
+          console.log(res?.data?.data);
+
           setExpendGraphData(res?.data?.data?.chartExpend);
           setIsLoading(false);
         })
@@ -310,6 +314,7 @@ export default function ExpendList() {
   return (
     <div style={{ padding: 20 }}>
       <div
+        class="account-payment"
         style={{
           display: "flex",
           flexDirection: "row",
@@ -320,13 +325,14 @@ export default function ExpendList() {
       >
         <TitleComponent title={t("paid_account")} />
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "end",
-            alignItems: "center",
-            gap: 5,
-          }}
+          className="account"
+          // style={{
+          //   display: "flex",
+          //   flexDirection: "row",
+          //   justifyContent: "end",
+          //   alignItems: "center",
+          //   gap: 5,
+          // }}
         >
           <Form.Label>{t("date")}</Form.Label>
           <Form.Control
@@ -335,7 +341,7 @@ export default function ExpendList() {
             onChange={(e) => setDateStart(e?.target?.value)}
             style={{ width: 150 }}
           />{" "}
-          ~
+          ຫາວັນທີ
           <Form.Control
             type="date"
             value={dateEnd}
@@ -365,10 +371,11 @@ export default function ExpendList() {
             <option value="100">100</option>
             <option value="200">200</option>
           </Form.Control> */}
+          {/* Button ລົງບັນຊີປະຈຳວັນ */}
           <ButtonComponent
             title={t("daily_account")}
             icon={faPlusCircle}
-            colorbg={"#fb6e3b"}
+            colorbg={"#1d6a9f"}
             hoverbg={"orange"}
             width={"150px"}
             handleClick={() => navigate("/add-expend")}
@@ -387,25 +394,31 @@ export default function ExpendList() {
       />
 
       <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+
+        class="column"
+        // style={{
+        //   display: "flex",
+        //   flexDirection: "row",
+        //   justifyContent: "space-between",
+        //   alignItems: "center",
+        // }}
       >
+        {/* responsive column */}
+
         <div
           className="p-2 hover-me"
           style={{
-            backgroundColor: "#fb6e3b",
-            width: 200,
+            backgroundColor: "#1d6a9f",
+            width: 180,
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
         >
           <div
@@ -434,14 +447,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
         >
           <div
@@ -470,14 +487,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
         >
           <div
@@ -511,14 +532,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
         >
           <div
@@ -552,14 +577,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
         >
           <div
@@ -593,14 +622,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
@@ -635,14 +668,18 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
-            width: 200,
+
+            width: 180,
+
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
-            margin: 12,
+
+            margin: 10,
+
           }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
@@ -688,16 +725,22 @@ export default function ExpendList() {
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
               <th>{t("date")}</th>
-              <th width="30%">{t("detial")}</th>
+
+              <th style={{ textWrap: "nowrap" }} width="30%">
+                {t("detial")}
+              </th>
               <th>{t("paid_type")}</th>
-              <th>{t("paid_mode")}</th>
-              <th>{t("jam")}</th>
-              <th>{t("payer")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("paid_mode")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("jam")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("payer")}</th>
+
               <th style={{ textAlign: "right" }}>{t("lak")}</th>
               <th style={{ textAlign: "right" }}>{t("thb")}</th>
               <th style={{ textAlign: "right" }}>{t("cny")}</th>
               <th style={{ textAlign: "right" }}>{t("usd")}</th>
-              <th>{t("manage")}</th>
+
+              <th style={{ textWrap: "nowrap" }}>{t("manage")}</th>
+
             </tr>
           </thead>
           <tbody>
@@ -710,13 +753,15 @@ export default function ExpendList() {
                   onClick={() => navigate(`/detail-expend/${item?._id}`)}
                 >
                   <td>{index + 1 + _limit * (parame?.skip - 1)}</td>
-                  <td style={{ textAlign: "left" }}>
+                  <td style={{ textAlign: "left", textWrap: "nowrap" }}>
                     {formatDate(item?.dateExpend)}
                   </td>
                   <td style={{ textAlign: "left" }}>
                     {limitText(item?.detail, 50)}
                   </td>
-                  <td>{convertExpendatureType(item?.type)}</td>
+                  <td style={{ textWrap: "nowrap" }}>
+                    {convertExpendatureType(item?.type)}
+                  </td>
                   <td>{convertPayment(item?.payment)}</td>
                   <td
                     style={{

@@ -16,70 +16,106 @@ import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
 import { useParams } from "react-router-dom";
 import { useStore } from "../../store";
 const CanceledOrderTab = () => {
-  const { t } = useTranslation(); //translate
-  /**
-   * routes
-   */
-  const params = useParams();
-  const { number } = params;
+	const { t } = useTranslation(); //translate
+	/**
+	 * routes
+	 */
+	const params = useParams();
+	const { number } = params;
 
-  // const {
-  //   handleCheckbox,
-  //   checkAllOrders,
-  // } = useStore();
-  const { orderItems } = useStore();
+	// const {
+	//   handleCheckbox,
+	//   checkAllOrders,
+	// } = useStore();
+	const { orderItems } = useStore();
 
-  /**
-   * states
-   */
-  const [isLoading, setIsLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
-  /**
-   * use effect
-   */
+	/**
+	 * states
+	 */
+	const [isLoading, setIsLoading] = useState(false);
+	const [orders, setOrders] = useState([]);
+	/**
+	 * use effect
+	 */
 
-  return (
-    <div>
-      {isLoading ? <Loading /> : ""}
-      {/* <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate /> */}
-      <Container fluid className="mt-3">
-        <Table responsive className="staff-table-list borderless table-hover">
-          <thead style={{ backgroundColor: "#F1F1F1" }}>
-            <tr>
-              {/* <th>
+	return (
+		<div>
+			{isLoading ? <Loading /> : ""}
+			{/* <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate /> */}
+			<Container fluid className="mt-3">
+				<Table responsive className="staff-table-list borderless table-hover">
+					<thead style={{ backgroundColor: "#F1F1F1" }}>
+						<tr>
+							{/* <th>
                   <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
                 </th> */}
-              <th>{t('no')}</th>
-              <th>{t('menu_name')}</th>
-              <th>{t('amount')}</th>
-              <th>{t('table_code')}</th>
-              <th>{t('status')}</th>
-              <th>{t('time')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderItems &&
-              orderItems?.map((order, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{order?.menu?.name ?? "-"}</td>
-                  <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.table_id ?? "-"}</td>
-                  <td style={{ color: "green", fontWeight: "bold" }}>
-                    {order?.status ? orderStatus(order?.status) : "-"}
-                  </td>
-                  <td>
-                    {order?.createdAt
-                      ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      </Container>
-    </div>
-  );
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("no")}
+							</th>
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("menu_name")}
+							</th>
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("amount")}
+							</th>
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("table_code")}
+							</th>
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("status")}
+							</th>
+							<th
+								style={{
+									textWrap: "nowrap",
+								}}
+							>
+								{t("time")}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{orderItems &&
+							orderItems?.map((order, index) => (
+								<tr key={index}>
+									<td>{index + 1}</td>
+									<td>{order?.menu?.name ?? "-"}</td>
+									<td>{order?.quantity ?? "-"}</td>
+									<td>{order?.table_id ?? "-"}</td>
+									<td style={{ color: "green", fontWeight: "bold" }}>
+										{order?.status ? orderStatus(order?.status) : "-"}
+									</td>
+									<td>
+										{order?.createdAt
+											? moment(order?.createdAt).format("HH:mm a")
+											: "-"}
+									</td>
+								</tr>
+							))}
+					</tbody>
+				</Table>
+			</Container>
+		</div>
+	);
 };
 
 export default CanceledOrderTab;
