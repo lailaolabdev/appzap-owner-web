@@ -13,18 +13,18 @@ import {
   Spinner,
 } from "react-bootstrap";
 import {
-	faCertificate,
-	faCoins,
-	faPeopleArrows,
-	faTable,
-	faList,
-	faBirthdayCake,
+  faCertificate,
+  faCoins,
+  faPeopleArrows,
+  faTable,
+  faList,
+  faBirthdayCake,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	BsArrowCounterclockwise,
-	BsFillCalendarWeekFill,
-	BsInfoCircle,
+  BsArrowCounterclockwise,
+  BsFillCalendarWeekFill,
+  BsInfoCircle,
 } from "react-icons/bs";
 import {
   MdAssignmentAdd,
@@ -40,18 +40,18 @@ import { COLOR_APP } from "../../constants";
 import ButtonDropdown from "../../components/button/ButtonDropdown";
 import { FaSearch, FaUser } from "react-icons/fa";
 import {
-	getMemberAllCount,
-	getMemberCount,
-	getMembers,
-	getMemberBillCount,
-	getMemberTotalMoney,
-	getAllPoints,
-	getAllBills,
-	getMemberOrderMenu,
-	getTotalPoint,
-	getAllMoneys,
-	getMembersListTop,
-	getMembersListBirthday,
+  getMemberAllCount,
+  getMemberCount,
+  getMembers,
+  getMemberBillCount,
+  getMemberTotalMoney,
+  getAllPoints,
+  getAllBills,
+  getMemberOrderMenu,
+  getTotalPoint,
+  getAllMoneys,
+  getMembersListTop,
+  getMembersListBirthday,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
@@ -137,45 +137,45 @@ export default function MemberPage() {
   const [memberListBirthday, setMemberListBirthday] = useState();
   const [valueTopList, setValueTopList] = useState();
 
-	const { storeDetail, setStoreDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
 
   // console.log("valueTopList", valueTopList);
 
   // console.log({ startDate, endDate, startTime, endTime });
   // provider
 
-	// useEffect
-	useEffect(() => {
-		getMembersData();
-		getMemberCountData();
-		getMemberCountByfilterData();
-		getMemberBillCountData();
-		getMemberTotalMoneyData();
-		getAllPoint();
-		getAllBill();
-		getMemberOrderMenus();
-		getAllMoney();
-		getTotalPoints();
-		getMemberListBirthday();
-		getMemberListTop();
-		setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
-	}, []);
+  // useEffect
+  useEffect(() => {
+    getMembersData();
+    getMemberCountData();
+    getMemberCountByfilterData();
+    getMemberBillCountData();
+    getMemberTotalMoneyData();
+    getAllPoint();
+    getAllBill();
+    getMemberOrderMenus();
+    getAllMoney();
+    getTotalPoints();
+    getMemberListBirthday();
+    getMemberListTop();
+    setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
+  }, []);
 
-	useEffect(() => {
-		getMemberCountByfilterData();
-		getMemberBillCountData();
-		getMemberTotalMoneyData();
-		getTotalPoints();
-		getMemberOrderMenus();
-		getMemberTotalMoneyData();
-		getMemberBillCountData();
-	}, [endDate, startDate, endTime, startTime, selectedMenuIds]);
+  useEffect(() => {
+    getMemberCountByfilterData();
+    getMemberBillCountData();
+    getMemberTotalMoneyData();
+    getTotalPoints();
+    getMemberOrderMenus();
+    getMemberTotalMoneyData();
+    getMemberBillCountData();
+  }, [endDate, startDate, endTime, startTime, selectedMenuIds]);
 
-	useEffect(() => {
-		getMembersData();
-		getMemberListTop();
-		getMemberListBirthday();
-	}, [paginationMember]);
+  useEffect(() => {
+    getMembersData();
+    getMemberListTop();
+    getMemberListBirthday();
+  }, [paginationMember]);
 
   useEffect(() => {
     getMemberOrderMenus();
@@ -224,25 +224,25 @@ export default function MemberPage() {
   //   console.log(object)
   // }, [selectedMenuIds]);
 
-	// useEffect(() => {
-	//   console.log("memberOrders: ", memberOrders.data);
-	// }, [memberOrders]);
+  // useEffect(() => {
+  //   console.log("memberOrders: ", memberOrders.data);
+  // }, [memberOrders]);
 
-	const handleEditClick = (member) => {
-		setSelectedMember(member);
-		setPopup({ PopUpMemberEdit: true });
-	};
+  const handleEditClick = (member) => {
+    setSelectedMember(member);
+    setPopup({ PopUpMemberEdit: true });
+  };
 
-	const handleUpdate = () => {
-		getMembersData(); // Refresh the members data
-		getMemberListTop();
-		getMemberListBirthday();
-	};
+  const handleUpdate = () => {
+    getMembersData(); // Refresh the members data
+    getMemberListTop();
+    getMemberListBirthday();
+  };
 
-	const handleSelectMember = (memberOrders) => {
-		console.log("DATAID: ", selectedMemberOrders, memberOrders);
-		setSelectedMemberOrders(memberOrders);
-	};
+  const handleSelectMember = (memberOrders) => {
+    console.log("DATAID: ", selectedMemberOrders, memberOrders);
+    setSelectedMemberOrders(memberOrders);
+  };
 
   // function
   const getMembersData = async () => {
@@ -299,8 +299,7 @@ export default function MemberPage() {
     }
   };
 
-
-	// console.log(memberListTop);
+  // console.log(memberListTop);
 
   const getMemberListBirthday = async () => {
     setLoading(true);
@@ -328,42 +327,42 @@ export default function MemberPage() {
     }
   };
 
-	const getAllPoint = async () => {
-		try {
-			const { TOKEN } = await getLocalData();
-			const _data = await getAllPoints(TOKEN);
-			if (_data.error) throw new Error("error");
-			setallPoints(_data);
-		} catch (error) {}
-	};
+  const getAllPoint = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllPoints(TOKEN);
+      if (_data.error) throw new Error("error");
+      setallPoints(_data);
+    } catch (error) {}
+  };
 
-	const getAllBill = async () => {
-		try {
-			const { TOKEN } = await getLocalData();
-			const _data = await getAllBills(TOKEN);
-			if (_data.error) throw new Error("error");
-			setAllBills(_data);
-		} catch (error) {}
-	};
+  const getAllBill = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllBills(TOKEN);
+      if (_data.error) throw new Error("error");
+      setAllBills(_data);
+    } catch (error) {}
+  };
 
-	const getAllMoney = async () => {
-		try {
-			const { TOKEN } = await getLocalData();
-			const _data = await getAllMoneys(TOKEN);
-			if (_data.error) throw new Error("error");
-			setAllMoneys(_data);
-		} catch (error) {}
-	};
+  const getAllMoney = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      const _data = await getAllMoneys(TOKEN);
+      if (_data.error) throw new Error("error");
+      setAllMoneys(_data);
+    } catch (error) {}
+  };
 
-	const getTotalPoints = async () => {
-		try {
-			const { TOKEN, DATA } = await getLocalData();
-			const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-			const _data = await getTotalPoint(selectedMemberOrders, findBy, TOKEN);
-			if (_data.error) throw new Error("error");
-			setTotalPoints(_data?.totalPoint);
-		} catch (error) {}
-	};
+  const getTotalPoints = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const _data = await getTotalPoint(selectedMemberOrders, findBy, TOKEN);
+      if (_data.error) throw new Error("error");
+      setTotalPoints(_data?.totalPoint);
+    } catch (error) {}
+  };
 
   const getMemberOrderMenus = async () => {
     try {
@@ -392,10 +391,9 @@ export default function MemberPage() {
     } catch (err) {}
   };
 
-	const getMemberCountByfilterData = async () => {
-		const { TOKEN, DATA } = await getLocalData();
-		const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-
+  const getMemberCountByfilterData = async () => {
+    const { TOKEN, DATA } = await getLocalData();
+    const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
 
     const _data = await getMemberCount(findBy, TOKEN);
     if (_data.error) return;
@@ -417,11 +415,11 @@ export default function MemberPage() {
       TOKEN
     );
 
-		// console.log("MEMBERID: ", selectedMemberOrders);
+    // console.log("MEMBERID: ", selectedMemberOrders);
 
-		if (_data.error) return;
-		setMemberTotalMoney(_data.totalMoney);
-	};
+    if (_data.error) return;
+    setMemberTotalMoney(_data.totalMoney);
+  };
 
   const getMemberListBirthdayFilter = async () => {
     try {
@@ -442,156 +440,156 @@ export default function MemberPage() {
     } catch (err) {}
   };
 
-	return (
-		<>
-			<Box sx={{ padding: { md: 20, xs: 10 } }}>
-				<Breadcrumb>
-					<Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
-					<Breadcrumb.Item active>{t("report_member")}</Breadcrumb.Item>
-				</Breadcrumb>
-				<Alert
-					key="warning"
-					variant="warning"
-					style={{ display: "flex", justifyContent: "space-between" }}
-				>
-					{t("report_member_updates_last")}
-					<Button
-						variant="outline-primary"
-						style={{ display: "flex", gap: 10, alignItems: "center" }}
-						onClick={() => setPopup({ Export: true })}
-						// onClick={downloadExcel}
-						// disabled={loadingExportCsv}
-					>
-						<MdOutlineCloudDownload /> EXPORT
-					</Button>
-				</Alert>
-				<Box
-					sx={{
-						display: "grid",
-						gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
-						gap: 20,
-						gridTemplateRows: "masonry",
-						marginBottom: 20,
-					}}
-				>
-					<Card border="primary" style={{ margin: 0 }}>
-						<Card.Header
-							style={{
-								backgroundColor: COLOR_APP,
-								color: "#fff",
-								fontSize: 18,
-								fontWeight: "bold",
-							}}
-						>
-							{t("all_member")}
-						</Card.Header>
-						<Card.Body>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									fontSize: 32,
-									// fontWeight: 700
-								}}
-							>
-								{memberAllCount}
-							</div>
-						</Card.Body>
-					</Card>
-					<Card border="primary" style={{ margin: 0 }}>
-						<Card.Header
-							style={{
-								backgroundColor: COLOR_APP,
-								color: "#fff",
-								fontSize: 18,
-								fontWeight: "bold",
-							}}
-						>
-							ຈຳນວນເງີນທັງໝົດ
-						</Card.Header>
-						<Card.Body>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									fontSize: 32,
-									// fontWeight: 700
-								}}
-							>
-								{moneyCurrency(allMoneys?.moneyAmount)}{" "}
-								{storeDetail?.firstCurrency}
-							</div>
-						</Card.Body>
-					</Card>
-					<Card border="primary" style={{ margin: 0 }}>
-						<Card.Header
-							style={{
-								backgroundColor: COLOR_APP,
-								color: "#fff",
-								fontSize: 18,
-								fontWeight: "bold",
-							}}
-						>
-							ຈຳນວນບີນທັງໝົດ
-						</Card.Header>
-						<Card.Body>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									fontSize: 32,
-									// fontWeight: 700
-								}}
-							>
-								{allBills?.billAmount}
-							</div>
-						</Card.Body>
-					</Card>
-					<Card border="primary" style={{ margin: 0 }}>
-						<Card.Header
-							style={{
-								backgroundColor: COLOR_APP,
-								color: "#fff",
-								fontSize: 18,
-								fontWeight: "bold",
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								padding: 10,
-							}}
-						>
-							<span>{t("all_point")}</span>
+  return (
+    <>
+      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+        <Breadcrumb>
+          <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("report_member")}</Breadcrumb.Item>
+        </Breadcrumb>
+        <Alert
+          key="warning"
+          variant="warning"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          {t("report_member_updates_last")}
+          <Button
+            variant="outline-primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ Export: true })}
+            // onClick={downloadExcel}
+            // disabled={loadingExportCsv}
+          >
+            <MdOutlineCloudDownload /> EXPORT
+          </Button>
+        </Alert>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
+            gap: 20,
+            gridTemplateRows: "masonry",
+            marginBottom: 20,
+          }}
+        >
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("all_member")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+                {memberAllCount}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຈຳນວນເງີນທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+                {moneyCurrency(allMoneys?.moneyAmount)}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຈຳນວນບີນທັງໝົດ
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+                {allBills?.billAmount}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+              }}
+            >
+              <span>{t("all_point")}</span>
 
-							<Button
-								variant="dark"
-								bg="dark"
-								onClick={() =>
-									navigate("/reports/members-report/setting-point")
-								}
-							>
-								<FaCoins /> {t("point_setting")}
-							</Button>
-						</Card.Header>
-						<Card.Body>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-									fontSize: 32,
-									fontWeight: 400,
-								}}
-							>
-								{allPoints?.pointAmmount}
-							</div>
-						</Card.Body>
-					</Card>
-				</Box>
+              <Button
+                variant="dark"
+                bg="dark"
+                onClick={() =>
+                  navigate("/reports/members-report/setting-point")
+                }
+              >
+                <FaCoins /> {t("point_setting")}
+              </Button>
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 400,
+                }}
+              >
+                {allPoints?.pointAmmount}
+              </div>
+            </Card.Body>
+          </Card>
+        </Box>
 
-				{/* Tab Select */}
+        {/* Tab Select */}
 
         <Box
           sx={{
@@ -691,31 +689,29 @@ export default function MemberPage() {
           </Nav.Item>
         </Box>
 
-
-				{storeDetail.changeUi === "LIST_MEMBER" && (
-					<Card
-						border="primary"
-						style={{
-							margin: 0,
-							marginBottom: 20,
-							maxWidth: "95vw",
-							overflowX: "auto",
-						}}
-					>
-						<Card.Header
-							style={{
-								backgroundColor: COLOR_APP,
-								color: "#fff",
-								fontSize: 18,
-								fontWeight: "bold",
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								padding: 10,
-							}}
-						>
-							<span>{t("member_list")}</span>
-
+        {storeDetail.changeUi === "LIST_MEMBER" && (
+          <Card
+            border="primary"
+            style={{
+              margin: 0,
+              marginBottom: 20,
+              maxWidth: "95vw",
+              overflowX: "auto",
+            }}
+          >
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+              }}
+            >
+              <span>{t("member_list")}</span>
 
               <Button
                 variant="dark"
@@ -1092,7 +1088,7 @@ export default function MemberPage() {
         )}
 
         {/* filter */}
-		<div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <Button
             variant="outline-primary"
             size="small"
@@ -1345,79 +1341,79 @@ export default function MemberPage() {
         onUpdate={handleUpdate}
       />
 
-			<PopUpExportExcel
-				open={popup?.Export}
-				setPopup={setPopup}
-				onClose={() => setPopup()}
-			/>
+      <PopUpExportExcel
+        open={popup?.Export}
+        setPopup={setPopup}
+        onClose={() => setPopup()}
+      />
 
-			<PopUpMemberOrder
-				open={popup?.popupmemberorder}
-				onClose={() => setPopup()}
-				onSelectMember={handleSelectMember}
-				setData={setMemberName}
-			/>
-			<PopUpMemberOrderAll
-				open={popup?.popupmemberorderall}
-				onClose={() => setPopup()}
-				setSelectedMenu={setSelectedMenuIds}
-			/>
-		</>
-	);
+      <PopUpMemberOrder
+        open={popup?.popupmemberorder}
+        onClose={() => setPopup()}
+        onSelectMember={handleSelectMember}
+        setData={setMemberName}
+      />
+      <PopUpMemberOrderAll
+        open={popup?.popupmemberorderall}
+        onClose={() => setPopup()}
+        setSelectedMenu={setSelectedMenuIds}
+      />
+    </>
+  );
 }
 
 function ReportCard({ title, chart }) {
-	const { t } = useTranslation();
-	return (
-		<Card border="primary" style={{ margin: 0 }}>
-			<Card.Header
-				style={{
-					backgroundColor: COLOR_APP,
-					color: "#fff",
-					fontSize: 18,
-					fontWeight: "bold",
-				}}
-			>
-				{title} <BsInfoCircle />
-			</Card.Header>
-			<Card.Body>
-				{/* <Card.Title>Special title treatment</Card.Title>
+  const { t } = useTranslation();
+  return (
+    <Card border="primary" style={{ margin: 0 }}>
+      <Card.Header
+        style={{
+          backgroundColor: COLOR_APP,
+          color: "#fff",
+          fontSize: 18,
+          fontWeight: "bold",
+        }}
+      >
+        {title} <BsInfoCircle />
+      </Card.Header>
+      <Card.Body>
+        {/* <Card.Title>Special title treatment</Card.Title>
           <Card.Text>
             With supporting text below as a natural lead-in to additional content.
           </Card.Text> */}
-				<div
-					style={{
-						display: "flex",
-						flexWrap: "wrap",
-						alignItems: "center",
-						gap: 10,
-						padding: 10,
-					}}
-				>
-					<ButtonDropdown variant="outline-primary">
-						<option>{t("amount")}</option>
-						<option>{t("price")}</option>
-					</ButtonDropdown>
-					<Button variant="outline-primary">{t("chose_one_prod")}</Button>
-					<ButtonGroup aria-label="Basic example">
-						<Button variant="outline-primary">{"<<"}</Button>
-						<Button variant="outline-primary">01/03/2023 ~ 31/03/2023</Button>
-						<Button variant="outline-primary">{">>"}</Button>
-					</ButtonGroup>
-					<div>{t("compare")}</div>
-					<ButtonDropdown variant="outline-primary">
-						<option value={"test"}>{t("last_month")}</option>
-						<option value={"test2"}>{t("bg_year")}</option>
-						<option value={"test3"}>01/03/2023 ~ 31/03/2023</option>
-					</ButtonDropdown>
-					<Button variant="outline-primary">
-						<BsArrowCounterclockwise />
-					</Button>
-				</div>
-				<div>{chart}</div>
-			</Card.Body>
-		</Card>
-	);
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 10,
+            padding: 10,
+          }}
+        >
+          <ButtonDropdown variant="outline-primary">
+            <option>{t("amount")}</option>
+            <option>{t("price")}</option>
+          </ButtonDropdown>
+          <Button variant="outline-primary">{t("chose_one_prod")}</Button>
+          <ButtonGroup aria-label="Basic example">
+            <Button variant="outline-primary">{"<<"}</Button>
+            <Button variant="outline-primary">01/03/2023 ~ 31/03/2023</Button>
+            <Button variant="outline-primary">{">>"}</Button>
+          </ButtonGroup>
+          <div>{t("compare")}</div>
+          <ButtonDropdown variant="outline-primary">
+            <option value={"test"}>{t("last_month")}</option>
+            <option value={"test2"}>{t("bg_year")}</option>
+            <option value={"test3"}>01/03/2023 ~ 31/03/2023</option>
+          </ButtonDropdown>
+          <Button variant="outline-primary">
+            <BsArrowCounterclockwise />
+          </Button>
+        </div>
+        <div>{chart}</div>
+      </Card.Body>
+    </Card>
+  );
 }
 
 const CardHeader = styled.div`

@@ -65,7 +65,7 @@ export const useOrderState = () => {
         END_POINT +
           `/v3/orders?status=WAITING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
       );
-      console.log("orderDoing?.data", orderDoing?.data);
+      // console.log("orderDoing?.data", orderDoing?.data);
       setOrderDoing(orderDoing?.data);
       setOrderWaiting(orderWaiting?.data);
     } catch (err) {}
@@ -106,7 +106,7 @@ export const useOrderState = () => {
               }
               return false;
             });
-            console.log("findData", findData);
+            // console.log("findData", findData);
             if (!findData) {
               return e;
             } else {

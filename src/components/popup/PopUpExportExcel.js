@@ -55,7 +55,6 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
-
   const exportTopTen = async () => {
     setPopup({ printReportSale: true });
     let listTop = storeDetail.limitData ? storeDetail.limitData : 10;

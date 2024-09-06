@@ -31,6 +31,13 @@ export default function PopUpSetStartAndEndDate({
     setValueEndDate(endDate);
     setValueStartTime(startTime);
     setValueEndTime(endTime);
+    setStoreDetail({
+      ...storeDetail,
+      start_date: startDate,
+      end_date: endDate,
+      start_time: startTime,
+      end_time: endTime,
+    });
   }, [startDate, endDate, startTime, endTime]);
 
   const onGetToday = () => {

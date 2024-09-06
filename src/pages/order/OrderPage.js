@@ -280,7 +280,11 @@ export default function OrderPage() {
         >
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={() => onPrintForCher()}
+            onClick={async () => {
+              await onPrintForCher();
+              await handleUpdateOrderStatus("DOING");
+              getOrderWaitingAndDoingByStore();
+            }}
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}

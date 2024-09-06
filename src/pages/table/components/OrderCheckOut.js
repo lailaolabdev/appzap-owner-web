@@ -13,7 +13,6 @@ import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
 import styled from "styled-components";
 
-
 const OrderCheckOut = ({
   data = { orderId: [] },
   serviceCharge = 0,

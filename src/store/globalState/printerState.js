@@ -31,6 +31,9 @@ export const usePrintersState = ({ storeDetail }) => {
     findby += `storeId=${storeDetail?._id}`;
     const data = await getPrinters(findby);
     setPrinters(data);
+
+    // console.log("setPrinters", data);
+
     setPrintersLoading(false);
   };
   const getPrinterCounterState = async () => {
@@ -39,6 +42,9 @@ export const usePrintersState = ({ storeDetail }) => {
     findby += `storeId=${storeDetail?._id}`;
     const data = await getPrinterCounter(findby);
     setPrinterCounter(data);
+
+    // console.log("setPrinterCounter", data);
+
     setPrintersLoading(false);
   };
 

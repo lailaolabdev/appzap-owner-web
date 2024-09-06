@@ -14,7 +14,7 @@ import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
 import Axios from "axios";
 
-export const useTableState = (storeDetail) => {
+export const useTableState = () => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -38,32 +38,36 @@ export const useTableState = (storeDetail) => {
         let _userData = await getLocalData();
         let params = {
           status: true,
-          isCheckout: false, 
-          storeId: _userData?.DATA?.storeId
-        }
+          isCheckout: false,
+          storeId: _userData?.DATA?.storeId,
+        };
         if (query) {
-          params = { ...params, ...query }
+          params = { ...params, ...query };
         }
-        
+
         await Axios.get(`${END_POINT}/v3/codes`, {
-          params: params
-        })
-        .then((response) => {
+          params: params,
+        }).then((response) => {
           if (response?.status !== 200) return;
           setTableList(response?.data);
           let _openTable = response?.data?.filter((table) => {
             return table.isOpened && !table.isStaffConfirm;
           });
+
           setOpenTableData(_openTable);
-        })
+        });
       } catch (error) {
-        console.log('error', error)
+        console.log("error", error);
       }
     },
     []
-  ); // useEffect(() => {
+  );
+
+  // useEffect(() => {
   //   getTableDataStore();
-  // }, []);
+  //   console.log("UseEffect", storeDetail?.statusPrintBill);
+  // }, [storeDetail?.statusPrintBill !== undefined]);
+
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();
