@@ -41,14 +41,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -73,14 +73,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -105,14 +105,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -123,6 +123,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-daily/" + findBy;
+      console.log("URLDaily: ", url);
       const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
@@ -137,14 +138,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -155,6 +156,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-category/" + findBy;
+      console.log("URL: ", url);
       const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
@@ -169,14 +171,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -201,14 +203,14 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        await setStoreDetail({
-          ...storeDetail,
-          start_date: "",
-          end_date: "",
-          start_time: "",
-          end_time: "",
-          selectedTableIds: "",
-        });
+        // await setStoreDetail({
+        //   ...storeDetail,
+        //   start_date: "",
+        //   end_date: "",
+        //   start_time: "",
+        //   end_time: "",
+        //   selectedTableIds: "",
+        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
