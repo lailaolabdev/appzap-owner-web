@@ -151,7 +151,6 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
-    setStoreDetail,
   } = useStore();
 
   // console.log("actions", storeDetail?.actions);
