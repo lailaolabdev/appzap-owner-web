@@ -33,7 +33,8 @@ export const getMemberAllCount = async (storeId, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count?storeId=${storeId}`;
     const res = await axios.get(url, { headers: TOKEN });
-    return res?.data;
+    console.log("MEMBER>>>>>>>", res?.data?.data);
+    return res?.data?.data;
   } catch (error) {
     return { error: true };
   }
@@ -65,7 +66,7 @@ export const getMemberCount = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
-    return res?.data;
+    return res?.data?.data;
   } catch (error) {
     return error;
   }

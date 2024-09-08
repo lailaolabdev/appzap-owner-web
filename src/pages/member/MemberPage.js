@@ -386,6 +386,7 @@ export default function MemberPage() {
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
+      console.log("MEMBER5555>>>>>>:", _data?.count);
       setMemberAllCount(_data?.count);
       // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
