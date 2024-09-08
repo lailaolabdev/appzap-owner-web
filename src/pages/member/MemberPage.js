@@ -386,7 +386,7 @@ export default function MemberPage() {
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setMemberAllCount(_data.data.count);
+      setMemberAllCount(_data?.count);
       // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
   };
@@ -397,7 +397,7 @@ export default function MemberPage() {
 
     const _data = await getMemberCount(findBy, TOKEN);
     if (_data.error) return;
-    setMemberCount(_data.data.count);
+    setMemberCount(_data?.count);
   };
   const getMemberBillCountData = async () => {
     const { TOKEN, DATA } = await getLocalData();

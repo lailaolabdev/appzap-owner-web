@@ -720,12 +720,12 @@ function AddOrder() {
                 });
               }
               // print for flutter
-              onPrintForCher().then(() => {
-                onSelectTable(selectedTable);
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-              });
+              // onPrintForCher().then(() => {
+              //   onSelectTable(selectedTable);
+              //   navigate(
+              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+              //   );
+              // });
             } else {
               onSelectTable(selectedTable);
               navigate(

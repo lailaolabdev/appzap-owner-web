@@ -2,7 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import moment from "moment";
 
-export default function CombinedBillForChefNoCut({ storeDetail, selectedTable, table, selectedMenu }) {
+export default function CombinedBillForChefNoCut({
+  storeDetail,
+  selectedTable,
+  table,
+  selectedMenu,
+}) {
   return (
     <div style={{ background: "#fff" }}>
       <Container>
@@ -11,7 +16,7 @@ export default function CombinedBillForChefNoCut({ storeDetail, selectedTable, t
             tableLayout: "fixed",
             borderCollapse: "collapse",
             width: "100%",
-            lineHeight: "1.2", // Adjusted line height
+            lineHeight: 1.3,
           }}
         >
           {selectedMenu.map((val, i) => (
@@ -19,16 +24,27 @@ export default function CombinedBillForChefNoCut({ storeDetail, selectedTable, t
               {i === 0 && (
                 <tr>
                   <td
-                    colSpan={2}
+                    // colSpan={2}
                     style={{
                       background: "#000",
                       color: "#fff",
                       fontWeight: "bold",
                       fontSize: 20,
-                      padding: "5px 0", // Reduced padding
+                      lineHeight: "100%",
+                      padding: 5,
                     }}
                   >
                     {table?.tableId?.name || selectedTable?.name}
+                  </td>
+                  <td
+                    style={{
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    {val?.code || selectedTable?.code} | #
+                    {val?.queue || selectedTable?.queue}
                   </td>
                 </tr>
               )}
@@ -65,8 +81,16 @@ export default function CombinedBillForChefNoCut({ storeDetail, selectedTable, t
               )}
               {i === selectedMenu.length - 1 && (
                 <tr>
-                  <td colSpan={2} style={{ borderTop: "1px dotted #000", paddingTop: "5px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <td
+                    colSpan={2}
+                    style={{ borderTop: "1px dotted #000", paddingTop: "5px" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <div
                         style={{
                           color: "#000",
@@ -88,7 +112,6 @@ export default function CombinedBillForChefNoCut({ storeDetail, selectedTable, t
                   </td>
                 </tr>
               )}
-              
             </React.Fragment>
           ))}
         </table>
@@ -101,7 +124,7 @@ const Container = styled("div")({
   width: "100%",
   minWidth: "260px",
   maxWidth: "260px",
-//   border: "1px solid #000",
+  border: "1px solid #000",
   backgroundColor: "#fff",
   margin: 0, // Ensure no margin
   padding: 0, // Ensure no padding
