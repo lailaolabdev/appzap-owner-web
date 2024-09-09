@@ -616,8 +616,7 @@ export default function CheckOutPopup({
                 </div>
               </BoxMember>
             </div>
-            <div>{moneyCurrency(serviceAmount)}</div>
-            <>{storeDetail?.serviceChargePer}</>
+
             <div
               style={{
                 marginBottom: 10,
