@@ -19,6 +19,7 @@ import {
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
+import PopUpCreateServiceCharge from "../../components/popup/PopUpCreateServiceCharge";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -52,6 +53,20 @@ export default function ConfigPage() {
   }, []);
 
   // function
+  const handleCreateServiceCharge = async (serviceCharge) => {
+    try {
+      const { DATA } = await getLocalData();
+      const _res = await Axios.post(
+        END_POINT_SEVER + "/v4/create/service-charge",
+        { serviceCharge: parseInt(serviceCharge), storeId: DATA.storeId }
+      );
+      console.log("SUCCESS: ", _res);
+      getServiceCharge();
+      setPopup();
+    } catch (error) {
+      console.error("Failed to create service charge", error);
+    }
+  };
   const handleChangeTax = async (newTax) => {
     const { DATA } = await getLocalData();
     const _res = await Axios.put(
@@ -181,11 +196,21 @@ export default function ConfigPage() {
                     justifyContent: "center",
                   }}
                 >
-                  <Button
-                    onClick={() => setPopup({ PopUpEditServiceCharge: true })}
-                  >
-                    {t("edit")}
-                  </Button>
+                  {serviceCharge ? (
+                    <Button
+                      onClick={() => setPopup({ PopUpEditServiceCharge: true })}
+                    >
+                      {t("edit")}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() =>
+                        setPopup({ PopUpCreateServiceCharge: true })
+                      }
+                    >
+                      {t("create")}
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card.Body>
@@ -465,6 +490,11 @@ export default function ConfigPage() {
         onClose={() => setPopup()}
         prevServiceCharge={serviceCharge}
         onSubmit={handleChangeServiceCharge}
+      />
+      <PopUpCreateServiceCharge
+        open={popup?.PopUpCreateServiceCharge}
+        onClose={() => setPopup()}
+        onSubmit={handleCreateServiceCharge}
       />
     </>
   );

@@ -2460,6 +2460,7 @@ export default function TableList() {
         }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
+        // serviceCharge={storeDetail}
         // editMode={select}
       />
 

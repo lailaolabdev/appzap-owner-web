@@ -57,7 +57,9 @@ const OrderCheckOut = ({
     }
 
     // Calculate service charge
-    const serviceChargeAmount = isServiceChargeEnabled ? _total * 0.1 : 0; // 10% if enabled
+    const serviceChargeAmount = isServiceChargeEnabled
+      ? _total * (serviceCharge / 100)
+      : 0; // 10% if enabled
     setServiceAmount(serviceChargeAmount);
     setTotal(_total);
   };
@@ -96,7 +98,10 @@ const OrderCheckOut = ({
 
   const getToggleServiceCharge = (e) => {
     setIsServiceChargeEnabled(e.target.checked);
-    setStoreDetail({ ...storeDetail, serviceChargePer: serviceCharge });
+    setStoreDetail({
+      ...storeDetail,
+      serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
+    });
   };
 
   console.log("STORE DETAIL: ", storeDetail?.serviceChargePer);
@@ -222,7 +227,7 @@ const OrderCheckOut = ({
                 </td>
                 <td colSpan="1">
                   {moneyCurrency(
-                    total * (taxPercent * 0.01 + 1) + serviceAmount
+                    Math.floor(total * (taxPercent * 0.01 + 1) + serviceAmount)
                   )}{" "}
                   {storeDetail?.firstCurrency}
                 </td>
@@ -265,29 +270,34 @@ const OrderCheckOut = ({
                 <b>
                   {data && data?.discountType === "LAK"
                     ? moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          data?.discount >
-                          0
-                          ? (total + serviceAmount) * (taxPercent * 0.01 + 1) -
-                              data?.discount
-                          : 0
+                        Math.floor(
+                          total * (taxPercent * 0.01 + 1) +
+                            serviceAmount -
+                            data?.discount >
+                            0
+                            ? (total + serviceAmount) *
+                                (taxPercent * 0.01 + 1) -
+                                data?.discount
+                            : 0
+                        )
                       )
                     : moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          ((total + serviceAmount) *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                            100 >
-                          0
-                          ? total * (taxPercent * 0.01 + 1) +
-                              serviceAmount -
-                              ((total + serviceAmount) *
-                                (taxPercent * 0.01 + 1) *
-                                data?.discount) /
-                                100
-                          : 0
+                        Math.floor(
+                          total * (taxPercent * 0.01 + 1) +
+                            serviceAmount -
+                            ((total + serviceAmount) *
+                              (taxPercent * 0.01 + 1) *
+                              data?.discount) /
+                              100 >
+                            0
+                            ? total * (taxPercent * 0.01 + 1) +
+                                serviceAmount -
+                                ((total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) *
+                                  data?.discount) /
+                                  100
+                            : 0
+                        )
                       )}
                 </b>
               </span>

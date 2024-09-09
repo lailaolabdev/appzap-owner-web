@@ -124,7 +124,9 @@ export default function CheckOutPopup({
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
-  const totalBill = totalBillDefualt + taxAmount;
+  const serviceAmount =
+    (totalBillDefualt * storeDetail?.serviceChargePer) / 100;
+  const totalBill = totalBillDefualt + taxAmount + serviceAmount;
 
   useEffect(() => {
     if (!open) return;
@@ -174,7 +176,7 @@ export default function CheckOutPopup({
       setCash();
       setRateCurrency(1);
     }
-  }, [selectCurrency, selectCurrency]);
+  }, [selectCurrency, selectCurrency, storeDetail?.serviceChargePer]);
   useEffect(() => {
     if (!open) return;
     const amount = cashCurrency * rateCurrency;
@@ -195,7 +197,7 @@ export default function CheckOutPopup({
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill]);
+  }, [dataBill, storeDetail?.serviceChargePer]);
   // function
   const getDataCurrency = async () => {
     try {
@@ -214,6 +216,12 @@ export default function CheckOutPopup({
   };
   const _checkBill = async () => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+
+    const serviceChargePer = storeDetail?.serviceChargePer;
+    const serviceChargeAmount = Math.floor(
+      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
+    );
+    console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -227,6 +235,8 @@ export default function CheckOutPopup({
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
+            serviceChargePercent: serviceChargePer,
+            serviceChargeAmount: serviceChargeAmount,
             customerId: selectDataOpption?._id,
             userNanme: selectDataOpption?.username,
             phone: selectDataOpption?.phone,
@@ -247,12 +257,7 @@ export default function CheckOutPopup({
       )
       .then(async function (response) {
         setSelectedTable();
-        const localZone = localStorage.getItem("selectedZone");
-        if (localZone) {
-          getTableDataStore({ zone: localZone });
-        } else {
-          getTableDataStore();
-        }
+        getTableDataStore();
         setCashCurrency();
         setTab("cash");
         setSelectCurrency("LAK");
@@ -380,7 +385,6 @@ export default function CheckOutPopup({
             ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
-
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -476,14 +480,18 @@ export default function CheckOutPopup({
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
+                      Math.floor(
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                      )
                     )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
+                      Math.floor(
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0
+                      )
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
@@ -608,7 +616,8 @@ export default function CheckOutPopup({
                 </div>
               </BoxMember>
             </div>
-
+            <div>{moneyCurrency(serviceAmount)}</div>
+            <>{storeDetail?.serviceChargePer}</>
             <div
               style={{
                 marginBottom: 10,

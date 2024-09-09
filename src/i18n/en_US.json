@@ -122,6 +122,8 @@
   "bookingDetail": "Booking detail",
   "bookingSuccess": "Booking success",
   "edit": "Edit",
+  "create": "Create",
+  "create_service_charge": "Create service charge",
   "bookingConfirm": "Booking confirm",
   "date&timeBooking": "Date & time booking",
   "numberOfPeopleBooking": "Number of people booking",

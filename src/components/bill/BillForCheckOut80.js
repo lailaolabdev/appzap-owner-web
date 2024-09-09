@@ -41,7 +41,7 @@ export default function BillForCheckOut80({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
     // console.log("currencyData: ", currencyData);
-  }, [dataBill, taxPercent]);
+  }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
 
   useEffect(() => {
     _calculateTotal();
@@ -72,7 +72,10 @@ export default function BillForCheckOut80({
     }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
-    setServiceChargeAmount((_total * storeDetail?.serviceChargePer) / 100);
+    const serviceChargeTotal = Math.floor(
+      (_total * storeDetail?.serviceChargePer) / 100
+    );
+    setServiceChargeAmount(serviceChargeTotal);
   };
 
   const getDataCurrency = async () => {
@@ -290,7 +293,7 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
               {moneyCurrency(
-                totalAfterDiscount + taxAmount + serviceChargeAmount
+                Math.floor(totalAfterDiscount + taxAmount + serviceChargeAmount)
               )}
             </div>
           </Col>

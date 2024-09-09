@@ -103,6 +103,8 @@
   "bookingDetail": "ລາຍລະອຽດການຈອງ",
   "bookingSuccess": "ສຳເລັດການຈອງ",
   "edit": "ແກ້ໄຂ",
+  "create": "ສ້າງ",
+  "create_service_charge": "ສ້າງເຊີວິດຊາດຣ",
   "bookingConfirm": "ຍືນຍັນການຈອງ",
   "date&timeBooking": "ວັນ - ເວລາທີ່ຈອງ",
   "numberOfPeopleBooking": "ຈຳນວນຄົນທີ່ຈະມາ",
