@@ -196,21 +196,11 @@ export default function ConfigPage() {
                     justifyContent: "center",
                   }}
                 >
-                  {serviceCharge ? (
-                    <Button
-                      onClick={() => setPopup({ PopUpEditServiceCharge: true })}
-                    >
-                      {t("edit")}
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={() =>
-                        setPopup({ PopUpCreateServiceCharge: true })
-                      }
-                    >
-                      {t("create")}
-                    </Button>
-                  )}
+                  <Button
+                    onClick={() => setPopup({ PopUpEditServiceCharge: true })}
+                  >
+                    {t("edit")}
+                  </Button>
                 </div>
               </div>
             </Card.Body>
