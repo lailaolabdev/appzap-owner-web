@@ -106,7 +106,7 @@ export default function ExpendList() {
       filterByPayment: filterByPayment,
     };
 
-    console.log("parame?.skip:::", parame?.skip);
+    // console.log("parame?.skip:::", parame?.skip);
 
     fetchExpend(
       filterByYear,
@@ -217,13 +217,13 @@ export default function ExpendList() {
       if (filterByYear) findby += `&year=${filterByYear}`;
       if (filterByMonth) findby += `&month=${filterByMonth}`;
       if (dateStart && dateEnd)
-        findby += `&date_gte==${dateStart}&date_lt=${moment(
-          moment(dateEnd).add(1, "days")
+        findby += `&date_gte=${dateStart}&date_lt=${moment(
+          moment(dateEnd)
         ).format("YYYY/MM/DD")}`;
       if (filterByPayment !== "ALL" && filterByPayment !== undefined)
         findby += `&payment=${filterByPayment}`;
 
-      console.log("findby::", findby);
+      // console.log("findby::", findby);
 
       let header = await getHeadersAccount();
       const headers = {
