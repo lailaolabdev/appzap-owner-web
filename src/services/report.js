@@ -6,7 +6,11 @@ export const getReports = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/report-daily/${storeId}${findBy}`;
-    const res = await axios.post(url, { tableIds: tableIds }, { headers: _header });
+    const res = await axios.post(
+      url,
+      { tableIds: tableIds },
+      { headers: _header }
+    );
     return res.data;
   } catch (error) {
     return error;
@@ -17,13 +21,17 @@ export const getSalesInformationReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/sales-information-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { tableIds }, { tableIds }, { headers: _header });
+    const res = await axios.post(
+      url,
+      { tableIds },
+      { tableIds },
+      { headers: _header }
+    );
     return res.data;
   } catch (error) {
     return error;
   }
 };
-
 
 export const getTotalBillActiveReport = async (storeId, findBy, tableIds) => {
   try {
@@ -52,7 +60,7 @@ export const getMenuReport = async (storeId, findBy, tableIds) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/menu-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
-    console.log('url: ', url)
+    console.log("MENU REPORT DATA: ", url);
     return res.data;
   } catch (error) {
     return error;
@@ -65,7 +73,6 @@ export const getCategoryReport = async (storeId, findBy, tableIds) => {
     const url = `${END_POINT_APP}/v4/category-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
-    
   } catch (error) {
     return error;
   }
@@ -106,7 +113,11 @@ export const getActiveBillReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/active-bill-report/${storeId}${findBy}`;
-    const res = await axios.post(url, { tableIds: tableIds ? tableIds : [] }, { headers: _header });
+    const res = await axios.post(
+      url,
+      { tableIds: tableIds ? tableIds : [] },
+      { headers: _header }
+    );
     return res.data;
   } catch (error) {
     return error;
