@@ -4,7 +4,7 @@ import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
-export default function PopUpSetStartAndEndDate({
+export default function PopUpSetStartAndEndDateFilterExport({
   open,
   onClose,
   startDate,
@@ -218,10 +218,10 @@ export default function PopUpSetStartAndEndDate({
             setEndTime(valueEndTime);
             setStoreDetail({
               ...storeDetail,
-              startDay: valueStartDate,
-              endDay: valueEndDate,
-              startTime: valueStartTime,
-              endTime: valueEndTime,
+              startDayFilter: valueStartDate,
+              endDayFilter: valueEndDate,
+              startTimeFilter: valueStartTime,
+              endTimeFilter: valueEndTime,
             });
             onClose();
           }}

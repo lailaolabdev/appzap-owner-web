@@ -278,7 +278,7 @@ export default function TableList() {
     const getDataServiceCharge = async () => {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+        `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
       );
       setServiceChargePercent(_res?.data?.serviceCharge);
     };

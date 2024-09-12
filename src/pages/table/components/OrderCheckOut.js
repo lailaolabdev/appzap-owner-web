@@ -104,7 +104,7 @@ const OrderCheckOut = ({
     });
   };
 
-  console.log("STORE DETAIL: ", storeDetail?.serviceChargePer);
+  // console.log("STORE DETAIL: ", storeDetail?.serviceChargePer);
 
   return (
     <>
