@@ -29,8 +29,8 @@ export const END_POINT_SERVER_BUNSI = "https://accounting.lailaolab.la/";
 // ------------EXPORT END POINT--------------
 const production_export = "https://api.appzap.la";
 const dev_export = "https://api.appzap.la:17070";
-const dev1 = "http://localhost:7070";
-export const END_POINT_EXPORT = isProduction ? production_export : dev1;
+// const dev1 = "http://localhost:7070";
+export const END_POINT_EXPORT = isProduction ? production_export : dev_export;
 
 // ------------------------------------------
 
