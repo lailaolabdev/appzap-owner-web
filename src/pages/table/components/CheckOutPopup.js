@@ -47,7 +47,7 @@ export default function CheckOutPopup({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail, profile } = useStore();
+  const { storeDetail, setStoreDetail, profile } = useStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -111,7 +111,7 @@ export default function CheckOutPopup({
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data?.data?.data);
+      setMembersData(_data?.data);
     } catch (err) {}
   };
 
@@ -221,6 +221,7 @@ export default function CheckOutPopup({
     const serviceChargeAmount = Math.floor(
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
+
     console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
@@ -277,12 +278,18 @@ export default function CheckOutPopup({
           showConfirmButton: false,
           timer: 1800,
         });
+
+        setStoreDetail({
+          ...storeDetail,
+          serviceChargePer: 0,
+          isServiceCharge: false,
+        });
       })
       .catch(function (error) {
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  // console.log('transfer', transfer)
+  console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();

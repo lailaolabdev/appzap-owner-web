@@ -244,6 +244,11 @@ export default function TableList() {
       setZoneId(localZone);
       getTableDataStore({ zone: localZone });
     }
+
+    setStoreDetail({
+      ...storeDetail,
+      serviceChargePer: 0,
+    });
   }, []);
 
   // useEffect(() => {
@@ -1520,7 +1525,7 @@ export default function TableList() {
         method: "get",
         url: END_POINT_SEVER + `/v3/zones`,
         params: {
-          storeId: params?.id,
+          storeId: storeDetail?._id,
           limit: 100,
         },
         headers: headers,
