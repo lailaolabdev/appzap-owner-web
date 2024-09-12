@@ -7,9 +7,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "./index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faTrashAlt,
-	faEdit,
-	faQrcode,
+  faTrashAlt,
+  faEdit,
+  faQrcode,
 } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
@@ -24,11 +24,15 @@ export default function SettingTable() {
   const { t } = useTranslation();
   const [data, setData] = useState("No result");
   const params = useParams();
-  const { tableListCheck, setTableListCheck, getTableDataStoreList } =
-    useStore();
+  const {
+    tableListCheck,
+    setTableListCheck,
+    getTableDataStoreList,
+    storeDetail,
+  } = useStore();
   useEffect(() => {
     getTableDataStoreList();
-    getDataZone()
+    getDataZone();
   }, []);
 
   const [show, setShow] = useState(false);
@@ -42,27 +46,27 @@ export default function SettingTable() {
 
   const getDataZone = async () => {
     try {
-        let header = await getHeaders();
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: header.authorization,
-        };
-        const data = await axios({
-          method: "get",
-          url: END_POINT_SEVER + `/v3/zones`,
-          params: {
-            storeId: params?.id,
-            limit: 100,
-          },
-          headers: headers,
-        });
-        if (data?.status == 200) {
-            setZoneData(data?.data?.data);
-        }
+      let header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const data = await axios({
+        method: "get",
+        url: END_POINT_SEVER + `/v3/zones`,
+        params: {
+          storeId: storeDetail?._id,
+          limit: 100,
+        },
+        headers: headers,
+      });
+      if (data?.status == 200) {
+        setZoneData(data?.data?.data);
+      }
     } catch (err) {
-        console.log("err:", err);
+      console.log("err:", err);
     }
-};
+  };
 
   const _createTable = async () => {
     let header = await getHeaders();
@@ -88,13 +92,13 @@ export default function SettingTable() {
       });
       handleClose();
       if (createTable?.data?.message === "INVALID_NAME") {
-        warningAlert(`${t('table_exist')}`);
+        warningAlert(`${t("table_exist")}`);
       } else {
         getTableDataStoreList();
-        successAdd(`${t('table_add_success')}`);
+        successAdd(`${t("table_add_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('table_add_fail')}`);
+      errorAdd(`${t("table_add_fail")}`);
     }
   };
   const [show4, setShow4] = useState(false);
@@ -108,7 +112,7 @@ export default function SettingTable() {
     };
     try {
       if (!selectTatle?.name) {
-        warningAlert(`${t('p_fill_code')}`);
+        warningAlert(`${t("p_fill_code")}`);
         return;
       }
       const createTable = await axios({
@@ -127,19 +131,19 @@ export default function SettingTable() {
       });
       setShow4(false);
       if (createTable?.data?.message === "INVALID_NAME") {
-        warningAlert(`${t('table_exist')}`);
+        warningAlert(`${t("table_exist")}`);
       } else {
         getTableDataStoreList();
-        successAdd(`${t('table_add_success')}`);
+        successAdd(`${t("table_add_success")}`);
       }
     } catch (err) {
-      errorAdd(`${t('table_add_fail')}`);
+      errorAdd(`${t("table_add_fail")}`);
     }
   };
   const _changeStatusTable = async (data) => {
     try {
       if (data?.isOpened) {
-        errorAdd(`${t('can_not_open_table')}`);
+        errorAdd(`${t("can_not_open_table")}`);
         return;
       }
       let header = await getHeaders();
@@ -192,7 +196,7 @@ export default function SettingTable() {
     };
     if (dateDelete?.isOpened === true) {
       handleClose3();
-      warningAlert(t('delete_using_table_fail'));
+      warningAlert(t("delete_using_table_fail"));
       return;
     }
     const resData = await axios({
@@ -203,7 +207,7 @@ export default function SettingTable() {
     if (resData.status < 300) {
       handleClose3();
       setTableListCheck((prev) => prev.filter((e) => e._id != dateDelete?._id));
-      successAdd(t('delete_success'));
+      successAdd(t("delete_success"));
     }
   };
   return (
@@ -220,7 +224,7 @@ export default function SettingTable() {
             }}
             onClick={handleShow}
           >
-            {t('add_table')}
+            {t("add_table")}
           </button>
         </div>
         <div style={{ height: 20 }}></div>
@@ -229,12 +233,12 @@ export default function SettingTable() {
             <thead>
               <tr>
                 {/* <th scope="col">#</th> */}
-                <th scope="col">{t('code')}</th>
-                <th scope="col">{t('zone')}</th>
+                <th scope="col">{t("code")}</th>
+                <th scope="col">{t("zone")}</th>
                 {/* <th scope="col">ການເປີດ/ປິດ</th> */}
                 {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
                 <th scope="col" style={{ textAlign: "right" }}>
-                  {t('manage')}
+                  {t("manage")}
                 </th>
               </tr>
             </thead>
@@ -251,7 +255,7 @@ export default function SettingTable() {
                         <span style={{ color: "red" }}> - (ປິດ)</span>
                       )} */}
                     </td>
-                    <td>{table?.zone?.name ?? '-'}</td>
+                    <td>{table?.zone?.name ?? "-"}</td>
                     {/* <td>
                       <label className="switch">
                         <input
@@ -262,7 +266,7 @@ export default function SettingTable() {
                         <span className="slider round"></span>
                       </label>
                     </td> */}
-										{/* <td
+                    {/* <td
                       style={{
                         color: table?.isOpened === true ? "green" : "red",
                       }}
@@ -323,57 +327,59 @@ export default function SettingTable() {
       </div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('add_table')}</Modal.Title>
+          <Modal.Title>{t("add_table")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t('no')}</Form.Label>
+            <Form.Label>{t("no")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="number"
-              placeholder={t('fill_table_no')}
+              placeholder={t("fill_table_no")}
               onChange={(e) => setSortNumber(e?.target?.value)}
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t('code')}</Form.Label>
+            <Form.Label>{t("code")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
-              placeholder={t('fill_code')}
+              placeholder={t("fill_code")}
               onChange={(e) => setTableNumber(e?.target?.value)}
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>{t('fill_zone')}</Form.Label>
+            <Form.Label>{t("fill_zone")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
-              as='select'
+              as="select"
               onChange={(e) => setZoneId(e?.target?.value)}
             >
-              <option value="">{t('choose_zone')}</option>
+              <option value="">{t("choose_zone")}</option>
               {zoneData?.map((item, index) => (
-                <option key={index} value={item?._id}>{item?.name}</option>
+                <option key={index} value={item?._id}>
+                  {item?.name}
+                </option>
               ))}
             </Form.Control>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            {t('cancel')}
+            {t("cancel")}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _createTable()}
           >
-            {t('save')}
+            {t("save")}
           </Button>
         </Modal.Footer>
       </Modal>
       {/* ===== edit ===== */}
       <Modal show={show4} onHide={() => setShow4(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('edit_table')}</Modal.Title>
+          <Modal.Title>{t("edit_table")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -381,7 +387,7 @@ export default function SettingTable() {
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="number"
-              placeholder={t('fill_table_no')}
+              placeholder={t("fill_table_no")}
               value={selectTatle?.sort || 0}
               onChange={(e) =>
                 setSelectTatle({ ...selectTatle, sort: e.target.value || 0 })
@@ -389,11 +395,11 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t('code')}</Form.Label>
+            <Form.Label>{t("code")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
-              placeholder={t('fill_code')}
+              placeholder={t("fill_code")}
               value={selectTatle?.name}
               onChange={(e) =>
                 setSelectTatle({ ...selectTatle, name: e?.target?.value })
@@ -401,20 +407,24 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t('fill_zone')}</Form.Label>
+            <Form.Label>{t("fill_zone")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
-              as='select'
+              as="select"
               value={selectTatle?.zone}
-              onChange={(e) => setSelectTatle({ ...selectTatle, zone: e?.target?.value })}
+              onChange={(e) =>
+                setSelectTatle({ ...selectTatle, zone: e?.target?.value })
+              }
             >
-              <option value="">{t('choose_zone')}</option>
+              <option value="">{t("choose_zone")}</option>
               {zoneData?.map((item, index) => (
-                <option key={index} value={item?._id}>{item?.name}</option>
+                <option key={index} value={item?._id}>
+                  {item?.name}
+                </option>
               ))}
             </Form.Control>
           </Form.Group>
-          <div>{t('enable')}</div>
+          <div>{t("enable")}</div>
           <label className="switch">
             <input
               type="checkbox"
@@ -435,7 +445,7 @@ export default function SettingTable() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => _updateTable()}
           >
-            {t('save')}
+            {t("save")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -448,39 +458,39 @@ export default function SettingTable() {
       />
       {/* ===== qr ===== */}
 
-			<Modal show={popup?.qr} onHide={() => setPopup()} centered>
-				<Modal.Header closeButton>
-					<Modal.Title>QR </Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					<QrReader
-						onResult={(result, error) => {
-							console.log(result);
-							if (!!result) {
-								axios
-									.put(result?.text, {
-										type: "LINK",
-										"details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
-									})
-									.then(() => {
-										setPopup();
-									})
-									.catch((err) => {
-										console.log(err);
-									});
-							}
+      <Modal show={popup?.qr} onHide={() => setPopup()} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>QR </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <QrReader
+            onResult={(result, error) => {
+              console.log(result);
+              if (!!result) {
+                axios
+                  .put(result?.text, {
+                    type: "LINK",
+                    "details.redirect": `${END_POINT_WEB_CLIENT}${selectTatle?.storeId}?tableId=${selectTatle?.tableId}`,
+                  })
+                  .then(() => {
+                    setPopup();
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
 
-							// if (!!error) {
-							//   console.info(error);
-							// }
-						}}
-						constraints={{
-							facingMode: "environment",
-						}}
-						style={{ width: "100%" }}
-					/>
-				</Modal.Body>
-			</Modal>
-		</div>
-	);
+              // if (!!error) {
+              //   console.info(error);
+              // }
+            }}
+            constraints={{
+              facingMode: "environment",
+            }}
+            style={{ width: "100%" }}
+          />
+        </Modal.Body>
+      </Modal>
+    </div>
+  );
 }

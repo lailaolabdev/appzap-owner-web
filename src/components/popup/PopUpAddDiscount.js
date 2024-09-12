@@ -56,7 +56,7 @@ export default function PopUpAddDiscount({
   }, [discountCategory]);
 
   useEffect(() => {
-    getCategoryType();
+    getCategoryType(storeDetail?._id);
   }, [open]);
 
   const setDiscountBill = async () => {
@@ -83,11 +83,11 @@ export default function PopUpAddDiscount({
     }
   };
 
-  const getCategoryType = async () => {
+  const getCategoryType = async (id) => {
     try {
       const res = await axios({
         method: "GET",
-        url: END_POINT_SEVER + `/v3/categoroy-type`,
+        url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
       });
       console.log("CATEGORYTYPE: ", res.data.data);
       setCategorysType(res?.data?.data);

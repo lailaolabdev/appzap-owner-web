@@ -101,10 +101,11 @@ const OrderCheckOut = ({
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
+      isServiceCharge: e.target.checked,
     });
   };
 
-  // console.log("STORE DETAIL: ", storeDetail?.serviceChargePer);
+  console.log("STORE DETAIL: ", storeDetail?.isServiceCharge);
 
   return (
     <>
@@ -142,7 +143,7 @@ const OrderCheckOut = ({
             <Form.Check
               style={{ margin: 2 }}
               type="switch"
-              checked={isServiceChargeEnabled}
+              checked={storeDetail?.isServiceCharge}
               id={"switch-audio"}
               onChange={(e) => getToggleServiceCharge(e)}
             />
@@ -204,7 +205,7 @@ const OrderCheckOut = ({
                     : storeDetail?.firstCurrency}
                 </td>
               </tr>
-              {isServiceChargeEnabled && (
+              {storeDetail?.isServiceCharge && (
                 <tr>
                   <td colSpan="4" style={{ textAlign: "center" }}>
                     {t("service_charge")}:
