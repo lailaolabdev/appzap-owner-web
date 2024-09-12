@@ -284,8 +284,7 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-              {t("total")} + {t("vat")} {taxPercent}%{" "}
-              {storeDetail?.firstCurrency}:
+              {t("total")} + {"ອມພ"} {taxPercent}% {storeDetail?.firstCurrency}:
             </div>
           </Col>
           <Col>
