@@ -80,6 +80,9 @@ export default function ExpendList() {
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
 
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+
   // const startDate = new Date(year, month, 1);
   // const endDate = new Date(year, month + 1, 0);
   const time = new Date();
@@ -217,9 +220,10 @@ export default function ExpendList() {
       if (filterByYear) findby += `&year=${filterByYear}`;
       if (filterByMonth) findby += `&month=${filterByMonth}`;
       if (dateStart && dateEnd)
-        findby += `&date_gte=${dateStart}&date_lt=${moment(
-          moment(dateEnd)
-        ).format("YYYY/MM/DD")}`;
+        findby += `&date_gte=${moment(moment(dateStart)).format("YYYY/MM/DD")}`;
+      findby += `&date_lt=${moment(moment(dateEnd)).format("YYYY/MM/DD")}`;
+      findby += `&startTime=${startTime}&endTime=${endTime}`;
+
       if (filterByPayment !== "ALL" && filterByPayment !== undefined)
         findby += `&payment=${filterByPayment}`;
 
@@ -249,7 +253,8 @@ export default function ExpendList() {
       })
         .then((res) => {
           setTotalReport(res?.data?.data);
-          console.log(res?.data?.data);
+          // setExpendData(res?.data?.expends);
+          // console.log("Reports", res?.data?.expends);
           setExpendGraphData(res?.data?.data?.chartExpend);
           setIsLoading(false);
         })
@@ -710,8 +715,8 @@ export default function ExpendList() {
           </thead>
           <tbody>
             {expendData?.data &&
-              expendData?.data.length > 0 &&
-              expendData?.data.map((item, index) => (
+              expendData?.data?.length > 0 &&
+              expendData?.data?.map((item, index) => (
                 <tr
                   key={"expend" + index}
                   style={{ cursor: "pointer" }}
