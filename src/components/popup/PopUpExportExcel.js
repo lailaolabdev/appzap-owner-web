@@ -18,10 +18,11 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const { t } = useTranslation();
 
   const exportAllMember = async () => {
+    console.log("exportAllMember", storeDetail?.startDateMember);
     setPopup({ printReportSale: true });
     try {
       // const findBy = `&startDate=${storeDetail?.startDateMember}&endDate=${storeDetail?.endDateMember}&&startTime=${storeDetail?.startTimeMember}&endTime=${storeDetail?.endTimeMember}`;
-      let findBy;
+      let findBy = "";
       if (
         storeDetail?.startDateMember &&
         storeDetail?.endDateMember &&
@@ -55,6 +56,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
+
   const exportTopTen = async () => {
     setPopup({ printReportSale: true });
     let listTop = storeDetail.limitData ? storeDetail.limitData : 10;
@@ -89,7 +91,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
   const exportOrders = async () => {
     setPopup({ printReportStaffSale: true });
     try {
-      // let findBy = `&storeId=${storeDetail?._id}&startDate=${storeDetail?.startDayFilter}&endDate=${storeDetail?.endDayFilter}&startTime=${storeDetail?.startTimeFilter}&endTime=${storeDetail?.endTimeFilter}`;
+      // let findBy = `&storeId=${storeDetail?._id}&startDate=${storeDetail?.startDay}&endDate=${storeDetail?.endDay}&startTime=${storeDetail?.startTime}&endTime=${storeDetail?.endTime}`;
       let findBy = "?";
       findBy += `storeId=${storeDetail?._id}&`;
       if (storeDetail?.selectedMemberID) {
@@ -97,15 +99,15 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
       }
 
       if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
+        storeDetail?.startDay &&
+        storeDetail?.endDay &&
+        storeDetail?.startTime &&
+        storeDetail?.endTime
       ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+        findBy += `startDate=${storeDetail?.startDay}&`;
+        findBy += `endDate=${storeDetail?.endDay}&`;
+        findBy += `startTime=${storeDetail?.startTime}&`;
+        findBy += `endTime=${storeDetail?.endTime}`;
       }
 
       const url = END_POINT_EXPORT + "/export/member-order-customer" + findBy;
@@ -127,10 +129,10 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         // setStoreDetail({
         //   ...storeDetail,
-        //   startDayFilter: "",
-        //   endDayFilter: "",
-        //   startTimeFilter: "",
-        //   endTimeFilter: "",
+        //   startDay: "",
+        //   endDay: "",
+        //   startTime: "",
+        //   endTime: "",
         //   selectedMemberID: "",
         // });
       }

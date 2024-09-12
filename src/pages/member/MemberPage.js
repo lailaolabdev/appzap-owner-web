@@ -72,7 +72,7 @@ import { set } from "lodash";
 import EmptyImage from "../../image/empty-removebg.png";
 import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartAndEndDateMember";
 
-const limitData = 10;
+let limitData = 10;
 
 export default function MemberPage() {
   const { t } = useTranslation();
@@ -185,25 +185,7 @@ export default function MemberPage() {
   }, [selectedMemberOrders]);
 
   useEffect(() => {
-    getMembersData();
-  }, [
-    endDateMember,
-    startDateMember,
-    endTimeMember,
-    startTimeMember,
-    // filterValue,
-  ]);
-
-  useEffect(() => {
-    getMemberListTop();
-  }, [endDateTop, startDateTop, endTimeTop, startTimeTop, valueTopList]);
-
-  useEffect(() => {
-    getMemberListBirthday();
-  }, [endDateBirthDay, startDateBirthDay, endTimeBirthDay, startTimeBirthDay]);
-
-  useEffect(() => {
-    getMembersData();
+    getMembersDataSearch();
   }, [
     endDateMember,
     startDateMember,
@@ -240,12 +222,37 @@ export default function MemberPage() {
   };
 
   const handleSelectMember = (memberOrders) => {
-    console.log("DATAID: ", selectedMemberOrders, memberOrders);
+    // console.log("DATAID: ", selectedMemberOrders, memberOrders);
     setSelectedMemberOrders(memberOrders);
   };
 
   // function
   const getMembersData = async () => {
+    setLoading(true);
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${DATA?.storeId}&`;
+      findby += `skip=${(paginationMember - 1) * limitData}&`;
+      findby += `limit=${limitData}&`;
+      if (filterValue) {
+        findby += `search=${filterValue}&`;
+      }
+      // findby += `startDate=${startDateMember}&`;
+      // findby += `endDate=${endDateMember}&`;
+      // findby += `startTime=${startTimeMember}&`;
+      // findby += `endTime=${endTimeMember}`;
+
+      const _data = await getMembers(findby, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMembersData(_data.data.data);
+      setTotalPaginationMember(Math.ceil(_data?.data?.memberCount / limitData));
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+  const getMembersDataSearch = async () => {
     setLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -283,7 +290,7 @@ export default function MemberPage() {
       findby += `startDate=${startDateTop}&`;
       findby += `endDate=${endDateTop}&`;
       findby += `startTime=${startTimeTop}&`;
-      findby += `endTime=${endTimeTop}&`;
+      findby += `endTime=${endTimeTop}`;
       const _data = await getMembersListTop(findby, TOKEN);
 
       // console.log("Data Top", _data.data);
@@ -385,8 +392,9 @@ export default function MemberPage() {
     try {
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
+      console.log({ _data });
       if (_data.error) throw new Error("error");
-      console.log("MEMBER5555>>>>>>:", _data?.count);
+      // setMemberAllCount(_data?.count);
       setMemberAllCount(_data?.count);
       // setTotalPaginationMember(Math.ceil(_data?.count / limitData));
     } catch (err) {}
@@ -397,6 +405,8 @@ export default function MemberPage() {
     const findBy = `?storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
 
     const _data = await getMemberCount(findBy, TOKEN);
+
+    // console.log("CountFilterData", _data);
     if (_data.error) return;
     setMemberCount(_data?.count);
   };
@@ -691,15 +701,7 @@ export default function MemberPage() {
         </Box>
 
         {storeDetail.changeUi === "LIST_MEMBER" && (
-          <Card
-            border="primary"
-            style={{
-              margin: 0,
-              marginBottom: 20,
-              maxWidth: "95vw",
-              overflowX: "auto",
-            }}
-          >
+          <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
             <Card.Header
               style={{
                 backgroundColor: COLOR_APP,
@@ -1115,6 +1117,13 @@ export default function MemberPage() {
               "ເລືອກວັນທີ ແລະ ເວລາ "
             )}
           </Button>
+          {/* <Button
+            variant="outline-primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ PopupDaySplitView: true })}
+          >
+            <BsFillCalendarEventFill /> DAY SPLIT VIEW
+          </Button> */}
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
@@ -1335,6 +1344,43 @@ export default function MemberPage() {
         endTime={endTime}
         endDate={endDate}
       />
+      <PopUpSetStartAndEndDateMember
+        open={popup?.popupfiltterMember}
+        onClose={() => setPopup()}
+        startDateMember={startDateMember}
+        setStartDateMember={setStartDateMember}
+        setStartTimeMember={setStartTimeMember}
+        startTimeMember={startTimeMember}
+        setEndDateMember={setEndDateMember}
+        setEndTimeMember={setEndTimeMember}
+        endTimeMember={endTimeMember}
+        endDateMember={endDateMember}
+      />
+      <PopUpSetStartAndEndDateTop
+        open={popup?.popupfiltterTop}
+        onClose={() => setPopup()}
+        startDateTop={startDateTop}
+        setStartDateTop={setStartDateTop}
+        setStartTimeTop={setStartTimeTop}
+        startTimeTop={startTimeTop}
+        setEndDateTop={setEndDateTop}
+        setEndTimeTop={setEndTimeTop}
+        endTimeTop={endTimeTop}
+        endDateTop={endDateTop}
+      />
+      <PopUpSetStartAndEndDateBirthDay
+        open={popup?.popupfiltterBD}
+        onClose={() => setPopup()}
+        startDateBirthDay={startDateBirthDay}
+        setStartDateBirthDay={setStartDateBirthDay}
+        setStartTimeBirthDay={setStartTimeBirthDay}
+        startTimeBirthDay={startTimeBirthDay}
+        setEndDateBirthDay={setEndDateBirthDay}
+        setEndTimeBirthDay={setEndTimeBirthDay}
+        endTimeBirthDay={endTimeBirthDay}
+        endDateBirthDay={endDateBirthDay}
+      />
+
       <PopUpMemberEdit
         open={popup?.PopUpMemberEdit}
         onClose={() => setPopup()}

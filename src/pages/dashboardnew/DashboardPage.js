@@ -24,7 +24,7 @@ import { saveAs } from "file-saver";
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
-import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
+import PopUpSetStartAndEndDateFilterExport from "../../components/popup/PopUpSetStartAndEndDateFilterExport";
 import moment from "moment";
 import PopUpPrintReport from "../../components/popup/PopUpPrintReport";
 import PopUpPrintComponent from "../../components/popup/PopUpPrintComponent";
@@ -39,7 +39,7 @@ import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
 import { useTranslation } from "react-i18next";
-import PopUpExcelExportReport from "./../../components/popup/PopUpExcelExportReport";
+import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -197,16 +197,7 @@ export default function DashboardPage() {
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
         </Breadcrumb> */}
-        <div
-          style={{
-            marginBottom: 20,
-            display: "flex",
-            gap: 10,
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-          }}
-        >
+        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <div style={{ display: "flex", gap: 10 }}>
             <Button
               variant="outline-primary"
@@ -236,30 +227,21 @@ export default function DashboardPage() {
           >
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
           </Button> */}
-
-          <div
-            className="d-flex align-items-center"
-            style={{
-              gap: 4,
-            }}
+          <div style={{ flex: 1 }} />
+          <Button
+            variant="outline-primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ printReport: true })}
           >
-            <Button
-              variant="outline-primary"
-              style={{ display: "flex", gap: 10, alignItems: "center" }}
-              onClick={() => setPopup({ printReport: true })}
-            >
-              <AiFillPrinter /> PRINT
-            </Button>
-            <Button
-              variant="outline-primary"
-              style={{ display: "flex", gap: 10, alignItems: "center" }}
-              // onClick={downloadCsv}
-              onClick={() => setPopup({ exportReport: true })}
-              disabled={loadingExportCsv}
-            >
-              <MdOutlineCloudDownload /> EXPORT
-            </Button>
-          </div>
+            <AiFillPrinter /> PRINT
+          </Button>
+          <Button
+            variant="outline-primary"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            onClick={() => setPopup({ ReportExport: true })}
+          >
+            <MdOutlineCloudDownload /> EXPORT
+          </Button>
         </div>
         <Box
           sx={{
@@ -309,18 +291,18 @@ export default function DashboardPage() {
                   )}${storeDetail?.firstCurrency}`,
                 },
 
-                {
-                  title: `${t("paid_lak")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["totalCostLAK"]
-                  )} ${t("lak")}`,
-                },
-                {
-                  title: `${t("defult_profit")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfitLAK"]
-                  )}${storeDetail?.firstCurrency}`,
-                },
+                // {
+                //   title: `${t("paid_lak")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["totalCostLAK"]
+                //   )} ${t("lak")}`,
+                // },
+                // {
+                //   title: `${t("defult_profit")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["grossProfitLAK"]
+                //   )}${storeDetail?.firstCurrency}`,
+                // },
                 // {
                 //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
                 //   amount: `${moneyCurrency(
@@ -396,7 +378,7 @@ export default function DashboardPage() {
             >
               {t("bill_detial")}
             </Card.Header>
-            <Card.Body style={{ overflowX: "auto" }}>
+            <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
                   <th>{t("bill_type")}</th>
@@ -521,31 +503,15 @@ export default function DashboardPage() {
               {t("sales_info")}
               {t("every_day")}
             </Card.Header>
-            <Card.Body
-              style={{
-                overflowX: "auto",
-              }}
-            >
+            <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left", textWrap: "nowrap" }}>
-                    {t("date")}
-                  </th>
-                  <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                    {t("order")}
-                  </th>
-                  <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                    {t("bill_amount")}
-                  </th>
-                  <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                    {t("discount")}
-                  </th>
-                  <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                    {t("last_amount")}
-                  </th>
-                  <th style={{ textAlign: "right", textWrap: "nowrap" }}>
-                    {t("total")}
-                  </th>
+                  <th style={{ textAlign: "left" }}>{t("date")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order")}</th>
+                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("discount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
+                  <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {reportData.map((e) => (
                   <tr>
@@ -680,12 +646,19 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuAndCategoryHistoryComponent>
+
       <PopUpPrintReport
         open={popup?.printReport}
         setPopup={setPopup}
         onClose={() => setPopup()}
       />
-      <PopUpSetStartAndEndDate
+      <PopUpReportExportExcel
+        open={popup?.ReportExport}
+        setPopup={setPopup}
+        onClose={() => setPopup()}
+      />
+
+      <PopUpSetStartAndEndDateFilterExport
         open={popup?.popupfiltter}
         onClose={() => setPopup()}
         startDate={startDate}

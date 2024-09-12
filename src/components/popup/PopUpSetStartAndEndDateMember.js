@@ -146,7 +146,7 @@ export default function PopUpSetStartAndEndDateMember({
               selectedButton === "thisYear" ? "primary" : "outline-primary"
             }
           >
-            {t("this_month")}
+            {t("this_years")}
           </Button>
           <Button
             onClick={onGetLastYear}

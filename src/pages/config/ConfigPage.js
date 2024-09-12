@@ -94,7 +94,7 @@ export default function ConfigPage() {
   const getServiceCharge = async () => {
     const { DATA } = await getLocalData();
     const _res = await Axios.get(
-      `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+      `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
     );
     setServiceCharge(_res?.data?.serviceCharge);
   };

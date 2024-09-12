@@ -700,6 +700,8 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
+              console.log("PRINT TEST : ", hasNoCut);
+
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
@@ -720,12 +722,12 @@ function AddOrder() {
                 });
               }
               // print for flutter
-              // onPrintForCher().then(() => {
-              //   onSelectTable(selectedTable);
-              //   navigate(
-              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              //   );
-              // });
+              onPrintForCher().then(() => {
+                onSelectTable(selectedTable);
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              });
             } else {
               onSelectTable(selectedTable);
               navigate(
