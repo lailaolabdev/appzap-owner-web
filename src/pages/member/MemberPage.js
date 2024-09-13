@@ -86,6 +86,12 @@ export default function MemberPage() {
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
+  const [startDateMenu, setStartDateMenu] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDateMenu, setEndDateMenu] = useState(moment().format("YYYY-MM-DD"));
+  const [startTimeMenu, setStartTimeMenu] = useState("00:00:00");
+  const [endTimeMenu, setEndTimeMenu] = useState("23:59:59");
   const [startDateTop, setStartDateTop] = useState(
     moment().format("YYYY-MM-DD")
   );
@@ -156,8 +162,8 @@ export default function MemberPage() {
     getMemberOrderMenus();
     getAllMoney();
     getTotalPoints();
-    getMemberListBirthday();
-    getMemberListTop();
+    // getMemberListBirthday();
+    // getMemberListTop();
     setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
   }, []);
 
@@ -236,7 +242,7 @@ export default function MemberPage() {
       findby += `skip=${(paginationMember - 1) * limitData}&`;
       findby += `limit=${limitData}&`;
       if (filterValue) {
-        findby += `search=${filterValue}&`;
+        findby += `search=${filterValue}`;
       }
       // findby += `startDate=${startDateMember}&`;
       // findby += `endDate=${endDateMember}&`;
@@ -371,13 +377,13 @@ export default function MemberPage() {
     } catch (error) {}
   };
 
+  console.log({ startDateMenu, endDateMenu, startTimeMenu, endTimeMenu });
+
   const getMemberOrderMenus = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-
       // console.log({ TOKEN });
-
-      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDateMenu}&endDate=${endDateMenu}&endTime=${endTimeMenu}&startTime=${startTimeMenu}`;
       const _data = await getMemberOrderMenu(
         selectedMemberOrders,
         findBy,
@@ -392,7 +398,7 @@ export default function MemberPage() {
     try {
       const { TOKEN, DATA } = await getLocalData();
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
-      console.log({ _data });
+      // console.log({ _data });
       if (_data.error) throw new Error("error");
       // setMemberAllCount(_data?.count);
       setMemberAllCount(_data?.count);
@@ -430,25 +436,6 @@ export default function MemberPage() {
 
     if (_data.error) return;
     setMemberTotalMoney(_data.totalMoney);
-  };
-
-  const getMemberListBirthdayFilter = async () => {
-    try {
-      const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      findby += `skip=${(paginationMember - 1) * limitData}&`;
-      findby += `limit=${limitData}&`;
-      findby += `startDay=${storeDetail.startDay}&`;
-      findby += `endDay=${storeDetail.endDay}&`;
-      findby += `month=${storeDetail.month}&`;
-      const _data = await getMembersListBirthday(findby, TOKEN);
-      if (_data.error) throw new Error("error");
-      setMemberListBirthday(_data.data.data);
-      setTotalPaginationMemberBirthday(
-        Math.ceil(_data?.data?.memberCount / limitData)
-      );
-    } catch (err) {}
   };
 
   return (
@@ -1142,10 +1129,11 @@ export default function MemberPage() {
                 endTimeFilter: "",
                 selectedMemberID: "",
               });
-              setStartDate("");
-              setEndDate("");
-              setStartTime("");
-              setEndTime("");
+              setSelectedMemberOrders("");
+              setStartDateMenu("");
+              setEndDateMenu("");
+              setStartTimeMenu("");
+              setEndTimeMenu("");
               getMemberOrderMenus();
             }}
           >
@@ -1343,6 +1331,14 @@ export default function MemberPage() {
         setEndTime={setEndTime}
         endTime={endTime}
         endDate={endDate}
+        startDateMenu={startDateMenu}
+        setStartDateMenu={setStartDateMenu}
+        setStartTimeMenu={setStartTimeMenu}
+        startTimeMenu={startTimeMenu}
+        setEndDateMenu={setEndDateMenu}
+        setEndTimeMenu={setEndTimeMenu}
+        endTimeMenu={endTimeMenu}
+        endDateMenu={endDateMenu}
       />
       <PopUpSetStartAndEndDateMember
         open={popup?.popupfiltterMember}

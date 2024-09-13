@@ -51,7 +51,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("promotion")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -89,7 +92,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -127,7 +133,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("staff_info")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -151,7 +160,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
 
       const url =
         END_POINT_EXPORT + `/export/report-daily/${storeDetail?._id}` + findBy;
-      const _res = await Axios.post(url);
+      const _res = await Axios.get(url);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -165,7 +174,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("dialy_sales")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -205,7 +217,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("menu_type")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -245,7 +260,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         });
 
         // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("menu_info")}` + ".xlsx" || "export.xlsx"
+        );
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
