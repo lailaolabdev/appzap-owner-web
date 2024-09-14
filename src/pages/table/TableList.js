@@ -151,9 +151,18 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    billSplitNewId,
+    billSplitOldId,
+    setbillSplitNewId,
+    setbillSplitOldId,
+    setlistbillSplitNew,
+    setlistbillSplitOld,
+    getSplitBillOld,
+    getSplitBillNew,
+    getSplitBillAll,
   } = useStore();
 
-  // console.log("actions", storeDetail?.actions);
+  console.log("tableOrderItems", tableOrderItems);
 
   const reLoadData = () => {
     setReload(true);
@@ -425,10 +434,16 @@ export default function TableList() {
     }
     try {
       const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
+      setlistbillSplitNew(_billsNew);
       const _billIdNew = _billsNew?.[0]?.["_id"];
+      setbillSplitNewId(_billIdNew);
+      getSplitBillNew(_billIdNew);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
+      setlistbillSplitOld(_billsOld);
       const _billIdOld = _billsOld?.[0]?.["_id"];
+      setbillSplitOldId(_billIdOld);
+      getSplitBillOld(_billIdOld);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -466,6 +481,8 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
+
+        navigate("/bill/split");
       }
     } catch (err) {
       console.log({ err });

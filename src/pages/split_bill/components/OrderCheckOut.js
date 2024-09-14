@@ -47,12 +47,9 @@ const OrderCheckOut = ({
     let _total = 0;
     if (data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
-        if (data?.orderId[i]?.status === "SERVED") {
-          _total +=
-            data?.orderId[i]?.quantity *
-            (data?.orderId[i]?.price +
-              (data?.orderId[i]?.totalOptionPrice ?? 0));
-        }
+        _total +=
+          data?.orderId[i]?.quantity *
+          (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
       }
     }
 
@@ -105,7 +102,7 @@ const OrderCheckOut = ({
     });
   };
 
-  console.log("STORE DETAIL: ", storeDetail?.isServiceCharge);
+  // console.log("tableData: ", tableData);
 
   return (
     <>
@@ -120,7 +117,7 @@ const OrderCheckOut = ({
         </Modal.Header>
         <Modal.Body>
           <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t("table")}: {tableData?.tableName}
+            {t("table")}: {tableData?.tableId?.name}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
             {t("code")}: {tableData?.code}

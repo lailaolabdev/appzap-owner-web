@@ -115,16 +115,27 @@ export default function BillSplit() {
     setQuantity(true);
   };
 
-  const { printerCounter, printers } = useStore();
+  const {
+    printerCounter,
+    printers,
+    getSplitBillOld,
+    getSplitBillNew,
+    getSplitBillAll,
+    listbillSplitNew,
+    listbillSplitAll,
+    billTotal,
+    onSelectBill,
+    selectedBill,
+    billOrderItems,
+    isbillOrderLoading,
+  } = useStore();
 
   // provider
   const {
     isTableOrderLoading,
-    orderItemForPrintBill,
     tableList,
     selectedTable,
     setSelectedTable,
-    openTable,
     tableOrderItems,
     getTableDataStore,
     onSelectTable,
@@ -139,16 +150,14 @@ export default function BillSplit() {
     setNewOrderUpdateStatusTransaction,
     billSplitNewId,
     billSplitOldId,
-    listbillSplitNew,
-    listbillSplitOld,
-    openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    listbillSplitOld,
   } = useStore();
 
   // console.log({ billSplitNewId, billSplitOldId });
-  // console.log({ listbillSplitNew, listbillSplitOld });
-  // console.log({ selectedTable });
+  console.log({ listbillSplitNew, listbillSplitOld });
+  console.log({ tableOrderItems });
 
   const reLoadData = () => {
     setReload(true);
@@ -285,8 +294,10 @@ export default function BillSplit() {
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
   };
-  const _goToAddOrder = (tableId, code) => {
-    navigate(`/addOrder/tableid/${tableId}/code/${code}`);
+  const _goToAddOrder = (tableId, code, isSplit) => {
+    navigate(`/addOrder/tableid/${tableId}/code/${code}`, {
+      state: { key: isSplit },
+    });
   };
 
   useEffect(() => {
@@ -613,6 +624,7 @@ export default function BillSplit() {
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       getTableDataStore();
+      setMenuItemDetailModal(false);
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -1506,6 +1518,7 @@ export default function BillSplit() {
                           className={"blink_car"}
                           onClick={() => {
                             onSelectTable({ ...data, isSplit: false });
+                            onSelectBill({ ...data, isSplit: false });
                           }}
                         >
                           <div
@@ -1524,7 +1537,7 @@ export default function BillSplit() {
                                 color: "#616161",
                               }}
                             >
-                              <div>{`ໃບບິນ ${data?.tableId?.name}`}</div>
+                              <div>{`ໃບບິນເກົ່າ ${data?.tableId?.name}`}</div>
                               <div>{`ລະຫັດໂຕະ ${data?.code}`}</div>
                               <div>
                                 {moneyCurrency(total)}{" "}
@@ -1570,6 +1583,7 @@ export default function BillSplit() {
                           className={"blink_car"}
                           onClick={() => {
                             onSelectTable({ ...data, isSplit: false });
+                            onSelectBill({ ...data, isSplit: false });
                           }}
                         >
                           <div
@@ -1588,7 +1602,7 @@ export default function BillSplit() {
                                 color: "#616161",
                               }}
                             >
-                              <div>{`ໃບບິນ ${data?.tableId?.name}`}</div>
+                              <div>{`ໃບບິນໃໝ່ ${data?.tableId?.name}`}</div>
                               <div>{`ລະຫັດໂຕະ ${data?.code}`}</div>
                               <div>
                                 {moneyCurrency(total)}{" "}
@@ -1634,6 +1648,7 @@ export default function BillSplit() {
                           className={"blink_car"}
                           onClick={() => {
                             onSelectTable({ ...data, isSplit: true });
+                            onSelectBill({ ...data, isSplit: true });
                           }}
                         >
                           <div
@@ -1889,13 +1904,15 @@ export default function BillSplit() {
                         <ButtonCustom
                           onClick={() =>
                             _goToAddOrder(
-                              selectedTable?.tableId,
+                              selectedTable?.tableId?._id,
                               selectedTable?.code,
-                              selectedTable?._id
+                              selectedTable?.isSplit
                             )
                           }
                         >
-                          + {t("addOrder")}
+                          {/* {JSON.stringify(selectedTable?.tableId?._id)} */}
+                          {/* {JSON.stringify(selectedTable?._id)} */}+{" "}
+                          {t("addOrder")}
                         </ButtonCustom>
                         <ButtonCustom disabled></ButtonCustom>
                         <ButtonCustom
@@ -2077,7 +2094,7 @@ export default function BillSplit() {
         <BillForCheckOut80
           storeDetail={storeDetail}
           selectedTable={selectedTable}
-          dataBill={dataBill}
+          dataBill={selectedTable}
           taxPercent={taxPercent}
           profile={profile}
         />
@@ -2097,7 +2114,7 @@ export default function BillSplit() {
         <BillForCheckOut58
           storeDetail={storeDetail}
           selectedTable={selectedTable}
-          dataBill={dataBill}
+          dataBill={selectNewTable}
           taxPercent={taxPercent}
         />
       </div>
@@ -2180,7 +2197,7 @@ export default function BillSplit() {
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
-        dataBill={dataBill}
+        dataBill={selectedTable}
         tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
@@ -2191,7 +2208,7 @@ export default function BillSplit() {
 
       <OrderCheckOut
         staffData={userData}
-        data={dataBill}
+        data={selectedTable}
         setDataBill={setDataBill}
         onPrintBill={onPrintBill}
         tableData={selectedTable}

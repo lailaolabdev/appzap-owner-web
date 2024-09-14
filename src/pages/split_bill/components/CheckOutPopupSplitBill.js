@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 
 import Loading from "../../../components/Loading";
 
-export default function CheckOutPopupCafe({
+export default function CheckOutPopupSplitBill({
   onPrintDrawer,
   onPrintBill,
   open,

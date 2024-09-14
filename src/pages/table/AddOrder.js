@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
@@ -55,11 +56,12 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import printFlutter from "../../helpers/printFlutter";
 
 function AddOrder() {
+  const { state } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
-  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
+  const [billId, setBillId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -91,6 +93,8 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -679,7 +683,7 @@ function AddOrder() {
         billId: _billId,
       };
 
-      console.log("CreateOrder: ", _body);
+      // console.log("CreateOrder: ", _body);
 
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
@@ -700,25 +704,35 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
-              console.log("PRINT TEST : ", hasNoCut);
+              // console.log("PRINT TEST : ", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
                   () => {
                     onSelectTable(selectedTable);
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                    );
+                    if (state?.key === false) {
+                      navigate(`/bill/split`);
+                      return;
+                    } else {
+                      navigate(
+                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                      );
+                    }
                   }
                 );
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
-                  navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                  );
+                  if (state?.key === false) {
+                    navigate(`/bill/split`);
+                    return;
+                  } else {
+                    navigate(
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                    );
+                  }
                 });
               }
               // print for flutter
@@ -730,9 +744,14 @@ function AddOrder() {
               // });
             } else {
               onSelectTable(selectedTable);
-              navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              );
+              if (state?.key === false) {
+                navigate(`/bill/split`);
+                return;
+              } else {
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              }
             }
           }
         })

@@ -11,6 +11,7 @@ import { printItems } from "./printItems";
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 /**
  * const
@@ -55,6 +56,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import printFlutter from "../../helpers/printFlutter";
 
 function AddOrder() {
+  const { state } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
@@ -91,6 +93,8 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -679,7 +683,7 @@ function AddOrder() {
         billId: _billId,
       };
 
-      console.log("CreateOrder: ", _body);
+      // console.log("CreateOrder: ", _body);
 
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
@@ -700,13 +704,16 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
-              console.log("PRINT TEST : ", hasNoCut);
+              // console.log("PRINT TEST : ", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
                   () => {
                     onSelectTable(selectedTable);
+                    if (state?.key === false) {
+                      navigate(`/bill/split/${tableId}`);
+                    }
                     navigate(
                       `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                     );
@@ -716,6 +723,9 @@ function AddOrder() {
                 // Print with cut
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
+                  if (state?.key === false) {
+                    navigate(`/bill/split/${tableId}`);
+                  }
                   navigate(
                     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                   );

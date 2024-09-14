@@ -138,7 +138,14 @@ export default function BillForCheckOut80({
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
-      <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
+      <div style={{ textAlign: "center" }}>
+        {" "}
+        {` ${
+          selectedTable?.isSplit
+            ? " ໃບບິນລວມທັງໝົດ"
+            : `ໃບບິນເລກໂຕະ ${selectedTable?.tableId?.name}`
+        }`}
+      </div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>

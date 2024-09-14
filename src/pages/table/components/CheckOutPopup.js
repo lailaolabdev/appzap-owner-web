@@ -71,6 +71,8 @@ export default function CheckOutPopup({
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
+  console.log({ dataBill });
+
   const navigate = useNavigate();
 
   useEffect(() => {

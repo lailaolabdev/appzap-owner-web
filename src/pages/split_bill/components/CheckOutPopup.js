@@ -71,6 +71,8 @@ export default function CheckOutPopup({
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
+  console.log({ dataBill });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,13 +122,15 @@ export default function CheckOutPopup({
   // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    dataBill?.orderId?.filter((e) => e?.status),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const serviceAmount =
     (totalBillDefualt * storeDetail?.serviceChargePer) / 100;
   const totalBill = totalBillDefualt + taxAmount + serviceAmount;
+
+  console.log("totalBill", totalBill);
 
   useEffect(() => {
     if (!open) return;
@@ -222,7 +226,7 @@ export default function CheckOutPopup({
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
 
-    console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
+    // console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -284,12 +288,15 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
         });
+
+        navigate("/tables");
       })
       .catch(function (error) {
         errorAdd(`${t("checkbill_fial")}`);
+        console.log("Error", error);
       });
   };
-  console.log("SERVICE", storeDetail?.serviceChargePer);
+  // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
     // onSubmit();
@@ -464,7 +471,7 @@ export default function CheckOutPopup({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          {t("check_out_table")} ({tableData?.tableName}) - {t("code")}{" "}
+          {t("check_out_table")} ({tableData?.tableId?.name}) - {t("code")}{" "}
           {tableData?.code}
         </Modal.Title>
       </Modal.Header>
