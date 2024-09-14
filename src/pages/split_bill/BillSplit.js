@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
-
 import moment from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
@@ -12,6 +11,8 @@ import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 import { SiAirtable } from "react-icons/si";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * component
@@ -72,6 +73,12 @@ export default function BillSplit() {
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
+
+  const oldId = params?.oldId;
+  const newId = params?.newId;
+
+  // console.log({ oldId, newId });
+
   const { t } = useTranslation();
 
   // state
@@ -115,26 +122,12 @@ export default function BillSplit() {
     setQuantity(true);
   };
 
-  const {
-    printerCounter,
-    printers,
-    getSplitBillOld,
-    getSplitBillNew,
-    getSplitBillAll,
-    listbillSplitNew,
-    listbillSplitAll,
-    billTotal,
-    onSelectBill,
-    selectedBill,
-    billOrderItems,
-    isbillOrderLoading,
-  } = useStore();
+  const { printerCounter, printers } = useStore();
 
   // provider
   const {
     isTableOrderLoading,
     tableList,
-    selectedTable,
     setSelectedTable,
     tableOrderItems,
     getTableDataStore,
@@ -153,18 +146,32 @@ export default function BillSplit() {
     setCountOrderWaiting,
     profile,
     listbillSplitOld,
+    listbillSplitNew,
+    billSplitNew,
+    billSplitOld,
+    getSplitBillOld,
+    getSplitBillNew,
+    getSplitBillAll,
+    listbillSplitAll,
+    billTotal,
+    onSelectBill,
+    selectedBill,
+    billOrderItems,
+    isbillOrderLoading,
+    combine,
   } = useStore();
 
   // console.log({ billSplitNewId, billSplitOldId });
-  console.log({ listbillSplitNew, listbillSplitOld });
-  console.log({ tableOrderItems });
+  // console.log({ billSplitNew, billSplitOld });
+  // console.log(billOrderItems);
+  // console.log(billOrderItems[0]);
 
   const reLoadData = () => {
     setReload(true);
   };
   useEffect(() => {
     if (reload) {
-      getTableOrders(selectedTable);
+      getTableOrders(selectedBill);
       setReload(false);
       // orderSound();
     }
@@ -180,6 +187,11 @@ export default function BillSplit() {
   const [groupedItems, setGroupedItems] = useState({});
 
   // console.log({ tableOrderItems });
+
+  useEffect(() => {
+    getSplitBillOld(oldId);
+    getSplitBillNew(newId);
+  }, [oldId, newId]);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -227,6 +239,8 @@ export default function BillSplit() {
 
   useEffect(() => {
     getUserData();
+    getSplitBillOld(oldId);
+    getSplitBillNew(newId);
   }, []);
 
   const getUserData = async () => {
@@ -263,16 +277,12 @@ export default function BillSplit() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  useEffect(() => {
-    getTableDataStore();
-  }, []);
-
   /**
    * Modify Order Status
    */
   useEffect(() => {
     setIsCheckedOrderItem([...tableOrderItems]);
-  }, [selectedTable, tableOrderItems]);
+  }, [selectedBill, tableOrderItems]);
   // useEffect(() => {
   //   if (!tableOrderItems) return;
   //   let _tableOrderItems = [...tableOrderItems];
@@ -368,70 +378,6 @@ export default function BillSplit() {
     }
   };
 
-  const [selectNewTable, setSelectNewTable] = useState();
-
-  const _changeTable = async () => {
-    if (!selectNewTable) {
-      handleClose();
-      await Swal.fire({
-        icon: "warning",
-        title: `${t("please_select_table")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return;
-    }
-    try {
-      const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
-      const _billIdNew = _billsNew?.[0]?.["_id"];
-
-      const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
-      const _billIdOld = _billsOld?.[0]?.["_id"];
-
-      const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
-      const _codeIdNew = _codesNew?.[0]?.["_id"];
-
-      let header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-
-      const changTable = await axios({
-        method: "put",
-        url: END_POINT_SEVER + `/v3/bill-transfer`,
-        data: {
-          billOld: _billIdOld,
-          billNew: _billIdNew ?? "NOT_BILL",
-          codeId: _codeIdNew,
-          tableNow: selectedTable?.tableName,
-          tableNew: selectNewTable?.tableName,
-        },
-        headers: headers,
-      });
-      if (changTable?.status === 200) {
-        handleClose();
-        setSelectedTable();
-        getTableDataStore();
-        await Swal.fire({
-          icon: "success",
-          title: `${t("change_table_success")}`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    } catch (err) {
-      console.log({ err });
-      await Swal.fire({
-        icon: "error",
-        title: `${t("change_table_fial")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    }
-    setSelectNewTable();
-  };
-
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
     setOpenModalSetting(true);
@@ -483,33 +429,6 @@ export default function BillSplit() {
         _open += 1;
     }
     return _open;
-  };
-  const _checkStatusCodeA = (code) => {
-    let _empty = 0;
-    for (let i = 0; i < code?.length; i++) {
-      if (
-        !code[i]?.isOpened &&
-        code[i]?.status &&
-        !code[i]?.isStaffConfirm &&
-        !code[i]?.isCheckout
-      )
-        _empty += 1;
-    }
-    return _empty;
-  };
-  const _checkStatusCodeB = (code) => {
-    let _checkBill = 0;
-    for (let i = 0; i < code?.length; i++) {
-      if (
-        code[i]?.isOpened &&
-        code[i]?.status &&
-        code[i]?.isStaffConfirm &&
-        !code[i]?.isCheckout &&
-        code[i]?.statusBill === "CALL_TO_CHECKOUT"
-      )
-        _checkBill += 1;
-    }
-    return _checkBill;
   };
 
   const [widthBill80, setWidthBill80] = useState(0);
@@ -621,7 +540,7 @@ export default function BillSplit() {
       });
 
       // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
+      callCheckOutPrintBillOnly(selectedBill?._id);
       setSelectedTable();
       getTableDataStore();
       setMenuItemDetailModal(false);
@@ -1035,127 +954,6 @@ export default function BillSplit() {
     setOnPrinting(false);
   };
 
-  const onPrintForCherCancel = async () => {
-    setOnPrinting(true);
-
-    let _dataBill = {
-      ...dataBill,
-      typePrint: "PRINT_BILL_FORCHER",
-    };
-    await _createHistoriesPrinter(_dataBill);
-
-    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-    let _index = 0;
-    const printDate = [...billForCherCancel80.current];
-    let dataUrls = [];
-    for (const _ref of printDate) {
-      const dataUrl = await html2canvas(_ref, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-        scale: 530 / widthBill80,
-      });
-      dataUrls.push(dataUrl);
-    }
-    for (const _ref of printDate) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
-
-      try {
-        let urlForPrinter = "";
-        let dataUrl = dataUrls[_index];
-        // if (_printer?.width === "80mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 530 / widthBill80,
-        //   });
-        // }
-        // if (_printer?.width === "58mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 350 / widthBill58,
-        //   });
-        // }
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = ETHERNET_PRINTER_PORT;
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = USB_PRINTER_PORT;
-        }
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        await printFlutter(
-          {
-            imageBuffer: dataUrl.toDataURL(),
-            ip: _printer?.ip,
-            type: _printer?.type,
-            port: "9100",
-          },
-          async () => {
-            await axios({
-              method: "post",
-              url: urlForPrinter,
-              data: bodyFormData,
-              headers: { "Content-Type": "multipart/form-data" },
-            });
-          }
-        );
-        // printFlutter({
-        //   imageBuffer: dataUrl.toDataURL(),
-        //   ip: _printer?.ip,
-        //   type: _printer?.type,
-        //   port: "9100",
-        // });
-        // await axios({
-        //   method: "post",
-        //   url: urlForPrinter,
-        //   data: bodyFormData,
-        //   headers: { "Content-Type": "multipart/form-data" },
-        // });
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "success",
-            title: `${t("print_success")}`,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
-      } catch (err) {
-        console.log(err);
-        if (_index === 0) {
-          setOnPrinting(false);
-          await Swal.fire({
-            icon: "error",
-            title: "ປິ້ນບໍ່ສຳເລັດ",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          return { error: true, err };
-        }
-      }
-      _index++;
-    }
-    setOnPrinting(false);
-  };
-
   const onSelect = (data) => {
     const _data = isCheckedOrderItem.map((e) => {
       if (data?._id === e?._id) {
@@ -1180,27 +978,6 @@ export default function BillSplit() {
     }
   };
 
-  const checkAllOrders = (item) => {
-    let _newOrderItems = [];
-    if (item?.target?.checked) {
-      _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCELED") return item;
-        return {
-          ...item,
-          isChecked: true,
-        };
-      });
-    } else {
-      _newOrderItems = isCheckedOrderItem.map((item) => {
-        return {
-          ...item,
-          isChecked: false,
-        };
-      });
-    }
-    setIsCheckedOrderItem(_newOrderItems);
-  };
-
   const handleUpdateOrderStatus = async (status) => {
     const storeId = storeDetail?._id;
     let menuId;
@@ -1218,7 +995,7 @@ export default function BillSplit() {
       storeId,
       menuId,
       seletedCancelOrderItem,
-      selectedTable
+      selectedBill
     );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
@@ -1252,51 +1029,11 @@ export default function BillSplit() {
       storeId,
       menuId,
       seletedCancelOrderItem,
-      selectedTable
+      selectedBill
     );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
       setCheckedBox(!checkedBox);
-      Swal.fire({
-        icon: "success",
-        title: `${t("update_order_status_success")}`,
-        showConfirmButton: false,
-        timer: 2000,
-      });
-
-      const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0);
-    }
-  };
-
-  const handleUpdateOrderStatuscancel = async (status) => {
-    // getOrderItemsStore(CANCEL_STATUS);
-    const storeId = storeDetail?._id;
-    // let previousStatus = orderItems[0].status;
-    let menuId;
-    let _updateItems = isCheckedOrderItem
-      ?.filter((e) => e?.isChecked)
-      .map((i) => {
-        return {
-          status: status,
-          _id: i?._id,
-          menuId: i?.menuId,
-          name: i?.name,
-          // remark: seletedCancelOrderItem
-        };
-      });
-    let _resOrderUpdate = await updateOrderItem(
-      _updateItems,
-      storeId,
-      menuId,
-      seletedCancelOrderItem,
-      selectedTable
-    );
-    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      handleClose1();
-      reLoadData();
-      setCheckedBox(!checkedBox);
-      // if (previousStatus === CANCEL_STATUS) getOrderItemsStore(CANCEL_STATUS);
       Swal.fire({
         icon: "success",
         title: `${t("update_order_status_success")}`,
@@ -1336,7 +1073,7 @@ export default function BillSplit() {
         storeId,
         menuId,
         seletedCancelOrderItem,
-        selectedTable
+        selectedBill
       );
       if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
         handleClose1();
@@ -1394,23 +1131,23 @@ export default function BillSplit() {
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTable]);
+  }, [billOrderItems]);
   // function
   const _calculateTotal = () => {
     let _total = 0;
-    for (let _data of selectedTable?.orderId || []) {
+    for (let _data of billOrderItems[0]?.orderId || []) {
       // console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
-    if (selectedTable?.discount > 0) {
+    if (billOrderItems?.discount > 0) {
       if (
-        selectedTable?.discountType == "LAK" ||
-        selectedTable?.discountType == "MONEY"
+        billOrderItems?.discountType == "LAK" ||
+        billOrderItems?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(_total - selectedTable?.discount);
+        setTotalAfterDiscount(_total - billOrderItems?.discount);
       } else {
-        const ddiscount = parseInt((_total * selectedTable?.discount) / 100);
+        const ddiscount = parseInt((_total * billOrderItems?.discount) / 100);
         setTotalAfterDiscount(_total - ddiscount);
       }
     } else {
@@ -1420,14 +1157,14 @@ export default function BillSplit() {
   };
 
   const getQrTokenForSelfOrdering = async () => {
-    const data = await tokenSelfOrderingPost(selectedTable?.billId);
+    const data = await tokenSelfOrderingPost(selectedBill?.billId);
     if (data?.token) {
       setQrToken(data?.token);
       setPopup({ qrToken: true });
     }
   };
 
-  // console.log("selectedTable", selectedTable?.orderId[0]?.createdBy?.firstname);
+  // console.log("selectedBill", selectedBill?.orderId[0]?.createdBy?.firstname);
 
   return (
     <div
@@ -1440,13 +1177,13 @@ export default function BillSplit() {
     >
       {/* popup */}
       <PopUpQRToken
-        tableName={selectedTable?.tableName}
+        tableName={selectedBill?.tableName}
         open={popup?.qrToken}
         qr={qrToken}
-        storeId={selectedTable?.storeId}
+        storeId={selectedBill?.storeId}
         onClose={() => setPopup()}
       />
-      {isTableOrderLoading ? <Loading /> : ""}
+      {isbillOrderLoading ? <Loading /> : ""}
       <div>
         <Box
           sx={{
@@ -1486,12 +1223,12 @@ export default function BillSplit() {
                   },
                 }}
               >
-                {listbillSplitOld?.length > 0 &&
-                  listbillSplitOld?.map((data, index) => (
+                {billSplitOld?.length > 0 &&
+                  billSplitOld?.map((data, index) => (
                     <div
                       style={{
                         border: "1px solid #FB6E3B",
-                        backgroundColor: selectedTable ? "#FB6E3B" : "#FFF",
+                        backgroundColor: selectedBill ? "#FB6E3B" : "#FFF",
                         borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
@@ -1539,10 +1276,10 @@ export default function BillSplit() {
                             >
                               <div>{`ໃບບິນເກົ່າ ${data?.tableId?.name}`}</div>
                               <div>{`ລະຫັດໂຕະ ${data?.code}`}</div>
-                              <div>
-                                {moneyCurrency(total)}{" "}
-                                {storeDetail?.firstCurrency}
-                              </div>
+                              {/* <FontAwesomeIcon
+                                icon={faListAlt}
+                                style={{ width: "100%", height: "100%" }}
+                              /> */}
                             </span>
                           </div>
                         </div>
@@ -1550,12 +1287,12 @@ export default function BillSplit() {
                     </div>
                   ))}
 
-                {listbillSplitNew?.length > 0 &&
-                  listbillSplitNew?.map((data, index) => (
+                {billSplitNew?.length > 0 &&
+                  billSplitNew?.map((data, index) => (
                     <div
                       style={{
                         border: "1px solid #FB6E3B",
-                        backgroundColor: selectedTable ? "#FB6E3B" : "#FFF",
+                        backgroundColor: selectedBill ? "#FB6E3B" : "#FFF",
                         borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
@@ -1604,10 +1341,10 @@ export default function BillSplit() {
                             >
                               <div>{`ໃບບິນໃໝ່ ${data?.tableId?.name}`}</div>
                               <div>{`ລະຫັດໂຕະ ${data?.code}`}</div>
-                              <div>
-                                {moneyCurrency(total)}{" "}
-                                {storeDetail?.firstCurrency}
-                              </div>
+                              {/* <FontAwesomeIcon
+                                icon={faListAlt}
+                                style={{ width: "100%", height: "100%" }}
+                              /> */}
                             </span>
                           </div>
                         </div>
@@ -1615,12 +1352,76 @@ export default function BillSplit() {
                     </div>
                   ))}
 
+                {combine?.length > 0 &&
+                  combine?.map((data, index) => (
+                    <div
+                      style={{
+                        border: "1px solid #FB6E3B",
+                        backgroundColor: selectedBill ? "#FB6E3B" : "#FFF",
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        cursor: "pointer",
+                      }}
+                      key={index}
+                    >
+                      <Box
+                        sx={{
+                          display: { md: "block", xs: "none" },
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            border: "none",
+                            borderRadius: 8,
+                            background: "white",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            textAlign: "center",
+                            padding: 10,
+                          }}
+                          className={"blink_car"}
+                          // onClick={() => {
+                          //   onSelectTable({ ...data, isSplit: true });
+                          //   onSelectBill({ ...data, isSplit: true });
+                          // }}
+                        >
+                          <div
+                            style={{
+                              position: "absolute",
+                              float: "right",
+                              right: 10,
+                              top: 10,
+                            }}
+                          ></div>
+                          <div>
+                            <span
+                              style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: "#616161",
+                              }}
+                            >
+                              <div>{`ບິນລວມທັງໝົດ`}</div>
+                              <div>{data?.code}</div>
+                              {/* <FontAwesomeIcon
+                                icon={faListAlt}
+                                style={{ width: "100%", height: "100%" }}
+                              /> */}
+                            </span>
+                          </div>
+                        </div>
+                      </Box>
+                    </div>
+                  ))}
                 {dataListBillSplit?._billsNew?.length > 0 &&
                   dataListBillSplit?._billsNew?.map((data, index) => (
                     <div
                       style={{
                         border: "1px solid #FB6E3B",
-                        backgroundColor: selectedTable ? "#FB6E3B" : "#FFF",
+                        backgroundColor: selectedBill ? "#FB6E3B" : "#FFF",
                         borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
@@ -1669,10 +1470,10 @@ export default function BillSplit() {
                             >
                               <div>{`ບິນລວມທັງໝົດ`}</div>
                               <div>{data?.code}</div>
-                              <div>
-                                {moneyCurrency(total)}{" "}
-                                {storeDetail?.firstCurrency}
-                              </div>
+                              {/* <FontAwesomeIcon
+                                icon={faListAlt}
+                                style={{ width: "100%", height: "100%" }}
+                              /> */}
                             </span>
                           </div>
                         </div>
@@ -1694,14 +1495,14 @@ export default function BillSplit() {
               overflow: "hidden",
             }}
           >
-            {selectedTable === undefined ? (
+            {selectedBill === undefined ? (
               <div className="text-center">
                 <div style={{ marginTop: 50, fontSize: 50 }}>
                   <h4>{t("not_list_bill")}</h4>
                 </div>
               </div>
             ) : (
-              selectedTable && (
+              selectedBill && (
                 <div
                   style={{
                     width: "100%",
@@ -1723,9 +1524,9 @@ export default function BillSplit() {
                         >
                           <SiAirtable />{" "}
                           {` ${
-                            selectedTable?.isSplit
+                            billOrderItems?.isBillSplit
                               ? " ໃບບິນລວມທັງໝົດ"
-                              : `ໃບບິນເລກໂຕະ ${selectedTable?.tableId?.name}`
+                              : `ໃບບິນເລກໂຕະ ${billOrderItems[0]?.tableId?.name}`
                           }`}
                         </div>
                         <div
@@ -1740,7 +1541,7 @@ export default function BillSplit() {
                               color: COLOR_APP,
                             }}
                           >
-                            {selectedTable?.code}
+                            {billOrderItems[0]?.code}
                           </span>
                         </div>
                         <div
@@ -1755,7 +1556,7 @@ export default function BillSplit() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moment(selectedTable?.createdAt).format("HH:mm A")}
+                            {moment(selectedBill?.createdAt).format("HH:mm A")}
                           </span>
                         </div>
                         <div
@@ -1770,7 +1571,7 @@ export default function BillSplit() {
                               color: COLOR_APP,
                             }}
                           >
-                            {`${selectedTable?.orderId[0]?.createdBy?.firstname}  ${selectedTable?.orderId[0]?.createdBy?.firstname}`}
+                            {`${billOrderItems[0]?.createdBy?.firstname}  ${billOrderItems[0]?.createdBy?.firstname}`}
                           </span>
                         </div>
 
@@ -1874,7 +1675,7 @@ export default function BillSplit() {
                           {t("printBillToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom
-                          onClick={() => _openModalSetting(selectedTable)}
+                          onClick={() => _openModalSetting(selectedBill)}
                         >
                           {/* <FontAwesomeIcon
                               icon={faWindowClose}
@@ -1904,14 +1705,14 @@ export default function BillSplit() {
                         <ButtonCustom
                           onClick={() =>
                             _goToAddOrder(
-                              selectedTable?.tableId?._id,
-                              selectedTable?.code,
-                              selectedTable?.isSplit
+                              billOrderItems[0]?.tableId?._id,
+                              billOrderItems[0]?.code,
+                              billOrderItems?.isBillSplit
                             )
                           }
                         >
-                          {/* {JSON.stringify(selectedTable?.tableId?._id)} */}
-                          {/* {JSON.stringify(selectedTable?._id)} */}+{" "}
+                          {/* {JSON.stringify(selectedBill?.tableId?._id)} */}
+                          {/* {JSON.stringify(selectedBill?._id)} */}+{" "}
                           {t("addOrder")}
                         </ButtonCustom>
                         <ButtonCustom disabled></ButtonCustom>
@@ -2009,8 +1810,8 @@ export default function BillSplit() {
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedTable
-                            ? selectedTable?.orderId?.map(
+                          {billOrderItems
+                            ? billOrderItems[0]?.orderId?.map(
                                 (orderItem, index) => {
                                   const options =
                                     orderItem?.options
@@ -2093,8 +1894,8 @@ export default function BillSplit() {
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
           storeDetail={storeDetail}
-          selectedTable={selectedTable}
-          dataBill={selectedTable}
+          selectedBill={selectedBill}
+          dataBill={selectedBill}
           taxPercent={taxPercent}
           profile={profile}
         />
@@ -2103,18 +1904,18 @@ export default function BillSplit() {
         {/* <BillQRSmartOrdering80
           storeId={storeDetail?._id}
           TokenOfBill={tokenForSmartOrder}
-          tableName={selectedTable?.tableName}
+          tableName={selectedBill?.tableName}
         /> */}
         <BillQRShortSmartOrdering80
-          tableName={selectedTable?.tableName}
+          tableName={selectedBill?.tableName}
           CodeShortLink={codeShortLink}
         />
       </div>
       <div style={{ width: "58mm", padding: 10 }} ref={bill58Ref}>
         <BillForCheckOut58
           storeDetail={storeDetail}
-          selectedTable={selectedTable}
-          dataBill={selectNewTable}
+          selectedBill={selectedBill}
+          // dataBill={selectNewTable}
           taxPercent={taxPercent}
         />
       </div>
@@ -2128,7 +1929,7 @@ export default function BillSplit() {
             >
               <BillForChef80
                 storeDetail={storeDetail}
-                selectedTable={selectedTable}
+                selectedBill={selectedBill}
                 dataBill={dataBill}
                 val={val}
               />
@@ -2145,7 +1946,7 @@ export default function BillSplit() {
             >
               <BillForChefCancel80
                 storeDetail={storeDetail}
-                selectedTable={selectedTable}
+                selectedBill={selectedBill}
                 dataBill={dataBill}
                 val={val}
               />
@@ -2163,7 +1964,7 @@ export default function BillSplit() {
               >
                 <BillForChef58
                   storeDetail={storeDetail}
-                  selectedTable={selectedTable}
+                  selectedBill={selectedBill}
                   dataBill={dataBill}
                   val={val}
                 />
@@ -2185,9 +1986,9 @@ export default function BillSplit() {
             >
               <CombinedBillForChefNoCut
                 storeDetail={storeDetail}
-                selectedTable={selectedTable}
+                selectedBill={selectedBill}
                 selectedMenu={items}
-                table={{ tableId: { name: selectedTable?.tableName } }}
+                table={{ tableId: { name: selectedBill?.tableName } }}
               />
             </div>
           </div>
@@ -2197,8 +1998,8 @@ export default function BillSplit() {
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
-        dataBill={selectedTable}
-        tableData={selectedTable}
+        dataBill={billOrderItems}
+        tableData={billOrderItems}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
@@ -2208,10 +2009,10 @@ export default function BillSplit() {
 
       <OrderCheckOut
         staffData={userData}
-        data={selectedTable}
+        data={billOrderItems}
         setDataBill={setDataBill}
         onPrintBill={onPrintBill}
-        tableData={selectedTable}
+        tableData={billOrderItems}
         show={menuItemDetailModal}
         resetTableOrder={resetTableOrder}
         hide={() => setMenuItemDetailModal(false)}
@@ -2232,7 +2033,7 @@ export default function BillSplit() {
 
       {/* <UpdateDiscountOrder
         data={tableOrderItems}
-        tableData={selectedTable}
+        tableData={selectedBill}
         show={modalAddDiscount}
         resetTableOrder={resetTableOrder}
         hide={() => setModalAddDiscount(false)}
@@ -2240,7 +2041,7 @@ export default function BillSplit() {
 
       {/* <FeedbackOrder
         data={orderItemForPrintBill}
-        tableData={selectedTable}
+        tableData={selectedBill}
         show={feedbackOrderModal}
         hide={() => setFeedbackOrderModal(false)}
       /> */}
@@ -2248,18 +2049,18 @@ export default function BillSplit() {
       {/* <UserCheckoutModal
         show={checkoutModel}
         hide={() => setCheckoutModal(false)}
-        tableId={selectedTable?.code}
+        tableId={selectedBill?.code}
         func={_handlecheckout}
       /> */}
       {/* <PopupOpenTable
         open={popup?.openTable}
-        code={selectedTable}
+        code={selectedBill}
         onClose={() => {
           setPopup();
         }}
         onSubmit={async () => {
           openTable().then(() => {
-            navigate(`/staff/tableDetail/${selectedTable?._id}`);
+            navigate(`/staff/tableDetail/${selectedBill?._id}`);
             setPopup();
           });
           // getData();
@@ -2286,7 +2087,7 @@ export default function BillSplit() {
         <Modal.Body>
           <div>
             <Form.Label>
-              {t("move_from")} : {selectedTable?.tableName}
+              {t("move_from")} : {selectedBill?.tableName}
             </Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -2311,7 +2112,7 @@ export default function BillSplit() {
                     key={"talbe-" + index}
                     value={item?._id}
                     disabled={
-                      selectedTable?.tableName === item?.tableName
+                      selectedBill?.tableName === item?.tableName
                         ? true
                         : false
                     }

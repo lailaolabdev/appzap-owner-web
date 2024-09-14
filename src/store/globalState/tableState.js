@@ -33,7 +33,7 @@ export const useTableState = (storeDetail) => {
    *
    */
 
-  console.log("tableOrders", tableOrders);
+  // console.log("tableOrders", tableOrders);
 
   useEffect(() => {
     setTableOrderItems(tableOrders);

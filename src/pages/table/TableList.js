@@ -151,8 +151,6 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
-    billSplitNewId,
-    billSplitOldId,
     setbillSplitNewId,
     setbillSplitOldId,
     setlistbillSplitNew,
@@ -437,13 +435,13 @@ export default function TableList() {
       setlistbillSplitNew(_billsNew);
       const _billIdNew = _billsNew?.[0]?.["_id"];
       setbillSplitNewId(_billIdNew);
-      getSplitBillNew(_billIdNew);
+      // getSplitBillNew(_billIdNew);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       setlistbillSplitOld(_billsOld);
       const _billIdOld = _billsOld?.[0]?.["_id"];
       setbillSplitOldId(_billIdOld);
-      getSplitBillOld(_billIdOld);
+      // getSplitBillOld(_billIdOld);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -482,7 +480,7 @@ export default function TableList() {
           timer: 1500,
         });
 
-        navigate("/bill/split");
+        navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
       }
     } catch (err) {
       console.log({ err });

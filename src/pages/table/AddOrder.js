@@ -94,7 +94,7 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-  console.log("State", state);
+  // console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -176,7 +176,14 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
+  const {
+    storeDetail,
+    printers,
+    selectedTable,
+    onSelectTable,
+    billSplitNewId,
+    billSplitOldId,
+  } = useStore();
   const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
@@ -597,7 +604,7 @@ function AddOrder() {
 
     const _menuOptions = _checkMenuOption(menu);
 
-    console.log("menuOptions: ", _menuOptions);
+    // console.log("menuOptions: ", _menuOptions);
 
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
@@ -652,7 +659,7 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    console.log({ data, header, isPrinted });
+    // console.log({ data, header, isPrinted });
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -684,7 +691,6 @@ function AddOrder() {
       };
 
       // console.log("CreateOrder: ", _body);
-
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
           headers: headers,
@@ -712,7 +718,9 @@ function AddOrder() {
                   () => {
                     onSelectTable(selectedTable);
                     if (state?.key === false) {
-                      navigate(`/bill/split`);
+                      navigate(
+                        `/bill/split/${billSplitOldId}/${billSplitNewId}`
+                      );
                       return;
                     } else {
                       navigate(
@@ -726,7 +734,7 @@ function AddOrder() {
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
                   if (state?.key === false) {
-                    navigate(`/bill/split`);
+                    navigate(`/bill/split/${billSplitOldId}/${billSplitNewId}`);
                     return;
                   } else {
                     navigate(
@@ -745,7 +753,7 @@ function AddOrder() {
             } else {
               onSelectTable(selectedTable);
               if (state?.key === false) {
-                navigate(`/bill/split`);
+                navigate(`/bill/split/${billSplitOldId}/${billSplitNewId}`);
                 return;
               } else {
                 navigate(
