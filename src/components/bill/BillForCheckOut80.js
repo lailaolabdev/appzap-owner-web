@@ -328,26 +328,30 @@ export default function BillForCheckOut80({
           </span>
         ))}
       </div>
-      {/* <Price>
-        <div style={{ flexGrow: 1 }}></div>
-        <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>
-            {dataBill?.paymentMethod === "CASH"
-              ? "ເງີນສົດ"
-              : dataBill?.paymentMethod === "TRANSFER"
-              ? "ເງີນໂອນ"
-              : dataBill?.paymentMethod === "TRANSFER_CASH"
-              ? "ເງີນສົດແລະໂອນ"
-              : ""}
-          </div>
-          <div>
-            {t("getMoney")} {dataBill?.moneyReceived || 0}
-          </div>
-          <div>
-            {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
-          </div>
+
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 12,
+        }}
+      >
+        <div>
+          {dataBill?.paymentMethod === "CASH"
+            ? "ເງີນສົດ"
+            : dataBill?.paymentMethod === "TRANSFER"
+            ? "ເງີນໂອນ"
+            : dataBill?.paymentMethod === "TRANSFER_CASH"
+            ? "ເງີນສົດແລະໂອນ"
+            : ""}
         </div>
-      </Price> */}
+        <div>
+          {t("getMoney")} {dataBill?.moneyReceived || 0}
+        </div>
+        <div>
+          {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+        </div>
+      </div>
+
       {/* <div
         style={{
           display: "flex",
