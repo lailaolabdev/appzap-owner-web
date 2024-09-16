@@ -222,6 +222,8 @@ export default function CheckOutPopup({
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
 
+    const localZone = localStorage.getItem("selectedZone");
+
     console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
@@ -283,6 +285,7 @@ export default function CheckOutPopup({
           ...storeDetail,
           serviceChargePer: 0,
           isServiceCharge: false,
+          zoneCheckBill: true,
         });
       })
       .catch(function (error) {

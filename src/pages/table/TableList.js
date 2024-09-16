@@ -76,7 +76,7 @@ export default function TableList() {
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
 
-  // console.log({ state });
+  console.log({ state });
 
   // state
   const [show, setShow] = useState(false);
@@ -248,6 +248,7 @@ export default function TableList() {
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: 0,
+      zoneCheckBill: false,
     });
   }, []);
 
@@ -349,12 +350,33 @@ export default function TableList() {
   }, [tableOrderItems]);
 
   useEffect(() => {
+    console.log("ZONE23");
     if (zoneId) {
       getTableDataStore({ zone: zoneId });
     } else {
       getTableDataStore();
     }
   }, [zoneId]);
+
+  useEffect(() => {
+    console.log("ZONEID");
+    if (state?.zoneId) {
+      getTableDataStore({ zone: state?.zoneId });
+    } else {
+      getTableDataStore();
+    }
+  }, [state?.zoneId]);
+
+  console.log("ZONE Out :", storeDetail?.zoneCheckBill);
+
+  useEffect(() => {
+    console.log("ZONE In :", storeDetail?.zoneCheckBill);
+    if (storeDetail?.zoneCheckBill === true) {
+      getTableDataStore({ zone: state?.zoneId });
+    } else {
+      getTableDataStore();
+    }
+  }, [storeDetail?.zoneCheckBill === true]);
 
   const onSelectedZone = (value) => {
     localStorage.setItem("selectedZone", value);
