@@ -79,7 +79,8 @@ export default function TableList() {
   const handleShow = () => setShow(true);
   const handleClose1 = () => setShow1(false);
 
-  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value);
+  const handleSelectedCancelOrder = (e) =>
+    setSeletedCancelOrderItem(e.target.value);
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -208,6 +209,7 @@ export default function TableList() {
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: 0,
+      zoneCheckBill: false,
     });
   }, []);
 
@@ -223,9 +225,7 @@ export default function TableList() {
 
   const getDataTax = async () => {
     const { DATA } = await getLocalData();
-    const _res = await axios.get(
-      END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
-    );
+    const _res = await axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
     setTaxPercent(_res?.data?.taxPercent);
   };
 
@@ -278,12 +278,33 @@ export default function TableList() {
   }, [tableOrderItems]);
 
   useEffect(() => {
+    console.log("ZONE23");
     if (zoneId) {
       getTableDataStore({ zone: zoneId });
     } else {
       getTableDataStore();
     }
   }, [zoneId]);
+
+  useEffect(() => {
+    console.log("ZONEID");
+    if (state?.zoneId) {
+      getTableDataStore({ zone: state?.zoneId });
+    } else {
+      getTableDataStore();
+    }
+  }, [state?.zoneId]);
+
+  console.log("ZONE Out :", storeDetail?.zoneCheckBill);
+
+  useEffect(() => {
+    console.log("ZONE In :", storeDetail?.zoneCheckBill);
+    if (storeDetail?.zoneCheckBill === true) {
+      getTableDataStore({ zone: state?.zoneId });
+    } else {
+      getTableDataStore();
+    }
+  }, [storeDetail?.zoneCheckBill === true]);
 
   const onSelectedZone = (value) => {
     localStorage.setItem("selectedZone", value);
@@ -311,7 +332,7 @@ export default function TableList() {
       });
       setDataBill(_resBill?.data);
     } catch (err) {
-      console.log("err: ", err)
+      console.log("err: ", err);
     }
   };
 
@@ -1266,8 +1287,11 @@ export default function TableList() {
     if (!onPrinting) {
       if (!reload) {
         if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-          console.log("newOrderTransaction: ", newOrderTransaction)
-          console.log("newOrderUpdateStatusTransaction: ", newOrderUpdateStatusTransaction)
+          console.log("newOrderTransaction: ", newOrderTransaction);
+          console.log(
+            "newOrderUpdateStatusTransaction: ",
+            newOrderUpdateStatusTransaction
+          );
           handleMessage();
           setNewOrderTransaction(false);
           setNewOrderUpdateStatusTransaction(false);
@@ -1296,7 +1320,8 @@ export default function TableList() {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
       // console.log({ _data });
-      _total += (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+      _total +=
+        (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
     if (dataBill?.discount > 0) {
       if (
@@ -1462,8 +1487,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "#FFE17B"
-                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                ? "#FFE17B"
+                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1479,8 +1504,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1506,15 +1531,15 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? ""
-                                      : "bold"
+                                    ? ""
+                                    : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "#616161"
-                                      : "white"
+                                    ? "#616161"
+                                    : "white"
                                   : "#616161",
                               }}
                             >
@@ -1562,8 +1587,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                              //   ? "blink_cardCallCheckOut"
-                              ""
+                                //   ? "blink_cardCallCheckOut"
+                                ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1694,10 +1719,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                              dataBill?.orderId?.[0]?.updatedBy?.lastname
+                            dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                              " " +
-                              dataBill?.orderId[0]?.updatedBy?.lastname
+                                " " +
+                                dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1744,7 +1769,8 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(totalAfterDiscount)} {" "} {storeDetail?.firstCurrency}
+                            {moneyCurrency(totalAfterDiscount)}{" "}
+                            {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div
@@ -1927,68 +1953,68 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                              const options =
-                                orderItem?.options
-                                  ?.map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ") || "";
-                              return (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                      disabled={
-                                        orderItem?.status === "CANCELED"
-                                      }
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) => {
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        });
-                                      }}
-                                    />
-                                  </td>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {orderItem?.name} {options}
-                                  </td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                const options =
+                                  orderItem?.options
+                                    ?.map((option) =>
+                                      option.quantity > 1
+                                        ? `[${option.quantity} x ${option.name}]`
+                                        : `[${option.name}]`
+                                    )
+                                    .join(" ") || "";
+                                return (
+                                  <tr
+                                    key={"order" + index}
+                                    style={{ borderBottom: "1px solid #eee" }}
+                                  >
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                      <Checkbox
+                                        disabled={
+                                          orderItem?.status === "CANCELED"
+                                        }
+                                        name="checked"
+                                        checked={orderItem?.isChecked || false}
+                                        onChange={(e) => {
+                                          onSelect({
+                                            ...orderItem,
+                                            isChecked: e.target.checked,
+                                          });
+                                        }}
+                                      />
+                                    </td>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                      {orderItem?.name} {options}
+                                    </td>
+                                    <td>{orderItem?.quantity}</td>
+                                    <td
+                                      style={{
+                                        color:
+                                          orderItem?.status === `SERVED`
+                                            ? "green"
+                                            : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? t(
-                                        orderStatusTranslate(
-                                          orderItem?.status
-                                        )
-                                      )
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                        "HH:mm A"
-                                      )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              );
-                            })
+                                      }}
+                                    >
+                                      {orderItem?.status
+                                        ? t(
+                                            orderStatusTranslate(
+                                              orderItem?.status
+                                            )
+                                          )
+                                        : "-"}
+                                    </td>
+                                    <td>{orderItem?.createdBy?.firstname}</td>
+                                    <td>
+                                      {orderItem?.createdAt
+                                        ? moment(orderItem?.createdAt).format(
+                                            "HH:mm A"
+                                          )
+                                        : "-"}
+                                    </td>
+                                  </tr>
+                                );
+                              })
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2497,8 +2523,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                            ? ""
-                            : "red",
+                          ? ""
+                          : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2523,9 +2549,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-          // onClick={() => {
-          //   _orderTableQunatity();
-          // }}
+            // onClick={() => {
+            //   _orderTableQunatity();
+            // }}
           >
             {t("save")}
           </Button>

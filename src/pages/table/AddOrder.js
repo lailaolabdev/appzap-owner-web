@@ -680,6 +680,9 @@ function AddOrder() {
       };
 
       console.log("CreateOrder: ", _body);
+      const localZone = localStorage.getItem("selectedZone");
+
+      console.log("ZONE : ", localZone);
 
       axios
         .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
@@ -700,15 +703,14 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
-              console.log("PRINT TEST : ", hasNoCut);
-
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
                   () => {
                     onSelectTable(selectedTable);
                     navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                      { state: { zoneId: localZone } }
                     );
                   }
                 );
@@ -717,7 +719,8 @@ function AddOrder() {
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
                   navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
                   );
                 });
               }
@@ -731,7 +734,8 @@ function AddOrder() {
             } else {
               onSelectTable(selectedTable);
               navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                { state: { zoneId: localZone } }
               );
             }
           }
