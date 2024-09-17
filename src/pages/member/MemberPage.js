@@ -147,7 +147,7 @@ export default function MemberPage() {
 
   // console.log("valueTopList", valueTopList);
 
-  // console.log({ startDate, endDate, startTime, endTime });
+  console.log({ startDate, endDate, startTime, endTime });
   // provider
 
   // useEffect
@@ -380,6 +380,20 @@ export default function MemberPage() {
   console.log({ startDateMenu, endDateMenu, startTimeMenu, endTimeMenu });
 
   const getMemberOrderMenus = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      // console.log({ TOKEN });
+      const findBy = `&storeId=${DATA?.storeId}&startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const _data = await getMemberOrderMenu(
+        selectedMemberOrders,
+        findBy,
+        TOKEN
+      );
+      if (_data.error) throw new Error("error");
+      setOrderMenu(_data || []);
+    } catch (error) {}
+  };
+  const getMemberOrderMenusAll = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
       // console.log({ TOKEN });
@@ -1134,7 +1148,8 @@ export default function MemberPage() {
               setEndDateMenu("");
               setStartTimeMenu("");
               setEndTimeMenu("");
-              getMemberOrderMenus();
+              getMemberOrderMenusAll();
+              setMemberName("");
             }}
           >
             <MdRotateRight /> {t("clear")}
