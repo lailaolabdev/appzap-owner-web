@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOut80({
   storeDetail,
-  selectedTable,
+  selectedBill,
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
@@ -33,7 +33,8 @@ export default function BillForCheckOut80({
   const [base64Image, setBase64Image] = useState("");
 
   // console.log("storeDetail", storeDetail);
-  // console.log("dataBill", dataBill);
+  // console.log("dataBill 80 code", dataBill?.orderId);
+  // console.log("selectedBill 80", selectedBill);
 
   // useEffect
   useEffect(() => {
@@ -141,9 +142,9 @@ export default function BillForCheckOut80({
       <div style={{ textAlign: "center" }}>
         {" "}
         {` ${
-          selectedTable?.isSplit
+          selectedBill?.isSplit
             ? " ໃບບິນລວມທັງໝົດ"
-            : `ໃບບິນເລກໂຕະ ${selectedTable?.tableId?.name}`
+            : `ໃບບິນເລກໂຕະ ${selectedBill?.tableId?.name}`
         }`}
       </div>
       <Price>

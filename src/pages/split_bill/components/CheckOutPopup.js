@@ -122,12 +122,15 @@ export default function CheckOutPopup({
   // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
-    dataBill[0]?.orderId?.filter((e) => e?.status),
+    dataBill?.orderId?.filter((e) => e?.status),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
+  // console.log("totalBillDefualt", totalBillDefualt);
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  // console.log("taxAmount", taxAmount);
   const serviceAmount =
     (totalBillDefualt * storeDetail?.serviceChargePer) / 100;
+  // console.log("serviceAmount", serviceAmount);
   const totalBill = totalBillDefualt + taxAmount + serviceAmount;
 
   // console.log("totalBill", totalBill);
@@ -137,12 +140,12 @@ export default function CheckOutPopup({
     let moneyReceived = "";
     let moneyChange = "";
     const discountedTotalBill =
-      dataBill[0]?.discountType === "LAK"
-        ? totalBill - dataBill[0]?.discount > 0
-          ? totalBill - dataBill[0]?.discount
+      dataBill?.discountType === "LAK"
+        ? totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
           : 0
-        : totalBill - (totalBill * dataBill[0]?.discount) / 100 > 0
-        ? totalBill - (totalBill * dataBill[0]?.discount) / 100
+        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+        ? totalBill - (totalBill * dataBill?.discount) / 100
         : 0;
 
     const cashAmount = parseFloat(cash) || 0;
@@ -197,11 +200,11 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (!open) return;
-    for (let i = 0; i < dataBill[0]?.orderId?.length; i++) {
+    for (let i = 0; i < dataBill?.orderId?.length; i++) {
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill[0], storeDetail?.serviceChargePer]);
+  }, [dataBill, storeDetail?.serviceChargePer]);
   // function
   const getDataCurrency = async () => {
     try {
@@ -231,7 +234,7 @@ export default function CheckOutPopup({
       .put(
         END_POINT + `/v3/bill-split/checkout`,
         {
-          id: dataBill[0]?._id,
+          id: dataBill?._id,
           data: {
             isCheckout: "true",
             status: "CHECKOUT",
@@ -305,10 +308,9 @@ export default function CheckOutPopup({
 
   const _calculateTotal = () => {
     let _total = 0;
-    for (let i = 0; i < dataBill[0]?.orderId.length; i++) {
-      if (dataBill[0]?.orderId[i]?.status) {
-        _total +=
-          dataBill[0]?.orderId[i]?.quantity * dataBill[0]?.orderId[i]?.price;
+    for (let i = 0; i < dataBill?.orderId.length; i++) {
+      if (dataBill?.orderId[i]?.status) {
+        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
       }
     }
     setTotal(_total);
@@ -321,15 +323,15 @@ export default function CheckOutPopup({
   useEffect(() => {
     if (!open) return;
     if (forcus == "CASH") {
-      if (dataBill[0]?.discount) {
-        if (dataBill[0]?.discountType === "PERCENT") {
-          if (cash >= totalBill - (totalBill * dataBill[0]?.discount) / 100) {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (cash >= totalBill - dataBill[0]?.discount) {
+          if (cash >= totalBill - dataBill?.discount) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -343,11 +345,11 @@ export default function CheckOutPopup({
         }
       }
     } else if (forcus == "TRANSFER") {
-      if (dataBill[0]?.discount) {
-        if (dataBill[0]?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill[0]?.discount) / 100);
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
         } else {
-          setTransfer(totalBill - dataBill[0]?.discount);
+          setTransfer(totalBill - dataBill?.discount);
         }
       } else {
         setTransfer(totalBill);
@@ -355,15 +357,15 @@ export default function CheckOutPopup({
       setCanCheckOut(true);
     } else if (forcus == "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      if (dataBill[0]?.discount) {
-        if (dataBill[0]?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill[0]?.discount) / 100) {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (_sum >= totalBill - dataBill[0]?.discount) {
+          if (_sum >= totalBill - dataBill?.discount) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -380,24 +382,24 @@ export default function CheckOutPopup({
   }, [cash, transfer, totalBill, forcus]);
 
   let transferCal =
-    dataBill[0]?.discountType === "PERCENT"
-      ? totalBill - dataBill[0]?.discount > 0
-        ? totalBill - dataBill[0]?.discount
+    dataBill?.discountType === "PERCENT"
+      ? totalBill - dataBill?.discount > 0
+        ? totalBill - dataBill?.discount
         : 0
-      : totalBill - (totalBill * dataBill[0]?.discount) / 100 > 0
-      ? (totalBill * dataBill[0]?.discount) / 100
+      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+      ? (totalBill * dataBill?.discount) / 100
       : 0;
 
   let totalBillMoney =
-    dataBill[0] && dataBill[0]?.discountType === "LAK"
+    dataBill && dataBill?.discountType === "LAK"
       ? parseFloat(
-          totalBill - dataBill[0]?.discount > 0
-            ? totalBill - dataBill[0]?.discount
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
             : 0
         )
       : parseFloat(
-          totalBill - (totalBill * dataBill[0]?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill[0]?.discount) / 100
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
   let _selectDataOption = (option) => {
@@ -472,8 +474,8 @@ export default function CheckOutPopup({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          {t("check_out_table")} ({tableData[0]?.tableId?.name}) - {t("code")}{" "}
-          {tableData[0]?.code}
+          {t("check_out_table")} ({tableData?.tableId?.name}) - {t("code")}{" "}
+          {tableData?.code}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ padding: 0 }}>
@@ -493,20 +495,18 @@ export default function CheckOutPopup({
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {dataBill[0] && dataBill[0]?.discountType === "LAK"
+                {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
                       Math.floor(
-                        totalBill - dataBill[0]?.discount > 0
-                          ? totalBill - dataBill[0]?.discount
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
                           : 0
                       )
                     )
                   : moneyCurrency(
                       Math.floor(
-                        totalBill - (totalBill * dataBill[0]?.discount) / 100 >
-                          0
-                          ? totalBill -
-                              (totalBill * dataBill[0]?.discount) / 100
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
                           : 0
                       )
                     )}{" "}
@@ -521,12 +521,12 @@ export default function CheckOutPopup({
                 hidden={selectCurrency === "LAK"}
               >
                 {moneyCurrency(
-                  (dataBill[0] && dataBill[0]?.discountType === "LAK"
-                    ? totalBill - dataBill[0]?.discount > 0
-                      ? totalBill - dataBill[0]?.discount
+                  (dataBill && dataBill?.discountType === "LAK"
+                    ? totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
                       : 0
-                    : totalBill - (totalBill * dataBill[0]?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill[0]?.discount) / 100
+                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
                     : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
@@ -622,13 +622,12 @@ export default function CheckOutPopup({
                 <div className="box-right">
                   <div className="box-name">
                     <InputGroup.Text>
-                      {t("name")}: {dataBill[0]?.Name ? dataBill[0]?.Name : ""}
+                      {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
                     </InputGroup.Text>
                   </div>
                   <div className="box-name">
                     <InputGroup.Text>
-                      {t("point")}:{" "}
-                      {dataBill[0]?.Point ? dataBill[0]?.Point : "0"}
+                      {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
                     </InputGroup.Text>
                   </div>
                 </div>
@@ -644,25 +643,23 @@ export default function CheckOutPopup({
               {moneyCurrency(
                 (parseInt(cash) || 0) +
                   (parseInt(transfer) || 0) -
-                  (dataBill[0] && dataBill[0]?.discountType === "LAK"
-                    ? totalBill - dataBill[0]?.discount > 0
-                      ? totalBill - dataBill[0]?.discount
+                  (dataBill && dataBill?.discountType === "LAK"
+                    ? totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
                       : 0
-                    : totalBill - (totalBill * dataBill[0]?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill[0]?.discount) / 100
+                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
                     : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
                       (parseInt(transfer) || 0) -
-                      (dataBill[0] && dataBill[0]?.discountType === "LAK"
-                        ? totalBill - dataBill[0]?.discount > 0
-                          ? totalBill - dataBill[0]?.discount
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
                           : 0
-                        : totalBill -
-                            (totalBill * dataBill[0]?.discount) / 100 >
-                          0
-                        ? totalBill - (totalBill * dataBill[0]?.discount) / 100
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0)
               )}{" "}
               {storeDetail?.firstCurrency}

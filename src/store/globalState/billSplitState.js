@@ -12,7 +12,7 @@ export const useBillState = (storeDetail) => {
   const [billTotal, setbillTotal] = useState([]);
 
   const [selectedItems, setSelectedItems] = useState([]);
-  const [mergedObject, setMergedObject] = useState({});
+  const [combine, setcombine] = useState({});
 
   // console.log("billTotal", billTotal);
 
@@ -99,7 +99,7 @@ export const useBillState = (storeDetail) => {
       console.log("data", data);
       if (res.status < 300) {
         setbillOrders({ ...data, isBillSplit: bill?.isSplit });
-        setSelectedBill(data);
+        // setSelectedBill(data);
         setIsbillOrderLoading(false);
         return data;
       } else {
@@ -115,44 +115,68 @@ export const useBillState = (storeDetail) => {
   };
 
   const onSelectBill = async (bill) => {
-    console.log("OnselectBill", bill);
+    // console.log("OnselectBill", bill);
+
     if (bill) {
       setbillOrderItems([]);
       // alert(JSON.stringify(bill));
       setSelectedBill(bill);
       await getbillOrders(bill);
+    }
 
-      if (selectedItems.includes(bill?._id)) {
-        // Remove the item from the selected list
-        setSelectedItems(selectedItems.filter((id) => id !== bill?._id));
-
-        // Update the merged object to remove the deselected item properties
-        const { [bill?._title]: _, ...rest } = mergedObject;
-        setMergedObject(rest);
-      } else {
-        // Add the item to the selected list
-        setSelectedItems([...selectedItems, bill?._id]);
-
-        // Merge the object properties into the mergedObject state
-        setMergedObject({
-          ...mergedObject,
-          Data: bill?.orderId,
-        });
-      }
+    if (selectedItems.includes(bill)) {
+      if (selectedItems?.length >= 2) return;
+      // console.log("selectedItems 01");
+      setSelectedItems(selectedItems.filter((b) => b !== bill));
     } else {
+      if (
+        selectedItems?.filter((b) => {
+          console.log("bill", b?._id, "===", bill?._id);
+          // return b?._id !== bill?._id;
+        })
+      ) {
+        setSelectedItems([...selectedItems, bill]);
+      }
     }
   };
 
-  // console.log("selectedItems", selectedItems);
-  console.log("mergedObject", mergedObject);
+  console.log("SelectedItems", selectedItems);
 
-  /**
-   * ເປີດໂຕະ
-   */
+  const combineBills = (bill1, bill2) => {
+    const combinedItems = [...bill1?.orderId, ...bill2?.orderId];
+    const totalbill1 = bill1?.orderId?.reduce(
+      (sum, bill) => sum + bill.totalPrice,
+      0
+    );
+    const totalbill2 = bill2?.orderId?.reduce(
+      (sum, bill) => sum + bill.totalPrice,
+      0
+    );
+    const combinedTotal = totalbill1 + totalbill2;
 
-  /**
-   * ອັບເດດສະຖານະອໍເດີ
-   */
+    return {
+      items: combinedItems,
+      total: combinedTotal,
+      // You can merge other fields as well, like timestamps, users, etc.
+      mergedTableNames: `ບິນລວມທັງໝົດ`,
+      // You can decide how to handle discounts, taxes, etc.
+    };
+  };
+
+  const handleCombineBills = () => {
+    if (selectedItems.length >= 2) {
+      const combinedBill = combineBills(selectedItems[0], selectedItems[1]);
+      setcombine(combinedBill);
+      // You can then update the UI or send this combined object to the backend.
+    } else {
+      alert("Please select exactly two bills to combine.");
+    }
+  };
+
+  console.log("selectedItems All", selectedItems);
+  console.log("selectedItems[0]", selectedItems[0]);
+  console.log("selectedItems[1]", selectedItems[1]);
+  console.log("combine", combine);
 
   return {
     getSplitBillOld,
@@ -166,5 +190,8 @@ export const useBillState = (storeDetail) => {
     selectedBill,
     billOrderItems,
     isbillOrderLoading,
+    handleCombineBills,
+    selectedItems,
+    combine,
   };
 };

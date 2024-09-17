@@ -600,7 +600,7 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    console.log("addToCart: ", menu);
+    // console.log("addToCart: ", menu);
 
     const _menuOptions = _checkMenuOption(menu);
 

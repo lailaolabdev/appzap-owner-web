@@ -39,7 +39,7 @@ const OrderCheckOut = ({
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
 
-  console.log("orderCheckOut", data);
+  // console.log("orderCheckOut", data);
 
   useEffect(() => {
     _calculateTotal();
@@ -47,12 +47,11 @@ const OrderCheckOut = ({
 
   const _calculateTotal = () => {
     let _total = 0;
-    if (data[0]?.orderId) {
-      for (let i = 0; i < data[0]?.orderId?.length; i++) {
+    if (data?.orderId) {
+      for (let i = 0; i < data?.orderId?.length; i++) {
         _total +=
-          data[0]?.orderId[i]?.quantity *
-          (data[0]?.orderId[i]?.price +
-            (data[0]?.orderId[i]?.totalOptionPrice ?? 0));
+          data?.orderId[i]?.quantity *
+          (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
       }
     }
 
@@ -120,10 +119,10 @@ const OrderCheckOut = ({
         </Modal.Header>
         <Modal.Body>
           <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t("table")}: {tableData[0]?.tableId?.name}
+            {t("table")}: {tableData?.tableId?.name}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("code")}: {tableData[0]?.code}
+            {t("code")}: {tableData?.code}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
             {t("open_at")}:{" "}
@@ -160,8 +159,8 @@ const OrderCheckOut = ({
               </tr>
             </thead>
             <tbody>
-              {data[0] &&
-                data[0]?.orderId?.map((orderItem, index) => {
+              {data &&
+                data?.orderId?.map((orderItem, index) => {
                   const options =
                     orderItem?.options
                       ?.map((option) =>
@@ -269,16 +268,16 @@ const OrderCheckOut = ({
             >
               <span style={{ justifyContent: "flex-end", display: "row" }}>
                 <b>
-                  {data[0] && data[0]?.discountType === "LAK"
+                  {data && data?.discountType === "LAK"
                     ? moneyCurrency(
                         Math.floor(
                           total * (taxPercent * 0.01 + 1) +
                             serviceAmount -
-                            data[0]?.discount >
+                            data?.discount >
                             0
                             ? (total + serviceAmount) *
                                 (taxPercent * 0.01 + 1) -
-                                data[0]?.discount
+                                data?.discount
                             : 0
                         )
                       )
@@ -288,14 +287,14 @@ const OrderCheckOut = ({
                             serviceAmount -
                             ((total + serviceAmount) *
                               (taxPercent * 0.01 + 1) *
-                              data[0]?.discount) /
+                              data?.discount) /
                               100 >
                             0
                             ? total * (taxPercent * 0.01 + 1) +
                                 serviceAmount -
                                 ((total + serviceAmount) *
                                   (taxPercent * 0.01 + 1) *
-                                  data[0]?.discount) /
+                                  data?.discount) /
                                   100
                             : 0
                         )

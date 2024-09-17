@@ -155,12 +155,14 @@ export default function TableList() {
     setbillSplitOldId,
     setlistbillSplitNew,
     setlistbillSplitOld,
+    billSplitNewId,
+    billSplitOldId,
     getSplitBillOld,
     getSplitBillNew,
     getSplitBillAll,
   } = useStore();
 
-  console.log("tableOrderItems", tableOrderItems);
+  // console.log("actions", storeDetail?.actions);
 
   const reLoadData = () => {
     setReload(true);
@@ -251,11 +253,6 @@ export default function TableList() {
       setZoneId(localZone);
       getTableDataStore({ zone: localZone });
     }
-
-    setStoreDetail({
-      ...storeDetail,
-      serviceChargePer: 0,
-    });
   }, []);
 
   // useEffect(() => {
@@ -290,7 +287,7 @@ export default function TableList() {
     const getDataServiceCharge = async () => {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
+        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
       );
       setServiceChargePercent(_res?.data?.serviceCharge);
     };
@@ -432,16 +429,14 @@ export default function TableList() {
     }
     try {
       const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
-      setlistbillSplitNew(_billsNew);
       const _billIdNew = _billsNew?.[0]?.["_id"];
+      setlistbillSplitNew(_billsNew);
       setbillSplitNewId(_billIdNew);
-      // getSplitBillNew(_billIdNew);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
-      setlistbillSplitOld(_billsOld);
       const _billIdOld = _billsOld?.[0]?.["_id"];
+      setlistbillSplitOld(_billsOld);
       setbillSplitOldId(_billIdOld);
-      // getSplitBillOld(_billIdOld);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -467,7 +462,7 @@ export default function TableList() {
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        // getTableDataStore();
+        getTableDataStore();
         if (zoneId) {
           getTableDataStore({ zone: zoneId });
         } else {
@@ -479,7 +474,6 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
-
         navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
       }
     } catch (err) {
@@ -1540,7 +1534,7 @@ export default function TableList() {
         method: "get",
         url: END_POINT_SEVER + `/v3/zones`,
         params: {
-          storeId: storeDetail?._id,
+          storeId: params?.id,
           limit: 100,
         },
         headers: headers,
@@ -2071,6 +2065,15 @@ export default function TableList() {
                           onClick={() => setPopup({ PopUpTranferTable: true })}
                         >
                           {t("move_order")}
+                        </ButtonCustom>
+                        <ButtonCustom
+                          onClick={() =>
+                            navigate(
+                              `/bill/split/${billSplitOldId}/${billSplitNewId}`
+                            )
+                          }
+                        >
+                          {t("bill")}
                         </ButtonCustom>
                       </div>
                       <div
