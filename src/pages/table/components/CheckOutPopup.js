@@ -44,9 +44,6 @@ export default function CheckOutPopup({
   taxPercent = 0,
 }) {
   const { t } = useTranslation();
-  // ref
-  const inputCashRef = useRef(null);
-  const inputTransferRef = useRef(null);
   const { storeDetail, setStoreDetail, profile } = useStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -58,7 +55,6 @@ export default function CheckOutPopup({
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
-  const [total, setTotal] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
@@ -71,8 +67,6 @@ export default function CheckOutPopup({
 
   const { setSelectedTable, getTableDataStore } = useStore();
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     setMemberData();
     if (textSearchMember.length > 0) {
@@ -82,6 +76,7 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     getMembersData();
+    getDataCurrency();
   }, []);
 
   const handleSearchOne = async () => {
@@ -115,9 +110,6 @@ export default function CheckOutPopup({
     } catch (err) {}
   };
 
-  // console.log("tableData:=======abc======>", tableData)
-
-  // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -222,7 +214,6 @@ export default function CheckOutPopup({
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
 
-    console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -289,11 +280,8 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
-    // onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
   };
 
   const _calculateTotal = () => {
@@ -303,13 +291,8 @@ export default function CheckOutPopup({
         _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
       }
     }
-    setTotal(_total);
   };
 
-  // useEffect
-  useEffect(() => {
-    getDataCurrency();
-  }, []);
   useEffect(() => {
     if (!open) return;
     if (forcus == "CASH") {

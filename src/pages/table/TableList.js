@@ -76,8 +76,6 @@ export default function TableList() {
   const activeTableId = params?.tableId;
   const { t } = useTranslation();
 
-  // console.log({ state });
-
   // state
   const [show, setShow] = useState(false);
   const [show1, setShow1] = useState(false);
@@ -153,8 +151,6 @@ export default function TableList() {
     profile,
   } = useStore();
 
-  // console.log("actions", storeDetail?.actions);
-
   const reLoadData = () => {
     setReload(true);
   };
@@ -206,9 +202,6 @@ export default function TableList() {
       return groups;
     }, {});
   };
-
-  // console.log("shopId==========>", storeDetail?._id)
-  // console.log("userData==========>", userData)
 
   // function handleSetQuantity(int, seletedOrderItem) {
   //   let _data = seletedOrderItem?.quantity + int
@@ -577,8 +570,6 @@ export default function TableList() {
     setWidthBill58(bill58Ref.current.offsetWidth);
   }, [bill80Ref, bill58Ref]);
 
-  // console.log("bill80Ref", bill80Ref);
-
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
   const _createHistoriesPrinter = async (data) => {
     try {
@@ -745,8 +736,6 @@ export default function TableList() {
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
-
-      // console.log("printerBillData", printerBillData);
 
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
@@ -2667,7 +2656,6 @@ export default function TableList() {
                   handleUpdateOrderStatuscancel("CANCELED");
                 });
               } else {
-                console.log("cancle");
                 handleUpdateOrderStatuscancel("CANCELED");
               }
             }}

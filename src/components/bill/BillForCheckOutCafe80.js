@@ -33,7 +33,7 @@ export default function BillForCheckOutCafe80({
 
   // console.log("storeDetail",storeDetail)
   // console.log("profile",profile)
-  console.log("dataBill", dataBill);
+  // console.log("dataBill", dataBill);
 
   // useEffect
   useEffect(() => {

@@ -104,9 +104,7 @@ const OrderCheckOut = ({
       isServiceCharge: e.target.checked,
     });
   };
-
-  console.log("STORE DETAIL: ", storeDetail?.isServiceCharge);
-
+  
   return (
     <>
       <Modal

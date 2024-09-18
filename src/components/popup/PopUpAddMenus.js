@@ -14,7 +14,6 @@ export default function PopUpAddMenus({
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [menuWithRestaurant, setMenuWithRestaurant] = useState('');
     const [menuRestaurantType, setMenuRestaurantType] = useState([]);
-    console.log('menuRestaurantType: ', menuRestaurantType);
     useEffect(() => {
         getCategory(menuWithRestaurant)
     }, [menuWithRestaurant])
