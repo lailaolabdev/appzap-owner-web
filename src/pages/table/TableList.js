@@ -1555,7 +1555,6 @@ export default function TableList() {
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
       />
-      {isTableOrderLoading ? <Loading /> : ""}
       <div>
         <Box
           sx={{
