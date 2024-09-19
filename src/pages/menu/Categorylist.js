@@ -38,9 +38,6 @@ export default function Categorylist() {
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
-  const [updateType, setUpdateType] = useState();
-
-  console.log("Categorys::", Categorys);
 
   const handleShow2 = async (item) => {
     // console.log("ITEM: ", item.categoryTypeId.name);

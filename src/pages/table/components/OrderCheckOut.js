@@ -45,7 +45,7 @@ const OrderCheckOut = ({
 
   const _calculateTotal = () => {
     let _total = 0;
-    if (data?.orderId) {
+    if (data && data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
         if (data?.orderId[i]?.status === "SERVED") {
           _total +=

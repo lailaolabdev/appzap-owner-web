@@ -88,9 +88,7 @@ export const useTableState = () => {
    */
   const getTableOrders = async (table) => {
     try {
-      setTableOrders([]);
       if (!table?.billId) return;
-      setIsTableOrderLoading(true);
       const url =
         END_POINT +
         `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;

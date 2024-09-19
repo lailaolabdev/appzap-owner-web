@@ -26,8 +26,6 @@ import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
-import CheckOutType from "./components/CheckOutType";
-import BillQRSmartOrdering80 from "../../components/bill/BillQRSmartOrdering80";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 
@@ -51,8 +49,7 @@ import {
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { createHistoriesPrinter, getBills } from "../../services/bill";
-// import _ from "lodash";
+import { getBills } from "../../services/bill";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import styled from "styled-components";
 import { callCheckOutPrintBillOnly, getCodes } from "../../services/code";
@@ -66,11 +63,9 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 
 export default function TableList() {
   const navigate = useNavigate();
-  const { state } = useLocation();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
@@ -79,20 +74,12 @@ export default function TableList() {
   // state
   const [show, setShow] = useState(false);
   const [show1, setShow1] = useState(false);
-  const [popup, setPopup] = useState({
-    CheckOutType: false,
-  });
-  const [mobileMode, setMobileMode] = useState(false);
+  const [popup, setPopup] = useState({ CheckOutType: false });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
   const handleClose1 = () => setShow1(false);
-  const handleShow1 = (e) => {
-    setShow1(true);
-  };
 
-  const handleSelectedCancelOrder = (e) =>
-    setSeletedCancelOrderItem(e.target.value);
+  const handleSelectedCancelOrder = (e) => setSeletedCancelOrderItem(e.target.value);
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -106,25 +93,17 @@ export default function TableList() {
   const [quantity, setQuantity] = useState(false);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [total, setTotal] = useState(0);
-  const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
   const [codeShortLink, setCodeShortLink] = useState(null);
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
-  const [loadingCheckOut, setLoadingCheckOut] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
-  const handleShowQuantity = (item) => {
-    // _orderTableQunatity(item)
-    setSeletedOrderItem(item);
-    setQuantity(true);
-  };
 
   const { printerCounter, printers } = useStore();
 
   // provider
   const {
-    isTableOrderLoading,
     orderItemForPrintBill,
     tableList,
     selectedTable,
@@ -143,9 +122,6 @@ export default function TableList() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
-    getTableDataStoreList,
-    setPrintNowList,
-    openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
@@ -158,7 +134,6 @@ export default function TableList() {
     if (reload) {
       getTableOrders(selectedTable);
       setReload(false);
-      // orderSound();
     }
   }, [reload]);
 
@@ -168,14 +143,9 @@ export default function TableList() {
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
-  const [dataCustomer, setDataCustomer] = useState();
-  const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
-
-  const [isBillTest, setIsBillTest] = useState(true);
-
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
@@ -203,11 +173,6 @@ export default function TableList() {
     }, {});
   };
 
-  // function handleSetQuantity(int, seletedOrderItem) {
-  //   let _data = seletedOrderItem?.quantity + int
-  //   setSeletedOrderItem(_data)
-  // }
-
   useEffect(() => {
     if (!pinStatus) return;
     setPinStatus(false);
@@ -229,27 +194,22 @@ export default function TableList() {
   }, [pinStatus]);
 
   useEffect(() => {
-    getUserData();
-    getDataZone();
-
     const localZone = localStorage.getItem("selectedZone");
     if (localZone) {
       setZoneId(localZone);
       getTableDataStore({ zone: localZone });
     }
 
+    getUserData();
+    getDataZone();
+    getDataTax();
+    getDataServiceCharge();
+
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: 0,
     });
   }, []);
-
-  // useEffect(() => {
-  //   getUserData();
-  //   if (window.opener) {
-  //     window.opener.location.reload();
-  //   }
-  // }, []);
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -261,27 +221,22 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  useEffect(() => {
-    const getDataTax = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
-      );
-      setTaxPercent(_res?.data?.taxPercent);
-    };
-    getDataTax();
-  }, []);
+  const getDataTax = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+    );
+    setTaxPercent(_res?.data?.taxPercent);
+  };
 
-  useEffect(() => {
-    const getDataServiceCharge = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
-      );
-      setServiceChargePercent(_res?.data?.serviceCharge);
-    };
-    getDataServiceCharge();
-  }, []);
+  const getDataServiceCharge = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
+    );
+    setServiceChargePercent(_res?.data?.serviceCharge);
+  };
+
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
@@ -296,36 +251,17 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  // useEffect(() => {
-  //   // initialTableSocket();
-  //   // getTableDataStoreList();
-  //   getTableDataStore();
-  // }, []);
-
-  /**
-   * Modify Order Status
-   */
   useEffect(() => {
     setIsCheckedOrderItem([...tableOrderItems]);
   }, [selectedTable, tableOrderItems]);
-  // useEffect(() => {
-  //   if (!tableOrderItems) return;
-  //   let _tableOrderItems = [...tableOrderItems];
-  //   let _checkDataStatus = [];
-  //   let _checkDataStatusCancel = [];
-  //   _tableOrderItems.map((nData) => {
-  //     if (nData.status === "SERVED") _checkDataStatus.push(nData?.status);
-  //     if (nData.status === "CANCELED")
-  //       _checkDataStatusCancel.push(nData?.status);
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tableOrderItems]);
+
   const _handlecheckout = async () => {
     setCheckoutModal(false);
     navigate(
       `/tables/pagenumber/${number}/tableid/${activeTableId}/${params?.storeId}`
     );
   };
+
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
   };
@@ -359,7 +295,6 @@ export default function TableList() {
 
   const getData = async (code) => {
     try {
-      setDataBill();
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -376,30 +311,7 @@ export default function TableList() {
       });
       setDataBill(_resBill?.data);
     } catch (err) {
-      setDataBill();
-    }
-  };
-
-  const _orderTableQunatity = async () => {
-    try {
-      let headers = await getHeaders();
-
-      const updateTable = await axios({
-        method: "put",
-        url: END_POINT_SEVER + `/v3/orders/update/${seletedOrderItem?._id}`,
-        data: {
-          quantity: seletedOrderItem?.quantity,
-        },
-        headers: headers,
-      });
-
-      if (updateTable?.status < 300) {
-        setQuantity(false);
-        reLoadData();
-        successAdd(`${t("succes_update_amount")}`);
-      }
-    } catch (err) {
-      errorAdd(`${t("fail_update_amount")}`);
+      console.log("err: ", err)
     }
   };
 
@@ -516,6 +428,7 @@ export default function TableList() {
       errorAdd(`${t("close_table_fial")}`);
     }
   };
+
   const _checkStatusCode = (code) => {
     let _open = 0;
     for (let i = 0; i < code?.length; i++) {
@@ -685,7 +598,6 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
-      // setLoadingCheckOut(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -863,90 +775,6 @@ export default function TableList() {
       });
     }
   };
-
-  // const onPrintQR = async (tokenQR) => {
-  //   try {
-  //     if (!tokenQR) {
-  //       return;
-  //     }
-  //     // alert(tokenQR);
-  //     // setTokenForSmartOrder(tokenQR, (ee) => {
-  //     //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
-  //     // });
-  //     // if (!tokenForSmartOrder) {
-  //     //   setTokenForSmartOrder(tokenQR);
-  //     //   await delay(1000);
-  //     //   return;
-  //     // }
-  //     // if (!tokenForSmartOrder) {
-  //     //   return;
-  //     // }
-  //     let urlForPrinter = "";
-  //     const _printerCounters = JSON.parse(printerCounter?.prints);
-  //     const printerBillData = printers?.find(
-  //       (e) => e?._id === _printerCounters?.BILL
-  //     );
-  //     let dataImageForPrint;
-  //     if (printerBillData?.width === "80mm") {
-  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
-  //         useCORS: true,
-  //         scrollX: 10,
-  //         scrollY: 0,
-  //         scale: 530 / widthBill80,
-  //       });
-  //     }
-
-  //     if (printerBillData?.width === "58mm") {
-  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
-  //         useCORS: true,
-  //         scrollX: 10,
-  //         scrollY: 0,
-  //         scale: 350 / widthBill58,
-  //       });
-  //     }
-  //     if (printerBillData?.type === "ETHERNET") {
-  //       urlForPrinter = ETHERNET_PRINTER_PORT;
-  //     }
-  //     if (printerBillData?.type === "BLUETOOTH") {
-  //       urlForPrinter = BLUETOOTH_PRINTER_PORT;
-  //     }
-  //     if (printerBillData?.type === "USB") {
-  //       urlForPrinter = USB_PRINTER_PORT;
-  //     }
-
-  //     const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-  //     var bodyFormData = new FormData();
-  //     bodyFormData.append("ip", printerBillData?.ip);
-  //     bodyFormData.append("port", "9100");
-  //     bodyFormData.append("image", _file);
-  //     bodyFormData.append("beep1", 1);
-  //     bodyFormData.append("beep2", 9);
-
-  //     await axios({
-  //       method: "post",
-  //       url: urlForPrinter,
-  //       data: bodyFormData,
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-  //     setTokenForSmartOrder(null);
-  //     await Swal.fire({
-  //       icon: "success",
-  //       title: "ປິນສຳເລັດ",
-  //       showConfirmButton: false,
-  //       timer: 1500,
-  //     });
-  //     setTokenForSmartOrder(null);
-  //   } catch (err) {
-  //     setTokenForSmartOrder(null);
-  //     console.log(err);
-  //     await Swal.fire({
-  //       icon: "error",
-  //       title: "ປິນບໍ່ສຳເລັດ",
-  //       showConfirmButton: false,
-  //       timer: 1500,
-  //     });
-  //   }
-  // };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
 
@@ -1433,10 +1261,13 @@ export default function TableList() {
   const handleMessage = (event) => {
     reLoadData();
   };
+
   useEffect(() => {
     if (!onPrinting) {
       if (!reload) {
         if (newOrderTransaction || newOrderUpdateStatusTransaction) {
+          console.log("newOrderTransaction: ", newOrderTransaction)
+          console.log("newOrderUpdateStatusTransaction: ", newOrderUpdateStatusTransaction)
           handleMessage();
           setNewOrderTransaction(false);
           setNewOrderUpdateStatusTransaction(false);
@@ -1444,19 +1275,9 @@ export default function TableList() {
       }
     }
   }, [newOrderTransaction, onPrinting, newOrderUpdateStatusTransaction]);
-  // useEffect(() => {
-  //   if (!onPrinting) {
-  //     if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-  //       handleMessage();
-  //       setNewOrderTransaction(false);
-  //       setNewOrderUpdateStatusTransaction(false);
-  //     }
-  //   }
-  // }, [onPrinting]);
 
   useEffect(() => {
     if (newTableTransaction) {
-      // getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
       } else {
@@ -1466,18 +1287,16 @@ export default function TableList() {
     }
   }, [newTableTransaction]);
 
-  // useEffect
   useEffect(() => {
     _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
+
   // function
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
       // console.log({ _data });
-      _total +=
-        (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+      _total += (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
     if (dataBill?.discount > 0) {
       if (
@@ -1607,7 +1426,6 @@ export default function TableList() {
                   },
                 }}
               >
-                {loadingCheckOut && <Loading />}
                 {tableList &&
                   tableList?.map((table, index) => (
                     <div
@@ -1644,8 +1462,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                  ? "#FFE17B"
+                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1661,8 +1479,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1688,15 +1506,15 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
+                                      ? ""
+                                      : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
+                                      ? "#616161"
+                                      : "white"
                                   : "#616161",
                               }}
                             >
@@ -1744,8 +1562,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1837,19 +1655,6 @@ export default function TableList() {
                         >
                           <SiAirtable /> {selectedTable?.tableName}
                         </div>
-                        {/* <Button onClick={()=> setIsBillTest(true)}>test print</Button>
-
-                          <Modal show={isBillTest} onHide={() => setIsBillTest(false)}>
-                          <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
-                          <BillForCheckOut80
-          storeDetail={storeDetail}
-          selectedTable={selectedTable}
-          dataBill={dataBill}
-          taxPercent={taxPercent}
-        />
-      </div>
-                          </Modal>   */}
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1880,11 +1685,7 @@ export default function TableList() {
                             {moment(selectedTable?.createdAt).format("HH:mm A")}
                           </span>
                         </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
+                        <div style={{ fontSize: 16 }}>
                           {t("respon")}:{" "}
                           <span
                             style={{
@@ -1893,19 +1694,15 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
+                              dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
 
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
+                        <div style={{ fontSize: 16 }}>
                           {t("discount")}:{" "}
                           <span
                             style={{
@@ -1947,8 +1744,7 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(totalAfterDiscount)}{" "}
-                            {storeDetail?.firstCurrency}
+                            {moneyCurrency(totalAfterDiscount)} {" "} {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div
@@ -1991,7 +1787,6 @@ export default function TableList() {
                         }}
                       >
                         <ButtonCustom
-                          // onClick={() => onPrintForCher()}
                           onClick={() => onPrintToKitchen()}
                           disabled={onPrinting}
                         >
@@ -2003,10 +1798,6 @@ export default function TableList() {
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
                         >
-                          {/* <FontAwesomeIcon
-                              icon={faWindowClose}
-                              style={{ color: "#fff", marginRight: 10 }}
-                            /> */}
                           {t("closeTable")}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>
@@ -2136,69 +1927,68 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                                const options =
-                                  orderItem?.options
-                                    ?.map((option) =>
-                                      option.quantity > 1
-                                        ? `[${option.quantity} x ${option.name}]`
-                                        : `[${option.name}]`
-                                    )
-                                    .join(" ") || "";
-                                return (
-                                  <tr
-                                    // onClick={() => handleShowQuantity(orderItem)}
-                                    key={"order" + index}
-                                    style={{ borderBottom: "1px solid #eee" }}
-                                  >
-                                    <td onClick={(e) => e.stopPropagation()}>
-                                      <Checkbox
-                                        disabled={
-                                          orderItem?.status === "CANCELED"
-                                        }
-                                        name="checked"
-                                        checked={orderItem?.isChecked || false}
-                                        onChange={(e) => {
-                                          onSelect({
-                                            ...orderItem,
-                                            isChecked: e.target.checked,
-                                          });
-                                        }}
-                                      />
-                                    </td>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                      {orderItem?.name} {options}
-                                    </td>
-                                    <td>{orderItem?.quantity}</td>
-                                    <td
-                                      style={{
-                                        color:
-                                          orderItem?.status === `SERVED`
-                                            ? "green"
-                                            : orderItem?.status === "DOING"
+                              const options =
+                                orderItem?.options
+                                  ?.map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ") || "";
+                              return (
+                                <tr
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {orderItem?.name} {options}
+                                  </td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
-                                      }}
-                                    >
-                                      {orderItem?.status
-                                        ? t(
-                                            orderStatusTranslate(
-                                              orderItem?.status
-                                            )
-                                          )
-                                        : "-"}
-                                    </td>
-                                    <td>{orderItem?.createdBy?.firstname}</td>
-                                    <td>
-                                      {orderItem?.createdAt
-                                        ? moment(orderItem?.createdAt).format(
-                                            "HH:mm A"
-                                          )
-                                        : "-"}
-                                    </td>
-                                  </tr>
-                                );
-                              })
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? t(
+                                        orderStatusTranslate(
+                                          orderItem?.status
+                                        )
+                                      )
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                        "HH:mm A"
+                                      )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              );
+                            })
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2296,10 +2086,6 @@ export default function TableList() {
                     display: !selectedTable?.isOpened ? "block" : "none",
                   }}
                   onClick={() => {
-                    // openTableAndReturnTokenOfBill().then((e) => {
-                    //   setTokenForSmartOrder(e);
-                    //   onPrintQR(e);
-                    // });
                     openTableAndReturnCodeShortLink().then((e) => {
                       setCodeShortLink(e);
                     });
@@ -2342,11 +2128,6 @@ export default function TableList() {
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
-        {/* <BillQRSmartOrdering80
-          storeId={storeDetail?._id}
-          TokenOfBill={tokenForSmartOrder}
-          tableName={selectedTable?.tableName}
-        /> */}
         <BillQRShortSmartOrdering80
           tableName={selectedTable?.tableName}
           CodeShortLink={codeShortLink}
@@ -2453,8 +2234,6 @@ export default function TableList() {
         }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
-        // serviceCharge={storeDetail}
-        // editMode={select}
       />
 
       <OrderCheckOut
@@ -2526,7 +2305,7 @@ export default function TableList() {
           setPopup();
         }}
         onSubmit={async () => {
-          handleMessage();
+          // handleMessage();
           getData();
         }}
       />
@@ -2718,8 +2497,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
+                            ? ""
+                            : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2744,9 +2523,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
+          // onClick={() => {
+          //   _orderTableQunatity();
+          // }}
           >
             {t("save")}
           </Button>

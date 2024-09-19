@@ -696,8 +696,8 @@ export default function CheckOutPopup({
                 }}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
-                {currencyList?.map((e) => (
-                  <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                {currencyList?.map((e, index) => (
+                  <option key={index} value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
             </div>

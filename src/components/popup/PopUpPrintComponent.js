@@ -194,7 +194,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           <Form.Control
             type="date"
             value={startDate}
-            // onChange={(e) => setStartDate(e.target.value)}
+            onChange={(e) => setStartDate(e.target.value)}
           />
         </div>
         <div

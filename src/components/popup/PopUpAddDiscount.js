@@ -27,14 +27,11 @@ export default function PopUpAddDiscount({
   const [discount, setDiscount] = useState(0);
   const { storeDetail } = useStore();
   const [selectedButton, setSelectedButton] = useState("%");
-  const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [discountCategory, setDiscountCategory] = useState(0);
   const [discountOrder, setDiscountOrder] = useState(0);
-  const [discountCategoryAmount, setDiscountCategoryAmount] = useState(0);
-  const [adjustedTotal, setAdjustedTotal] = useState(0);
   const [selectedButtonCategory, setSelectedButtonCategory] = useState("%");
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -89,7 +86,6 @@ export default function PopUpAddDiscount({
         method: "GET",
         url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
       });
-      console.log("CATEGORYTYPE: ", res.data.data);
       setCategorysType(res?.data?.data);
     } catch (error) {
       console.log(error);
@@ -110,7 +106,6 @@ export default function PopUpAddDiscount({
       const filteredCategories = json.filter((category) =>
         orderCategoryIds.includes(category._id)
       );
-      console.log("filteredCategories", filteredCategories);
       setFilteredCategories(filteredCategories);
     } catch (err) {
       console.log(err);
@@ -118,7 +113,6 @@ export default function PopUpAddDiscount({
   };
 
   useEffect(() => {
-    console.log("Categorys:", Categorys);
     const fetchData = async () => {
       try {
         const _localData = await getLocalData();

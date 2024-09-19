@@ -235,11 +235,8 @@ export const numberFormat = (_number) => {
 
 export const convertImageToBase64 = async (imageUrl) => {
   try {
-    console.log("convertImage:---->", typeof (imageUrl));
     const response = await fetch(imageUrl);
-    console.log("convertResponse:---->", typeof (response));
     const blob = await response.blob();
-    console.log("convertblob:---->", blob);
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);

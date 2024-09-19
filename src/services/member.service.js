@@ -33,7 +33,6 @@ export const getMemberAllCount = async (storeId, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count?storeId=${storeId}`;
     const res = await axios.get(url, { headers: TOKEN });
-    console.log("MEMBER>>>>>>>", res?.data?.data);
     return res?.data?.data;
   } catch (error) {
     return { error: true };
@@ -54,9 +53,7 @@ export const getMemberBillCount = async (memberId, findBy, TOKEN) => {
 export const getMemberTotalMoney = async (memberId, findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/total-money?memberId=${memberId}${findBy}`;
-    // console.log("URL: ", url);
     const res = await axios.get(url, { headers: TOKEN });
-    console.log("RESDATA: ", res?.data);
     return res?.data;
   } catch (error) {
     return { error: true };
@@ -154,7 +151,6 @@ export const getMemberOrderMenu = async (memmberId, findby, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
     const response = await axios.get(url, { headers: TOKEN });
-    console.log("MEMBER ORDER MENU: ", response?.data);
     return response?.data?.data;
   } catch (error) {
     console.error("Error in GetMemberOrderMenu: ", error);
@@ -166,7 +162,6 @@ export const getTotalPoint = async (memmberId, findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/total-point?memberId=${memmberId}${findBy}`;
     const response = await axios.get(url, { headers: TOKEN });
-    console.log("DATA: ", response.data);
     return response?.data;
   } catch (error) {
     console.error("Error in GetMemberOrderMenu: ", error);
@@ -190,7 +185,6 @@ export const getSearchOne = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/search-one${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
-    console.log(res.data);
     return res?.data;
   } catch (error) {
     return error;
