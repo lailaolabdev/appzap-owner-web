@@ -282,7 +282,7 @@ export default function OrderPage() {
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
               await onPrintForCher();
-              await handleUpdateOrderStatus("DOING");
+              // await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
             }}
             disabled={onPrinting}
