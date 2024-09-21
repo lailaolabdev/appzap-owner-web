@@ -30,13 +30,13 @@ export const useSoundState = () => {
 
   const messageSound = () => {
     if (audioSetting?.message) {
-      _messageSound.play();
+      _messageSound?.play();
     }
   };
 
   const orderSound = () => {
     if (audioSetting?.order) {
-      _orderSound.play();
+      _orderSound?.play();
     }
     // toast.success("ອັບເດດສະຖານະສຳເລັດ", {
     //   position: "top-center",

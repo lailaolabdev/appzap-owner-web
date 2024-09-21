@@ -331,7 +331,7 @@ export default function OrderPage() {
   };
   return (
     <RootStyle>
-      {orderLoading || (isLoading && <Loading />)}
+      {/* {orderLoading || (isLoading && <Loading />)} */}
       <div style={{ backgroundColor: "white" }}>
         <Tabs
           defaultActiveKey={WAITING_STATUS}

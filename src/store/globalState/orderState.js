@@ -74,7 +74,7 @@ export const useOrderState = () => {
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
     // console.log("getOrderItemsStore runnnnn");
     try {
-      setOrderItems([]);
+      // setOrderItems([]);
       let time = "";
       if (status === "SERVED" || status === "CANCELED") {
         time = `&startDate=${moment(moment())
