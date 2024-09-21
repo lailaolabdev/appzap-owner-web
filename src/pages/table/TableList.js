@@ -66,6 +66,7 @@ import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefN
 
 export default function TableList() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const params = useParams();
   const number = params?.number;
   const activeTableId = params?.tableId;
@@ -295,7 +296,7 @@ export default function TableList() {
     }
   }, [state?.zoneId]);
 
-  console.log("ZONE Out :", storeDetail?.zoneCheckBill);
+  // console.log("ZONE Out :", storeDetail?.zoneCheckBill);
 
   useEffect(() => {
     console.log("ZONE In :", storeDetail?.zoneCheckBill);
