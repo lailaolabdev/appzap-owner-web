@@ -253,25 +253,30 @@ export default function TableList() {
 
   useEffect(() => {
     // setIsCheckedOrderItem([...tableOrderItems]);
-    updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
+    if (tableOrderItems?.length > 0) updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
+    else setIsCheckedOrderItem([]);
   }, [selectedTable, tableOrderItems]);
 
   const updateCheckedOrderItems = (isCheckedOrderItem, tableOrderItems) => {
-    tableOrderItems.forEach((tableItem) => {
-      const existingItemIndex = isCheckedOrderItem.findIndex((checkedItem) => checkedItem._id === tableItem._id);
+    if (isCheckedOrderItem.length <= 0 || tableOrderItems[0]["code"] != isCheckedOrderItem[0]["code"]) {
+      setIsCheckedOrderItem(tableOrderItems);
+    } else {
+      tableOrderItems.forEach((tableItem) => {
+        const existingItemIndex = isCheckedOrderItem.findIndex((checkedItem) => checkedItem._id === tableItem._id);
 
-      if (existingItemIndex === -1) {
-        // Item doesn't exist in isCheckedOrderItem, so add it
-        isCheckedOrderItem.unshift({ ...tableItem });
-      } else {
-        // Item exists, check if status differs
-        if (isCheckedOrderItem[existingItemIndex].status !== tableItem.status) {
-          // Update the status
-          isCheckedOrderItem[existingItemIndex].status = tableItem.status;
+        if (existingItemIndex === -1) {
+          // Item doesn't exist in isCheckedOrderItem, so add it
+          isCheckedOrderItem = [{ ...tableItem }, ...isCheckedOrderItem];
+        } else {
+          // Item exists, check if status differs
+          if (isCheckedOrderItem[existingItemIndex].status !== tableItem.status) {
+            // Update the status
+            isCheckedOrderItem[existingItemIndex].status = tableItem.status;
+          }
         }
-      }
-    });
-    setIsCheckedOrderItem(isCheckedOrderItem);
+      });
+      setIsCheckedOrderItem(isCheckedOrderItem);
+    }
   };
 
   const _handlecheckout = async () => {
