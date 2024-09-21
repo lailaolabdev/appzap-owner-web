@@ -875,8 +875,8 @@
   "3_more_day": "ອີກ 3 ມື້",
   "5_more_day": "ອີກ 5 ມື້",
   "7_more_day": "ອີກ 7 ມື້",
-  "1_more_month": "ອີກ 1 ມື້",
-  "3_more_month": "ອີກ 3 ມື້",
+  "1_more_month": "ອີກ 1 ເດືອນ",
+  "3_more_month": "ອີກ 3 ເດືອນ",
   "this_years": "ປີນີ້",
   "last_years": "ປີກ່ອນ",
   "chose_top": "ເລຶອກການຈັດ Top",
@@ -902,5 +902,4 @@
   "show_by_zone": "ສະແດງຕາມໂຊນ",
   "show_all_zone": "ທັງໝົດ",
   "clear": "ລ້າງຄ່າ"
-
 }
