@@ -40,8 +40,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 fontSize: 14,
               }}
             >
-              {val?.code || selectedTable?.code} | #
-              {val?.queue || selectedTable?.queue}
+              {val?.code || selectedTable?.code}
             </td>
           </tr>
           <tr>
