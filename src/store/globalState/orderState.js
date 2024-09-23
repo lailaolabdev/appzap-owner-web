@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
 import { END_POINT, WAITING_STATUS } from "../../constants";
 import { getLocalData } from "../../constants/api";
@@ -19,6 +19,10 @@ export const useOrderState = () => {
   const [orderServed, setOrderServed] = useState([]);
   const [orderDoing, setOrderDoing] = useState([]);
   const [orderWaiting, setOrderWaiting] = useState([]);
+
+  const [printBackground, setPrintBackground] = useState([]);
+  const [onProcessPrintBackground, setOnProcessPrintBackground] =
+    useState(false);
 
   const initialOrderSocket = useMemo(
     () => async () => {
@@ -192,6 +196,16 @@ export const useOrderState = () => {
     setorderItemForPrintBillSelect(_newOrderItems);
     setOrderItems(_newOrderItems);
   };
+
+  useEffect(() => {
+    if (onProcessPrintBackground) return;
+    if (printBackground.length <= 0) return;
+    setOnProcessPrintBackground(true);
+    setPrintBackground([]);
+    Promise.all(printBackground).then(() => {
+      setOnProcessPrintBackground(false);
+    });
+  }, [printBackground, onProcessPrintBackground]);
   return {
     soundPlayer,
     callCheckBill,
@@ -213,5 +227,7 @@ export const useOrderState = () => {
     setOrderDoing,
     orderWaiting,
     setOrderWaiting,
+    printBackground,
+    setPrintBackground,
   };
 };

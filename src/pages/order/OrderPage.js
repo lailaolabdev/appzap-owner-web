@@ -55,6 +55,8 @@ export default function OrderPage() {
     orderWaiting,
     setorderItemForPrintBillSelect,
     setCountOrderWaiting,
+    printBackground,
+    setPrintBackground,
   } = useStore();
 
   const handleUpdateOrderStatus = async (status) => {
@@ -101,16 +103,26 @@ export default function OrderPage() {
       const printDate = [...billForCher80.current].filter((e) => e != null);
       console.log(billForCher80.current);
       console.log(printDate.length);
-      const dataUrls = [];
+      let array2canvas = [];
       for (const _ref of printDate) {
-        const dataUrl = await html2canvas(_ref, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-        });
-        dataUrls.push(dataUrl);
+        // const dataUrl = await html2canvas(_ref, {
+        //   useCORS: true,
+        //   scrollX: 10,
+        //   scrollY: 0,
+        // });
+        array2canvas.push(
+          html2canvas(_ref, {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+          })
+        );
+        // dataUrls.push(dataUrl);
       }
 
+      const dataUrls = await Promise.all(array2canvas);
+
+      let arrayPrint = [];
       for (const _ref of printDate) {
         const _printer = printers.find((e) => {
           return e?._id === orderSelect?.[_index]?.printer;
@@ -143,37 +155,48 @@ export default function OrderPage() {
           if (_printer?.type === "USB") {
             urlForPrinter = USB_PRINTER_PORT;
           }
-          const _file = await base64ToBlob(await dataUrl.toDataURL());
-          var bodyFormData = new FormData();
+          const runPrint = async () => {
+            try {
+              const _file = await base64ToBlob(await dataUrl.toDataURL());
+              var bodyFormData = new FormData();
 
-          bodyFormData.append("ip", _printer?.ip);
-          if (_index === 0) {
-            bodyFormData.append("beep1", 1);
-            bodyFormData.append("beep2", 9);
-          }
-          bodyFormData.append("isdrawer", false);
-          bodyFormData.append("port", "9100");
-          bodyFormData.append("image", _file);
-          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+              bodyFormData.append("ip", _printer?.ip);
+              if (_index === 0) {
+                bodyFormData.append("beep1", 1);
+                bodyFormData.append("beep2", 9);
+              }
+              bodyFormData.append("isdrawer", false);
+              bodyFormData.append("port", "9100");
+              bodyFormData.append("image", _file);
+              bodyFormData.append(
+                "paper",
+                _printer?.width === "58mm" ? 58 : 80
+              );
 
-          await printFlutter(
-            {
-              imageBuffer: dataUrl.toDataURL(),
-              ip: _printer?.ip,
-              type: _printer?.type,
-              port: "9100",
-              beep: 1,
-              width: _printer?.width === "58mm" ? 400 : 580,
-            },
-            async () => {
-              await axios({
-                method: "post",
-                url: urlForPrinter,
-                data: bodyFormData,
-                headers: { "Content-Type": "multipart/form-data" },
-              });
+              await printFlutter(
+                {
+                  imageBuffer: dataUrl.toDataURL(),
+                  ip: _printer?.ip,
+                  type: _printer?.type,
+                  port: "9100",
+                  beep: 1,
+                  width: _printer?.width === "58mm" ? 400 : 580,
+                },
+                async () => {
+                  await axios({
+                    method: "post",
+                    url: urlForPrinter,
+                    data: bodyFormData,
+                    headers: { "Content-Type": "multipart/form-data" },
+                  });
+                }
+              );
+              return true;
+            } catch {
+              return false;
             }
-          );
+          };
+          arrayPrint.push(runPrint());
           // await axios({
           //   method: "post",
           //   url: urlForPrinter,
@@ -181,14 +204,14 @@ export default function OrderPage() {
           //   headers: { "Content-Type": "multipart/form-data" },
           // });
 
-          if (_index === 0) {
-            await Swal.fire({
-              icon: "success",
-              title: "ປິ້ນສຳເລັດ",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          }
+          // if (_index === 0) {
+          //   await Swal.fire({
+          //     icon: "success",
+          //     title: "ປິ້ນສຳເລັດ",
+          //     showConfirmButton: false,
+          //     timer: 1500,
+          //   });
+          // }
         } catch (err) {
           if (err) {
             setCountError("ERR");
@@ -198,12 +221,20 @@ export default function OrderPage() {
         }
         _index++;
       }
+      setPrintBackground((prev) => [...prev, ...arrayPrint]);
       setOnPrinting(false);
       if (countError == "ERR") {
         setIsLoading(false);
         Swal.fire({
           icon: "error",
           title: "ປິ້ນບໍ່ສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        await Swal.fire({
+          icon: "success",
+          title: "ປິ້ນສຳເລັດ",
           showConfirmButton: false,
           timer: 1500,
         });
