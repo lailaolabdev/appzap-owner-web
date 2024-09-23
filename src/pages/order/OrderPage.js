@@ -98,7 +98,6 @@ export default function OrderPage() {
   const onPrintForCher = async () => {
     setOnPrinting(true);
     try {
-      console.log("a")
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
@@ -115,20 +114,17 @@ export default function OrderPage() {
         // );
         array2blob.push(_ref);
       }
-      console.log("b")
 
       // const dataUrls = await Promise.all(array2canvas);
       console.log("array2blob", array2blob);
       const dataUrls = array2blob;
       console.log("dataUrls", dataUrls);
 
-      console.log("c")
       let arrayPrint = [];
       for (const _ref of printDate) {
         const _printer = printers.find((e) => {
           return e?._id === orderSelect?.[_index]?.printer;
         });
-        console.log("d")
 
         try {
           let urlForPrinter = "";
@@ -142,7 +138,6 @@ export default function OrderPage() {
           if (_printer?.type === "USB") {
             urlForPrinter = USB_PRINTER_PORT;
           }
-          console.log("e")
           const runPrint = async () => {
             try {
               // const _file = await base64ToBlob(await dataUrl.toDataURL());
@@ -184,7 +179,6 @@ export default function OrderPage() {
               return false;
             }
           };
-          console.log("j")
           arrayPrint.push(runPrint());
         } catch (err) {
           if (err) {
@@ -193,7 +187,6 @@ export default function OrderPage() {
             console.log("err::::", err);
           }
         }
-        console.log("k")
         _index++;
       }
       if (countError == "ERR") {
@@ -212,10 +205,8 @@ export default function OrderPage() {
           timer: 1500,
         });
       }
-      console.log("l")
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
-      console.log("m")
     } catch (err) {
       setIsLoading(false);
       setOnPrinting(false);
