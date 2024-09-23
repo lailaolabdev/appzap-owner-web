@@ -24,6 +24,7 @@ export const useTableState = () => {
   const [selectedTable, setSelectedTable] = useState();
   const [selectTable2, setSelectTable2] = useState();
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
+  const [isWaitingCheckout, setIsWaitingCheckout] = useState(false);
 
   /**
    * Modify Order
@@ -116,12 +117,15 @@ export const useTableState = () => {
    */
 
   const onSelectTable = async (table) => {
-    if (table) {
+    if (table && !isWaitingCheckout) {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
       setSelectedTable(table);
+      setIsWaitingCheckout(true)
       await getTableOrders(table);
+      setIsWaitingCheckout(false)
     } else {
+      setIsWaitingCheckout(true)
     }
   };
 
@@ -390,5 +394,6 @@ export const useTableState = () => {
     setSelectTable2,
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
+    isWaitingCheckout,
   };
 };
