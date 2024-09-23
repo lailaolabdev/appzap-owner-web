@@ -33,6 +33,7 @@
     "file-saver": "^2.0.5",
     "formik": "^2.1.5",
     "holderjs": "^2.9.9",
+    "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "i18next": "^22.4.9",
     "js-file-download": "^0.4.12",
