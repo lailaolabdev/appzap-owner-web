@@ -206,6 +206,7 @@ export const useOrderState = () => {
       setOnProcessPrintBackground(false);
     });
   }, [printBackground, onProcessPrintBackground]);
+  
   return {
     soundPlayer,
     callCheckBill,

@@ -92,7 +92,7 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) {}
+    } catch (err) { }
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -171,10 +171,7 @@ export default function OrderPage() {
               bodyFormData.append("isdrawer", false);
               bodyFormData.append("port", "9100");
               bodyFormData.append("image", _file);
-              bodyFormData.append(
-                "paper",
-                _printer?.width === "58mm" ? 58 : 80
-              );
+              bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
               // await printFlutter(
               //   {
@@ -383,6 +380,7 @@ export default function OrderPage() {
             title={`${t("hasOrder")}(${orderWaiting?.length})`}
           >
             <Tool />
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -390,14 +388,17 @@ export default function OrderPage() {
             title={`${t("cooking")}(${orderDoing?.length})`}
           >
             <Tool />
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
             <DoingOrderTab />
           </Tab>
           <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
             {/* <Tool /> */}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
             <ServedOrderTab />
           </Tab>
           <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
             {/* <Tool /> */}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
             <CanceledOrderTab />
           </Tab>
           {/* <Tab eventKey="contact" title="Contact" disabled>
