@@ -200,13 +200,23 @@ export const useOrderState = () => {
   useEffect(() => {
     if (onProcessPrintBackground) return;
     if (printBackground.length <= 0) return;
+
+    const processChunks = async (items, limit) => {
+      for (let i = 0; i < items.length; i += limit) {
+        const chunk = items.slice(i, i + limit);
+        await Promise.all(chunk);
+      }
+    };
+
     setOnProcessPrintBackground(true);
+    const printItems = [...printBackground]; // Create a copy to avoid mutation
     setPrintBackground([]);
-    Promise.all(printBackground).then(() => {
+
+    processChunks(printItems, 5).then(() => {
       setOnProcessPrintBackground(false);
     });
   }, [printBackground, onProcessPrintBackground]);
-  
+
   return {
     soundPlayer,
     callCheckBill,
