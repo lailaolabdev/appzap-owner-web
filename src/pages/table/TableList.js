@@ -151,6 +151,7 @@ export default function TableList() {
   const [zoneId, setZoneId] = useState();
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [printBillLoading, setPrintBillLoading] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -255,23 +256,31 @@ export default function TableList() {
 
   useEffect(() => {
     // setIsCheckedOrderItem([...tableOrderItems]);
-    if (tableOrderItems?.length > 0) updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
+    if (tableOrderItems?.length > 0)
+      updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
     else setIsCheckedOrderItem([]);
   }, [selectedTable, tableOrderItems]);
 
   const updateCheckedOrderItems = (isCheckedOrderItem, tableOrderItems) => {
-    if (isCheckedOrderItem.length <= 0 || tableOrderItems[0]["code"] != isCheckedOrderItem[0]["code"]) {
+    if (
+      isCheckedOrderItem.length <= 0 ||
+      tableOrderItems[0]["code"] != isCheckedOrderItem[0]["code"]
+    ) {
       setIsCheckedOrderItem(tableOrderItems);
     } else {
       tableOrderItems.forEach((tableItem) => {
-        const existingItemIndex = isCheckedOrderItem.findIndex((checkedItem) => checkedItem._id === tableItem._id);
+        const existingItemIndex = isCheckedOrderItem.findIndex(
+          (checkedItem) => checkedItem._id === tableItem._id
+        );
 
         if (existingItemIndex === -1) {
           // Item doesn't exist in isCheckedOrderItem, so add it
           isCheckedOrderItem = [{ ...tableItem }, ...isCheckedOrderItem];
         } else {
           // Item exists, check if status differs
-          if (isCheckedOrderItem[existingItemIndex].status !== tableItem.status) {
+          if (
+            isCheckedOrderItem[existingItemIndex].status !== tableItem.status
+          ) {
             // Update the status
             isCheckedOrderItem[existingItemIndex].status = tableItem.status;
           }
@@ -552,6 +561,7 @@ export default function TableList() {
 
   const onPrintBill = async (isPrintBill) => {
     try {
+      setPrintBillLoading(true)
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -626,7 +636,8 @@ export default function TableList() {
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
-
+      
+      setPrintBillLoading(false)
       await Swal.fire({
         icon: "success",
         title: `${t("checkbill_success")}`,
@@ -645,6 +656,7 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
+      setPrintBillLoading(false)
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -759,14 +771,14 @@ export default function TableList() {
       //   headers: { "Content-Type": "multipart/form-data" },
       // });
 
-      setCodeShortLink(null);
+      // setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
-      setCodeShortLink(null);
+      // setCodeShortLink(null);
     } catch (err) {
       setCodeShortLink(null);
       console.log(err);
@@ -1313,8 +1325,11 @@ export default function TableList() {
     if (!onPrinting) {
       if (!reload) {
         if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-          console.log("newOrderTransaction: ", newOrderTransaction)
-          console.log("newOrderUpdateStatusTransaction: ", newOrderUpdateStatusTransaction)
+          console.log("newOrderTransaction: ", newOrderTransaction);
+          console.log(
+            "newOrderUpdateStatusTransaction: ",
+            newOrderUpdateStatusTransaction
+          );
           handleMessage();
           setNewOrderTransaction(false);
           setNewOrderUpdateStatusTransaction(false);
@@ -1977,45 +1992,45 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                              const options =
-                                orderItem?.options
-                                  ?.map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ") || "";
-                              return (
-                                <tr
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  <td onClick={(e) => e.stopPropagation()}>
-                                    <Checkbox
-                                      disabled={
-                                        orderItem?.status === "CANCELED"
-                                      }
-                                      name="checked"
-                                      checked={orderItem?.isChecked || false}
-                                      onChange={(e) => {
-                                        onSelect({
-                                          ...orderItem,
-                                          isChecked: e.target.checked,
-                                        });
-                                      }}
-                                    />
-                                  </td>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {orderItem?.name} {options}
-                                  </td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "DOING"
+                                const options =
+                                  orderItem?.options
+                                    ?.map((option) =>
+                                      option.quantity > 1
+                                        ? `[${option.quantity} x ${option.name}]`
+                                        : `[${option.name}]`
+                                    )
+                                    .join(" ") || "";
+                                return (
+                                  <tr
+                                    key={"order" + index}
+                                    style={{ borderBottom: "1px solid #eee" }}
+                                  >
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                      <Checkbox
+                                        disabled={
+                                          orderItem?.status === "CANCELED"
+                                        }
+                                        name="checked"
+                                        checked={orderItem?.isChecked || false}
+                                        onChange={(e) => {
+                                          onSelect({
+                                            ...orderItem,
+                                            isChecked: e.target.checked,
+                                          });
+                                        }}
+                                      />
+                                    </td>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                      {orderItem?.name} {options}
+                                    </td>
+                                    <td>{orderItem?.quantity}</td>
+                                    <td
+                                      style={{
+                                        color:
+                                          orderItem?.status === `SERVED`
+                                            ? "green"
+                                            : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
                                       }}
@@ -2192,44 +2207,15 @@ export default function TableList() {
           serviceCharge={serviceChargePercent}
         />
       </div>
-      {isCheckedOrderItem?.filter((e) => e?.isChecked).map((val, i) => {
-        return (
-          <div
-            style={{ width: "80mm", padding: 10 }}
-            ref={(el) => (billForCher80.current[i] = el)}
-          >
-            <BillForChef80
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              dataBill={dataBill}
-              val={val}
-            />
-          </div>
-        );
-      })}
-      {isCheckedOrderItem?.filter((e) => e?.isChecked).map((val, i) => {
-        return (
-          <div
-            style={{ width: "80mm", padding: 10 }}
-            ref={(el) => (billForCherCancel80.current[i] = el)}
-          >
-            <BillForChefCancel80
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              dataBill={dataBill}
-              val={val}
-            />
-          </div>
-        );
-      })}
-      <div>
-        {isCheckedOrderItem?.filter((e) => e?.isChecked).map((val, i) => {
+      {isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((val, i) => {
           return (
             <div
-              style={{ width: "58mm", padding: 10 }}
-              ref={(el) => (billForCher58.current[i] = el)}
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCher80.current[i] = el)}
             >
-              <BillForChef58
+              <BillForChef80
                 storeDetail={storeDetail}
                 selectedTable={selectedTable}
                 dataBill={dataBill}
@@ -2238,6 +2224,41 @@ export default function TableList() {
             </div>
           );
         })}
+      {isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((val, i) => {
+          return (
+            <div
+              style={{ width: "80mm", padding: 10 }}
+              ref={(el) => (billForCherCancel80.current[i] = el)}
+            >
+              <BillForChefCancel80
+                storeDetail={storeDetail}
+                selectedTable={selectedTable}
+                dataBill={dataBill}
+                val={val}
+              />
+            </div>
+          );
+        })}
+      <div>
+        {isCheckedOrderItem
+          ?.filter((e) => e?.isChecked)
+          .map((val, i) => {
+            return (
+              <div
+                style={{ width: "58mm", padding: 10 }}
+                ref={(el) => (billForCher58.current[i] = el)}
+              >
+                <BillForChef58
+                  storeDetail={storeDetail}
+                  selectedTable={selectedTable}
+                  dataBill={dataBill}
+                  val={val}
+                />
+              </div>
+            );
+          })}
       </div>
 
       {/* Render the combined bill for 80mm */}
@@ -2295,6 +2316,7 @@ export default function TableList() {
           setMenuItemDetailModal(false);
           setPopup({ CheckOutType: true });
         }}
+        printBillLoading={printBillLoading}
       />
 
       <PopUpPin

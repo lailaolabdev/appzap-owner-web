@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Modal, Table, Button, Form, Row, Card } from "react-bootstrap";
+import { Modal, Table, Button, Form, Row, Card, Spinner } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
@@ -20,9 +20,10 @@ const OrderCheckOut = ({
   show = false,
   hide,
   taxPercent = 0,
-  onPrintBill = () => {},
-  onSubmit = () => {},
+  onPrintBill = () => { },
+  onSubmit = () => { },
   staffData,
+  printBillLoading,
 }) => {
   const { t } = useTranslation();
   const {
@@ -104,7 +105,7 @@ const OrderCheckOut = ({
       isServiceCharge: e.target.checked,
     });
   };
-  
+
   return (
     <>
       <Modal
@@ -183,10 +184,10 @@ const OrderCheckOut = ({
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                              (orderItem?.price +
-                                (orderItem?.totalOptionPrice ?? 0)) *
-                                orderItem?.quantity
-                            )
+                            (orderItem?.price +
+                              (orderItem?.totalOptionPrice ?? 0)) *
+                            orderItem?.quantity
+                          )
                           : "-"}
                       </td>
                     </tr>
@@ -244,8 +245,10 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
+              disabled={printBillLoading}
               onClick={() => onPrintBill(false)}
             >
+              {printBillLoading && <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />}
               <FontAwesomeIcon
                 icon={faCashRegister}
                 style={{ color: "#fff" }}
@@ -269,35 +272,35 @@ const OrderCheckOut = ({
                 <b>
                   {data && data?.discountType === "LAK"
                     ? moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            data?.discount >
-                            0
-                            ? (total + serviceAmount) *
-                                (taxPercent * 0.01 + 1) -
-                                data?.discount
-                            : 0
-                        )
+                      Math.floor(
+                        total * (taxPercent * 0.01 + 1) +
+                          serviceAmount -
+                          data?.discount >
+                          0
+                          ? (total + serviceAmount) *
+                          (taxPercent * 0.01 + 1) -
+                          data?.discount
+                          : 0
                       )
+                    )
                     : moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            ((total + serviceAmount) *
-                              (taxPercent * 0.01 + 1) *
-                              data?.discount) /
-                              100 >
-                            0
-                            ? total * (taxPercent * 0.01 + 1) +
-                                serviceAmount -
-                                ((total + serviceAmount) *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100
-                            : 0
-                        )
-                      )}
+                      Math.floor(
+                        total * (taxPercent * 0.01 + 1) +
+                          serviceAmount -
+                          ((total + serviceAmount) *
+                            (taxPercent * 0.01 + 1) *
+                            data?.discount) /
+                          100 >
+                          0
+                          ? total * (taxPercent * 0.01 + 1) +
+                          serviceAmount -
+                          ((total + serviceAmount) *
+                            (taxPercent * 0.01 + 1) *
+                            data?.discount) /
+                          100
+                          : 0
+                      )
+                    )}
                 </b>
               </span>
             </div>

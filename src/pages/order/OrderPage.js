@@ -102,8 +102,6 @@ export default function OrderPage() {
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
-      console.log(billForCher80.current);
-      console.log(printDate.length);
       let array2canvas = [];
       let array2blob = [];
       for (const _ref of printDate) {
@@ -131,21 +129,6 @@ export default function OrderPage() {
         try {
           let urlForPrinter = "";
           const dataUrl = dataUrls[_index];
-          // if (_printer?.width === "80mm") {
-          //   dataUrl = await html2canvas(printDate[_index], {
-          //     useCORS: true,
-          //     scrollX: 10,
-          //     scrollY: 0,
-          //   });
-          // }
-          // if (_printer?.width === "58mm") {
-          //   dataUrl = await html2canvas(printDate[_index], {
-          //     useCORS: true,
-          //     scrollX: 10,
-          //     scrollY: 0,
-          //   });
-          // }
-
           if (_printer?.type === "ETHERNET") {
             urlForPrinter = ETHERNET_PRINTER_PORT;
           }
@@ -197,21 +180,6 @@ export default function OrderPage() {
             }
           };
           arrayPrint.push(runPrint());
-          // await axios({
-          //   method: "post",
-          //   url: urlForPrinter,
-          //   data: bodyFormData,
-          //   headers: { "Content-Type": "multipart/form-data" },
-          // });
-
-          // if (_index === 0) {
-          //   await Swal.fire({
-          //     icon: "success",
-          //     title: "ປິ້ນສຳເລັດ",
-          //     showConfirmButton: false,
-          //     timer: 1500,
-          //   });
-          // }
         } catch (err) {
           if (err) {
             setCountError("ERR");
@@ -221,8 +189,6 @@ export default function OrderPage() {
         }
         _index++;
       }
-      setPrintBackground((prev) => [...prev, ...arrayPrint]);
-      setOnPrinting(false);
       if (countError == "ERR") {
         setIsLoading(false);
         Swal.fire({
@@ -239,12 +205,13 @@ export default function OrderPage() {
           timer: 1500,
         });
       }
+      setOnPrinting(false);
+      setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (err) {
       setIsLoading(false);
       setOnPrinting(false);
     }
   };
-  // useEffect
 
   useEffect(() => {
     const _run = async () => {
@@ -380,7 +347,7 @@ export default function OrderPage() {
             title={`${t("hasOrder")}(${orderWaiting?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -388,17 +355,17 @@ export default function OrderPage() {
             title={`${t("cooking")}(${orderDoing?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <DoingOrderTab />
           </Tab>
           <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <ServedOrderTab />
           </Tab>
           <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <CanceledOrderTab />
           </Tab>
           {/* <Tab eventKey="contact" title="Contact" disabled>
