@@ -97,19 +97,13 @@ export default function OrderPage() {
   const onPrintForCher = async () => {
     setOnPrinting(true);
     try {
+      console.log("a")
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
-      console.log(billForCher80.current);
-      console.log(printDate.length);
       let array2canvas = [];
       for (const _ref of printDate) {
-        // const dataUrl = await html2canvas(_ref, {
-        //   useCORS: true,
-        //   scrollX: 10,
-        //   scrollY: 0,
-        // });
         array2canvas.push(
           html2canvas(_ref, {
             useCORS: true,
@@ -117,35 +111,22 @@ export default function OrderPage() {
             scrollY: 0,
           })
         );
-        // dataUrls.push(dataUrl);
       }
+      console.log("b")
 
       const dataUrls = await Promise.all(array2canvas);
 
+      console.log("c")
       let arrayPrint = [];
       for (const _ref of printDate) {
         const _printer = printers.find((e) => {
           return e?._id === orderSelect?.[_index]?.printer;
         });
+        console.log("d")
 
         try {
           let urlForPrinter = "";
           const dataUrl = dataUrls[_index];
-          // if (_printer?.width === "80mm") {
-          //   dataUrl = await html2canvas(printDate[_index], {
-          //     useCORS: true,
-          //     scrollX: 10,
-          //     scrollY: 0,
-          //   });
-          // }
-          // if (_printer?.width === "58mm") {
-          //   dataUrl = await html2canvas(printDate[_index], {
-          //     useCORS: true,
-          //     scrollX: 10,
-          //     scrollY: 0,
-          //   });
-          // }
-
           if (_printer?.type === "ETHERNET") {
             urlForPrinter = ETHERNET_PRINTER_PORT;
           }
@@ -155,9 +136,11 @@ export default function OrderPage() {
           if (_printer?.type === "USB") {
             urlForPrinter = USB_PRINTER_PORT;
           }
+          console.log("e")
           const runPrint = async () => {
             try {
               const _file = base64ToBlob(dataUrl.toDataURL());
+              console.log("f")
               var bodyFormData = new FormData();
 
               bodyFormData.append("ip", _printer?.ip);
@@ -170,6 +153,7 @@ export default function OrderPage() {
               bodyFormData.append("image", _file);
               bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
+              console.log("g")
               await printFlutter(
                 {
                   imageBuffer: dataUrl.toDataURL(),
@@ -180,6 +164,7 @@ export default function OrderPage() {
                   width: _printer?.width === "58mm" ? 400 : 580,
                 },
                 async () => {
+                  console.log("h")
                   await axios({
                     method: "post",
                     url: urlForPrinter,
@@ -188,27 +173,14 @@ export default function OrderPage() {
                   });
                 }
               );
+              console.log("i")
               return true;
             } catch {
               return false;
             }
           };
+          console.log("j")
           arrayPrint.push(runPrint());
-          // await axios({
-          //   method: "post",
-          //   url: urlForPrinter,
-          //   data: bodyFormData,
-          //   headers: { "Content-Type": "multipart/form-data" },
-          // });
-
-          // if (_index === 0) {
-          //   await Swal.fire({
-          //     icon: "success",
-          //     title: "ປິ້ນສຳເລັດ",
-          //     showConfirmButton: false,
-          //     timer: 1500,
-          //   });
-          // }
         } catch (err) {
           if (err) {
             setCountError("ERR");
@@ -216,10 +188,9 @@ export default function OrderPage() {
             console.log("err::::", err);
           }
         }
+        console.log("k")
         _index++;
       }
-      setPrintBackground((prev) => [...prev, ...arrayPrint]);
-      setOnPrinting(false);
       if (countError == "ERR") {
         setIsLoading(false);
         Swal.fire({
@@ -236,12 +207,15 @@ export default function OrderPage() {
           timer: 1500,
         });
       }
+      console.log("l")
+      setOnPrinting(false);
+      setPrintBackground((prev) => [...prev, ...arrayPrint]);
+      console.log("m")
     } catch (err) {
       setIsLoading(false);
       setOnPrinting(false);
     }
   };
-  // useEffect
 
   useEffect(() => {
     const _run = async () => {
@@ -377,7 +351,7 @@ export default function OrderPage() {
             title={`${t("hasOrder")}(${orderWaiting?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -385,17 +359,17 @@ export default function OrderPage() {
             title={`${t("cooking")}(${orderDoing?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <DoingOrderTab />
           </Tab>
           <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <ServedOrderTab />
           </Tab>
           <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Loading new data...</span></div>}
+            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
             <CanceledOrderTab />
           </Tab>
           {/* <Tab eventKey="contact" title="Contact" disabled>
