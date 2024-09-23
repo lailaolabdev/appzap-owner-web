@@ -295,7 +295,7 @@ export default function FarkCreatePage() {
           overflow: "hidden",
         }}
       >
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 20, overflow: "auto" }}>
           <Breadcrumb>
             <Breadcrumb.Item>{t("bury_deposit_layer")}</Breadcrumb.Item>
             <Breadcrumb.Item active>{t("add_list")}</Breadcrumb.Item>
