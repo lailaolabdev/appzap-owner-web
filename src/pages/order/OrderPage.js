@@ -7,6 +7,7 @@ import { useStore } from "../../store";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from "html-to-image";
 import axios from "axios";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import BillForChef80 from "../../components/bill/BillForChef80";
@@ -103,18 +104,23 @@ export default function OrderPage() {
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
       let array2canvas = [];
+      let array2blob = [];
       for (const _ref of printDate) {
-        array2canvas.push(
-          html2canvas(_ref, {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-          })
-        );
+        // array2canvas.push(
+        //   html2canvas(_ref, {
+        //     useCORS: true,
+        //     scrollX: 10,
+        //     scrollY: 0,
+        //   })
+        // );
+        array2blob.push(_ref);
       }
       console.log("b")
 
-      const dataUrls = await Promise.all(array2canvas);
+      // const dataUrls = await Promise.all(array2canvas);
+      console.log("array2blob", array2blob);
+      const dataUrls = array2blob;
+      console.log("dataUrls", dataUrls);
 
       console.log("c")
       let arrayPrint = [];
@@ -139,8 +145,10 @@ export default function OrderPage() {
           console.log("e")
           const runPrint = async () => {
             try {
-              const _file = base64ToBlob(dataUrl.toDataURL());
-              console.log("f")
+              // const _file = await base64ToBlob(await dataUrl.toDataURL());
+              const _file = await toBlob(dataUrl, { cacheBust: true });
+              // const _file = dataUrl;
+              console.log("_file", _file);
               var bodyFormData = new FormData();
 
               bodyFormData.append("ip", _printer?.ip);
@@ -153,27 +161,24 @@ export default function OrderPage() {
               bodyFormData.append("image", _file);
               bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
-              console.log("g")
-              await printFlutter(
-                {
-                  imageBuffer: dataUrl.toDataURL(),
-                  ip: _printer?.ip,
-                  type: _printer?.type,
-                  port: "9100",
-                  beep: 1,
-                  width: _printer?.width === "58mm" ? 400 : 580,
-                },
-                async () => {
-                  console.log("h")
-                  await axios({
-                    method: "post",
-                    url: urlForPrinter,
-                    data: bodyFormData,
-                    headers: { "Content-Type": "multipart/form-data" },
-                  });
-                }
-              );
-              console.log("i")
+              // await printFlutter(
+              //   {
+              //     imageBuffer: dataUrl.toDataURL(),
+              //     ip: _printer?.ip,
+              //     type: _printer?.type,
+              //     port: "9100",
+              //     beep: 1,
+              //     width: _printer?.width === "58mm" ? 400 : 580,
+              //   },
+              //   async () => {
+              await axios({
+                method: "post",
+                url: urlForPrinter,
+                data: bodyFormData,
+                headers: { "Content-Type": "multipart/form-data" },
+              });
+              //   }
+              // );
               return true;
             } catch {
               return false;

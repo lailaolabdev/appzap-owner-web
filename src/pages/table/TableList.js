@@ -151,6 +151,7 @@ export default function TableList() {
   const [zoneId, setZoneId] = useState();
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [printBillLoading, setPrintBillLoading] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -552,6 +553,7 @@ export default function TableList() {
 
   const onPrintBill = async (isPrintBill) => {
     try {
+      setPrintBillLoading(true)
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -626,7 +628,8 @@ export default function TableList() {
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
-
+      
+      setPrintBillLoading(false)
       await Swal.fire({
         icon: "success",
         title: `${t("checkbill_success")}`,
@@ -645,6 +648,7 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
+      setPrintBillLoading(false)
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -2295,6 +2299,7 @@ export default function TableList() {
           setMenuItemDetailModal(false);
           setPopup({ CheckOutType: true });
         }}
+        printBillLoading={printBillLoading}
       />
 
       <PopUpPin
