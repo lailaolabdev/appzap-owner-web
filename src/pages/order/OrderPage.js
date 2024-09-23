@@ -92,7 +92,7 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       // fetchData();
       return;
-    } catch (err) { }
+    } catch (err) {}
   };
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
@@ -103,7 +103,7 @@ export default function OrderPage() {
       let _index = 0;
       const printDate = [...billForCher80.current].filter((e) => e != null);
       let array2canvas = [];
-      let array2blob = [];
+      let array_ref = [];
       for (const _ref of printDate) {
         // array2canvas.push(
         //   html2canvas(_ref, {
@@ -112,13 +112,8 @@ export default function OrderPage() {
         //     scrollY: 0,
         //   })
         // );
-        array2blob.push(_ref);
+        array_ref.push(_ref);
       }
-
-      // const dataUrls = await Promise.all(array2canvas);
-      console.log("array2blob", array2blob);
-      const dataUrls = array2blob;
-      console.log("dataUrls", dataUrls);
 
       let arrayPrint = [];
       for (const _ref of printDate) {
@@ -128,7 +123,7 @@ export default function OrderPage() {
 
         try {
           let urlForPrinter = "";
-          const dataUrl = dataUrls[_index];
+          const item_ref = array_ref[_index];
           if (_printer?.type === "ETHERNET") {
             urlForPrinter = ETHERNET_PRINTER_PORT;
           }
@@ -140,10 +135,14 @@ export default function OrderPage() {
           }
           const runPrint = async () => {
             try {
-              // const _file = await base64ToBlob(await dataUrl.toDataURL());
-              const _file = await toBlob(dataUrl, { cacheBust: true });
+              const dataUrl = await html2canvas(item_ref, {
+                useCORS: true,
+                scrollX: 10,
+                scrollY: 0,
+              });
+              const _file = await base64ToBlob(await dataUrl.toDataURL());
+              // const _file = await toBlob(dataUrl, { cacheBust: true });
               // const _file = dataUrl;
-              console.log("_file", _file);
               var bodyFormData = new FormData();
 
               bodyFormData.append("ip", _printer?.ip);
@@ -154,26 +153,29 @@ export default function OrderPage() {
               bodyFormData.append("isdrawer", false);
               bodyFormData.append("port", "9100");
               bodyFormData.append("image", _file);
-              bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+              bodyFormData.append(
+                "paper",
+                _printer?.width === "58mm" ? 58 : 80
+              );
 
-              // await printFlutter(
-              //   {
-              //     imageBuffer: dataUrl.toDataURL(),
-              //     ip: _printer?.ip,
-              //     type: _printer?.type,
-              //     port: "9100",
-              //     beep: 1,
-              //     width: _printer?.width === "58mm" ? 400 : 580,
-              //   },
-              //   async () => {
-              await axios({
-                method: "post",
-                url: urlForPrinter,
-                data: bodyFormData,
-                headers: { "Content-Type": "multipart/form-data" },
-              });
-              //   }
-              // );
+              await printFlutter(
+                {
+                  imageBuffer: dataUrl.toDataURL(),
+                  ip: _printer?.ip,
+                  type: _printer?.type,
+                  port: "9100",
+                  beep: 1,
+                  width: _printer?.width === "58mm" ? 400 : 580,
+                },
+                async () => {
+                  await axios({
+                    method: "post",
+                    url: urlForPrinter,
+                    data: bodyFormData,
+                    headers: { "Content-Type": "multipart/form-data" },
+                  });
+                }
+              );
               return true;
             } catch {
               return false;
@@ -347,7 +349,16 @@ export default function OrderPage() {
             title={`${t("hasOrder")}(${orderWaiting?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
+            {orderLoading && (
+              <div>
+                <Spinner
+                  animation="border"
+                  style={{ marginLeft: 20 }}
+                  size="sm"
+                />{" "}
+                <span>Load new data...</span>
+              </div>
+            )}
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -355,17 +366,44 @@ export default function OrderPage() {
             title={`${t("cooking")}(${orderDoing?.length})`}
           >
             <Tool />
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
+            {orderLoading && (
+              <div>
+                <Spinner
+                  animation="border"
+                  style={{ marginLeft: 20 }}
+                  size="sm"
+                />{" "}
+                <span>Load new data...</span>
+              </div>
+            )}
             <DoingOrderTab />
           </Tab>
           <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
+            {orderLoading && (
+              <div>
+                <Spinner
+                  animation="border"
+                  style={{ marginLeft: 20 }}
+                  size="sm"
+                />{" "}
+                <span>Load new data...</span>
+              </div>
+            )}
             <ServedOrderTab />
           </Tab>
           <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
             {/* <Tool /> */}
-            {orderLoading && <div><Spinner animation="border" style={{ marginLeft: 20 }} size="sm" /> <span>Load new data...</span></div>}
+            {orderLoading && (
+              <div>
+                <Spinner
+                  animation="border"
+                  style={{ marginLeft: 20 }}
+                  size="sm"
+                />{" "}
+                <span>Load new data...</span>
+              </div>
+            )}
             <CanceledOrderTab />
           </Tab>
           {/* <Tab eventKey="contact" title="Contact" disabled>
