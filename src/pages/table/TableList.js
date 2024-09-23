@@ -127,6 +127,7 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    isWaitingCheckout,
   } = useStore();
 
   const reLoadData = () => {
@@ -1410,6 +1411,7 @@ export default function TableList() {
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
       />
+      {isWaitingCheckout && <Loading />}
       <div>
         <Box
           sx={{
@@ -1862,10 +1864,10 @@ export default function TableList() {
                         </ButtonCustom>
 
                         <ButtonCustom
-                          disabled={!canCheckOut}
+                          disabled={!canCheckOut || isWaitingCheckout}
                           onClick={() => _onCheckOut()}
                         >
-                          Checkout
+                          {isWaitingCheckout && <Spinner animation="border" size="sm" />} {" "} Checkout
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() =>
