@@ -32,6 +32,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     ຈ່າຍເງິນສົດ: 0,
     ຈ່າຍເງິນໂອນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
+    servicechange:0,
     ສ່ວນຫຼຸດ: 0,
     ບິນຄ້າງ: 0,
     ເງິນຄ້າງ: 0,
@@ -143,6 +144,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const transferTotalBill = _.sumBy(data, (e) => e.transferAmount) || 0;
       const discountBill = data.filter((e) => e.discount != 0);
       const countDiscountBill = discountBill.length;
+      const service = totalBill * 0.03
+      const newServicechange = totalBill - service
       const discountTotalBill = _.sumBy(discountBill, (e) => {
         let discountMomeny = 0;
         if (e.discountType == "PERCENT") {
@@ -163,6 +166,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
         ບິນສ່ວນຫຼຸດ: countDiscountBill,
+        servicechange: newServicechange ,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
         ເງິນຄ້າງ: totalActiveBill,
@@ -235,6 +239,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               {
                 name: `${t("discount_bill")}:`,
                 value: reportBill[`${t("discount_bill")}`],
+              },
+              {
+                name: `${t("service change")}:`,
+                value: reportBill.servicechange,
               },
               {
                 name: `${t("discount")}:`,
