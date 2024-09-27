@@ -282,7 +282,7 @@ export default function OrderPage() {
       }
     }
   }, [onPrinting]);
-  
+
   // function
   async function waitForPrinting() {
     // alert("gogo");
