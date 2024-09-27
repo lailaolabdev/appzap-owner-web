@@ -202,39 +202,44 @@ export default function OrderPage() {
         context.fillStyle = "#000"; // Black background
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
-        context.font = "bold 36px Arial";
+        context.font = "bold 36px NotoSansLao";
         context.fillText(val?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 30px Arial";
+        context.font = "bold 30px NotoSansLao";
         context.fillText(val?.code || selectedTable?.code, width - 220, 44); // Code text on the right
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 40px Arial";
+        context.font = "bold 40px NotoSansLao";
         context.fillText(`${val?.name} (${val?.quantity})`, 10, 110); // Item name
 
+        // Draw Item Name and Quantity
+        context.fillStyle = "#000"; // Black text
+        context.font = "24px NotoSansLao";
+        context.fillText(`${val?.note}`, 10, 150); // Item name
+
         // Draw Price and Quantity
-        context.font = "28px Arial";
-        context.fillText(`${moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x ${val?.quantity}`, 20, 190); // Price and quantity
+        context.font = "28px NotoSansLao";
+        context.fillText(`${moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x ${val?.quantity}`, 20, 210); // Price and quantity
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
         context.beginPath();
-        context.moveTo(0, 210); // Start at (20, 150)
-        context.lineTo(width, 210); // End at (width - 20, 150)
+        context.moveTo(0, 230); // Start at (20, 150)
+        context.lineTo(width, 230); // End at (width - 20, 150)
         context.stroke();
 
         // Draw Footer (Created By and Date)
         context.setLineDash([]); // Reset line style
-        context.font = "bold 24px Arial";
-        context.fillText(val?.createdBy?.firstname || 'lailaolab', 20, 250); // Created by name
+        context.font = "bold 24px NotoSansLao";
+        context.fillText(val?.createdBy?.firstname || 'lailaolab', 20, 260); // Created by name
 
         context.fillStyle = "#6e6e6e"; // Black text
-        context.font = "22px Arial";
-        context.fillText(`${moment(val?.createdAt).format("DD/MM/YY")} | ${moment(val?.createdAt).format("LT")}`, width - 180, 250); // Date and time
+        context.font = "22px NotoSansLao";
+        context.fillText(`${moment(val?.createdAt).format("DD/MM/YY")} | ${moment(val?.createdAt).format("LT")}`, width - 180, 260); // Date and time
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
