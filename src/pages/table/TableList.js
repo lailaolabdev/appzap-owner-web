@@ -1430,7 +1430,6 @@ export default function TableList() {
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
       />
-      {isWaitingCheckout && <Loading />}
       <div>
         <Box
           sx={{
