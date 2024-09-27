@@ -126,15 +126,6 @@ export default function BillForCheckOut80({
           ) : (
             ""
           )}
-          <span
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              marginRight: "10px",
-            }}
-          >
-            # {dataBill?.queue}
-          </span>
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>

@@ -24,6 +24,7 @@ const OrderCheckOut = ({
   onSubmit = () => { },
   staffData,
   printBillLoading,
+  billDataLoading,
 }) => {
   const { t } = useTranslation();
   const {
@@ -158,7 +159,7 @@ const OrderCheckOut = ({
                 <th>{t("total_price")}</th>
               </tr>
             </thead>
-            <tbody>
+            {billDataLoading ? <Spinner animation="border" /> : <tbody>
               {data &&
                 data?.orderId?.map((orderItem, index) => {
                   const options =
@@ -232,7 +233,7 @@ const OrderCheckOut = ({
                   {storeDetail?.firstCurrency}
                 </td>
               </tr>
-            </tbody>
+            </tbody>}
           </Table>
         </Modal.Body>
         <CardFooterModal>

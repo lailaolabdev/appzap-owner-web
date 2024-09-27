@@ -101,14 +101,12 @@ export default function OrderPage() {
       setOnPrinting(true);
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
-      const printDate = [...billForCher80.current].filter((e) => e != null);
-      const base64Array = convertHtmlToBase64(printDate)
-      console.log("base64Array: ", base64Array)
+      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect)
+      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter)
 
       let arrayPrint = [];
-      for (var index = 0; index < base64Array.length; index++) {
-        const printer = printers.find((e) => e?._id === orderSelect[index].printer);
-        arrayPrint.push(runPrint(base64Array, index, printer));
+      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+        arrayPrint.push(runPrint(base64ArrayAndPrinter[index].dataUrl, index, base64ArrayAndPrinter[index].printer));
       }
       if (countError == "ERR") {
         setIsLoading(false);
@@ -134,9 +132,9 @@ export default function OrderPage() {
     }
   };
 
-  const runPrint = async (base64Array, index, printer) => {
+  const runPrint = async (dataUrl, index, printer) => {
     try {
-      const printFile = base64ToBlob(base64Array[index]);
+      const printFile = base64ToBlob(dataUrl);
       var bodyFormData = new FormData();
 
       bodyFormData.append("ip", printer?.ip);
@@ -156,7 +154,7 @@ export default function OrderPage() {
 
       await printFlutter(
         {
-          imageBuffer: base64Array[index],
+          imageBuffer: dataUrl,
           ip: printer?.ip,
           type: printer?.type,
           port: "9100",
@@ -178,11 +176,11 @@ export default function OrderPage() {
     }
   };
 
-  const convertHtmlToBase64 = (printDate) => {
-    const base64Array = [];
+  const convertHtmlToBase64 = (orderSelect) => {
+    const base64ArrayAndPrinter = [];
 
-    printDate.forEach((element, index) => {
-      if (element) {
+    orderSelect.forEach((data, index) => {
+      if (data) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 
@@ -191,8 +189,6 @@ export default function OrderPage() {
         const height = 290;
         canvas.width = width;
         canvas.height = height;
-
-        const val = orderItems[index];
 
         // Set white background
         context.fillStyle = "#fff";
@@ -203,26 +199,26 @@ export default function OrderPage() {
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
         context.font = "bold 36px NotoSansLao";
-        context.fillText(val?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
+        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
         context.font = "bold 30px NotoSansLao";
-        context.fillText(val?.code || selectedTable?.code, width - 220, 44); // Code text on the right
+        context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
         context.font = "bold 40px NotoSansLao";
-        context.fillText(`${val?.name} (${val?.quantity})`, 10, 110); // Item name
+        context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
         context.font = "24px NotoSansLao";
-        context.fillText(`${val?.note}`, 10, 150); // Item name
+        context.fillText(`${data?.note}`, 10, 150); // Item name
 
         // Draw Price and Quantity
         context.font = "28px NotoSansLao";
-        context.fillText(`${moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x ${val?.quantity}`, 20, 210); // Price and quantity
+        context.fillText(`${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${data?.quantity}`, 20, 210); // Price and quantity
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
@@ -235,19 +231,21 @@ export default function OrderPage() {
         // Draw Footer (Created By and Date)
         context.setLineDash([]); // Reset line style
         context.font = "bold 24px NotoSansLao";
-        context.fillText(val?.createdBy?.firstname || 'lailaolab', 20, 260); // Created by name
+        context.fillText(data?.createdBy?.firstname || (data?.updatedBy?.firstname || 'lailaolab'), 20, 260); // Created by name
 
         context.fillStyle = "#6e6e6e"; // Black text
         context.font = "22px NotoSansLao";
-        context.fillText(`${moment(val?.createdAt).format("DD/MM/YY")} | ${moment(val?.createdAt).format("LT")}`, width - 180, 260); // Date and time
+        context.fillText(`${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(data?.createdAt).format("LT")}`, width - 180, 260); // Date and time
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
-        base64Array.push(dataUrl);
+
+        const printer = printers.find((e) => e?._id === data?.printer);
+        if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
     });
 
-    return base64Array;
+    return base64ArrayAndPrinter;
   };
 
   useEffect(() => {

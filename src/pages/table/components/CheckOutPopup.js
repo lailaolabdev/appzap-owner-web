@@ -42,6 +42,7 @@ export default function CheckOutPopup({
   tableData,
   setDataBill,
   taxPercent = 0,
+  billDataLoading,
 }) {
   const { t } = useTranslation();
   // ref
@@ -528,7 +529,7 @@ export default function CheckOutPopup({
               </span>
             </div>
 
-            <div
+            {billDataLoading ? <Spinner animation="border" /> : <div
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -623,7 +624,7 @@ export default function CheckOutPopup({
                   </div>
                 </div>
               </BoxMember>
-            </div>
+            </div>}
 
             <div
               style={{
