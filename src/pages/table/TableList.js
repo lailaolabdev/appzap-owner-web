@@ -561,7 +561,7 @@ export default function TableList() {
 
   const onPrintBill = async (isPrintBill) => {
     try {
-      setPrintBillLoading(true)
+      setPrintBillLoading(true);
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -622,6 +622,7 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -636,8 +637,8 @@ export default function TableList() {
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
-      
-      setPrintBillLoading(false)
+
+      setPrintBillLoading(false);
       await Swal.fire({
         icon: "success",
         title: `${t("checkbill_success")}`,
@@ -656,7 +657,7 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
-      setPrintBillLoading(false)
+      setPrintBillLoading(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -753,6 +754,7 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9000",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -947,6 +949,7 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1066,6 +1069,7 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1882,7 +1886,10 @@ export default function TableList() {
                           disabled={!canCheckOut || isWaitingCheckout}
                           onClick={() => _onCheckOut()}
                         >
-                          {isWaitingCheckout && <Spinner animation="border" size="sm" />} {" "} Checkout
+                          {isWaitingCheckout && (
+                            <Spinner animation="border" size="sm" />
+                          )}{" "}
+                          Checkout
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() =>

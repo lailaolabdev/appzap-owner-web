@@ -97,7 +97,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          beep: 1,
+          // beep: 1,
           width: myPrinter?.width === "58" ? 400 : 580,
         },
         async () => {
