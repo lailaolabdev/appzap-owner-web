@@ -1,18 +1,17 @@
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import { END_POINT } from "../../constants";
+import { errorAdd } from "../../helpers/sweetalert";
 export const useBillState = (storeDetail) => {
   const [isbillOrderLoading, setIsbillOrderLoading] = useState(false);
   const [billOrders, setbillOrders] = useState([]);
   const [billOrderItems, setbillOrderItems] = useState([]);
   const [selectedBill, setSelectedBill] = useState();
-  const [billSplitNew, setbillSplitNew] = useState([]);
-  const [billSplitOld, setbillSplitOld] = useState([]);
   const [listbillSplitAll, setlistbillSplitAll] = useState([]);
-  const [billTotal, setbillTotal] = useState([]);
-
+  const [showAllbill, setShowAllbill] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [combine, setcombine] = useState({});
+  const [chageStatus, setChageStatus] = useState(false);
 
   // console.log("billTotal", billTotal);
 
@@ -27,80 +26,46 @@ export const useBillState = (storeDetail) => {
     setbillOrderItems(billOrders);
   }, [billOrders]);
 
-  const getSplitBillOld = useMemo(
-    () => async (oldId) => {
-      setIsbillOrderLoading(true);
-      const url = END_POINT + `/v3/bills?_id=${oldId}`;
-      await fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          console.log("Old billresponse", response);
-          if (response.message === "server error") return;
-          setbillSplitOld(response);
-          setbillTotal(...billTotal, response);
-          // let _openbill = response.filter((bill) => {
-          //   return bill.isOpened && !bill.isStaffConfirm;
-          // });
-          // setOpenbillData(_openbill);
-          setIsbillOrderLoading(false);
-        })
-        .catch((err) => {
-          setIsbillOrderLoading(false);
-        });
-    },
-    []
-  );
-  const getSplitBillNew = useMemo(
-    () => async (newId) => {
-      setIsbillOrderLoading(true);
-      const url = END_POINT + `/v3/bills?_id=${newId}`;
-      await fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          console.log("New bill response", response);
-          if (response.message === "server error") return;
-          setbillSplitNew(response);
-          setbillTotal(...billTotal, response);
-          // let _openbill = response.filter((bill) => {
-          //   return bill.isOpened && !bill.isStaffConfirm;
-          // });
-          // setOpenbillData(_openbill);
-          setIsbillOrderLoading(false);
-        })
-        .catch((err) => {
-          setIsbillOrderLoading(false);
-        });
-    },
-    []
-  );
-
   const getSplitBillAll = useMemo(
-    () => async (Id) => {
-      const url = END_POINT + `/v3/bills?_id=${Id}`;
+    () => async (oldId, newId) => {
+      // const url = END_POINT + `/v3/bills/${oldId}/${newId}`;
+      const url = END_POINT + `/v3/code/${oldId}/${newId}`;
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
           if (response.message === "server error") return;
           setlistbillSplitAll(response);
-          setbillTotal(...billTotal, response);
         });
     },
     []
   );
   const getbillOrders = async (bill) => {
-    // console.log("get billOrders", bill);
     try {
       setbillOrders([]);
-      if (!bill?._id) return;
+      if (!bill?.billId) return;
       setIsbillOrderLoading(true);
-      const url = END_POINT + `/v3/bills?_id=${bill?._id}`;
+      const url = END_POINT + `/v3/bills?_id=${bill?.billId}`;
       let res = await axios.get(url);
       const data = res.data;
-      console.log("data", data);
+
+      if (selectedItems.includes(data[0])) {
+        if (selectedItems?.length >= 2) return;
+        setSelectedItems(selectedItems.filter((b) => b?._id === data[0]?._id));
+      } else {
+        setSelectedItems([...selectedItems, data[0]]);
+        const exitItems = selectedItems.filter((b) => b?._id === data[0]?._id);
+        if (exitItems?.length > 0) {
+          setSelectedItems(
+            selectedItems.filter((b) => b?._id !== data[0]?._id)
+          );
+        }
+      }
+
       if (res.status < 300) {
-        setbillOrders({ ...data, isBillSplit: bill?.isSplit });
-        // setSelectedBill(data);
+        setbillOrders(data);
         setIsbillOrderLoading(false);
+        // setSelectedItems([...selectedItems, data[0]] || data[0]);
+        // console.log({ data });
         return data;
       } else {
         setbillOrders([]);
@@ -115,32 +80,16 @@ export const useBillState = (storeDetail) => {
   };
 
   const onSelectBill = async (bill) => {
-    // console.log("OnselectBill", bill);
-
+    setShowAllbill(false);
     if (bill) {
       setbillOrderItems([]);
       // alert(JSON.stringify(bill));
       setSelectedBill(bill);
       await getbillOrders(bill);
     }
-
-    if (selectedItems.includes(bill)) {
-      if (selectedItems?.length >= 2) return;
-      // console.log("selectedItems 01");
-      setSelectedItems(selectedItems.filter((b) => b !== bill));
-    } else {
-      if (
-        selectedItems?.filter((b) => {
-          console.log("bill", b?._id, "===", bill?._id);
-          // return b?._id !== bill?._id;
-        })
-      ) {
-        setSelectedItems([...selectedItems, bill]);
-      }
-    }
   };
 
-  console.log("SelectedItems", selectedItems);
+  // console.log("SelectedItems", selectedItems);
 
   const combineBills = (bill1, bill2) => {
     const combinedItems = [...bill1?.orderId, ...bill2?.orderId];
@@ -155,43 +104,70 @@ export const useBillState = (storeDetail) => {
     const combinedTotal = totalbill1 + totalbill2;
 
     return {
+      DiscountCategory: bill2?.DiscountCategory,
+      billAmount: bill2?.billAmount,
+      billAmountBefore: bill2?.billAmountBefore,
+      checkPoint: bill2?.checkPoint,
+      code: bill2?.code,
+      createdAt: bill2?.createdAt,
+      createdBy: bill2?.createdBy,
+      currency: bill2?.currency,
+      discount: bill2?.discount,
+      discountType: bill2?.discountType,
+      isCheckout: bill2?.isCheckout,
+      isDeleted: bill2?.isDeleted,
+      memberName: bill2?.memberName,
+      password: bill2?.password,
+      payAmount: bill2?.payAmount,
+      paymentMethod: bill2?.paymentMethod,
+      queue: bill2?.queue,
+      saveCafe: bill2?.saveCafe,
+      serviceChargeAmount: bill2?.serviceChargeAmount,
+      serviceChargePercent: bill2?.serviceChargePercent,
+      status: bill2?.status,
+      storeId: bill2?.storeId,
+      tableId: bill2?.tableId,
+      taxAmount: bill2?.taxAmount,
+      taxPercent: bill2?.taxPercent,
+      transferAmount: bill2?.transferAmount,
+      _id: bill2?._id,
+      oldId: bill1?._id,
+      newId: bill2?._id,
       items: combinedItems,
       total: combinedTotal,
-      // You can merge other fields as well, like timestamps, users, etc.
       mergedTableNames: `ບິນລວມທັງໝົດ`,
-      // You can decide how to handle discounts, taxes, etc.
     };
   };
 
   const handleCombineBills = () => {
-    if (selectedItems.length >= 2) {
+    setSelectedItems([]);
+    if (selectedItems?.length === 0) {
+      return errorAdd("Please select exactly two bills to combine.");
+    }
+    if (selectedItems?.length >= 2) {
+      setShowAllbill(true);
       const combinedBill = combineBills(selectedItems[0], selectedItems[1]);
       setcombine(combinedBill);
       // You can then update the UI or send this combined object to the backend.
     } else {
-      alert("Please select exactly two bills to combine.");
+      errorAdd("Please select exactly two bills to combine.");
     }
   };
 
-  console.log("selectedItems All", selectedItems);
-  console.log("selectedItems[0]", selectedItems[0]);
-  console.log("selectedItems[1]", selectedItems[1]);
-  console.log("combine", combine);
-
   return {
-    getSplitBillOld,
-    getSplitBillNew,
     getSplitBillAll,
-    billSplitNew,
-    billSplitOld,
     listbillSplitAll,
-    billTotal,
     onSelectBill,
     selectedBill,
     billOrderItems,
     isbillOrderLoading,
     handleCombineBills,
     selectedItems,
+    setSelectedItems,
     combine,
+    setcombine,
+    showAllbill,
+    chageStatus,
+    setChageStatus,
   };
 };

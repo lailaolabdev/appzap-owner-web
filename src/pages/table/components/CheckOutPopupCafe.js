@@ -69,7 +69,7 @@ export default function CheckOutPopupCafe({
   const { t } = useTranslation();
   // val
   // console.log("tableData:=======abc======>", tableData);
-  // console.log("dataBill:=======abc======>", dataBill);
+  // console.log("dataBill:=============>", dataBill);
 
   useEffect(() => {
     setMemberData();
@@ -115,16 +115,6 @@ export default function CheckOutPopupCafe({
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBills = totalBillDefualt + taxAmount;
-
-  console.log({ totalBillDefualt, taxAmount, totalBills });
-
-  // console.log(TotalPrice())
-
-  // const taxAmount = TotalPrice() * taxPercent;
-
-  // const totalBill = TotalPrice();
-
-  // console.log(totalBill)
 
   useEffect(() => {
     setCash();
@@ -245,7 +235,7 @@ export default function CheckOutPopupCafe({
     setIsLoading(true);
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
-    const Orders = dataBill.map((itemOrder) => itemOrder);
+    const Orders = dataBill?.map((itemOrder) => itemOrder);
 
     const datas = {
       order: Orders,

@@ -176,14 +176,7 @@ function AddOrder() {
     });
   };
 
-  const {
-    storeDetail,
-    printers,
-    selectedTable,
-    onSelectTable,
-    billSplitNewId,
-    billSplitOldId,
-  } = useStore();
+  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
   const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
@@ -718,9 +711,7 @@ function AddOrder() {
                   () => {
                     onSelectTable(selectedTable);
                     if (state?.key === false) {
-                      navigate(
-                        `/bill/split/${billSplitOldId}/${billSplitNewId}`
-                      );
+                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
                       return;
                     } else {
                       navigate(
@@ -734,7 +725,7 @@ function AddOrder() {
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
                   if (state?.key === false) {
-                    navigate(`/bill/split/${billSplitOldId}/${billSplitNewId}`);
+                    navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
                     return;
                   } else {
                     navigate(
@@ -753,7 +744,7 @@ function AddOrder() {
             } else {
               onSelectTable(selectedTable);
               if (state?.key === false) {
-                navigate(`/bill/split/${billSplitOldId}/${billSplitNewId}`);
+                navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
                 return;
               } else {
                 navigate(

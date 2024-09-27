@@ -32,12 +32,12 @@ import {
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 
-export default function CheckOutPopup({
+export default function CheckOutPopupBillCombine({
   onPrintDrawer,
   onPrintBill,
   open,
   onClose,
-  // onSubmit,
+  setshowBillAfterCheckout,
   dataBill,
   tableData,
   setDataBill,
@@ -69,9 +69,14 @@ export default function CheckOutPopup({
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
-  const { setSelectedTable, getTableDataStore } = useStore();
+  const {
+    setSelectedTable,
+    getTableDataStore,
+    billSplitNewId,
+    billSplitOldId,
+  } = useStore();
 
-  // console.log({ dataBill });
+  console.log("CheckOutPopupBillCombine", dataBill);
 
   const navigate = useNavigate();
 
@@ -117,18 +122,23 @@ export default function CheckOutPopup({
     } catch (err) {}
   };
 
-  console.log("tableData:=============>", tableData);
+  // console.log("tableData:=======abc======>", tableData)
 
   // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    dataBill?.items?.filter((e) => e?.status),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
+  // console.log("totalBillDefualt", totalBillDefualt);
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  // console.log("taxAmount", taxAmount);
   const serviceAmount =
     (totalBillDefualt * storeDetail?.serviceChargePer) / 100;
+  // console.log("serviceAmount", serviceAmount);
   const totalBill = totalBillDefualt + taxAmount + serviceAmount;
+
+  // console.log("totalBill", totalBill);
 
   useEffect(() => {
     if (!open) return;
@@ -195,7 +205,7 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (!open) return;
-    for (let i = 0; i < dataBill?.orderId?.length; i++) {
+    for (let i = 0; i < dataBill?.items?.length; i++) {
       _calculateTotal();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,13 +234,17 @@ export default function CheckOutPopup({
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
 
+    let Orders = dataBill?.items?.map((itemOrder) => itemOrder);
+
     // console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
-        END_POINT + `/v3/bill-checkout`,
+        END_POINT + `/v3/bill-split-combine/checkout`,
         {
-          id: dataBill?._id,
+          oldId: billSplitOldId,
+          newId: billSplitNewId,
           data: {
+            order: Orders,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -247,11 +261,12 @@ export default function CheckOutPopup({
             memberName: memberData?.name,
             memberPhone: memberData?.phone,
             billMode: tableData?.editBill,
-            tableName: tableData?.tableName,
+            // tableName: tableData?.mergedTableNames,
+            tableName: "combineTable",
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
+              profile?.data?.firstname + " " + profile?.data?.lastname ?? "-",
+            staffCheckOutId: profile?.data?._id,
           },
         },
         {
@@ -286,22 +301,29 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
         });
+
+        navigate("/tables");
+        getTableDataStore();
+        setshowBillAfterCheckout(true);
       })
       .catch(function (error) {
         errorAdd(`${t("checkbill_fial")}`);
+        console.log("Error", error);
       });
   };
+  // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
+    getTableDataStore();
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
 
   const _calculateTotal = () => {
     let _total = 0;
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status === "SERVED") {
-        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
+    for (let i = 0; i < dataBill?.items.length; i++) {
+      if (dataBill?.items[i]?.status) {
+        _total += dataBill?.items[i]?.quantity * dataBill?.items[i]?.price;
       }
     }
     setTotal(_total);
@@ -465,7 +487,7 @@ export default function CheckOutPopup({
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          {t("check_out_table")} ({tableData?.tableName}) - {t("code")}{" "}
+          {t("check_out_table")} ({tableData?.mergedTableNames}) - {t("code")}{" "}
           {tableData?.code}
         </Modal.Title>
       </Modal.Header>

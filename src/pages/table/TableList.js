@@ -153,13 +153,10 @@ export default function TableList() {
     profile,
     setbillSplitNewId,
     setbillSplitOldId,
-    setlistbillSplitNew,
-    setlistbillSplitOld,
     billSplitNewId,
     billSplitOldId,
-    getSplitBillOld,
-    getSplitBillNew,
-    getSplitBillAll,
+    userCallCheckout,
+    setUserCallCheckout,
   } = useStore();
 
   // console.log("actions", storeDetail?.actions);
@@ -416,6 +413,9 @@ export default function TableList() {
 
   const [selectNewTable, setSelectNewTable] = useState();
 
+  // console.log("New", selectNewTable?.billId);
+  // console.log("Old", selectedTable?.billId);
+
   const _changeTable = async () => {
     if (!selectNewTable) {
       handleClose();
@@ -430,13 +430,11 @@ export default function TableList() {
     try {
       const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
       const _billIdNew = _billsNew?.[0]?.["_id"];
-      setlistbillSplitNew(_billsNew);
-      setbillSplitNewId(_billIdNew);
+      setbillSplitNewId(selectNewTable?.billId);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
-      setlistbillSplitOld(_billsOld);
-      setbillSplitOldId(_billIdOld);
+      setbillSplitOldId(selectedTable?.billId);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -474,7 +472,8 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
+        // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
+        navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
       }
     } catch (err) {
       console.log({ err });
@@ -1485,6 +1484,17 @@ export default function TableList() {
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
+  useEffect(() => {
+    if (userCallCheckout) {
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({ zone: zoneId });
+      } else {
+        getTableDataStore();
+      }
+      setUserCallCheckout(false);
+    }
+  }, [userCallCheckout]);
 
   // useEffect
   useEffect(() => {

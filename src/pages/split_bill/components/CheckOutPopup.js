@@ -37,16 +37,16 @@ export default function CheckOutPopup({
   onPrintBill,
   open,
   onClose,
-  // onSubmit,
+  setshowBillAfterCheckout,
   dataBill,
   tableData,
   setDataBill,
   taxPercent = 0,
+  newId,
+  oldId,
 }) {
   const { t } = useTranslation();
   // ref
-  const inputCashRef = useRef(null);
-  const inputTransferRef = useRef(null);
   const { storeDetail, setStoreDetail, profile } = useStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -69,9 +69,7 @@ export default function CheckOutPopup({
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
-  const { setSelectedTable, getTableDataStore } = useStore();
-
-  // console.log("checkOutPopup", dataBill);
+  const { setSelectedTable, getTableDataStore, setChageStatus } = useStore();
 
   const navigate = useNavigate();
 
@@ -278,6 +276,7 @@ export default function CheckOutPopup({
         setTransfer();
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
+        setChageStatus(true);
         onClose();
         Swal.fire({
           icon: "success",
@@ -291,8 +290,10 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
         });
-
-        navigate("/tables");
+        navigate(`/bill/split/${oldId}/${newId}`);
+        await getTableDataStore();
+        setChageStatus(false);
+        setshowBillAfterCheckout(true);
       })
       .catch(function (error) {
         errorAdd(`${t("checkbill_fial")}`);
@@ -302,6 +303,7 @@ export default function CheckOutPopup({
   // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
+    getTableDataStore();
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };

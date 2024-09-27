@@ -13,8 +13,8 @@ import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
 import styled from "styled-components";
 
-const OrderCheckOut = ({
-  data = { orderId: [] },
+const OrderCheckOutBillCombine = ({
+  data = { items: [] },
   serviceCharge = 0,
   tableData = {},
   show = false,
@@ -39,20 +39,19 @@ const OrderCheckOut = ({
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
 
+  // console.log("OrderCheckOutBillCombine", data);
+
   useEffect(() => {
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
 
   const _calculateTotal = () => {
     let _total = 0;
-    if (data?.orderId) {
-      for (let i = 0; i < data?.orderId?.length; i++) {
-        if (data?.orderId[i]?.status === "SERVED") {
-          _total +=
-            data?.orderId[i]?.quantity *
-            (data?.orderId[i]?.price +
-              (data?.orderId[i]?.totalOptionPrice ?? 0));
-        }
+    if (data?.items) {
+      for (let i = 0; i < data?.items?.length; i++) {
+        _total +=
+          data?.items[i]?.quantity *
+          (data?.items[i]?.price + (data?.items[i]?.totalOptionPrice ?? 0));
       }
     }
 
@@ -105,7 +104,7 @@ const OrderCheckOut = ({
     });
   };
 
-  // console.log("STORE DETAIL: ", storeDetail?.isServiceCharge);
+  // console.log("tableData: ", tableData);
 
   return (
     <>
@@ -120,7 +119,7 @@ const OrderCheckOut = ({
         </Modal.Header>
         <Modal.Body>
           <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t("table")}: {tableData?.tableName}
+            {t("table")}: {tableData?.mergedTableNames}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
             {t("code")}: {tableData?.code}
@@ -161,7 +160,7 @@ const OrderCheckOut = ({
             </thead>
             <tbody>
               {data &&
-                data?.orderId?.map((orderItem, index) => {
+                data?.items?.map((orderItem, index) => {
                   const options =
                     orderItem?.options
                       ?.map((option) =>
@@ -328,7 +327,7 @@ const OrderCheckOut = ({
   );
 };
 
-OrderCheckOut.propTypes = {
+OrderCheckOutBillCombine.propTypes = {
   show: PropTypes.bool,
   hide: PropTypes.func,
   data: PropTypes.array,
@@ -341,4 +340,4 @@ const CardFooterModal = styled.div`
   margin-bottom: 20px;
 `;
 
-export default OrderCheckOut;
+export default OrderCheckOutBillCombine;
