@@ -30,7 +30,11 @@ export const useTableState = () => {
    * Modify Order
    */
   useEffect(() => {
-    setTableOrderItems(tableOrders);
+    if (tableOrders.length > 0 && tableOrders[0].code != selectedTable?.code) {
+      getTableOrders(selectedTable);
+    } else {
+      setTableOrderItems(tableOrders);
+    }
   }, [tableOrders]);
 
   const getTableDataStore = useMemo(
