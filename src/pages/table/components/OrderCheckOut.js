@@ -44,6 +44,18 @@ const OrderCheckOut = ({
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
 
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userID");
+    const storedBillId = localStorage.getItem("BillID");
+  
+    if (storedUserId && storedBillId) {
+      console.log("UserID:", storedUserId);
+      console.log("BillID:", storedBillId);
+      // You can now use these values as needed
+    }
+  }, []);
+  
+
   const _calculateTotal = () => {
     let _total = 0;
     if (data && data?.orderId) {
@@ -98,13 +110,21 @@ const OrderCheckOut = ({
   };
 
   const getToggleServiceCharge = (e) => {
+    const userId = profile?.id || ""; // Assuming 'profile' contains the user data
+    const billId = data?.orderId?.[0]?.id || ""; // Assuming the first orderId is the BillID
+  
     setIsServiceChargeEnabled(e.target.checked);
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
       isServiceCharge: e.target.checked,
     });
+  
+    // Store userID and BillID in localStorage
+    localStorage.setItem("userID", userId);
+    localStorage.setItem("BillID", billId);
   };
+  
 
   return (
     <>
@@ -205,7 +225,7 @@ const OrderCheckOut = ({
                 </td>
               </tr>
               {storeDetail?.isServiceCharge && (
-                <tr>
+                <tr >
                   <td colSpan="4" style={{ textAlign: "center" }}>
                     {t("service_charge")}:
                   </td>

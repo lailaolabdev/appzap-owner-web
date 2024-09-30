@@ -12,6 +12,7 @@ import {
 	faPeopleArrows,
 	faPrint,
 	faTable,
+	faHistory 
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -170,6 +171,24 @@ export default function HistoryUse() {
 							<div style={{ width: 8 }}></div> {t("change_combine_table")}
 						</Nav.Link>
 					</Nav.Item>
+					<Nav.Item>
+                        <Nav.Link
+                            eventKey="/historyServiceChange"
+                            style={{
+                                color: "#FB6E3B",
+                                border: "none",
+                                height: 60,
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                            onClick={() => setFiltterModele("historyServiceChange")}
+                        >
+                            <FontAwesomeIcon icon={faHistory}></FontAwesomeIcon>{" "}
+                            <div style={{ width: 8 }}></div> {t("history service change")}
+                        </Nav.Link>
+                    </Nav.Item>
+
 				</Nav>
 			</div>
 			{isLoading ? (
@@ -188,7 +207,7 @@ export default function HistoryUse() {
 									{t("no")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("manager_name")}
+									{ filtterModele  === "historyServiceChange" ?"ຊື່ແລະນາມສະກຸນ" :t("manager_name")}
 								</th>
 								{/* <th scope="col">ສະຖານະ</th> */}
 								<th style={{ textWrap: "nowrap" }} scope="col">
