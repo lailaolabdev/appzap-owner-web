@@ -211,7 +211,7 @@ export default function HistoryUse() {
 								</th>
 								{/* <th scope="col">ສະຖານະ</th> */}
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("detial")}
+								{ filtterModele  === "historyServiceChange" ?"Vat" :t("detial")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("cause")}
