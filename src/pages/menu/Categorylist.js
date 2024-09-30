@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
+import { CATEGORY, getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
@@ -54,7 +54,7 @@ export default function Categorylist() {
       };
       const _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
-        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/category/delete/${dateDelete?.id}`,
         {
           headers: headers,
         }
@@ -77,7 +77,7 @@ export default function Categorylist() {
     };
     const resData = await axios({
       method: "POST",
-      url: END_POINT_SEVER + "/v3/category/create",
+      url: END_POINT_SEVER_TABLE_MENU + "/v3/category/create",
       data: {
         storeId: getTokken?.DATA?.storeId,
         name: values?.name,
@@ -109,7 +109,7 @@ export default function Categorylist() {
       console.log("============>", values);
 
       const resData = await axios.put(
-        END_POINT_SEVER + `/v3/category/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/category/update`,
         {
           id: dataUpdate?._id,
           data: {
@@ -154,7 +154,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
     console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
@@ -165,7 +165,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/categoroy-type?storeId=${id}`,
     });
     setCategorysType(_resCategoryType?.data?.data);
     setIsLoading(false);
@@ -211,7 +211,7 @@ export default function Categorylist() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/category/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/category/update/`,
         data: {
           id: id,
           data: {

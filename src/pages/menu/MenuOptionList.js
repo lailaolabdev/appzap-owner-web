@@ -14,7 +14,7 @@ import {
 	Breadcrumb,
 } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER } from "../../constants/api";
+import { MENUS, getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
@@ -108,7 +108,7 @@ export default function MenuListOption() {
 	const getcategory = async (id) => {
 		try {
 			await fetch(
-				END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
+				END_POINT_SEVER_TABLE_MENU + `/v3/categories?storeId=${id}&isDeleted=false`,
 				{
 					method: "GET",
 				},
@@ -124,7 +124,7 @@ export default function MenuListOption() {
     try {
       setIsLoading(true);
       const res = await axios.get(
-        END_POINT_SEVER + `/v3/restaurant/${storeId}/menu-options`
+        END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`
       );
       setMenuOptions(res.data);
       setIsLoading(false);
@@ -170,7 +170,7 @@ export default function MenuListOption() {
 			};
 
       const resData = await axios.post(
-        END_POINT_SEVER +
+        END_POINT_SEVER_TABLE_MENU +
           `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
         createData,
         { headers: headers }
@@ -201,7 +201,7 @@ export default function MenuListOption() {
 			};
 
       const resData = await axios.put(
-        END_POINT_SEVER +
+        END_POINT_SEVER_TABLE_MENU +
           `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
         updateData,
         { headers: headers }
@@ -226,7 +226,7 @@ export default function MenuListOption() {
 			};
 
 			const resData = await axios.delete(
-				END_POINT_SEVER + `/v3/menu-option/${dateDelete?.id}/delete`,
+				END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${dateDelete?.id}/delete`,
 				{ headers: headers },
 			);
 

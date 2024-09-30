@@ -19,7 +19,7 @@ import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import {
 	MENUS,
 	getLocalData,
-	END_POINT_SEVER,
+	END_POINT_SEVER_TABLE_MENU,
 	master_menu_api_dev,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
@@ -143,7 +143,7 @@ export default function MenuList() {
 	const getcategory = async (id) => {
 		try {
 			await fetch(
-				END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
+				END_POINT_SEVER_TABLE_MENU + `/v3/categories?storeId=${id}&isDeleted=false`,
 				{
 					method: "GET",
 				},
@@ -267,7 +267,7 @@ export default function MenuList() {
 				createData = { ...createData, menuId: connectMenuId };
 			const resData = await axios({
 				method: "POST",
-				url: END_POINT_SEVER + "/v3/menu/create",
+				url: END_POINT_SEVER_TABLE_MENU + "/v3/menu/create",
 				data: createData,
 				headers: headers,
 			});
@@ -312,7 +312,7 @@ export default function MenuList() {
 			};
 			const resData = await axios({
 				method: "DELETE",
-				url: END_POINT_SEVER + `/v3/menu/delete/${dateDelete?.id}`,
+				url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/delete/${dateDelete?.id}`,
 				headers: headers,
 			});
 			if (resData?.data) {
@@ -346,7 +346,7 @@ export default function MenuList() {
 		};
 		const resData = await axios({
 			method: "PUT",
-			url: END_POINT_SEVER + `/v3/menu/update`,
+			url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update`,
 			data: {
 				id: dataUpdate?._id,
 				data: {
@@ -378,7 +378,7 @@ export default function MenuList() {
 	const _updateQtyCategory = async (values) => {
 		await axios({
 			method: "PUT",
-			url: END_POINT_SEVER + "/v3/menu-stock/update",
+			url: END_POINT_SEVER_TABLE_MENU + "/v3/menu-stock/update",
 			data: {
 				id: getIdMenu,
 				data: {
@@ -430,7 +430,7 @@ export default function MenuList() {
 
 			await axios({
 				method: "PUT",
-				url: END_POINT_SEVER + `/v3/menu/update/`,
+				url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
 				data: {
 					id: id,
 					data: {
@@ -463,7 +463,7 @@ export default function MenuList() {
 
 			await axios({
 				method: "PUT",
-				url: END_POINT_SEVER + `/v3/menu/update/`,
+				url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
 				data: {
 					id: id,
 					data: {
@@ -496,7 +496,7 @@ export default function MenuList() {
 
 			await axios({
 				method: "PUT",
-				url: END_POINT_SEVER + `/v3/menu/update/`,
+				url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
 				data: {
 					id: id,
 					data: {
@@ -527,7 +527,7 @@ export default function MenuList() {
 			};
 			await axios({
 				method: "PUT",
-				url: END_POINT_SEVER + `/v3/menu/update/`,
+				url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
 				data: {
 					id: id,
 					data: {

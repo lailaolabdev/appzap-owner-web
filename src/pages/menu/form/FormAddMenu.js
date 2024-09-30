@@ -3,7 +3,7 @@ import { Spinner, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import axios from "axios";
 import { COLOR_APP } from "../../../constants";
-import { getLocalData, END_POINT_SEVER } from "../../../constants/api";
+import { getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faTrash } from "@fortawesome/free-solid-svg-icons";
 import PopUpAddMenuStocks from "../components/popup/PopUpAddMenuStocks";
@@ -48,7 +48,7 @@ export default function FormAddMenu() {
       try {
         const resData = await axios({
           method: "POST",
-          url: END_POINT_SEVER + "/v3/menu/create",
+          url: END_POINT_SEVER_TABLE_MENU + "/v3/menu/create",
           data: {
             name: values?.name,
             quantity: values?.quantity,
@@ -83,7 +83,7 @@ export default function FormAddMenu() {
       try {
         const resData = await axios({
           method: "PUT",
-          url: END_POINT_SEVER + "/v3/menu-and-menu-stock/update",
+          url: END_POINT_SEVER_TABLE_MENU + "/v3/menu-and-menu-stock/update",
           data: {
             id: "62bbf9a0dcc3eb00202167b5",
             storeId: "61d8019f9d14fc92d015ee8e",
@@ -114,7 +114,7 @@ export default function FormAddMenu() {
       if (_localData) {
         setIsLoading(true);
         const data = await axios.get(
-          `${END_POINT_SEVER}/v3/categories?storeId=${_localData.DATA?.storeId}&isDeleted=false`
+          `${END_POINT_SEVER_TABLE_MENU}/v3/categories?storeId=${_localData.DATA?.storeId}&isDeleted=false`
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
@@ -134,7 +134,7 @@ export default function FormAddMenu() {
       if (_localData) {
         setIsLoading(true);
         const data = await axios.get(
-          `${END_POINT_SEVER}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false`
+          `${END_POINT_SEVER_TABLE_MENU}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false`
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Spinner } from "react-bootstrap";
 import axios from "axios";
 import { PRESIGNED_URL } from "../../../constants/api";
-import { getLocalData, END_POINT_SEVER } from "../../../constants/api";
+import { getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleRight,
@@ -93,7 +93,7 @@ export default function FormAddMenuStock() {
     const _localData = await getLocalData();
     if (headers) {
       const res = await axios.put(
-        `${END_POINT_SEVER}/v3/menu-and-menu-stock/update`,
+        `${END_POINT_SEVER_TABLE_MENU}/v3/menu-and-menu-stock/update`,
         {
           id: id,
           data: {
@@ -124,7 +124,7 @@ export default function FormAddMenuStock() {
       const _localData = await getLocalData();
       if (headers) {
         const res = await axios.put(
-          `${END_POINT_SEVER}/v3/menu-and-menu-stock/update`,
+          `${END_POINT_SEVER_TABLE_MENU}/v3/menu-and-menu-stock/update`,
           {
             id: id,
             data: {
@@ -154,7 +154,7 @@ export default function FormAddMenuStock() {
       const _localData = await getLocalData();
       if (headers) {
         const res = await axios.delete(
-          `${END_POINT_SEVER}/v3/menu-stock/delete/${id}`,
+          `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stock/delete/${id}`,
           { headers }
         );
       }
@@ -169,7 +169,7 @@ export default function FormAddMenuStock() {
       if (_localData) {
         setIsLoading(true);
         const data = await axios.get(
-          `${END_POINT_SEVER}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false&limit=1000`
+          `${END_POINT_SEVER_TABLE_MENU}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false&limit=1000`
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
@@ -189,7 +189,7 @@ export default function FormAddMenuStock() {
       if (_localData) {
         setIsLoading(true);
         const data = await axios.get(
-          `${END_POINT_SEVER}/v3/menu-stocks?menuId=${id}`
+          `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stocks?menuId=${id}`
         );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
@@ -218,7 +218,7 @@ export default function FormAddMenuStock() {
       const _localData = await getLocalData();
       if (_localData) {
         setIsLoading(true);
-        const data = await axios.get(`${END_POINT_SEVER}/v3/menu/${id}`);
+        const data = await axios.get(`${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}`);
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
           setMenuOne(data.data);

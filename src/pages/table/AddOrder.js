@@ -31,7 +31,7 @@ import {
 
 import {
   CATEGORY,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   getLocalData,
   MENUS,
 } from "../../constants/api";
@@ -685,7 +685,7 @@ function AddOrder() {
       console.log("ZONE : ", localZone);
 
       axios
-        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+        .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
           headers: headers,
         })
         .then(async (response) => {

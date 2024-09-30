@@ -7,13 +7,14 @@ import {
   WAITING_STATUS,
 } from "../constants";
 import { getHeaders } from "./auth";
+import { END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getOrders = async (
   status = ACTIVE_STATUS,
   orderItemStatus = WAITING_STATUS
 ) => {
   try {
-    const url = `${END_POINT}/orderItems`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/orderItems`;
     const orders = await axios.get(url, {
       headers: await getHeaders(),
     });
@@ -43,7 +44,7 @@ export const getCountOrderWaiting = async (
   storeId
 ) => {
   try {
-    const url = `${END_POINT}/v3/orders/count-order-waiting?storeId=${storeId}&status=WAITING`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders/count-order-waiting?storeId=${storeId}&status=WAITING`;
     const countOrder = await axios.get(url);
     return countOrder?.data?.count || 0
   } catch (error) {
@@ -55,7 +56,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   try {
     let url;
     if (tableId) {
-      url = `${END_POINT}/orders?table_id=${tableId}&checkout=false`;
+      url = `${END_POINT_SEVER_BILL_ORDER}/orders?table_id=${tableId}&checkout=false`;
     }
     const orders = await axios.get(url, {
       headers: await getHeaders(),
@@ -86,7 +87,7 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
 
 export const updateOrderItem = async (orderItems, storeId, menuId, seletedCancelOrderItem, selectedTable) => {
   try {
-    const url = `${END_POINT}/v3/orders/updateMany`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders/updateMany`;
     const orders = await axios.put(
       url,
       {
@@ -107,7 +108,7 @@ export const updateOrderItem = async (orderItems, storeId, menuId, seletedCancel
 };
 export const updateManyOrderItemsFeedBack = async (orderItems, storeId) => {
   try {
-    const url = `${END_POINT}/v2/updateManyOrderItemsFeedBack`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/v2/updateManyOrderItemsFeedBack`;
     const orders = await axios.put(
       url,
       {
@@ -127,7 +128,7 @@ export const updateManyOrderItemsFeedBack = async (orderItems, storeId) => {
 export const updateOrder = async (data, status = CANCEL_STATUS) => {
   try {
     for (let orderElement of data) {
-      const url = `${END_POINT}/orders/${orderElement.id}`;
+      const url = `${END_POINT_SEVER_BILL_ORDER}/orders/${orderElement.id}`;
       await axios.put(
         url,
         { status },
@@ -137,7 +138,7 @@ export const updateOrder = async (data, status = CANCEL_STATUS) => {
       );
     }
     if (status === CHECKOUT_STATUS) {
-      const url = `${END_POINT}/generates/${data[0].code}`;
+      const url = `${END_POINT_SEVER_BILL_ORDER}/generates/${data[0].code}`;
       await axios.put(url);
     }
   } catch (error) {

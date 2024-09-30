@@ -5,7 +5,7 @@ import { BODY, COLOR_APP } from "../../constants";
 import { Breadcrumb, Nav, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { END_POINT_SEVER_TABLE_MENU, getLocalData } from "../../constants/api";
 import PopUpAddCategoryType from "../../components/popup/PopUpAddCategoryType";
 import { getCategoryType } from "../../services/menu";
 
@@ -52,7 +52,7 @@ export default function CategoryType() {
   const createCategoryType = async (values) => {
     setIsLoading(true);
     try {
-      await axios.post(`${END_POINT_SEVER}/v3/categoroy-type`, values);
+      await axios.post(`${END_POINT_SEVER_TABLE_MENU}/v3/categoroy-type`, values);
       const _localData = await getLocalData();
       fetchCategoryTypes(_localData?.DATA?.storeId);
     } catch (error) {

@@ -8,7 +8,7 @@ import {
   DOING_STATUS,
   CANCEL_STATUS,
 } from "../../constants";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER, END_POINT_SEVER_TABLE_MENU, getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
@@ -77,7 +77,7 @@ export const useTableState = () => {
     () => async () => {
       let _userData = await getLocalData();
       const url =
-        END_POINT +
+        END_POINT_SEVER_TABLE_MENU +
         `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
       await fetch(url)
         .then((response) => response.json())
@@ -95,7 +95,7 @@ export const useTableState = () => {
     try {
       if (!table?.billId) return;
       const url =
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
         `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
       let res = await axios.get(url);
       const data = res.data;
@@ -148,7 +148,7 @@ export const useTableState = () => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -188,7 +188,7 @@ export const useTableState = () => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -238,7 +238,7 @@ export const useTableState = () => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -286,7 +286,7 @@ export const useTableState = () => {
 
   const mergeTable = async (_newTable) => {
     try {
-      const response = await axios.put(END_POINT_SEVER + "v3/bill-transfer", {
+      const response = await axios.put(END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer", {
         headers: await getHeaders(),
         body: {
           billOld: selectedTable["billId"],

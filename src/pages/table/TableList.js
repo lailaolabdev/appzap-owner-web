@@ -41,7 +41,7 @@ import {
 import { useStore } from "../../store";
 import {
   END_POINT_APP,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   END_POINT_WEB_CLIENT,
   USERS,
   getLocalData,
@@ -228,14 +228,14 @@ export default function TableList() {
 
   const getDataTax = async () => {
     const { DATA } = await getLocalData();
-    const _res = await axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
+    const _res = await axios.get(END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId);
     setTaxPercent(_res?.data?.taxPercent);
   };
 
   const getDataServiceCharge = async () => {
     const { DATA } = await getLocalData();
     const _res = await axios.get(
-      `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
+      `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
     );
     setServiceChargePercent(_res?.data?.serviceCharge);
   };
@@ -365,7 +365,7 @@ export default function TableList() {
       const _billId = _bills?.[0]?.["_id"];
       const _resBill = await axios({
         method: "get",
-        url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-group/` + _billId,
         headers: headers,
       });
       setDataBill(_resBill?.data);
@@ -409,7 +409,7 @@ export default function TableList() {
 
       const changTable = await axios({
         method: "put",
-        url: END_POINT_SEVER + `/v3/bill-transfer`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-transfer`,
         data: {
           billOld: _billIdOld,
           billNew: _billIdNew ?? "NOT_BILL",
@@ -466,7 +466,7 @@ export default function TableList() {
       };
       const updateTable = await axios({
         method: "put",
-        url: END_POINT_SEVER + `/v3/code/update`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         data: {
           id: dataSettingModal?._id,
           data: {
@@ -1386,7 +1386,7 @@ export default function TableList() {
       };
       const data = await axios({
         method: "get",
-        url: END_POINT_SEVER + `/v3/zones`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/zones`,
         params: {
           storeId: storeDetail?._id,
           limit: 100,
