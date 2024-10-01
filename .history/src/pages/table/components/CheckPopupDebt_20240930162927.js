@@ -516,21 +516,30 @@ export default function CheckPopupDebt({
   //   };
   // });
 
-  const optionsData = Array.isArray(membersData)
-    ? membersData.map((item) => {
-        return {
-          value: item.phone,
-          label: `${item.name} `, //(${item.phone})
-          phoneNumber: item.phone,
-        };
-      })
-    : [];
+  // Function to transform members data
+  const transformMembersData = (membersData) => {
+    // Check if membersData is an array before proceeding
+    if (!Array.isArray(membersData)) {
+      return [];
+    }
+
+    return membersData.map((item) => {
+      return {
+        value: item.phone,
+        label: `${item.name}`,
+        phoneNumber: item.phone,
+      };
+    });
+  };
+
+  // Usage
+  const optionsData = transformMembersData(membersData);
 
   // console.log("optionsData", optionsData);
 
-  // const handleSearchInput = (option) => {
-  //   setTextSearchMember(option.value);
-  // };
+  const handleSearchInput = (option) => {
+    setTextSearchMember(option.value);
+  };
 
   // console.log("textSearchMember", textSearchMember);
 

@@ -885,17 +885,11 @@
   "debt_list_all": "ລາຍການຕິດໜີ້ທັງໝົດ",
   "debt_list_history": "ປະຫວັດລາຍການຕິດໜີ້",
   "debt_paymentbefore": "ຈຳນວນເງິນທີ່ຈ່າຍກ່ອນ",
-  "debt_total": "ຕິດໜີ້ທັງໝົດ",
-  "debt_and_pay": "ຈ່າຍ + ຕິດ",
   "debt_notpay": "ຈຳນວນເງິນທີ່ຍັງຕິດໜີ້",  
   "debt_create": "ສ້າງລາຍການຕິດໜີ້",
-  "debt_not_pay": "ຈຳນວນເງິນທີ່ຍັງບໍ່ຊຳລະ",
   "start_date_debt": "ວັນທີເລີ່ມ",
   "end_date_debt": "ວັນທີສິ້ນສຸດ",
   "expire_date_debt": "ວັນໝົດອາຍຸ",
   "payment_date_debt": "ວັນທີຊຳລະ",
-  "bills_code": "ລະຫັດບິນ",
-  "debtAmount": "ຈຳນວນທັງໝົດທີ່ຕິດໜີ້",
-  "debt_fail": "ສ້າງລາຍການຕິດໜີ້ບໍ່ສຳເລັດ",
-  "debt_success": "ສ້າງລາຍການຕິດໜີ້ສຳເລັດ"
+  "bills_code": "ລະຫັດບິນ"
 }

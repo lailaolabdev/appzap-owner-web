@@ -64,7 +64,6 @@ export const getMemberTotalMoney = async (memberId, findBy, TOKEN) => {
     const url = `${END_POINT_SEVER}/v4/member/total-money?memberId=${memberId}${findBy}`;
     console.log("URL: ", url);
     const res = await axios.get(url, { headers: TOKEN });
-    console.log("RESDATA: ", res.data);
     return res.data;
   } catch (error) {
     return { error: true };
@@ -74,6 +73,7 @@ export const getMemberCount = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
+    console.log("getmemberdata", res);
     return res.data;
   } catch (error) {
     return error;

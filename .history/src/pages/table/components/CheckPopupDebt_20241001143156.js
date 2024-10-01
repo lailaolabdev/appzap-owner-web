@@ -516,7 +516,7 @@ export default function CheckPopupDebt({
   //   };
   // });
 
-  const optionsData = Array.isArray(membersData)
+  const optionsData = membersData.map(membersData)
     ? membersData.map((item) => {
         return {
           value: item.phone,
@@ -524,7 +524,7 @@ export default function CheckPopupDebt({
           phoneNumber: item.phone,
         };
       })
-    : [];
+    : []; // คืนค่า array ว่างถ้า membersData ไม่ใช่ array
 
   // console.log("optionsData", optionsData);
 

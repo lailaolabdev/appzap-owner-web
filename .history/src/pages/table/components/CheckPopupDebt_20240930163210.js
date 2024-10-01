@@ -507,30 +507,20 @@ export default function CheckPopupDebt({
     });
   };
 
-  // const optionsData = membersData.map((item) => {
-  //   // console.log(item);
-  //   return {
-  //     value: item.phone,
-  //     label: `${item.name} `, //(${item.phone})
-  //     phoneNumber: item.phone,
-  //   };
-  // });
-
-  const optionsData = Array.isArray(membersData)
-    ? membersData.map((item) => {
-        return {
-          value: item.phone,
-          label: `${item.name} `, //(${item.phone})
-          phoneNumber: item.phone,
-        };
-      })
-    : [];
+  const optionsData = membersData.map((item) => {
+    // console.log(item);
+    return {
+      value: item.phone,
+      label: `${item.name} `, //(${item.phone})
+      phoneNumber: item.phone,
+    };
+  });
 
   // console.log("optionsData", optionsData);
 
-  // const handleSearchInput = (option) => {
-  //   setTextSearchMember(option.value);
-  // };
+  const handleSearchInput = (option) => {
+    setTextSearchMember(option.value);
+  };
 
   // console.log("textSearchMember", textSearchMember);
 

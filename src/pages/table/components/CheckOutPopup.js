@@ -267,7 +267,7 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log("transfer", transfer);
+  // console.log("transfer", transfer);
   const handleSubmit = () => {
     _checkBill();
     onSubmit();
@@ -413,7 +413,7 @@ export default function CheckOutPopup({
   };
 
   const optionsData = membersData.map((item) => {
-    console.log(item);
+    // console.log(item);
     return {
       value: item.phone,
       label: `${item.name} (${item.phone})`,
@@ -422,7 +422,7 @@ export default function CheckOutPopup({
     };
   });
 
-  console.log("optionsData", optionsData);
+  // console.log("optionsData", optionsData);
 
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
@@ -586,6 +586,8 @@ export default function CheckOutPopup({
                   {t("point")}: {memberData?.point}
                 </InputGroup.Text>
               </InputGroup> */}
+
+              {/* Click Add member */}
               <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
                 <div style={{ width: "100%" }}>
                   <Select
