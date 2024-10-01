@@ -110,9 +110,7 @@ export default function BillForCheckOut80({
 
   return (
     <Container>
-      <div
-        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-      >
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", flexDirection: "row" }}>
           {base64Image ? (
             <Image

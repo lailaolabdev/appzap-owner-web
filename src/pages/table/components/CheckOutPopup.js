@@ -34,7 +34,7 @@ import { useTranslation } from "react-i18next";
 
 export default function CheckOutPopup({
   onPrintDrawer,
-  onPrintBill,
+  onPrintBill = () => {},
   open,
   onClose,
   // onSubmit,
@@ -89,7 +89,9 @@ export default function CheckOutPopup({
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER_TABLE_MENU + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU +
+        "/v4/member/search-one?phone=" +
+        textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -114,7 +116,7 @@ export default function CheckOutPopup({
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   // console.log("tableData:=======abc======>", tableData)
@@ -140,21 +142,23 @@ export default function CheckOutPopup({
           ? totalBill - dataBill?.discount
           : 0
         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0;
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : 0;
 
     const cashAmount = parseFloat(cash) || 0;
     const transferAmount = parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${selectCurrency == "LAK"
+    moneyReceived = `${
+      selectCurrency == "LAK"
         ? moneyCurrency(totalReceived)
         : moneyCurrency(parseFloat(cashCurrency) || 0)
-      } ${selectCurrency}`;
+    } ${selectCurrency}`;
 
     const changeAmount = totalReceived - discountedTotalBill;
-    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${storeDetail?.firstCurrency
-      }`;
+    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
+      storeDetail?.firstCurrency
+    }`;
 
     setDataBill((prev) => ({
       ...prev,
@@ -291,9 +295,10 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log("SERVICE", storeDetail?.serviceChargePer);
+  // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
+    onPrintBill(true);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
@@ -379,21 +384,21 @@ export default function CheckOutPopup({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-        ? (totalBill * dataBill?.discount) / 100
-        : 0;
+      ? (totalBill * dataBill?.discount) / 100
+      : 0;
 
   let totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? parseFloat(
-        totalBill - dataBill?.discount > 0
-          ? totalBill - dataBill?.discount
-          : 0
-      )
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+        )
       : parseFloat(
-        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0
-      );
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0
+        );
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -489,19 +494,19 @@ export default function CheckOutPopup({
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                    Math.floor(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
+                      Math.floor(
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                      )
                     )
-                  )
                   : moneyCurrency(
-                    Math.floor(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )
-                  )}{" "}
+                      Math.floor(
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0
+                      )
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -518,8 +523,8 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) / rateCurrency
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
@@ -529,102 +534,113 @@ export default function CheckOutPopup({
               </span>
             </div>
 
-            {billDataLoading ? <Spinner animation="border" /> : <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 10,
-              }}
-            >
-              <InputGroup hidden={selectCurrency == "LAK"}>
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(cashCurrency)}
-                  onClick={() => {
-                    setSelectInput("inputCurrency");
-                  }}
-                  onChange={(e) => {
-                    onChangeCurrencyInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>{t("cash")}</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash" && tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(cash)}
-                  onClick={() => {
-                    setSelectInput("inputCash");
-                  }}
-                  onChange={(e) => {
-                    onChangeCashInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>{t("transfer")}</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(transfer)}
-                  onClick={() => {
-                    setSelectInput("inputTransfer");
-                  }}
-                  onChange={(e) => {
-                    onChangeTransferInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              <BoxMember hidden={!hasCRM}>
-                <div className="box-left">
-                  <div className="box-search">
-                    <Select
-                      placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
-                      options={optionsData}
-                      onChange={handleSearchInput}
-                    />
-                  </div>
-                  <Button className="primary" onClick={() => getMembersData()}>
-                    <BiRotateRight />
-                  </Button>
-                  <Button
-                    className="primary"
+            {billDataLoading ? (
+              <Spinner animation="border" />
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <InputGroup hidden={selectCurrency == "LAK"}>
+                  <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(cashCurrency)}
                     onClick={() => {
-                      // navigate("/add/newMembers", {
-                      //   state: { key: "newMembers" },
-                      // });
-                      window.open("/add/newMembers");
+                      setSelectInput("inputCurrency");
                     }}
-                  >
-                    ເພີ່ມໃໝ່{" "}
-                  </Button>
-                </div>
-                <div className="box-right">
-                  <div className="box-name">
-                    <InputGroup.Text>
-                      {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
-                    </InputGroup.Text>
+                    onChange={(e) => {
+                      onChangeCurrencyInput(e.target.value);
+                    }}
+                    size="lg"
+                  />
+                  <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                </InputGroup>
+                <InputGroup>
+                  <InputGroup.Text>{t("cash")}</InputGroup.Text>
+                  <Form.Control
+                    disabled={tab !== "cash" && tab !== "cash_transfer"}
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(cash)}
+                    onClick={() => {
+                      setSelectInput("inputCash");
+                    }}
+                    onChange={(e) => {
+                      onChangeCashInput(e.target.value);
+                    }}
+                    size="lg"
+                  />
+                  <InputGroup.Text>
+                    {storeDetail?.firstCurrency}
+                  </InputGroup.Text>
+                </InputGroup>
+                <InputGroup>
+                  <InputGroup.Text>{t("transfer")}</InputGroup.Text>
+                  <Form.Control
+                    disabled={tab !== "cash_transfer"}
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(transfer)}
+                    onClick={() => {
+                      setSelectInput("inputTransfer");
+                    }}
+                    onChange={(e) => {
+                      onChangeTransferInput(e.target.value);
+                    }}
+                    size="lg"
+                  />
+                  <InputGroup.Text>
+                    {storeDetail?.firstCurrency}
+                  </InputGroup.Text>
+                </InputGroup>
+                <BoxMember hidden={!hasCRM}>
+                  <div className="box-left">
+                    <div className="box-search">
+                      <Select
+                        placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
+                        options={optionsData}
+                        onChange={handleSearchInput}
+                      />
+                    </div>
+                    <Button
+                      className="primary"
+                      onClick={() => getMembersData()}
+                    >
+                      <BiRotateRight />
+                    </Button>
+                    <Button
+                      className="primary"
+                      onClick={() => {
+                        // navigate("/add/newMembers", {
+                        //   state: { key: "newMembers" },
+                        // });
+                        window.open("/add/newMembers");
+                      }}
+                    >
+                      ເພີ່ມໃໝ່{" "}
+                    </Button>
                   </div>
-                  <div className="box-name">
-                    <InputGroup.Text>
-                      {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
-                    </InputGroup.Text>
+                  <div className="box-right">
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
+                      </InputGroup.Text>
+                    </div>
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
+                      </InputGroup.Text>
+                    </div>
                   </div>
-                </div>
-              </BoxMember>
-            </div>}
+                </BoxMember>
+              </div>
+            )}
 
             <div
               style={{
@@ -640,19 +656,19 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) <=
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0)
+                      (parseInt(transfer) || 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -781,15 +797,15 @@ export default function CheckOutPopup({
         </div>
         <Button
           onClick={() => {
-            setPrintBillLoading(true)
-            onPrintBill().then(() => {
-              setPrintBillLoading(false)
-              handleSubmit();
-            });
+            setPrintBillLoading(true);
+            setPrintBillLoading(false);
+            handleSubmit();
           }}
           disabled={!canCheckOut || printBillLoading}
         >
-          {printBillLoading && <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />}
+          {printBillLoading && (
+            <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />
+          )}
           <BiSolidPrinter />
           {t("print_checkbill")}
         </Button>

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Modal, Table, Button, Form, Row, Card, Spinner } from "react-bootstrap";
+import {
+  Modal,
+  Table,
+  Button,
+  Form,
+  Row,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
@@ -20,8 +28,8 @@ const OrderCheckOut = ({
   show = false,
   hide,
   taxPercent = 0,
-  onPrintBill = () => { },
-  onSubmit = () => { },
+  onPrintBill = () => {},
+  onSubmit = () => {},
   staffData,
   printBillLoading,
   billDataLoading,
@@ -159,81 +167,90 @@ const OrderCheckOut = ({
                 <th>{t("total_price")}</th>
               </tr>
             </thead>
-            {billDataLoading ? <Spinner animation="border" /> : <tbody>
-              {data &&
-                data?.orderId?.map((orderItem, index) => {
-                  const options =
-                    orderItem?.options
-                      ?.map((option) =>
-                        option.quantity > 1
-                          ? `[${option.quantity} x ${option.name}]`
-                          : `[${option.name}]`
-                      )
-                      .join(" ") || "";
-                  return (
-                    <tr key={getOrderItemKey(orderItem)}>
-                      <td>{index + 1}</td>
-                      <td>
-                        {orderItem?.name ?? "-"} {options}
-                      </td>
-                      <td>{orderItem?.quantity}</td>
-                      <td>
-                        {moneyCurrency(
-                          orderItem?.price + (orderItem?.totalOptionPrice ?? 0)
-                        )}
-                      </td>
-                      <td>
-                        {orderItem?.price
-                          ? moneyCurrency(
-                            (orderItem?.price +
-                              (orderItem?.totalOptionPrice ?? 0)) *
-                            orderItem?.quantity
-                          )
-                          : "-"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
-                  {t("discount")}:
-                </td>
-                <td colSpan="1">
-                  {moneyCurrency(data?.discount)}{" "}
-                  {data?.discountType !== "LAK"
-                    ? "%"
-                    : storeDetail?.firstCurrency}
-                </td>
-              </tr>
-              {storeDetail?.isServiceCharge && (
+            {billDataLoading ? (
+              <td colSpan={9} style={{ textAlign: "center" }}>
+                <Spinner animation="border" variant="primary" />
+              </td>
+            ) : (
+              <tbody>
+                {data &&
+                  data?.orderId?.map((orderItem, index) => {
+                    const options =
+                      orderItem?.options
+                        ?.map((option) =>
+                          option.quantity > 1
+                            ? `[${option.quantity} x ${option.name}]`
+                            : `[${option.name}]`
+                        )
+                        .join(" ") || "";
+                    return (
+                      <tr key={getOrderItemKey(orderItem)}>
+                        <td>{index + 1}</td>
+                        <td>
+                          {orderItem?.name ?? "-"} {options}
+                        </td>
+                        <td>{orderItem?.quantity}</td>
+                        <td>
+                          {moneyCurrency(
+                            orderItem?.price +
+                              (orderItem?.totalOptionPrice ?? 0)
+                          )}
+                        </td>
+                        <td>
+                          {orderItem?.price
+                            ? moneyCurrency(
+                                (orderItem?.price +
+                                  (orderItem?.totalOptionPrice ?? 0)) *
+                                  orderItem?.quantity
+                              )
+                            : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 <tr>
                   <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("service_charge")}:
+                    {t("discount")}:
                   </td>
-                  <td colSpan="1">{serviceCharge}%</td>
+                  <td colSpan="1">
+                    {moneyCurrency(data?.discount)}{" "}
+                    {data?.discountType !== "LAK"
+                      ? "%"
+                      : storeDetail?.firstCurrency}
+                  </td>
                 </tr>
-              )}
-              <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
-                  {t("total_price")}:
-                </td>
-                <td colSpan="1">
-                  {moneyCurrency(total)} {storeDetail?.firstCurrency}
-                </td>
-              </tr>
+                {storeDetail?.isServiceCharge && (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      {t("service_charge")}:
+                    </td>
+                    <td colSpan="1">{serviceCharge}%</td>
+                  </tr>
+                )}
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("total_price")}:
+                  </td>
+                  <td colSpan="1">
+                    {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
 
-              <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
-                  {t("total_price")} + {t("tax")} {taxPercent}%:
-                </td>
-                <td colSpan="1">
-                  {moneyCurrency(
-                    Math.floor(total * (taxPercent * 0.01 + 1) + serviceAmount)
-                  )}{" "}
-                  {storeDetail?.firstCurrency}
-                </td>
-              </tr>
-            </tbody>}
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("total_price")} + {t("tax")} {taxPercent}%:
+                  </td>
+                  <td colSpan="1">
+                    {moneyCurrency(
+                      Math.floor(
+                        total * (taxPercent * 0.01 + 1) + serviceAmount
+                      )
+                    )}{" "}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
+              </tbody>
+            )}
           </Table>
         </Modal.Body>
         <CardFooterModal>
@@ -249,7 +266,13 @@ const OrderCheckOut = ({
               disabled={printBillLoading}
               onClick={() => onPrintBill(false)}
             >
-              {printBillLoading && <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />}
+              {printBillLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
               <FontAwesomeIcon
                 icon={faCashRegister}
                 style={{ color: "#fff" }}
@@ -273,35 +296,35 @@ const OrderCheckOut = ({
                 <b>
                   {data && data?.discountType === "LAK"
                     ? moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          data?.discount >
-                          0
-                          ? (total + serviceAmount) *
-                          (taxPercent * 0.01 + 1) -
-                          data?.discount
-                          : 0
+                        Math.floor(
+                          total * (taxPercent * 0.01 + 1) +
+                            serviceAmount -
+                            data?.discount >
+                            0
+                            ? (total + serviceAmount) *
+                                (taxPercent * 0.01 + 1) -
+                                data?.discount
+                            : 0
+                        )
                       )
-                    )
                     : moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          ((total + serviceAmount) *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                          100 >
-                          0
-                          ? total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          ((total + serviceAmount) *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                          100
-                          : 0
-                      )
-                    )}
+                        Math.floor(
+                          total * (taxPercent * 0.01 + 1) +
+                            serviceAmount -
+                            ((total + serviceAmount) *
+                              (taxPercent * 0.01 + 1) *
+                              data?.discount) /
+                              100 >
+                            0
+                            ? total * (taxPercent * 0.01 + 1) +
+                                serviceAmount -
+                                ((total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) *
+                                  data?.discount) /
+                                  100
+                            : 0
+                        )
+                      )}
                 </b>
               </span>
             </div>
