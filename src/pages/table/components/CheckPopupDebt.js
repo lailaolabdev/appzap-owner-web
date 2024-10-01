@@ -7,7 +7,7 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd } from "../../../helpers/sweetalert";
+import { errorAdd, successAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter } from "react-icons/bi";
 import { FaSearch } from "react-icons/fa";
 
@@ -20,6 +20,8 @@ import {
   getLocalData,
 } from "../../../constants/api";
 
+import { createBilldebt, getMenuDebt } from "../../../services/debt";
+
 import { Spinner } from "react-bootstrap";
 import { MdRefresh } from "react-icons/md";
 
@@ -29,6 +31,7 @@ import convertNumberReverse from "../../../helpers/convertNumberReverse";
 import { getMembers } from "../../../services/member.service";
 import moment from "moment";
 
+import { useNavigate } from "react-router-dom";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +46,7 @@ export default function CheckPopupDebt({
   setDataBill,
   taxPercent = 0,
 }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   // ref
   const inputCashRef = useRef(null);
@@ -51,6 +55,9 @@ export default function CheckPopupDebt({
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
+  const [menuDebtData, setMenuDebtData] = useState();
+  const [billId, setBillId] = useState();
+  const [amount, setAmount] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [selectInput, setSelectInput] = useState("inputCash");
   const [selectDataOpption, setSelectDataOpption] = useState();
@@ -70,7 +77,10 @@ export default function CheckPopupDebt({
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
+  const [printCode, setPrintCode] = useState();
   const { setSelectedTable, getTableDataStore } = useStore();
+  const [customerName, setCustomerName] = useState();
+  const [customerPhone, setCustomerPhone] = useState();
   const [startDate, setStartDate] = useState(
     moment(moment()).format("YYYY-MM-DD")
   );
@@ -78,37 +88,82 @@ export default function CheckPopupDebt({
     moment(moment()).add(7, "days").format("YYYY-MM-DD")
   );
 
-  useEffect(() => {
-    setMemberData();
-    if (textSearchMember.length > 0) {
-      handleSearchOne();
-    }
-  }, [textSearchMember]);
+  // useEffect(() => {
+  //   setMemberData();
+  //   if (textSearchMember.length > 0) {
+  //     handleSearchOne();
+  //   }
+  // }, [textSearchMember]);
 
   useEffect(() => {
     getMembersData();
   }, []);
 
-  const handleSearchOne = async () => {
+  useEffect(() => {
+    getData();
+  }, [billId]);
+
+  // function
+  const getData = async () => {
     try {
-      let url =
-        END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
-      const _header = await getHeaders();
-      const _res = await axios.get(url, { headers: _header });
-      if (!_res.data) throw new Error("Empty!");
-      setMemberData(_res.data);
-      setDataBill((prev) => ({
-        ...prev,
-        memberId: _res.data?._id,
-        memberName: _res.data?.name,
-        memberPhone: _res.data?.phone,
+      const { DATA, TOKEN } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}&`;
+      findby += `billDebtId=${billId}`;
+      const data = await getMenuDebt(findby, TOKEN);
+      setMenuDebtData(data);
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+
+  // const handleSearchOne = async () => {
+  //   try {
+  //     let url =
+  //       END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
+  //     const _header = await getHeaders();
+  //     const _res = await axios.get(url, { headers: _header });
+  //     if (!_res.data) throw new Error("Empty!");
+  //     setMemberData(_res.data);
+  //     setDataBill((prev) => ({
+  //       ...prev,
+  //       memberId: _res.data?._id,
+  //       memberName: _res.data?.name,
+  //       memberPhone: _res.data?.phone,
+  //       status: "DEBT",
+  //       startDate: startDate,
+  //       endDate: expirtDate,
+  //     }));
+  //   } catch (err) {
+  //     console.log(err);
+  //     errorAdd("ບໍ່ພົບສະມາຊິກ");
+  //   }
+  // };
+
+  const handleClickCreateDebt = async () => {
+    try {
+      const { DATA, TOKEN } = await getLocalData();
+      const _body = {
+        customerName: customerName,
+        customerPhone: customerPhone,
+        billId: billId,
+        amount: amount,
         status: "DEBT",
         startDate: startDate,
         endDate: expirtDate,
-      }));
+        storeId: DATA?.storeId,
+      };
+      const data = await createBilldebt(_body, TOKEN);
+      if (data.error) {
+        errorAdd(`${t("save_fail")}`);
+        return;
+      }
+      setPrintCode(data.code);
+      // await onPrintBillFark();
+      navigate("/debt");
+      successAdd(`${t("save_success")}`);
     } catch (err) {
       console.log(err);
-      errorAdd("ບໍ່ພົບສະມາຊິກ");
     }
   };
 
@@ -634,6 +689,14 @@ export default function CheckPopupDebt({
                   ເພີ່ມໃໝ່
                 </button>
               </div>
+
+              <Form.Label>{t("customer_name")}</Form.Label>
+              <Form.Control
+                placeholder={t("customer_name")}
+                value={customerName}
+                onChange={(e) => setCustomerPhone(e?.target.value)}
+              />
+              <Form.Label></Form.Label>
 
               <Form.Label>{t("start_date_debt")}</Form.Label>
               <Form.Control
