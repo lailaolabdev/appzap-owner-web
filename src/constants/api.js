@@ -3,13 +3,18 @@ import { USER_KEY } from "./index";
 // TODO: check domain name and set end point
 const production_domain = "restaurant.appzap.la"; // Production
 const now_domain = window.location.hostname;
+// const dev = "https://api.appzap.la:445"; // dev endpoint report & other
+// const dev1 = "https://api.appzap.la:444"; // dev endpoint table & menu
+// const dev2 = "https://api.appzap.la"; // dev endpoint bill & order
 const dev = "https://api.appzap.la:17072"; // dev endpoint report & other
 const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu
 const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order
 // const dev = "https://api.appzap.la"; //local
 // const dev = "http://192.168.1.11:7070"; //locals
 // const dev = "http://localhost:7070"; //locals
-const production = "https://api.appzap.la"; // Production
+const production = "https://api.appzap.la:445"; // Production
+const production1 = "https://api.appzap.la:444"; // Production
+const production2 = "https://api.appzap.la"; // Production
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
@@ -20,8 +25,8 @@ export const master_menu_api_dev =
 const isProduction = production_domain == now_domain;
 export const END_POINT_SEVER = isProduction ? production : dev;
 export const END_POINT_APP = isProduction ? production : dev;
-export const END_POINT_SEVER_TABLE_MENU = isProduction ? production : dev1;
-export const END_POINT_SEVER_BILL_ORDER = isProduction ? production : dev2;
+export const END_POINT_SEVER_TABLE_MENU = isProduction ? production1 : dev1;
+export const END_POINT_SEVER_BILL_ORDER = isProduction ? production2 : dev2;
 export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
 export const END_POINT_WEB_CLIENT = isProduction
   ? production_web_client
