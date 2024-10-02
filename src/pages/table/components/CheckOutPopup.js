@@ -798,8 +798,10 @@ export default function CheckOutPopup({
         <Button
           onClick={() => {
             setPrintBillLoading(true);
-            setPrintBillLoading(false);
-            handleSubmit();
+            onPrintBill(true).then(() => {
+              setPrintBillLoading(false);
+              handleSubmit();
+            });
           }}
           disabled={!canCheckOut || printBillLoading}
         >
