@@ -298,7 +298,7 @@ export default function CheckOutPopup({
   // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
-    onPrintBill(true);
+    // onPrintBill(true);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
