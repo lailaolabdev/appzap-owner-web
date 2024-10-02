@@ -24,6 +24,7 @@ const OrderCheckOut = ({
   onSubmit = () => { },
   staffData,
   printBillLoading,
+  selectedTable
 }) => {
   const { t } = useTranslation();
   const {
@@ -44,17 +45,6 @@ const OrderCheckOut = ({
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem("userID");
-    const storedBillId = localStorage.getItem("BillID");
-  
-    if (storedUserId && storedBillId) {
-      console.log("UserID:", storedUserId);
-      console.log("BillID:", storedBillId);
-      // You can now use these values as needed
-    }
-  }, []);
-  
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -110,8 +100,6 @@ const OrderCheckOut = ({
   };
 
   const getToggleServiceCharge = (e) => {
-    const userId = profile?.id || ""; // Assuming 'profile' contains the user data
-    const billId = data?.orderId?.[0]?.id || ""; // Assuming the first orderId is the BillID
   
     setIsServiceChargeEnabled(e.target.checked);
     setStoreDetail({
@@ -120,10 +108,11 @@ const OrderCheckOut = ({
       isServiceCharge: e.target.checked,
     });
   
-    // Store userID and BillID in localStorage
-    localStorage.setItem("userID", userId);
-    localStorage.setItem("BillID", billId);
   };
+
+ 
+
+  
   
 
   return (

@@ -42,6 +42,7 @@ export default function CheckOutPopup({
   tableData,
   setDataBill,
   taxPercent = 0,
+  selectedTable
 }) {
   const { t } = useTranslation();
   // ref
@@ -290,8 +291,29 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  console.log("SERVICE", storeDetail?.serviceChargePer);
+
+  const service = storeDetail?.serviceChargePer
+  console.log("SERVICE", service);
+
+  const saveServiceChargeDetails = () => {
+    const userId = profile.data?._id || ""; // Assuming 'profile' contains the user data
+    const billId = selectedTable?.billId; // Add optional chaining to avoid accessing billId on undefined
+    
+    if (!billId) {
+      console.error("billId is undefined");
+      return; // Exit if billId is not defined
+    }
+  
+    console.log("User id:",userId);
+    console.log("Bill id:",billId);
+  };
+
   const handleSubmit = () => {
+
+    if (service > 0){
+      saveServiceChargeDetails();
+    }
+
     _checkBill();
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
