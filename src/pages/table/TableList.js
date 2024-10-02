@@ -128,6 +128,7 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
     isWaitingCheckout,
+    
   } = useStore();
 
   const reLoadData = () => {
@@ -559,13 +560,37 @@ export default function TableList() {
     }
   };
 
+  
+  const saveServiceChargeDetails = () => {
+     const userId = profile.data?._id || ""; // Assuming 'profile' contains the user data
+    const billId = selectedTable?.billId; // Add optional chaining to avoid accessing billId on undefined
+    
+    if (!billId) {
+      console.error("billId is undefined");
+      return; // Exit if billId is not defined
+    }
+  
+    console.log("User id:",userId);
+    console.log("Bill id:",billId);
+  };
+  const saveService=()=>{
+    if(storeDetail?.serviceChargePer>0){
+      saveServiceChargeDetails();
+    }
+  }
+ 
+
+
+ 
   const onPrintBill = async (isPrintBill) => {
     try {
+      
       setPrintBillLoading(true)
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
+      saveService()
       await _createHistoriesPrinter(_dataBill);
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
