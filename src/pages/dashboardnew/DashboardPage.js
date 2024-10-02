@@ -46,7 +46,7 @@ export default function DashboardPage() {
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
-  const [userReport, setUserReport] = useState();
+  const [userReport, setUserReport] = useState([]);
   const [menuReport, setMenuReport] = useState();
   const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
@@ -477,7 +477,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
-                {userReport?.map((e) => (
+                {userReport?.length> 0 && userReport?.map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
                     <td style={{ textAlign: "center" }}>{e?.served}</td>

@@ -186,7 +186,7 @@ export default function PopUpPrintStaffHistoryComponent({
             <div style={{ fontWeight: "bold" }}>
               {t("to")}: {startDate} 23:59:59
             </div>
-            {userReport?.map((e) => (
+            {userReport?.length > 0 && userReport?.map((e) => (
               <div>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 {[
