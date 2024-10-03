@@ -1130,9 +1130,9 @@ export default function TableList() {
     });
 
     if (_isChecked.length === 0) {
-      setCheckedBox(true);
-    } else {
       setCheckedBox(false);
+    } else {
+      setCheckedBox(true);
     }
   };
 
