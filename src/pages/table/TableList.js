@@ -143,7 +143,7 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
-  const [checkedBox, setCheckedBox] = useState(true);
+  const [checkedBox, setCheckedBox] = useState(false);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
   const [userData, setuserData] = useState(null);
@@ -1154,40 +1154,58 @@ export default function TableList() {
         };
       });
     }
+    setCheckedBox(!checkedBox);
     setIsCheckedOrderItem(_newOrderItems);
   };
 
+  const [isServedLoading, setIsServerdLoading] = useState(false);
   const handleUpdateOrderStatus = async (status) => {
-    const storeId = storeDetail?._id;
-    let menuId;
-    let _updateItems = isCheckedOrderItem
-      ?.filter((e) => e?.isChecked)
-      .map((i) => {
-        return {
-          status: status,
-          _id: i?._id,
-          menuId: i?.menuId,
-        };
-      });
-    let _resOrderUpdate = await updateOrderItem(
-      _updateItems,
-      storeId,
-      menuId,
-      seletedCancelOrderItem,
-      selectedTable
-    );
-    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      reLoadData();
-      setCheckedBox(!checkedBox);
-      Swal.fire({
-        icon: "success",
-        title: `${t("update_order_status_success")}`,
-        showConfirmButton: false,
-        timer: 2000,
-      });
+    try {
+      if (status === "SERVED") setIsServerdLoading(true);
+      const storeId = storeDetail?._id;
+      let menuId;
+      let _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked)
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
+      let _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        Swal.fire({
+          icon: "success",
+          title: `${t("update_order_status_success")}`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        let _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
 
-      const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0);
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+        setIsServerdLoading(false);
+      } else {
+        setIsServerdLoading(false);
+      }
+    } catch (error) {
+      setIsServerdLoading(false);
+      console.log(error)
     }
   };
 
@@ -1523,8 +1541,8 @@ export default function TableList() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                  ? "#FFE17B"
+                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedTable?.code === table?.code
@@ -1540,8 +1558,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1567,15 +1585,15 @@ export default function TableList() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
+                                      ? ""
+                                      : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
+                                      ? "#616161"
+                                      : "white"
                                   : "#616161",
                               }}
                             >
@@ -1623,8 +1641,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1755,10 +1773,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
+                              dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -1914,14 +1932,14 @@ export default function TableList() {
                           padding: "0 10px",
                           marginBottom: 10,
                         }}
-                        hidden={checkedBox}
+                        hidden={!checkedBox}
                       >
                         <ButtonCustom
                           onClick={() => {
                             setWorkAfterPin("cancle_order_and_print");
                             setPopup({ PopUpPin: true });
                           }}
-                          disabled={checkedBox || onPrinting}
+                          disabled={!checkedBox || onPrinting}
                         >
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
@@ -1933,7 +1951,7 @@ export default function TableList() {
                             setWorkAfterPin("cancle_order");
                             setPopup({ PopUpPin: true });
                           }}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
                           {t("cancel")}
                         </ButtonCustom>
@@ -1948,7 +1966,7 @@ export default function TableList() {
                               }
                             ).then();
                           }}
-                          disabled={checkedBox || onPrinting}
+                          disabled={!checkedBox || onPrinting}
                         >
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
@@ -1957,15 +1975,15 @@ export default function TableList() {
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
                           {t("sendToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
-                          {t("servedBy")}
+                          {isServedLoading && <Spinner animation="border" size="sm" />} {t("servedBy")}
                         </ButtonCustom>
                       </div>
 
@@ -1975,9 +1993,10 @@ export default function TableList() {
                             <th>
                               <Checkbox
                                 name="checked"
+                                checked={checkedBox}
                                 onChange={(e) => {
                                   checkAllOrders(e);
-                                  setCheckedBox(!e.target.checked);
+                                  setCheckedBox(!checkedBox);
                                 }}
                               />
                             </th>
@@ -1992,68 +2011,68 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                                const options =
-                                  orderItem?.options
-                                    ?.map((option) =>
-                                      option.quantity > 1
-                                        ? `[${option.quantity} x ${option.name}]`
-                                        : `[${option.name}]`
-                                    )
-                                    .join(" ") || "";
-                                return (
-                                  <tr
-                                    key={"order" + index}
-                                    style={{ borderBottom: "1px solid #eee" }}
-                                  >
-                                    <td onClick={(e) => e.stopPropagation()}>
-                                      <Checkbox
-                                        disabled={
-                                          orderItem?.status === "CANCELED"
-                                        }
-                                        name="checked"
-                                        checked={orderItem?.isChecked || false}
-                                        onChange={(e) => {
-                                          onSelect({
-                                            ...orderItem,
-                                            isChecked: e.target.checked,
-                                          });
-                                        }}
-                                      />
-                                    </td>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                      {orderItem?.name} {options}
-                                    </td>
-                                    <td>{orderItem?.quantity}</td>
-                                    <td
-                                      style={{
-                                        color:
-                                          orderItem?.status === `SERVED`
-                                            ? "green"
-                                            : orderItem?.status === "DOING"
+                              const options =
+                                orderItem?.options
+                                  ?.map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ") || "";
+                              return (
+                                <tr
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {orderItem?.name} {options}
+                                  </td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
-                                      }}
-                                    >
-                                      {orderItem?.status
-                                        ? t(
-                                            orderStatusTranslate(
-                                              orderItem?.status
-                                            )
-                                          )
-                                        : "-"}
-                                    </td>
-                                    <td>{orderItem?.createdBy?.firstname}</td>
-                                    <td>
-                                      {orderItem?.createdAt
-                                        ? moment(orderItem?.createdAt).format(
-                                            "HH:mm A"
-                                          )
-                                        : "-"}
-                                    </td>
-                                  </tr>
-                                );
-                              })
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? t(
+                                        orderStatusTranslate(
+                                          orderItem?.status
+                                        )
+                                      )
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                        "HH:mm A"
+                                      )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              );
+                            })
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2565,8 +2584,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
+                            ? ""
+                            : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2591,9 +2610,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
+          // onClick={() => {
+          //   _orderTableQunatity();
+          // }}
           >
             {t("save")}
           </Button>
