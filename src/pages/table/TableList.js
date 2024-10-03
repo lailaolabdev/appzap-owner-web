@@ -1237,6 +1237,13 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      let _newOrderItems = isCheckedOrderItem.map((item) => {
+        return {
+          ...item,
+          isChecked: false,
+        };
+      });
+      setIsCheckedOrderItem(_newOrderItems);
 
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
@@ -1277,6 +1284,13 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      let _newOrderItems = isCheckedOrderItem.map((item) => {
+        return {
+          ...item,
+          isChecked: false,
+        };
+      });
+      setIsCheckedOrderItem(_newOrderItems);
 
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
@@ -1324,6 +1338,13 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 2000,
         });
+        let _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
 
         const count = await getCountOrderWaiting(storeId);
         setCountOrderWaiting(count || 0);
