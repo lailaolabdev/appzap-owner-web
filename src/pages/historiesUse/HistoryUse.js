@@ -61,6 +61,8 @@ export default function HistoryUse() {
 			const res = await axios.get(apiUrl
 				,{ headers },
 			);
+			
+
 			if (res?.status < 300) {
 				setData(res?.data?.data);
 				setTotalLogs(res?.data?.total);
@@ -232,7 +234,9 @@ export default function HistoryUse() {
 										<td style={{ textWrap: "nowrap" }}>
 											{page * rowsPerPage + index + 1}
 										</td>
-										<td style={{ textWrap: "nowrap" }}>{item?.user}</td>
+										{filtterModele === 'historyServiceChange' 
+										? (<td style={{ textWrap: "nowrap" }}>{item.userId.firstname} {item.userId.lastname}</td>)
+									    : (<td style={{ textWrap: "nowrap" }}>{item?.user}</td>) }
 										{/* <td
                       style={{
                         color: item?.event === "INFO" ? "green" : "red",
