@@ -561,28 +561,32 @@ export default function TableList() {
   };
 
   
-  const saveServiceChargeDetails  = async () => {
-    if (storeDetail?.serviceChargePer > 0) {
-      const userId = profile.data?._id || "";
-      const billId = selectedTable?.billId;
+  // const saveServiceChargeDetails  = async () => {
+  //   if (storeDetail?.serviceChargePer > 0) {
+  //     const userId = profile.data?._id || "";
+  //     const billId = selectedTable?.billId;
   
-      try {
-        const response = await axios.post("/api/saveServiceCharge", {
-          userId,
-          billId,
-          serviceChargePer: storeDetail.serviceChargePer, // Assuming you're sending this as well
-        });
+  //     try {
+  //       const response = await axios.post("/api/saveServiceCharge", {
+  //         userId,
+  //         billId,
+  //         serviceChargePer: storeDetail.serviceChargePer, // Assuming you're sending this as well
+  //       });
   
-        console.log("Service charge saved:", response.data);
-      } catch (error) {
-        console.error("Error saving service charge:", error);
-      }
-    }
-  };
+  //       console.log("Service charge saved:", response.data);
+  //     } catch (error) {
+  //       console.error("Error saving service charge:", error);
+  //     }
+  //   }
+  // };
  
  
 
-
+  const userId = profile.data?._id || "";
+  const billId = selectedTable?.billId;
+  console.log(userId)
+  console.log(billId)
+  
  
   const onPrintBill = async (isPrintBill) => {
     try {
