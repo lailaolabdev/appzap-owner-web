@@ -561,23 +561,25 @@ export default function TableList() {
   };
 
   
-  const saveServiceChargeDetails = () => {
-     const userId = profile.data?._id || ""; // Assuming 'profile' contains the user data
-    const billId = selectedTable?.billId; // Add optional chaining to avoid accessing billId on undefined
-    
-    if (!billId) {
-      console.error("billId is undefined");
-      return; // Exit if billId is not defined
-    }
+  const saveServiceChargeDetails  = async () => {
+    if (storeDetail?.serviceChargePer > 0) {
+      const userId = profile.data?._id || "";
+      const billId = selectedTable?.billId;
   
-    console.log("User id:",userId);
-    console.log("Bill id:",billId);
-  };
-  const saveService=()=>{
-    if(storeDetail?.serviceChargePer>0){
-      saveServiceChargeDetails();
+      try {
+        const response = await axios.post("/api/saveServiceCharge", {
+          userId,
+          billId,
+          serviceChargePer: storeDetail.serviceChargePer, // Assuming you're sending this as well
+        });
+  
+        console.log("Service charge saved:", response.data);
+      } catch (error) {
+        console.error("Error saving service charge:", error);
+      }
     }
-  }
+  };
+ 
  
 
 
@@ -590,7 +592,6 @@ export default function TableList() {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
-      saveService()
       await _createHistoriesPrinter(_dataBill);
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
