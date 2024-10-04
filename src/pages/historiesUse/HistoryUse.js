@@ -51,12 +51,15 @@ export default function HistoryUse() {
 		try {
 			const headers = await getHeaders();
 			setIsLoading(true);
-			const res = await axios.get(
-				END_POINT_SEVER +
-					`/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
-						params?.id
-					}&modele=${filtterModele}`,
-				{ headers },
+
+			let apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
+
+			if(filtterModele ==='historyServiceChange'){
+				apiUrl = "http://localhost:7070/saveservice"; 
+			}
+
+			const res = await axios.get(apiUrl
+				,{ headers },
 			);
 			if (res?.status < 300) {
 				setData(res?.data?.data);
