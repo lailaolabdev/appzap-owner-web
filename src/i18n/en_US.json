@@ -851,5 +851,8 @@
   "usernam_incorrect": "Username or password is incorrect",
   "tel": "Phone number",
   "choose_type" : "Select category",
-  "auto_print": "Automatic print receipt button"
+  "auto_print": "Automatic print receipt button",
+  "quantity_full": "Quantity full",
+  "Drawer": "Drawer",
+  "enter_phone_and_name": "Enter name or phone number"
 }

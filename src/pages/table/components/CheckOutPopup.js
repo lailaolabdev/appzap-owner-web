@@ -603,7 +603,7 @@ export default function CheckOutPopup({
                   <div className="box-left">
                     <div className="box-search">
                       <Select
-                        placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
+                        placeholder={<div>{t("enter_phone_and_name")}</div>}
                         options={optionsData}
                         onChange={handleSearchInput}
                       />
@@ -623,7 +623,7 @@ export default function CheckOutPopup({
                         window.open("/add/newMembers");
                       }}
                     >
-                      ເພີ່ມໃໝ່{" "}
+                      {t("add_new")}{" "}
                     </Button>
                   </div>
                   <div className="box-right">
@@ -815,7 +815,7 @@ export default function CheckOutPopup({
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
-        <Button onClick={() => onSubmit()}>{t("debt")}</Button>
+        {/* <Button onClick={() => onSubmit()}>{t("debt")}</Button> */}
       </Modal.Footer>
     </Modal>
   );
