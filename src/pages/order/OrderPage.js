@@ -92,7 +92,7 @@ export default function OrderPage() {
       const count = await getCountOrderWaiting(storeDetail?._id);
       setCountOrderWaiting(count || 0);
       return;
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const [onPrinting, setOnPrinting] = useState(false);
@@ -101,12 +101,18 @@ export default function OrderPage() {
       setOnPrinting(true);
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
-      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect)
-      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter)
+      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
+      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
-        arrayPrint.push(runPrint(base64ArrayAndPrinter[index].dataUrl, index, base64ArrayAndPrinter[index].printer));
+        arrayPrint.push(
+          runPrint(
+            base64ArrayAndPrinter[index].dataUrl,
+            index,
+            base64ArrayAndPrinter[index].printer
+          )
+        );
       }
       if (countError == "ERR") {
         setIsLoading(false);
@@ -181,8 +187,8 @@ export default function OrderPage() {
 
     orderSelect.forEach((data, index) => {
       if (data) {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
 
         // Define canvas dimensions based on the image layout you want to replicate
         const width = 510;
@@ -218,7 +224,13 @@ export default function OrderPage() {
 
         // Draw Price and Quantity
         context.font = "28px NotoSansLao";
-        context.fillText(`${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${data?.quantity}`, 20, 210); // Price and quantity
+        context.fillText(
+          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
+            data?.quantity
+          }`,
+          20,
+          210
+        ); // Price and quantity
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
@@ -231,11 +243,23 @@ export default function OrderPage() {
         // Draw Footer (Created By and Date)
         context.setLineDash([]); // Reset line style
         context.font = "bold 24px NotoSansLao";
-        context.fillText(data?.createdBy?.firstname || (data?.updatedBy?.firstname || 'lailaolab'), 20, 260); // Created by name
+        context.fillText(
+          data?.createdBy?.firstname ||
+            data?.updatedBy?.firstname ||
+            "lailaolab",
+          20,
+          260
+        ); // Created by name
 
         context.fillStyle = "#6e6e6e"; // Black text
         context.font = "22px NotoSansLao";
-        context.fillText(`${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(data?.createdAt).format("LT")}`, width - 180, 260); // Date and time
+        context.fillText(
+          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+            data?.createdAt
+          ).format("LT")}`,
+          width - 180,
+          260
+        ); // Date and time
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
@@ -359,7 +383,7 @@ export default function OrderPage() {
           </Button>
         </div>
 
-        <div>ປຸ່ມພິມບິນອັດຕະໂນມັດ</div>
+        <div>{t("auto_print")}</div>
       </div>
     );
   };
@@ -448,20 +472,22 @@ export default function OrderPage() {
         </Tabs>
       </div>
       <div style={{ padding: "20px" }}>
-        {orderItems?.filter((e) => e?.isChecked).map((val, i) => {
-          return (
-            <div
-              style={{ display: "inline-block", margin: 10 }}
-              ref={(el) => (billForCher80.current[i] = el)}
-            >
-              <BillForChef80
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                val={val}
-              />
-            </div>
-          );
-        })}
+        {orderItems
+          ?.filter((e) => e?.isChecked)
+          .map((val, i) => {
+            return (
+              <div
+                style={{ display: "inline-block", margin: 10 }}
+                ref={(el) => (billForCher80.current[i] = el)}
+              >
+                <BillForChef80
+                  storeDetail={storeDetail}
+                  selectedTable={selectedTable}
+                  val={val}
+                />
+              </div>
+            );
+          })}
       </div>
       <PopUpPin
         open={popup?.PopUpPin}

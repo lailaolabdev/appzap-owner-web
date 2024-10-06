@@ -130,10 +130,10 @@ export default function FoodTypeList() {
         // setCategorys(resData?.data);
         getData(getTokken?.DATA?.storeId);
         setShow2(false);
-        successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
+        successAdd(t("update_success"));
       }
     } catch (err) {
-      errorAdd("ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("update_fail"));
     }
   };
   const [isLoading, setIsLoading] = useState(false);

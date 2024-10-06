@@ -625,7 +625,7 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>{t("chose_food_type")}</label>
+                <label>{t("chose_type")}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
@@ -1008,7 +1008,7 @@ export default function MenuList() {
                       }}
                     >
                       <option selected={true} disabled={true} value="">
-                        {t("chose_food_type")}
+                        {t("chose_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;

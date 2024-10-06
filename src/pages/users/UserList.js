@@ -23,6 +23,7 @@ import profileImage from "../../image/profile.png";
 import { STATUS_USERS } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function UserList() {
   const params = useParams();
@@ -32,7 +33,7 @@ export default function UserList() {
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setuserData] = useState();
   const [show, setShow] = useState(false);
-
+  const { t } = useTranslation();
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [getTokken, setgetTokken] = useState();
@@ -190,14 +191,14 @@ export default function UserList() {
       headers: getTokken?.TOKEN,
     })
       .then(async function (response) {
-        successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+        successAdd(t("delete_success"));
         handleClose();
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
       .catch(function (error) {
-        errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+        errorAdd(t("delete_fail"));
       });
   };
   // =======>
@@ -226,14 +227,14 @@ export default function UserList() {
       },
     })
       .then(async function (response) {
-        successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
+        successAdd(t("update_success"));
         handleClose();
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
       .catch(function (error) {
-        errorAdd("ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !");
+        errorAdd(t("update_"));
       });
   };
   return (

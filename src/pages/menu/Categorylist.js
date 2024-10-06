@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import { CATEGORY, getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../constants/api";
+import {
+  CATEGORY,
+  getLocalData,
+  END_POINT_SEVER_TABLE_MENU,
+} from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
@@ -154,7 +158,9 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER_TABLE_MENU + `/v3/categories?isDeleted=false&storeId=${id}`,
+      url:
+        END_POINT_SEVER_TABLE_MENU +
+        `/v3/categories?isDeleted=false&storeId=${id}`,
     });
     console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
@@ -382,7 +388,7 @@ export default function Categorylist() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = `${t("file_type_name")}`;
+              errors.name = `${t("foodTypeName")}`;
             }
             return errors;
           }}
@@ -492,7 +498,7 @@ export default function Categorylist() {
                     onBlur={handleBlur}
                     value={values.categoryTypeId}
                   >
-                    <option value="">ເລືອກປະເພດ</option>
+                    <option value="">{t("chose_type")}</option>
                     {categorysType &&
                       categorysType.map((data, index) => (
                         <option key={"categorytype" + index} value={data._id}>
@@ -660,7 +666,7 @@ export default function Categorylist() {
                     value={values.categoryTypeId}
                   >
                     <option value="">
-                      {dataUpdate?.categoryTypeId?.name ?? "ເລືອກປະເພດ"}
+                      {dataUpdate?.categoryTypeId?.name ?? t("chose_type")}
                     </option>
                     {categorysType &&
                       categorysType.map((data, index) => (

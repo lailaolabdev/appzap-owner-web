@@ -21,6 +21,7 @@ import { USER_KEY, END_POINT, COLOR_APP } from "../../constants";
 import role from "../../helpers/role";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import { errorAdd } from "../../helpers/sweetalert";
+import { useTranslation } from "react-i18next";
 
 function Login() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
   const { setStoreDetail, setProfile } = useStore();
+  const { t } = useTranslation();
 
   useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED");
@@ -63,12 +65,12 @@ function Login() {
         //   draggable: true,
         //   progress: undefined,
         // });
-        errorAdd("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ");
+        errorAdd(t("usernam_incorrect"));
         setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);
-      errorAdd("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ");
+      errorAdd(t("usernam_incorrect"));
       // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
       //   position: "bottom-left",
       //   autoClose: 1000,
@@ -116,10 +118,10 @@ function Login() {
             validate={(values) => {
               const errors = {};
               if (!values.userId) {
-                errors.userId = "ກາລຸນາປ້ອນຊື່ຜູ້ໃຊ້!";
+                errors.userId = t("user_require");
               }
               if (!values.password) {
-                errors.password = "ກາລຸນາປ້ອນລະຫັດຜ່ານ!";
+                errors.password = t("password_require");
               }
               return errors;
             }}
@@ -178,7 +180,7 @@ function Login() {
                         fontSize: { md: 30, xs: 24 },
                       }}
                     >
-                      ສໍາລັບຮ້ານອາຫານ
+                      {t("for_restuarant")}
                     </Box>
                   </Box>
                   <div style={{ height: 45 }} />
@@ -186,11 +188,11 @@ function Login() {
                     className="text-start"
                     style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}
                   >
-                    ຊື່ຜູ້ໃຊ້ລະບົບ
+                    {t("user_name")}
                   </div>
                   <Form.Control
                     type="text"
-                    placeholder="ຊື່ຜູ້ໃຊ້..."
+                    placeholder={t("user_name_dot")}
                     onChange={handleChange("userId")}
                     onBlur={handleBlur}
                     value={values.userId}
@@ -212,7 +214,7 @@ function Login() {
                     className="text-start"
                     style={{ width: "100%", color: "#4B4A4A", fontSize: 20 }}
                   >
-                    ລະຫັດຜ່ານ
+                    {t("password")}
                   </div>
                   <div
                     style={{
@@ -226,7 +228,7 @@ function Login() {
                   >
                     <Form.Control
                       type={isPasswordType ? "password" : "text"}
-                      placeholder="ລະຫັດຜ່ານ..."
+                      placeholder={t("password_dot")}
                       onChange={handleChange("password")}
                       onBlur={handleBlur}
                       value={values.password}
@@ -285,7 +287,7 @@ function Login() {
                     // disabled={isLoading}
                   >
                     {isLoading && <Spinner size="small" animation="border" />}
-                    ເຂົ້າສູ່ລະບົບ
+                    {t("log_in")}
                   </Button>
                   <div style={{ height: 50 }} />
 
@@ -305,9 +307,14 @@ function Login() {
                       ນະໂຍບາຍການນໍາໃຊ້
                     </div> */}
                     <div
-                      style={{ color: COLOR_APP, textDecoration: "underline", cursor: 'pointer' }}
-                      onClick={() => navigate('/policy')}>
-                      ນະໂຍບາຍການນໍາໃຊ້
+                      style={{
+                        color: COLOR_APP,
+                        textDecoration: "underline",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => navigate("/policy")}
+                    >
+                      {t("policy")}
                     </div>
                     <div style={{ color: "#ccc" }}>v{packetJson?.version}</div>
                   </div>

@@ -21,7 +21,7 @@ import {
   getMembers,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
 import { useTranslation } from "react-i18next";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
@@ -35,8 +35,6 @@ export default function CreateMemberPage() {
   // state
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
-
-  const { state } = useLocation();
 
   console.log(" State ", state?.key);
 

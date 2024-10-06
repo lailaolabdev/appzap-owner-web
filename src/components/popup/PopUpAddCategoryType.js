@@ -4,7 +4,7 @@ import { Formik } from "formik";
 // Assuming you are using a translation library like i18next
 import { useTranslation } from "react-i18next";
 
-const PopUpAddCategoryType = ({ open, onClose, onSubmit }) => {
+const PopUpAddCategoryType = ({ open, onClose, onSubmit, storeId }) => {
   const { t } = useTranslation(); // Translation hook
 
   return (

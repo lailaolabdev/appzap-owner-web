@@ -183,7 +183,7 @@ export default function UserPage() {
                       textWrap: "nowrap",
                     }}
                   >
-                    Username
+                    {t("user_name")}
                   </th>
                   <th
                     style={{

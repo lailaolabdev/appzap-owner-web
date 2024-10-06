@@ -522,7 +522,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ຈຳນວນເງີນທັງໝົດ
+              {t("total_money_many")}
             </Card.Header>
             <Card.Body>
               <div
@@ -548,7 +548,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              ຈຳນວນບີນທັງໝົດ
+              {t("total_bill_many")}
             </Card.Header>
             <Card.Body>
               <div
