@@ -109,7 +109,11 @@ export default function ExpendList() {
       filterByPayment: filterByPayment,
     };
 
+<<<<<<< HEAD
     // console.log("parame?.skip:::", parame?.skip);
+=======
+    console.log("parame?.skip:::", parame?.skip);
+>>>>>>> translate
 
     fetchExpend(
       filterByYear,
@@ -159,7 +163,7 @@ export default function ExpendList() {
       },
     },
     title: {
-      text: "ລາຍຈ່າຍ",
+      text: t("pay"),
       align: "left",
     },
     grid: {
@@ -220,6 +224,7 @@ export default function ExpendList() {
       if (filterByYear) findby += `&year=${filterByYear}`;
       if (filterByMonth) findby += `&month=${filterByMonth}`;
       if (dateStart && dateEnd)
+<<<<<<< HEAD
         findby += `&date_gte=${moment(moment(dateStart)).format("YYYY/MM/DD")}`;
       findby += `&date_lt=${moment(moment(dateEnd)).format("YYYY/MM/DD")}`;
       findby += `&startTime=${startTime}&endTime=${endTime}`;
@@ -228,6 +233,15 @@ export default function ExpendList() {
         findby += `&payment=${filterByPayment}`;
 
       // console.log("findby::", findby);
+=======
+        findby += `&date_gte==${dateStart}&date_lt=${moment(
+          moment(dateEnd).add(1, "days")
+        ).format("YYYY/MM/DD")}`;
+      if (filterByPayment !== "ALL" && filterByPayment !== undefined)
+        findby += `&payment=${filterByPayment}`;
+
+      console.log("findby::", findby);
+>>>>>>> translate
 
       let header = await getHeadersAccount();
       const headers = {
@@ -253,8 +267,12 @@ export default function ExpendList() {
       })
         .then((res) => {
           setTotalReport(res?.data?.data);
+<<<<<<< HEAD
           // setExpendData(res?.data?.expends);
           // console.log("Reports", res?.data?.expends);
+=======
+          console.log(res?.data?.data);
+>>>>>>> translate
           setExpendGraphData(res?.data?.data?.chartExpend);
           setIsLoading(false);
         })
@@ -395,6 +413,7 @@ export default function ExpendList() {
       />
 
       <div
+<<<<<<< HEAD
         class="column"
         // style={{
         //   display: "flex",
@@ -410,13 +429,31 @@ export default function ExpendList() {
           style={{
             backgroundColor: "#1d6a9f",
             width: 180,
+=======
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
         >
           <div
@@ -445,14 +482,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
         >
           <div
@@ -481,14 +526,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
         >
           <div
@@ -522,14 +575,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
         >
           <div
@@ -563,14 +624,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
         >
           <div
@@ -604,14 +673,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
@@ -646,14 +723,22 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
+<<<<<<< HEAD
             width: 180,
+=======
+            width: 200,
+>>>>>>> translate
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-around",
             alignItems: "center",
+<<<<<<< HEAD
             margin: 10,
+=======
+            margin: 12,
+>>>>>>> translate
           }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
@@ -699,6 +784,7 @@ export default function ExpendList() {
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
               <th>{t("date")}</th>
+<<<<<<< HEAD
               <th style={{ textWrap: "nowrap" }} width="30%">
                 {t("detial")}
               </th>
@@ -706,11 +792,22 @@ export default function ExpendList() {
               <th style={{ textWrap: "nowrap" }}>{t("paid_mode")}</th>
               <th style={{ textWrap: "nowrap" }}>{t("jam")}</th>
               <th style={{ textWrap: "nowrap" }}>{t("payer")}</th>
+=======
+              <th width="30%">{t("detial")}</th>
+              <th>{t("paid_type")}</th>
+              <th>{t("paid_mode")}</th>
+              <th>{t("jam")}</th>
+              <th>{t("payer")}</th>
+>>>>>>> translate
               <th style={{ textAlign: "right" }}>{t("lak")}</th>
               <th style={{ textAlign: "right" }}>{t("thb")}</th>
               <th style={{ textAlign: "right" }}>{t("cny")}</th>
               <th style={{ textAlign: "right" }}>{t("usd")}</th>
+<<<<<<< HEAD
               <th style={{ textWrap: "nowrap" }}>{t("manage")}</th>
+=======
+              <th>{t("manage")}</th>
+>>>>>>> translate
             </tr>
           </thead>
           <tbody>

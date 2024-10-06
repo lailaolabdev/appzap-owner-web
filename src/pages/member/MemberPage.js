@@ -131,8 +131,6 @@ export default function MemberPage() {
   const [memberName, setMemberName] = useState("");
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedMemberOrders, setSelectedMemberOrders] = useState("");
-  const [memberOrdersToTalMoney, setMemberOrdersToTalMoney] = useState([]);
-  const [memberOrdersTotalBill, setMemberOrdersTotalBill] = useState([]);
   const [changeUi, setChangeUi] = useState("LIST_MEMBER");
 
   const [filterTopData, setFilterTopData] = useState([]);
@@ -162,9 +160,15 @@ export default function MemberPage() {
     getMemberOrderMenus();
     getAllMoney();
     getTotalPoints();
-    // getMemberListBirthday();
-    // getMemberListTop();
-    setStoreDetail({ ...storeDetail, changeUi: "LIST_MEMBER" });
+    getMemberListBirthday();
+    getMemberListTop();
+    setStoreDetail({
+      ...storeDetail,
+      changeUi: "LIST_MEMBER",
+      startDay: moment(startDate).format("DD"),
+      endDay: moment(endDate).format("DD"),
+      month: moment(startDate).format("MM"),
+    });
   }, []);
 
   useEffect(() => {

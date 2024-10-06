@@ -10,6 +10,15 @@ export const getMembers = async (findBy, TOKEN) => {
     return error;
   }
 };
+export const getMembersAll = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members/all${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const getMembersListTop = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member-top-award${findBy}`;

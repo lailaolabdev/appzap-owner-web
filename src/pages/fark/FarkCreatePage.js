@@ -355,6 +355,7 @@ export default function FarkCreatePage() {
                             width: "100%",
                             objectFit: "cover",
                           }}
+                          alt=""
                         />
                       </div>
                       <div style={{ textWrap: "nowrap" }}>{e?.name}</div>

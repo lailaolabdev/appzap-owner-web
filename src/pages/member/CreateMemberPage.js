@@ -21,7 +21,7 @@ import {
   getMembers,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
 import { useTranslation } from "react-i18next";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
@@ -29,6 +29,9 @@ import { errorAdd, successAdd } from "../../helpers/sweetalert";
 export default function CreateMemberPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  // console.log("state: ", state);
   // state
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
@@ -46,7 +49,11 @@ export default function CreateMemberPage() {
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
-      navigate("/reports/members-report");
+      if (state?.key) {
+        navigate("/debt/create");
+      } else {
+        navigate("/reports/members-report");
+      }
     } catch (err) {
       errorAdd(`${t("add_fail")}`);
       setDisabledButton(false);

@@ -106,7 +106,7 @@ export default function CategoryType() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => setPopup({ popUpAddCategoryType: true })}
           >
-            ສ້າງໝວດໝູ່
+            {t("create_category")}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>
@@ -116,7 +116,7 @@ export default function CategoryType() {
               <thead>
                 <tr>
                   <th scope="col">{t("no")}</th>
-                  <th scope="col">ຊື່ໝວດອາຫານ</th>
+                  <th scope="col">{t("food_category")}</th>
                 </tr>
               </thead>
               <tbody>

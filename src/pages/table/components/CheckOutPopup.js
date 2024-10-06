@@ -37,7 +37,7 @@ export default function CheckOutPopup({
   onPrintBill = () => {},
   open,
   onClose,
-  // onSubmit,
+  onSubmit = () => {},
   dataBill,
   tableData,
   setDataBill,
@@ -815,6 +815,7 @@ export default function CheckOutPopup({
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
+        <Button onClick={() => onSubmit()}>{t("debt")}</Button>
       </Modal.Footer>
     </Modal>
   );

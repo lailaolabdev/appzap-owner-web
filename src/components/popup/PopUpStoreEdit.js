@@ -83,7 +83,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>ໄອດີຮ້ານ</Form.Label>
+                <Form.Label>{t("store_id")}</Form.Label>
                 <Form.Control
                   readOnly
                   type="text"
@@ -119,7 +119,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>whatsapp</Form.Label>
+                <Form.Label>{t("WhatsApp")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="whatsapp"

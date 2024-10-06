@@ -58,6 +58,7 @@ import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
+import CheckPopupDebt from "./components/CheckPopupDebt";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
@@ -2323,6 +2324,17 @@ export default function TableList() {
         ))}
       </div>
 
+      <CheckPopupDebt
+        onPrintBill={onPrintBill}
+        onPrintDrawer={onPrintDrawer}
+        dataBill={dataBill}
+        tableData={selectedTable}
+        open={popup?.CheckPopUpDebt}
+        onClose={() => setPopup()}
+        setDataBill={setDataBill}
+        taxPercent={taxPercent}
+        // editMode={select}
+      />
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
@@ -2339,7 +2351,14 @@ export default function TableList() {
         }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
+<<<<<<< HEAD
         billDataLoading={billDataLoading}
+=======
+        onSubmit={() => {
+          setPopup({ CheckOutType: false, CheckPopUpDebt: true });
+        }}
+        // editMode={select}
+>>>>>>> translate
       />
 
       <OrderCheckOut

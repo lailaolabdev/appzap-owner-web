@@ -91,6 +91,7 @@
     "sass": "^1.62.1",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.2.0",
+    "sweetalert": "^2.1.2",
     "sweetalert2": "10.16.6",
     "use-sound": "2.0.2",
     "uuidv4": "^6.2.13",

@@ -409,7 +409,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t("no")}
+                    placeholder={t("no_")}
                     value={values?.sort}
                     onChange={handleChange}
                   />
@@ -565,7 +565,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder="{t('no')}"
+                    placeholder={t("no")}
                     value={values.sort}
                     onChange={handleChange}
                   />
@@ -651,7 +651,7 @@ export default function Categorylist() {
                   />
                 </Form.Group> */}
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຫົວຂໍປະເພດອາຫານ</Form.Label>
+                  <Form.Label>{t("food_title")}</Form.Label>
                   <Form.Control
                     as="select"
                     name="categoryTypeId"
