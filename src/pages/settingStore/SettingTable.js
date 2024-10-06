@@ -198,7 +198,7 @@ export default function SettingTable() {
             <thead>
               <tr>
                 {/* <th scope="col">#</th> */}
-                <th scope="col">{t("code")}</th>
+                <th scope="col">{t("tablecode")}</th>
                 {/* <th scope="col">ການເປີດ/ປິດ</th> */}
                 {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
                 <th scope="col" style={{ textAlign: "right" }}>
@@ -303,7 +303,7 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("code")}</Form.Label>
+            <Form.Label>{t("tablecode")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
@@ -343,7 +343,7 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("code")}</Form.Label>
+            <Form.Label>{t("tablecode")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
@@ -390,7 +390,7 @@ export default function SettingTable() {
 
       <Modal show={popup?.qr} onHide={() => setPopup()}>
         <Modal.Header closeButton>
-          <Modal.Title>QR </Modal.Title>
+          <Modal.Title>QR CODE</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <QrReader

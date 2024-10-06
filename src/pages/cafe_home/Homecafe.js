@@ -1011,7 +1011,7 @@ function Homecafe() {
             }}
           >
             <div>
-              <label>{t("chose_food_type")}</label>
+              <label>{t("choose_food_type")}</label>
               <select
                 className="form-control"
                 onChange={(e) => setSelectedCategory(e.target.value)}

@@ -238,17 +238,14 @@ export default function Categorylist() {
   return (
     <div style={BODY}>
       <Breadcrumb>
-        <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
-        <Breadcrumb.Item active>{t('food_type')}</Breadcrumb.Item>
+        <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+        <Breadcrumb.Item active>{t("food_type")}</Breadcrumb.Item>
       </Breadcrumb>
       <div>
-        <Nav variant="tabs" defaultActiveKey='/settingStore/category'>
+        <Nav variant="tabs" defaultActiveKey="/settingStore/category">
           <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/menu"
-              onClick={() => _menuList()}
-            >
-              {t('menu')}
+            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
+              {t("menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -256,7 +253,7 @@ export default function Categorylist() {
               eventKey="/settingStore/menu-option"
               onClick={() => _menuOptionList()}
             >
-              {t('option_menu')}
+              {t("option_menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -264,7 +261,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t('food_type')}
+              {t("food_type")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -330,7 +327,7 @@ export default function Categorylist() {
                         {/*adamHere*/}
                         <td
                           style={{
-                            color: data?.showForCustomer ? "green" : "red"
+                            color: data?.showForCustomer ? "green" : "red",
                           }}
                         >
                           <label className="switch">
@@ -397,7 +394,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t("no")}
+                    placeholder={t("no_")}
                     value={values?.sort}
                     onChange={handleChange}
                   />
@@ -553,7 +550,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder="{t('no')}"
+                    placeholder={t("no")}
                     value={values.sort}
                     onChange={handleChange}
                   />
@@ -639,7 +636,7 @@ export default function Categorylist() {
                   />
                 </Form.Group> */}
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຫົວຂໍປະເພດອາຫານ</Form.Label>
+                  <Form.Label>{t("food_title")}</Form.Label>
                   <Form.Control
                     as="select"
                     name="categoryTypeId"

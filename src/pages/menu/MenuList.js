@@ -43,8 +43,6 @@ export default function MenuList() {
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
 
-  
-
   const [isOpened, setIsOpened] = useState(true);
   const [show, setShow] = useState(false);
   const [showAddMenus, setShowAddMenus] = useState(false);
@@ -90,9 +88,8 @@ export default function MenuList() {
   const [Menus, setMenus] = useState();
 
   const location = useLocation();
-  const pathParts = location.pathname.split('/');
+  const pathParts = location.pathname.split("/");
   const defaultActiveKey = `/settingStore/${pathParts[2]}`;
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,7 +156,7 @@ export default function MenuList() {
   };
 
   const handleUpdateMenuOptionsCount = (menuId, count) => {
-    setMenuOptionsCount(prev => ({ ...prev, [menuId]: count }));
+    setMenuOptionsCount((prev) => ({ ...prev, [menuId]: count }));
   };
 
   const getMenu = async (id, categoryId) => {
@@ -188,8 +185,6 @@ export default function MenuList() {
       setIsLoading(false);
     }
   };
-
-  
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -393,7 +388,7 @@ export default function MenuList() {
     })
       .then(async function () {
         handleClose4();
-        successAdd(`${t("edd_amount_success")}`);
+        successAdd(`${t("add_amount_success")}`);
         handleClose();
         setTimeout(() => {
           window.location.reload();
@@ -603,7 +598,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t('option_menu')}
+                {t("option_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -629,7 +624,7 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>{t("chose_food_type")}</label>
+                <label>{t("choose_food_type")}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
@@ -702,15 +697,15 @@ export default function MenuList() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">{t('no_show')}</th>
-                  <th scope="col">{t('picture')}</th>
-                  <th scope="col">{t('type_name')}</th>
-                  <th scope="col">{t('menu_type')}</th>
-                  <th scope="col">{t('food_name')}</th>
-                  <th scope="col">{t('price')}</th>
-                  <th scope="col">{t('setting_show')}</th>
-                  <th scope="col">{t('options')}</th>
-                  <th scope="col">{t('manage_data')}</th>
+                  <th scope="col">{t("no_show")}</th>
+                  <th scope="col">{t("picture")}</th>
+                  <th scope="col">{t("type_name")}</th>
+                  <th scope="col">{t("menu_type")}</th>
+                  <th scope="col">{t("food_name")}</th>
+                  <th scope="col">{t("price")}</th>
+                  <th scope="col">{t("setting_show")}</th>
+                  <th scope="col">{t("options")}</th>
+                  <th scope="col">{t("manage_data")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -787,7 +782,11 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
+                            +{t("addition_options")} (
+                            {menuOptionsCount[data._id] ||
+                              data?.menuOptions?.length ||
+                              0}
+                            )
                           </button>
                         </td>
 
@@ -962,8 +961,8 @@ export default function MenuList() {
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
-                      as="select"
                       name="categoryId"
+                      placeholder={t("choose_food_type")}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.categoryId}
@@ -977,7 +976,7 @@ export default function MenuList() {
                       }}
                     >
                       <option selected={true} disabled={true} value="">
-                        {t("chose_food_type")}
+                        {t("choose_food_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -1300,7 +1299,7 @@ export default function MenuList() {
           size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t("update-menu")}</Modal.Title>
+            <Modal.Title>{t("updatemenu")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -1413,7 +1412,7 @@ export default function MenuList() {
                       value={values.categoryId}
                     >
                       <option selected={true} disabled={true}>
-                        {t("chose_food_type")}
+                        {t("choose_food_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -1578,7 +1577,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name}
-                                      placeholder={t("food_name")}
+                                      placeholder={t("Enter Dish name...")}
                                       isInvalid={!item?.name}
                                     />
                                   </Form.Group>
@@ -1599,7 +1598,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_en}
-                                      placeholder={t("food_name")}
+                                      placeholder={t("Enter Dish name...")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1621,7 +1620,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_cn}
-                                      placeholder={t("food_name")}
+                                      placeholder={t("Enter Dish name...")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1641,7 +1640,7 @@ export default function MenuList() {
                                         )
                                       }
                                       value={item?.name_kr}
-                                      placeholder={t("food_name")}
+                                      placeholder={t("Enter Dish name...")}
                                     />
                                   </Form.Group>
                                 </Col>
@@ -1775,18 +1774,16 @@ export default function MenuList() {
           }
         />
 
-      <PopUpAddMenuOption
+        <PopUpAddMenuOption
           showSetting={showOptionSetting}
           detailMenu={detailMenuOption}
           handleClose={() => {
-              setShowOptionSetting(false);
-              setDetailMenuOption(null);
+            setShowOptionSetting(false);
+            setDetailMenuOption(null);
           }}
           getTokken={getTokken}
           updateMenuOptionsCount={handleUpdateMenuOptionsCount}
-      />
-
-
+        />
       </Box>
     </div>
   );

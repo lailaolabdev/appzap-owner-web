@@ -1,0 +1,414 @@
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  Breadcrumb,
+  Form,
+  OverlayTrigger,
+  Tooltip,
+  Button,
+} from "react-bootstrap";
+import { COLOR_APP } from "../../constants";
+import Box from "../../components/Box";
+import { useStore } from "../../store";
+import { BsExclamationDiamondFill } from "react-icons/bs";
+import {
+  getSetting,
+  updateSetting,
+  updateSettingCafe,
+  getSettingCafe
+} from "../../services/setting";
+import PopUpEditTax from "../../components/popup/PopUpEditTax";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import Axios from "axios";
+import { useTranslation } from "react-i18next";
+import { getStore } from "../../services/store";
+export default function ConfigPage() {
+  const { t } = useTranslation();
+  // state
+  const [setting, setSetting] = useState();
+  const [switchState, setSwitchState] = useState({});
+  const [switchCafeState, setSwitchCafeState] = useState(false);
+  const [tax, setTax] = useState(0);
+  const [popup, setPopup] = useState();
+
+  // provider
+  const { audioSetting, setAudioSetting,setStoreDetail, storeDetail, profile } = useStore();
+
+  // console.log(audioSetting)
+
+  // useEffect
+  useEffect(() => {
+    getSettingData();
+    getDataTax();
+  }, []);
+
+  // function
+  const handleChangeTax = async (newTax) => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.put(
+      END_POINT_SEVER + "/v4/tax/update/" + DATA.storeId,
+      { newTax: parseInt(newTax) }
+    );
+    getDataTax();
+    setPopup();
+  };
+  const getDataTax = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
+    setTax(_res?.data?.taxPercent);
+  };
+
+  const getSettingData = async () => {
+    const data = await getSetting(storeDetail?._id);
+    setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
+    setSetting(data);
+  };
+
+
+  const changeSwitchData = async (dataUpdate) => {
+    const data = await updateSetting(setting?._id, dataUpdate);
+    setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
+  };
+
+  const changeCafe = async (e) => {
+    const isCafe = e.target.checked;
+    const _type = isCafe ? "CAFE" : "GENERAL"
+    await updateSettingCafe(profile?.data.storeId, { data: _type })
+    const dataStore = await getStore(storeDetail?._id);
+    setStoreDetail(dataStore);
+      
+  };
+
+  const TooltipFunc = ({ id, children, title }) => (
+    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
+      <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
+    </OverlayTrigger>
+  );
+
+  return (
+    <>
+      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+        <Breadcrumb>
+          <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>POS config</Breadcrumb.Item>
+        </Breadcrumb>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
+            gap: 20,
+            gridTemplateRows: "masonry",
+          }}
+        >
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("tax")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>
+                  {t("tax")}: {tax}%
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                    {t("edit")}
+                  </Button>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              SMART MENU & SELF ORDERING
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: `${t("oppen_smart_menu")}`,
+                  key: "open",
+                  tooltip: `${t("close_oppen_for_work")}`,
+                  disabled: true,
+                  default: true,
+                },
+                {
+                  title: `${t("oppen_table_first")}`,
+                  key: "shouldOpenTableForSelfOrdering",
+                  tooltip: "",
+                  disabled: true,
+                },
+                {
+                  title: `${t("auto_oppen")}`,
+                  key: "autoOpenTable",
+                  tooltip: "",
+                  disabled: true,
+                },
+                {
+                  title: `${t("table_qr")}`,
+                  key: "tableQrEveryoneCanSelfOrdering",
+                  tooltip: "",
+                  disabled: true,
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>
+                    {item?.title}{" "}
+                    <TooltipFunc title={item?.tooltip} id={index} />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                      {switchState?.[item?.key] || item?.default
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      disabled={item?.disabled}
+                      type="switch"
+                      checked={switchState?.[item?.key] || item?.default}
+                      id={"switch-audio-" + item?.key}
+                      onChange={(e) => {
+                        changeSwitchData({
+                          [`smartMenu.${item?.key}`]: e.target.checked,
+                        })
+                          .then((e) => {
+                            getSettingData();
+                          })
+                          .catch((er) => console.log(er));
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("stock_system")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: `${t("enable_stock")}`,
+                  key: "sang",
+                  default: false,
+                  disabled: true,
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                      {audioSetting?.[item?.key] || item?.default
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      disabled={item?.disabled}
+                      type="switch"
+                      checked={audioSetting?.[item?.key] || item?.default}
+                      id={"switch-audio-" + item?.key}
+                      onChange={(e) =>
+                        setAudioSetting((prev) => ({
+                          ...prev,
+                          [item?.key]: e.target.checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("booking")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: `${t("enable_booking")}`,
+                  key: "fer",
+                  disabled: true,
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                      {audioSetting?.[item?.key]
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      disabled={item?.disabled}
+                      type="switch"
+                      checked={audioSetting?.[item?.key]}
+                      id={"switch-audio-" + item?.key}
+                      onChange={(e) =>
+                        setAudioSetting((prev) => ({
+                          ...prev,
+                          [item?.key]: e.target.checked,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              ຮ້ານຄາເຟ
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: "ເປີດໃຊ້ງານຮ້ານຄາເຟ",
+                  key: "fer",
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"switch-cafe-" + item?.key}>
+                      {storeDetail?.isRestuarant == "CAFE" ? "ເປີດ" : "ປິດ"}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isRestuarant == "CAFE"}
+                      id={"switch-cafe-" + item?.key}
+                      onChange={changeCafe}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+        </Box>
+      </Box>
+      {/* popup */}
+      <PopUpEditTax
+        open={popup?.PopUpEditTax}
+        onClose={() => setPopup()}
+        prevTax={tax}
+        onSubmit={handleChangeTax}
+      />
+    </>
+  );
+}
