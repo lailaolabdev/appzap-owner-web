@@ -105,7 +105,7 @@ export default function History() {
                 ></input>
               </div>
               <div className="col">
-                <label>ຫາວັນທີ</label>
+                <label>{t("all_list")}</label>
                 <input
                   type="date"
                   className="form-control"
