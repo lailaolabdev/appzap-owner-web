@@ -210,7 +210,6 @@ function HistorySale() {
           }}
         >
           <div>
-<<<<<<< HEAD
             {isLoading ? (
               <Loading />
             ) : (
@@ -354,30 +353,6 @@ function HistorySale() {
                             })}
                           </tbody>
                         </Table>
-=======
-            <>
-              <div className="m-2" style={{ marginBottom: 20 }}>
-                <h5>{t("history_sales")}</h5>
-                <div style={{ flex: 1 }} />
-              </div>
-              <div style={{ padding: 0 }}>
-                <div style={{ padding: 10 }}>
-                  <Table striped hover size="sm" style={{ fontSize: 15 }}>
-                    <thead>
-                      <tr>
-                        <th>ລຳດັບ</th>
-                        <th>ລະຫັດສິນຄ້າ</th>
-                        <th>ຈຳນວນລາຍການ</th>
-                        <th>ລາຄາລວມ</th>
-                        <th>ວັນທີ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {isLoading ? (
-                        <td colSpan={9} style={{ textAlign: "center" }}>
-                          <Spinner animation="border" variant="warning" />
-                        </td>
->>>>>>> translate
                       ) : (
                         historyCafe.map((item, index) => (
                           <tr
@@ -522,7 +497,6 @@ function HistorySale() {
           </div>
         </div>
         {/* Detail Table */}
-<<<<<<< HEAD
         {!isMobile ? (
           <div
             style={{
@@ -558,41 +532,6 @@ function HistorySale() {
                       {t("product_sales")}
                     </Button>
                   </div>
-=======
-        <div
-          style={{
-            minWidth: 380,
-            backgroundColor: "#FFF",
-            maxHeight: "90vh",
-            borderColor: "black",
-            overflowY: "scroll",
-            borderWidth: 1,
-            paddingLeft: 20,
-            paddingTop: 20,
-          }}
-        >
-          <div className="container">
-            <div className="row">
-              <div className="col-12 mx-auto">
-                <div className="row" style={{ margin: 0 }}></div>
-                <div style={{ height: 10 }} />
-                <div className="row" style={{ margin: 0 }}>
-                  <Button
-                    variant="light"
-                    className="hover-me"
-                    style={{
-                      height: 60,
-                      marginRight: 15,
-                      backgroundColor: "#FB6E3B",
-                      color: "#ffffff",
-                      fontWeight: "bold",
-                      flex: 1,
-                    }}
-                    onClick={() => navigate(`/cafe`)}
-                  >
-                    {t("product_sales")}
-                  </Button>
->>>>>>> translate
                 </div>
               </div>
             </div>
