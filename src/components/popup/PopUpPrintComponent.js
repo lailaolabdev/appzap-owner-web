@@ -28,7 +28,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [bills, setBill] = useState();
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
-    ຍອດທັງຫມົດ: 0,
+    ຍອດທັງໝົດ: 0,
     ຈ່າຍເງິນສົດ: 0,
     ຈ່າຍເງິນໂອນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
