@@ -75,7 +75,6 @@ export default function PopUpAddDiscount({
           discountType: discountType === "%" ? "PERCENT" : "LAK",
         },
       };
-      console.log("BODY: ", _body);
       const _header = await getHeaders();
       const res = await axios.put(url, _body, { headers: _header });
     } catch (err) {
@@ -89,7 +88,6 @@ export default function PopUpAddDiscount({
         method: "GET",
         url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
       });
-      console.log("CATEGORYTYPE: ", res.data.data);
       setCategorysType(res?.data?.data);
     } catch (error) {
       console.log(error);
@@ -110,7 +108,6 @@ export default function PopUpAddDiscount({
       const filteredCategories = json.filter((category) =>
         orderCategoryIds.includes(category._id)
       );
-      console.log("filteredCategories", filteredCategories);
       setFilteredCategories(filteredCategories);
     } catch (err) {
       console.log(err);
@@ -118,7 +115,6 @@ export default function PopUpAddDiscount({
   };
 
   useEffect(() => {
-    console.log("Categorys:", Categorys);
     const fetchData = async () => {
       try {
         const _localData = await getLocalData();

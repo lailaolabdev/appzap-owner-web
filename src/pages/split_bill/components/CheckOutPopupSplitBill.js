@@ -215,15 +215,19 @@ export default function CheckOutPopupSplitBill({
   }, [dataBill]);
 
   const _calculateTotal = () => {
-    let _total = 0;
-    for (let _data of dataBill || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
-    }
-    setTotal(_total);
-    setTotalBill(_total);
+    // let _total = 0;
+    // for (let _data of dataBill || []) {
+    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
+    //   const itemPrice = _data?.price + totalOptionPrice;
+    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+    //   _total += _data?.quantity * itemPrice;
+    // }
+    const totalBillDefualt = _.sumBy(
+      dataBill?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
+    setTotal(totalBillDefualt);
+    setTotalBill(totalBillDefualt);
   };
   // function
   const getDataCurrency = async () => {

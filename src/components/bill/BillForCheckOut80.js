@@ -13,10 +13,11 @@ import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import _ from "lodash";
 
 export default function BillForCheckOut80({
   storeDetail,
-  selectedBill,
+  selectedTable,
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
@@ -34,7 +35,7 @@ export default function BillForCheckOut80({
 
   // console.log("storeDetail", storeDetail);
   // console.log("dataBill 80 code", dataBill?.orderId);
-  // console.log("selectedBill 80", selectedBill);
+  // console.log("selectedTable 80", selectedTable);
 
   // useEffect
   useEffect(() => {
@@ -51,30 +52,37 @@ export default function BillForCheckOut80({
 
   // function
   const _calculateTotal = () => {
-    let _total = 0;
-    for (let _data of dataBill?.orderId || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
-    }
+    // let _total = 0;
+    // for (let _data of dataBill?.orderId || []) {
+    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
+    //   const itemPrice = _data?.price + totalOptionPrice;
+    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+    //   _total += _data?.quantity * itemPrice;
+    // }
+
+    const totalBillDefualt = _.sumBy(
+      dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType == "LAK" ||
         dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(_total - dataBill?.discount);
+        setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-        setTotalAfterDiscount(_total - ddiscount);
+        const ddiscount = parseInt(
+          (totalBillDefualt * dataBill?.discount) / 100
+        );
+        setTotalAfterDiscount(totalBillDefualt - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(totalBillDefualt);
     }
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
+    setTotal(totalBillDefualt);
+    setTaxAmount((totalBillDefualt * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (_total * storeDetail?.serviceChargePer) / 100
+      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
@@ -141,11 +149,7 @@ export default function BillForCheckOut80({
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>
         {" "}
-        {` ${
-          selectedBill?.isSplit
-            ? " ໃບບິນລວມທັງໝົດ"
-            : `ໃບບິນເລກໂຕະ ${selectedBill?.tableId?.name}`
-        }`}
+        {`${t("tableNumber")} ${dataBill?.tableId?.name}`}
       </div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>

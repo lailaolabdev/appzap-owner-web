@@ -176,8 +176,8 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
-  const [currency, setCurrency] = useState([]);
+  const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
+    useStore();
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -355,10 +355,10 @@ function AddOrder() {
 
   useEffect(() => {
     // TODO: check selectTable
-    if (!selectedTable) {
+    if (!selectedTable || !selectedBill) {
       navigate("/tables");
     }
-  }, [selectedTable]);
+  }, [selectedTable, selectedBill]);
 
   useEffect(() => {
     (async () => {

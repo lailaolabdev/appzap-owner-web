@@ -33,7 +33,6 @@ export const getMemberAllCount = async (storeId, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/count?storeId=${storeId}`;
     const res = await axios.get(url, { headers: TOKEN });
-    console.log("MEMBER>>>>>>>", res?.data?.data);
     return res?.data?.data;
   } catch (error) {
     return { error: true };

@@ -12,8 +12,9 @@ export const useBillState = (storeDetail) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [combine, setcombine] = useState({});
   const [chageStatus, setChageStatus] = useState(false);
-
-  // console.log("billTotal", billTotal);
+  const [tableChild, setTableChild] = useState([]);
+  const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
+  // console.log("tableChild", tableChild);
 
   /**
    * Modify Order
@@ -27,26 +28,56 @@ export const useBillState = (storeDetail) => {
   }, [billOrders]);
 
   const getSplitBillAll = useMemo(
-    () => async (oldId, newId) => {
+    () => async (newId) => {
+      // console.log("get new Id", newId);
       // const url = END_POINT + `/v3/bills/${oldId}/${newId}`;
-      const url = END_POINT + `/v3/code/${oldId}/${newId}`;
+      // const url = END_POINT + `/v3/code/${oldId}/${newId}`;
+      const url = END_POINT + `/v3/code/findTwoCode/${newId}`;
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
+          // console.log("response", response);
           if (response.message === "server error") return;
           setlistbillSplitAll(response);
+          setTableChild(response[0]?.tableChildren);
         });
     },
     []
   );
+
+  const onChangeMenuCheckbox = async (order) => {
+    let _orderItemForPrint = [];
+    let _orderItems = [...billOrderItems];
+    let _newOrderItems = _orderItems.map((item) => {
+      if (item._id === order._id) {
+        return {
+          ...item,
+          isChecked: !item.isChecked,
+        };
+      } else return item;
+    });
+    for (let i = 0; i < _newOrderItems?.length; i++) {
+      if (_newOrderItems[i]?.isChecked === true)
+        _orderItemForPrint.push(_newOrderItems[i]);
+    }
+
+    setorderItemForPrintBill(_orderItemForPrint);
+    setbillOrderItems(_newOrderItems);
+  };
+
   const getbillOrders = async (bill) => {
     try {
       setbillOrders([]);
       if (!bill?.billId) return;
       setIsbillOrderLoading(true);
+      // const url =
+      //   END_POINT +
+      //   `/v3/orders?code=${bill?.code}&storeId=${bill?.storeId}&storeId=${bill?.storeId}&billId=${bill?.billId}`;
       const url = END_POINT + `/v3/bills?_id=${bill?.billId}`;
       let res = await axios.get(url);
       const data = res.data;
+
+      console.log("getbillOrders", data);
 
       if (selectedItems.includes(data[0])) {
         if (selectedItems?.length >= 2) return;
@@ -169,5 +200,8 @@ export const useBillState = (storeDetail) => {
     showAllbill,
     chageStatus,
     setChageStatus,
+    tableChild,
+    orderItemForPrintBill,
+    onChangeMenuCheckbox,
   };
 };

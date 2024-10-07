@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 // sound
 import messageSound from "../sound/message.mp3";
+import { use } from "i18next";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -42,6 +43,13 @@ export default function NavBar() {
     };
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // const lang = localStorage.getItem("i18nextLng");
+    // if (lang) {
+    //   // const _localJson = JSON.parse(lang);
+    //   i18n.changeLanguage(lang);
+
+    // }
   }, []);
 
   const _onLogout = () => {
@@ -52,7 +60,11 @@ export default function NavBar() {
     // sessionStorage.clear();
     navigate(`/`);
   };
+
   const switchLanguage = (language) => {
+    // localStorage.setItem("i18nextLng", language);
+    // const lang = localStorage.getItem("i18nextLng");
+
     i18n.changeLanguage(language);
   };
 
@@ -103,7 +115,11 @@ export default function NavBar() {
               boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
             }}
           >
-            <select onChange={(e) => switchLanguage(e.target.value)}>
+            <select
+              onChange={(e) => {
+                switchLanguage(e.target.value);
+              }}
+            >
               <option value="la">LA</option>
               <option value="en">EN</option>
             </select>
@@ -120,7 +136,7 @@ export default function NavBar() {
                   fontSize: 12,
                 }}
               >
-                <MdPrint /> <span>{t('connect_pinter')}</span>
+                <MdPrint /> <span>{t("connect_pinter")}</span>
               </div>
             ) : (
               <a
@@ -138,7 +154,7 @@ export default function NavBar() {
                     fontSize: 12,
                   }}
                 >
-                  <MdPrintDisabled /> {t('unconnect_pinter')} !
+                  <MdPrintDisabled /> {t("unconnect_pinter")} !
                 </div>
               </a>
             )}
@@ -158,10 +174,10 @@ export default function NavBar() {
                 <Box sx={{ display: { xs: "none", sm: "block" } }}>
                   {userData
                     ? (userData?.data?.firstname
-                      ? userData?.data?.firstname
-                      : "") +
-                    " " +
-                    (userData?.data?.lastname ? userData?.data?.lastname : "")
+                        ? userData?.data?.firstname
+                        : "") +
+                      " " +
+                      (userData?.data?.lastname ? userData?.data?.lastname : "")
                     : ""}
                 </Box>
               </Dropdown.Toggle>
@@ -170,7 +186,7 @@ export default function NavBar() {
                   style={{ color: "#909090" }}
                   onClick={() => _onLogout()}
                 >
-                  {t('log_out')}
+                  {t("log_out")}
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

@@ -12,6 +12,7 @@ import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import _ from "lodash";
 import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOutCombine80({
@@ -51,30 +52,37 @@ export default function BillForCheckOutCombine80({
 
   // function
   const _calculateTotal = () => {
-    let _total = 0;
-    for (let _data of dataBill?.items || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
-    }
+    // let _total = 0;
+    // for (let _data of dataBill?.items || []) {
+    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
+    //   const itemPrice = _data?.price + totalOptionPrice;
+    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+    //   _total += _data?.quantity * itemPrice;
+    // }
+
+    const totalBillDefualt = _.sumBy(
+      dataBill?.items?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType == "LAK" ||
         dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(_total - dataBill?.discount);
+        setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-        setTotalAfterDiscount(_total - ddiscount);
+        const ddiscount = parseInt(
+          (totalBillDefualt * dataBill?.discount) / 100
+        );
+        setTotalAfterDiscount(totalBillDefualt - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(totalBillDefualt);
     }
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
+    setTotal(totalBillDefualt);
+    setTaxAmount((totalBillDefualt * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (_total * storeDetail?.serviceChargePer) / 100
+      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };

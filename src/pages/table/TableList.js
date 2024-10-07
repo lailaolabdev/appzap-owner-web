@@ -67,6 +67,7 @@ import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { padding_white } from "./../../constants/index";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -80,15 +81,15 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
-  const [show1, setShow1] = useState(false);
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
   const [mobileMode, setMobileMode] = useState(false);
+  const [show1, setShow1] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
   const handleClose1 = () => setShow1(false);
+
   const handleShow1 = (e) => {
     setShow1(true);
   };
@@ -108,7 +109,6 @@ export default function TableList() {
   const [quantity, setQuantity] = useState(false);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
   const [total, setTotal] = useState(0);
-  const [tokenForSmartOrder, setTokenForSmartOrder] = useState(null);
   const [codeShortLink, setCodeShortLink] = useState(null);
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
@@ -145,21 +145,19 @@ export default function TableList() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
-    getTableDataStoreList,
-    setPrintNowList,
-    openTableAndReturnTokenOfBill,
+    // getTableDataStoreList,
+    // setPrintNowList,
+    // openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
     setbillSplitNewId,
     setbillSplitOldId,
-    billSplitNewId,
-    billSplitOldId,
+    // billSplitNewId,
+    // billSplitOldId,
     userCallCheckout,
     setUserCallCheckout,
   } = useStore();
-
-  // console.log("actions", storeDetail?.actions);
 
   const reLoadData = () => {
     setReload(true);
@@ -178,13 +176,9 @@ export default function TableList() {
   const [checkedBox, setCheckedBox] = useState(true);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
-  const [dataCustomer, setDataCustomer] = useState();
-  const [codeId, setCodeId] = useState(null);
   const [userData, setuserData] = useState(null);
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
-
-  const [isBillTest, setIsBillTest] = useState(true);
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
@@ -250,14 +244,25 @@ export default function TableList() {
       setZoneId(localZone);
       getTableDataStore({ zone: localZone });
     }
-  }, []);
 
-  // useEffect(() => {
-  //   getUserData();
-  //   if (window.opener) {
-  //     window.opener.location.reload();
-  //   }
-  // }, []);
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
+
+    const getDataServiceCharge = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+      );
+      setServiceChargePercent(_res?.data?.serviceCharge);
+    };
+    getDataServiceCharge();
+  }, []);
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -269,27 +274,6 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  useEffect(() => {
-    const getDataTax = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
-      );
-      setTaxPercent(_res?.data?.taxPercent);
-    };
-    getDataTax();
-  }, []);
-
-  useEffect(() => {
-    const getDataServiceCharge = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
-      );
-      setServiceChargePercent(_res?.data?.serviceCharge);
-    };
-    getDataServiceCharge();
-  }, []);
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
@@ -304,30 +288,10 @@ export default function TableList() {
       e?.tableOrderItems?.length === 0
   )?._id;
 
-  // useEffect(() => {
-  //   // initialTableSocket();
-  //   // getTableDataStoreList();
-  //   getTableDataStore();
-  // }, []);
-
-  /**
-   * Modify Order Status
-   */
   useEffect(() => {
     setIsCheckedOrderItem([...tableOrderItems]);
   }, [selectedTable, tableOrderItems]);
-  // useEffect(() => {
-  //   if (!tableOrderItems) return;
-  //   let _tableOrderItems = [...tableOrderItems];
-  //   let _checkDataStatus = [];
-  //   let _checkDataStatusCancel = [];
-  //   _tableOrderItems.map((nData) => {
-  //     if (nData.status === "SERVED") _checkDataStatus.push(nData?.status);
-  //     if (nData.status === "CANCELED")
-  //       _checkDataStatusCancel.push(nData?.status);
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tableOrderItems]);
+
   const _handlecheckout = async () => {
     setCheckoutModal(false);
     navigate(
@@ -473,7 +437,8 @@ export default function TableList() {
           timer: 1500,
         });
         // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
-        navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
+        // navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
+        // navigate(`/bill/split/${selectNewTable?._id}`);
       }
     } catch (err) {
       console.log({ err });
@@ -1271,6 +1236,8 @@ export default function TableList() {
   };
 
   const checkAllOrders = (item) => {
+    console.log("checkAllOrders tableList", item);
+
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
@@ -1711,6 +1678,7 @@ export default function TableList() {
                             <span
                               style={{
                                 fontSize: 16,
+                                position: "relative",
                                 // color: table?.staffConfirm
                                 //   ? "white"
                                 //   : "#616161",
@@ -1731,6 +1699,17 @@ export default function TableList() {
                                   : "#616161",
                               }}
                             >
+                              <div
+                                style={{
+                                  fontWeight: "bold",
+                                  position: "absolute",
+                                  top: -5,
+                                  right: -35,
+                                }}
+                              >
+                                {table?.tableChildren.length > 0 &&
+                                  table?.tableChildren.length}
+                              </div>
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
                               <div>
@@ -1868,19 +1847,6 @@ export default function TableList() {
                         >
                           <SiAirtable /> {selectedTable?.tableName}
                         </div>
-                        {/* <Button onClick={()=> setIsBillTest(true)}>test print</Button>
-
-                          <Modal show={isBillTest} onHide={() => setIsBillTest(false)}>
-                          <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
-                          <BillForCheckOut80
-          storeDetail={storeDetail}
-          selectedTable={selectedTable}
-          dataBill={dataBill}
-          taxPercent={taxPercent}
-        />
-      </div>
-                          </Modal>   */}
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1931,7 +1897,6 @@ export default function TableList() {
                               : ""}
                           </span>
                         </div>
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1950,7 +1915,6 @@ export default function TableList() {
                               : storeDetail?.firstCurrency}
                           </span>
                         </div>
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1990,7 +1954,8 @@ export default function TableList() {
                               (e) =>
                                 e?.status != "SERVED" &&
                                 e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status != "FEEDBACK" &&
+                                e?.status != "PAID"
                             )?.length
                               ? "block"
                               : "none",
@@ -2001,10 +1966,24 @@ export default function TableList() {
                               (e) =>
                                 e?.status != "SERVED" &&
                                 e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status != "FEEDBACK" &&
+                                e?.status != "PAID"
                             )?.length
                           }{" "}
                           {t("itemNotServed")} !
+                        </div>
+                        <div>
+                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                            {isCheckedOrderItem?.filter(
+                              (e) => e?.status == "PAID"
+                            )?.length
+                              ? ` ${
+                                  isCheckedOrderItem?.filter(
+                                    (e) => e?.status == "PAID"
+                                  )?.length
+                                } ${t("ORDER_PAID")}`
+                              : ""}
+                          </p>
                         </div>
                       </div>
                       <div
@@ -2076,15 +2055,16 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() =>
-                            navigate(
-                              `/bill/split/${billSplitOldId}/${billSplitNewId}`
-                            )
-                          }
-                        >
-                          {t("bill")}
-                        </ButtonCustom>
+                        {selectedTable?.tableChildren?.length > 0 && (
+                          <ButtonCustom
+                            onClick={() =>
+                              navigate(`/bill/split/${selectedTable?._id}`)
+                            }
+                          >
+                            {/* {t("bill_combine")} */}
+                            ບິນແຍກຈ່າຍ
+                          </ButtonCustom>
+                        )}
                       </div>
                       <div
                         style={{
@@ -2215,6 +2195,8 @@ export default function TableList() {
                                         color:
                                           orderItem?.status === `SERVED`
                                             ? "green"
+                                            : orderItem?.status === "PAID"
+                                            ? COLOR_APP
                                             : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
@@ -2606,6 +2588,12 @@ export default function TableList() {
                         ? true
                         : false
                     }
+                    style={{
+                      backgroundColor:
+                        selectedTable?.tableName === item?.tableName
+                          ? "orange"
+                          : "",
+                    }}
                   >
                     {t("table")} {item?.tableName}
                   </option>

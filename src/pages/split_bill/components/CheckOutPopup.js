@@ -253,8 +253,8 @@ export default function CheckOutPopup({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
+              profile?.data?.firstname + " " + profile?.data?.lastname ?? "-",
+            staffCheckOutId: profile?.data?.id,
           },
         },
         {
@@ -290,7 +290,7 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
         });
-        navigate(`/bill/split/${oldId}/${newId}`);
+        navigate(`/bill/split/${newId}`);
         await getTableDataStore();
         setChageStatus(false);
         setshowBillAfterCheckout(true);

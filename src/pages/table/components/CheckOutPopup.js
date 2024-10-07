@@ -117,10 +117,6 @@ export default function CheckOutPopup({
     } catch (err) {}
   };
 
-  console.log("tableData:=============>", tableData);
-
-  // console.log("membersData", membersData);
-
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
@@ -250,8 +246,8 @@ export default function CheckOutPopup({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
+              profile?.data?.firstname + " " + profile?.data?.lastname ?? "-",
+            staffCheckOutId: profile?.data?.id,
           },
         },
         {

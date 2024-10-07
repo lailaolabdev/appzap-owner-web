@@ -7,6 +7,7 @@ import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
+import _ from "lodash";
 import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
 import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 
@@ -47,20 +48,24 @@ const OrderCheckOut = ({
 
   const _calculateTotal = () => {
     let _total = 0;
-    if (data?.orderId) {
-      for (let i = 0; i < data?.orderId?.length; i++) {
-        _total +=
-          data?.orderId[i]?.quantity *
-          (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
-      }
-    }
+    // if (data?.orderId) {
+    //   for (let i = 0; i < data?.orderId?.length; i++) {
+    //     _total +=
+    //       data?.orderId[i]?.quantity *
+    //       (data?.orderId[i]?.price + (data?.orderId[i]?.totalOptionPrice ?? 0));
+    //   }
+    // }
+    const totalBillDefualt = _.sumBy(
+      data?.orderId?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
 
     // Calculate service charge
     const serviceChargeAmount = isServiceChargeEnabled
-      ? _total * (serviceCharge / 100)
+      ? totalBillDefualt * (serviceCharge / 100)
       : 0; // 10% if enabled
     setServiceAmount(serviceChargeAmount);
-    setTotal(_total);
+    setTotal(totalBillDefualt);
   };
 
   const onConfirmStaffToCheckBill = () => {
@@ -160,39 +165,42 @@ const OrderCheckOut = ({
             </thead>
             <tbody>
               {data &&
-                data?.orderId?.map((orderItem, index) => {
-                  const options =
-                    orderItem?.options
-                      ?.map((option) =>
-                        option.quantity > 1
-                          ? `[${option.quantity} x ${option.name}]`
-                          : `[${option.name}]`
-                      )
-                      .join(" ") || "";
-                  return (
-                    <tr key={getOrderItemKey(orderItem)}>
-                      <td>{index + 1}</td>
-                      <td>
-                        {orderItem?.name ?? "-"} {options}
-                      </td>
-                      <td>{orderItem?.quantity}</td>
-                      <td>
-                        {moneyCurrency(
-                          orderItem?.price + (orderItem?.totalOptionPrice ?? 0)
-                        )}
-                      </td>
-                      <td>
-                        {orderItem?.price
-                          ? moneyCurrency(
-                              (orderItem?.price +
-                                (orderItem?.totalOptionPrice ?? 0)) *
-                                orderItem?.quantity
-                            )
-                          : "-"}
-                      </td>
-                    </tr>
-                  );
-                })}
+                data?.orderId
+                  ?.filter((o) => o?.status === "SERVED")
+                  ?.map((orderItem, index) => {
+                    const options =
+                      orderItem?.options
+                        ?.map((option) =>
+                          option.quantity > 1
+                            ? `[${option.quantity} x ${option.name}]`
+                            : `[${option.name}]`
+                        )
+                        .join(" ") || "";
+                    return (
+                      <tr key={getOrderItemKey(orderItem)}>
+                        <td>{index + 1}</td>
+                        <td>
+                          {orderItem?.name ?? "-"} {options}
+                        </td>
+                        <td>{orderItem?.quantity}</td>
+                        <td>
+                          {moneyCurrency(
+                            orderItem?.price +
+                              (orderItem?.totalOptionPrice ?? 0)
+                          )}
+                        </td>
+                        <td>
+                          {orderItem?.price
+                            ? moneyCurrency(
+                                (orderItem?.price +
+                                  (orderItem?.totalOptionPrice ?? 0)) *
+                                  orderItem?.quantity
+                              )
+                            : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })}
               <tr>
                 <td colSpan="4" style={{ textAlign: "center" }}>
                   {t("discount")}:

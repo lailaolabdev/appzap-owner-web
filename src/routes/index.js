@@ -132,7 +132,8 @@ function Router() {
           element: <Table />,
         },
         {
-          path: "/bill/split/:oldId/:newId",
+          // path: "/bill/split/:oldId/:newId",
+          path: "/bill/split/:newId",
           element: <BillSplit />,
         },
 
