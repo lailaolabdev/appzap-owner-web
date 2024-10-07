@@ -44,6 +44,7 @@ const OrderCheckOut = ({
     setAudioSetting,
   } = useStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
+  const [totalCheckBefore, setTotalCheckBefore] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
@@ -54,6 +55,28 @@ const OrderCheckOut = ({
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
 
+  const calculateDiscount = (
+    totalWithTax,
+    serviceAmount,
+    discountType,
+    discount
+  ) => {
+    if (discountType === "LAK") {
+      return totalWithTax + serviceAmount - discount > 0
+        ? totalWithTax + serviceAmount - discount
+        : 0;
+    } else {
+      return totalWithTax +
+        serviceAmount -
+        (totalWithTax + serviceAmount) * (discount / 100) >
+        0
+        ? totalWithTax +
+            serviceAmount -
+            (totalWithTax + serviceAmount) * (discount / 100)
+        : 0;
+    }
+  };
+
   useEffect(() => {
     if (orderPayBefore) {
       console.log("DATA: ", data);
@@ -62,23 +85,36 @@ const OrderCheckOut = ({
   }, [orderPayBefore]);
 
   const _calculateTotal = () => {
+    let totalOrderPrice = 0;
     let _total = 0;
-    if (data && data?.orderId) {
+
+    const calculatePrice = (order) => {
+      return order?.quantity * (order?.price + (order?.totalOptionPrice ?? 0));
+    };
+
+    if (orderPayBefore && orderPayBefore.length > 0) {
+      totalOrderPrice = orderPayBefore.reduce((total, order) => {
+        return order?.status === "SERVED"
+          ? total + calculatePrice(order)
+          : total;
+      }, 0);
+    } else if (data && data?.orderId) {
       for (let i = 0; i < data?.orderId?.length; i++) {
         if (data?.orderId[i]?.status === "SERVED") {
-          _total +=
-            data?.orderId[i]?.quantity *
-            (data?.orderId[i]?.price +
-              (data?.orderId[i]?.totalOptionPrice ?? 0));
+          _total += calculatePrice(data?.orderId[i]);
         }
       }
     }
 
+    console.log("Total Price for SERVED Orders: ", totalOrderPrice);
+    console.log("TOTAL: ", _total);
+
     // Calculate service charge
     const serviceChargeAmount = isServiceChargeEnabled
       ? _total * (serviceCharge / 100)
-      : 0; // 10% if enabled
+      : 0; // Apply service charge if enabled
     setServiceAmount(serviceChargeAmount);
+    setTotalCheckBefore(totalOrderPrice);
     setTotal(_total);
   };
 
@@ -122,6 +158,10 @@ const OrderCheckOut = ({
       isServiceCharge: e.target.checked,
     });
   };
+
+  const totalWithTax = total * (taxPercent * 0.01 + 1);
+  const activeTotal =
+    orderPayBefore && orderPayBefore.length > 0 ? totalCheckBefore : total;
 
   return (
     <>
@@ -269,28 +309,59 @@ const OrderCheckOut = ({
                     <td colSpan="1">{serviceCharge}%</td>
                   </tr>
                 )}
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("total_price")}:
-                  </td>
-                  <td colSpan="1">
-                    {moneyCurrency(total)} {storeDetail?.firstCurrency}
-                  </td>
-                </tr>
+                {orderPayBefore && orderPayBefore.length > 0 ? (
+                  <>
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: "center" }}>
+                        {t("total_price")}:
+                      </td>
+                      <td colSpan="1">
+                        {moneyCurrency(totalCheckBefore)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
 
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("total_price")} + {t("tax")} {taxPercent}%:
-                  </td>
-                  <td colSpan="1">
-                    {moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) + serviceAmount
-                      )
-                    )}{" "}
-                    {storeDetail?.firstCurrency}
-                  </td>
-                </tr>
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: "center" }}>
+                        {t("total_price")} + {t("tax")} {taxPercent}%:
+                      </td>
+                      <td colSpan="1">
+                        {moneyCurrency(
+                          Math.floor(
+                            totalCheckBefore * (taxPercent * 0.01 + 1) +
+                              serviceAmount
+                          )
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: "center" }}>
+                        {t("total_price")}:
+                      </td>
+                      <td colSpan="1">
+                        {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td colSpan="4" style={{ textAlign: "center" }}>
+                        {t("total_price")} + {t("tax")} {taxPercent}%:
+                      </td>
+                      <td colSpan="1">
+                        {moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) + serviceAmount
+                          )
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  </>
+                )}
               </tbody>
             )}
           </Table>
@@ -335,39 +406,7 @@ const OrderCheckOut = ({
               }}
             >
               <span style={{ justifyContent: "flex-end", display: "row" }}>
-                <b>
-                  {data && data?.discountType === "LAK"
-                    ? moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            data?.discount >
-                            0
-                            ? (total + serviceAmount) *
-                                (taxPercent * 0.01 + 1) -
-                                data?.discount
-                            : 0
-                        )
-                      )
-                    : moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            ((total + serviceAmount) *
-                              (taxPercent * 0.01 + 1) *
-                              data?.discount) /
-                              100 >
-                            0
-                            ? total * (taxPercent * 0.01 + 1) +
-                                serviceAmount -
-                                ((total + serviceAmount) *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100
-                            : 0
-                        )
-                      )}
-                </b>
+                <b>{moneyCurrency(activeTotal)}</b>
               </span>
             </div>
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
