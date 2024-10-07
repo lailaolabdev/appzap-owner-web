@@ -71,7 +71,7 @@ export default function CheckOutPopup({
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
-  const { setSelectedTable, getTableDataStore } = useStore();
+  const { setSelectedTable, getTableDataStore, orderPayBefore } = useStore();
 
   const navigate = useNavigate();
 

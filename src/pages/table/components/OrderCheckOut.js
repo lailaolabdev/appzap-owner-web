@@ -38,6 +38,7 @@ const OrderCheckOut = ({
   const {
     storeDetail,
     setStoreDetail,
+    orderPayBefore,
     profile,
     audioSetting,
     setAudioSetting,
@@ -52,6 +53,13 @@ const OrderCheckOut = ({
   useEffect(() => {
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
+
+  useEffect(() => {
+    if (orderPayBefore) {
+      console.log("DATA: ", data);
+      console.log("Updated orderPayBefore: ", orderPayBefore);
+    }
+  }, [orderPayBefore]);
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -173,41 +181,75 @@ const OrderCheckOut = ({
               </td>
             ) : (
               <tbody>
-                {data &&
-                  data?.orderId?.map((orderItem, index) => {
-                    const options =
-                      orderItem?.options
-                        ?.map((option) =>
-                          option.quantity > 1
-                            ? `[${option.quantity} x ${option.name}]`
-                            : `[${option.name}]`
-                        )
-                        .join(" ") || "";
-                    return (
-                      <tr key={getOrderItemKey(orderItem)}>
-                        <td>{index + 1}</td>
-                        <td>
-                          {orderItem?.name ?? "-"} {options}
-                        </td>
-                        <td>{orderItem?.quantity}</td>
-                        <td>
-                          {moneyCurrency(
-                            orderItem?.price +
-                              (orderItem?.totalOptionPrice ?? 0)
-                          )}
-                        </td>
-                        <td>
-                          {orderItem?.price
-                            ? moneyCurrency(
-                                (orderItem?.price +
-                                  (orderItem?.totalOptionPrice ?? 0)) *
-                                  orderItem?.quantity
-                              )
-                            : "-"}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                {orderPayBefore && orderPayBefore.length > 0
+                  ? orderPayBefore.map((e, index) => {
+                      const options =
+                        e?.options
+                          ?.map((option) =>
+                            option.quantity > 1
+                              ? `[${option.quantity} x ${option.name}]`
+                              : `[${option.name}]`
+                          )
+                          .join(" ") || "";
+
+                      return (
+                        <tr key={getOrderItemKey(e)}>
+                          <td>{index + 1}</td>
+                          <td>
+                            {e?.name ?? "-"} {options}
+                          </td>
+                          <td>{e?.quantity}</td>
+                          <td>
+                            {moneyCurrency(
+                              e?.price + (e?.totalOptionPrice ?? 0)
+                            )}
+                          </td>
+                          <td>
+                            {e?.price
+                              ? moneyCurrency(
+                                  (e?.price + (e?.totalOptionPrice ?? 0)) *
+                                    e?.quantity
+                                )
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  : data &&
+                    data?.orderId?.map((orderItem, index) => {
+                      const options =
+                        orderItem?.options
+                          ?.map((option) =>
+                            option.quantity > 1
+                              ? `[${option.quantity} x ${option.name}]`
+                              : `[${option.name}]`
+                          )
+                          .join(" ") || "";
+                      return (
+                        <tr key={getOrderItemKey(orderItem)}>
+                          <td>{index + 1}</td>
+                          <td>
+                            {orderItem?.name ?? "-"} {options}
+                          </td>
+                          <td>{orderItem?.quantity}</td>
+                          <td>
+                            {moneyCurrency(
+                              orderItem?.price +
+                                (orderItem?.totalOptionPrice ?? 0)
+                            )}
+                          </td>
+                          <td>
+                            {orderItem?.price
+                              ? moneyCurrency(
+                                  (orderItem?.price +
+                                    (orderItem?.totalOptionPrice ?? 0)) *
+                                    orderItem?.quantity
+                                )
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 <tr>
                   <td colSpan="4" style={{ textAlign: "center" }}>
                     {t("discount")}:

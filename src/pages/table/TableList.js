@@ -129,6 +129,8 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
     isWaitingCheckout,
+    setOrderPayBefore,
+    orderPayBefore,
   } = useStore();
 
   const reLoadData = () => {
@@ -1114,6 +1116,7 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
+    setOrderPayBefore({ ...orderPayBefore, data });
     const _data = isCheckedOrderItem.map((e) => {
       if (data?._id === e?._id) {
         return data;
@@ -1121,7 +1124,12 @@ export default function TableList() {
         return e;
       }
     });
+
+    const res = _data.filter((e) => e?.isChecked);
+    setOrderPayBefore(res);
     setIsCheckedOrderItem(_data);
+
+    // console.log("CHECKER5: ", _data);
 
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
@@ -1136,6 +1144,9 @@ export default function TableList() {
       setCheckedBox(true);
     }
   };
+
+  // console.log("DATA1 : ", ORM);
+  // console.log("DATA2 : ", orderPayBefore);
 
   const checkAllOrders = (item) => {
     let _newOrderItems = [];
@@ -1156,6 +1167,7 @@ export default function TableList() {
       });
     }
     setCheckedBox(!checkedBox);
+    setOrderPayBefore(!checkedBox);
     setIsCheckedOrderItem(_newOrderItems);
   };
 
@@ -1292,7 +1304,7 @@ export default function TableList() {
         };
       });
       setIsCheckedOrderItem(_newOrderItems);
-
+      console.log("CHECKER6:", _newOrderItems);
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
     }
@@ -2020,6 +2032,8 @@ export default function TableList() {
                                 name="checked"
                                 checked={checkedBox}
                                 onChange={(e) => {
+                                  console.log("CHECKER1:", e);
+                                  setOrderPayBefore(e);
                                   checkAllOrders(e);
                                   setCheckedBox(!checkedBox);
                                 }}
@@ -2057,6 +2071,10 @@ export default function TableList() {
                                         name="checked"
                                         checked={orderItem?.isChecked || false}
                                         onChange={(e) => {
+                                          console.log(
+                                            "CHECKER2: ",
+                                            e.target.checked
+                                          );
                                           onSelect({
                                             ...orderItem,
                                             isChecked: e.target.checked,

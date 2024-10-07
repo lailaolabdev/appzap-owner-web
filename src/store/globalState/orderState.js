@@ -8,6 +8,7 @@ import axios from "axios";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
+  const [orderPayBefore, setOrderPayBefore] = useState([]);
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] =
@@ -240,5 +241,7 @@ export const useOrderState = () => {
     setOrderWaiting,
     printBackground,
     setPrintBackground,
+    orderPayBefore,
+    setOrderPayBefore,
   };
 };
