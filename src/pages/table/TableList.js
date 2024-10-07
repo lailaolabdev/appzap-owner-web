@@ -45,6 +45,7 @@ import {
   END_POINT_WEB_CLIENT,
   USERS,
   getLocalData,
+  
 } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
@@ -153,6 +154,8 @@ export default function TableList() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
+  const [serviceChangeAmount, setServiceChangeAmount] = useState(0)
+  // const [payAmount, setPayAmount] = useState(0)
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -565,22 +568,27 @@ export default function TableList() {
     if (storeDetail?.serviceChargePer > 0) {
       const userId = profile.data?._id || ""; 
       const billId = selectedTable?.billId;
+
+      console.log("User_Id: ",userId)
+      console.log("Bill_Id: ",billId)
+      console.log("serviceChangeAmount: ",serviceChangeAmount)
+      
+      // try {
+      //   const response = await axios.post(`${END_POINT_SEVER}/saveservice`, {
+      //     userId,
+      //     billId,
+      //     taxPercent,
+      //     serviceChargePer: storeDetail.serviceChargePer, // ใส่ข้อมูล serviceChargePer
+      //   }, {
+      //     headers: {
+      //       "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
+      //     },
+      //   });
   
-      try {
-        const response = await axios.post("http://localhost:7070/saveservice", {
-          userId,
-          billId,
-          serviceChargePer: storeDetail.serviceChargePer, // ใส่ข้อมูล serviceChargePer
-        }, {
-          headers: {
-            "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
-          },
-        });
-  
-        console.log("Service charge saved:", response.data);
-      } catch (error) {
-        console.error("Error saving service charge:", error);
-      }
+      //   console.log("Service charge saved..:", response.data);
+      // } catch (error) {
+      //   console.error("Error saving service charge:", error);
+      // }
     }
   };
   
@@ -595,7 +603,6 @@ export default function TableList() {
     try {
       
       setPrintBillLoading(true)
-      // saveServiceChargeDetails()
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -690,7 +697,7 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
-      saveServiceChargeDetails()
+       saveServiceChargeDetails()
       setPrintBillLoading(false)
       await Swal.fire({
         icon: "error",
@@ -2337,6 +2344,7 @@ export default function TableList() {
       />
 
       <OrderCheckOut
+        setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
         data={dataBill}
         setDataBill={setDataBill}

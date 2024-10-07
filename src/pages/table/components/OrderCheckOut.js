@@ -24,7 +24,8 @@ const OrderCheckOut = ({
   onSubmit = () => { },
   staffData,
   printBillLoading,
-  selectedTable
+  selectedTable,
+  setServiceChangeAmount
 }) => {
   const { t } = useTranslation();
   const {
@@ -33,6 +34,7 @@ const OrderCheckOut = ({
     profile,
     audioSetting,
     setAudioSetting,
+   
   } = useStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
@@ -65,6 +67,7 @@ const OrderCheckOut = ({
       : 0; // 10% if enabled
     setServiceAmount(serviceChargeAmount);
     setTotal(_total);
+    setServiceChangeAmount(serviceAmount)
   };
 
   const onConfirmStaffToCheckBill = () => {
@@ -98,6 +101,8 @@ const OrderCheckOut = ({
         .join(",") || "";
     return `${orderItem?.id}-${options}`;
   };
+
+  
 
   const getToggleServiceCharge = (e) => {
   
