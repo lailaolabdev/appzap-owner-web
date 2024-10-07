@@ -136,7 +136,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
 
       // logic
-
       const countBill = data.length || 0;
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
       const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
@@ -159,7 +158,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       setReportBill({
         ຈຳນວນບິນ: countBill,
-        ຍອດທັງຫມົດ: totalBill,
+        ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
         ບິນສ່ວນຫຼຸດ: countDiscountBill,
