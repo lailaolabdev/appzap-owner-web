@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOut80({
   storeDetail,
+  orderPayBefore,
   selectedTable,
   dataBill,
   taxPercent = 0,
@@ -34,7 +35,10 @@ export default function BillForCheckOut80({
 
   // console.log("storeDetail", storeDetail);
   // console.log("dataBill", dataBill);
-
+  const orders =
+    orderPayBefore && orderPayBefore.length > 0
+      ? orderPayBefore
+      : dataBill?.orderId;
   // useEffect
   useEffect(() => {
     _calculateTotal();
@@ -165,7 +169,7 @@ export default function BillForCheckOut80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {dataBill?.orderId?.map((item, index) => {
+        {orders?.map((item, index) => {
           const optionsNames =
             item?.options
               ?.map((option) =>
@@ -176,7 +180,6 @@ export default function BillForCheckOut80({
               .join("") || "";
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
-          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
           const itemTotal = itemPrice * item?.quantity;
 
           return (

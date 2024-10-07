@@ -2247,6 +2247,7 @@ export default function TableList() {
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
+          orderPayBefore={orderPayBefore}
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
