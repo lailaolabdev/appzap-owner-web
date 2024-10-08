@@ -184,11 +184,11 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            {t("restaurantOwnerInformation")}
+            {t("restaurant_owner_information")}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t("surnameAndLastName")}</div>
+            <div className="col-5">{t("surname_and_last_name")}</div>
             <div className="col-5">
               {dataStore?.adminName ? dataStore?.adminName : "-"}
             </div>
@@ -209,7 +209,7 @@ export default function StoreDetail() {
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t("phoneNumber")}</div>
+            <div className="col-5">{t("phone_number")}</div>
             <div className="col-5">
               {dataStore?.phone ? dataStore?.phone : "-"}
             </div>
@@ -223,11 +223,11 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            {t("generalInfo")}
+            {t("general_info")}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t("totalTable")}</div>
+            <div className="col-5">{t("total_table")}</div>
             <div className="col-5">
               {" "}
               {numBerTable} {t("table")}
@@ -235,7 +235,7 @@ export default function StoreDetail() {
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t("allMenu")}</div>
+            <div className="col-5">{t("all_menu")}</div>
             <div className="col-5">
               {numBerMenus ? numBerMenus : "-"} {t("menu")}
             </div>

@@ -424,7 +424,7 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              {t("isCafe")}
+              {t("is_cafe")}
             </Card.Header>
             <Card.Body>
               {[

@@ -81,7 +81,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const itemList = [
     {
-      title: `${t("table_status")}`,
+      title: `${t("table_management")}`,
       key: "tables",
       icon: faHome,
       typeStore: "",
@@ -97,14 +97,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "orderManagement",
     },
     // {
-    //   title: t("financialStatic"),
+    //   title: t("financial_static"),
     //   key: "report",
     //   icon: faTachometerAlt,
     //   typeStore: "",
     //   system: "reportManagement",
     // },
     {
-      title: `${t("isCafe")}`,
+      title: `${t("is_cafe")}`,
       key: "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,

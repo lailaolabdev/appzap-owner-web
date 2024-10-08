@@ -88,7 +88,7 @@ export default function CategoryType() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t("foodType")}
+              {t("food_type")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -96,7 +96,7 @@ export default function CategoryType() {
               eventKey="/settingStore/category-type"
               onClick={() => _categoryType()}
             >
-              {t("categoryType")}
+              {t("category_type")}
             </Nav.Link>
           </Nav.Item>
         </Nav>

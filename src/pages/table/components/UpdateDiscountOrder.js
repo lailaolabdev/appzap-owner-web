@@ -108,7 +108,7 @@ const UpdateDiscountOrder = ({
           ລະຫັດ:{tableData?.code}
         </pre>
         <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-          {t("openTime")}:
+          {t("open_time")}:
           {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
         </pre>
         <Table responsive className="staff-table-list borderless table-hover">

@@ -300,7 +300,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category-type"
                 onClick={() => _categoryType()}
               >
-                {t("categoryType")}
+                {t("category_type")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -323,7 +323,7 @@ export default function MenuListOption() {
                   justifyContent: "end",
                 }}
               >
-                {t("example")}
+                {t("example_option")}
               </Col>
 
               <Col

@@ -43,7 +43,7 @@ export default function SettingList() {
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
-      title: t("employeeManage"),
+      title: t("employee_manage"),
       subTitle: t("employee_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/user`,
@@ -60,7 +60,7 @@ export default function SettingList() {
     // },
     {
       id: "ab2dd4fe-617d-48f7-afa6-645fa3b8e04e",
-      title: t("menuManage"),
+      title: t("menu_manage"),
       subTitle: t("menu_manage_desc"),
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUtensils} />

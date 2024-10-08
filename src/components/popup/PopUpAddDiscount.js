@@ -311,7 +311,7 @@ export default function PopUpAddDiscount({
             {categorysType &&
               categorysType?.map((data, index) => {
                 return (
-                  <option key={"categoryType" + index} value={data?._id}>
+                  <option key={"category_type" + index} value={data?._id}>
                     {data?.name}
                   </option>
                 );

@@ -141,7 +141,7 @@ export default function BillForCheckOutCafe80({
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
-            {t("phoneNumber")}: {""}
+            {t("phone_number")}: {""}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
           <div>
@@ -149,7 +149,7 @@ export default function BillForCheckOutCafe80({
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
           {/* <div>
-            {t("tableCode")}:{" "}
+            {t("table_code")}:{" "}
             <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
           </div> */}
           <div>
@@ -159,7 +159,7 @@ export default function BillForCheckOutCafe80({
             </span>
           </div>
           <div>
-            {t("staffCheckBill")}:{" "}
+            {t("staff_check_bill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
@@ -360,7 +360,7 @@ export default function BillForCheckOutCafe80({
             <Row>
               <Col></Col>
               <Col>
-                <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
+                <div style={{ textAlign: "right" }}>{t("customer_name")}: </div>
               </Col>
               <Col>
                 <div style={{ textAlign: "right" }}>
@@ -368,7 +368,7 @@ export default function BillForCheckOutCafe80({
                 </div>
               </Col>
             </Row>
-             {t("customerName")} : {dataBill?.memberName} ({" "}
+             {t("customer_name")} : {dataBill?.memberName} ({" "}
             {dataBill?.memberPhone} ) 
           </div>*/}
         </div>
@@ -380,7 +380,7 @@ export default function BillForCheckOutCafe80({
         <div style={{ flexGrow: 1 }}></div>
         <div style={{ display: "flex", gap: 10 }}>
           <h6>
-            {t("aPriceHasToPay")}{" "}
+            {t("price_has_to_pay")}{" "}
             {moneyCurrency(totalAfterDiscount + taxAmount)}{" "}
             {storeDetail?.firstCurrency}
           </h6>
@@ -391,7 +391,7 @@ export default function BillForCheckOutCafe80({
         <div style={{ fontSize: 12 }}>
           {currencyData?.map((item, index) => (
             <div key={index}>
-              {t("exchangeRate")} ({item?.currencyCode}): {item?.buy}
+              {t("exchange_rate")} ({item?.currencyCode}): {item?.buy}
             </div>
           ))}
         </div>
@@ -409,10 +409,10 @@ export default function BillForCheckOutCafe80({
               : ""}
           </div>
           <div>
-            {t("getMoney")} {dataBill?.moneyReceived || 0}
+            {t("get_money")} {dataBill?.moneyReceived || 0}
           </div>
           <div>
-            {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+            {t("money_withdrawn")} {dataBill?.moneyChange || 0}
           </div>
         </div>
       </Price>

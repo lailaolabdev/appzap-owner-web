@@ -295,7 +295,7 @@ function HistorySale() {
                   </div>
                   <Modal show={show} onHide={handleClose} size="lg">
                     <Modal.Header closeButton>
-                      <Modal.Title>{t("menuModal")}</Modal.Title>
+                      <Modal.Title>{t("menu_modal")}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                       {dataModale.length > 0 ? (
@@ -359,9 +359,9 @@ function HistorySale() {
                           <span>24-07-2024 17:08</span> */}
                           </div>
                           <div>
-                            <span>{t("pricesTotal")} </span>
+                            <span>{t("total_money")} </span>
                             <span>
-                              {moneyCurrency(total)} {t("nameCurrency")}
+                              {moneyCurrency(total)} {t("name_currency")}
                             </span>
                           </div>
                         </div>

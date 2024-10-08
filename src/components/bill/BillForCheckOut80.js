@@ -131,7 +131,7 @@ export default function BillForCheckOut80({
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
-            {t("phoneNumber")}: {""}
+            {t("phone_number")}: {""}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
           <div>
@@ -139,7 +139,7 @@ export default function BillForCheckOut80({
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
           <div>
-            {t("tableCode")}:{" "}
+            {t("table_code")}:{" "}
             <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
           </div>
           <div>
@@ -149,7 +149,7 @@ export default function BillForCheckOut80({
             </span>
           </div>
           <div>
-            {t("staffCheckBill")}:{" "}
+            {t("staff_check_bill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
@@ -242,7 +242,7 @@ export default function BillForCheckOut80({
         {dataBill?.memberName ? (
           <Row>
             <Col xs={8}>
-              <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
+              <div style={{ textAlign: "right" }}>{t("customer_name")}: </div>
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
@@ -272,7 +272,7 @@ export default function BillForCheckOut80({
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
-              {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
+              {/* {t("price_has_to_pay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
               {t("total")} + {"ອມພ"} {taxPercent}% {storeDetail?.firstCurrency}:
             </div>
           </Col>
@@ -305,7 +305,7 @@ export default function BillForCheckOut80({
       <div style={{ margin: "10px" }}></div>
 
       <div style={{ fontSize: 12, textAlign: "center" }}>
-        <span>{t("exchangeRate")}&nbsp;</span>
+        <span>{t("exchange_rate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.buy)}
@@ -334,10 +334,10 @@ export default function BillForCheckOut80({
             : ""}
         </div>
         <div>
-          {t("getMoney")} {dataBill?.moneyReceived || 0}
+          {t("get_money")} {dataBill?.moneyReceived || 0}
         </div>
         <div>
-          {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+          {t("money_withdrawn")} {dataBill?.moneyChange || 0}
         </div>
       </div>
 

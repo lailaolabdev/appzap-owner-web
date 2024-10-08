@@ -2,9 +2,7 @@ import { END_POINT_SEVER } from "./api";
 import packageJson from "../../package.json";
 export const USER_KEY = "@userKey";
 export const VERSION = packageJson?.version;
-export const URL_PHOTO_AW3 =
-  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/";
-// export const END_POINT = END_POINT_SEVER;
+export const URL_PHOTO_AW3 = "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/";
 export const END_POINT = END_POINT_SEVER;
 export const END_POINT_VERSION = "v3";
 export const FONT_HEADER_SIZE = 16;
@@ -27,8 +25,6 @@ export const COLOR_APP = "#FF6700";
 export const COLOR_GRAY = "#3D3C3A"
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {
-  // paddingLeft: 55,
-  // paddingTop: 20,
   backgroundColor: "#F9F9F9",
   width: "100%",
 };
@@ -49,18 +45,11 @@ export const HEADER = {
   height: 60,
   width: "100%",
   paddingTop: 20,
-  // paddingLeft: 35,
   fontSize: FONT_HEADER_SIZE,
 };
 export const BODY = {
   width: "100%",
   minHeight: "100vh",
-  // marginRight: 32,
-  // marginLeft: 32,
-  // paddingLeft: 32,
-  // paddingTop: 32,
-  // paddingRight: 32,
-  // paddingBottom: 40,
   padding:20,
 };
 

@@ -112,7 +112,7 @@ export default function SettingTable() {
     };
     try {
       if (!selectTatle?.name) {
-        warningAlert(`${t("p_fill_code")}`);
+        warningAlert(`${t("password_fill_code")}`);
         return;
       }
       const createTable = await axios({
@@ -233,7 +233,7 @@ export default function SettingTable() {
             <thead>
               <tr>
                 {/* <th scope="col">#</th> */}
-                <th scope="col">{t("tablecode")}</th>
+                <th scope="col">{t("table_code")}</th>
                 {/* <th scope="col">ການເປີດ/ປິດ</th> */}
                 {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
                 <th scope="col" style={{ textAlign: "right" }}>
@@ -339,7 +339,7 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("tablecode")}</Form.Label>
+            <Form.Label>{t("table_code")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"
@@ -394,7 +394,7 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("tablecode")}</Form.Label>
+            <Form.Label>{t("table_code")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               type="text"

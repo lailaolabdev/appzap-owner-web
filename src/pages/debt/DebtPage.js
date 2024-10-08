@@ -139,7 +139,7 @@ export default function DebtPage() {
                     <th>#</th>
                     <th>{t("bill_no")}</th>
                     <th>{t("name")}</th>
-                    <th>{t("phoneNumber")}</th>
+                    <th>{t("phone_number")}</th>
                     <th>{t("money_amount")}</th>
                     <th>{t("status")}</th>
                     <th>{t("date_add")}</th>

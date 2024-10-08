@@ -567,7 +567,7 @@ export default function CheckPopupDebt({
                 fontSize: 22,
               }}
             >
-              <span>{t("debtAmount")}: </span>
+              <span>{t("debt_amount")}: </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
                 value={debtAmount}
@@ -637,7 +637,7 @@ export default function CheckPopupDebt({
               </InputGroup>
 
               <InputGroup>
-                <InputGroup.Text>{t("debt_paymentbefore")}</InputGroup.Text>
+                <InputGroup.Text>{t("debt_payment_before")}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"

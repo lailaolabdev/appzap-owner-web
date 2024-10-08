@@ -661,9 +661,6 @@ function Homecafe() {
     }, 0);
   };
 
-  // console.log("TotalAmount", TotalAmount());
-  // console.log("TotalPrice", TotalPrice());
-
   const onRemoveFromCart = (id) => {
     const selectedMenuCopied = [...selectedMenu];
     for (let i = 0; i < selectedMenuCopied.length; i++) {
@@ -1297,13 +1294,13 @@ function Homecafe() {
                   {selectedMenu.length > 0 ? (
                     <div className="mb-3">
                       <div>
-                        <span>{t("amountTotal")} : </span>
+                        <span>{t("amount_total")} : </span>
                         <span>{TotalAmount()} </span>
                       </div>
                       <div>
-                        <span>{t("pricesTotal")} : </span>
+                        <span>{t("total_money")} : </span>
                         <span>
-                          {moneyCurrency(total)} {t("nameCurrency")}
+                          {moneyCurrency(total)} {t("name_currency")}
                         </span>
                       </div>
                     </div>
@@ -1622,13 +1619,13 @@ function Homecafe() {
                 {selectedMenu.length > 0 ? (
                   <div className="mb-3">
                     <div>
-                      <span>{t("amountTotal")} : </span>
+                      <span>{t("amount_total")} : </span>
                       <span>{TotalAmount()} </span>
                     </div>
                     <div>
-                      <span>{t("pricesTotal")} : </span>
+                      <span>{t("total_money")} : </span>
                       <span>
-                        {moneyCurrency(total)} {t("nameCurrency")}
+                        {moneyCurrency(total)} {t("name_currency")}
                       </span>
                     </div>
                   </div>

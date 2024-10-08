@@ -142,7 +142,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
               )}
               <Form.Group>
                 <Form.Label>
-                  {t("billCutPaperTitle")} <span style={{ color: "red" }}>*</span>
+                  {t("bill_cut_paper_title")} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -155,8 +155,8 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   <option value="" disabled>
                     -Select Option-
                   </option>
-                  <option value={"cut"}>{t("billCut")}</option>
-                  <option value="not_cut">{t("billNoCut")}</option>
+                  <option value={"cut"}>{t("bill_cut")}</option>
+                  <option value="not_cut">{t("bill_no_cut")}</option>
                 </Form.Control>
               </Form.Group>
             </Modal.Body>

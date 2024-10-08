@@ -95,7 +95,7 @@ export default function DepositBeer() {
       data: {
         "storeId": DATA?.storeId,
         "billCode": _randomCode,
-        "customerName": data?.customerName,
+        "customer_name": data?.customerName,
         "menu": menuData,
         "amount": menuData?.length,
         "startDate": data?.startDate,
@@ -315,7 +315,7 @@ export default function DepositBeer() {
                       <Form.Label>ຊື່ລູກຄ້າ</Form.Label>
                       <Form.Control
                         type='text'
-                        name="customerName"
+                        name="customer_name"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.customerName}

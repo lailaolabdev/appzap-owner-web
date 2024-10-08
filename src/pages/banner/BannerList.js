@@ -88,7 +88,7 @@ export default function BannerList() {
 			})
 			.catch((error) => {
 				console.log("error", error);
-				errorAdd(`${t("add_data_fail_crc_existed")}`);
+				errorAdd(`${t("add_data_fail_cerrency_existed")}`);
 			});
 	};
 
@@ -141,7 +141,7 @@ export default function BannerList() {
 										fontWeight: "bold",
 									}}
 								>
-									<BsImages /> {t("ex")}
+									<BsImages /> {t("example")}
 								</Card.Header>
 								<Card.Body>
 									<ImageSlider images={images} />

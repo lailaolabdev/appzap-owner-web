@@ -1488,10 +1488,10 @@ export default function TableList() {
                 color: "#fff",
               }}
             >
-              {t("totalTable")} : {tableList?.length},{" "}
-              {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
-              {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
-              {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
+              {t("total_table")} : {tableList?.length},{" "}
+              {t("total_unavailable_table")} : {_checkStatusCode(tableList)},{" "}
+              {t("total_available_table")} : {_checkStatusCodeA(tableList)},{" "}
+              {t("total_bill_check")} : {_checkStatusCodeB(tableList)}
             </div>
 
             {zoneData?.length > 0 ? (
@@ -1761,7 +1761,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t("tableNumber2")}:{" "}
+                          {t("table_code")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1776,7 +1776,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t("timeOfTableOpening")}:{" "}
+                          {t("time_of_table_opening")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1787,7 +1787,7 @@ export default function TableList() {
                           </span>
                         </div>
                         <div style={{ fontSize: 16 }}>
-                          {t("respon")}:{" "}
+                          {t("responsible")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1838,7 +1838,7 @@ export default function TableList() {
                             fontSize: 16,
                           }}
                         >
-                          {t("aPriceHasToPay")}:{" "}
+                          {t("price_has_to_pay")}:{" "}
                           <span
                             style={{
                               fontWeight: "bold",
@@ -1871,7 +1871,7 @@ export default function TableList() {
                                 e?.status != "FEEDBACK"
                             )?.length
                           }{" "}
-                          {t("itemNotServed")} !
+                          {t("item_not_served")} !
                         </div>
                       </div>
                       <div
@@ -1895,12 +1895,12 @@ export default function TableList() {
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          {t("printBillToKitchen")}
+                          {t("print_bill_to_kitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => _openModalSetting(selectedTable)}
                         >
-                          {t("closeTable")}
+                          {t("close_table")}
                         </ButtonCustom>
                         <ButtonCustom onClick={handleShow}>
                           {t("combine_table")}
@@ -1933,7 +1933,7 @@ export default function TableList() {
                             )
                           }
                         >
-                          + {t("addOrder")}
+                          + {t("add_order")}
                         </ButtonCustom>
                         <ButtonCustom disabled></ButtonCustom>
                         <ButtonCustom
@@ -1999,7 +1999,7 @@ export default function TableList() {
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
                           disabled={!checkedBox}
                         >
-                          {t("sendToKitchen")}
+                          {t("send_to_kitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
@@ -2008,7 +2008,7 @@ export default function TableList() {
                           {isServedLoading && (
                             <Spinner animation="border" size="sm" />
                           )}{" "}
-                          {t("servedBy")}
+                          {t("served_by")}
                         </ButtonCustom>
                       </div>
 
@@ -2105,7 +2105,7 @@ export default function TableList() {
                         <div className="text-center">
                           <div style={{ marginTop: 50, fontSize: 50 }}>
                             {" "}
-                            {t("TableHasNoOrder")}
+                            {t("table_has_no_order")}
                           </div>
                         </div>
                       )}
@@ -2156,7 +2156,7 @@ export default function TableList() {
                     textAlign: "center",
                   }}
                 >
-                  {t("bringThisQRCodeToCustomersOrPressOpenToStartUsing")}
+                  {t("bring_this_or_code_to_customers_or_press_open_to_start_using")}
                 </p>
                 <p
                   style={{

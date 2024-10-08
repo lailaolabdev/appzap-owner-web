@@ -260,7 +260,7 @@ export default function SettingMemberPointPage() {
                 <Form.Group>
                   <Form.Label>{t('bill_total_price')}</Form.Label>
                   <Form.Control
-                    name="totalAmount"
+                    name="total_amount"
                     value={formData.totalAmount}
                     onChange={handleChange}
                     type="number"

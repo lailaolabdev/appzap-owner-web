@@ -271,7 +271,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category-type"
               onClick={() => _categoryType()}
             >
-              {t("categoryType")}
+              {t("category_type")}
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -284,7 +284,7 @@ export default function Categorylist() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
           >
-            {t("addFoodType")}
+            {t("add_food_type")}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>
@@ -302,16 +302,16 @@ export default function Categorylist() {
                     {t("no")}
                   </th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("foodTypeName")}
+                    {t("food_type_name")}
                   </th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("foodTypeName")}
+                    {t("food_type_name")}
                   </th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("foodTypeName")}
+                    {t("food_type_name")}
                   </th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("foodTypeName")}
+                    {t("food_type_name")}
                   </th>
                   {/* <th scope="col">{t('note')}</th> */}
                   <th style={{ textWrap: "nowrap" }} scope="col">
@@ -388,7 +388,7 @@ export default function Categorylist() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = `${t("foodTypeName")}`;
+              errors.name = `${t("food_type_name")}`;
             }
             return errors;
           }}
@@ -501,7 +501,7 @@ export default function Categorylist() {
                     <option value="">{t("chose_type")}</option>
                     {categorysType &&
                       categorysType.map((data, index) => (
-                        <option key={"categorytype" + index} value={data._id}>
+                        <option key={"category_type" + index} value={data._id}>
                           {data.name}
                         </option>
                       ))}
@@ -670,7 +670,7 @@ export default function Categorylist() {
                     </option>
                     {categorysType &&
                       categorysType.map((data, index) => (
-                        <option key={"categorytype" + index} value={data._id}>
+                        <option key={"category_type" + index} value={data._id}>
                           {data.name}
                         </option>
                       ))}
@@ -685,7 +685,7 @@ export default function Categorylist() {
                       categorysType?.map((data, index) => {
                         return (
                           <option
-                            key={"categorytype" + index}
+                            key={"category_type" + index}
                             value={data?._id}
                           >
                             {data?.name}

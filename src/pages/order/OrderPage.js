@@ -346,7 +346,7 @@ export default function OrderPage() {
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}
-            {t("send_to_kitchen")}
+            {t("print_to_kitchen")}
           </Button>
 
           <Button
@@ -404,7 +404,7 @@ export default function OrderPage() {
         >
           <Tab
             eventKey={WAITING_STATUS}
-            title={`${t("hasOrder")}(${orderWaiting?.length})`}
+            title={`${t("new_order")}(${orderWaiting?.length})`}
           >
             <Tool />
             {orderLoading && (

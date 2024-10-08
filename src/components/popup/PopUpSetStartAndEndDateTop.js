@@ -122,7 +122,7 @@ export default function PopUpSetStartAndEndDateTop({
               selectedButton === "yesterday" ? "primary" : "outline-primary"
             }
           >
-            {t("yester_day")}
+            {t("yesterday")}
           </Button>
           <Button
             onClick={onGetThisMonth}

@@ -238,7 +238,7 @@ export default function FoodTypeList() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t("foodType")}
+                {t("food_type")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -249,7 +249,7 @@ export default function FoodTypeList() {
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={handleShow}
             >
-              + {t("addFoodType")}
+              + {t("add_food_type")}
             </Button>{" "}
           </div>
           <div style={{ height: 20 }}></div>
@@ -259,10 +259,10 @@ export default function FoodTypeList() {
                 <thead className="thead-light">
                   <tr>
                     <th scope="col">{t("no")}</th>
-                    <th scope="col">{t("foodTypeNameLO")}</th>
-                    <th scope="col">{t("foodTypeNameEN")}</th>
-                    <th scope="col">{t("foodTypeNameCN")}</th>
-                    <th scope="col">{t("foodTypeNameKR")}</th>
+                    <th scope="col">{t("food_type_name_lo")}</th>
+                    <th scope="col">{t("food_type_name_en")}</th>
+                    <th scope="col">{t("food_type_name_cn")}</th>
+                    <th scope="col">{t("food_type_name_kr")}</th>
                     {/* <th scope="col">{t('note')}</th> */}
                     <th scope="col">{t("manage")}</th>
                   </tr>

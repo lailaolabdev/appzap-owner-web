@@ -342,7 +342,7 @@ export default function ExpendList() {
             onChange={(e) => setDateStart(e?.target?.value)}
             style={{ width: 150 }}
           />{" "}
-          {t("toXX")}
+          {t("to_date")}
           <Form.Control
             type="date"
             value={dateEnd}

@@ -26,17 +26,17 @@ export const orderStatusTranslate = (status) => {
   // these return value use for i18n
   switch (status) {
     case "WAITING":
-      return "ORDER_IN";
+      return "order_in";
     case "DOING":
-      return "ORDER_PROCESSING";
+      return "order_processing";
     case "SERVED":
-      return "ORDER_SERVED";
+      return "order_served";
     case "CART":
-      return "ORDER_CART";
+      return "order_cart";
     case "FEEDBACK":
-      return "ORDER_FEEDBACK";
+      return "order_feedback";
     default:
-      return "ORDER_CANCEL";
+      return "order_cancel";
   }
 };
 

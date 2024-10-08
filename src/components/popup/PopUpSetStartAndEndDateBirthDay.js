@@ -169,7 +169,7 @@ export default function PopUpSetStartAndEndDateBirthDay({
               selectedButton === "yesterday" ? "primary" : "outline-primary"
             }
           >
-            {t("yester_day")}
+            {t("yesterday")}
           </Button>
 
           <Button

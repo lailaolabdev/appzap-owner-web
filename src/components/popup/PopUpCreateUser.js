@@ -54,7 +54,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>{t("l_name")}</Form.Label>
+            <Form.Label>{t("last_name")}</Form.Label>
             <Form.Control
               placeholder={t("enter_lname")}
               value={formData?.lastname}
@@ -81,7 +81,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             </select>
           </div>
           <div>
-            <Form.Label>{t("phonenumber")}</Form.Label>
+            <Form.Label>{t("phone_number")}</Form.Label>
             <Form.Control
               placeholder={t("enter_phone")}
               value={formData?.phone}

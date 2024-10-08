@@ -269,7 +269,7 @@ export default function IncomeExpendExport() {
   const calculateSummaryIncome = (type) => {
     let _summaryAmount = 0;
     incomeExpendData.map((x) => {
-      if (type == "INCOME") _summaryAmount = _summaryAmount + x.income;
+      if (type == "income") _summaryAmount = _summaryAmount + x.income;
       else if (type == "EXPEND") _summaryAmount = _summaryAmount + x.expend;
       else _summaryAmount = _summaryAmount + (x.income - x.expend);
     });
@@ -419,7 +419,7 @@ export default function IncomeExpendExport() {
                   textAlign: "right",
                 }}
               >
-                {calculateSummaryIncome("INCOME")}
+                {calculateSummaryIncome("income")}
               </div>
             </div>
           </div>

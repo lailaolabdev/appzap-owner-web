@@ -187,7 +187,7 @@ export default function History() {
                         textAlign: "center",
                       }}
                     >
-                      {t("totalPrice2")} :{" "}
+                      {t("sum_price")} :{" "}
                     </td>
                     <td colSpan={2} style={{ color: "blue" }}>
                       {new Intl.NumberFormat("ja-JP", {

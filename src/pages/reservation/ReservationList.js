@@ -154,7 +154,7 @@ export default function ReservationList() {
                   setTabSelect("WATTING");
                 }}
               >
-                {t("waitingForApprove")}
+                {t("waiting_for_approve")}
               </ButtonTab>
               <ButtonTab
                 active={tabSelect === "STAFF_CONFIRM"}
@@ -196,7 +196,7 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                {t("addBooking")}
+                {t("add_booking")}
               </ButtonPrimary>
             </div>
           </div>
@@ -224,7 +224,7 @@ export default function ReservationList() {
               </InputGroup>
             </FormGroup>
             <FormGroup>
-              <Form.Label>{t("bookingDate")}</Form.Label>
+              <Form.Label>{t("booking_date")}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -235,7 +235,7 @@ export default function ReservationList() {
               />
             </FormGroup>
             <FormGroup>
-              <Form.Label>{t("toXX")}</Form.Label>
+              <Form.Label>{t("to_date")}</Form.Label>
               <Form.Control
                 type="date"
                 style={{ maxWidth: 100 }}
@@ -283,13 +283,13 @@ export default function ReservationList() {
                 >
                   <tr>
                     <th style={{ color: COLOR_APP }}>{t("no")}</th>
-                    <th style={{ color: COLOR_APP }}>{t("bookedBy")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("booked_by")}</th>
                     <th style={{ color: COLOR_APP }}>
-                      {t("phoneNumberOfBooked")}
+                      {t("phone_number_of_booked")}
                     </th>
-                    <th style={{ color: COLOR_APP }}>{t("dateAndTime")}</th>
-                    <th style={{ color: COLOR_APP }}>{t("tableStatus2")}</th>
-                    <th style={{ color: COLOR_APP }}>{t("numberOfPeople")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("date_and_time")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("table_status")}</th>
+                    <th style={{ color: COLOR_APP }}>{t("number_of_people")}</th>
                     <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <Form.Control

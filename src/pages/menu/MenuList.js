@@ -615,7 +615,7 @@ export default function MenuList() {
                 eventKey="/settingStore/category"
                 onClick={() => _categoryType()}
               >
-                {t("categoryType")}
+                {t("category_type")}
               </Nav.Link>
             </Nav.Item>
           </Nav>

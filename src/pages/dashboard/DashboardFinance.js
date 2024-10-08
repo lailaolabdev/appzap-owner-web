@@ -308,21 +308,21 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
-                {t("tableNumber")}
+                {t("table_number")}
               </th>
               <th
                 style={{
                   textWrap: "nowrap",
                 }}
               >
-                {t("tableCode")}
+                {t("table_code")}
               </th>
               <th
                 style={{
                   textWrap: "nowrap",
                 }}
               >
-                {t("tableDiscount")}
+                {t("table_discount")}
               </th>
               <th
                 style={{
@@ -343,14 +343,14 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
-                {t("tableStatus")}
+                {t("table_management")}
               </th>
               <th
                 style={{
                   textWrap: "nowrap",
                 }}
               >
-                {t("paymentType")}
+                {t("payment_type")}
               </th>
               <th
                 style={{
@@ -364,7 +364,7 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
-                {t("staffCheckBill")}
+                {t("staff_check_bill")}
               </th>
             </tr>
           </thead>
@@ -458,10 +458,10 @@ export default function DashboardFinance({
                   }}
                 >
                   {item?.paymentMethod === "CASH"
-                    ? t("payBycash")
+                    ? t("pay_by_cash")
                     : item?.paymentMethod === "TRANSFER"
-                    ? t("transferPayment")
-                    : t("transfercash")}
+                    ? t("transfer_payment")
+                    : t("transfer_cash")}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
@@ -506,7 +506,7 @@ export default function DashboardFinance({
       </div>
       <Modal show={show} onHide={handleClose} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{t("menuModal")}</Modal.Title>
+          <Modal.Title>{t("menu_modal")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div
@@ -525,8 +525,8 @@ export default function DashboardFinance({
               onClick={handleEditBill}
             >
               {selectOrder?.status === "ACTIVE"
-                ? t("editingTheBill")
-                : t("billEditing")}
+                ? t("editing_the_bill")
+                : t("bill_editing")}
             </Button>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
@@ -535,8 +535,8 @@ export default function DashboardFinance({
                 <th>{t("no")}</th>
                 <th>{t("menuname")}</th>
                 <th>{t("amount")}</th>
-                <th>{t("statusOfFood")}</th>
-                <th>{t("servedBy")}</th>
+                <th>{t("status_of_food")}</th>
+                <th>{t("served_by")}</th>
                 <th>{t("price")}</th>
                 <th>{t("time")}</th>
                 <th>ເວລາອັບເດດ</th>

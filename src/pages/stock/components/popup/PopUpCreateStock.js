@@ -190,7 +190,7 @@ export default function PopUpCreateStock({ onClose, open, callback }) {
 									<option selected={true} disabled={true} value="">
 										{t("chose_unit")}
 									</option>
-									<option value="ກຣາມ">{t("g")}</option>
+									<option value="ກຣາມ">{t("gram")}</option>
 									<option value="ໝັດ">{t("bundle")}</option>
 									<option value="ແກ້ວ">{t("bottle")}</option>
 									<option value="ອື່ນໆ">{t("etc")}</option>

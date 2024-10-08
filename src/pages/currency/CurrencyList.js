@@ -316,7 +316,7 @@ export default function CurrencyList() {
 									fontWeight: "bold",
 								}}
 							>
-								<BsCurrencyExchange /> {t("crc_history")}
+								<BsCurrencyExchange /> {t("cerrency_history")}
 							</Card.Header>
 							<Card.Body
 								style={{
@@ -328,7 +328,7 @@ export default function CurrencyList() {
 										<th>#</th>
 										<th style={{ textWrap: "nowrap" }}>{t("m_ccrc")}</th>
 										<th style={{ textWrap: "nowrap" }}>
-											{t("short_main_crc")}
+											{t("short_main_cerrency")}
 										</th>
 										<th style={{ textWrap: "nowrap" }}>{t("buy_price")}</th>
 										<th style={{ textWrap: "nowrap" }}>{t("sales_price")}</th>
@@ -417,7 +417,7 @@ export default function CurrencyList() {
 								<Modal.Body>
 									<Form.Group>
 										<Form.Label style={{ fontWeight: "bold" }}>
-											{t("crc_name")} <span style={{ color: "red" }}>*</span>
+											{t("cerrency_name")} <span style={{ color: "red" }}>*</span>
 										</Form.Label>
 										<Form.Control
 											as="select"
@@ -428,11 +428,11 @@ export default function CurrencyList() {
 												setFieldValue("currencyCode", e.target.value);
 											}}
 										>
-											<option value="">--{t("select_crc")}--</option>
+											<option value="">--{t("select_cerrency")}--</option>
 											<option value="LAK">{t("kip_lak")}</option>
-											<option value="THB">{t("b_th")}</option>
-											<option value="USD">{t("dolar_usd")}</option>
-											<option value="CNY">{t("y_cn")}</option>
+											<option value="THB">{t("thai_baht")}</option>
+											<option value="USD">{t("us_dolar")}</option>
+											<option value="CNY">{t("china_yuan")}</option>
 										</Form.Control>
 									</Form.Group>
 									<Form.Group controlId="exampleForm.ControlInput1">
@@ -504,7 +504,7 @@ export default function CurrencyList() {
 					keyboard={false}
 				>
 					<Modal.Header closeButton>
-						<Modal.Title>{t("edit_crc")}</Modal.Title>
+						<Modal.Title>{t("edit_cerrency")}</Modal.Title>
 					</Modal.Header>
 					<Formik
 						initialValues={{
@@ -548,11 +548,11 @@ export default function CurrencyList() {
 												handleChange(e);
 											}}
 										>
-											<option value="">--{t("select_crc")}--</option>
+											<option value="">--{t("select_cerrency")}--</option>
 											<option value="LAK">{t("kip_lak")}</option>
-											<option value="THB">{t("b_th")}</option>
-											<option value="USD">{t("dolar_usd")}</option>
-											<option value="CNY">{t("y_cn")}</option>
+											<option value="THB">{t("thai_baht")}</option>
+											<option value="USD">{t("us_dolar")}</option>
+											<option value="CNY">{t("china_yuan")}</option>
 										</Form.Control>
 									</Form.Group>
 								</Modal.Body>
@@ -629,7 +629,7 @@ export default function CurrencyList() {
 								<Modal.Body>
 									<Form.Group>
 										<Form.Label style={{ fontWeight: "bold" }}>
-											{t("crc_name")} <span style={{ color: "red" }}>*</span>
+											{t("cerrency_name")} <span style={{ color: "red" }}>*</span>
 										</Form.Label>
 										<Form.Control
 											as="select"
@@ -639,11 +639,11 @@ export default function CurrencyList() {
 												setFieldValue("currencyCode", e.target.value);
 											}}
 										>
-											<option value="">--{t("select_crc")}--</option>
+											<option value="">--{t("select_cerrency")}--</option>
 											<option value="LAK">{t("kip_lak")}</option>
-											<option value="THB">{t("b_th")}</option>
-											<option value="USD">{t("dolar_usd")}</option>
-											<option value="CNY">{t("y_cn")}</option>
+											<option value="THB">{t("thai_baht")}</option>
+											<option value="USD">{t("us_dolar")}</option>
+											<option value="CNY">{t("china_yuan")}</option>
 										</Form.Control>
 									</Form.Group>
 
@@ -711,7 +711,7 @@ export default function CurrencyList() {
 					<Modal.Header closeButton></Modal.Header>
 					<Modal.Body>
 						<div style={{ textAlign: "center" }}>
-							<div>{t("sure_to_delect_crc")}</div>
+							<div>{t("sure_to_delect_cerrency")}</div>
 							<div
 								style={{ color: "red" }}
 							>{`${dataDelete?.currencyName} (${dataDelete?.currencyCode})`}</div>

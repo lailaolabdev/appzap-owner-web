@@ -158,7 +158,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("CHECKBILL")}
           >
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("tableStatus")}
+            <div style={{ width: 8 }}></div> {t("table_management")}
           </Nav.Link>
         </Nav.Item>
         {/* <Nav.Item>
@@ -176,7 +176,7 @@ export default function Dashboard() {
             onClick={() => setChangeUi("MONEY_CHART")}
           >
             <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("financialStatic")}
+            <div style={{ width: 8 }}></div> {t("financial_static")}
           </Nav.Link>
         </Nav.Item> */}
       </Box>
@@ -231,7 +231,7 @@ export default function Dashboard() {
             </Card.Header>
             <Card.Body>
               <div>
-                {t("numberOfBill")}
+                {t("number_of_bill")}
                 {" : "}
                 {countAllBillReport?.count} ບິນ
               </div>
@@ -244,7 +244,7 @@ export default function Dashboard() {
                 )}
               </div>
               <div>
-                {t("outstandingDebt")}
+                {t("outstanding_debt")}
                 {" : "}
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
@@ -268,7 +268,7 @@ export default function Dashboard() {
             </Card.Header>
             <Card.Body>
               <div>
-                {t("numberOfBill")}
+                {t("number_of_bill")}
                 {" : "}
                 {convertNumber(
                   salesInformationReport?.noOfSalesTransactions
@@ -276,17 +276,17 @@ export default function Dashboard() {
                 ບິນ
               </div>
               <div>
-                {t("totalBalance")}
+                {t("total_balance")}
                 {" : "}
                 {convertNumber(salesInformationReport?.totalSales)}
               </div>
               <div>
-                {t("payBycash")}
+                {t("pay_by_cash")}
                 {" : "}
                 {convertNumber(moneyReport?.cash?.totalBill)}
               </div>
               <div>
-                {t("transferPayment")}
+                {t("transfer_payment")}
                 {" : "}
                 {convertNumber(moneyReport?.transfer?.totalBill)}
               </div>
@@ -296,7 +296,7 @@ export default function Dashboard() {
                 {convertNumber(moneyReport?.transferCash?.totalBill)}
               </div>
               <div>
-                {t("cashDiscount")}
+                {t("cash_discount")}
                 {" : "}
                 {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
                 {convertNumber(promotionReport?.[0]?.count)}ບິນ
@@ -316,7 +316,7 @@ export default function Dashboard() {
             </Card.Header>
             <Card.Body>
               <div>
-                {t("numberOfBill")}
+                {t("number_of_bill")}
                 {" : "}
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
