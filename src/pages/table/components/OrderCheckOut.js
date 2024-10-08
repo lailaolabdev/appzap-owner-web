@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Modal, Table, Button, Form, Row, Card, Spinner } from "react-bootstrap";
+import {
+  Modal,
+  Table,
+  Button,
+  Form,
+  Row,
+  Card,
+  Spinner,
+} from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
@@ -20,12 +28,14 @@ const OrderCheckOut = ({
   show = false,
   hide,
   taxPercent = 0,
-  onPrintBill = () => { },
-  onSubmit = () => { },
+  onPrintBill = () => {},
+  onSubmit = () => {},
   staffData,
   printBillLoading,
   selectedTable,
-  setServiceChangeAmount
+  setServiceChangeAmount,
+  setTotalMustPay,
+  totalMustPay
 }) => {
   const { t } = useTranslation();
   const {
@@ -34,7 +44,6 @@ const OrderCheckOut = ({
     profile,
     audioSetting,
     setAudioSetting,
-   
   } = useStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
@@ -46,7 +55,6 @@ const OrderCheckOut = ({
   useEffect(() => {
     _calculateTotal();
   }, [data, isServiceChargeEnabled]);
-
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -67,7 +75,7 @@ const OrderCheckOut = ({
       : 0; // 10% if enabled
     setServiceAmount(serviceChargeAmount);
     setTotal(_total);
-    setServiceChangeAmount(serviceAmount)
+    setServiceChangeAmount(serviceChargeAmount);
   };
 
   const onConfirmStaffToCheckBill = () => {
@@ -102,25 +110,46 @@ const OrderCheckOut = ({
     return `${orderItem?.id}-${options}`;
   };
 
-  
-
   const getToggleServiceCharge = (e) => {
-  
     setIsServiceChargeEnabled(e.target.checked);
     setStoreDetail({
       ...storeDetail,
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
       isServiceCharge: e.target.checked,
     });
-  
   };
+  const calculateTotalWithDiscount = (
+    total,
+    taxPercent,
+    serviceAmount,
+    discount,
+    discountType
+  ) => {
+    if (discountType === "LAK") {
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discount
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    } else {
+      const discountInPercent =
+        (total + serviceAmount) * (taxPercent * 0.01 + 1) * (discount / 100);
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discountInPercent
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    }
+  };
+  useEffect(() => {
+    const calculatedTotal = calculateTotalWithDiscount(
+      total, 
+      taxPercent, 
+      serviceAmount, 
+      data?.discount, 
+      data?.discountType
+    );
+    setTotalMustPay(calculatedTotal);
+  }, [total, taxPercent, serviceAmount, data]);
 
-  
-
- 
-
-  
-  
 
   return (
     <>
@@ -200,10 +229,10 @@ const OrderCheckOut = ({
                       <td>
                         {orderItem?.price
                           ? moneyCurrency(
-                            (orderItem?.price +
-                              (orderItem?.totalOptionPrice ?? 0)) *
-                            orderItem?.quantity
-                          )
+                              (orderItem?.price +
+                                (orderItem?.totalOptionPrice ?? 0)) *
+                                orderItem?.quantity
+                            )
                           : "-"}
                       </td>
                     </tr>
@@ -221,7 +250,7 @@ const OrderCheckOut = ({
                 </td>
               </tr>
               {storeDetail?.isServiceCharge && (
-                <tr >
+                <tr>
                   <td colSpan="4" style={{ textAlign: "center" }}>
                     {t("service_charge")}:
                   </td>
@@ -264,7 +293,13 @@ const OrderCheckOut = ({
               disabled={printBillLoading}
               onClick={() => onPrintBill(false)}
             >
-              {printBillLoading && <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />}
+              {printBillLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
               <FontAwesomeIcon
                 icon={faCashRegister}
                 style={{ color: "#fff" }}
@@ -285,39 +320,9 @@ const OrderCheckOut = ({
               }}
             >
               <span style={{ justifyContent: "flex-end", display: "row" }}>
-                <b>
-                  {data && data?.discountType === "LAK"
-                    ? moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          data?.discount >
-                          0
-                          ? (total + serviceAmount) *
-                          (taxPercent * 0.01 + 1) -
-                          data?.discount
-                          : 0
-                      )
-                    )
-                    : moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          ((total + serviceAmount) *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                          100 >
-                          0
-                          ? total * (taxPercent * 0.01 + 1) +
-                          serviceAmount -
-                          ((total + serviceAmount) *
-                            (taxPercent * 0.01 + 1) *
-                            data?.discount) /
-                          100
-                          : 0
-                      )
-                    )}
-                </b>
+              <b>
+               {data && moneyCurrency(totalMustPay)} {/* Display total_must_pay */}
+             </b>  
               </span>
             </div>
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>

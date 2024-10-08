@@ -290,7 +290,9 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
+  
   console.log("SERVICE", storeDetail?.serviceChargePer);
+ 
 
   
 
@@ -665,6 +667,7 @@ export default function CheckOutPopup({
                 marginBottom: 30,
               }}
             >
+              {/* ເງິີນສົດ */}
               <Button
                 variant={tab === "cash" ? "primary" : "outline-primary"}
                 onClick={() => {
@@ -721,6 +724,7 @@ export default function CheckOutPopup({
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
+              <div>fuck</div>
             </div>
             <NumberKeyboard
               onClickMember={() => {

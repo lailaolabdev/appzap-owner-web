@@ -55,7 +55,7 @@ export default function HistoryUse() {
 			let apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
 
 			if(filtterModele ==='historyServiceChange'){
-				apiUrl = "http://localhost:7070/saveservice"; 
+				apiUrl = `${END_POINT_SEVER}/saveservice`; 
 			}
 
 			const res = await axios.get(apiUrl
@@ -72,6 +72,13 @@ export default function HistoryUse() {
 		}
 		setIsLoading(false);
 	};
+	const formatNumber = (num) => {
+		if (typeof num !== 'number' || isNaN(num)) {
+			return '-'; // return a default value if num is invalid
+		}
+		return num.toLocaleString('en-US').replace(/,/g, '.');
+	};
+	
 
 	return (
 		<div>
@@ -216,10 +223,10 @@ export default function HistoryUse() {
 								</th>
 								{/* <th scope="col">ສະຖານະ</th> */}
 								<th style={{ textWrap: "nowrap" }} scope="col">
-								{ filtterModele  === "historyServiceChange" ?"Vat" :t("detial")}
+								{ filtterModele  === "historyServiceChange" ?"Service change" :t("detial")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("cause")}
+									{filtterModele == "historyServiceChange" ? "Vat" :t("cause") }
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("date_time")}
@@ -235,7 +242,7 @@ export default function HistoryUse() {
 											{page * rowsPerPage + index + 1}
 										</td>
 										{filtterModele === 'historyServiceChange' 
-										? (<td style={{ textWrap: "nowrap" }}>{item.userId.firstname} {item.userId.lastname}</td>)
+										? (<td style={{ textWrap: "nowrap" }}>{item.firstName} {item.lastName}</td>)
 									    : (<td style={{ textWrap: "nowrap" }}>{item?.user}</td>) }
 										{/* <td
                       style={{
@@ -244,15 +251,20 @@ export default function HistoryUse() {
                     >
                       {item?.event}
                     </td> */}
-										<td style={{ textWrap: "nowrap" }}>{item?.eventDetail}</td>
 										<td style={{ textWrap: "nowrap" }}>
-											{item?.reason === null ||
+										{filtterModele === 'historyServiceChange'?
+										    ` ${item.serviceChargePercent}% `:""}
+										</td>
+										<td style={{ textWrap: "nowrap" }}>
+											{filtterModele == 'historyServiceChange'?
+											`ຍອດລວມ: ${formatNumber(item.total)} ກີບ, ຍອດລວມ + ພາຊີ: ${item.taxPercent}% = ${ formatNumber((item.total * 0.13) + item.total) } ກີບ`
+										    : (item?.reason === null ||
 											item?.reason === "" ||
 											item?.reason === undefined ||
 											item?.reason === "undefined" ||
 											item?.reason === "null"
 												? "-"
-												: item?.reason}
+												: item?.reason)}
 										</td>
 										<td style={{ textWrap: "nowrap" }}>
 											{moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}

@@ -104,6 +104,8 @@ export default function TableList() {
   const handleCloseQuantity = () => setQuantity(false);
 
   const { printerCounter, printers } = useStore();
+  const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
+
 
   // provider
   const {
@@ -155,8 +157,7 @@ export default function TableList() {
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0)
-  // const [payAmount, setPayAmount] = useState(0)
-
+  
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     const refs = {};
@@ -568,29 +569,42 @@ export default function TableList() {
     if (storeDetail?.serviceChargePer > 0) {
       const userId = profile.data?._id || ""; 
       const billId = selectedTable?.billId;
-
+      const firstName = profile.data?.firstname
+      const lastName = profile.data?.lastname
+      
       console.log("User_Id: ",userId)
       console.log("Bill_Id: ",billId)
+      console.log("taxPercent: ",taxPercent)
+      console.log("total: ",total)
+      console.log("serviceChargePercent: ",serviceChargePercent)
       console.log("serviceChangeAmount: ",serviceChangeAmount)
-      
-      // try {
-      //   const response = await axios.post(`${END_POINT_SEVER}/saveservice`, {
-      //     userId,
-      //     billId,
-      //     taxPercent,
-      //     serviceChargePer: storeDetail.serviceChargePer, // ใส่ข้อมูล serviceChargePer
-      //   }, {
-      //     headers: {
-      //       "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
-      //     },
-      //   });
+      console.log("totalMustPay: ",totalMustPay)
+      console.log("fname: ",firstName)
+      console.log("lname: ",lastName)
+      try {
+        const response = await axios.post(`${END_POINT_SEVER}/saveservice`, {
+          userId,
+          billId,
+          taxPercent, // ส่งข้อมูล taxPercent
+          total, // ส่งข้อมูล total
+          serviceChargePercent, // ส่งข้อมูล serviceChargePercent
+          serviceChangeAmount ,
+          totalMustPay,
+          firstName,
+          lastName
+        }, {
+          headers: {
+            "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
+          },
+        });
   
-      //   console.log("Service charge saved..:", response.data);
-      // } catch (error) {
-      //   console.error("Error saving service charge:", error);
-      // }
+        console.log("Service charge saved..:", response.data);
+      } catch (error) {
+        console.error("Error saving service charge:", error);
+      }
     }
-  };
+};
+
   
  
  
@@ -607,6 +621,7 @@ export default function TableList() {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
+      saveServiceChargeDetails();
       await _createHistoriesPrinter(_dataBill);
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -697,7 +712,6 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
-       saveServiceChargeDetails()
       setPrintBillLoading(false)
       await Swal.fire({
         icon: "error",
@@ -2344,6 +2358,8 @@ export default function TableList() {
       />
 
       <OrderCheckOut
+       totalMustPay={totalMustPay}
+        setTotalMustPay={setTotalMustPay}
         setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
         data={dataBill}
