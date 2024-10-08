@@ -66,6 +66,7 @@ export default function HistoryUse() {
 			if (res?.status < 300) {
 				setData(res?.data?.data);
 				setTotalLogs(res?.data?.total);
+				console.log(data)
 			}
 		} catch (error) {
 			console.log(error);
@@ -221,13 +222,15 @@ export default function HistoryUse() {
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{ filtterModele  === "historyServiceChange" ?"ຊື່ແລະນາມສະກຸນ" :t("manager_name")}
 								</th>
-								{/* <th scope="col">ສະຖານະ</th> */}
 								<th style={{ textWrap: "nowrap" }} scope="col">
-								{ filtterModele  === "historyServiceChange" ?"Service change" :t("detial")}
+									{filtterModele == "historyServiceChange" ? "ຍອດລວມ" :t("cause") }
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{filtterModele == "historyServiceChange" ? "Vat" :t("cause") }
+								{ filtterModele  === "historyServiceChange" ?`Service change ${""}` :t("detial")}
 								</th>
+								{filtterModele === 'historyServiceChange' && (
+									<th style={{ textWrap: "nowrap" }} scope="col">ຍອດລວມ + ພາສີ  </th>
+								)}
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("date_time")}
 								</th>
@@ -249,23 +252,28 @@ export default function HistoryUse() {
                         color: item?.event === "INFO" ? "green" : "red",
                       }}
                     >
-                      {item?.event}
+					{item?.event}
                     </td> */}
+					                    <td style={{ textWrap: "nowrap" }}>
+					                    	{filtterModele == 'historyServiceChange'?
+					                    	` ${formatNumber(item.total)} ກີບ, `
+					                    	: (item?.reason === null ||
+					                    	item?.reason === "" ||
+					                    	item?.reason === undefined ||
+					                    	item?.reason === "undefined" ||
+					                    	item?.reason === "null"
+					                    		? "-"
+					                    		: item?.reason)}
+					                    </td>
 										<td style={{ textWrap: "nowrap" }}>
 										{filtterModele === 'historyServiceChange'?
 										    ` ${item.serviceChargePercent}% `:""}
 										</td>
-										<td style={{ textWrap: "nowrap" }}>
-											{filtterModele == 'historyServiceChange'?
-											`ຍອດລວມ: ${formatNumber(item.total)} ກີບ, ຍອດລວມ + ພາຊີ: ${item.taxPercent}% = ${ formatNumber((item.total * 0.13) + item.total) } ກີບ`
-										    : (item?.reason === null ||
-											item?.reason === "" ||
-											item?.reason === undefined ||
-											item?.reason === "undefined" ||
-											item?.reason === "null"
-												? "-"
-												: item?.reason)}
-										</td>
+										{filtterModele === 'historyServiceChange' && (
+                                            <td style={{ textWrap: "nowrap" }}>
+                                               { formatNumber((item.total * 0.13) + item.total) } ກີບ 
+                                            </td>
+                                        )}
 										<td style={{ textWrap: "nowrap" }}>
 											{moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
 										</td>
