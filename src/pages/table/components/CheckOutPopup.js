@@ -31,6 +31,7 @@ import {
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
+import { bankImages } from "../../../image/bank/bank";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -457,6 +458,25 @@ export default function CheckOutPopup({
 
   // console.log("textSearchMember", textSearchMember);
 
+  const selectBank =[
+    { 
+      label: "BCEL_ONE",
+      value: "BCEL_ONE",
+      image: bankImages.bcelOne
+    },
+    { 
+      label: "ACLEDA",
+      value: "ACLEDA",
+      image: bankImages.acleda
+    },
+    { 
+      label: "BCEL_ONE",
+      value: "JDB",
+      image: bankImages.jdb
+    },
+   
+  ]
+
   return (
     <Modal
       show={open}
@@ -724,7 +744,17 @@ export default function CheckOutPopup({
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
-              <div>fuck</div>
+              {tab == 'transfer' && (
+                <div  style={{display:"flex",border:'1px solid red'}}>
+                  {selectBank.map((bank,index)=>{
+                    return(
+                      <div>
+                        <img src={bank.image} width={70} height={70} style={{borderRadius:"50%", cursor:"pointer"}}/>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {

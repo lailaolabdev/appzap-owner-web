@@ -229,7 +229,7 @@ export default function HistoryUse() {
 								{ filtterModele  === "historyServiceChange" ?`Service change ${""}` :t("detial")}
 								</th>
 								{filtterModele === 'historyServiceChange' && (
-									<th style={{ textWrap: "nowrap" }} scope="col">ຍອດລວມ + ພາສີ  </th>
+									<th style={{ textWrap: "nowrap" }} scope="col">vat  </th>
 								)}
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("date_time")}
@@ -267,7 +267,7 @@ export default function HistoryUse() {
 					                    </td>
 										<td style={{ textWrap: "nowrap" }}>
 										{filtterModele === 'historyServiceChange'?
-										    ` ${formatNumber(item.serviceChangeAmount )} ກີບ `:""}
+										    ` ${formatNumber(item.serviceChangeAmount )} ກີບ `:`${item?.eventDetail}`}
 										</td>
 										{filtterModele === 'historyServiceChange' && (
                                             <td style={{ textWrap: "nowrap" }}>
