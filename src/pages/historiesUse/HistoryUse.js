@@ -267,11 +267,11 @@ export default function HistoryUse() {
 					                    </td>
 										<td style={{ textWrap: "nowrap" }}>
 										{filtterModele === 'historyServiceChange'?
-										    ` ${item.serviceChargePercent}% `:""}
+										    ` ${formatNumber(item.serviceChangeAmount )} ກີບ `:""}
 										</td>
 										{filtterModele === 'historyServiceChange' && (
                                             <td style={{ textWrap: "nowrap" }}>
-                                               { formatNumber((item.total * 0.13) + item.total) } ກີບ 
+                                               { formatNumber( item.totalMustPay) } ກີບ 
                                             </td>
                                         )}
 										<td style={{ textWrap: "nowrap" }}>
