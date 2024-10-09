@@ -238,7 +238,7 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
-            selectedBank:selectedBank,
+            selectBank:selectBank,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
