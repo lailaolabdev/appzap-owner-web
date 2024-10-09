@@ -43,6 +43,7 @@ export default function CheckOutPopup({
   tableData,
   setDataBill,
   taxPercent = 0,
+  saveServiceChargeDetails
 }) {
   const { t } = useTranslation();
   // ref
@@ -72,8 +73,13 @@ export default function CheckOutPopup({
   const [membersData, setMembersData] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
+  const [selectedBank, setSelectedBank] = useState("BCEL_ONE");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Bank: ", selectedBank);
+  }, [selectedBank]);
 
   useEffect(() => {
     setMemberData();
@@ -114,7 +120,7 @@ export default function CheckOutPopup({
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   // console.log("tableData:=======abc======>", tableData)
@@ -140,21 +146,23 @@ export default function CheckOutPopup({
           ? totalBill - dataBill?.discount
           : 0
         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0;
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : 0;
 
     const cashAmount = parseFloat(cash) || 0;
     const transferAmount = parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${selectCurrency == "LAK"
+    moneyReceived = `${
+      selectCurrency == "LAK"
         ? moneyCurrency(totalReceived)
         : moneyCurrency(parseFloat(cashCurrency) || 0)
-      } ${selectCurrency}`;
+    } ${selectCurrency}`;
 
     const changeAmount = totalReceived - discountedTotalBill;
-    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${storeDetail?.firstCurrency
-      }`;
+    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
+      storeDetail?.firstCurrency
+    }`;
 
     setDataBill((prev) => ({
       ...prev,
@@ -230,6 +238,7 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
+            selectedBank:selectedBank,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -291,13 +300,11 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  
-  console.log("SERVICE", storeDetail?.serviceChargePer);
- 
 
-  
+  console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
+    saveServiceChargeDetails()
     _checkBill();
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
@@ -384,21 +391,21 @@ export default function CheckOutPopup({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-        ? (totalBill * dataBill?.discount) / 100
-        : 0;
+      ? (totalBill * dataBill?.discount) / 100
+      : 0;
 
   let totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? parseFloat(
-        totalBill - dataBill?.discount > 0
-          ? totalBill - dataBill?.discount
-          : 0
-      )
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
+        )
       : parseFloat(
-        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-          ? totalBill - (totalBill * dataBill?.discount) / 100
-          : 0
-      );
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0
+        );
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -458,24 +465,23 @@ export default function CheckOutPopup({
 
   // console.log("textSearchMember", textSearchMember);
 
-  const selectBank =[
-    { 
+  const selectBank = [
+    {
       label: "BCEL_ONE",
       value: "BCEL_ONE",
-      image: bankImages.bcelOne
+      image: bankImages.bcelOne,
     },
-    { 
+    {
       label: "ACLEDA",
       value: "ACLEDA",
-      image: bankImages.acleda
+      image: bankImages.acleda,
     },
-    { 
+    {
       label: "BCEL_ONE",
       value: "JDB",
-      image: bankImages.jdb
+      image: bankImages.jdb,
     },
-   
-  ]
+  ];
 
   return (
     <Modal
@@ -513,19 +519,19 @@ export default function CheckOutPopup({
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                    Math.floor(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
+                      Math.floor(
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                      )
                     )
-                  )
                   : moneyCurrency(
-                    Math.floor(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )
-                  )}{" "}
+                      Math.floor(
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0
+                      )
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -542,8 +548,8 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) / rateCurrency
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
@@ -664,19 +670,19 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0) <=
+                    ? totalBill - (totalBill * dataBill?.discount) / 100
+                    : 0) <=
                   0
                   ? 0
                   : (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                      ? totalBill - (totalBill * dataBill?.discount) / 100
-                      : 0)
+                      (parseInt(transfer) || 0) -
+                      (dataBill && dataBill?.discountType === "LAK"
+                        ? totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                        ? totalBill - (totalBill * dataBill?.discount) / 100
+                        : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -744,15 +750,42 @@ export default function CheckOutPopup({
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
-              {tab == 'transfer' && (
-                <div  style={{display:"flex",border:'1px solid red'}}>
-                  {selectBank.map((bank,index)=>{
-                    return(
-                      <div>
-                        <img src={bank.image} width={70} height={70} style={{borderRadius:"50%", cursor:"pointer"}}/>
+              {tab == "transfer" && (
+                <div
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <div style={{position:'absolute',display:'flex',right:'0px',top:'-25px'}}>
+                    {selectBank.map((bank, index) => (
+                      <div
+                        key={index}
+                        onClick={() => setSelectedBank(bank.value)}
+                        style={{
+                          border:
+                            selectedBank === bank.value
+                              ? "4px solid tomato"
+                              : "none",
+                          margin: selectedBank === bank.value ? "5px" : "0",
+                          borderRadius: "50%",
+                          cursor: "pointer",
+                          margin: "5px",
+                          boxSizing: "border-box",
+                        }}
+                      >
+                        <img
+                          src={bank.image}
+                          width={70}
+                          height={70}
+                          style={{
+                            borderRadius: "50%",
+                            boxSizing: "border-box",
+                          }}
+                          alt={`bank-${index}`}
+                        />
                       </div>
-                    )
-                  })}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -817,15 +850,18 @@ export default function CheckOutPopup({
         </div>
         <Button
           onClick={() => {
-            setPrintBillLoading(true)
+            setPrintBillLoading(true);
+            saveServiceChargeDetails()
             onPrintBill().then(() => {
-              setPrintBillLoading(false)
+              setPrintBillLoading(false);
               handleSubmit();
             });
           }}
           disabled={!canCheckOut || printBillLoading}
         >
-          {printBillLoading && <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />}
+          {printBillLoading && (
+            <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />
+          )}
           <BiSolidPrinter />
           {t("print_checkbill")}
         </Button>

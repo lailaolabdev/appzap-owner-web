@@ -2340,6 +2340,7 @@ export default function TableList() {
       </div>
 
       <CheckOutPopup
+        saveServiceChargeDetails={saveServiceChargeDetails}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
