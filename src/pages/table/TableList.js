@@ -645,6 +645,7 @@ export default function TableList() {
       // update bill status to call check out
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
+      setOrderPayBefore([]);
       // getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -1177,15 +1178,10 @@ export default function TableList() {
       if (status === "SERVED") setIsServerdLoading(true);
       const storeId = storeDetail?._id;
       let menuId;
-      let _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked)
-        .map((i) => {
-          return {
-            status: status,
-            _id: i?._id,
-            menuId: i?.menuId,
-          };
-        });
+      let _updateItems = isCheckedOrderItem?.filter(
+        (e) => e?.isChecked && e?.status !== "PAID"
+      );
+
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
@@ -1216,6 +1212,8 @@ export default function TableList() {
       } else {
         setIsServerdLoading(false);
       }
+
+      setIsServerdLoading(false);
     } catch (error) {
       setIsServerdLoading(false);
       console.log(error);
@@ -1403,11 +1401,13 @@ export default function TableList() {
     _calculateTotal();
   }, [dataBill]);
 
+  console.log("BILL: ", dataBill);
+
   // function
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      // console.log({ _data });
+      console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
@@ -2032,7 +2032,6 @@ export default function TableList() {
                                 name="checked"
                                 checked={checkedBox}
                                 onChange={(e) => {
-                                  console.log("CHECKER1:", e);
                                   setOrderPayBefore(e);
                                   checkAllOrders(e);
                                   setCheckedBox(!checkedBox);

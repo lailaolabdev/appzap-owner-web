@@ -123,8 +123,13 @@ export default function CheckOutPopup({
 
   // console.log("membersData", membersData);
 
+  const orders =
+    orderPayBefore && orderPayBefore.length > 0
+      ? orderPayBefore
+      : dataBill?.orderId;
+
   const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    orders?.filter((e) => e?.status === "SERVED"),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
@@ -218,6 +223,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
+
   const _checkBill = async () => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -228,12 +234,15 @@ export default function CheckOutPopup({
 
     const localZone = localStorage.getItem("selectedZone");
 
+    const orderItem = orderPayBefore?.map((e) => e?._id);
+
     await axios
       .put(
-        END_POINT + `/v3/bill-checkout`,
+        END_POINT + `/v3/bill-checkout-paid`,
         {
           id: dataBill?._id,
           data: {
+            orderPayBefore: orderItem,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
