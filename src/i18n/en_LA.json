@@ -965,5 +965,9 @@
   "auto_print": "ປຸ່ມພິມບິນອັດຕະໂນມັດ",
   "quantity_full": "ເຕັມຈຳນວນ",
   "Drawer": "ລິ້ນຊັກ",
-  "enter_phone_and_name": "ພິມຊື່ ຫຼື ເບີໂທ"
+  "enter_phone_and_name": "ພິມຊື່ ຫຼື ເບີໂທ",
+  "show_by_zone": "ສະແດງຕາມໂຊນ",
+  "show_all_zone": "ສະແດງໂຊນທັງໝົດ",
+  "zone_setting": "ການຕັ້ງຄ່າໂຊນ"
+
 }
