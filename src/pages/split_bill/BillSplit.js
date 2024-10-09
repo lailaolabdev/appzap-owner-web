@@ -21,7 +21,6 @@ import _ from "lodash";
 import Loading from "../../components/Loading";
 import UserCheckoutModal from "./components/UserCheckoutModal";
 import OrderCheckOut from "./components/OrderCheckOut";
-import OrderCheckOutBillCombine from "./components/OrderCheckOutBillCombine";
 import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
 import FeedbackOrder from "./components/FeedbackOrder";
 import { orderStatus, moneyCurrency } from "../../helpers";
@@ -65,7 +64,6 @@ import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
-import CheckOutPopupBillCombine from "./components/CheckOutPopupBillCombine";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
@@ -92,7 +90,6 @@ export default function BillSplit() {
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
-  const [mobileMode, setMobileMode] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -105,10 +102,7 @@ export default function BillSplit() {
 
   const [checkoutModel, setCheckoutModal] = useState(false);
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
-  const [menuItemDetailModalCombine, setMenuItemDetailModalCombine] =
-    useState(false);
   const [dataBill, setDataBill] = useState();
-  const [modalAddDiscount, setModalAddDiscount] = useState(false);
   const [reload, setReload] = useState(false);
   const [quantity, setQuantity] = useState(false);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(0);
@@ -117,8 +111,6 @@ export default function BillSplit() {
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
-  const [dataListBillSplit, setDataListBillSplit] = useState([]);
-  const [seletedDataOrderItem, setSeletedDataOrderItem] = useState([]);
 
   const handleCloseQuantity = () => setQuantity(false);
   const handleShowQuantity = (item) => {
@@ -133,7 +125,6 @@ export default function BillSplit() {
   const {
     tableOrderItems,
     getTableDataStore,
-    onSelectTable,
     resetTableOrder,
     storeDetail,
     getTableOrders,
@@ -143,8 +134,6 @@ export default function BillSplit() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
-    billSplitNewId,
-    billSplitOldId,
     setCountOrderWaiting,
     profile,
     getSplitBillAll,
@@ -154,10 +143,6 @@ export default function BillSplit() {
     billOrderItems,
     isbillOrderLoading,
     combine,
-    setcombine,
-    handleCombineBills,
-    selectedItems,
-    setSelectedItems,
     showAllbill,
     chageStatus,
     tableChild,
@@ -168,12 +153,12 @@ export default function BillSplit() {
   // console.log(billOrderItems);
   // console.log({ combine });
   // console.log({ billOrderItems });
-  // console.log({ selectedItems });
+  // console.log("tableChlistbillSplitAllild", listbillSplitAll);
 
-  const totalBill = _.sumBy(
-    combine?.items?.filter((e) => e?.status),
-    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-  );
+  // const totalBill = _.sumBy(
+  //   combine?.items?.filter((e) => e?.status),
+  //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+  // );
 
   const reLoadData = () => {
     setReload(true);
@@ -204,14 +189,15 @@ export default function BillSplit() {
 
   useEffect(() => {
     // Automatically select the first tableChild if it exists
-    if (tableChild && tableChild.length > 0) {
+    if (tableChild && tableChild[0]?.billId !== null) {
       const firstTableChild = tableChild[0];
-      // onSelectTable(firstTableChild);
       onSelectBill({ ...firstTableChild, isSplit: false });
       setDisableBtn(true);
       setShowBillAfterCheckout(false);
+    } else {
+      onSelectBill(listbillSplitAll[0]);
     }
-  }, [tableChild]);
+  }, [tableChild, listbillSplitAll]);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -321,9 +307,6 @@ export default function BillSplit() {
   };
   const _onCheckOut = async () => {
     setMenuItemDetailModal(true);
-  };
-  const _onCheckOutCombine = async () => {
-    setMenuItemDetailModalCombine(true);
   };
   const _goToAddOrder = (tableId, code, isSplit) => {
     navigate(`/addOrder/tableid/${tableId}/code/${code}`, {
@@ -572,97 +555,6 @@ export default function BillSplit() {
       // setSelectedBill();
       getTableDataStore();
       setMenuItemDetailModal(false);
-    } catch (err) {
-      console.log("err printer", err);
-      await Swal.fire({
-        icon: "error",
-        title: `${t("print_fial")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return err;
-    }
-  };
-  const onPrintBillCombine = async () => {
-    try {
-      let _dataBill = {
-        ...dataBill,
-        typePrint: "PRINT_BILL_CHECKOUT",
-      };
-      await _createHistoriesPrinter(_dataBill);
-
-      let urlForPrinter = "";
-      const _printerCounters = JSON.parse(printerCounter?.prints);
-      const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
-      );
-      let dataImageForPrint;
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(billcombine80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBillCombine80,
-        });
-      }
-
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(bill58Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 350 / widthBillCombine80,
-        });
-      }
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
-
-      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("isdrawer", false);
-      bodyFormData.append("image", _file);
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-
-      await printFlutter(
-        {
-          imageBuffer: dataImageForPrint.toDataURL(),
-          ip: printerBillData?.ip,
-          type: printerBillData?.type,
-          port: "9100",
-        },
-        async () => {
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
-      );
-
-      await Swal.fire({
-        icon: "success",
-        title: "ປິນສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-
-      // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedBill?._id);
-      getTableDataStore();
-      setMenuItemDetailModal(false);
-      // setSelectedBill([]);
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -1263,7 +1155,7 @@ export default function BillSplit() {
   }, [billOrderItems]);
   // function
   const _calculateTotal = () => {
-    let _total = 0;
+    // let _total = 0;
     // for (let _data of billOrderItems[0]?.orderId || []) {
     //   // console.log({ _data });
     //   _total +=
@@ -1290,16 +1182,6 @@ export default function BillSplit() {
       setTotalAfterDiscount(totalBillDefualt);
     }
     setTotal(totalBillDefualt);
-  };
-
-  // console.log("totalBilDefualt", totalBillDefualt);
-
-  const getQrTokenForSelfOrdering = async () => {
-    const data = await tokenSelfOrderingPost(selectedBill?.billId);
-    if (data?.token) {
-      setQrToken(data?.token);
-      setPopup({ qrToken: true });
-    }
   };
 
   // console.log("selectedBill[0]", selectedBill[0]);
@@ -1362,7 +1244,7 @@ export default function BillSplit() {
                 }}
               >
                 {/* ============================ Child Table ==================== */}
-                {tableChild &&
+                {tableChild[0]?.billId !== null &&
                   tableChild?.map((table, index) => (
                     <div
                       style={{
@@ -1736,48 +1618,6 @@ export default function BillSplit() {
                   ))}
               </Box>
               <div style={{ height: 20 }} />
-              {/* <hr />
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4,1fr)",
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                }}
-              >
-                <ButtonCustom
-                  className="btn btn-primary"
-                  disabled={selectedItems?.length < 2}
-                  onClick={() => {
-                    handleCombineBills();
-                  }}
-                >
-                  ລວມບິນ {selectedItems?.length}
-                </ButtonCustom>
-                 <ButtonCustom
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setcombine();
-                    setSelectedItems();
-                  }}
-                >
-                  {t("clear")}
-                </ButtonCustom> 
-              </div>
-
-              <div style={{ height: 20 }} />
-              {showBillAfterCheckout
-                ? ""
-                : showAllbill && (
-                    <ListBillCombine
-                      combine={combine}
-                      billOrderItems={billOrderItems}
-                      totalBill={totalBill}
-                      _goToAddOrder={_goToAddOrder}
-                      _onCheckOutCombine={_onCheckOutCombine}
-                    />
-                  )}*/}
             </Container>
           </Box>
           {/* Detail Table */}
@@ -1791,318 +1631,209 @@ export default function BillSplit() {
               overflow: "hidden",
             }}
           >
-            {showAllbill ? (
-              <div className="text-center">
-                <div style={{ marginTop: 50, fontSize: 50 }}>
-                  <h4>{t("avaliable")}</h4>
-                  <FontAwesomeIcon
-                    icon={faListAlt}
-                    style={{
-                      width: "calc(50%)",
-                      height: "calc(50%)",
-                      opacity: 0.5,
-                    }}
-                  />
-                </div>
-              </div>
-            ) : showBillAfterCheckout ? (
-              <div className="text-center">
-                <div style={{ marginTop: 50, fontSize: 50 }}>
-                  <h4>{t("avaliable")}</h4>
-                  <FontAwesomeIcon
-                    icon={faListAlt}
-                    style={{
-                      width: "calc(50%)",
-                      height: "calc(50%)",
-                      opacity: 0.5,
-                    }}
-                  />
-                </div>
-              </div>
-            ) : (
-              billOrderItems.length !== 0 && (
-                <div
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#FFF",
-                    maxHeight: "90vh",
-                    overflowY: "scroll",
-                  }}
-                >
-                  {
-                    <div>
-                      <div style={{ backgroundColor: "#fff", padding: 10 }}>
-                        <div
+            {billOrderItems.length !== 0 && (
+              <div
+                style={{
+                  width: "100%",
+                  backgroundColor: "#FFF",
+                  maxHeight: "90vh",
+                  overflowY: "scroll",
+                }}
+              >
+                {
+                  <div>
+                    <div style={{ backgroundColor: "#fff", padding: 10 }}>
+                      <div
+                        style={{
+                          fontSize: 24,
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          padding: 20,
+                        }}
+                      >
+                        <SiAirtable />{" "}
+                        {` ${`ໃບບິນ ${billOrderItems[0]?.tableId?.name}`}`}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 16,
+                        }}
+                      >
+                        {t("tableNumber2")}:{" "}
+                        <span
                           style={{
-                            fontSize: 24,
                             fontWeight: "bold",
-                            textAlign: "center",
-                            padding: 20,
+                            color: COLOR_APP,
                           }}
                         >
-                          <SiAirtable />{" "}
-                          {` ${`ໃບບິນ ${billOrderItems[0]?.tableId?.name}`}`}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("tableNumber2")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {billOrderItems[0]?.code}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("timeOfTableOpening")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moment(selectedBill?.createdAt).format("HH:mm A")}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("respon")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {`${billOrderItems[0]?.createdBy?.firstname}  ${billOrderItems[0]?.createdBy?.firstname}`}
-                          </span>
-                        </div>
-
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("discount")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT"
-                              ? "%"
-                              : storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("total")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moneyCurrency(total)} {storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("aPriceHasToPay")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moneyCurrency(totalAfterDiscount)}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                            color: "red",
-                            display: isCheckedOrderItem?.filter(
-                              (e) =>
-                                e?.status !== "SERVED" &&
-                                e?.status !== "CANCELED" &&
-                                e?.status !== "PAID" &&
-                                e?.status !== "FEEDBACK"
-                            )?.length
-                              ? "block"
-                              : "none",
-                          }}
-                        >
-                          {
-                            isCheckedOrderItem?.filter(
-                              (e) =>
-                                e?.status !== "SERVED" &&
-                                e?.status !== "CANCELED" &&
-                                e?.status !== "PAID" &&
-                                e?.status !== "FEEDBACK"
-                            )?.length
-                          }{" "}
-                          {t("itemNotServed")} !
-                        </div>
-                        <div>
-                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                            {isCheckedOrderItem?.filter(
-                              (e) => e?.status == "PAID"
-                            )?.length
-                              ? ` ${
-                                  isCheckedOrderItem?.filter(
-                                    (e) => e?.status == "PAID"
-                                  )?.length
-                                } ${t("ORDER_PAID")}`
-                              : ""}
-                          </p>
-                        </div>
+                          {billOrderItems[0]?.code}
+                        </span>
                       </div>
                       <div
                         style={{
-                          borderBottom: "1px dashed #ccc",
-                          marginBottom: 10,
-                        }}
-                      />
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(4,1fr)",
-                          paddingLeft: 10,
-                          paddingRight: 10,
+                          fontSize: 16,
                         }}
                       >
-                        {/* <ButtonCustom
-                          // onClick={() => onPrintForCher()}
-                          onClick={() => onPrintToKitchen()}
-                          disabled={onPrinting}
-                        >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("printBillToKitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            // _onAddDiscount();
-                            setWorkAfterPin("discount");
-                            setPopup({ PopUpPin: true });
+                        {t("timeOfTableOpening")}:{" "}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: COLOR_APP,
                           }}
                         >
-                          {t("discount")}
-                        </ButtonCustom> */}
-
-                        <ButtonCustom
-                          disabled={!canCheckOut}
-                          onClick={() => _onCheckOut()}
-                        >
-                          {t("checkout")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          disabled={disableBtn}
-                          onClick={() =>
-                            _goToAddOrder(
-                              billOrderItems[0]?.tableId?._id,
-                              billOrderItems[0]?.code,
-                              billOrderItems?.isBillSplit
-                            )
-                          }
-                        >
-                          + {t("addOrder")}
-                        </ButtonCustom>
+                          {moment(selectedBill?.createdAt).format("HH:mm A")}
+                        </span>
                       </div>
                       <div
                         style={{
-                          borderBottom: "1px dashed #ccc",
-                          margin: "10px 0",
+                          fontSize: 16,
                         }}
-                      />
-                      {/* <div
-                        style={{
-                          display: "flex",
-                          padding: "0 10px",
-                          marginBottom: 10,
-                        }}
-                        hidden={checkedBox}
                       >
-                        <ButtonCustom
-                          onClick={() => {
-                            setWorkAfterPin("cancle_order_and_print");
-                            setPopup({ PopUpPin: true });
+                        {t("respon")}:{" "}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: COLOR_APP,
                           }}
-                          disabled={checkedBox || onPrinting}
                         >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("cancel_and_send_to_kitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            setWorkAfterPin("cancle_order");
-                            setPopup({ PopUpPin: true });
-                          }}
-                          disabled={checkedBox}
-                        >
-                          {t("cancel")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            handleUpdateOrderStatusAndCallback(
-                              "DOING",
-                              async () => {
-                                // const data = await onPrintForCher();
-                                const data = await onPrintToKitchen();
-                                return data;
-                              }
-                            ).then();
-                          }}
-                          disabled={checkedBox || onPrinting}
-                        >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("update_and_send_to_kitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => handleUpdateOrderStatusgo("DOING")}
-                          disabled={checkedBox}
-                        >
-                          {t("sendToKitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => handleUpdateOrderStatus("SERVED")}
-                          disabled={checkedBox}
-                        >
-                          {t("servedBy")}
-                        </ButtonCustom>
-                      </div> */}
+                          {`${billOrderItems[0]?.createdBy?.firstname}  ${billOrderItems[0]?.createdBy?.firstname}`}
+                        </span>
+                      </div>
 
-                      <TableCustom>
-                        <thead>
-                          <tr>
-                            {/* <th>
+                      <div
+                        style={{
+                          fontSize: 16,
+                        }}
+                      >
+                        {t("discount")}:{" "}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: COLOR_APP,
+                          }}
+                        >
+                          {moneyCurrency(dataBill?.discount)}{" "}
+                          {dataBill?.discountType === "PERCENT"
+                            ? "%"
+                            : storeDetail?.firstCurrency}
+                        </span>
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: 16,
+                        }}
+                      >
+                        {t("total")}:{" "}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: COLOR_APP,
+                          }}
+                        >
+                          {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 16,
+                        }}
+                      >
+                        {t("aPriceHasToPay")}:{" "}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: COLOR_APP,
+                          }}
+                        >
+                          {moneyCurrency(totalAfterDiscount)}{" "}
+                          {storeDetail?.firstCurrency}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 16,
+                          color: "red",
+                          display: isCheckedOrderItem?.filter(
+                            (e) =>
+                              e?.status !== "SERVED" &&
+                              e?.status !== "CANCELED" &&
+                              e?.status !== "PAID" &&
+                              e?.status !== "FEEDBACK"
+                          )?.length
+                            ? "block"
+                            : "none",
+                        }}
+                      >
+                        {
+                          isCheckedOrderItem?.filter(
+                            (e) =>
+                              e?.status !== "SERVED" &&
+                              e?.status !== "CANCELED" &&
+                              e?.status !== "PAID" &&
+                              e?.status !== "FEEDBACK"
+                          )?.length
+                        }{" "}
+                        {t("itemNotServed")} !
+                      </div>
+                      <div>
+                        <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                          {isCheckedOrderItem?.filter(
+                            (e) => e?.status == "PAID"
+                          )?.length
+                            ? ` ${
+                                isCheckedOrderItem?.filter(
+                                  (e) => e?.status == "PAID"
+                                )?.length
+                              } ${t("ORDER_PAID")}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        borderBottom: "1px dashed #ccc",
+                        marginBottom: 10,
+                      }}
+                    />
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "repeat(4,1fr)",
+                        paddingLeft: 10,
+                        paddingRight: 10,
+                      }}
+                    >
+                      <ButtonCustom
+                        disabled={!canCheckOut}
+                        onClick={() => _onCheckOut()}
+                      >
+                        {t("checkout")}
+                      </ButtonCustom>
+                      <ButtonCustom
+                        disabled={disableBtn}
+                        onClick={() =>
+                          _goToAddOrder(
+                            billOrderItems[0]?.tableId?._id,
+                            billOrderItems[0]?.code,
+                            billOrderItems?.isBillSplit
+                          )
+                        }
+                      >
+                        + {t("addOrder")}
+                      </ButtonCustom>
+                    </div>
+                    <div
+                      style={{
+                        borderBottom: "1px dashed #ccc",
+                        margin: "10px 0",
+                      }}
+                    />
+
+                    <TableCustom>
+                      <thead>
+                        <tr>
+                          {/* <th>
                               <Checkbox
                                 name="checked"
                                 onChange={(e) => {
@@ -2111,32 +1842,31 @@ export default function BillSplit() {
                                 }}
                               />
                             </th> */}
-                            <th>{t("no")}</th>
-                            <th>{t("menuname")}</th>
-                            <th>{t("quantity")}</th>
-                            <th>{t("status")}</th>
-                            <th>{t("customer")}</th>
-                            <th>{t("time")}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {billOrderItems[0]?.orderId?.map(
-                            (orderItem, index) => {
-                              const options =
-                                orderItem?.options
-                                  ?.map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ") || "";
-                              return (
-                                <tr
-                                  // onClick={() => handleShowQuantity(orderItem)}
-                                  key={"order" + index}
-                                  style={{ borderBottom: "1px solid #eee" }}
-                                >
-                                  {/* <td onClick={(e) => e.stopPropagation()}>
+                          <th>{t("no")}</th>
+                          <th>{t("menuname")}</th>
+                          <th>{t("quantity")}</th>
+                          <th>{t("status")}</th>
+                          <th>{t("customer")}</th>
+                          <th>{t("time")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {billOrderItems[0]?.orderId?.map((orderItem, index) => {
+                          const options =
+                            orderItem?.options
+                              ?.map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ") || "";
+                          return (
+                            <tr
+                              // onClick={() => handleShowQuantity(orderItem)}
+                              key={"order" + index}
+                              style={{ borderBottom: "1px solid #eee" }}
+                            >
+                              {/* <td onClick={(e) => e.stopPropagation()}>
                                     <Checkbox
                                       disabled={
                                         orderItem?.status === "CANCELED"
@@ -2151,50 +1881,44 @@ export default function BillSplit() {
                                       }}
                                     />
                                   </td> */}
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {orderItem?.name} {options}
-                                  </td>
-                                  <td>{orderItem?.quantity}</td>
-                                  <td
-                                    style={{
-                                      color:
-                                        orderItem?.status === `SERVED`
-                                          ? "green"
-                                          : orderItem?.status === "PAID"
-                                          ? COLOR_APP
-                                          : orderItem?.status === "DOING"
-                                          ? ""
-                                          : "red",
-                                    }}
-                                  >
-                                    {orderItem?.status
-                                      ? t(
-                                          orderStatusTranslate(
-                                            orderItem?.status
-                                          )
-                                        )
-                                      : "-"}
-                                  </td>
-                                  <td>{orderItem?.createdBy?.firstname}</td>
-                                  <td>
-                                    {orderItem?.createdAt
-                                      ? moment(orderItem?.createdAt).format(
-                                          "HH:mm A"
-                                        )
-                                      : "-"}
-                                  </td>
-                                </tr>
-                              );
-                            }
-                          )}
-                        </tbody>
-                      </TableCustom>
-                      <div style={{ marginBottom: 100 }} />
-                    </div>
-                  }
-                </div>
-              )
+                              <td>{index + 1}</td>
+                              <td>
+                                {orderItem?.name} {options}
+                              </td>
+                              <td>{orderItem?.quantity}</td>
+                              <td
+                                style={{
+                                  color:
+                                    orderItem?.status === `SERVED`
+                                      ? "green"
+                                      : orderItem?.status === "PAID"
+                                      ? COLOR_APP
+                                      : orderItem?.status === "DOING"
+                                      ? ""
+                                      : "red",
+                                }}
+                              >
+                                {orderItem?.status
+                                  ? t(orderStatusTranslate(orderItem?.status))
+                                  : "-"}
+                              </td>
+                              <td>{orderItem?.createdBy?.firstname}</td>
+                              <td>
+                                {orderItem?.createdAt
+                                  ? moment(orderItem?.createdAt).format(
+                                      "HH:mm A"
+                                    )
+                                  : "-"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </TableCustom>
+                    <div style={{ marginBottom: 100 }} />
+                  </div>
+                }
+              </div>
             )}
           </Box>
         </Box>
@@ -2341,340 +2065,6 @@ export default function BillSplit() {
           setPopup({ CheckOutType: true });
         }}
       />
-      <CheckOutPopupBillCombine
-        onPrintBill={onPrintBillCombine}
-        onPrintDrawer={onPrintDrawer}
-        dataBill={combine}
-        tableData={combine}
-        open={popup?.CheckOutCombineType}
-        onClose={() => setPopup()}
-        setDataBill={setDataBill}
-        taxPercent={taxPercent}
-        setshowBillAfterCheckout={setShowBillAfterCheckout}
-      />
-
-      <OrderCheckOutBillCombine
-        staffData={userData}
-        data={combine}
-        tableData={combine}
-        setDataBill={setDataBill}
-        onPrintBill={onPrintBillCombine}
-        show={menuItemDetailModalCombine}
-        resetTableOrder={resetTableOrder}
-        hide={() => setMenuItemDetailModalCombine(false)}
-        taxPercent={taxPercent}
-        onSubmit={() => {
-          setMenuItemDetailModalCombine(false);
-          setPopup({ CheckOutCombineType: true });
-        }}
-      />
-
-      {/* <PopUpPin
-        open={popup?.PopUpPin}
-        onClose={() => setPopup()}
-        setPinStatus={(e) => {
-          setPinStatus(e);
-        }}
-      /> */}
-
-      {/* <UpdateDiscountOrder
-        data={tableOrderItems}
-        tableData={selectedBill}
-        show={modalAddDiscount}
-        resetTableOrder={resetTableOrder}
-        hide={() => setModalAddDiscount(false)}
-      /> */}
-
-      {/* <FeedbackOrder
-        data={orderItemForPrintBill}
-        tableData={selectedBill}
-        show={feedbackOrderModal}
-        hide={() => setFeedbackOrderModal(false)}
-      /> */}
-
-      {/* <UserCheckoutModal
-        show={checkoutModel}
-        hide={() => setCheckoutModal(false)}
-        tableId={selectedBill?.code}
-        func={_handlecheckout}
-      /> */}
-      {/* <PopupOpenTable
-        open={popup?.openTable}
-        code={selectedBill}
-        onClose={() => {
-          setPopup();
-        }}
-        onSubmit={async () => {
-          openTable().then(() => {
-            navigate(`/staff/tableDetail/${selectedBill?._id}`);
-            setPopup();
-          });
-          // getData();
-        }}
-      /> */}
-
-      {/* <PopUpAddDiscount
-        open={popup?.discount}
-        value={isCheckedOrderItem}
-        dataBill={dataBill}
-        onClose={() => {
-          setPopup();
-        }}
-        onSubmit={async () => {
-          handleMessage();
-          getData();
-        }}
-      /> */}
-
-      {/* <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("combine_table")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <Form.Label>
-              {t("move_from")} : {selectedBill?.tableName}
-            </Form.Label>
-            <div style={{ height: 10 }}></div>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>{t("to_table")} : </Form.Label>
-              <div style={{ height: 10 }}></div>
-              <select
-                className="form-select form-control"
-                aria-label="Default select example"
-                value={selectNewTable?._id}
-                onChange={(e) => {
-                  const _select = tableList?.find(
-                    (item) => e.target.value === item?._id
-                  );
-                  setSelectNewTable(_select);
-                }}
-              >
-                <option selected disabled>
-                  {t("chose_table")}
-                </option>
-                {tableList?.map((item, index) => (
-                  <option
-                    key={"talbe-" + index}
-                    value={item?._id}
-                    disabled={
-                      selectedBill?.tableName === item?.tableName
-                        ? true
-                        : false
-                    }
-                  >
-                    {t("table")} {item?.tableName}
-                  </option>
-                ))}
-              </select>
-            </Form.Group>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => handleClose()}>
-            {t("cancel")}
-          </Button>
-          <Button variant="success" onClick={() => _changeTable()}>
-            {t("combine_table")}
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
-
-      {/* <Modal show={show1} onHide={handleClose1}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("cause_cancel_order")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <select
-              size="8"
-              style={{ overflow: "auto", border: "none", fontSize: "20px" }}
-              className="form-control"
-              onChange={handleSelectedCancelOrder}
-            >
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("wrong_serving")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("customer_cancel")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("wrong_cooking")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("server_wrong_ordering")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("wait_long")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("food_gone")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("drink_gone")}
-              </option>
-              <option
-                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
-              >
-                {t("table_no_food")}
-              </option>
-            </select>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => handleClose1()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            variant="success"
-            // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
-            onClick={() => {
-              if (workAfterPin == "cancle_order_and_print") {
-                handleUpdateOrderStatusAndCallback("CANCELED", async () => {
-                  const data = await onPrintForCherCancel();
-                  return data;
-                }).then((resp) => {
-                  setWorkAfterPin("");
-                  handleUpdateOrderStatuscancel("CANCELED");
-                });
-              } else {
-                console.log("cancle");
-                handleUpdateOrderStatuscancel("CANCELED");
-              }
-            }}
-          >
-            {t("save")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={quantity} onHide={handleCloseQuantity}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("edit_amount")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <TableCustom>
-              <thead>
-                <tr>
-                  <th>{t("table")}</th>
-                  <th>{t("menuname")}</th>
-                  <th>{t("quantity")}</th>
-                  <th>{t("status")}</th>
-                  <th>{t("customer")}</th>
-                  <th>{t("time")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{seletedOrderItem?.tableId?.name}</td>
-                  <td>
-                    {seletedOrderItem?.name}{" "}
-                    {seletedOrderItem?.options
-                      ?.map((option) => `[${option.quantity} x ${option.name}]`)
-                      .join(" ")}
-                  </td>
-                  <td
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <button
-                      style={{ color: "blue", border: "none", width: 25 }}
-                      onClick={() => handleSetQuantity(-1, seletedOrderItem)}
-                    >
-                      -
-                    </button>
-                    {seletedOrderItem?.quantity}
-                    <button
-                      style={{ color: "red", border: "none", width: 25 }}
-                      onClick={() => handleSetQuantity(1, seletedOrderItem)}
-                    >
-                      +
-                    </button>
-                  </td>
-                  <td
-                    style={{
-                      color:
-                        seletedOrderItem?.status === `SERVED`
-                          ? "green"
-                          : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
-                    }}
-                  >
-                    {seletedOrderItem?.status
-                      ? orderStatus(seletedOrderItem?.status)
-                      : "-"}
-                  </td>
-                  <td>{seletedOrderItem?.createdBy?.firstname}</td>
-                  <td>
-                    {seletedOrderItem?.createdAt
-                      ? moment(seletedOrderItem?.createdAt).format("HH:mm A")
-                      : "-"}
-                  </td>
-                </tr>
-              </tbody>
-            </TableCustom>
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => handleCloseQuantity()}>
-            {t("cancel")}
-          </Button>
-          <Button
-            disabled
-            variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
-          >
-            {t("save")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={openModalSetting} onHide={() => setOpenModalSetting(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("setting_table")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div style={{ textAlign: "center" }}>
-            {t("would_you_like_to_close")} {dataSettingModal?.tableName} ?
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => setOpenModalSetting(false)}>
-            {t("cancel")}
-          </Button>
-          <Button variant="success" onClick={() => _resetTable()}>
-            {t("close_table")}
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
-
-      {/* <PopUpTranferTable
-        open={popup?.PopUpTranferTable}
-        onClose={() => setPopup({ PopUpTranferTable: false })}
-        onSubmit={reLoadData}
-        tableList={tableList}
-      /> */}
     </div>
   );
 }

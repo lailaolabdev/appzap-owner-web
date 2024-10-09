@@ -140,8 +140,6 @@ function AddOrder() {
       ? sortOptionsById([...data.options])
       : [];
 
-    console.log({ selectedMenu });
-
     for (const i of selectedMenu) {
       let _data = { ...i };
 
@@ -162,9 +160,6 @@ function AddOrder() {
         dataArray.push(_data);
       }
     }
-
-    console.log("ORDER DATA: ", dataArray);
-
     setSelectedMenu(dataArray);
   };
 
@@ -242,10 +237,7 @@ function AddOrder() {
         }
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-
-        console.log("dataUrl=5555==========>", dataUrl);
         const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("_file===========>", _file);
         var bodyFormData = new FormData();
         bodyFormData.append("isdrawer", false);
         bodyFormData.append("ip", _printer?.ip);
@@ -257,8 +249,6 @@ function AddOrder() {
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
-        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData);
-        console.log("onPrintFlutter: =======");
         await printFlutter(
           {
             imageBuffer: dataUrl.toDataURL(),
@@ -353,12 +343,12 @@ function AddOrder() {
     // getcurrency();
   }, []);
 
-  useEffect(() => {
-    // TODO: check selectTable
-    if (!selectedTable || !selectedBill) {
-      navigate("/tables");
-    }
-  }, [selectedTable, selectedBill]);
+  // useEffect(() => {
+  //   // TODO: check selectTable
+  //   if (!selectedTable || !selectedBill) {
+  //     navigate("/tables");
+  //   }
+  // }, [selectedTable]);
 
   useEffect(() => {
     (async () => {
@@ -419,7 +409,6 @@ function AddOrder() {
   };
 
   const calculateTotalPrice = (menu, selectedOptionsArray) => {
-    console.log({ menu });
     if (!menu || !menu._id) {
       return 0;
     }
@@ -433,11 +422,6 @@ function AddOrder() {
   };
 
   const handleConfirmOptions = () => {
-    console.log("menuOptions: ", menuOptions);
-    console.log("selectedItem: ", selectedItem);
-    console.log("SelectedOptionsArray: ", selectedOptionsArray);
-    console.log("selectedMenu: ", selectedMenu);
-
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
         (option) => option.quantity >= 1
@@ -802,9 +786,7 @@ function AddOrder() {
   };
 
   const onEditOrder = (menu) => {
-    console.log("onEditOrder: ", menu);
     const menuOptions = _checkMenuOption(menu);
-    console.log("menuOptions: ", menuOptions);
 
     // Get the selected options from the menu with their quantities
     const selectedOptions = menu.options || [];

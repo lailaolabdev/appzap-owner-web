@@ -227,6 +227,7 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
+            // order: "",
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,

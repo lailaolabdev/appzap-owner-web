@@ -69,15 +69,13 @@ export const useBillState = (storeDetail) => {
     try {
       setbillOrders([]);
       if (!bill?.billId) return;
-      setIsbillOrderLoading(true);
+      // setIsbillOrderLoading(true);
       // const url =
       //   END_POINT +
       //   `/v3/orders?code=${bill?.code}&storeId=${bill?.storeId}&storeId=${bill?.storeId}&billId=${bill?.billId}`;
       const url = END_POINT + `/v3/bills?_id=${bill?.billId}`;
       let res = await axios.get(url);
       const data = res.data;
-
-      console.log("getbillOrders", data);
 
       if (selectedItems.includes(data[0])) {
         if (selectedItems?.length >= 2) return;
@@ -111,6 +109,8 @@ export const useBillState = (storeDetail) => {
   };
 
   const onSelectBill = async (bill) => {
+    console.log("____Billl===>", bill);
+
     setShowAllbill(false);
     if (bill) {
       setbillOrderItems([]);
@@ -122,69 +122,6 @@ export const useBillState = (storeDetail) => {
 
   // console.log("SelectedItems", selectedItems);
 
-  const combineBills = (bill1, bill2) => {
-    const combinedItems = [...bill1?.orderId, ...bill2?.orderId];
-    const totalbill1 = bill1?.orderId?.reduce(
-      (sum, bill) => sum + bill.totalPrice,
-      0
-    );
-    const totalbill2 = bill2?.orderId?.reduce(
-      (sum, bill) => sum + bill.totalPrice,
-      0
-    );
-    const combinedTotal = totalbill1 + totalbill2;
-
-    return {
-      DiscountCategory: bill2?.DiscountCategory,
-      billAmount: bill2?.billAmount,
-      billAmountBefore: bill2?.billAmountBefore,
-      checkPoint: bill2?.checkPoint,
-      code: bill2?.code,
-      createdAt: bill2?.createdAt,
-      createdBy: bill2?.createdBy,
-      currency: bill2?.currency,
-      discount: bill2?.discount,
-      discountType: bill2?.discountType,
-      isCheckout: bill2?.isCheckout,
-      isDeleted: bill2?.isDeleted,
-      memberName: bill2?.memberName,
-      password: bill2?.password,
-      payAmount: bill2?.payAmount,
-      paymentMethod: bill2?.paymentMethod,
-      queue: bill2?.queue,
-      saveCafe: bill2?.saveCafe,
-      serviceChargeAmount: bill2?.serviceChargeAmount,
-      serviceChargePercent: bill2?.serviceChargePercent,
-      status: bill2?.status,
-      storeId: bill2?.storeId,
-      tableId: bill2?.tableId,
-      taxAmount: bill2?.taxAmount,
-      taxPercent: bill2?.taxPercent,
-      transferAmount: bill2?.transferAmount,
-      _id: bill2?._id,
-      oldId: bill1?._id,
-      newId: bill2?._id,
-      items: combinedItems,
-      total: combinedTotal,
-      mergedTableNames: `ບິນລວມທັງໝົດ`,
-    };
-  };
-
-  const handleCombineBills = () => {
-    setSelectedItems([]);
-    if (selectedItems?.length === 0) {
-      return errorAdd("Please select exactly two bills to combine.");
-    }
-    if (selectedItems?.length >= 2) {
-      setShowAllbill(true);
-      const combinedBill = combineBills(selectedItems[0], selectedItems[1]);
-      setcombine(combinedBill);
-      // You can then update the UI or send this combined object to the backend.
-    } else {
-      errorAdd("Please select exactly two bills to combine.");
-    }
-  };
-
   return {
     getSplitBillAll,
     listbillSplitAll,
@@ -192,7 +129,6 @@ export const useBillState = (storeDetail) => {
     selectedBill,
     billOrderItems,
     isbillOrderLoading,
-    handleCombineBills,
     selectedItems,
     setSelectedItems,
     combine,

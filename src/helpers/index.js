@@ -12,6 +12,8 @@ export const orderStatus = (status) => {
       return "ກໍາລັງຄົວ";
     case "SERVED":
       return `ເສີບແລ້ວ`;
+    case "PAID":
+      return `ຈ່າຍແລ້ວ`;
     case "CART":
       return `ກຳລັງຈະສັງ`;
     case "FEEDBACK":

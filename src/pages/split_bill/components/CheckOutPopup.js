@@ -226,7 +226,6 @@ export default function CheckOutPopup({
     const serviceChargeAmount = Math.floor(
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
-
     // console.log("DATA123 ", serviceChargePer, serviceChargeAmount);
     await axios
       .put(
@@ -290,7 +289,8 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
         });
-        navigate(`/bill/split/${newId}`);
+        // navigate(`/bill/split/${newId}`);
+        navigate(`/tables`);
         await getTableDataStore();
         setChageStatus(false);
         setshowBillAfterCheckout(true);

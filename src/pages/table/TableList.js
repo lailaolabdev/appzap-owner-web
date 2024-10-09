@@ -179,7 +179,7 @@ export default function TableList() {
   const [userData, setuserData] = useState(null);
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
-
+  const [selectNewTable, setSelectNewTable] = useState([]);
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
@@ -306,18 +306,11 @@ export default function TableList() {
   };
 
   useEffect(() => {
-    if (tableOrderItems?.length > 0) {
-      getData(tableOrderItems[0]?.code);
-    } else {
-      setDataBill();
-    }
-  }, [tableOrderItems]);
-
-  useEffect(() => {
     if (zoneId) {
       getTableDataStore({ zone: zoneId });
     } else {
       getTableDataStore();
+      // onSelectTable(selectNewTable)
     }
   }, [zoneId]);
 
@@ -374,8 +367,6 @@ export default function TableList() {
       errorAdd(`${t("fail_update_amount")}`);
     }
   };
-
-  const [selectNewTable, setSelectNewTable] = useState();
 
   // console.log("New", selectNewTable?.billId);
   // console.log("Old", selectedTable?.billId);
@@ -436,6 +427,9 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
+        setSelectedTable(selectNewTable);
+        onSelectTable(selectNewTable);
+        // getTableDataStore();
         // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
         // navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
         // navigate(`/bill/split/${selectNewTable?._id}`);
@@ -451,6 +445,13 @@ export default function TableList() {
     }
     setSelectNewTable();
   };
+  useEffect(() => {
+    if (tableOrderItems?.length > 0) {
+      getData(tableOrderItems[0]?.code);
+    } else {
+      setDataBill();
+    }
+  }, [tableOrderItems]);
 
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
