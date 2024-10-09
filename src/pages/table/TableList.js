@@ -1178,10 +1178,17 @@ export default function TableList() {
       if (status === "SERVED") setIsServerdLoading(true);
       const storeId = storeDetail?._id;
       let menuId;
-      let _updateItems = isCheckedOrderItem?.filter(
-        (e) => e?.isChecked && e?.status !== "PAID"
-      );
+      let _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked && e?.status !== "PAID")
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
 
+      console.log("STATUS: ", _updateItems);
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
