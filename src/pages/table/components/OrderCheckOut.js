@@ -35,7 +35,9 @@ const OrderCheckOut = ({
   selectedTable,
   setServiceChangeAmount,
   setTotalMustPay,
-  totalMustPay
+  totalMustPay,
+  setCreatedAt,
+  createdAt
 }) => {
   const { t } = useTranslation();
   const {
@@ -51,6 +53,7 @@ const OrderCheckOut = ({
   const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
+
 
   useEffect(() => {
     _calculateTotal();
@@ -150,6 +153,8 @@ const OrderCheckOut = ({
     setTotalMustPay(calculatedTotal);
   }, [total, taxPercent, serviceAmount, data]);
 
+  setCreatedAt(tableData?.createdAt)
+
 
   return (
     <>
@@ -171,7 +176,7 @@ const OrderCheckOut = ({
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
             {t("open_at")}:{" "}
-            {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+            {moment(createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
           <Row>
             <div

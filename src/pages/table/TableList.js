@@ -105,6 +105,7 @@ export default function TableList() {
 
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
+  const [createdAt , setCreatedAt] = useState()
 
 
   // provider
@@ -572,6 +573,8 @@ export default function TableList() {
       const firstName = profile.data?.firstname
       const lastName = profile.data?.lastname
       
+      
+      
       console.log("User_Id: ",userId)
       console.log("Bill_Id: ",billId)
       console.log("taxPercent: ",taxPercent)
@@ -581,6 +584,8 @@ export default function TableList() {
       console.log("totalMustPay: ",totalMustPay)
       console.log("fname: ",firstName)
       console.log("lname: ",lastName)
+      console.log("CreateAt: ",createdAt)
+
       try {
         const response = await axios.post(`${END_POINT_SEVER}/saveservice`, {
           userId,
@@ -591,7 +596,8 @@ export default function TableList() {
           serviceChangeAmount ,
           totalMustPay,
           firstName,
-          lastName
+          lastName,
+          createdAt
         }, {
           headers: {
             "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
@@ -2359,6 +2365,8 @@ export default function TableList() {
       />
 
       <OrderCheckOut
+       setCreatedAt={setCreatedAt}
+       createdAt={createdAt}
        totalMustPay={totalMustPay}
         setTotalMustPay={setTotalMustPay}
         setServiceChangeAmount={setServiceChangeAmount}

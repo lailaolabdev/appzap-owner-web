@@ -276,7 +276,7 @@ export default function HistoryUse() {
                                         )}
 										<td style={{ textWrap: "nowrap" }}>
 											{filtterModele == 'historyServiceChange'?
-												`${(item.createdAt)}`
+												`${moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}`
 												:`${moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}`
 											}
 											
