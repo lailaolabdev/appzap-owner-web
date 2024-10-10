@@ -238,7 +238,6 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
-            selectBank:selectBank,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -465,23 +464,7 @@ export default function CheckOutPopup({
 
   // console.log("textSearchMember", textSearchMember);
 
-  const selectBank = [
-    {
-      label: "BCEL_ONE",
-      value: "BCEL_ONE",
-      image: bankImages.bcelOne,
-    },
-    {
-      label: "ACLEDA",
-      value: "ACLEDA",
-      image: bankImages.acleda,
-    },
-    {
-      label: "BCEL_ONE",
-      value: "JDB",
-      image: bankImages.jdb,
-    },
-  ];
+  
 
   return (
     <Modal
@@ -750,44 +733,6 @@ export default function CheckOutPopup({
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
-              {tab == "transfer" && (
-                <div
-                  style={{
-                    position: "relative",
-                  }}
-                >
-                  <div style={{position:'absolute',display:'flex',right:'0px',top:'-25px'}}>
-                    {selectBank.map((bank, index) => (
-                      <div
-                        key={index}
-                        onClick={() => setSelectedBank(bank.value)}
-                        style={{
-                          border:
-                            selectedBank === bank.value
-                              ? "4px solid tomato"
-                              : "none",
-                          margin: selectedBank === bank.value ? "5px" : "0",
-                          borderRadius: "50%",
-                          cursor: "pointer",
-                          margin: "5px",
-                          boxSizing: "border-box",
-                        }}
-                      >
-                        <img
-                          src={bank.image}
-                          width={70}
-                          height={70}
-                          style={{
-                            borderRadius: "50%",
-                            boxSizing: "border-box",
-                          }}
-                          alt={`bank-${index}`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {
