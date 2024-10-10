@@ -9,11 +9,6 @@ const dev = "https://api.appzap.la:17072"; // dev endpoint report & other
 const dev_table_menu = "https://api.appzap.la:17071"; // dev endpoint table & menu
 const dev_bill_order = "https://api.appzap.la:17070"; // dev endpoint bill & order
 
-// Prod endpoint
-const production = "https://api.appzap.la:445"; // Production report & other
-const production_table_menu = "https://api.appzap.la:444"; // Production table & menu
-const production_bill_order = "https://api.appzap.la"; // Production bill & order
-
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
@@ -22,10 +17,10 @@ const isProduction = production_domain == now_domain;
 
 export const master_menu_api_dev = "https://kq2xqiss46.execute-api.ap-southeast-1.amazonaws.com";
 export const END_POINT_SERVER_BUNSI = "https://accounting.lailaolab.la/";
-export const END_POINT_APP = isProduction ? production : dev;
-export const END_POINT_SEVER = isProduction ? production : dev; // endpoint report & other
-export const END_POINT_SEVER_TABLE_MENU = isProduction ? production_table_menu : dev_table_menu; // endpoint table & menu
-export const END_POINT_SEVER_BILL_ORDER = isProduction ? production_bill_order : dev_bill_order; // endpoint bill & order
+export const END_POINT_APP = dev;
+export const END_POINT_SEVER = dev; // endpoint report & other
+export const END_POINT_SEVER_TABLE_MENU = dev_table_menu; // endpoint table & menu
+export const END_POINT_SEVER_BILL_ORDER = dev_bill_order; // endpoint bill & order
 export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
 export const END_POINT_WEB_CLIENT = isProduction ? production_web_client : dev_web_client;
 
