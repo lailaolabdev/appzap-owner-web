@@ -15,6 +15,7 @@ import {
   faImages,
   faDatabase,
   faTh,
+  faBuildingColumns
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -127,6 +128,15 @@ export default function SettingList() {
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
       title: t("currencyManage"),
+      subTitle: t('currency_manage_desc'),
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
+      ),
+      path: `/settingStore/currency/${params?.id}`,
+    },
+    {
+      id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
+      title: "ຈັດການທະນາຄານ",
       subTitle: t('currency_manage_desc'),
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
