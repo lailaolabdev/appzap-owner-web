@@ -101,13 +101,13 @@ export default function ExpendList() {
   );
 
   useEffect(() => {
-    let filter = {
-      filterByYear: filterByYear,
-      filterByMonth: filterByMonth,
-      dateStart: dateStart,
-      dateEnd: dateEnd,
-      filterByPayment: filterByPayment,
-    };
+    // let filter = {
+    //   filterByYear: filterByYear,
+    //   filterByMonth: filterByMonth,
+    //   dateStart: dateStart,
+    //   dateEnd: dateEnd,
+    //   filterByPayment: filterByPayment,
+    // };
 
     // console.log("parame?.skip:::", parame?.skip);
 
@@ -211,6 +211,7 @@ export default function ExpendList() {
     dateEnd,
     filterByPayment
   ) => {
+    console.log("fetchExpend::", dateStart, dateEnd);
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
@@ -219,10 +220,13 @@ export default function ExpendList() {
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
       if (filterByYear) findby += `&year=${filterByYear}`;
       if (filterByMonth) findby += `&month=${filterByMonth}`;
-      if (dateStart && dateEnd)
-        findby += `&date_gte=${moment(moment(dateStart)).format("YYYY/MM/DD")}`;
-      findby += `&date_lt=${moment(moment(dateEnd)).format("YYYY/MM/DD")}`;
-      findby += `&startTime=${startTime}&endTime=${endTime}`;
+      if (dateStart && dateEnd) {
+        findby += `&date_gte=${moment(dateStart).format("YYYY/MM/DD")}`;
+        findby += `&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
+      }
+      if (startTime && endTime) {
+        findby += `&startTime=${startTime}&endTime=${endTime}`;
+      }
 
       if (filterByPayment !== "ALL" && filterByPayment !== undefined)
         findby += `&payment=${filterByPayment}`;
@@ -389,8 +393,8 @@ export default function ExpendList() {
         filterByMonth={filterByMonth}
         setFilterByMonth={setFilterByMonth}
         dateStart={dateStart}
-        setDateStart={setDateStart}
         dateEnd={dateEnd}
+        setDateStart={setDateStart}
         setDateEnd={setDateEnd}
       />
 
