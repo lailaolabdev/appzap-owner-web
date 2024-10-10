@@ -56,8 +56,8 @@ const OrderCheckOut = ({
 
   useEffect(() => {
     if (orderPayBefore) {
-      console.log("DATA: ", data);
-      console.log("Updated orderPayBefore: ", orderPayBefore);
+      // console.log("DATA: ", data);
+      // console.log("Updated orderPayBefore: ", orderPayBefore);
     }
   }, [orderPayBefore]);
 
@@ -139,7 +139,7 @@ const OrderCheckOut = ({
       }
     }
 
-    console.log("DATATOTAL: ", orderPayBefore);
+    // console.log("DATATOTAL: ", orderPayBefore);
 
     // Calculate service charge
     const serviceChargeAmount = isServiceChargeEnabled

@@ -1153,7 +1153,7 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCELED") return item;
+        if (item?.status === "CANCELED" || item.status === "PAID") return item;
         return {
           ...item,
           isChecked: true,
@@ -1166,7 +1166,9 @@ export default function TableList() {
           isChecked: false,
         };
       });
+      setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
+
     setCheckedBox(!checkedBox);
     setOrderPayBefore(!checkedBox);
     setIsCheckedOrderItem(_newOrderItems);
@@ -1179,7 +1181,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
       let menuId;
       let _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked && e?.status !== "PAID")
+        ?.filter((e) => e?.isChecked)
         .map((i) => {
           return {
             status: status,
@@ -1188,7 +1190,6 @@ export default function TableList() {
           };
         });
 
-      console.log("STATUS: ", _updateItems);
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
@@ -1408,7 +1409,8 @@ export default function TableList() {
     _calculateTotal();
   }, [dataBill]);
 
-  console.log("BILL: ", dataBill);
+  // console.log("BILL: ", dataBill);
+  // console.log("TABLE: ", selectedTable);
 
   // function
   const _calculateTotal = () => {
@@ -2072,15 +2074,12 @@ export default function TableList() {
                                     <td onClick={(e) => e.stopPropagation()}>
                                       <Checkbox
                                         disabled={
-                                          orderItem?.status === "CANCELED"
+                                          orderItem?.status === "CANCELED" ||
+                                          orderItem?.status === "PAID"
                                         }
                                         name="checked"
                                         checked={orderItem?.isChecked || false}
                                         onChange={(e) => {
-                                          console.log(
-                                            "CHECKER2: ",
-                                            e.target.checked
-                                          );
                                           onSelect({
                                             ...orderItem,
                                             isChecked: e.target.checked,
