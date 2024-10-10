@@ -88,14 +88,16 @@ export default function ExpendList() {
   const time = new Date();
   const month = time.getMonth();
   const year = time.getFullYear();
-  const [dateStart, setDateStart] = useState(
-    // !parsed?.dateStart ? "" : parsed?.dateStart
-    new Date(year, month, 1)
-  );
-  const [dateEnd, setDateEnd] = useState(
-    // !parsed?.dateEnd ? "" : parsed?.dateEnd
-    new Date(year, month + 1, 0)
-  );
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+  // const [dateStart, setDateStart] = useState(
+  //   // !parsed?.dateStart ? "" : parsed?.dateStart
+  //   new Date(year, month, 1)
+  // );
+  // const [dateEnd, setDateEnd] = useState(
+  //   // !parsed?.dateEnd ? "" : parsed?.dateEnd
+  //   new Date(year, month + 1, 0)
+  // );
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
