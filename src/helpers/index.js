@@ -1,9 +1,8 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
-import moment from "moment"
+import moment from "moment";
 
 // import { useTranslation } from 'react-i18next';
-
 
 export const orderStatus = (status) => {
   switch (status) {
@@ -156,13 +155,14 @@ export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
   });
 };
 
-
 export const convertPayment = (status) => {
   switch (status) {
     case "CASH":
       return "ເງິນສົດ";
     case "TRANSFER":
       return "ເງິນໂອນ";
+    case "DEBT":
+      return "ຕິດໜີ້";
     case "OTHER":
       return `ອື່ນໆ`;
     default:
@@ -171,7 +171,6 @@ export const convertPayment = (status) => {
 };
 export const convertExpendatureType = (status) => {
   switch (status) {
-
     case "INGREDIENT_FOOD":
       return "ຊື້ວັດຖຸດິບອາຫານ";
     case "INGREDIENT_DRINK":
@@ -219,8 +218,7 @@ export const formatDateTime = (dateTime) => {
 
 export const generateRandomTextAndNumber = (length) => {
   let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -231,7 +229,6 @@ export const generateRandomTextAndNumber = (length) => {
 export const numberFormat = (_number) => {
   return new Intl.NumberFormat("en-US").format(_number);
 };
-
 
 export const convertImageToBase64 = async (imageUrl) => {
   try {
@@ -248,4 +245,3 @@ export const convertImageToBase64 = async (imageUrl) => {
     return null;
   }
 };
-
