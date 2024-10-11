@@ -164,7 +164,6 @@ export default function OrderPage() {
           ip: printer?.ip,
           type: printer?.type,
           port: "9100",
-          beep: 1,
           width: printer?.width === "58mm" ? 400 : 580,
         },
         async () => {

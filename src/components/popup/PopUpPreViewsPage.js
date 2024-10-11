@@ -71,7 +71,6 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
           type: myPrinter?.type,
           port: "9100",
           width: myPrinter?.width === "58mm" ? 400 : 580,
-          //   beap: 1,
         },
         async () => {
           await axios({

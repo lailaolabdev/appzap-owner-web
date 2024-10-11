@@ -61,7 +61,7 @@ export const printItems = async (groupedItems, combinedBillRefs, printers) => {
           ip: _printer?.ip,
           type: _printer?.type,
           port: "9100",
-          beep: 1, // Assuming beep is set to 1 for this example, adjust as needed
+
           width: _printer?.width === "58mm" ? 400 : 580, // Adjusting width based on printer paper size
         },
         async () => {
