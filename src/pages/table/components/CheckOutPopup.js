@@ -31,6 +31,7 @@ import {
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
+import { callCheckOutPrintBillOnly } from "../../../services/code";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -48,7 +49,6 @@ export default function CheckOutPopup({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail, setStoreDetail, profile } = useStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -71,7 +71,15 @@ export default function CheckOutPopup({
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
-  const { setSelectedTable, getTableDataStore } = useStore();
+  const {
+    setSelectedTable,
+    getTableDataStore,
+    orderPayBefore,
+    selectedTable,
+    storeDetail,
+    setStoreDetail,
+    profile,
+  } = useStore();
 
   const navigate = useNavigate();
 
@@ -123,8 +131,13 @@ export default function CheckOutPopup({
 
   // console.log("membersData", membersData);
 
+  const orders =
+    orderPayBefore && orderPayBefore.length > 0
+      ? orderPayBefore
+      : dataBill?.orderId;
+
   const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    orders?.filter((e) => e?.status === "SERVED"),
     (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
@@ -218,6 +231,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
+
   const _checkBill = async () => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -228,14 +242,24 @@ export default function CheckOutPopup({
 
     const localZone = localStorage.getItem("selectedZone");
 
+    const orderItem =
+      orderPayBefore && orderPayBefore.length > 0
+        ? orderPayBefore?.map((e) => e?._id)
+        : [];
+    const checkStatus =
+      orderPayBefore && orderPayBefore.length > 0 ? "false" : "true";
+    const checkStatusBill =
+      orderPayBefore && orderPayBefore.length > 0 ? "PAID" : "CHECKOUT";
+
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
         {
           id: dataBill?._id,
           data: {
-            isCheckout: "true",
-            status: "CHECKOUT",
+            orderPayBefore: orderItem,
+            isCheckout: checkStatus,
+            status: checkStatusBill,
             payAmount: cash,
             transferAmount: transfer,
             paymentMethod: forcus,
@@ -274,6 +298,8 @@ export default function CheckOutPopup({
         setTextSearchMember("");
         setCash();
         setTransfer();
+        // callCheckOutPrintBillOnly(selectedTable?._id);
+        // setStoreDetail({ ...storeDetail, ChangeColorTable: true });
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
@@ -295,6 +321,7 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
+
   // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();

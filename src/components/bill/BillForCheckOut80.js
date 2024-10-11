@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOut80({
   storeDetail,
+  orderPayBefore,
   selectedTable,
   dataBill,
   taxPercent = 0,
@@ -34,7 +35,10 @@ export default function BillForCheckOut80({
 
   // console.log("storeDetail", storeDetail);
   // console.log("dataBill", dataBill);
-
+  const orders =
+    orderPayBefore && orderPayBefore.length > 0
+      ? orderPayBefore
+      : dataBill?.orderId;
   // useEffect
   useEffect(() => {
     _calculateTotal();
@@ -51,16 +55,25 @@ export default function BillForCheckOut80({
   // function
   const _calculateTotal = () => {
     let _total = 0;
-    for (let _data of dataBill?.orderId || []) {
+
+    // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
+    const orders =
+      orderPayBefore && orderPayBefore.length > 0
+        ? orderPayBefore
+        : dataBill?.orderId;
+
+    // Loop through the available orders
+    for (let _data of orders || []) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
       _total += _data?.quantity * itemPrice;
     }
+
+    // Handle discount logic
     if (dataBill?.discount > 0) {
       if (
-        dataBill?.discountType == "LAK" ||
-        dataBill?.discountType == "MONEY"
+        dataBill?.discountType === "LAK" ||
+        dataBill?.discountType === "MONEY"
       ) {
         setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
@@ -70,8 +83,12 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(_total);
     }
+
+    // Set total amount and related charges
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
+
+    // Calculate service charge
     const serviceChargeTotal = Math.floor(
       (_total * storeDetail?.serviceChargePer) / 100
     );
@@ -165,7 +182,7 @@ export default function BillForCheckOut80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {dataBill?.orderId?.map((item, index) => {
+        {orders?.map((item, index) => {
           const optionsNames =
             item?.options
               ?.map((option) =>
@@ -176,7 +193,6 @@ export default function BillForCheckOut80({
               .join("") || "";
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
-          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
           const itemTotal = itemPrice * item?.quantity;
 
           return (

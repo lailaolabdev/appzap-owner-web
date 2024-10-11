@@ -129,6 +129,8 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
     isWaitingCheckout,
+    setOrderPayBefore,
+    orderPayBefore,
   } = useStore();
 
   const reLoadData = () => {
@@ -643,6 +645,7 @@ export default function TableList() {
       // update bill status to call check out
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
+      setOrderPayBefore([]);
       // getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -1114,6 +1117,7 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
+    setOrderPayBefore({ ...orderPayBefore, data });
     const _data = isCheckedOrderItem.map((e) => {
       if (data?._id === e?._id) {
         return data;
@@ -1121,7 +1125,12 @@ export default function TableList() {
         return e;
       }
     });
+
+    const res = _data.filter((e) => e?.isChecked);
+    setOrderPayBefore(res);
     setIsCheckedOrderItem(_data);
+
+    // console.log("CHECKER5: ", _data);
 
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
@@ -1137,11 +1146,14 @@ export default function TableList() {
     }
   };
 
+  // console.log("DATA1 : ", ORM);
+  // console.log("DATA2 : ", orderPayBefore);
+
   const checkAllOrders = (item) => {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCELED") return item;
+        if (item?.status === "CANCELED" || item.status === "PAID") return item;
         return {
           ...item,
           isChecked: true,
@@ -1154,8 +1166,11 @@ export default function TableList() {
           isChecked: false,
         };
       });
+      setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
+
     setCheckedBox(!checkedBox);
+    setOrderPayBefore(!checkedBox);
     setIsCheckedOrderItem(_newOrderItems);
   };
 
@@ -1174,6 +1189,7 @@ export default function TableList() {
             menuId: i?.menuId,
           };
         });
+
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
@@ -1204,6 +1220,8 @@ export default function TableList() {
       } else {
         setIsServerdLoading(false);
       }
+
+      setIsServerdLoading(false);
     } catch (error) {
       setIsServerdLoading(false);
       console.log(error);
@@ -1292,7 +1310,7 @@ export default function TableList() {
         };
       });
       setIsCheckedOrderItem(_newOrderItems);
-
+      console.log("CHECKER6:", _newOrderItems);
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
     }
@@ -1391,11 +1409,14 @@ export default function TableList() {
     _calculateTotal();
   }, [dataBill]);
 
+  // console.log("BILL: ", dataBill);
+  // console.log("TABLE: ", selectedTable);
+
   // function
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill?.orderId || []) {
-      // console.log({ _data });
+      console.log({ _data });
       _total +=
         (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
     }
@@ -2020,6 +2041,7 @@ export default function TableList() {
                                 name="checked"
                                 checked={checkedBox}
                                 onChange={(e) => {
+                                  setOrderPayBefore(e);
                                   checkAllOrders(e);
                                   setCheckedBox(!checkedBox);
                                 }}
@@ -2052,7 +2074,8 @@ export default function TableList() {
                                     <td onClick={(e) => e.stopPropagation()}>
                                       <Checkbox
                                         disabled={
-                                          orderItem?.status === "CANCELED"
+                                          orderItem?.status === "CANCELED" ||
+                                          orderItem?.status === "PAID"
                                         }
                                         name="checked"
                                         checked={orderItem?.isChecked || false}
@@ -2229,6 +2252,7 @@ export default function TableList() {
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
+          orderPayBefore={orderPayBefore}
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
