@@ -879,6 +879,7 @@
   "ORDER_CART": "ກຳລັງຈະສັ່ງ",
   "ORDER_FEEDBACK": "ສົ່ງຄືນ",
   "ORDER_CANCEL": "ຍົກເລີກ",
+  "ORDER_PAID": "ຈ່າຍແລ້ວ",
   "option_menu": "ອ໋ອບຊັນ",
   "example": "** ເຊັ່ນ: ຮ້ອນ,ເຢັນ,ປັ່ນ,ນ້ອຍ,ກາງ,ໃຫຍ່ (ບໍ່ຕັດສະຕ໋ອກ)",
   "chose_export_excel": "ເລືອກລາຍການທີ່ຈະ Export",

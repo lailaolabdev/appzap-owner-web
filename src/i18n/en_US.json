@@ -781,6 +781,7 @@
   "ORDER_CART": "On cart",
   "ORDER_FEEDBACK": "Feedback",
   "ORDER_CANCEL": "Cancel",
+  "ORDER_PAID": "Paid",
   "option_menu": "Menu Options",
   "update_options": "Update Options",
   "chose_export_excel": "Select item to export",
