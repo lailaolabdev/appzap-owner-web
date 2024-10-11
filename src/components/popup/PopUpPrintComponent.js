@@ -78,6 +78,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);

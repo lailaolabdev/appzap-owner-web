@@ -1054,6 +1054,7 @@ export default function TableList() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
