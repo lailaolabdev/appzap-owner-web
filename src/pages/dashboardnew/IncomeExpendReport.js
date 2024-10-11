@@ -6,7 +6,11 @@ import { TitleComponent } from "../../components";
 import { Form } from "react-bootstrap";
 import IncomeExpendatureChart from "./IncomeExpendatureChart";
 import { COLOR_APP } from "../../constants";
-import { END_POINT_SERVER_BUNSI, getLocalData } from "../../constants/api";
+import {
+  END_POINT_SERVER_BUNSI,
+  getLocalData,
+  END_POINT_SEVER,
+} from "../../constants/api";
 import PaginationComponent from "../../components/PaginationComponent";
 import { getHeadersAccount } from "../../services/auth";
 import { useLocation, useParams } from "react-router-dom";
@@ -36,6 +40,8 @@ export default function IncomeExpendExport() {
   const [dateStart, setDateStart] = useState(new Date(year, month, 1));
   const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
 
+  // console.log("dateStart::", dateStart, "dateEnd::", dateEnd);
+
   const { width, height } = useWindowDimensions2();
 
   //filter
@@ -52,6 +58,9 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
+
+  // console.log("incomeExpendData::", incomeExpendData);
+
   const OPTION = {
     chart: {
       height: 350,
@@ -163,9 +172,9 @@ export default function IncomeExpendExport() {
       // if (filterByYear) findby += `&year=${filterByYear}`
       // if (filterByMonth) findby += `&month=${filterByMonth}`
       if (dateStart && dateEnd)
-        findby += `&date_gte==${dateStart}&date_lt=${moment(
-          moment(dateEnd)
-        ).format("YYYY/MM/DD")}`;
+        findby += `&date_gte=${moment(dateStart).format(
+          "YYYY/MM/DD"
+        )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
       // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
       const header = await getHeadersAccount();
@@ -179,8 +188,9 @@ export default function IncomeExpendExport() {
         headers: headers,
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           setExpendGraphData(res?.data?.data?.chartExpend);
+          console.log("ExpendGraphData", res?.data);
         })
         .finally(() => {
           setIsLoading(false);
@@ -188,17 +198,17 @@ export default function IncomeExpendExport() {
 
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
       if (dateStart && dateEnd)
-        findIncomeby += `startDate=${moment(moment(dateStart)).format(
+        findIncomeby += `startDate=${moment(dateStart).format(
           "YYYY-MM-DD"
-        )}&endDate=${moment(moment(dateEnd)).format("YYYY-MM-DD")}`;
+        )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
       findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
       await axios({
         method: "post",
-        url: `https://api.appzap.la/v4/report-daily/${findIncomeby}`,
+        url: `${END_POINT_SEVER}/v4/report-daily/${findIncomeby}`,
         headers: headers,
       })
         .then((res) => {
-          console.log(res);
+          // console.log("IncomeGraphData", res?.data);
           setIncomeGraphData(res?.data);
           setIsLoading(false);
         })
@@ -224,7 +234,6 @@ export default function IncomeExpendExport() {
     bbb.map((x) => _xAxisData.push(`${moment(x).format("YYYY-MM-DD")}`));
     const _options = OPTION;
     _options.xaxis.categories = _xAxisData;
-    console.log({ _xAxisData });
 
     const _dataAtGraph = expendGraphData?.totalExpendLAK;
     const _lakData = [];

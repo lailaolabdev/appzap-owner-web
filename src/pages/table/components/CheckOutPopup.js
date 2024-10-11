@@ -174,7 +174,8 @@ export default function CheckOutPopup({
       const _currencyData = currencyList.find(
         (e) => e.currencyCode == selectCurrency
       );
-      setRateCurrency(_currencyData?.buy || 1);
+      console.log("_currencyData", _currencyData);
+      setRateCurrency(_currencyData?.sell || 1);
     } else {
       setCashCurrency();
       setCash();
@@ -210,6 +211,8 @@ export default function CheckOutPopup({
         const data = await axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
+
+        console.log("getDataCurrency", data);
         if (data?.status == 200) {
           setCurrencyList(data?.data?.data);
         }
