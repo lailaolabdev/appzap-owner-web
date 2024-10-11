@@ -73,6 +73,7 @@ import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
+import BankList from "../pages/bank/BankList";
 
 function Router() {
   return useRoutes([
@@ -176,6 +177,10 @@ function Router() {
         {
           path: "/settingStore/currency/:id",
           element: <CurrencyList />,
+        },
+        {
+          path: "/settingStore/bank/:id",
+          element: <BankList />,
         },
         {
           path: "/settingStore/menu/category/limit/:limit/page/:page/:id",

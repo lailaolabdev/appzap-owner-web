@@ -43,7 +43,7 @@ export default function CheckOutPopup({
   tableData,
   setDataBill,
   taxPercent = 0,
-  saveServiceChargeDetails
+  saveServiceChargeDetails,
 }) {
   const { t } = useTranslation();
   // ref
@@ -73,13 +73,35 @@ export default function CheckOutPopup({
   const [membersData, setMembersData] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
-  const [selectedBank, setSelectedBank] = useState("BCEL_ONE");
-
+  const [banks, setBanks] = useState([]); // เริ่มต้นเป็น array
+  const [selectedBank, setSelectedBank] = useState("");
   const navigate = useNavigate();
 
+  //select Bank
+
   useEffect(() => {
-    console.log("Bank: ", selectedBank);
-  }, [selectedBank]);
+    const fetchBanks = async () => {
+      try {
+        const response = await axios.get(`${END_POINT_SEVER}/v3/banks/`);
+        console.log(response.data); // ตรวจสอบข้อมูลที่ได้รับ
+        setBanks(response.data); // ต้องมั่นใจว่า response.data เป็น array
+      } catch (error) {
+        console.error("Error fetching banks:", error);
+      }
+    };
+
+    fetchBanks();
+  }, []);
+
+  useEffect(() => {
+    console.log("tab: ", tab);
+    console.log("bank: ", banks);
+  }, [tab]);
+
+  const handleChange = (event) => {
+    setSelectedBank(event.target.value);
+  };
+  ////
 
   useEffect(() => {
     setMemberData();
@@ -303,7 +325,7 @@ export default function CheckOutPopup({
   console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
-    saveServiceChargeDetails()
+    saveServiceChargeDetails();
     _checkBill();
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
@@ -463,8 +485,6 @@ export default function CheckOutPopup({
   };
 
   // console.log("textSearchMember", textSearchMember);
-
-  
 
   return (
     <Modal
@@ -733,6 +753,12 @@ export default function CheckOutPopup({
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
+
+              {tab == "transfer" && (
+                <div>
+                  <button>fuck</button>
+                </div>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {
@@ -796,7 +822,7 @@ export default function CheckOutPopup({
         <Button
           onClick={() => {
             setPrintBillLoading(true);
-            saveServiceChargeDetails()
+            saveServiceChargeDetails();
             onPrintBill().then(() => {
               setPrintBillLoading(false);
               handleSubmit();

@@ -135,6 +135,15 @@ export default function SettingList() {
       path: `/settingStore/currency/${params?.id}`,
     },
     {
+      id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
+      title: "Bank",
+      subTitle: t('currency_manage_desc'),
+      icon: (
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
+      ),
+      path: `/settingStore/bank/${params?.id}`,
+    },
+    {
       id: "f962968d-1bed-48da-9049-92551dcd7101",
       title: "Banner",
       subTitle: t('banner_desc'),
