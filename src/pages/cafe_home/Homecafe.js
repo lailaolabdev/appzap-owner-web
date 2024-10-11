@@ -982,7 +982,6 @@ function Homecafe() {
           type: printerBillData?.type,
           port: "9100",
           width: printerBillData?.width === "58mm" ? 400 : 580,
-          // beep: 1,
         },
         async () => {
           await axios({
