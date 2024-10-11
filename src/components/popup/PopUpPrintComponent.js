@@ -28,7 +28,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [bills, setBill] = useState();
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
-    ຍອດທັງຫມົດ: 0,
+    ຍອດທັງໝົດ: 0,
     ຈ່າຍເງິນສົດ: 0,
     ຈ່າຍເງິນໂອນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
@@ -97,7 +97,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          // beep: 1,
           width: myPrinter?.width === "58" ? 400 : 580,
         },
         async () => {
@@ -136,7 +135,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
 
       // logic
-
       const countBill = data.length || 0;
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
       const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
@@ -159,7 +157,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       setReportBill({
         ຈຳນວນບິນ: countBill,
-        ຍອດທັງຫມົດ: totalBill,
+        ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
         ບິນສ່ວນຫຼຸດ: countDiscountBill,

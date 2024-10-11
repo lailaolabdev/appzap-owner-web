@@ -855,5 +855,8 @@
   "auto_print": "Automatic print receipt button",
   "quantity_full": "Quantity full",
   "Drawer": "Drawer",
-  "enter_phone_and_name": "Enter name or phone number"
+  "enter_phone_and_name": "Enter name or phone number",
+   "show_by_zone": "Show by zone",
+  "show_all_zone": "Show all zone",
+  "zone_setting": "Zone setting"
 }
