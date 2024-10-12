@@ -27,10 +27,11 @@ export default function BankList() {
   const [editBank, setEditBank] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [alertMessage, setAlertMessage] = useState(""); // Message for alerts
+  const [bankToDelete, setBankToDelete] = useState(null); // State for bank to delete
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
-  
+
   // Fetch all banks
   const fetchAllBanks = async () => {
     try {
@@ -49,8 +50,14 @@ export default function BankList() {
   const handleShowEdit = (data) => {};
   const handleCloseEdit = () => setShowEdit(false);
 
-  const handleShowDelete = (data) => {};
-  const handleCloseDelete = () => setShowDelete(false);
+  const handleShowDelete = (data) => {
+    setBankToDelete(data); // Store the bank to be deleted
+    setShowDelete(true); // Show delete modal
+  };
+  const handleCloseDelete = () => {
+    setShowDelete(false);
+    setBankToDelete(null); // Clear bank to delete
+  };
 
   const _create = async (values) => {
     setIsLoading(true); // Show loading when saving
@@ -83,8 +90,22 @@ export default function BankList() {
     }
   };
 
-  const _update = async (values) => {};
-  const _confirmeDelete = async () => {};
+  const _confirmDelete = async () => {
+    if (!bankToDelete) return; // Check if there's a bank to delete
+    setIsLoading(true); // Show loading
+
+    try {
+      await Axios.delete(`${END_POINT_SEVER}/v3/bank/delete/${bankToDelete._id}`);
+      fetchAllBanks(); // Refresh banks after deletion
+      setAlertMessage("ລົບທະນາຄານແລ້ວ"); // Show success message
+    } catch (error) {
+      console.error("Error deleting bank:", error);
+      setAlertMessage("ມີບັດເສດໃນການລົບ"); // Show error message
+    } finally {
+      setIsLoading(false); // Hide loading
+      handleCloseDelete(); // Close delete modal
+    }
+  };
 
   return (
     <>
@@ -215,16 +236,31 @@ export default function BankList() {
                   >
                     {t("cancel")}
                   </Button>
-                  <Button
-                    type="submit"
-                    style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  >
-                    {t("save")}
+                  <Button variant="primary" type="submit">
+                    {isSubmitting ? "ກຳລັงບັນທຶກ..." : "ບັນທຶກ"}
                   </Button>
                 </Modal.Footer>
               </form>
             )}
           </Formik>
+        </Modal>
+
+        {/* Delete Modal */}
+        <Modal show={showDelete} onHide={handleCloseDelete}>
+          <Modal.Header closeButton>
+            <Modal.Title>{"ຢືນຢັນການລົບ"}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {"ທ່ານຕ້ອງການລົບທະນາຄານ: " + (bankToDelete ? bankToDelete.bankName : "")}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDelete}>
+              {t("cancel")}
+            </Button>
+            <Button variant="danger" onClick={_confirmDelete}>
+              {"ລົບ"}
+            </Button>
+          </Modal.Footer>
         </Modal>
       </Box>
     </>
