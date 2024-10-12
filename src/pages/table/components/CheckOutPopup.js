@@ -80,23 +80,21 @@ export default function CheckOutPopup({
   //select Bank
 
   useEffect(() => {
-    const fetchBanks = async () => {
+    const fetchAllBanks = async () => {
       try {
-        const response = await axios.get(`${END_POINT_SEVER}/v3/banks/`);
-        console.log(response.data); // ตรวจสอบข้อมูลที่ได้รับ
-        setBanks(response.data); // ต้องมั่นใจว่า response.data เป็น array
+        const response = await axios.get(`${END_POINT_SEVER}/v3/banks`);
+        setBanks(response.data.data);
       } catch (error) {
-        console.error("Error fetching banks:", error);
+        console.error("Error fetching all banks:", error);
       }
     };
-
-    fetchBanks();
-  }, []);
-
-  useEffect(() => {
     console.log("tab: ", tab);
     console.log("bank: ", banks);
-  }, [tab]);
+    console.log("selectedBank: ", selectedBank);
+    fetchAllBanks()
+    
+  }, [tab,selectedBank]);
+
 
   const handleChange = (event) => {
     setSelectedBank(event.target.value);
@@ -260,6 +258,7 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
+            selectedBank:selectedBank,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -755,9 +754,13 @@ export default function CheckOutPopup({
               </Form.Control>
 
               {tab == "transfer" && (
-                <div>
-                  <button>fuck</button>
-                </div>
+                <select value={selectedBank} onChange={handleChange}>
+                {Array.isArray(banks) && banks.map((bank) => (
+                  <option key={bank._id} value={bank.bankName}>
+                    {bank.bankName}
+                  </option>
+                ))}
+              </select>
               )}
             </div>
             <NumberKeyboard
