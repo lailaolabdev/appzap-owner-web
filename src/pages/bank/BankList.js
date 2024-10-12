@@ -4,78 +4,87 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Form, Modal, Card, Table } from "react-bootstrap";
 import { Formik } from "formik";
-import {
-  END_POINT_SEVER,
-} from "../../constants/api";
+import { END_POINT_SEVER } from "../../constants/api";
 import Axios from "axios";
-import { Breadcrumb, Nav, Tab, Tabs } from "react-bootstrap";
+import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
 import { BsCurrencyExchange } from "react-icons/bs";
 import Loading from "../../components/Loading";
-import moment from "moment";
-import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
+import { useStore } from "../../store";
 
 export default function BankList() {
   const { t } = useTranslation();
-  const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-
-  //new
-
+  // New state variables
+  const { profile } = useStore();
   const [banks, setBanks] = useState([]);
-  const [newBank, setNewBank] = useState({ name: "", code: "" });
-  const [editBank, setEditBank] = useState(null);  // เก็บข้อมูลธนาคารที่กำลังแก้ไข
-  const [isEditing, setIsEditing] = useState(false);  // เก็บสถานะการแก้ไข
-  const [newBankName, setNewBankName] = useState(""); // เก็บชื่อธนาคารที่แก้ไข
-
+  const [editBank, setEditBank] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(""); // Message for alerts
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
+  
+  // Fetch all banks
+  const fetchAllBanks = async () => {
+    try {
+      const response = await Axios.get(`${END_POINT_SEVER}/v3/banks`);
+      setBanks(response.data.data);
+      console.log("banks data", response.data.data);
+    } catch (error) {
+      console.error("Error fetching all banks:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAllBanks = async () => {
-      try {
-        const response = await Axios.get(`${END_POINT_SEVER}/v3/banks`); // Fetch all banks
-        setBanks(response.data.data); // เข้าถึงเฉพาะ data ภายใน object
-        console.log("banks data", response.data.data); // Log ข้อมูล bank ที่เป็น array
-      } catch (error) {
-        console.error("Error fetching all banks:", error);
-      }
-    };
-
     fetchAllBanks();
   }, []);
 
-  console.log("bank", banks);
-
-  
-
-  const handleShowEdit = (data) => {
-  };
+  const handleShowEdit = (data) => {};
   const handleCloseEdit = () => setShowEdit(false);
 
-  const handleShowDelete = (data) => {
-  };
+  const handleShowDelete = (data) => {};
   const handleCloseDelete = () => setShowDelete(false);
 
-
   const _create = async (values) => {
+    setIsLoading(true); // Show loading when saving
+    const createdBy = profile.data?._id || ""; // Use createdBy instead of userId
+    console.log(createdBy);
 
+    // Check if the bank name already exists
+    const existingBank = banks.find((bank) => bank.bankName === values.bankName);
+    if (existingBank) {
+      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ"); // Show alert message
+      setIsLoading(false); // Hide loading
+      return; // Stop execution if the bank already exists
+    }
+
+    try {
+      const response = await Axios.post(`${END_POINT_SEVER}/v3/bank/create`, {
+        bankName: values.bankName,
+        createdBy, // Send the user who created the bank
+      });
+
+      if (response) {
+        fetchAllBanks(); // Refresh data after successful creation
+        handleCloseAdd(); // Close modal after saving
+        setAlertMessage(""); // Clear alert message
+      }
+    } catch (error) {
+      console.error("Error creating new bank:", error);
+    } finally {
+      setIsLoading(false); // Hide loading when finished
+    }
   };
 
-  const _update = async (values) => {
-    
-  };
-
-  const _confirmeDelete = async () => {
-    
-  };
+  const _update = async (values) => {};
+  const _confirmeDelete = async () => {};
 
   return (
     <>
@@ -86,11 +95,7 @@ export default function BankList() {
           <Breadcrumb.Item active>ຈັດການທະນາຄານ</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
-          <Tab
-            eventKey="currency-list"
-            //title={t("all_curency")}
-            style={{ paddingTop: 20 }}
-          >
+          <Tab eventKey="currency-list" style={{ paddingTop: 20 }}>
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
                 style={{
@@ -107,43 +112,47 @@ export default function BankList() {
                 <span>
                   <BsCurrencyExchange /> {"ທະນາຄານຫລັກ"}
                 </span>
-                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {'ເພີມທະນນຄານ'}
+                <Button variant="dark" onClick={handleShowAdd}>
+                  <MdAssignmentAdd /> {"ເພີມທະນາຄານ"}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%" }}>
-                  <tr>
-                    <th>#</th>
-                    <th style={{ textWrap: "nowrap" }}>ຊື່ບັນຊີ</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
-                  </tr>
-                  {Array.isArray(banks) &&
-                    banks.map((data, index) => (
-                      <tr key={index}>
-                        <td className="text-left">{index + 1}</td>
-                        <td className="text-left">{data.bankName}</td>
-                        <td className="text-left">
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            style={{ color: COLOR_APP }}
-                            onClick={() => handleShowEdit(data)}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{ marginLeft: 20, color: "red" }}
-                            onClick={() => handleShowDelete(data)}
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th style={{ textWrap: "nowrap" }}>ຊື່ບັນຊີ</th>
+                      <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(banks) &&
+                      banks.map((data, index) => (
+                        <tr key={index}>
+                          <td className="text-left">{index + 1}</td>
+                          <td className="text-left">{data.bankName}</td>
+                          <td className="text-left">
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              style={{ color: COLOR_APP }}
+                              onClick={() => handleShowEdit(data)}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              style={{ marginLeft: 20, color: "red" }}
+                              onClick={() => handleShowDelete(data)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
                 </table>
               </Card.Body>
             </Card>
           </Tab>
         </Tabs>
 
-        {/* create */}
+        {/* Create Modal */}
         <Modal
           show={showAdd}
           onHide={handleCloseAdd}
@@ -156,14 +165,13 @@ export default function BankList() {
           <Formik
             enableReinitialize
             initialValues={{
-              currencyName: "",
-              currencyCode: "",
-              buy: "",
-              sell: "",
-              storeId: getTokken?.DATA?.storeId ?? "",
+              bankName: "",
             }}
             validate={(values) => {
               const errors = {};
+              if (!values.bankName) {
+                errors.bankName = "ກະລຸນາໃສ່ຊື່ທະນາຄານ";
+              }
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
@@ -171,33 +179,30 @@ export default function BankList() {
             }}
           >
             {({
-              setFieldValue,
               handleChange,
               handleSubmit,
               isSubmitting,
-              /* and other goodies */
+              errors,
+              touched,
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
+                  {alertMessage && (
+                    <div style={{ color: "red", marginBottom: "10px" }}>{alertMessage}</div>
+                  )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
                       {"ຊື່ທະນາຄານ"} <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
-                      as="select"
-                      name="currencyName"
-                      onChange={(e) => {
-                        handleChange(e);
-                        console.log(e.target.value);
-                        setFieldValue("currencyCode", e.target.value);
-                      }}
-                    >
-                      <option value="">--{t("select_crc")}--</option>
-                      <option value="LAK">{t("kip_lak")}</option>
-                      <option value="THB">{t("b_th")}</option>
-                      <option value="USD">{t("dolar_usd")}</option>
-                      <option value="CNY">{t("y_cn")}</option>
-                    </Form.Control>
+                      type="text"
+                      name="bankName"
+                      onChange={handleChange}
+                      placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
+                    />
+                    {errors.bankName && touched.bankName && (
+                      <div style={{ color: "red" }}>{errors.bankName}</div>
+                    )}
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -211,8 +216,8 @@ export default function BankList() {
                     {t("cancel")}
                   </Button>
                   <Button
+                    type="submit"
                     style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                    onClick={() => handleSubmit()}
                   >
                     {t("save")}
                   </Button>
@@ -221,12 +226,6 @@ export default function BankList() {
             )}
           </Formik>
         </Modal>
-
-        {/* update */}
-
-
-        {/* delete */}
-
       </Box>
     </>
   );
