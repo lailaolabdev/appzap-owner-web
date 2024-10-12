@@ -56,9 +56,11 @@ export default function BankList() {
     setIsLoading(true);
     const createdBy = profile.data?._id || "";
 
-    const existingBank = banks.find((bank) => bank.bankName === values.bankName);
+    const existingBank = banks.find(
+      (bank) => bank.bankName === values.bankName
+    );
     if (existingBank) {
-      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ");
+      setAlertMessage("ຊື່ທະນາຄານນີ້ມີແລ້ວ");
       setIsLoading(false);
       return;
     }
@@ -82,9 +84,11 @@ export default function BankList() {
     setIsLoading(true);
 
     // ตรวจสอบว่ามีชื่อธนาคารซ้ำในฐานข้อมูลหรือไม่
-    const existingBank = banks.find((bank) => bank.bankName === values.bankName && bank._id !== editBank._id);
+    const existingBank = banks.find(
+      (bank) => bank.bankName === values.bankName && bank._id !== editBank._id
+    );
     if (existingBank) {
-      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ");
+      setAlertMessage("ຊື່ທະນາຄານນີ້ມີແລ້ວ");
       setIsLoading(false);
       return;
     }
@@ -168,12 +172,12 @@ export default function BankList() {
                           <td className="text-left">
                             <FontAwesomeIcon
                               icon={faEdit}
-                              style={{ color: COLOR_APP }}
+                              style={{ color: COLOR_APP,cursor:'pointer' }}
                               onClick={() => handleShowEdit(data)}
                             />
                             <FontAwesomeIcon
                               icon={faTrashAlt}
-                              style={{ marginLeft: 20, color: "red" }}
+                              style={{ marginLeft: 20, color: "red",cursor:'pointer' }}
                               onClick={() => handleShowDelete(data)}
                             />
                           </td>
@@ -187,7 +191,12 @@ export default function BankList() {
         </Tabs>
 
         {/* Create Modal */}
-        <Modal show={showAdd} onHide={handleCloseAdd} backdrop="static" keyboard={false}>
+        <Modal
+          show={showAdd}
+          onHide={handleCloseAdd}
+          backdrop="static"
+          keyboard={false}
+        >
           <Modal.Header closeButton>
             <Modal.Title>{"ເພີມທະນາຄານ"}</Modal.Title>
           </Modal.Header>
@@ -208,11 +217,19 @@ export default function BankList() {
               setSubmitting(false); // reset submitting status
             }}
           >
-            {({ handleChange, handleSubmit, isSubmitting, errors, touched }) => (
+            {({
+              handleChange,
+              handleSubmit,
+              isSubmitting,
+              errors,
+              touched,
+            }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   {alertMessage && (
-                    <div style={{ color: "red", marginBottom: "10px" }}>{alertMessage}</div>
+                    <div style={{ color: "red", marginBottom: "10px" }}>
+                      {alertMessage}
+                    </div>
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
@@ -234,7 +251,11 @@ export default function BankList() {
                   <Button variant="secondary" onClick={handleCloseAdd}>
                     {t("cancel")}
                   </Button>
-                  <Button variant="primary" type="submit" disabled={isSubmitting}>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
                   </Button>
                 </Modal.Footer>
@@ -244,9 +265,14 @@ export default function BankList() {
         </Modal>
 
         {/* Edit Modal */}
-        <Modal show={showEdit} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
+        <Modal
+          show={showEdit}
+          onHide={handleCloseEdit}
+          backdrop="static"
+          keyboard={false}
+        >
           <Modal.Header closeButton>
-            <Modal.Title>{"ແກ້ໄຂທະນາຄານ"}</Modal.Title>
+            <Modal.Title>{"ແກ້ໄຂຊື່ທະນາຄານ"}</Modal.Title>
           </Modal.Header>
           <Formik
             enableReinitialize
@@ -265,21 +291,30 @@ export default function BankList() {
               setSubmitting(false); // reset submitting status
             }}
           >
-            {({ handleChange, handleSubmit, isSubmitting, errors, touched }) => (
+            {({
+              handleChange,
+              handleSubmit,
+              values,
+              isSubmitting,
+              errors,
+              touched,
+            }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   {alertMessage && (
-                    <div style={{ color: "red", marginBottom: "10px" }}>{alertMessage}</div>
+                    <div style={{ color: "red", marginBottom: "10px" }}>
+                      {alertMessage}
+                    </div>
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {"ຊື່ທະນາຄານ"} <span style={{ color: "red" }}>*</span>
+                      {"ຊື່ທະນາຄານທີຕ້ອງການຈະແກ້ໄຂ"} <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       type="text"
                       name="bankName"
-                      onChange={handleChange}
-                      value={editBank?.bankName}
+                      value={values.bankName} // ให้ใช้ค่าจาก Formik (values.bankName)
+                      onChange={handleChange} // อัปเดตค่าใน Formik เมื่อมีการพิมพ์
                       placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
                       isInvalid={!!errors.bankName && touched.bankName}
                     />
@@ -292,7 +327,11 @@ export default function BankList() {
                   <Button variant="secondary" onClick={handleCloseEdit}>
                     {t("cancel")}
                   </Button>
-                  <Button variant="primary" type="submit" disabled={isSubmitting}>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
                   </Button>
                 </Modal.Footer>
@@ -302,7 +341,12 @@ export default function BankList() {
         </Modal>
 
         {/* Delete Modal */}
-        <Modal show={showDelete} onHide={handleCloseDelete} backdrop="static" keyboard={false}>
+        <Modal
+          show={showDelete}
+          onHide={handleCloseDelete}
+          backdrop="static"
+          keyboard={false}
+        >
           <Modal.Header closeButton>
             <Modal.Title>{"ລຶບທະນາຄານ"}</Modal.Title>
           </Modal.Header>
