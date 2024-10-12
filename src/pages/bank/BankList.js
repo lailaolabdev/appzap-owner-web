@@ -21,23 +21,28 @@ export default function BankList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  // New state variables
   const { profile } = useStore();
   const [banks, setBanks] = useState([]);
   const [editBank, setEditBank] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [alertMessage, setAlertMessage] = useState(""); // Message for alerts
-  const [bankToDelete, setBankToDelete] = useState(null); // State for bank to delete
+  const [alertMessage, setAlertMessage] = useState("");
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
+  const handleShowEdit = (data) => {
+    setEditBank(data);
+    setShowEdit(true);
+  };
+  const handleCloseEdit = () => setShowEdit(false);
+  const handleShowDelete = (data) => {
+    setEditBank(data);
+    setShowDelete(true);
+  };
+  const handleCloseDelete = () => setShowDelete(false);
 
-  // Fetch all banks
   const fetchAllBanks = async () => {
     try {
       const response = await Axios.get(`${END_POINT_SEVER}/v3/banks`);
       setBanks(response.data.data);
-      console.log("banks data", response.data.data);
     } catch (error) {
       console.error("Error fetching all banks:", error);
     }
@@ -47,63 +52,71 @@ export default function BankList() {
     fetchAllBanks();
   }, []);
 
-  const handleShowEdit = (data) => {};
-  const handleCloseEdit = () => setShowEdit(false);
-
-  const handleShowDelete = (data) => {
-    setBankToDelete(data); // Store the bank to be deleted
-    setShowDelete(true); // Show delete modal
-  };
-  const handleCloseDelete = () => {
-    setShowDelete(false);
-    setBankToDelete(null); // Clear bank to delete
-  };
-
   const _create = async (values) => {
-    setIsLoading(true); // Show loading when saving
-    const createdBy = profile.data?._id || ""; // Use createdBy instead of userId
-    console.log(createdBy);
+    setIsLoading(true);
+    const createdBy = profile.data?._id || "";
 
-    // Check if the bank name already exists
     const existingBank = banks.find((bank) => bank.bankName === values.bankName);
     if (existingBank) {
-      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ"); // Show alert message
-      setIsLoading(false); // Hide loading
-      return; // Stop execution if the bank already exists
+      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ");
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const response = await Axios.post(`${END_POINT_SEVER}/v3/bank/create`, {
+      await Axios.post(`${END_POINT_SEVER}/v3/bank/create`, {
         bankName: values.bankName,
-        createdBy, // Send the user who created the bank
+        createdBy,
       });
-
-      if (response) {
-        fetchAllBanks(); // Refresh data after successful creation
-        handleCloseAdd(); // Close modal after saving
-        setAlertMessage(""); // Clear alert message
-      }
+      fetchAllBanks();
+      handleCloseAdd();
+      setAlertMessage("");
     } catch (error) {
       console.error("Error creating new bank:", error);
     } finally {
-      setIsLoading(false); // Hide loading when finished
+      setIsLoading(false);
+    }
+  };
+
+  const _edit = async (values) => {
+    setIsLoading(true);
+
+    // ตรวจสอบว่ามีชื่อธนาคารซ้ำในฐานข้อมูลหรือไม่
+    const existingBank = banks.find((bank) => bank.bankName === values.bankName && bank._id !== editBank._id);
+    if (existingBank) {
+      setAlertMessage("ธนาคารนี้มีอยู่แล้วในระบบ");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await Axios.put(`${END_POINT_SEVER}/v3/bank/update/${editBank._id}`, {
+        bankName: values.bankName,
+        createdBy: profile.data?._id || "",
+      });
+      fetchAllBanks();
+      handleCloseEdit();
+      setAlertMessage("");
+    } catch (error) {
+      console.error("Error updating bank:", error);
+      setAlertMessage("Error updating bank");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const _confirmDelete = async () => {
-    if (!bankToDelete) return; // Check if there's a bank to delete
-    setIsLoading(true); // Show loading
-
+    setIsLoading(true);
     try {
-      await Axios.delete(`${END_POINT_SEVER}/v3/bank/delete/${bankToDelete._id}`);
-      fetchAllBanks(); // Refresh banks after deletion
-      setAlertMessage("ລົບທະນາຄານແລ້ວ"); // Show success message
+      await Axios.delete(`${END_POINT_SEVER}/v3/bank/delete/${editBank._id}`);
+      fetchAllBanks();
+      handleCloseDelete();
+      setAlertMessage("");
     } catch (error) {
       console.error("Error deleting bank:", error);
-      setAlertMessage("ມີບັດເສດໃນການລົບ"); // Show error message
+      setAlertMessage("Error deleting bank");
     } finally {
-      setIsLoading(false); // Hide loading
-      handleCloseDelete(); // Close delete modal
+      setIsLoading(false);
     }
   };
 
@@ -174,12 +187,7 @@ export default function BankList() {
         </Tabs>
 
         {/* Create Modal */}
-        <Modal
-          show={showAdd}
-          onHide={handleCloseAdd}
-          backdrop="static"
-          keyboard={false}
-        >
+        <Modal show={showAdd} onHide={handleCloseAdd} backdrop="static" keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>{"ເພີມທະນາຄານ"}</Modal.Title>
           </Modal.Header>
@@ -197,15 +205,10 @@ export default function BankList() {
             }}
             onSubmit={(values, { setSubmitting }) => {
               _create(values);
+              setSubmitting(false); // reset submitting status
             }}
           >
-            {({
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              errors,
-              touched,
-            }) => (
+            {({ handleChange, handleSubmit, isSubmitting, errors, touched }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   {alertMessage && (
@@ -220,24 +223,77 @@ export default function BankList() {
                       name="bankName"
                       onChange={handleChange}
                       placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
+                      isInvalid={!!errors.bankName && touched.bankName}
                     />
-                    {errors.bankName && touched.bankName && (
-                      <div style={{ color: "red" }}>{errors.bankName}</div>
-                    )}
+                    <Form.Control.Feedback type="invalid">
+                      {errors.bankName}
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button
-                    style={{
-                      backgroundColor: COLOR_APP_CANCEL,
-                      color: "#ffff",
-                    }}
-                    onClick={handleCloseAdd}
-                  >
+                  <Button variant="secondary" onClick={handleCloseAdd}>
                     {t("cancel")}
                   </Button>
-                  <Button variant="primary" type="submit">
-                    {isSubmitting ? "ກຳລັงບັນທຶກ..." : "ບັນທຶກ"}
+                  <Button variant="primary" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
+                  </Button>
+                </Modal.Footer>
+              </form>
+            )}
+          </Formik>
+        </Modal>
+
+        {/* Edit Modal */}
+        <Modal show={showEdit} onHide={handleCloseEdit} backdrop="static" keyboard={false}>
+          <Modal.Header closeButton>
+            <Modal.Title>{"ແກ້ໄຂທະນາຄານ"}</Modal.Title>
+          </Modal.Header>
+          <Formik
+            enableReinitialize
+            initialValues={{
+              bankName: editBank?.bankName || "",
+            }}
+            validate={(values) => {
+              const errors = {};
+              if (!values.bankName) {
+                errors.bankName = "ກະລຸນາໃສ່ຊື່ທະນາຄານ";
+              }
+              return errors;
+            }}
+            onSubmit={(values, { setSubmitting }) => {
+              _edit(values);
+              setSubmitting(false); // reset submitting status
+            }}
+          >
+            {({ handleChange, handleSubmit, isSubmitting, errors, touched }) => (
+              <form onSubmit={handleSubmit}>
+                <Modal.Body>
+                  {alertMessage && (
+                    <div style={{ color: "red", marginBottom: "10px" }}>{alertMessage}</div>
+                  )}
+                  <Form.Group>
+                    <Form.Label style={{ fontWeight: "bold" }}>
+                      {"ຊື່ທະນາຄານ"} <span style={{ color: "red" }}>*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="bankName"
+                      onChange={handleChange}
+                      value={editBank?.bankName}
+                      placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
+                      isInvalid={!!errors.bankName && touched.bankName}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.bankName}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseEdit}>
+                    {t("cancel")}
+                  </Button>
+                  <Button variant="primary" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -246,19 +302,19 @@ export default function BankList() {
         </Modal>
 
         {/* Delete Modal */}
-        <Modal show={showDelete} onHide={handleCloseDelete}>
+        <Modal show={showDelete} onHide={handleCloseDelete} backdrop="static" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>{"ຢືນຢັນການລົບ"}</Modal.Title>
+            <Modal.Title>{"ລຶບທະນາຄານ"}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {"ທ່ານຕ້ອງການລົບທະນາຄານ: " + (bankToDelete ? bankToDelete.bankName : "")}
+            <p>ທ່ານຢືນຢັນບໍ່ວ່າຈະລຶບ {editBank?.bankName} ອອກຈາກລະບົບ?</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
               {t("cancel")}
             </Button>
             <Button variant="danger" onClick={_confirmDelete}>
-              {"ລົບ"}
+              {"ລຶບ"}
             </Button>
           </Modal.Footer>
         </Modal>
