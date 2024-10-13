@@ -105,7 +105,7 @@ export default function TableList() {
 
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
-  const [createdAt , setCreatedAt] = useState('')
+  const [createdAt , setCreatedAt] = useState()
 
 
   // provider
