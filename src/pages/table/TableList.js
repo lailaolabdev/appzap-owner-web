@@ -568,47 +568,56 @@ export default function TableList() {
   
   const saveServiceChargeDetails = async () => {
     if (storeDetail?.serviceChargePer > 0) {
-      const userId = profile.data?._id || ""; 
-      const billId = selectedTable?.billId;
-      const firstName = profile.data?.firstname
-      const lastName = profile.data?.lastname
-      
-      
-      console.log("User_Id: ",userId)
-      console.log("Bill_Id: ",billId)
-      console.log("taxPercent: ",taxPercent)
-      console.log("total: ",total)
-      console.log("serviceChargePercent: ",serviceChargePercent)
-      console.log("serviceChangeAmount: ",serviceChangeAmount)
-      console.log("totalMustPay: ",totalMustPay)
-      console.log("fname: ",firstName)
-      console.log("lname: ",lastName)
-      console.log("CreateAt: ",createdAt)
-
       try {
-        const response = await axios.post(`${END_POINT_SEVER}/saveservice`, {
-          userId,
-          billId,
-          taxPercent, // ส่งข้อมูล taxPercent
-          total, // ส่งข้อมูล total
-          serviceChargePercent, // ส่งข้อมูล serviceChargePercent
-          serviceChangeAmount ,
-          totalMustPay,
-          firstName,
-          lastName,
-          createdAt
-        }, {
-          headers: {
-            "Content-Type": "application/json", // ใส่ header Content-Type เป็น json
-          },
-        });
+        if (!profile.data || !selectedTable) {
+          console.error("Missing profile data or selected table");
+          return;
+        }
   
-        console.log("Service charge saved..:", response.data);
+        const userId = profile.data._id || "";
+        const billId = selectedTable.billId;
+        const firstName = profile.data.firstname;
+        const lastName = profile.data.lastname;
+        const createdAt = new Date().toISOString();
+  
+        console.log("User_Id:", userId);
+        console.log("Bill_Id:", billId);
+        console.log("taxPercent:", taxPercent);
+        console.log("total:", total);
+        console.log("serviceChargePercent:", serviceChargePercent);
+        console.log("serviceChangeAmount:", serviceChangeAmount);
+        console.log("totalMustPay:", totalMustPay);
+        console.log("fname:", firstName);
+        console.log("lname:", lastName);
+        console.log("CreateAt:", createdAt);
+  
+        const response = await axios.post(
+          `${END_POINT_SEVER}/saveservice`,
+          {
+            userId,
+            billId,
+            taxPercent,
+            total,
+            serviceChargePercent,
+            serviceChangeAmount,
+            totalMustPay,
+            firstName,
+            lastName,
+            createdAt,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        console.log("Service charge saved:", response.data);
       } catch (error) {
-        console.error("Error saving service charge:", error);
+        console.error("Error saving service charge:", error.response?.data || error.message);
       }
     }
-};
+  };
 
   
  
