@@ -91,8 +91,7 @@ export default function CheckOutPopup({
     console.log("tab: ", tab);
     console.log("bank: ", banks);
     console.log("selectedBank: ", selectedBank);
-    fetchAllBanks()
-    
+    fetchAllBanks()   
   }, [tab,selectedBank]);
 
 
@@ -755,12 +754,14 @@ export default function CheckOutPopup({
 
               {tab == "transfer" && (
                 <select value={selectedBank} onChange={handleChange}>
+                <option value="" disabled >ເລື່ອກທະນາຄານ</option>
                 {Array.isArray(banks) && banks.map((bank) => (
                   <option key={bank._id} value={bank.bankName}>
                     {bank.bankName}
                   </option>
                 ))}
               </select>
+              
               )}
             </div>
             <NumberKeyboard
