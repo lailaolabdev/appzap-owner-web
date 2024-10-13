@@ -105,7 +105,7 @@ export default function TableList() {
 
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
-  const [createdAt , setCreatedAt] = useState()
+  const [createdAt , setCreatedAt] = useState('')
 
 
   // provider
@@ -578,8 +578,7 @@ export default function TableList() {
         const billId = selectedTable.billId;
         const firstName = profile.data.firstname;
         const lastName = profile.data.lastname;
-        const createdAt = new Date().toISOString();
-  
+
         console.log("User_Id:", userId);
         console.log("Bill_Id:", billId);
         console.log("taxPercent:", taxPercent);
