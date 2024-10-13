@@ -574,7 +574,6 @@ export default function TableList() {
       const lastName = profile.data?.lastname
       
       
-      
       console.log("User_Id: ",userId)
       console.log("Bill_Id: ",billId)
       console.log("taxPercent: ",taxPercent)
