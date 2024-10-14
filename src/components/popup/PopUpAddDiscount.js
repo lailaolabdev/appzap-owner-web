@@ -84,7 +84,7 @@ export default function PopUpAddDiscount({
     try {
       const res = await axios({
         method: "GET",
-        url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
+        url: END_POINT_SEVER + `/v3/category-type?storeId=${id}`,
       });
       setCategorysType(res?.data?.data);
     } catch (error) {

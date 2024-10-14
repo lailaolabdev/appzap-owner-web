@@ -31,7 +31,6 @@ export default function Categorylist() {
   // modal delete
   const [show3, setShow3] = useState(false);
   const handleClose3 = () => setShow3(false);
-  const [dateDelete, setdateDelete] = useState("");
   const handleShow3 = (id, name) => {
     setdateDelete({ name, id });
     setShow3(true);
@@ -39,6 +38,7 @@ export default function Categorylist() {
   // update
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
+  const [dateDelete, setdateDelete] = useState("");
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
@@ -73,7 +73,7 @@ export default function Categorylist() {
     }
   };
   const _createCategory = async (values) => {
-    console.log("DATA VALUES: ", values.categoryTypeId);
+    // console.log("DATA VALUES: ", values.categoryTypeId);
     const header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",

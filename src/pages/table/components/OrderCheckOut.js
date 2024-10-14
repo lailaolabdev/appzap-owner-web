@@ -39,6 +39,7 @@ const OrderCheckOut = ({
     storeDetail,
     setStoreDetail,
     orderPayBefore,
+    setOrderPayBefore,
     profile,
     audioSetting,
     setAudioSetting,
