@@ -15,8 +15,10 @@ import {
   faImages,
   faDatabase,
   faTh,
+  faBuilding,
   faBuildingColumns
 } from "@fortawesome/free-solid-svg-icons";
+
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import styled from "styled-components";
@@ -136,10 +138,10 @@ export default function SettingList() {
     },
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
-      title: "Bank",
-      subTitle: t('currency_manage_desc'),
+      title: t("bank"),
+      subTitle: t('bank_manage_desc'),
       icon: (
-        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBuilding } />
       ),
       path: `/settingStore/bank/${params?.id}`,
     },

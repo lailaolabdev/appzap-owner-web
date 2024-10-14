@@ -130,7 +130,7 @@ export default function BankList() {
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>ຈັດການທະນາຄານ</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("bank")}</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
           <Tab eventKey="currency-list" style={{ paddingTop: 20 }}>
@@ -148,10 +148,10 @@ export default function BankList() {
                 }}
               >
                 <span>
-                  <BsCurrencyExchange /> {"ທະນາຄານຫລັກ"}
+                  <BsCurrencyExchange /> {t("main_Bank")}
                 </span>
                 <Button variant="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {"ເພີມທະນາຄານ"}
+                  <MdAssignmentAdd /> {t("add_Bank")}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
@@ -159,7 +159,7 @@ export default function BankList() {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th style={{ textWrap: "nowrap" }}>ຊື່ບັນຊີ</th>
+                      <th style={{ textWrap: "nowrap" }}>{t("bank_Name")}</th>
                       <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
                     </tr>
                   </thead>
@@ -198,7 +198,7 @@ export default function BankList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{"ເພີມທະນາຄານ"}</Modal.Title>
+            <Modal.Title>{t("add_Bank")}</Modal.Title>
           </Modal.Header>
           <Formik
             enableReinitialize
@@ -233,13 +233,13 @@ export default function BankList() {
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {"ຊື່ທະນາຄານ"} <span style={{ color: "red" }}>*</span>
+                    {t("bank_Name")} <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       type="text"
                       name="bankName"
                       onChange={handleChange}
-                      placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
+                      placeholder={t("please_enter_the_bank_name")}
                       isInvalid={!!errors.bankName && touched.bankName}
                     />
                     <Form.Control.Feedback type="invalid">

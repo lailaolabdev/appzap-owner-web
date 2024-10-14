@@ -242,19 +242,19 @@ export default function HistoryUse() {
 									{t("no")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{ filtterModele  === "historyServiceChange" ?"ຊື່ແລະນາມສະກຸນ" :t("manager_name")}
+									{ filtterModele  === "historyServiceChange" ?t("surnameAndLastName") :t("manager_name")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{filtterModele == "historyServiceChange" ? "ຍອດບິນ" :t("cause") }
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-								{ filtterModele  === "historyServiceChange" ?`Service change (${serviceChargePercent}%)` :t("detial")}
+								{ filtterModele  === "historyServiceChange" ?`${t("service_charge")} (${serviceChargePercent}%)` :t("detial")}
 								</th>
 								{filtterModele === 'historyServiceChange' && (
 									<th style={{ textWrap: "nowrap" }} scope="col">vat ({taxPercent}%) </th>
 								)}
 								{filtterModele === 'historyServiceChange' && (
-									<th style={{ textWrap: "nowrap" }} scope="col">ຍອດເງິນທັງຫມົດ  </th>
+									<th style={{ textWrap: "nowrap" }} scope="col">{t("total_Amount_of_Money")}  </th>
 								)}
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("date_time")}
