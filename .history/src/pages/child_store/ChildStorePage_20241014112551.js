@@ -541,7 +541,7 @@ export default function ChildStores() {
                               {t("menu_type")}
                             </th>
                             <th style={{ textAlign: "center" }}>
-                              {t("order_success")}
+                              {t("order_cussess")}
                             </th>
                             <th style={{ textAlign: "center" }}>
                               {t("cancel")}

@@ -387,7 +387,7 @@ export default function DashboardPage() {
                 </tr>
                 {[
                   {
-                    method: `${t("cahs_bill")}`,
+                    method: `${t("bill_crash")}`,
                     qty: moneyReport?.cash?.count,
                     amount: moneyReport?.cash?.totalBill,
                   },
@@ -477,18 +477,17 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
-                {userReport?.length > 0 &&
-                  userReport?.map((e) => (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))}
+                {userReport?.length> 0 && userReport?.map((e) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
+                    <td style={{ textAlign: "center" }}>{e?.served}</td>
+                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.totalSaleAmount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </tr>
+                ))}
               </table>
             </Card.Body>
           </Card>

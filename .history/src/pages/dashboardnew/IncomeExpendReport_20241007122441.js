@@ -404,7 +404,7 @@ export default function IncomeExpendExport() {
                 style={{
                   fontWeight: "bold",
                   color: "white",
-                  fontSize: 25,
+                  fontSize: 30,
                   textAlign: "right",
                 }}
               >
@@ -415,7 +415,7 @@ export default function IncomeExpendExport() {
                 style={{
                   fontSize: 24,
                   color: "white",
-                  fontSize: 25,
+                  fontSize: 30,
                   textAlign: "right",
                 }}
               >
@@ -454,7 +454,7 @@ export default function IncomeExpendExport() {
                 style={{
                   fontWeight: "bold",
                   color: "white",
-                  fontSize: 25,
+                  fontSize: 30,
                   textAlign: "right",
                 }}
               >
@@ -497,7 +497,7 @@ export default function IncomeExpendExport() {
                 style={{
                   fontWeight: "bold",
                   color: "white",
-                  fontSize: 25,
+                  fontSize: 30,
                   textAlign: "right",
                 }}
               >
