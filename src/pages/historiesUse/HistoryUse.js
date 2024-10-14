@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Nav } from "react-bootstrap";
 import moment from "moment";
 import { getHeaders } from "../../services/auth";
-import { END_POINT_SEVER } from "../../constants/api";
+import { END_POINT_SEVER,getLocalData, } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -29,6 +29,22 @@ export default function HistoryUse() {
 	const [filtterModele, setFiltterModele] = useState("checkBill");
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [taxPercent, setTaxPercent] = useState(0);
+	const [serviceChargePercent, setServiceChargePercent] = useState(0);
+
+	const getDataTax = async () => {
+		const { DATA } = await getLocalData();
+		const _res = await axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
+		setTaxPercent(_res?.data?.taxPercent);
+	  };
+	
+	  const getDataServiceCharge = async () => {
+		const { DATA } = await getLocalData();
+		const _res = await axios.get(
+		  `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
+		);
+		setServiceChargePercent(_res?.data?.serviceCharge);
+	  };
 
 	const rowsPerPage = 100;
 	const [page, setPage] = useState(0);
@@ -39,13 +55,19 @@ export default function HistoryUse() {
 
 	useEffect(() => {
 		_getdataHistories();
+		getDataTax()
+		getDataServiceCharge()
 	}, []);
 	useEffect(() => {
 		_getdataHistories();
+		getDataTax()
+		getDataServiceCharge()
 	}, [page]);
 
 	useEffect(() => {
 		_getdataHistories();
+		getDataTax()
+		getDataServiceCharge()
 	}, [filtterModele]);
 	const _getdataHistories = async () => {
 		try {
@@ -223,13 +245,16 @@ export default function HistoryUse() {
 									{ filtterModele  === "historyServiceChange" ?"ຊື່ແລະນາມສະກຸນ" :t("manager_name")}
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-									{filtterModele == "historyServiceChange" ? "ຍອດລວມ" :t("cause") }
+									{filtterModele == "historyServiceChange" ? "ຍອດບິນ" :t("cause") }
 								</th>
 								<th style={{ textWrap: "nowrap" }} scope="col">
-								{ filtterModele  === "historyServiceChange" ?`Service change ${""}` :t("detial")}
+								{ filtterModele  === "historyServiceChange" ?`Service change (${serviceChargePercent}%)` :t("detial")}
 								</th>
 								{filtterModele === 'historyServiceChange' && (
-									<th style={{ textWrap: "nowrap" }} scope="col">vat  </th>
+									<th style={{ textWrap: "nowrap" }} scope="col">vat ({taxPercent}%) </th>
+								)}
+								{filtterModele === 'historyServiceChange' && (
+									<th style={{ textWrap: "nowrap" }} scope="col">ຍອດເງິນທັງຫມົດ  </th>
 								)}
 								<th style={{ textWrap: "nowrap" }} scope="col">
 									{t("date_time")}
@@ -269,6 +294,11 @@ export default function HistoryUse() {
 										{filtterModele === 'historyServiceChange'?
 										    ` ${formatNumber(item.serviceChangeAmount )} ກີບ `:`${item?.eventDetail}`}
 										</td>
+										{filtterModele === 'historyServiceChange' && (
+                                            <td style={{ textWrap: "nowrap" }}>
+                                               { formatNumber( (item.taxPercent *item.total ) / 100) } ກີບ 
+                                            </td>
+                                        )}
 										{filtterModele === 'historyServiceChange' && (
                                             <td style={{ textWrap: "nowrap" }}>
                                                { formatNumber( item.totalMustPay) } ກີບ 

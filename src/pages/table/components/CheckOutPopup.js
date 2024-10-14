@@ -752,7 +752,7 @@ export default function CheckOutPopup({
                 ))}
               </Form.Control>
 
-              {tab == "transfer" && (
+              {(tab == "transfer"|| tab === "cash_transfer")  && (
                 <select value={selectedBank} onChange={handleChange}>
                 <option value="" disabled >ເລື່ອກທະນາຄານ</option>
                 {Array.isArray(banks) && banks.map((bank) => (
