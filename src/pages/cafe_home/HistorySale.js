@@ -217,11 +217,19 @@ function HistorySale() {
                       <Table striped hover size="sm" style={{ fontSize: 15 }}>
                         <thead>
                           <tr>
-                            <th style={{ textWrap: "nowrap" }}>ລຳດັບ</th>
-                            <th style={{ textWrap: "nowrap" }}>ລະຫັດສິນຄ້າ</th>
-                            <th style={{ textWrap: "nowrap" }}>ຈຳນວນລາຍການ</th>
-                            <th style={{ textWrap: "nowrap" }}>ລາຄາລວມ</th>
-                            <th style={{ textWrap: "nowrap" }}>ວັນທີ</th>
+                            <th style={{ textWrap: "nowrap" }}>
+                              {t("sequence")}
+                            </th>
+                            <th style={{ textWrap: "nowrap" }}>
+                              {t("product_code")}
+                            </th>
+                            <th style={{ textWrap: "nowrap" }}>
+                              {t("number_items")}
+                            </th>
+                            <th style={{ textWrap: "nowrap" }}>
+                              {t("totalPrice")}
+                            </th>
+                            <th style={{ textWrap: "nowrap" }}>{t("date")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -266,10 +274,14 @@ function HistorySale() {
                     >
                       <ReactPaginate
                         previousLabel={
-                          <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                          <span className="glyphicon glyphicon-chevron-left">
+                            {t("previous")}
+                          </span>
                         }
                         nextLabel={
-                          <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                          <span className="glyphicon glyphicon-chevron-right">
+                            {t("next")}
+                          </span>
                         }
                         breakLabel={
                           <Pagination.Item disabled>...</Pagination.Item>

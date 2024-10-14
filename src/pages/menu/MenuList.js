@@ -805,7 +805,7 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ (
+                            +{t("addition_options")} (
                             {menuOptionsCount[data._id] ||
                               data?.menuOptions?.length ||
                               0}
@@ -1331,7 +1331,7 @@ export default function MenuList() {
           size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t("update-menu")}</Modal.Title>
+            <Modal.Title>{t("updatemenu")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{

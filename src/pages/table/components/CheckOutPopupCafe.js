@@ -80,7 +80,9 @@ export default function CheckOutPopupCafe({
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER_TABLE_MENU + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU +
+        "/v4/member/search-one?phone=" +
+        textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -477,7 +479,7 @@ export default function CheckOutPopupCafe({
                 fontSize: 22,
               }}
             >
-              <span>ລາຄາລວມ: </span>
+              <span>{t("totalPrice")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill
                   ? moneyCurrency(totalBill ? totalBill : 0)
@@ -533,7 +535,7 @@ export default function CheckOutPopupCafe({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>ເງິນສົດ</InputGroup.Text>
+                <InputGroup.Text>{t("cash")}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash" && tab !== "cash_transfer"}
                   type="text"
@@ -550,7 +552,7 @@ export default function CheckOutPopupCafe({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
-                <InputGroup.Text>ເງິນໂອນ</InputGroup.Text>
+                <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
@@ -567,7 +569,7 @@ export default function CheckOutPopupCafe({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
               <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>ສະມາຊິກ</InputGroup.Text>
+                <InputGroup.Text>{t("member")}</InputGroup.Text>
                 <InputGroup.Text>+856 20</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -586,8 +588,12 @@ export default function CheckOutPopupCafe({
                   <FaSearch />
                 </Button>
                 <div style={{ width: 30 }} />
-                <InputGroup.Text>ຊື່: {memberData?.name}</InputGroup.Text>
-                <InputGroup.Text>ຄະແນນ: {memberData?.point}</InputGroup.Text>
+                <InputGroup.Text>
+                  {t("name")}: {memberData?.name}
+                </InputGroup.Text>
+                <InputGroup.Text>
+                  {t("money_will_got")}: {memberData?.point}
+                </InputGroup.Text>
               </InputGroup>
             </div>
             <div
@@ -595,7 +601,7 @@ export default function CheckOutPopupCafe({
                 marginBottom: 10,
               }}
             >
-              ທອນ:{" "}
+              {t("return")}:{" "}
               {moneyCurrency(
                 (parseInt(cash) || 0) +
                   (parseInt(transfer) || 0) -
@@ -637,7 +643,7 @@ export default function CheckOutPopupCafe({
                   setForcus("CASH");
                 }}
               >
-                ເງິນສົດ
+                {t("cash")}
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
@@ -650,7 +656,7 @@ export default function CheckOutPopupCafe({
                   setForcus("TRANSFER");
                 }}
               >
-                ໂອນ
+                {t("transfer")}
               </Button>
               <Button
                 variant={
@@ -666,7 +672,7 @@ export default function CheckOutPopupCafe({
                   setForcus("TRANSFER_CASH");
                 }}
               >
-                ເງິນສົດ ແລະ ໂອນ
+                {t("cash_transfer")}
               </Button>
               <div style={{ flex: 1 }} />
               <Form.Control

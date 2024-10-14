@@ -1047,7 +1047,7 @@ function Homecafe() {
             }}
           >
             <div>
-              <label>{t("choose_food_type")}</label>
+              <label>{t("choose_type")}</label>
               <select
                 className="form-control"
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -1768,7 +1768,7 @@ function Homecafe() {
           </Form.Group>
           <div className="mt-3">
             <strong>
-              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {t("totalprice_option")}:
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
@@ -1778,8 +1778,8 @@ function Homecafe() {
           <Form.Group className="mt-3">
             <Form.Label>
               {selectedItem?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? t("commend_how_is_food")
+                : t("edit_commend")}
             </Form.Label>
             <Form.Control
               ref={selectedItem?.note === "" ? inputRef : null}
@@ -1787,7 +1787,7 @@ function Homecafe() {
               rows={3}
               value={addComments}
               onChange={(e) => setAddComments(e.target.value)}
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>

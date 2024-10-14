@@ -406,7 +406,7 @@ export default function SettingTable() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("fill_zone")}</Form.Label>
+            <Form.Label>{t("choose_zone")}</Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Control
               as="select"

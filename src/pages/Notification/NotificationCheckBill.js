@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Row,
@@ -7,49 +7,57 @@ import {
   Container,
   Image,
   InputGroup,
-  Nav
+  Nav,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faLock, faUser } from "@fortawesome/free-solid-svg-icons";
 import Table from "react-bootstrap/Table";
-import moment from 'moment';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { END_POINT } from '../../constants'
-import { _statusCheckBill } from "../../helpers/index"
-import Sidenav from '../../layouts/SideNav'
-import empty from '../../image/empty.png'
-import { useNavigate, useParams } from 'react-router-dom';
-import { END_POINT_SEVER_BILL_ORDER } from '../../constants/api';
+import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { END_POINT } from "../../constants";
+import { _statusCheckBill } from "../../helpers/index";
+import Sidenav from "../../layouts/SideNav";
+import empty from "../../image/empty.png";
+import { useNavigate, useParams } from "react-router-dom";
+import { END_POINT_SEVER_BILL_ORDER } from "../../constants/api";
 
 export default function NotificationCheckBill() {
   const navigate = useNavigate();
-  const params =useParams();
-  const [orderCallCheckOut, setorderCallCheckOut] = useState()
+  const params = useParams();
+  const [orderCallCheckOut, setorderCallCheckOut] = useState();
   const newDate = new Date();
 
   useEffect(() => {
-    getData()
-  }, [])
+    getData();
+  }, []);
   const getData = async (tokken) => {
-    await fetch(`${END_POINT_SEVER_BILL_ORDER}/orders/?storeId=${params?.id}&&status=CALLTOCHECKOUT`, {
-      method: "GET",
-      headers: tokken
-    }).then(response => response.json())
-      .then(json => setorderCallCheckOut(json));
-  }
+    await fetch(
+      `${END_POINT_SEVER_BILL_ORDER}/orders/?storeId=${params?.id}&&status=CALLTOCHECKOUT`,
+      {
+        method: "GET",
+        headers: tokken,
+      }
+    )
+      .then((response) => response.json())
+      .then((json) => setorderCallCheckOut(json));
+  };
   const _checkbillTable = (item) => {
-    navigate(`/checkBill/${params?.id}/historiesCheckBill/?code=${item}`)
-  }
+    navigate(`/checkBill/${params?.id}/historiesCheckBill/?code=${item}`);
+  };
   return (
     <div style={{ minHeight: 400 }}>
-      {orderCallCheckOut?.length > 0 ?
+      {orderCallCheckOut?.length > 0 ? (
         <Container fluid>
           <div className="row mt-5">
-            <h5 style={{ marginLeft: 30 }}><strong>ແຈ້ງເຕືອນ checkBill</strong></h5>
-            <Nav.Item className="ml-auto row mr-5" style={{ paddingBottom: "3px" }}>
-              <InputGroup>
-              </InputGroup>
+            <h5 style={{ marginLeft: 30 }}>
+              <strong>ແຈ້ງເຕືອນ checkBill</strong>
+            </h5>
+            <Nav.Item
+              className="ml-auto row mr-5"
+              style={{ paddingBottom: "3px" }}
+            >
+              <InputGroup></InputGroup>
             </Nav.Item>
           </div>
           <div style={{ height: 20 }}></div>
@@ -67,21 +75,40 @@ export default function NotificationCheckBill() {
               <tbody>
                 {orderCallCheckOut?.map((item, index) => {
                   return (
-                    <tr index={item} onClick={() => _checkbillTable(item?.code)}>
+                    <tr
+                      index={item}
+                      onClick={() => _checkbillTable(item?.code)}
+                    >
                       <td>{index + 1}</td>
                       <td>{item?.code}</td>
                       <td>{item?.table_id}</td>
-                      <td style={{ color: item?.status === "CALLTOCHECKOUT" ? "red" : item?.status === "ACTIVE" ? "blue" : item?.status === "CHECKOUT" ? "green" : "" }}>{_statusCheckBill(item?.status)}</td>
-                      <td>{moment(item?.createdAt).format("DD-MM-YYYY HH:mm a")} </td>
+                      <td
+                        style={{
+                          color:
+                            item?.status === "CALLTOCHECKOUT"
+                              ? "red"
+                              : item?.status === "ACTIVE"
+                              ? "blue"
+                              : item?.status === "CHECKOUT"
+                              ? "green"
+                              : "",
+                        }}
+                      >
+                        {_statusCheckBill(item?.status)}
+                      </td>
+                      <td>
+                        {moment(item?.createdAt).format("DD-MM-YYYY HH:mm a")}{" "}
+                      </td>
                     </tr>
-                  )
-                }
-                )}
+                  );
+                })}
               </tbody>
             </Table>
           </Col>
         </Container>
-        : <Image src={empty} alt="" width="100%" />}
+      ) : (
+        <Image src={empty} alt="" width="100%" />
+      )}
     </div>
-  )
+  );
 }

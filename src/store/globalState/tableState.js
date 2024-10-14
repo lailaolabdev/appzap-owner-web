@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
+
 import {
   END_POINT,
   SERVE_STATUS,
@@ -8,13 +10,19 @@ import {
   DOING_STATUS,
   CANCEL_STATUS,
 } from "../../constants";
-import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER, END_POINT_SEVER_TABLE_MENU, getLocalData } from "../../constants/api";
+import {
+  END_POINT_SEVER,
+  END_POINT_SEVER_BILL_ORDER,
+  END_POINT_SEVER_TABLE_MENU,
+  getLocalData,
+} from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
 import Axios from "axios";
 
 export const useTableState = () => {
+  const { t } = useTranslation();
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -125,11 +133,11 @@ export const useTableState = () => {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
       setSelectedTable(table);
-      setIsWaitingCheckout(true)
+      setIsWaitingCheckout(true);
       await getTableOrders(table);
-      setIsWaitingCheckout(false)
+      setIsWaitingCheckout(false);
     } else {
-      setIsWaitingCheckout(true)
+      setIsWaitingCheckout(true);
     }
   };
 
@@ -168,7 +176,7 @@ export const useTableState = () => {
         });
         Swal.fire({
           icon: "success",
-          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+          title: t("table_opened"),
           showConfirmButton: false,
           timer: 1800,
         });
@@ -213,7 +221,7 @@ export const useTableState = () => {
         });
         Swal.fire({
           icon: "success",
-          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+          title: t("table_opened"),
           showConfirmButton: false,
           timer: 1800,
         });
@@ -286,14 +294,17 @@ export const useTableState = () => {
 
   const mergeTable = async (_newTable) => {
     try {
-      const response = await axios.put(END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer", {
-        headers: await getHeaders(),
-        body: {
-          billOld: selectedTable["billId"],
-          billNew: _newTable["billId"] ?? "NOT_BILL",
-          codeId: _newTable["_id"],
-        },
-      });
+      const response = await axios.put(
+        END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer",
+        {
+          headers: await getHeaders(),
+          body: {
+            billOld: selectedTable["billId"],
+            billNew: _newTable["billId"] ?? "NOT_BILL",
+            codeId: _newTable["_id"],
+          },
+        }
+      );
 
       // print(response.body);
 
@@ -365,7 +376,7 @@ export const useTableState = () => {
       setTableOrderItems(_newOrderItem);
       Swal.fire({
         icon: "success",
-        title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+        title: t("update_order_status_success"),
         showConfirmButton: false,
         timer: 10000,
       });
