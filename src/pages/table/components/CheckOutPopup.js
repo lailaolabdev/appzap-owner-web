@@ -82,6 +82,8 @@ export default function CheckOutPopup({
     profile,
   } = useStore();
 
+  // console.log({ dataBill });
+
   const navigate = useNavigate();
 
   useEffect(() => {

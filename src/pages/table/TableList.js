@@ -63,6 +63,7 @@ import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
+import CheckPopupDebt from "./components/CheckPopupDebt";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
@@ -133,6 +134,12 @@ export default function TableList() {
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    setbillSplitNewId,
+    setbillSplitOldId,
+    // billSplitNewId,
+    // billSplitOldId,
+    userCallCheckout,
+    setUserCallCheckout,
     isWaitingCheckout,
     setOrderPayBefore,
     orderPayBefore,
@@ -216,6 +223,9 @@ export default function TableList() {
     getDataZone();
     getDataTax();
     getDataServiceCharge();
+    getUserData();
+    getDataTax();
+    // getDataServiceCharge();
 
     setStoreDetail({
       ...storeDetail,
@@ -391,6 +401,8 @@ export default function TableList() {
   };
 
   const [selectNewTable, setSelectNewTable] = useState();
+  // console.log("New", selectNewTable?.billId);
+  // console.log("Old", selectedTable?.billId);
 
   const _changeTable = async () => {
     if (!selectNewTable) {
@@ -1079,6 +1091,7 @@ export default function TableList() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
@@ -1991,6 +2004,19 @@ export default function TableList() {
                           }{" "}
                           {t("itemNotServed")}
                         </div>
+                        <div>
+                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                            {isCheckedOrderItem?.filter(
+                              (e) => e?.status == "PAID"
+                            )?.length
+                              ? ` ${
+                                  isCheckedOrderItem?.filter(
+                                    (e) => e?.status == "PAID"
+                                  )?.length
+                                } ${t("ORDER_PAID")}`
+                              : ""}
+                          </p>
+                        </div>
                       </div>
                       <div
                         style={{
@@ -2195,6 +2221,8 @@ export default function TableList() {
                                         color:
                                           orderItem?.status === `SERVED`
                                             ? "green"
+                                            : orderItem?.status === "PAID"
+                                            ? COLOR_APP
                                             : orderItem?.status === "PRINTBILL"
                                             ? "blue"
                                             : orderItem?.status === "DOING"
@@ -2451,6 +2479,17 @@ export default function TableList() {
         ))}
       </div>
 
+      <CheckPopupDebt
+        onPrintBill={onPrintBill}
+        onPrintDrawer={onPrintDrawer}
+        dataBill={dataBill}
+        tableData={selectedTable}
+        open={popup?.CheckPopUpDebt}
+        onClose={() => setPopup()}
+        setDataBill={setDataBill}
+        taxPercent={taxPercent}
+        // editMode={select}
+      />
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}

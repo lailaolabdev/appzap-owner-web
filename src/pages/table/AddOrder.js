@@ -683,6 +683,8 @@ function AddOrder() {
 
       console.log("ZONE : ", localZone);
 
+      // const localZone = localStorage.getItem("selectedZone");
+
       axios
         .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
           headers: headers,
@@ -715,6 +717,14 @@ function AddOrder() {
                 printItems(groupedItems, combinedBillRefs, printers).then(
                   () => {
                     onSelectTable(selectedTable);
+                    if (state?.key === false) {
+                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
+                      return;
+                    } else {
+                      navigate(
+                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                      );
+                    }
                     navigate(
                       `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
                       { state: { zoneId: localZone } }
@@ -725,6 +735,14 @@ function AddOrder() {
                 // Print with cut
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
+                  if (state?.key === false) {
+                    navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
+                    return;
+                  } else {
+                    navigate(
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                    );
+                  }
                   navigate(
                     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
                     { state: { zoneId: localZone } }
@@ -740,6 +758,14 @@ function AddOrder() {
               // });
             } else {
               onSelectTable(selectedTable);
+              if (state?.key === false) {
+                navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
+                return;
+              } else {
+                navigate(
+                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                );
+              }
               navigate(
                 `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
                 { state: { zoneId: localZone } }

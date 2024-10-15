@@ -13,6 +13,7 @@ import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import _ from "lodash";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -34,6 +35,9 @@ export default function BillForCheckOut80({
   const [base64Image, setBase64Image] = useState("");
 
   // console.log("storeDetail", storeDetail);
+  // console.log("dataBill 80 code", dataBill?.orderId);
+  // console.log("selectedTable 80", selectedTable);
+
   // console.log("dataBill", dataBill);
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -55,6 +59,11 @@ export default function BillForCheckOut80({
   // function
   const _calculateTotal = () => {
     let _total = 0;
+
+    const totalBillDefualt = _.sumBy(
+      dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
 
     // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
     const orders =
@@ -83,6 +92,8 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(_total);
     }
+    setTotal(totalBillDefualt);
+    setTaxAmount((totalBillDefualt * taxPercent) / 100);
 
     // Set total amount and related charges
     setTotal(_total);

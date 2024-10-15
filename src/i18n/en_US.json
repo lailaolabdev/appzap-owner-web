@@ -795,7 +795,6 @@
   "to_day": "Today",
   "yester_day": "Yesterday",
   "this_month": "This Month",
-  "last_month": "Last month",
   "3_more_day": "3 more day",
   "5_more_day": "5 more day",
   "7_more_day": "7 more day",
@@ -865,6 +864,8 @@
   "show_all_zone": "Show all zone",
   "zone_setting": "Zone setting",
   "Open": "Open",
-  "Close": "Close"
-
+  "Close": "Close",
+  "clear": "clear",
+  "bill_combine": "Bill combine"
+  
 }

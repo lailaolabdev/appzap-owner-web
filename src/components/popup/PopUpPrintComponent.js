@@ -78,6 +78,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -132,46 +133,61 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const startTime = "00:00:00";
       const endTime = "23:59:59";
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-  
+
       // Fetch bill data and active bill data
       const data = await getBillReport(storeDetail._id, findBy);
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-  
+
       console.log("Fetched Bill Data:", data); // Debug fetched data
       console.log("Fetched Active Bill Data:", activeBillData); // Debug active data
-  
+
       // Calculate fields
+      // logic
       const countBill = data.length || 0;
-  
+
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
-  
-      const cashTotalBill = _.sumBy(
-        data.filter((e) => e.paymentMethod === "CASH" || e.paymentMethod === "TRANSFER_CASH"),
-        (e) => (e.paymentMethod === "TRANSFER_CASH" ? e.payAmount : e.billAmount)
-      ) || 0;
-  
-      const transferTotalBill = _.sumBy(
-        data.filter((e) => e.paymentMethod === "TRANSFER" || e.paymentMethod === "TRANSFER_CASH"),
-        (e) => (e.paymentMethod === "TRANSFER_CASH" ? e.transferAmount : e.billAmount)
-      ) || 0;
-  
+
+      const cashTotalBill =
+        _.sumBy(
+          data.filter(
+            (e) =>
+              e.paymentMethod === "CASH" || e.paymentMethod === "TRANSFER_CASH"
+          ),
+          (e) =>
+            e.paymentMethod === "TRANSFER_CASH" ? e.payAmount : e.billAmount
+        ) || 0;
+
+      const transferTotalBill =
+        _.sumBy(
+          data.filter(
+            (e) =>
+              e.paymentMethod === "TRANSFER" ||
+              e.paymentMethod === "TRANSFER_CASH"
+          ),
+          (e) =>
+            e.paymentMethod === "TRANSFER_CASH"
+              ? e.transferAmount
+              : e.billAmount
+        ) || 0;
+
       const discountBill = data.filter((e) => e.discount > 0);
-      const discountTotalBill = _.sumBy(discountBill, (e) => {
-        let discountAmount = 0;
-        if (e.discountType === "PERCENT") {
-          discountAmount = (e.billAmountBefore * e.discount) / 100;
-        } else {
-          discountAmount = e.discount || 0; // Assume non-PERCENT discounts are fixed values
-        }
-        return discountAmount;
-      }) || 0;
-  
+      const discountTotalBill =
+        _.sumBy(discountBill, (e) => {
+          let discountAmount = 0;
+          if (e.discountType === "PERCENT") {
+            discountAmount = (e.billAmountBefore * e.discount) / 100;
+          } else {
+            discountAmount = e.discount || 0; // Assume non-PERCENT discounts are fixed values
+          }
+          return discountAmount;
+        }) || 0;
+
       const activeBill = data.filter(
         (e) => !e.isCheckout || e.status !== "CHECKOUT"
       ).length;
-  
+
       const totalActiveBill = _.sumBy(activeBillData, (e) => e.totalBill) || 0;
-  
+
       // Debug intermediate calculations
       console.log({
         countBill,
@@ -182,9 +198,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         activeBill,
         totalActiveBill,
       });
-  
+
       // Final validation: Check if calculated total matches totalBill
-      const calculatedTotal = (cashTotalBill + transferTotalBill) - discountTotalBill;
+      const calculatedTotal =
+        cashTotalBill + transferTotalBill - discountTotalBill;
       if (calculatedTotal !== totalBill) {
         console.error("Calculation Mismatch Detected!");
         console.error(`Expected Total (totalBill): ${totalBill}`);
@@ -192,7 +209,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       } else {
         console.log("Calculation validated: Total matches!");
       }
-  
+
       // Update state or return result
       setReportBill({
         ຈຳນວນບິນ: countBill,
@@ -204,16 +221,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ບິນຄ້າງ: activeBill,
         ເງິນຄ້າງ: totalActiveBill,
       });
-  
+
       setBill(data); // Set bill data for rendering
     } catch (err) {
       console.error("Error in getDataBillReport:", err);
     }
   };
-  
-  
-  
-  
 
   return (
     <Modal show={open} onHide={onClose} size="md">
