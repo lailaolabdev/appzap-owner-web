@@ -242,7 +242,7 @@ export default function ReportLayout() {
               onClick={() => onViewStocksPath("sales-report")}
             >
               <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
-              <strong>{t("report_sell")}</strong>
+              <strong>{t("report_selll")}</strong>
             </div>
             <div
               onKeyDown={() => {}}
