@@ -175,7 +175,7 @@ export default function CheckOutPopup({
       const _currencyData = currencyList.find(
         (e) => e.currencyCode == selectCurrency
       );
-      setRateCurrency(_currencyData?.buy || 1);
+      setRateCurrency(_currencyData?.sell || 1);
     } else {
       setCashCurrency();
       setCash();

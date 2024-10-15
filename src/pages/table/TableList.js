@@ -116,6 +116,7 @@ export default function TableList() {
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
   const [checkStatusItem, setCheckStatusItem] = useState(false);
+  const [showBtnCombine, setShowBtnCombine] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
 
@@ -242,18 +243,18 @@ export default function TableList() {
     };
     getDataTax();
 
-    const getDataServiceCharge = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
-      );
-      setServiceChargePercent(_res?.data?.serviceCharge);
-    };
-    getDataServiceCharge();
+    // const getDataServiceCharge = async () => {
+    //   const { DATA } = await getLocalData();
+    //   const _res = await axios.get(
+    //     `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+    //   );
+    //   setServiceChargePercent(_res?.data?.serviceCharge);
+    // };
+    // getDataServiceCharge();
     getUserData();
     getDataZone();
-    getDataTax();
-    getDataServiceCharge();
+    // getDataTax();
+    // getDataServiceCharge();
 
     setStoreDetail({
       ...storeDetail,
@@ -272,21 +273,21 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  const getDataTax = async () => {
-    const { DATA } = await getLocalData();
-    const _res = await axios.get(
-      END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
-    );
-    setTaxPercent(_res?.data?.taxPercent);
-  };
+  // const getDataTax = async () => {
+  //   const { DATA } = await getLocalData();
+  //   const _res = await axios.get(
+  //     END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
+  //   );
+  //   setTaxPercent(_res?.data?.taxPercent);
+  // };
 
-  const getDataServiceCharge = async () => {
-    const { DATA } = await getLocalData();
-    const _res = await axios.get(
-      `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
-    );
-    setServiceChargePercent(_res?.data?.serviceCharge);
-  };
+  // const getDataServiceCharge = async () => {
+  //   const { DATA } = await getLocalData();
+  //   const _res = await axios.get(
+  //     `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
+  //   );
+  //   setServiceChargePercent(_res?.data?.serviceCharge);
+  // };
 
   function handleSetQuantity(int, seletedOrderItem) {
     let _data = seletedOrderItem?.quantity + int;
@@ -448,22 +449,27 @@ export default function TableList() {
       const _billIdNew = _billsNew?.[0]?.["_id"];
       setbillSplitNewId(selectNewTable?.billId);
 
+      console.log("=======log1");
+
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
       setbillSplitOldId(selectedTable?.billId);
+      console.log("=======log2");
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
+      console.log("=======log3");
 
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+      console.log("=======log4");
 
       const changTable = await axios({
         method: "put",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-transfer`,
+        url: END_POINT_SEVER + `/v3/bill-transfer`,
         data: {
           billOld: _billIdOld,
           billNew: _billIdNew ?? "NOT_BILL",
@@ -473,6 +479,7 @@ export default function TableList() {
         },
         headers: headers,
       });
+      console.log("=======log5");
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
@@ -490,6 +497,7 @@ export default function TableList() {
         });
         setSelectedTable(selectNewTable);
         onSelectTable(selectNewTable);
+        setShowBtnCombine(true);
         // getTableDataStore();
         // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
         // navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
@@ -1356,7 +1364,7 @@ export default function TableList() {
       } else {
         setIsPrintedLoading(false);
       }
-
+      setOrderPayBefore([]);
       setIsPrintedLoading(false);
     } catch (error) {
       setIsPrintedLoading(false);
@@ -2152,15 +2160,17 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
-                        {selectedTable?.tableChildren?.length > 0 && (
+                        {selectedTable?.tableChildren?.length > 0 ||
+                        showBtnCombine ? (
                           <ButtonCustom
                             onClick={() =>
                               navigate(`/bill/split/${selectedTable?._id}`)
                             }
                           >
-                            {/* {t("bill_combine")} */}
-                            ບິນແຍກຈ່າຍ
+                            {t("bill_combine")}
                           </ButtonCustom>
+                        ) : (
+                          ""
                         )}
                       </div>
                       <div
@@ -2556,7 +2566,7 @@ export default function TableList() {
         ))}
       </div>
 
-      <CheckPopupDebt
+      {/* <CheckPopupDebt
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
@@ -2566,7 +2576,7 @@ export default function TableList() {
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         // editMode={select}
-      />
+      /> */}
       <CheckOutPopup
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}

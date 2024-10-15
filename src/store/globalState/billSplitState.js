@@ -14,6 +14,8 @@ export const useBillState = (storeDetail) => {
   const [chageStatus, setChageStatus] = useState(false);
   const [tableChild, setTableChild] = useState([]);
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
+  const [billSplitNewId, setbillSplitNewId] = useState([]);
+  const [billSplitOldId, setbillSplitOldId] = useState([]);
   // console.log("tableChild", tableChild);
 
   /**
@@ -139,5 +141,9 @@ export const useBillState = (storeDetail) => {
     tableChild,
     orderItemForPrintBill,
     onChangeMenuCheckbox,
+    billSplitNewId,
+    setbillSplitNewId,
+    billSplitOldId,
+    setbillSplitOldId,
   };
 };

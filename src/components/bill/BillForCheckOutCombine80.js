@@ -188,51 +188,53 @@ export default function BillForCheckOutCombine80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {dataBill?.items?.map((item, index) => {
-          const optionsNames =
-            item?.options
-              ?.map((option) =>
-                option.quantity > 1
-                  ? `[${option.quantity} x ${option.name}]`
-                  : `[${option.name}]`
-              )
-              .join("") || "";
-          const totalOptionPrice = item?.totalOptionPrice || 0;
-          const itemPrice = item?.price + totalOptionPrice;
-          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
-          const itemTotal = itemPrice * item?.quantity;
+        {dataBill?.items
+          ?.filter((e) => e?.status === "SERVED")
+          ?.map((item, index) => {
+            const optionsNames =
+              item?.options
+                ?.map((option) =>
+                  option.quantity > 1
+                    ? `[${option.quantity} x ${option.name}]`
+                    : `[${option.name}]`
+                )
+                .join("") || "";
+            const totalOptionPrice = item?.totalOptionPrice || 0;
+            const itemPrice = item?.price + totalOptionPrice;
+            // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
+            const itemTotal = itemPrice * item?.quantity;
 
-          return (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12,
-              }}
-              key={index}
-            >
-              <div style={{ textAlign: "left", width: "10px" }}>
-                {index + 1}
-              </div>
+            return (
               <div
                 style={{
-                  textAlign: "left",
-                  marginLeft: "-20px",
-                  width: "6rem",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
+                  fontSize: 12,
                 }}
+                key={index}
               >
-                {item?.name} {optionsNames}
+                <div style={{ textAlign: "left", width: "10px" }}>
+                  {index + 1}
+                </div>
+                <div
+                  style={{
+                    textAlign: "left",
+                    marginLeft: "-20px",
+                    width: "6rem",
+                  }}
+                >
+                  {item?.name} {optionsNames}
+                </div>
+                <div style={{ textAlign: "center" }}>{item?.quantity}</div>
+                <div style={{ textAlign: "left" }}>
+                  {itemPrice ? moneyCurrency(itemPrice) : "-"}
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  {itemTotal ? moneyCurrency(itemTotal) : "-"}
+                </div>
               </div>
-              <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-              <div style={{ textAlign: "left" }}>
-                {itemPrice ? moneyCurrency(itemPrice) : "-"}
-              </div>
-              <div style={{ textAlign: "right" }}>
-                {itemTotal ? moneyCurrency(itemTotal) : "-"}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </Order>
       <div style={{ height: 10 }}></div>
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
