@@ -794,6 +794,7 @@
   "tableNumberCode": "ເລກລະຫັດໂຕະ",
   "price": "ລາຄາ",
   "bill": "ບິນ",
+  "bill_combine": "ບິນລວມ",
   "paymentType": "ຮູບແບບການຈ່າຍ",
   "transferPayment": "ເງິນໂອນ",
   "require_music": "ລູກຄ້າຂໍເພງ",
@@ -875,6 +876,7 @@
   "click_upload": "ຄລິກເພື່ອອັບໂຫລດ",
   "ORDER_IN": "ອໍເດີເຂົ້າ",
   "ORDER_PROCESSING": "ກໍາລັງຄົວ",
+  "ORDER_PAID": "ຈ່າຍແລ້ວ",
   "ORDER_SERVED": "ເສີບແລ້ວ",
   "ORDER_CART": "ກຳລັງຈະສັ່ງ",
   "ORDER_FEEDBACK": "ສົ່ງຄືນ",
@@ -971,6 +973,7 @@
   "Drawer": "ລິ້ນຊັກ",
   "enter_phone_and_name": "ພິມຊື່ ຫຼື ເບີໂທ",
   "show_by_zone": "ສະແດງຕາມໂຊນ",
+  "clear": "ລ້າງຄ່າ",
   "show_all_zone": "ສະແດງໂຊນທັງໝົດ",
   "zone_setting": "ການຕັ້ງຄ່າໂຊນ"
 }

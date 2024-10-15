@@ -69,6 +69,8 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { padding_white } from "./../../constants/index";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -80,11 +82,18 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
+  const [popup, setPopup] = useState({
+    CheckOutType: false,
+  });
+  const [mobileMode, setMobileMode] = useState(false);
   const [show1, setShow1] = useState(false);
-  const [popup, setPopup] = useState({ CheckOutType: false });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleClose1 = () => setShow1(false);
+
+  const handleShow1 = (e) => {
+    setShow1(true);
+  };
 
   const handleSelectedCancelOrder = (e) =>
     setSeletedCancelOrderItem(e.target.value);
@@ -131,9 +140,18 @@ export default function TableList() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
+    // getTableDataStoreList,
+    // setPrintNowList,
+    // openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    setbillSplitNewId,
+    setbillSplitOldId,
+    // billSplitNewId,
+    // billSplitOldId,
+    userCallCheckout,
+    setUserCallCheckout,
     isWaitingCheckout,
     setOrderPayBefore,
     orderPayBefore,
@@ -158,6 +176,7 @@ export default function TableList() {
   const [userData, setuserData] = useState(null);
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
+  const [selectNewTable, setSelectNewTable] = useState([]);
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
@@ -213,6 +232,23 @@ export default function TableList() {
       getTableDataStore({ zone: localZone });
     }
 
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
+
+    const getDataServiceCharge = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+      );
+      setServiceChargePercent(_res?.data?.serviceCharge);
+    };
+    getDataServiceCharge();
     getUserData();
     getDataZone();
     getDataTax();
@@ -333,6 +369,7 @@ export default function TableList() {
       getTableDataStore({ zone: zoneId });
     } else {
       getTableDataStore();
+      // onSelectTable(selectNewTable)
     }
   }, [zoneId]);
 
@@ -391,7 +428,8 @@ export default function TableList() {
     }
   };
 
-  const [selectNewTable, setSelectNewTable] = useState();
+  // console.log("New", selectNewTable?.billId);
+  // console.log("Old", selectedTable?.billId);
 
   const _changeTable = async () => {
     if (!selectNewTable) {
@@ -407,9 +445,11 @@ export default function TableList() {
     try {
       const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
       const _billIdNew = _billsNew?.[0]?.["_id"];
+      setbillSplitNewId(selectNewTable?.billId);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
+      setbillSplitOldId(selectedTable?.billId);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -435,7 +475,7 @@ export default function TableList() {
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        // getTableDataStore();
+        getTableDataStore();
         if (zoneId) {
           getTableDataStore({ zone: zoneId });
         } else {
@@ -447,6 +487,12 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
+        setSelectedTable(selectNewTable);
+        onSelectTable(selectNewTable);
+        // getTableDataStore();
+        // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
+        // navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
+        // navigate(`/bill/split/${selectNewTable?._id}`);
       }
     } catch (err) {
       console.log({ err });
@@ -459,6 +505,13 @@ export default function TableList() {
     }
     setSelectNewTable();
   };
+  useEffect(() => {
+    if (tableOrderItems?.length > 0) {
+      getData(tableOrderItems[0]?.code);
+    } else {
+      setDataBill();
+    }
+  }, [tableOrderItems]);
 
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
@@ -1177,6 +1230,8 @@ export default function TableList() {
   // console.log("DATA2 : ", orderPayBefore);
 
   const checkAllOrders = (item) => {
+    console.log("checkAllOrders tableList", item);
+
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
@@ -1487,6 +1542,17 @@ export default function TableList() {
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
+  useEffect(() => {
+    if (userCallCheckout) {
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({ zone: zoneId });
+      } else {
+        getTableDataStore();
+      }
+      setUserCallCheckout(false);
+    }
+  }, [userCallCheckout]);
 
   useEffect(() => {
     _calculateTotal();
@@ -1549,7 +1615,7 @@ export default function TableList() {
         method: "get",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/zones`,
         params: {
-          storeId: storeDetail?._id,
+          storeId: params?.id,
           limit: 100,
         },
         headers: headers,
@@ -1716,6 +1782,7 @@ export default function TableList() {
                             <span
                               style={{
                                 fontSize: 16,
+                                position: "relative",
                                 // color: table?.staffConfirm
                                 //   ? "white"
                                 //   : "#616161",
@@ -1736,6 +1803,17 @@ export default function TableList() {
                                   : "#616161",
                               }}
                             >
+                              <div
+                                style={{
+                                  fontWeight: "bold",
+                                  position: "absolute",
+                                  top: -5,
+                                  right: -35,
+                                }}
+                              >
+                                {table?.tableChildren.length > 0 &&
+                                  table?.tableChildren.length}
+                              </div>
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
                               <div>
@@ -1934,7 +2012,6 @@ export default function TableList() {
                               : storeDetail?.firstCurrency}
                           </span>
                         </div>
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1992,6 +2069,19 @@ export default function TableList() {
                             )?.length
                           }{" "}
                           {t("itemNotServed")}
+                        </div>
+                        <div>
+                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                            {isCheckedOrderItem?.filter(
+                              (e) => e?.status == "PAID"
+                            )?.length
+                              ? ` ${
+                                  isCheckedOrderItem?.filter(
+                                    (e) => e?.status == "PAID"
+                                  )?.length
+                                } ${t("ORDER_PAID")}`
+                              : ""}
+                          </p>
                         </div>
                       </div>
                       <div
@@ -2061,6 +2151,16 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
+                        {selectedTable?.tableChildren?.length > 0 && (
+                          <ButtonCustom
+                            onClick={() =>
+                              navigate(`/bill/split/${selectedTable?._id}`)
+                            }
+                          >
+                            {/* {t("bill_combine")} */}
+                            ບິນແຍກຈ່າຍ
+                          </ButtonCustom>
+                        )}
                       </div>
                       <div
                         style={{
@@ -2197,6 +2297,8 @@ export default function TableList() {
                                         color:
                                           orderItem?.status === `SERVED`
                                             ? "green"
+                                            : orderItem?.status === "PAID"
+                                            ? COLOR_APP
                                             : orderItem?.status === "PRINTBILL"
                                             ? "blue"
                                             : orderItem?.status === "DOING"
@@ -2594,6 +2696,12 @@ export default function TableList() {
                         ? true
                         : false
                     }
+                    style={{
+                      backgroundColor:
+                        selectedTable?.tableName === item?.tableName
+                          ? "orange"
+                          : "",
+                    }}
                   >
                     {t("table")} {item?.tableName}
                   </option>

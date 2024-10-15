@@ -18,6 +18,7 @@ import { stringify } from "query-string";
 import Loading from "../../components/Loading";
 import ReactPaginate from "react-paginate";
 import { getCountBills } from "../../services/bill";
+import { COLOR_APP } from "../../constants";
 
 const limitData = 50;
 
@@ -182,7 +183,6 @@ export default function DashboardFinance({
       checkOut: _checkOut,
       amount: totalPrice,
     };
-    console.log("BILL CHECKOUT : ", _formatJson);
     setData(_formatJson);
     setIsLoading(false);
   };
@@ -262,6 +262,7 @@ export default function DashboardFinance({
       for (let i = 0; i < item.length; i++) {
         if (item[i]?.status === "SERVED")
           _countOrderSuccess += item[i]?.quantity;
+        if (item[i]?.status === "PAID") _countOrderSuccess += item[i]?.quantity;
         if (item[i]?.status === "CANCELED")
           _countOrderCancel += item[i]?.quantity;
       }
@@ -543,45 +544,55 @@ export default function DashboardFinance({
               </tr>
             </thead>
             <tbody>
-              {dataModal?.map((item, index) => (
-                <tr key={1 + index}>
-                  <td>{index + 1}</td>
-                  <td>{formatMenuName(item?.name, item?.options)}</td>
-                  <td>{item?.quantity}</td>
-                  <td
-                    style={{
-                      color:
-                        item?.status === "WAITING"
-                          ? "#2d00a8"
-                          : item?.status === "DOING"
-                          ? "#c48a02"
-                          : item?.status === "SERVED"
-                          ? "green"
-                          : item?.status === "CART"
-                          ? "#00496e"
-                          : item?.status === "FEEDBACK"
-                          ? "#00496e"
-                          : "#bd0d00",
-                    }}
-                  >
-                    {orderStatus(item?.status)}
-                  </td>
-                  <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
-                  <td>
-                    {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                      item?.totalPrice ??
-                        (item?.price + (item?.totalOptionPrice ?? 0)) *
-                          item?.quantity
-                    )}
-                  </td>
-                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
-                  <td>
-                    {item?.updatedAt
-                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
-                      : "-"}
-                  </td>
-                </tr>
-              ))}
+              {dataModal
+                // ?.filter((item) => item?.status !== "PAID")
+                .map((item, index) => (
+                  <tr key={1 + index}>
+                    <td>{index + 1}</td>
+                    <td>{formatMenuName(item?.name, item?.options)}</td>
+                    <td>{item?.quantity}</td>
+                    <td
+                      style={{
+                        color:
+                          item?.status === "WAITING"
+                            ? "#2d00a8"
+                            : item?.status === "DOING"
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                            ? "green"
+                            : item?.status === "PAID"
+                            ? COLOR_APP
+                            : item?.status === "CART"
+                            ? "#00496e"
+                            : item?.status === "FEEDBACK"
+                            ? "#00496e"
+                            : "#bd0d00",
+                      }}
+                    >
+                      {orderStatus(item?.status)}
+                    </td>
+                    <td>
+                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
+                    </td>
+                    <td>
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(
+                        item?.totalPrice ??
+                          (item?.price + (item?.totalOptionPrice ?? 0)) *
+                            item?.quantity
+                      )}
+                    </td>
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+                    <td>
+                      {item?.updatedAt
+                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </Modal.Body>

@@ -41,7 +41,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
-    console.log("printers: ", billRef.current);
+    // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -134,7 +134,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
       const data = await getBillReport(storeDetail._id, findBy);
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-
       // logic
       const countBill = data.length || 0;
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;

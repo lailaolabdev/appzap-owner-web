@@ -17,9 +17,8 @@ import {
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
-import Axios from "axios";
 
-export const useTableState = () => {
+export const useTableState = (storeDetail) => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -33,7 +32,11 @@ export const useTableState = () => {
 
   /**
    * Modify Order
+   *
    */
+
+  // console.log("tableOrders", tableOrders);
+
   useEffect(() => {
     if (tableOrders.length > 0 && tableOrders[0].code != selectedTable?.code) {
       getTableOrders(selectedTable);
@@ -43,41 +46,28 @@ export const useTableState = () => {
   }, [tableOrders]);
 
   const getTableDataStore = useMemo(
-    () => async (query) => {
-      try {
-        let _userData = await getLocalData();
-        let params = {
-          status: true,
-          isCheckout: false,
-          storeId: _userData?.DATA?.storeId,
-        };
-        if (query) {
-          params = { ...params, ...query };
-        }
-
-        await Axios.get(`${END_POINT}/v3/codes`, {
-          params: params,
-        }).then((response) => {
-          if (response?.status !== 200) return;
-          setTableList(response?.data);
-          let _openTable = response?.data?.filter((table) => {
+    () => async () => {
+      let _userData = await getLocalData();
+      const url =
+        END_POINT +
+        `/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
+      await fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.message === "server error") return;
+          setTableList(response);
+          let _openTable = response.filter((table) => {
             return table.isOpened && !table.isStaffConfirm;
           });
-
           setOpenTableData(_openTable);
-        });
-      } catch (error) {
-        console.log("error", error);
-      }
+        })
+        .catch((err) => {});
     },
     []
   );
-
   // useEffect(() => {
   //   getTableDataStore();
-  //   console.log("UseEffect", storeDetail?.statusPrintBill);
-  // }, [storeDetail?.statusPrintBill !== undefined]);
-
+  // }, []);
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();

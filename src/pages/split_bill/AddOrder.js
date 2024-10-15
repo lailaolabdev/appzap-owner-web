@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
@@ -12,6 +11,7 @@ import { printItems } from "./printItems";
 import { useTranslation } from "react-i18next";
 import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 /**
  * const
@@ -32,7 +32,7 @@ import {
 
 import {
   CATEGORY,
-  END_POINT_SEVER_TABLE_MENU,
+  END_POINT_SEVER,
   getLocalData,
   MENUS,
 } from "../../constants/api";
@@ -60,8 +60,8 @@ function AddOrder() {
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
-  const tableId = params?.tableId;
   const [billId, setBillId] = useState();
+  const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -94,7 +94,7 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-  // console.log("State", state);
+  console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -140,6 +140,8 @@ function AddOrder() {
       ? sortOptionsById([...data.options])
       : [];
 
+    console.log({ selectedMenu });
+
     for (const i of selectedMenu) {
       let _data = { ...i };
 
@@ -160,6 +162,9 @@ function AddOrder() {
         dataArray.push(_data);
       }
     }
+
+    console.log("ORDER DATA: ", dataArray);
+
     setSelectedMenu(dataArray);
   };
 
@@ -171,8 +176,8 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
-    useStore();
+  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
+  const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -237,7 +242,10 @@ function AddOrder() {
         }
 
         // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+        console.log("dataUrl=5555==========>", dataUrl);
         const _file = await base64ToBlob(dataUrl.toDataURL());
+        console.log("_file===========>", _file);
         var bodyFormData = new FormData();
         bodyFormData.append("isdrawer", false);
         bodyFormData.append("ip", _printer?.ip);
@@ -249,12 +257,15 @@ function AddOrder() {
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 
+        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData);
+        console.log("onPrintFlutter: =======");
         await printFlutter(
           {
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            beep: 1,
             width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
@@ -342,12 +353,12 @@ function AddOrder() {
     // getcurrency();
   }, []);
 
-  // useEffect(() => {
-  //   // TODO: check selectTable
-  //   if (!selectedTable || !selectedBill) {
-  //     navigate("/tables");
-  //   }
-  // }, [selectedTable]);
+  useEffect(() => {
+    // TODO: check selectTable
+    if (!selectedTable) {
+      navigate("/tables");
+    }
+  }, [selectedTable]);
 
   useEffect(() => {
     (async () => {
@@ -421,6 +432,11 @@ function AddOrder() {
   };
 
   const handleConfirmOptions = () => {
+    console.log("menuOptions: ", menuOptions);
+    console.log("selectedItem: ", selectedItem);
+    console.log("SelectedOptionsArray: ", selectedOptionsArray);
+    console.log("selectedMenu: ", selectedMenu);
+
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
         (option) => option.quantity >= 1
@@ -576,11 +592,11 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    // console.log("addToCart: ", menu);
+    console.log("addToCart: ", menu);
 
     const _menuOptions = _checkMenuOption(menu);
 
-    // console.log("menuOptions: ", _menuOptions);
+    console.log("menuOptions: ", _menuOptions);
 
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
@@ -635,7 +651,7 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    // console.log({ data, header, isPrinted });
+    console.log({ data, header, isPrinted });
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -666,12 +682,10 @@ function AddOrder() {
         billId: _billId,
       };
 
-    
-      const localZone = localStorage.getItem("selectedZone");
-
+      // console.log("CreateOrder: ", _body);
 
       axios
-        .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
+        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
           headers: headers,
         })
         .then(async (response) => {
@@ -689,22 +703,18 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
+              // console.log("PRINT TEST : ", hasNoCut);
+
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
                   () => {
                     onSelectTable(selectedTable);
                     if (state?.key === false) {
-                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                      return;
-                    } else {
-                      navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                      );
+                      navigate(`/bill/split/${tableId}`);
                     }
                     navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                      { state: { zoneId: localZone } }
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                     );
                   }
                 );
@@ -713,16 +723,10 @@ function AddOrder() {
                 onPrintForCher().then(() => {
                   onSelectTable(selectedTable);
                   if (state?.key === false) {
-                    navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                    return;
-                  } else {
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                    );
+                    navigate(`/bill/split/${tableId}`);
                   }
                   navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                    { state: { zoneId: localZone } }
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                   );
                 });
               }
@@ -735,17 +739,8 @@ function AddOrder() {
               // });
             } else {
               onSelectTable(selectedTable);
-              if (state?.key === false) {
-                navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                return;
-              } else {
-                navigate(
-                  `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                );
-              }
               navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                { state: { zoneId: localZone } }
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
               );
             }
           }
@@ -798,7 +793,9 @@ function AddOrder() {
   };
 
   const onEditOrder = (menu) => {
+    console.log("onEditOrder: ", menu);
     const menuOptions = _checkMenuOption(menu);
+    console.log("menuOptions: ", menuOptions);
 
     // Get the selected options from the menu with their quantities
     const selectedOptions = menu.options || [];

@@ -82,6 +82,8 @@ export default function CheckOutPopup({
     profile,
   } = useStore();
 
+  // console.log({ dataBill });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -281,8 +283,8 @@ export default function CheckOutPopup({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
+              profile?.data?.firstname + " " + profile?.data?.lastname ?? "-",
+            staffCheckOutId: profile?.data?.id,
           },
         },
         {
@@ -326,8 +328,6 @@ export default function CheckOutPopup({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-
-  // console.log("SERVICE", storeDetail?.serviceChargePer);
   const handleSubmit = () => {
     _checkBill();
     // onPrintBill(true);

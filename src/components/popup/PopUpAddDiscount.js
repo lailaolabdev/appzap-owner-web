@@ -72,7 +72,6 @@ export default function PopUpAddDiscount({
           discountType: discountType === "%" ? "PERCENT" : "LAK",
         },
       };
-      console.log("BODY: ", _body);
       const _header = await getHeaders();
       const res = await axios.put(url, _body, { headers: _header });
     } catch (err) {

@@ -145,8 +145,6 @@ export default function DashboardPage() {
     setMoneyReport(data);
   };
 
-  console.log("moneyReport", moneyReport);
-
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(
@@ -178,8 +176,6 @@ export default function DashboardPage() {
       const url =
         END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
-
-      console.log("_res: " + _res?.data?.exportUrl);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
