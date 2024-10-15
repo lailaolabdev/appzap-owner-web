@@ -8,9 +8,8 @@ const printFlutter = (
         type: type, // ETHERNET, BLUETOOTH, USB
         ip: ip, // ip printer ກໍລະນີ້ເປັນ type ETHERNET
         port: port, // port printer (9000)
-        image: imageBuffer, // ຮູບບິນ
         width: width,
-        beep: beep,
+        image: imageBuffer, // ຮູບບິນ
       };
 
       window.flutter_inappwebview

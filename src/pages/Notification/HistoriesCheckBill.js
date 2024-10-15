@@ -11,7 +11,7 @@ import { END_POINT, COLOR_APP } from "../../constants";
 import AnimationLoading from "../../constants/loading";
 import axios from "axios";
 import BillForCheckOut from "../../components/bill/BillForCheckOut80";
-import { STORE } from "../../constants/api";
+import { END_POINT_SEVER_BILL_ORDER, STORE } from "../../constants/api";
 
 import ReactToPrint from "react-to-print";
 import { ComponentToPrint } from "./components/ToPrint";
@@ -59,7 +59,7 @@ export default function HistoriesCheckBill() {
   };
   const _searchDate = async () => {
     setIsLoading(true);
-    const url = END_POINT + `/orders/${location?.search}`;
+    const url = END_POINT_SEVER_BILL_ORDER + `/orders/${location?.search}`;
     await fetch(url)
       .then((response) => response.json())
       .then((response) => {

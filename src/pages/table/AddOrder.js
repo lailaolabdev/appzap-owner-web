@@ -32,7 +32,7 @@ import {
 
 import {
   CATEGORY,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   getLocalData,
   MENUS,
 } from "../../constants/api";
@@ -255,7 +255,6 @@ function AddOrder() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
-            beep: 1,
             width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
@@ -667,9 +666,12 @@ function AddOrder() {
         billId: _billId,
       };
 
-      // console.log("CreateOrder: ", _body);
+    
+      const localZone = localStorage.getItem("selectedZone");
+
+
       axios
-        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
+        .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
           headers: headers,
         })
         .then(async (response) => {
@@ -687,8 +689,6 @@ function AddOrder() {
                 (printer) => printer.cutPaper === "not_cut"
               );
 
-              // console.log("PRINT TEST : ", hasNoCut);
-
               if (hasNoCut) {
                 // Print with no cut
                 printItems(groupedItems, combinedBillRefs, printers).then(
@@ -702,6 +702,10 @@ function AddOrder() {
                         `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                       );
                     }
+                    navigate(
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                      { state: { zoneId: localZone } }
+                    );
                   }
                 );
               } else {
@@ -716,6 +720,10 @@ function AddOrder() {
                       `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                     );
                   }
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
+                  );
                 });
               }
               // print for flutter
@@ -735,6 +743,10 @@ function AddOrder() {
                   `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                 );
               }
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                { state: { zoneId: localZone } }
+              );
             }
           }
         })

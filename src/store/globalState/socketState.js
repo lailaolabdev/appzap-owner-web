@@ -16,8 +16,8 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     useState(false);
   const [newOreservationTransaction, setNewOreservationTransaction] =
     useState(false);
+  const [checkoutTable, setCheckoutTable] = useState(false);
   const [countOrderWaiting, setCountOrderWaiting] = useState(0);
-  const [userCallCheckout, setUserCallCheckout] = useState(false);
 
   useMemo(() => {
     socket.on("connect", (e) => {
@@ -40,9 +40,10 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
       setRunSound({ orderSound: true });
       setNewOreservationTransaction(true);
     });
-    socket.on(`USER_CALL_CHECKOUT:${storeDetail._id}`, () => {
+    socket.on(`CHECKOUT_TABLE:${storeDetail._id}`, (data) => {
+      console.log("data: ", data);
       setRunSound({ orderSound: true });
-      setUserCallCheckout(true);
+      setCheckoutTable(true);
     });
     socket.on("disconnect", () => {
       setSocketConneted(socket.connected);
@@ -100,7 +101,7 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     setNewOreservationTransaction,
     countOrderWaiting,
     setCountOrderWaiting,
-    userCallCheckout,
-    setUserCallCheckout,
+    checkoutTable,
+    setCheckoutTable,
   };
 };

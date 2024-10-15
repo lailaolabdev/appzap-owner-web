@@ -4,17 +4,21 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-	Button,
-	Modal,
-	Form,
-	Nav,
-	Row,
-	Col,
-	Spinner,
-	Breadcrumb,
+  Button,
+  Modal,
+  Form,
+  Nav,
+  Row,
+  Col,
+  Spinner,
+  Breadcrumb,
 } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER } from "../../constants/api";
+import {
+  MENUS,
+  getLocalData,
+  END_POINT_SEVER_TABLE_MENU,
+} from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
@@ -30,18 +34,18 @@ const OPTION_PRICE_CURRENCY = {
 };
 
 export default function MenuListOption() {
-	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const params = useParams();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const params = useParams();
 
-	const [show, setShow] = useState(false);
-	const [showAddMenus, setShowAddMenus] = useState(false);
-	const [showCaution, setShowCaution] = useState(false);
-	const [show3, setShow3] = useState(false);
-	const [show2, setShow2] = useState(false);
-	const [show4, setShow4] = useState(false);
-	const [isOpened, setIsOpened] = useState(true);
-	const [isLoading, setIsLoading] = useState(false);
+  const [show, setShow] = useState(false);
+  const [showAddMenus, setShowAddMenus] = useState(false);
+  const [showCaution, setShowCaution] = useState(false);
+  const [show3, setShow3] = useState(false);
+  const [show2, setShow2] = useState(false);
+  const [show4, setShow4] = useState(false);
+  const [isOpened, setIsOpened] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [getIdMenu, setGetIdMenu] = useState();
   const [qtyMenu, setQtyMenu] = useState(0);
@@ -60,21 +64,21 @@ export default function MenuListOption() {
   const [dataUpdate, setdataUpdate] = useState("");
   const [dateDelete, setdateDelete] = useState("");
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const _localData = await getLocalData();
-				if (_localData) {
-					setgetTokken(_localData);
-					getcategory(_localData?.DATA?.storeId);
-					getMenuOptions(_localData?.DATA?.storeId);
-				}
-			} catch (err) {
-				console.log(err);
-			}
-		};
-		fetchData();
-	}, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const _localData = await getLocalData();
+        if (_localData) {
+          setgetTokken(_localData);
+          getcategory(_localData?.DATA?.storeId);
+          getMenuOptions(_localData?.DATA?.storeId);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (filterName || filterCategory) {
@@ -105,26 +109,27 @@ export default function MenuListOption() {
     }
   }, [filterName, filterCategory]);
 
-	const getcategory = async (id) => {
-		try {
-			await fetch(
-				END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
-				{
-					method: "GET",
-				},
-			)
-				.then((response) => response.json())
-				.then((json) => setCategorys(json));
-		} catch (err) {
-			console.log(err);
-		}
-	};
+  const getcategory = async (id) => {
+    try {
+      await fetch(
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/categories?storeId=${id}&isDeleted=false`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => setCategorys(json));
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getMenuOptions = async (storeId) => {
     try {
       setIsLoading(true);
       const res = await axios.get(
-        END_POINT_SEVER + `/v3/restaurant/${storeId}/menu-options`
+        END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`
       );
       setMenuOptions(res.data);
       setIsLoading(false);
@@ -134,115 +139,115 @@ export default function MenuListOption() {
     }
   };
 
-	const handleClose = () => setShow(false);
-	const handleShow = () => {
-		setOptionPriceCurrency(OPTION_PRICE_CURRENCY.LAK); // Set default currency for create modal
-		setShow(true);
-	};
-	const handleClose4 = () => setShow4(false);
-	const handleShow3 = (id, name) => {
-		setdateDelete({ name, id });
-		setShow3(true);
-	};
-	const handleClose3 = () => setShow3(false);
-	const handleShow2 = async (item) => {
-		setdataUpdate(item);
-		setDataUpdateMenuOption(item?.menuOption);
-		setOptionPriceCurrency(item?.currency || OPTION_PRICE_CURRENCY.LAK); // Set currency based on item data for update modal
-		setShow2(true);
-	};
-	const handleClose2 = () => setShow2(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => {
+    setOptionPriceCurrency(OPTION_PRICE_CURRENCY.LAK); // Set default currency for create modal
+    setShow(true);
+  };
+  const handleClose4 = () => setShow4(false);
+  const handleShow3 = (id, name) => {
+    setdateDelete({ name, id });
+    setShow3(true);
+  };
+  const handleClose3 = () => setShow3(false);
+  const handleShow2 = async (item) => {
+    setdataUpdate(item);
+    setDataUpdateMenuOption(item?.menuOption);
+    setOptionPriceCurrency(item?.currency || OPTION_PRICE_CURRENCY.LAK); // Set currency based on item data for update modal
+    setShow2(true);
+  };
+  const handleClose2 = () => setShow2(false);
 
-	const _createMenuOption = async (values) => {
-		try {
-			const _localData = await getLocalData();
-			const header = await getHeaders();
-			const headers = {
-				"Content-Type": "application/json",
-				Authorization: header.authorization,
-			};
+  const _createMenuOption = async (values) => {
+    try {
+      const _localData = await getLocalData();
+      const header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
 
-			const createData = {
-				name: values?.name,
-				price: values?.price,
-				storeId: _localData?.DATA?.storeId,
-				currency: optionPriceCurrency,
-			};
+      const createData = {
+        name: values?.name,
+        price: values?.price,
+        storeId: _localData?.DATA?.storeId,
+        currency: optionPriceCurrency,
+      };
 
       const resData = await axios.post(
-        END_POINT_SEVER +
+        END_POINT_SEVER_TABLE_MENU +
           `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
         createData,
         { headers: headers }
       );
 
-			if (resData?.data) {
-				getMenuOptions(_localData?.DATA?.storeId);
-				handleClose();
-				successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-			}
-		} catch (err) {
-			errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
-		}
-	};
+      if (resData?.data) {
+        getMenuOptions(_localData?.DATA?.storeId);
+        handleClose();
+        successAdd(t("add_success"));
+      }
+    } catch (err) {
+      errorAdd(t("add_fail"));
+    }
+  };
 
-	const _updateMenuOption = async (values) => {
-		try {
-			const header = await getHeaders();
-			const headers = {
-				"Content-Type": "application/json",
-				Authorization: header.authorization,
-			};
+  const _updateMenuOption = async (values) => {
+    try {
+      const header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
 
-			const updateData = {
-				name: values?.name,
-				price: values?.price,
-				currency: optionPriceCurrency,
-			};
+      const updateData = {
+        name: values?.name,
+        price: values?.price,
+        currency: optionPriceCurrency,
+      };
 
       const resData = await axios.put(
-        END_POINT_SEVER +
+        END_POINT_SEVER_TABLE_MENU +
           `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
         updateData,
         { headers: headers }
       );
 
-			if (resData?.data) {
-				handleClose2();
-				getMenuOptions(getTokken?.DATA?.storeId);
-				successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
-			}
-		} catch (err) {
-			errorAdd("ການແກ້ໄຂຂໍ້ມູນບໍ່ສຳເລັດ !");
-		}
-	};
+      if (resData?.data) {
+        handleClose2();
+        getMenuOptions(getTokken?.DATA?.storeId);
+        successAdd(t("edit_success"));
+      }
+    } catch (err) {
+      errorAdd(t("edit_failed"));
+    }
+  };
 
-	const _confirmeDelete = async () => {
-		try {
-			const header = await getHeaders();
-			const headers = {
-				"Content-Type": "application/json",
-				Authorization: header.authorization,
-			};
+  const _confirmeDelete = async () => {
+    try {
+      const header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
 
-			const resData = await axios.delete(
-				END_POINT_SEVER + `/v3/menu-option/${dateDelete?.id}/delete`,
-				{ headers: headers },
-			);
+      const resData = await axios.delete(
+        END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${dateDelete?.id}/delete`,
+        { headers: headers }
+      );
 
-			if (resData?.data) {
-				getMenuOptions(getTokken?.DATA?.storeId);
-				handleClose3();
-				successAdd("ການລົບຂໍ້ມູນສຳເລັດ");
-			}
-		} catch (err) {
-			errorAdd("ການລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
-		}
-	};
+      if (resData?.data) {
+        getMenuOptions(getTokken?.DATA?.storeId);
+        handleClose3();
+        successAdd(t("delete_success"));
+      }
+    } catch (err) {
+      errorAdd(t("delete_failed"));
+    }
+  };
 
-	const handleChangeOptionPriceCurrency = (e) => {
-		setOptionPriceCurrency(e.target.value);
-	};
+  const handleChangeOptionPriceCurrency = (e) => {
+    setOptionPriceCurrency(e.target.value);
+  };
 
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
@@ -318,96 +323,91 @@ export default function MenuListOption() {
                   justifyContent: "end",
                 }}
               >
-                ** ເຊັ່ນ: ຮ້ອນ,ເຢັນ,ປັ່ນ,ນ້ອຍ,ກາງ,ໃຫຍ່ (ບໍ່ຕັດສະຕ໋ອກ)
+                {t("example")}
               </Col>
 
-							<Col
-								md="2"
-								style={{
-									marginTop: 32,
-									display: "flex",
-									justifyContent: "end",
-								}}
-							>
-								<Button
-									style={{
-										backgroundColor: COLOR_APP,
-										color: "#ffff",
-										border: 0,
-									}}
-									onClick={handleShow}
-								>
-									+ ເພີ່ມອ໋ອບຊັນໃຫມ່
-								</Button>
-							</Col>
-						</Row>
-					</Col>
+              <Col
+                md="2"
+                style={{
+                  marginTop: 32,
+                  display: "flex",
+                  justifyContent: "end",
+                }}
+              >
+                <Button
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#ffff",
+                    border: 0,
+                  }}
+                  onClick={handleShow}
+                >
+                  + {t("add_new_options")}
+                </Button>
+              </Col>
+            </Row>
+          </Col>
 
-					<Col
-						md="12"
-						style={{
-							overflowX: "auto",
-						}}
-					>
-						<table className="table table-hover">
-							<thead className="thead-light">
-								<tr>
-									<th scope="col">#</th>
-									<th scope="col">ຊື່ອ໋ອບຊັນ</th>
-									<th scope="col">ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</th>
-									<th scope="col">ຈັດການ</th>
-								</tr>
-							</thead>
-							<tbody>
-								{isLoading ? (
-									<td colSpan={9}>
-										<Spinner animation="border" variant="warning" />
-									</td>
-								) : (
-									menuOptions?.map((data, index) => {
-										return (
-											<tr key={index}>
-												<td>{index + 1}</td>
-												<td style={{ textAlign: "left" }}>
-													{data?.name ?? ""}
-												</td>
-												<td>{moneyCurrency(data?.price)}</td>
-												<td>
-													<FontAwesomeIcon
-														icon={faEdit}
-														onClick={() => handleShow2(data)}
-														style={{ color: COLOR_APP, cursor: "pointer" }}
-													/>
-													<FontAwesomeIcon
-														icon={faTrashAlt}
-														style={{
-															marginLeft: 20,
-															color: "red",
-															cursor: "pointer",
-														}}
-														onClick={() => handleShow3(data?._id, data?.name)}
-													/>
-												</td>
-											</tr>
-										);
-									})
-								)}
-							</tbody>
-						</table>
-					</Col>
-				</Row>
-				{/* >>>>>>>>>>>>> popup >>>>>>>>>>>> */}
-				<PopUpConfirmDeletion
-					open={show3}
-					text={dateDelete?.name}
-					onClose={handleClose3}
-					onSubmit={_confirmeDelete}
-				/>
+          <Col md="12">
+            <table className="table table-hover" style={{ minWidth: 700 }}>
+              <thead className="thead-light">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">{t("options_name")}</th>
+                  <th scope="col">{t("price_addjust")}</th>
+                  <th scope="col">{t("manage_options")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <td colSpan={9}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : (
+                  menuOptions?.map((data, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td style={{ textAlign: "left" }}>
+                          {data?.name ?? ""}
+                        </td>
+                        <td>{moneyCurrency(data?.price)}</td>
+                        <td>
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            onClick={() => handleShow2(data)}
+                            style={{ color: COLOR_APP, cursor: "pointer" }}
+                          />
+                          <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            style={{
+                              marginLeft: 20,
+                              color: "red",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleShow3(data?._id, data?.name)}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </Col>
+        </Row>
+        {/* >>>>>>>>>>>>> popup >>>>>>>>>>>> */}
+        <PopUpConfirmDeletion
+          open={show3}
+          text={dateDelete?.name}
+          onClose={handleClose3}
+          onSubmit={_confirmeDelete}
+        />
 
         {/* add menu */}
         <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>ເພີ່ມອ໋ອບຊັນ</Modal.Title>
+            <Modal.Title>{t("add_options")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -418,10 +418,10 @@ export default function MenuListOption() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່";
+                errors.name = "Please Enter Option Name...";
               }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາທີ່ເພີ່ມຂຶ້ນ";
+                errors.price = "Please Enter Price Adjustment...";
               }
               return errors;
             }}
@@ -440,14 +440,14 @@ export default function MenuListOption() {
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ອ໋ອບຊັນ</Form.Label>
+                    <Form.Label>{t("options_name")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ອ໋ອບຊັນ..."
+                      placeholder="Enter Option Name..."
                       style={{
                         border:
                           errors.name && touched.name && errors.name
@@ -457,23 +457,23 @@ export default function MenuListOption() {
                     />
                   </Form.Group>
 
-									<Form.Group controlId="exampleForm.ControlInput1">
-										<Form.Label>ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</Form.Label>
-										<Form.Control
-											type="number"
-											name="price"
-											onChange={handleChange}
-											onBlur={handleBlur}
-											value={values?.price}
-											placeholder="ລາຄາ..."
-											style={{
-												border:
-													errors.price && touched.price && errors.price
-														? "solid 1px red"
-														: "",
-											}}
-										/>
-									</Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>{t("price_addjust")}</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="price"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.price}
+                      placeholder="Enter Price Adjustment..."
+                      style={{
+                        border:
+                          errors.price && touched.price && errors.price
+                            ? "solid 1px red"
+                            : "",
+                      }}
+                    />
+                  </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Control
@@ -490,7 +490,7 @@ export default function MenuListOption() {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -500,17 +500,18 @@ export default function MenuListOption() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
             )}
           </Formik>
         </Modal>
+
         {/* update menu */}
         <Modal show={show2} onHide={handleClose2} keyboard={false} size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>ອັບເດດອ໋ອບຊັນ</Modal.Title>
+            <Modal.Title>{t("update_options")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -543,14 +544,14 @@ export default function MenuListOption() {
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ອ໋ອບຊັນ</Form.Label>
+                    <Form.Label>{t("options_name")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ອ໋ອບຊັນ..."
+                      placeholder={t("enter_options_name")}
                       style={{
                         border:
                           errors.name && touched.name && errors.name
@@ -560,23 +561,23 @@ export default function MenuListOption() {
                     />
                   </Form.Group>
 
-									<Form.Group controlId="exampleForm.ControlInput1">
-										<Form.Label>ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</Form.Label>
-										<Form.Control
-											type="number"
-											name="price"
-											onChange={handleChange}
-											onBlur={handleBlur}
-											value={values?.price}
-											placeholder="ລາຄາ..."
-											style={{
-												border:
-													errors.price && touched.price && errors.price
-														? "solid 1px red"
-														: "",
-											}}
-										/>
-									</Form.Group>
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>{t("price_addjust")}</Form.Label>
+                    <Form.Control
+                      type="number"
+                      name="price"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values?.price}
+                      placeholder={t("enter_price_adjust")}
+                      style={{
+                        border:
+                          errors.price && touched.price && errors.price
+                            ? "solid 1px red"
+                            : "",
+                      }}
+                    />
+                  </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Control
@@ -593,7 +594,7 @@ export default function MenuListOption() {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -603,7 +604,7 @@ export default function MenuListOption() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>

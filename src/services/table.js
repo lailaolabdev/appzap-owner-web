@@ -1,10 +1,11 @@
 import axios from "axios";
 import { END_POINT } from "../constants";
 import { getHeaders } from "./auth";
+import { END_POINT_SEVER_BILL_ORDER, END_POINT_SEVER_TABLE_MENU } from "../constants/api";
 
 export const getTables = async () => {
   try {
-    const tables = await axios.get(`${END_POINT}/tables`);
+    const tables = await axios.get(`${END_POINT_SEVER_TABLE_MENU}/tables`);
     if (tables) {
       let data = tables?.data;
       return data;
@@ -18,13 +19,13 @@ export const getTables = async () => {
 
 export const getTableWithOrder = async () => {
   try {
-    const url = `${END_POINT}/orders?status=ACTIVE`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/orders?status=ACTIVE`;
     const orders = await axios.get(url, {
       headers: await getHeaders(),
     });
     const newOrders = orders?.data;
 
-    const tables = await axios.get(`${END_POINT}/tables`);
+    const tables = await axios.get(`${END_POINT_SEVER_TABLE_MENU}/tables`);
     if (tables && newOrders) {
       let data = tables?.data;
       let tableLen = data.length;
@@ -62,7 +63,7 @@ export const getTableWithOrder = async () => {
 };
 export const generatedCode = async (data) => {
   try {
-    const geneartedCode = await axios.post(`${END_POINT}/generates`, {
+    const geneartedCode = await axios.post(`${END_POINT_SEVER_TABLE_MENU}/generates`, {
       table_id: data,
     });
     if (geneartedCode) {
@@ -77,7 +78,7 @@ export const generatedCode = async (data) => {
 };
 export const getManyTables = async (storeId) => {
   try {
-    const geneartedCode = await axios.get(`${END_POINT}/v3/tables/${storeId}`);
+    const geneartedCode = await axios.get(`${END_POINT_SEVER_TABLE_MENU}/v3/tables/${storeId}`);
     console.log({})
     if (geneartedCode) {
       let data = geneartedCode.data;
@@ -95,7 +96,7 @@ export const getManyTables = async (storeId) => {
 export const getOrderData = async (tableId) => {
   try {
     const orderData = await axios.get(
-      `${END_POINT}/orders?status=CART&tableId=${tableId}`,
+      `${END_POINT_SEVER_BILL_ORDER}/orders?status=CART&tableId=${tableId}`,
       {
         headers: await getHeaders(),
       }
@@ -113,7 +114,7 @@ export const getOrderData = async (tableId) => {
 
 export const updateOrderData = async (tableId, data) => {
   try {
-    await axios.put(`${END_POINT}/orderItems/${tableId}`, data);
+    await axios.put(`${END_POINT_SEVER_BILL_ORDER}/orderItems/${tableId}`, data);
   } catch (error) {
     console.log("error: ", error);
   }
@@ -121,7 +122,7 @@ export const updateOrderData = async (tableId, data) => {
 
 export const getOrders = async (data) => {
   try {
-    const orders = await axios.get(`${END_POINT}/orders?status=ACTIVE`, {
+    const orders = await axios.get(`${END_POINT_SEVER_BILL_ORDER}/orders?status=ACTIVE`, {
       headers: await getHeaders(),
     });
     if (orders) {

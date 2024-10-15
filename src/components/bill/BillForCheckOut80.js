@@ -17,6 +17,7 @@ import _ from "lodash";
 
 export default function BillForCheckOut80({
   storeDetail,
+  orderPayBefore,
   selectedTable,
   dataBill,
   taxPercent = 0,
@@ -37,6 +38,11 @@ export default function BillForCheckOut80({
   // console.log("dataBill 80 code", dataBill?.orderId);
   // console.log("selectedTable 80", selectedTable);
 
+  // console.log("dataBill", dataBill);
+  const orders =
+    orderPayBefore && orderPayBefore.length > 0
+      ? orderPayBefore
+      : dataBill?.orderId;
   // useEffect
   useEffect(() => {
     _calculateTotal();
@@ -64,10 +70,26 @@ export default function BillForCheckOut80({
       dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
       (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
     );
+    let _total = 0;
+
+    // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
+    const orders =
+      orderPayBefore && orderPayBefore.length > 0
+        ? orderPayBefore
+        : dataBill?.orderId;
+
+    // Loop through the available orders
+    for (let _data of orders || []) {
+      const totalOptionPrice = _data?.totalOptionPrice || 0;
+      const itemPrice = _data?.price + totalOptionPrice;
+      _total += _data?.quantity * itemPrice;
+    }
+
+    // Handle discount logic
     if (dataBill?.discount > 0) {
       if (
-        dataBill?.discountType == "LAK" ||
-        dataBill?.discountType == "MONEY"
+        dataBill?.discountType === "LAK" ||
+        dataBill?.discountType === "MONEY"
       ) {
         setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
       } else {
@@ -81,6 +103,12 @@ export default function BillForCheckOut80({
     }
     setTotal(totalBillDefualt);
     setTaxAmount((totalBillDefualt * taxPercent) / 100);
+
+    // Set total amount and related charges
+    setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
+
+    // Calculate service charge
     const serviceChargeTotal = Math.floor(
       (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
@@ -119,9 +147,7 @@ export default function BillForCheckOut80({
 
   return (
     <Container>
-      <div
-        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-      >
+      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
         <div style={{ display: "flex", flexDirection: "row" }}>
           {base64Image ? (
             <Image
@@ -135,15 +161,6 @@ export default function BillForCheckOut80({
           ) : (
             ""
           )}
-          <span
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              marginRight: "10px",
-            }}
-          >
-            # {dataBill?.queue}
-          </span>
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
@@ -188,7 +205,7 @@ export default function BillForCheckOut80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {dataBill?.orderId?.map((item, index) => {
+        {orders?.map((item, index) => {
           const optionsNames =
             item?.options
               ?.map((option) =>
@@ -199,7 +216,6 @@ export default function BillForCheckOut80({
               .join("") || "";
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
-          // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
           const itemTotal = itemPrice * item?.quantity;
 
           return (
@@ -340,26 +356,30 @@ export default function BillForCheckOut80({
           </span>
         ))}
       </div>
-      {/* <Price>
-        <div style={{ flexGrow: 1 }}></div>
-        <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
-          <div>
-            {dataBill?.paymentMethod === "CASH"
-              ? "ເງີນສົດ"
-              : dataBill?.paymentMethod === "TRANSFER"
-              ? "ເງີນໂອນ"
-              : dataBill?.paymentMethod === "TRANSFER_CASH"
-              ? "ເງີນສົດແລະໂອນ"
-              : ""}
-          </div>
-          <div>
-            {t("getMoney")} {dataBill?.moneyReceived || 0}
-          </div>
-          <div>
-            {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
-          </div>
+
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: 12,
+        }}
+      >
+        <div>
+          {dataBill?.paymentMethod === "CASH"
+            ? "ເງີນສົດ"
+            : dataBill?.paymentMethod === "TRANSFER"
+            ? "ເງີນໂອນ"
+            : dataBill?.paymentMethod === "TRANSFER_CASH"
+            ? "ເງີນສົດແລະໂອນ"
+            : ""}
         </div>
-      </Price> */}
+        <div>
+          {t("getMoney")} {dataBill?.moneyReceived || 0}
+        </div>
+        <div>
+          {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+        </div>
+      </div>
+
       {/* <div
         style={{
           display: "flex",

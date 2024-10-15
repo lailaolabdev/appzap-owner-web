@@ -38,9 +38,9 @@ export const updateBillFark = async (billFarkId, data, token) => {
     return error;
   }
 };
-export const createBillFark = async (body, token) => {
+export const createBilldebt = async (body, token) => {
   try {
-    const url = `${END_POINT_APP}/v4/bill-fark/create`;
+    const url = `${END_POINT_APP}/v4/bill-debt/create`;
     const res = await axios.post(url, body, {
       headers: token,
     });
@@ -49,10 +49,10 @@ export const createBillFark = async (body, token) => {
     return { error: true };
   }
 };
-export const getBillFarks = async (findby, token) => {
+export const getBilldebts = async (findby, token) => {
   try {
     // console.log("token", token);
-    const url = `${END_POINT_APP}/v4/bill-farks${findby}`;
+    const url = `${END_POINT_APP}/v4/bill-debts${findby}`;
     const res = await axios.get(url, {
       headers: token,
     });
@@ -62,10 +62,10 @@ export const getBillFarks = async (findby, token) => {
   }
 };
 
-export const getMenuFarks = async (findby, token) => {
+export const getMenuDebt = async (findby, token) => {
   try {
-    console.log("token", token);
-    const url = `${END_POINT_APP}/v4/menu-farks${findby}`;
+    // console.log("token", token);
+    const url = `${END_POINT_APP}/v4/bill-debt-order${findby}`;
     const res = await axios.get(url, {
       headers: token,
     });

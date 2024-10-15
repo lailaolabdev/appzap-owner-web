@@ -80,11 +80,15 @@ export default function ExpendList() {
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
 
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+
   // const startDate = new Date(year, month, 1);
   // const endDate = new Date(year, month + 1, 0);
   const time = new Date();
   const month = time.getMonth();
   const year = time.getFullYear();
+
   const [dateStart, setDateStart] = useState(
     // !parsed?.dateStart ? "" : parsed?.dateStart
     new Date(year, month, 1)
@@ -93,6 +97,9 @@ export default function ExpendList() {
     // !parsed?.dateEnd ? "" : parsed?.dateEnd
     new Date(year, month + 1, 0)
   );
+
+  console.log("dateStart:::", dateStart, "dateEnd:::", dateEnd);
+
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
@@ -106,7 +113,7 @@ export default function ExpendList() {
       filterByPayment: filterByPayment,
     };
 
-    console.log("parame?.skip:::", parame?.skip);
+    // console.log("parame?.skip:::", parame?.skip);
 
     fetchExpend(
       filterByYear,
@@ -156,7 +163,7 @@ export default function ExpendList() {
       },
     },
     title: {
-      text: "ລາຍຈ່າຍ",
+      text: t("pay"),
       align: "left",
     },
     grid: {
@@ -208,6 +215,7 @@ export default function ExpendList() {
     dateEnd,
     filterByPayment
   ) => {
+    console.log("fetchExpend::", dateStart, dateEnd);
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
@@ -216,14 +224,18 @@ export default function ExpendList() {
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
       if (filterByYear) findby += `&year=${filterByYear}`;
       if (filterByMonth) findby += `&month=${filterByMonth}`;
-      if (dateStart && dateEnd)
-        findby += `&date_gte==${dateStart}&date_lt=${moment(
-          moment(dateEnd).add(1, "days")
-        ).format("YYYY/MM/DD")}`;
+      if (dateStart && dateEnd) {
+        findby += `&date_gte=${moment(dateStart).format("YYYY/MM/DD")}`;
+        findby += `&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
+      }
+      if (startTime && endTime) {
+        findby += `&startTime=${startTime}&endTime=${endTime}`;
+      }
+
       if (filterByPayment !== "ALL" && filterByPayment !== undefined)
         findby += `&payment=${filterByPayment}`;
 
-      console.log("findby::", findby);
+      // console.log("findby::", findby);
 
       let header = await getHeadersAccount();
       const headers = {
@@ -249,7 +261,8 @@ export default function ExpendList() {
       })
         .then((res) => {
           setTotalReport(res?.data?.data);
-          console.log(res?.data?.data);
+          // setExpendData(res?.data?.expends);
+          // console.log("Reports", res?.data?.expends);
           setExpendGraphData(res?.data?.data?.chartExpend);
           setIsLoading(false);
         })
@@ -337,7 +350,7 @@ export default function ExpendList() {
             onChange={(e) => setDateStart(e?.target?.value)}
             style={{ width: 150 }}
           />{" "}
-          ຫາວັນທີ
+          {t("toXX")}
           <Form.Control
             type="date"
             value={dateEnd}
@@ -384,8 +397,8 @@ export default function ExpendList() {
         filterByMonth={filterByMonth}
         setFilterByMonth={setFilterByMonth}
         dateStart={dateStart}
-        setDateStart={setDateStart}
         dateEnd={dateEnd}
+        setDateStart={setDateStart}
         setDateEnd={setDateEnd}
       />
 
@@ -710,8 +723,8 @@ export default function ExpendList() {
           </thead>
           <tbody>
             {expendData?.data &&
-              expendData?.data.length > 0 &&
-              expendData?.data.map((item, index) => (
+              expendData?.data?.length > 0 &&
+              expendData?.data?.map((item, index) => (
                 <tr
                   key={"expend" + index}
                   style={{ cursor: "pointer" }}

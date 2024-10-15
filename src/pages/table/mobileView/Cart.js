@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { getHeaders } from "../../../services/auth";
 import {
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
 } from "../../../constants/api";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
@@ -41,7 +41,7 @@ function Cart() {
       };
       axios
         .post(
-          END_POINT_SEVER + "/v3/public/bill/create",
+          END_POINT_SEVER_TABLE_MENU + "/v3/public/bill/create",
           {
             orders: data,
             storeId: params?.storeId,

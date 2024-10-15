@@ -232,6 +232,7 @@ export default function FarkCreatePage() {
       var bodyFormData = new FormData();
 
       bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -245,7 +246,6 @@ export default function FarkCreatePage() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          beep: 1,
           width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
@@ -295,7 +295,7 @@ export default function FarkCreatePage() {
           overflow: "hidden",
         }}
       >
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 20, overflow: "auto" }}>
           <Breadcrumb>
             <Breadcrumb.Item>{t("bury_deposit_layer")}</Breadcrumb.Item>
             <Breadcrumb.Item active>{t("add_list")}</Breadcrumb.Item>
@@ -355,6 +355,7 @@ export default function FarkCreatePage() {
                             width: "100%",
                             objectFit: "cover",
                           }}
+                          alt=""
                         />
                       </div>
                       <div style={{ textWrap: "nowrap" }}>{e?.name}</div>

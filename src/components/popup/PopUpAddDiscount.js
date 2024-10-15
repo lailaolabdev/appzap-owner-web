@@ -27,14 +27,11 @@ export default function PopUpAddDiscount({
   const [discount, setDiscount] = useState(0);
   const { storeDetail } = useStore();
   const [selectedButton, setSelectedButton] = useState("%");
-  const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [discountCategory, setDiscountCategory] = useState(0);
   const [discountOrder, setDiscountOrder] = useState(0);
-  const [discountCategoryAmount, setDiscountCategoryAmount] = useState(0);
-  const [adjustedTotal, setAdjustedTotal] = useState(0);
   const [selectedButtonCategory, setSelectedButtonCategory] = useState("%");
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
@@ -86,7 +83,7 @@ export default function PopUpAddDiscount({
     try {
       const res = await axios({
         method: "GET",
-        url: END_POINT_SEVER + `/v3/categoroy-type?storeId=${id}`,
+        url: END_POINT_SEVER + `/v3/category-type?storeId=${id}`,
       });
       setCategorysType(res?.data?.data);
     } catch (error) {

@@ -20,6 +20,7 @@ import { _statusCheckBill } from "../../helpers/index"
 import Sidenav from '../../layouts/SideNav'
 import empty from '../../image/empty.png'
 import { useNavigate, useParams } from 'react-router-dom';
+import { END_POINT_SEVER_BILL_ORDER } from '../../constants/api';
 
 export default function NotificationCheckBill() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function NotificationCheckBill() {
     getData()
   }, [])
   const getData = async (tokken) => {
-    await fetch(`${END_POINT}/orders/?storeId=${params?.id}&&status=CALLTOCHECKOUT`, {
+    await fetch(`${END_POINT_SEVER_BILL_ORDER}/orders/?storeId=${params?.id}&&status=CALLTOCHECKOUT`, {
       method: "GET",
       headers: tokken
     }).then(response => response.json())

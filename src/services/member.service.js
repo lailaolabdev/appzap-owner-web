@@ -1,11 +1,20 @@
 import axios from "axios";
-import { END_POINT_SEVER } from "../constants/api";
+import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getMembers = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
     return res?.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getMembersAll = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members/all${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
   } catch (error) {
     return error;
   }
@@ -53,9 +62,7 @@ export const getMemberBillCount = async (memberId, findBy, TOKEN) => {
 export const getMemberTotalMoney = async (memberId, findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/total-money?memberId=${memberId}${findBy}`;
-    // console.log("URL: ", url);
     const res = await axios.get(url, { headers: TOKEN });
-    console.log("RESDATA: ", res?.data);
     return res?.data;
   } catch (error) {
     return { error: true };
@@ -151,9 +158,8 @@ export const getAllMoneys = async (TOKEN) => {
 export const getMemberOrderMenu = async (memmberId, findby, TOKEN) => {
   // console.log({ TOKEN });
   try {
-    const url = `${END_POINT_SEVER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
     const response = await axios.get(url, { headers: TOKEN });
-    console.log("MEMBER ORDER MENU: ", response?.data);
     return response?.data?.data;
   } catch (error) {
     console.error("Error in GetMemberOrderMenu: ", error);
@@ -165,7 +171,6 @@ export const getTotalPoint = async (memmberId, findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/total-point?memberId=${memmberId}${findBy}`;
     const response = await axios.get(url, { headers: TOKEN });
-    console.log("DATA: ", response.data);
     return response?.data;
   } catch (error) {
     console.error("Error in GetMemberOrderMenu: ", error);
@@ -189,7 +194,6 @@ export const getSearchOne = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/search-one${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
-    console.log(res.data);
     return res?.data;
   } catch (error) {
     return error;

@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactPaginate from "react-paginate";
+import { useTranslation } from "react-i18next";
 
 const PaginationComponent = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const { t } = useTranslation();
   const [_limit, set_limit] = useState(parseInt(params?.limit));
   const [_skip, set_skip] = useState(parseInt(params?.skip));
 
-  const Pagination_component= (total, rout, filtter) => {
+  const Pagination_component = (total, rout, filtter) => {
     const handlePageClick = async (envent) => {
       let currentPage = envent.selected + 1;
-     await navigate(rout + "/limit/" + _limit + "/skip/" + currentPage,filtter);
+      await navigate(
+        rout + "/limit/" + _limit + "/skip/" + currentPage,
+        filtter
+      );
     };
     return (
       <ReactPaginate
-        previousLabel="ກັບຄືນ"
+        previousLabel={t("back")}
         onPageChange={handlePageClick}
         breakLabel="..."
         pageRangeDisplayed={5}
@@ -34,7 +39,7 @@ const PaginationComponent = () => {
         breakLinkClassName={"page-link"}
         activeClassName={"active"}
         forcePage={_skip - 1}
-        nextLabel="ຕໍ່ໄປ"
+        nextLabel={t("next")}
       />
     );
   };
@@ -43,7 +48,7 @@ const PaginationComponent = () => {
     set_skip,
     _limit,
     _skip,
-    Pagination_component
+    Pagination_component,
   };
 };
 export default PaginationComponent;

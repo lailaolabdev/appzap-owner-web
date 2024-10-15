@@ -18,6 +18,8 @@ export const orderStatus = (status) => {
       return `ກຳລັງຈະສັງ`;
     case "FEEDBACK":
       return `ສົ່ງຄືນ`;
+    case "PAID":
+      return `ຈ່າຍແລ້ວ`;
     default:
       return "ຍົກເລີກ";
   }
@@ -38,6 +40,10 @@ export const orderStatusTranslate = (status) => {
       return "ORDER_CART";
     case "FEEDBACK":
       return "ORDER_FEEDBACK";
+    case "PAID":
+      return "ORDER_PAID";
+    case "PRINTBILL":
+      return "ORDER_PRINTBILL";
     default:
       return "ORDER_CANCEL";
   }
@@ -165,6 +171,8 @@ export const convertPayment = (status) => {
       return "ເງິນສົດ";
     case "TRANSFER":
       return "ເງິນໂອນ";
+    case "DEBT":
+      return "ຕິດໜີ້";
     case "OTHER":
       return `ອື່ນໆ`;
     default:

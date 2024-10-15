@@ -3,7 +3,7 @@ import moment from "moment";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
-import { useTranslation } from "react-i18next";
+
 export default function PopUpSetStartAndEndDate({
   open,
   onClose,
@@ -23,8 +23,6 @@ export default function PopUpSetStartAndEndDate({
   const [valueEndTime, setValueEndTime] = useState(endTime);
   const [selectedButton, setSelectedButton] = useState(null);
 
-  const { storeDetail, setStoreDetail } = useStore();
-  const { t } = useTranslation();
   // useEffect
   useEffect(() => {
     setValueStartDate(startDate);
@@ -114,7 +112,7 @@ export default function PopUpSetStartAndEndDate({
             onClick={onGetToday}
             variant={selectedButton === "today" ? "primary" : "outline-primary"}
           >
-            {t("today")}
+            ມື້ນີ້
           </Button>
           <Button
             onClick={onGetYesterday}
@@ -122,7 +120,7 @@ export default function PopUpSetStartAndEndDate({
               selectedButton === "yesterday" ? "primary" : "outline-primary"
             }
           >
-            {t("yester_day")}
+            ມື້ວານ
           </Button>
           <Button
             onClick={onGetThisMonth}
@@ -130,7 +128,7 @@ export default function PopUpSetStartAndEndDate({
               selectedButton === "thisMonth" ? "primary" : "outline-primary"
             }
           >
-            {t("this_month")}
+            ເດືອນນີ້
           </Button>
           <Button
             onClick={onGetLastMonth}
@@ -138,7 +136,7 @@ export default function PopUpSetStartAndEndDate({
               selectedButton === "lastMonth" ? "primary" : "outline-primary"
             }
           >
-            {t("last_month")}
+            ເດືອນກ່ອນ
           </Button>
           <Button
             onClick={onGetThisYear}
@@ -146,7 +144,7 @@ export default function PopUpSetStartAndEndDate({
               selectedButton === "thisYear" ? "primary" : "outline-primary"
             }
           >
-            {t("this_years")}
+            ປີນີ້
           </Button>
           <Button
             onClick={onGetLastYear}
@@ -154,7 +152,7 @@ export default function PopUpSetStartAndEndDate({
               selectedButton === "lastYear" ? "primary" : "outline-primary"
             }
           >
-            {t("last_years")}
+            ປີກ່ອນ
           </Button>
         </Box>
         <Box
@@ -208,7 +206,7 @@ export default function PopUpSetStartAndEndDate({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onClose}>
-          {t("cancel")}
+          ຍົກເລີກ
         </Button>
         <Button
           onClick={() => {
@@ -216,17 +214,10 @@ export default function PopUpSetStartAndEndDate({
             setEndDate(valueEndDate);
             setStartTime(valueStartTime);
             setEndTime(valueEndTime);
-            setStoreDetail({
-              ...storeDetail,
-              startDay: valueStartDate,
-              endDay: valueEndDate,
-              startTime: valueStartTime,
-              endTime: valueEndTime,
-            });
             onClose();
           }}
         >
-          {t("confirm")}
+          ຍືນຢັນ
         </Button>
       </Modal.Footer>
     </Modal>

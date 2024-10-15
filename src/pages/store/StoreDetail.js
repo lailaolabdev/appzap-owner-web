@@ -15,11 +15,9 @@ import { useParams } from "react-router-dom";
 import StarRatings from "react-star-ratings";
 import { useTranslation } from "react-i18next";
 
-
 export default function StoreDetail() {
   const params = useParams();
   const { t } = useTranslation();
-
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +102,7 @@ export default function StoreDetail() {
     <div>
       <div className="row" style={{ padding: 40 }}>
         <div className="col-sm-10" style={{ fontWeight: "bold", fontSize: 18 }}>
-          {t('detail')}
+          {t("detail")}
         </div>
         <div className="col-sm-2">
           <Button
@@ -114,7 +112,7 @@ export default function StoreDetail() {
             onClick={() => setPopEditStroe(true)}
           >
             <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
-            {t('edit')}
+            {t("edit")}
           </Button>
         </div>
       </div>
@@ -166,7 +164,7 @@ export default function StoreDetail() {
             />
             <div>({dataStore?.reviewStarCount || 0})</div>
           </div>
-          <div style={{ padding: 5 }}>{t('open_service')}</div>
+          <div style={{ padding: 5 }}>{t("open_service")}</div>
           <div style={{ padding: 5 }}>{dataStore?.note}</div>
           <label className="switch">
             <input
@@ -186,32 +184,32 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            {t('restaurantOwnerInformation')}
+            {t("restaurantOwnerInformation")}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5"></div>
+            <div className="col-5">{t("surnameAndLastName")}</div>
             <div className="col-5">
               {dataStore?.adminName ? dataStore?.adminName : "-"}
             </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t('surnameAndLastName')}</div>
+            <div className="col-5">{t("location")}</div>
             <div className="col-5">
               {dataStore?.detail ? dataStore?.detail : "-"}
             </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">whatsapp</div>
+            <div className="col-5">WhatsApp</div>
             <div className="col-5">
               {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}
             </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t('phoneNumber')}</div>
+            <div className="col-5">{t("phoneNumber")}</div>
             <div className="col-5">
               {dataStore?.phone ? dataStore?.phone : "-"}
             </div>
@@ -225,17 +223,22 @@ export default function StoreDetail() {
               color: "#FFFFFF",
             }}
           >
-            {t('generalInfo')}
+            {t("generalInfo")}
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t('totalTable')}</div>
-            <div className="col-5"> {numBerTable} {t('table')}</div>
+            <div className="col-5">{t("totalTable")}</div>
+            <div className="col-5">
+              {" "}
+              {numBerTable} {t("table")}
+            </div>
           </div>
           <div style={{ height: 10 }}></div>
           <div className="row">
-            <div className="col-5">{t('allMenu')}</div>
-            <div className="col-5">{numBerMenus ? numBerMenus : "-"} {t('menu')}</div>
+            <div className="col-5">{t("allMenu")}</div>
+            <div className="col-5">
+              {numBerMenus ? numBerMenus : "-"} {t("menu")}
+            </div>
           </div>
         </div>
       </div>

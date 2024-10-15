@@ -981,7 +981,6 @@ function Homecafe() {
           type: printerBillData?.type,
           port: "9100",
           width: printerBillData?.width === "58mm" ? 400 : 580,
-          beep: 1,
         },
         async () => {
           await axios({
@@ -1046,7 +1045,7 @@ function Homecafe() {
             }}
           >
             <div>
-              <label>{t("chose_food_type")}</label>
+              <label>{t("choose_food_type")}</label>
               <select
                 className="form-control"
                 onChange={(e) => setSelectedCategory(e.target.value)}

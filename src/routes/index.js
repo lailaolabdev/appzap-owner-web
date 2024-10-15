@@ -41,6 +41,7 @@ import CreateMembers from "../pages/member/CreateMembers";
 // import SettingTheme from "../pages/setting_theme/SettingTheme";
 import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
+import CreateMemberPageWithDebt from "../pages/member/CreateMemberPageWithDebt";
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
@@ -67,6 +68,7 @@ import BannerList from "../pages/banner/BannerList";
 
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
+import DebtRoutes from "./Debt.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
@@ -107,6 +109,10 @@ function Router() {
       element: <CreateMembers />,
     },
 
+    {
+      path: "/create/members",
+      element: <CreateMemberPageWithDebt />,
+    },
     {
       path: "/",
       element: <MainLayout />,
@@ -301,6 +307,7 @@ function Router() {
         ConfigRoutes,
         SelfOrderingOrderRoutes,
         FarkRoutes,
+        DebtRoutes,
         UserRoutes,
         PinRoutes,
       ],

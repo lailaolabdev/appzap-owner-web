@@ -25,6 +25,7 @@ export default function NavBar() {
   const [userData, setUserData] = useState({});
   const { isConnectPrinter, profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
+  const [selectedLanguage, setSelectedLanguage] = useState("LA"); // ເພີ່ມ state ນີ້້ສຳລັບພາສາ
 
   // provider
   const { setStoreDetail, setProfile } = useStore();
@@ -55,9 +56,6 @@ export default function NavBar() {
   const _onLogout = () => {
     setProfile({});
     setStoreDetail({});
-    localStorage.removeItem("selectedZone");
-    // localStorage.clear();
-    // sessionStorage.clear();
     navigate(`/`);
   };
 
@@ -66,7 +64,17 @@ export default function NavBar() {
     // const lang = localStorage.getItem("i18nextLng");
 
     i18n.changeLanguage(language);
+    localStorage.setItem("language", language); // ເກັບຄ່າພາສາໃນ localStorage
+    setSelectedLanguage(language); // ອັບເດດ state ຂອງພາສາ
   };
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language"); // ດຶງຄ່າພາສາເກ່າຈາກ localStorage
+    if (savedLanguage) {
+      i18n.changeLanguage(savedLanguage); // ປ່ຽນພາສາໃນ i18n
+      setSelectedLanguage(savedLanguage); // ອັບເດດ state ໃຫ້ກົງກັບຄ່າທີ່ເກັບໄວ້
+    }
+  }, []);
 
   return (
     <div>
@@ -82,8 +90,6 @@ export default function NavBar() {
           left: 0,
           zIndex: 1,
           paddingLeft: 52,
-          // marginLeft: 60,
-          // paddingRight: 80,
         }}
         variant="dark"
       >
@@ -106,8 +112,6 @@ export default function NavBar() {
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
 
-          {/* <button onClick={() => switchLanguage("en")}>en</button>
-          <button onClick={() => switchLanguage("la")}>la</button> */}
           <div
             style={{
               marginRight: "30px",
@@ -115,13 +119,14 @@ export default function NavBar() {
               boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
             }}
           >
+            {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
             <select
-              onChange={(e) => {
-                switchLanguage(e.target.value);
-              }}
+              value={selectedLanguage}
+              onChange={(e) => switchLanguage(e.target.value)}
             >
               <option value="la">LA</option>
               <option value="en">EN</option>
+              <option value="km">KM</option>
             </select>
           </div>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>

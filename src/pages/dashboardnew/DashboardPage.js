@@ -46,7 +46,7 @@ export default function DashboardPage() {
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
-  const [userReport, setUserReport] = useState();
+  const [userReport, setUserReport] = useState([]);
   const [menuReport, setMenuReport] = useState();
   const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
@@ -61,7 +61,7 @@ export default function DashboardPage() {
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
   // provider
-  const { storeDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {
@@ -82,6 +82,18 @@ export default function DashboardPage() {
     const data = await getManyTables(storeDetail?._id);
     setTableList(data);
   };
+
+  const onExportData = async () => {
+    setStoreDetail({
+      ...storeDetail,
+      startDateReportExport: startDate,
+      endDateReportExport: endDate,
+      startTimeReportExport: startTime,
+      endTimeReportExport: endTime,
+    });
+    setPopup({ ReportExport: true });
+  };
+
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
@@ -234,7 +246,7 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ ReportExport: true })}
+            onClick={() => onExportData()}
           >
             <MdOutlineCloudDownload /> EXPORT
           </Button>
@@ -473,17 +485,18 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
-                {userReport?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                    <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
+                {userReport?.length > 0 &&
+                  userReport?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  ))}
               </table>
             </Card.Body>
           </Card>

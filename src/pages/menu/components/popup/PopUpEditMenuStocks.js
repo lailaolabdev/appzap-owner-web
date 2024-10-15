@@ -21,7 +21,8 @@ export default function PopUpEditMenuStocks({ open, onClose, onSubmit, data }) {
         onSubmit={(values, { setSubmitting }) => {
           onSubmit(values);
           onClose();
-        }}>
+        }}
+      >
         {({
           values,
           errors,
@@ -36,11 +37,11 @@ export default function PopUpEditMenuStocks({ open, onClose, onSubmit, data }) {
               <Modal.Title>ແກ້ໄຊເມນູສະຕ໊ອກ</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ຊື່ສະຕ໊ອກ</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='name'
+                  type="text"
+                  name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
@@ -50,21 +51,21 @@ export default function PopUpEditMenuStocks({ open, onClose, onSubmit, data }) {
               <div style={{ color: "red" }}>
                 {errors.name && touched.name && errors.name}
               </div>
-              <Form.Group controlId='exampleForm.ControlInput1'>
+              <Form.Group controlId="exampleForm.ControlInput1">
                 <Form.Label>ຈຳນວນ</Form.Label>
                 <Form.Control
-                  type='number'
-                  name='quantity'
+                  type="number"
+                  name="quantity"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.quantity}
-                  placeholder='ຈຳນວນ'
+                  placeholder="ຈຳນວນ"
                   isInvalid={errors.quantity}
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant='danger' onClick={onClose}>
+              <Button variant="danger" onClick={onClose}>
                 ຍົກເລີກ
               </Button>
               <Button
@@ -73,8 +74,9 @@ export default function PopUpEditMenuStocks({ open, onClose, onSubmit, data }) {
                   color: "#ffff",
                   border: 0,
                 }}
-                onClick={() => handleSubmit()}>
-                ບັນທືກ
+                onClick={() => handleSubmit()}
+              >
+                ບັນທຶກ
               </Button>
             </Modal.Footer>
           </form>

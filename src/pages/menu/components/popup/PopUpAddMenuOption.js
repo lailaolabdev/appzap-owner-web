@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import {
     MENUS,
     getLocalData,
-    END_POINT_SEVER,
+    END_POINT_SEVER_TABLE_MENU,
     master_menu_api_dev,
 } from "../../../../constants/api";
 
@@ -27,7 +27,7 @@ function PopUpAddMenuOption({
 
             const fetchAllMenuOptions = async () => {
                 try {
-                    const response = await axios.get(END_POINT_SEVER + `/v3/restaurant/${storeId}/menu-options`);
+                    const response = await axios.get(END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`);
                     setAllMenuOptions(response.data);
                 } catch (error) {
                     console.error('Error fetching all menu options:', error);
@@ -36,7 +36,7 @@ function PopUpAddMenuOption({
 
             const fetchSpecificMenuOptions = async () => {
                 try {
-                    const response = await axios.get(END_POINT_SEVER + `/v3/menu/${detailMenu.data._id}/menu-options`);
+                    const response = await axios.get(END_POINT_SEVER_TABLE_MENU + `/v3/menu/${detailMenu.data._id}/menu-options`);
                     setSpecificMenuOptions(response.data);
                     updateMenuOptionsCount(detailMenu.data._id, response.data.length);
                 } catch (error) {
@@ -56,8 +56,8 @@ function PopUpAddMenuOption({
     const handleAddOption = async (optionId) => {
         setLoadingOptionId(optionId);
         try {
-            await axios.post(END_POINT_SEVER + `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/add`);
-            const updatedOptions = await axios.get(END_POINT_SEVER + `/v3/menu/${detailMenu.data._id}/menu-options`);
+            await axios.post(END_POINT_SEVER_TABLE_MENU + `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/add`);
+            const updatedOptions = await axios.get(END_POINT_SEVER_TABLE_MENU + `/v3/menu/${detailMenu.data._id}/menu-options`);
             setSpecificMenuOptions(updatedOptions.data);
             updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
         } catch (error) {
@@ -75,8 +75,8 @@ function PopUpAddMenuOption({
     const handleDeleteOption = async (optionId) => {
         setLoadingOptionId(optionId);
         try {
-            await axios.delete(END_POINT_SEVER + `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/remove`);
-            const updatedOptions = await axios.get(END_POINT_SEVER + `/v3/menu/${detailMenu.data._id}/menu-options`);
+            await axios.delete(END_POINT_SEVER_TABLE_MENU + `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/remove`);
+            const updatedOptions = await axios.get(END_POINT_SEVER_TABLE_MENU + `/v3/menu/${detailMenu.data._id}/menu-options`);
             setSpecificMenuOptions(updatedOptions.data);
             updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
         } catch (error) {

@@ -59,10 +59,11 @@ export default function FoodTypeList() {
       };
       let _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
-        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`
-        , {
+        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
+        {
           headers: headers,
-        });
+        }
+      );
       if (_resData?.data) {
         setCategorys(_resData?.data);
         handleClose3();
@@ -127,12 +128,12 @@ export default function FoodTypeList() {
       );
       if (resData?.data) {
         // setCategorys(resData?.data);
-        getData(getTokken?.DATA?.storeId)
+        getData(getTokken?.DATA?.storeId);
         setShow2(false);
-        successAdd("ອັບເດດຂໍ້ມູນສຳເລັດ");
+        successAdd(t("update_success"));
       }
     } catch (err) {
-      errorAdd("ອັບເດດຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("update_fail"));
     }
   };
   const [isLoading, setIsLoading] = useState(false);
@@ -154,7 +155,7 @@ export default function FoodTypeList() {
       method: "get",
       url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
     });
-    console.log("-----", _resCategory?.data)
+    console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
     setIsLoading(false);
   };
@@ -162,14 +163,10 @@ export default function FoodTypeList() {
     navigate(`/food-setting/limit/40/page/1/`);
   };
   const _category = () => {
-    navigate(
-      `/food-setting/food-type/limit/40/page/1`
-    );
+    navigate(`/food-setting/food-type/limit/40/page/1`);
   };
-  const _setting= () => {
-    navigate(
-      `/settingStore/${storeDetail?._id}`
-    );
+  const _setting = () => {
+    navigate(`/settingStore/${storeDetail?._id}`);
   };
 
   const getCate = async (id) => {
@@ -179,8 +176,8 @@ export default function FoodTypeList() {
       })
         .then((response) => response.json())
         .then((json) => {
-          console.log(json)
-          setCATEGORY(json)
+          console.log(json);
+          setCATEGORY(json);
         });
     } catch (err) {
       console.log(err);
@@ -201,7 +198,7 @@ export default function FoodTypeList() {
         data: {
           id: id,
           data: {
-            isShowCategory: !isShowCategory
+            isShowCategory: !isShowCategory,
           },
         },
         headers: headers,
@@ -210,27 +207,29 @@ export default function FoodTypeList() {
       let _newData = [...Categorys];
 
       _newData[index].isShowCategory = !isShowCategory;
-      setCategorys(_newData)
-
+      setCategorys(_newData);
     } catch (err) {
       console.log("err:", err);
     }
   };
   //New Section End Here
 
-
-
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
-      <Breadcrumb>
-      <Breadcrumb.Item onClick={() => _setting()}>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
-        <Breadcrumb.Item active>ປະເພດອາຫານ</Breadcrumb.Item>
-      </Breadcrumb>
+        <Breadcrumb>
+          <Breadcrumb.Item onClick={() => _setting()}>
+            ຕັ້ງຄ່າຮ້ານອາຫານ
+          </Breadcrumb.Item>
+          <Breadcrumb.Item active>ປະເພດອາຫານ</Breadcrumb.Item>
+        </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey="/settingStore/category">
             <Nav.Item>
-              <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
+              <Nav.Link
+                eventKey="/settingStore/menu"
+                onClick={() => _menuList()}
+              >
                 ເມນູອາຫານ
               </Nav.Link>
             </Nav.Item>
@@ -239,7 +238,7 @@ export default function FoodTypeList() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t('foodType')}
+                {t("foodType")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -250,7 +249,7 @@ export default function FoodTypeList() {
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={handleShow}
             >
-             + {t('addFoodType')}
+              + {t("addFoodType")}
             </Button>{" "}
           </div>
           <div style={{ height: 20 }}></div>
@@ -259,13 +258,13 @@ export default function FoodTypeList() {
               <table className="table table-hover">
                 <thead className="thead-light">
                   <tr>
-                    <th scope="col">{t('no')}</th>
-                    <th scope="col">{t('foodTypeNameLO')}</th>
-                    <th scope="col">{t('foodTypeNameEN')}</th>
-                    <th scope="col">{t('foodTypeNameCN')}</th>
-                    <th scope="col">{t('foodTypeNameKR')}</th>
+                    <th scope="col">{t("no")}</th>
+                    <th scope="col">{t("foodTypeNameLO")}</th>
+                    <th scope="col">{t("foodTypeNameEN")}</th>
+                    <th scope="col">{t("foodTypeNameCN")}</th>
+                    <th scope="col">{t("foodTypeNameKR")}</th>
                     {/* <th scope="col">{t('note')}</th> */}
-                    <th scope="col">{t('manage')}</th>
+                    <th scope="col">{t("manage")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -274,10 +273,18 @@ export default function FoodTypeList() {
                       return (
                         <tr>
                           <td style={{ textAlign: "start" }}>{index + 1}</td>
-                          <td style={{ textAlign: "start" }}>{data?.name ?? ""}</td>
-                          <td style={{ textAlign: "start" }}>{data?.name_en ?? ""}</td>
-                          <td style={{ textAlign: "start" }}>{data?.name_cn ?? ""}</td>
-                          <td style={{ textAlign: "start" }}>{data?.name_kr ?? ""}</td>
+                          <td style={{ textAlign: "start" }}>
+                            {data?.name ?? ""}
+                          </td>
+                          <td style={{ textAlign: "start" }}>
+                            {data?.name_en ?? ""}
+                          </td>
+                          <td style={{ textAlign: "start" }}>
+                            {data?.name_cn ?? ""}
+                          </td>
+                          <td style={{ textAlign: "start" }}>
+                            {data?.name_kr ?? ""}
+                          </td>
                           {/* <td>{data?.note}</td> */}
                           <td style={{ textAlign: "start" }}>
                             <FontAwesomeIcon
@@ -307,7 +314,7 @@ export default function FoodTypeList() {
               name_cn: "",
               name_kr: "",
               note: "",
-              sort: ""
+              sort: "",
             }}
             validate={(values) => {
               const errors = {};
