@@ -38,6 +38,8 @@ export const orderStatusTranslate = (status) => {
       return "ORDER_FEEDBACK";
     case "PAID":
       return "ORDER_PAID";
+    case "PRINTBILL":
+      return "ORDER_PRINTBILL";
     default:
       return "ORDER_CANCEL";
   }

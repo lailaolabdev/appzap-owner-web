@@ -74,6 +74,7 @@ export default function CheckOutPopup({
   const {
     setSelectedTable,
     getTableDataStore,
+    setOrderPayBefore,
     orderPayBefore,
     selectedTable,
     storeDetail,
@@ -301,6 +302,7 @@ export default function CheckOutPopup({
         setTextSearchMember("");
         setCash();
         setTransfer();
+        setOrderPayBefore([]);
         // callCheckOutPrintBillOnly(selectedTable?._id);
         // setStoreDetail({ ...storeDetail, ChangeColorTable: true });
         localStorage.removeItem("STAFFCONFIRM_DATA");

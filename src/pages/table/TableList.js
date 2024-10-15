@@ -52,7 +52,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import styled from "styled-components";
-import { callCheckOutPrintBillOnly, getCodes } from "../../services/code";
+import {
+  callCheckOutPrintBillOnly,
+  callPayBeforePrintBillOnly,
+  callToUpdatePrintBillBefore,
+  getCodes,
+} from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
@@ -100,6 +105,7 @@ export default function TableList() {
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
+  const [checkStatusItem, setCheckStatusItem] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
 
@@ -256,6 +262,7 @@ export default function TableList() {
     (e) =>
       e?.status === "DOING" ||
       e?.status === "WAITING" ||
+      e?.status === "PRINTBILL" ||
       e?.tableOrderItems?.length === 0
   )?._id;
 
@@ -304,6 +311,7 @@ export default function TableList() {
 
   const [billDataLoading, setBillDataLoading] = useState(false);
   const _onCheckOut = async () => {
+    // setOrderPayBefore([]);
     getData(selectedTable?.code, true);
     setMenuItemDetailModal(true);
   };
@@ -630,7 +638,10 @@ export default function TableList() {
         }
       );
       // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
+      // orderPayBefore.length > 0 ? console.log("1") : console.log("2");
+      orderPayBefore.length > 0
+        ? updateTable()
+        : callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
@@ -641,9 +652,10 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1800,
       });
-
+      setMenuItemDetailModal(false);
       // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
+      // callCheckOutPrintBillOnly(selectedTable?._id);
+      // callPayBeforePrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setOrderPayBefore([]);
       // getTableDataStore();
@@ -663,6 +675,19 @@ export default function TableList() {
       });
       return err;
     }
+  };
+
+  const updateTable = async () => {
+    const orderItem =
+      orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
+    const checkStatus = orderPayBefore.length > 0 ? "false" : "";
+    const checkStatusBill = orderPayBefore.length > 0 ? "PRINTBILL" : "";
+    const body = {
+      orderPayBefore: orderItem,
+      isCheckout: checkStatus,
+      status: checkStatusBill,
+    };
+    callToUpdatePrintBillBefore(selectedTable?.billId, body);
   };
 
   useEffect(() => {
@@ -835,6 +860,7 @@ export default function TableList() {
   };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
+  // console.log("CHECKED ORDER: ", isCheckedOrderItem);
 
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -1176,6 +1202,7 @@ export default function TableList() {
   };
 
   const [isServedLoading, setIsServerdLoading] = useState(false);
+  const [isPrintedLoading, setIsPrintedLoading] = useState(false);
   const handleUpdateOrderStatus = async (status) => {
     try {
       if (status === "SERVED") setIsServerdLoading(true);
@@ -1225,6 +1252,58 @@ export default function TableList() {
       setIsServerdLoading(false);
     } catch (error) {
       setIsServerdLoading(false);
+      console.log(error);
+    }
+  };
+  const handleUpdateOrderPayBefore = async (status) => {
+    try {
+      if (status === "PRINTBILL") setIsPrintedLoading(true);
+      const storeId = storeDetail?._id;
+      let menuId;
+      let _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked && e?.status === "PRINTBILL")
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
+
+      let _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        Swal.fire({
+          icon: "success",
+          title: `${t("update_order_status_success")}`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        let _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
+
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+        setIsPrintedLoading(false);
+      } else {
+        setIsPrintedLoading(false);
+      }
+
+      setIsPrintedLoading(false);
+    } catch (error) {
+      setIsPrintedLoading(false);
       console.log(error);
     }
   };
@@ -1368,6 +1447,9 @@ export default function TableList() {
 
         const count = await getCountOrderWaiting(storeId);
         setCountOrderWaiting(count || 0);
+        setIsPrintedLoading(false);
+      } else {
+        setIsServerdLoading(false);
       }
     } catch (err) {
       errorAdd(`${t("fail")}`);
@@ -1409,6 +1491,17 @@ export default function TableList() {
   useEffect(() => {
     _calculateTotal();
   }, [dataBill]);
+
+  useEffect(() => {
+    getStatusItem();
+  }, [isCheckedOrderItem]);
+
+  const getStatusItem = async () => {
+    isCheckedOrderItem.map((e) => {
+      const PrintItem = e?.status === "PRINTBILL";
+      setCheckStatusItem(PrintItem);
+    });
+  };
 
   // console.log("BILL: ", dataBill);
   // console.log("TABLE: ", selectedTable);
@@ -1586,6 +1679,8 @@ export default function TableList() {
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
                                 ? "#FFE17B"
+                                : table?.statusBill === "CALL_TO_PAYBEFORE"
+                                ? "#F08080"
                                 : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
@@ -1879,7 +1974,9 @@ export default function TableList() {
                               (e) =>
                                 e?.status != "SERVED" &&
                                 e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status != "FEEDBACK" &&
+                                e?.status != "PAID" &&
+                                e?.status != "PRINTBILL"
                             )?.length
                               ? "block"
                               : "none",
@@ -1890,10 +1987,11 @@ export default function TableList() {
                               (e) =>
                                 e?.status != "SERVED" &&
                                 e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status != "FEEDBACK" &&
+                                e?.status != "PAID"
                             )?.length
                           }{" "}
-                          {t("itemNotServed")} !
+                          {t("itemNotServed")}
                         </div>
                       </div>
                       <div
@@ -2001,21 +2099,22 @@ export default function TableList() {
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => {
-                            handleUpdateOrderStatusAndCallback(
-                              "DOING",
-                              async () => {
-                                // const data = await onPrintForCher();
-                                const data = await onPrintToKitchen();
-                                return data;
-                              }
-                            ).then();
+                            handleUpdateOrderPayBefore("PRINTBILL");
+                            // handleUpdateOrderStatusAndCallback(
+                            //   "DOING",
+                            //   async () => {
+                            //     // const data = await onPrintForCher();
+                            //     const data = await onPrintToKitchen();
+                            //     return data;
+                            //   }
+                            // ).then();
                           }}
-                          disabled={!checkedBox || onPrinting}
+                          disabled={!checkedBox || isPrintedLoading}
                         >
-                          {onPrinting && (
+                          {isPrintedLoading && (
                             <Spinner animation="border" size="sm" />
                           )}
-                          {t("update_and_send_to_kitchen")}
+                          {t("update_printed")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
@@ -2098,6 +2197,8 @@ export default function TableList() {
                                         color:
                                           orderItem?.status === `SERVED`
                                             ? "green"
+                                            : orderItem?.status === "PRINTBILL"
+                                            ? "blue"
                                             : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
