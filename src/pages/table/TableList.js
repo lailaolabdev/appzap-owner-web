@@ -41,6 +41,7 @@ import {
 import { useStore } from "../../store";
 import {
   END_POINT_APP,
+  END_POINT_SEVER,
   END_POINT_SEVER_TABLE_MENU,
   END_POINT_WEB_CLIENT,
   USERS,
