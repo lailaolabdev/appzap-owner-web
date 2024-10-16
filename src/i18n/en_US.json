@@ -349,6 +349,8 @@
   "show_to_app": "Show to customer(App)",
   "show_to_web": "Show to customer(Web)",
   "show_to_staff": "Show to staff",
+  "app": "App",
+  "web": "Web",
   "close_out": "Closed",
   "define_show_menu": "Define showing menu",
   "notice": "Warning",
@@ -863,5 +865,8 @@
   "clear": "clear",
   "bill_combine": "Bill combine",
   "show_all_zone": "Show all zone",
-  "zone_setting": "Zone setting"
+  "zone_setting": "Zone setting",
+  "Open": "Open",
+  "Close": "Close"
+
 }
