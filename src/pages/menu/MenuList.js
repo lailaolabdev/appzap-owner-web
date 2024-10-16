@@ -577,6 +577,8 @@ export default function MenuList() {
     }
   };
 
+  console.log("PRINT: ", Menus);
+
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -722,6 +724,7 @@ export default function MenuList() {
                   </th>
                   <th scope="col">{t("food_name")}</th>
                   <th scope="col">{t("price")}</th>
+                  <th scope="col">{t("ປິດເປີດສະຖານະ")}</th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
                     {t("setting_show")}
                   </th>
@@ -783,6 +786,23 @@ export default function MenuList() {
                           {data?.name_kr ?? ""}
                         </td>
                         <td>{moneyCurrency(data?.price)}</td>
+                        <td style={{ textAlign: "center", color: "red" }}>
+                          {data?.isShowStaffApp === "false"
+                            ? t("staff") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCounterApp === "false"
+                            ? t("counter") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCustomerApp === "false"
+                            ? t("app") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCustomerWeb === "false"
+                            ? t("web") + " : " + t("Close")
+                            : ""}
+                        </td>
                         <td>
                           <button
                             type="button"
