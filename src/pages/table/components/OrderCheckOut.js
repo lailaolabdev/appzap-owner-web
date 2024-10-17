@@ -310,10 +310,10 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
-              disabled={printBillLoading}
+              disabled={billDataLoading}
               onClick={() => onPrintBill(false)}
             >
-              {printBillLoading && (
+              {billDataLoading && (
                 <Spinner
                   animation="border"
                   size="sm"
@@ -352,8 +352,16 @@ const OrderCheckOut = ({
                   border: "solid 1px #FB6E3B",
                   fontSize: 26,
                 }}
+                disabled={billDataLoading}
                 onClick={() => onSubmit()}
               >
+                {billDataLoading && (
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
                 <FontAwesomeIcon
                   icon={faCashRegister}
                   style={{ color: "#fff" }}
