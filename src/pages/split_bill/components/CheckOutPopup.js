@@ -311,7 +311,7 @@ export default function CheckOutPopup({
   const _calculateTotal = () => {
     let _total = 0;
     for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status) {
+      if (dataBill?.orderId[i]?.status === "SERVED") {
         _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
       }
     }
