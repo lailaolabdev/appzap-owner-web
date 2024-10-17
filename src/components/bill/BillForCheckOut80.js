@@ -58,7 +58,7 @@ export default function BillForCheckOut80({
 
   // function
   const _calculateTotal = () => {
-    // let _total = 0;
+    let _total = 0;
     // for (let _data of dataBill?.orderId || []) {
     //   const totalOptionPrice = _data?.totalOptionPrice || 0;
     //   const itemPrice = _data?.price + totalOptionPrice;
@@ -66,11 +66,11 @@ export default function BillForCheckOut80({
     //   _total += _data?.quantity * itemPrice;
     // }
 
-    const totalBillDefualt = _.sumBy(
-      dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-    );
-    let _total = 0;
+    // const _total = _.sumBy(
+    //   dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    // );
+    // let _total = 0;
 
     // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
     const orders =
@@ -79,7 +79,7 @@ export default function BillForCheckOut80({
         : dataBill?.orderId;
 
     // Loop through the available orders
-    for (let _data of orders || []) {
+    for (let _data of (orders || []).filter((e) => e?.status === "SERVED")) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
@@ -91,18 +91,16 @@ export default function BillForCheckOut80({
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
+        setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
-        const ddiscount = parseInt(
-          (totalBillDefualt * dataBill?.discount) / 100
-        );
-        setTotalAfterDiscount(totalBillDefualt - ddiscount);
+        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+        setTotalAfterDiscount(_total - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(totalBillDefualt);
+      setTotalAfterDiscount(_total);
     }
-    setTotal(totalBillDefualt);
-    setTaxAmount((totalBillDefualt * taxPercent) / 100);
+    setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
 
     // Set total amount and related charges
     setTotal(_total);
@@ -110,7 +108,7 @@ export default function BillForCheckOut80({
 
     // Calculate service charge
     const serviceChargeTotal = Math.floor(
-      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
+      (_total * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
