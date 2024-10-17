@@ -861,5 +861,7 @@
   "zone_setting": "Zone setting",
   "branch": "branch",
   "add_branch": "Add branch",
-  "branch_name": "Branch name"
+  "branch_name": "Branch name",
+  "total_branch": "Total branch",
+  "list_branch": "List branch"
 }

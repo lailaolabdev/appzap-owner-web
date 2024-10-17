@@ -12,6 +12,7 @@ import {
   faPeopleArrows,
   faTable,
 } from "@fortawesome/free-solid-svg-icons";
+import { FaEye } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import DashboardMenu from "./DashboardMenu";
 // import DashboardCategory from "./DashboardCategory";
@@ -62,6 +63,7 @@ export default function Dashboard() {
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
+  const [filterValue, setFilterValue] = useState("");
 
   const { storeDetail } = useStore();
 
@@ -77,18 +79,6 @@ export default function Dashboard() {
   }, [endDate, startDate, endTime, startTime]);
 
   // function
-  const _click1day = () => {
-    setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
-  const _click7days = () => {
-    setStartDate(moment(moment(newDate).add(-7, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
-  const _click30days = () => {
-    setStartDate(moment(moment(newDate).add(-30, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getReports(storeDetail?._id, findBy);
@@ -150,9 +140,9 @@ export default function Dashboard() {
           <CardHeader>
             <div className="box-search">
               <Form.Control
-                placeholder={t("search_name")}
-                // value={filterValue}
-                // onChange={(e) => setFilterValue(e.target.value)}
+                placeholder={t("name_branch")}
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
                 className="input-search"
               />
               <Button
@@ -192,6 +182,18 @@ export default function Dashboard() {
           </CardHeader>
           <div style={{ flex: 1 }} />
         </div>
+
+        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
+          {t("total_branch")}
+        </p>
+        <div
+          style={{
+            // height: 20,
+            borderBottom: `1px solid ${COLOR_APP}`,
+            width: "100%",
+            marginBottom: 20,
+          }}
+        />
         <Box
           sx={{
             display: "grid",
@@ -249,7 +251,7 @@ export default function Dashboard() {
                 fontWeight: "bold",
               }}
             >
-              {t("success_amount")}
+              {t("income")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -297,7 +299,7 @@ export default function Dashboard() {
                 fontWeight: "bold",
               }}
             >
-              {t("bill_crash")}
+              {t("expe_lak")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -312,6 +314,92 @@ export default function Dashboard() {
               </div>
             </Card.Body>
           </Card>
+        </Box>
+        {/* ================== other branch ======================== */}
+        <div
+          style={{
+            // height: 20,
+            borderBottom: `1px solid ${COLOR_APP}`,
+            width: "100%",
+            margin: "20px 0",
+          }}
+        />
+
+        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
+          {t("list_branch")}
+        </p>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              md: "1fr 1fr 1fr 1fr",
+              sm: "1fr 1fr",
+              xs: "1fr",
+            },
+            gap: 10,
+          }}
+        >
+          {Array.from({ length: 12 }).map((_, index) => (
+            <Card border="primary" style={{ margin: 0 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                {t("branch")} {index + 1}
+                <Button
+                  variant="primary"
+                  bg="primary"
+                  onClick={() => navigate("/branch/detail/123")}
+                >
+                  <FaEye /> {t("detail")}
+                </Button>
+              </Card.Header>
+              <Card.Body>
+                <div>
+                  {t("numberOfBill")}
+                  {" : "}
+                  {convertNumber(
+                    salesInformationReport?.noOfSalesTransactions
+                  )}{" "}
+                  ບິນ
+                </div>
+                <div>
+                  {t("totalBalance")}
+                  {" : "}
+                  {convertNumber(salesInformationReport?.totalSales)}
+                </div>
+                <div>
+                  {t("payBycash")}
+                  {" : "}
+                  {convertNumber(moneyReport?.cash?.totalBill)}
+                </div>
+                <div>
+                  {t("transferPayment")}
+                  {" : "}
+                  {convertNumber(moneyReport?.transfer?.totalBill)}
+                </div>
+                <div>
+                  {t("transfer_cash")}
+                  {" : "}
+                  {convertNumber(moneyReport?.transferCash?.totalBill)}
+                </div>
+                <div>
+                  {t("cashDiscount")}
+                  {" : "}
+                  {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
+                  {convertNumber(promotionReport?.[0]?.count)}ບິນ
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
         </Box>
       </div>
 

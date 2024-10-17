@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import AudioSettingPage from "../pages/audio/AudioSettingPage";
 import Dashboard from "../pages/branch/Dashboard";
 import BranchCreatePage from "../pages/branch/BranchCreatePage";
+import DetailBrancPage from "../pages/branch/DetailBrancPage";
 
 // eslint-disable-next-line
 export default {
@@ -16,6 +16,10 @@ export default {
     {
       path: "create",
       element: <BranchCreatePage />,
+    },
+    {
+      path: "detail/:id",
+      element: <DetailBrancPage />,
     },
   ],
 };

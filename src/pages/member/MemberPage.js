@@ -145,7 +145,7 @@ export default function MemberPage() {
 
   // console.log("valueTopList", valueTopList);
 
-  console.log({ startDate, endDate, startTime, endTime });
+  // console.log({ startDate, endDate, startTime, endTime });
   // provider
 
   // useEffect
@@ -381,7 +381,7 @@ export default function MemberPage() {
     } catch (error) {}
   };
 
-  console.log({ startDateMenu, endDateMenu, startTimeMenu, endTimeMenu });
+  // console.log({ startDateMenu, endDateMenu, startTimeMenu, endTimeMenu });
 
   const getMemberOrderMenus = async () => {
     try {

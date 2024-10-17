@@ -972,5 +972,7 @@
   "zone_setting": "ການຕັ້ງຄ່າໂຊນ",
   "branch": "ສາຂາ",
   "add_branch": "ເພີ່ມສາຂາ",
-  "name_branch": "ຊື່ສາຂາ"
+  "name_branch": "ຊື່ສາຂາ",
+  "total_branch": "ລວມທຸກສາຂາ",
+  "list_branch": "ລາຍການສາຂາ"
 }

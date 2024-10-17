@@ -41,7 +41,7 @@ import { END_POINT_EXPORT } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
-export default function DashboardPage() {
+export default function DetailBrancPage() {
   const { t } = useTranslation();
   // state
   const [reportData, setReportData] = useState([]);
@@ -226,11 +226,11 @@ export default function DashboardPage() {
                 {endDate} {endTime}
               </div>
             </Button>
-            <Button
+            {/* <Button
               onClick={() => setPopup({ popUpChooseTableComponent: true })}
             >
               {t("chose_table")}
-            </Button>
+            </Button> */}
           </div>
           {/* <Button
             variant="outline-primary"
@@ -683,12 +683,12 @@ export default function DashboardPage() {
         endTime={endTime}
         endDate={endDate}
       />
-      <PopUpChooseTableComponent
+      {/* <PopUpChooseTableComponent
         open={popup?.popUpChooseTableComponent}
         onClose={() => setPopup()}
         tableList={tableList || []}
         setSelectedTable={setSelectedTableIds}
-      />
+      /> */}
     </>
   );
 }
