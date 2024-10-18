@@ -1244,7 +1244,12 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCELED" || item.status === "PAID") return item;
+        if (
+          item?.status === "CANCELED" ||
+          item.status === "PAID" ||
+          item.status === "PRINTBILL"
+        )
+          return item;
         return {
           ...item,
           isChecked: true,
@@ -1273,7 +1278,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
       let menuId;
       let _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked)
+        ?.filter((e) => e?.isChecked && e.status !== "PRINTBILL")
         .map((i) => {
           return {
             status: status,
@@ -1281,6 +1286,8 @@ export default function TableList() {
             menuId: i?.menuId,
           };
         });
+
+      console.log("isCheckedOrderItem", _updateItems);
 
       let _resOrderUpdate = await updateOrderItem(
         _updateItems,

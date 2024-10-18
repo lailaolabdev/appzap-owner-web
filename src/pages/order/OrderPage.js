@@ -101,6 +101,7 @@ export default function OrderPage() {
       setOnPrinting(true);
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
+      console.log("orderSelect", orderSelect);
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
       console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 

@@ -206,8 +206,9 @@ function AddOrder() {
     try {
       setOnPrinting(true);
       setCountError("");
-      const orderSelect = selectedMenu?.filter((e) => e?.isChecked);
-      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
+
+      console.log("selectedMenu", selectedMenu);
+      const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
       console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
@@ -858,7 +859,7 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = printers.some(
+              const hasNoCut = !printers.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
 

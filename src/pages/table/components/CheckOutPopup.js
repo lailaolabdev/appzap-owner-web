@@ -257,6 +257,9 @@ export default function CheckOutPopup({
     const checkStatusBill =
       orderPayBefore && orderPayBefore.length > 0 ? "PAID" : "CHECKOUT";
 
+    console.log("checkStatus", checkStatus);
+    console.log("checkStatus", checkStatusBill);
+    console.log("orderItem", orderItem);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
