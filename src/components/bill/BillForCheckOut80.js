@@ -20,6 +20,7 @@ export default function BillForCheckOut80({
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
+  totalBillBillForCheckOut80,
   profile,
 }) {
   // state
@@ -32,48 +33,32 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  // console.log("storeDetail", storeDetail);
-  // console.log("dataBill", dataBill);
-
-  // useEffect
-  useEffect(() => {
-    _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
-    // console.log("currencyData: ", currencyData);
-  }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
-
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
-  }, []);
+  }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
 
   // function
   const _calculateTotal = () => {
-    let _total = 0;
-    for (let _data of dataBill?.orderId || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
-    }
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType == "LAK" ||
         dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(_total - dataBill?.discount);
+        setTotalAfterDiscount(totalBillBillForCheckOut80 - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-        setTotalAfterDiscount(_total - ddiscount);
+        const ddiscount = parseInt(
+          (totalBillBillForCheckOut80 * dataBill?.discount) / 100
+        );
+        setTotalAfterDiscount(totalBillBillForCheckOut80 - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(totalBillBillForCheckOut80);
     }
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
+    setTotal(totalBillBillForCheckOut80);
+    setTaxAmount((totalBillBillForCheckOut80 * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (_total * storeDetail?.serviceChargePer) / 100
+      (totalBillBillForCheckOut80 * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
