@@ -285,49 +285,53 @@ const OrderCheckOut = ({
             >
               {t("total_must_pay")}:
             </div>
-            <div
-              className="p-2 col-example text-center"
-              style={{
-                backgroundColor: "#F1F1F1",
-                fontSize: 26,
-              }}
-            >
-              <span style={{ justifyContent: "flex-end", display: "row" }}>
-                <b>
-                  {data && data?.discountType === "LAK"
-                    ? moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            data?.discount >
-                            0
-                            ? (total + serviceAmount) *
-                                (taxPercent * 0.01 + 1) -
-                                data?.discount
-                            : 0
+            {billDataLoading ? (
+              ""
+            ) : (
+              <div
+                className="p-2 col-example text-center"
+                style={{
+                  backgroundColor: "#F1F1F1",
+                  fontSize: 26,
+                }}
+              >
+                <span style={{ justifyContent: "flex-end", display: "row" }}>
+                  <b>
+                    {data && data?.discountType === "LAK"
+                      ? moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              data?.discount >
+                              0
+                              ? (total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) -
+                                  data?.discount
+                              : 0
+                          )
                         )
-                      )
-                    : moneyCurrency(
-                        Math.floor(
-                          total * (taxPercent * 0.01 + 1) +
-                            serviceAmount -
-                            ((total + serviceAmount) *
-                              (taxPercent * 0.01 + 1) *
-                              data?.discount) /
-                              100 >
-                            0
-                            ? total * (taxPercent * 0.01 + 1) +
-                                serviceAmount -
-                                ((total + serviceAmount) *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100
-                            : 0
-                        )
-                      )}
-                </b>
-              </span>
-            </div>
+                      : moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              ((total + serviceAmount) *
+                                (taxPercent * 0.01 + 1) *
+                                data?.discount) /
+                                100 >
+                              0
+                              ? total * (taxPercent * 0.01 + 1) +
+                                  serviceAmount -
+                                  ((total + serviceAmount) *
+                                    (taxPercent * 0.01 + 1) *
+                                    data?.discount) /
+                                    100
+                              : 0
+                          )
+                        )}
+                  </b>
+                </span>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
               <Button
                 className="ml-2 pl-4 pr-4"

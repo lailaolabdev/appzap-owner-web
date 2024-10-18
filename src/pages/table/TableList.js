@@ -570,7 +570,7 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
-    console.log("isPrintBill", isPrintBill);
+    // console.log("isPrintBill", isPrintBill);
     try {
       setPrintBillLoading(true);
       let _dataBill = {
@@ -1389,6 +1389,7 @@ export default function TableList() {
 
   useEffect(() => {
     _calculateTotal();
+    calculateTotalBill();
   }, [dataBill]);
 
   // function
@@ -1413,6 +1414,29 @@ export default function TableList() {
       setTotalAfterDiscount(_total);
     }
     setTotal(_total);
+  };
+
+  const calculateTotalBill = () => {
+    let _total = 0;
+    if (dataBill && dataBill?.orderId) {
+      for (let i = 0; i < dataBill?.orderId?.length; i++) {
+        if (dataBill?.orderId[i]?.status === "SERVED") {
+          _total +=
+            dataBill?.orderId[i]?.quantity *
+            (dataBill?.orderId[i]?.price +
+              (dataBill?.orderId[i]?.totalOptionPrice ?? 0));
+        }
+      }
+    }
+
+    console.log(_total);
+
+    // Calculate service charge
+    // const serviceChargeAmount = isServiceChargeEnabled
+    //   ? _total * (serviceCharge / 100)
+    //   : 0; // 10% if enabled
+    // setServiceAmount(serviceChargeAmount);
+    // setTotal(_total);
   };
 
   const getQrTokenForSelfOrdering = async () => {

@@ -197,9 +197,9 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (!open) return;
-    for (let i = 0; i < dataBill?.orderId?.length; i++) {
-      _calculateTotal();
-    }
+    // for (let i = 0; i < dataBill?.orderId?.length; i++) {
+    //   _calculateTotal();
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill, storeDetail?.serviceChargePer]);
   // function
@@ -303,15 +303,15 @@ export default function CheckOutPopup({
     // console.log("valueConfirm:------>", valueConfirm)
   };
 
-  const _calculateTotal = () => {
-    let _total = 0;
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status === "SERVED") {
-        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
-      }
-    }
-    setTotal(_total);
-  };
+  // const _calculateTotal = () => {
+  //   let _total = 0;
+  //   for (let i = 0; i < dataBill?.orderId.length; i++) {
+  //     if (dataBill?.orderId[i]?.status === "SERVED") {
+  //       _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
+  //     }
+  //   }
+  //   setTotal(_total);
+  // };
 
   // useEffect
   useEffect(() => {
