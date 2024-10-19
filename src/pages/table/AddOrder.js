@@ -207,7 +207,6 @@ function AddOrder() {
       setOnPrinting(true);
       setCountError("");
 
-      console.log("selectedMenu", selectedMenu);
       const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
       console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
@@ -407,12 +406,12 @@ function AddOrder() {
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
         context.font = "bold 36px NotoSansLao";
-        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
+        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
         context.font = "bold 30px NotoSansLao";
-        context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
+        context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
@@ -865,7 +864,7 @@ function AddOrder() {
 
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers).then(
+                printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(
                   () => {
                     onSelectTable(selectedTable);
                     if (state?.key === false) {
