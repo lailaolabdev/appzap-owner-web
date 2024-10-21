@@ -12,3 +12,15 @@ export const createBranchRelation = async (body, token) => {
     return { error: true };
   }
 };
+
+export const GetAllBranchRelation = async (token) => {
+  try {
+    const url = `${END_POINT_APP}/v4/branch`;
+    const res = await axios.get(url, {
+      headers: token,
+    });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};

@@ -12,6 +12,7 @@ import {
   faPeopleArrows,
   faTable,
 } from "@fortawesome/free-solid-svg-icons";
+import { getLocalData } from "../../constants/api";
 import { FaEye } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import DashboardMenu from "./DashboardMenu";
@@ -35,6 +36,7 @@ import {
   getSalesInformationReport,
   getTotalBillActiveReport,
 } from "../../services/report";
+import { GetAllBranchRelation } from "../../services/branchRelation";
 import { getCountBills } from "../../services/bill";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import convertNumber from "../../helpers/convertNumber";
@@ -64,6 +66,7 @@ export default function Dashboard() {
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
   const [filterValue, setFilterValue] = useState("");
+  const [branch, setBranch] = useState([]);
 
   const { storeDetail } = useStore();
 
@@ -76,7 +79,17 @@ export default function Dashboard() {
     getCountAllBillReportData();
     getCountBillActiveReportData();
     getTotalBillActiveReportData();
+    GetAllBranch();
   }, [endDate, startDate, endTime, startTime]);
+
+  const GetAllBranch = async () => {
+    const { DATA, TOKEN } = await getLocalData();
+    GetAllBranchRelation(TOKEN)
+      .then((data) => setBranch(data))
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   // function
   const getReportData = async () => {
@@ -115,7 +128,7 @@ export default function Dashboard() {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
 
-    console.log("getTotalBillActiveReportData: ", data);
+    // console.log("getTotalBillActiveReportData: ", data);
 
     setTotalBillActiveReport(data);
   };
@@ -340,8 +353,8 @@ export default function Dashboard() {
             gap: 10,
           }}
         >
-          {Array.from({ length: 12 }).map((_, index) => (
-            <Card border="primary" style={{ margin: 0 }}>
+          {branch.map((data, index) => (
+            <Card border="primary" style={{ margin: 0 }} key={index}>
               <Card.Header
                 style={{
                   backgroundColor: COLOR_APP,
