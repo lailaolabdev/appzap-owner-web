@@ -183,7 +183,7 @@ export default function BillForCheckOut80({
           <div>
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
+              {moment(dataBill?.createdAt).format("DD-MM-YYYY HH:mm:ss A")}
             </span>
           </div>
           <div>

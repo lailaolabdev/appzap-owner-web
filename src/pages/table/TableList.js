@@ -2065,11 +2065,11 @@ export default function TableList() {
                             color: "red",
                             display: isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK" &&
-                                e?.status != "PAID" &&
-                                e?.status != "PRINTBILL"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID" &&
+                                e?.status !== "PRINTBILL"
                             )?.length
                               ? "block"
                               : "none",
@@ -2078,10 +2078,10 @@ export default function TableList() {
                           {
                             isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK" &&
-                                e?.status != "PAID"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID"
                             )?.length
                           }{" "}
                           {t("itemNotServed")}
@@ -2089,11 +2089,11 @@ export default function TableList() {
                         <div>
                           <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
                             {isCheckedOrderItem?.filter(
-                              (e) => e?.status == "PAID"
+                              (e) => e?.status === "PAID"
                             )?.length
                               ? ` ${
                                   isCheckedOrderItem?.filter(
-                                    (e) => e?.status == "PAID"
+                                    (e) => e?.status === "PAID"
                                   )?.length
                                 } ${t("ORDER_PAID")}`
                               : ""}

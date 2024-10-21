@@ -38,7 +38,7 @@ export const useTableState = (storeDetail) => {
   // console.log("tableOrders", tableOrders);
 
   useEffect(() => {
-    if (tableOrders.length > 0 && tableOrders[0].code != selectedTable?.code) {
+    if (tableOrders.length > 0 && tableOrders[0].code !== selectedTable?.code) {
       getTableOrders(selectedTable);
     } else {
       setTableOrderItems(tableOrders);
