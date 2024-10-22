@@ -1,17 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 // import useReactRouter from "use-react-router"
-import { Nav } from "react-bootstrap";
+import { Nav, Table, Modal, Button } from "react-bootstrap";
 import moment from "moment";
 import { getHeaders } from "../../services/auth";
 import { END_POINT_SEVER } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
+import { orderStatus } from "./../../helpers";
+import { COLOR_APP } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-	faCertificate,
-	faCoins,
-	faPeopleArrows,
-	faPrint,
-	faTable,
+  faCertificate,
+  faCoins,
+  faPeopleArrows,
+  faPrint,
+  faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -20,231 +22,487 @@ import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
 
 export default function HistoryUse() {
-	const { t } = useTranslation();
-	// const { history, location, match } = useReactRouter();
-	const params = useParams();
-	const [data, setData] = useState([]);
-	const [totalLogs, setTotalLogs] = useState();
-	const [filtterModele, setFiltterModele] = useState("checkBill");
+  const { t } = useTranslation();
+  // const { history, location, match } = useReactRouter();
+  const params = useParams();
+  const [data, setData] = useState([]);
+  const [totalLogs, setTotalLogs] = useState();
+  const [filtterModele, setFiltterModele] = useState("checkBill");
+  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
+  const [isLoading, setIsLoading] = useState(false);
+  const [show, setShow] = useState(false);
+  const [dataModal, setDataModal] = useState([]);
+  const rowsPerPage = 100;
+  const [page, setPage] = useState(0);
+  const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+  const handleChangePage = useCallback((newPage) => {
+    setPage(newPage);
+  }, []);
 
-	const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    _getdataHistories();
+  }, []);
+  useEffect(() => {
+    _getdataHistories();
+  }, [page]);
 
-	const rowsPerPage = 100;
-	const [page, setPage] = useState(0);
-	const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
-	const handleChangePage = useCallback((newPage) => {
-		setPage(newPage);
-	}, []);
+  useEffect(() => {
+    _getdataHistories();
+  }, [filtterModele]);
+  const _getdataHistories = async () => {
+    try {
+      const headers = await getHeaders();
+      setIsLoading(true);
+      let apiUrl;
 
-	useEffect(() => {
-		_getdataHistories();
-	}, []);
-	useEffect(() => {
-		_getdataHistories();
-	}, [page]);
+      if (filtterModele === "billPayBefore") {
+        apiUrl = END_POINT_SEVER + `/v3/bills-split?storeId=${params?.id}`;
+      } else {
+        apiUrl =
+          END_POINT_SEVER +
+          `/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
+            params?.id
+          }&modele=${filtterModele}`;
+      }
 
-	useEffect(() => {
-		_getdataHistories();
-	}, [filtterModele]);
-	const _getdataHistories = async () => {
-		try {
-			const headers = await getHeaders();
-			setIsLoading(true);
-			const res = await axios.get(
-				END_POINT_SEVER +
-					`/v3/logs/skip/${page * rowsPerPage}/limit/${rowsPerPage}?storeId=${
-						params?.id
-					}&modele=${filtterModele}`,
-				{ headers },
-			);
-			if (res?.status < 300) {
-				setData(res?.data?.data);
-				setTotalLogs(res?.data?.total);
-			}
-		} catch (error) {
-			console.log(error);
-		}
-		setIsLoading(false);
-	};
+      const res = await axios.get(apiUrl, { headers });
+      console.log("response", res);
+      if (res?.status < 300) {
+        if (filtterModele === "billPayBefore") {
+          setData(res?.data);
+        } else {
+          setData(res?.data?.data);
+        }
+        setTotalLogs(res?.data?.total);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
+  };
 
-	return (
-		<div>
-			<div>
-				<Nav
-					fill
-					variant="tabs"
-					defaultActiveKey="/checkBill"
-					style={{
-						fontWeight: "bold",
-						backgroundColor: "#f8f8f8",
-						border: "none",
-						// height: 60,
-						marginBottom: 5,
-						overflowX: "scroll",
-						display: "flex",
-					}}
-				>
-					<Nav.Item>
-						<Nav.Link
-							eventKey="/checkBill"
-							style={{
-								color: "#FB6E3B",
-								border: "none",
-								height: 60,
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-							onClick={() => setFiltterModele("checkBill")}
-						>
-							{" "}
-							<FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-							<div style={{ width: 8 }}></div> {t("calculate_money")}
-						</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link
-							eventKey="/canceled"
-							style={{
-								color: "#FB6E3B",
-								border: "none",
-								height: 60,
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-							onClick={() => setFiltterModele("canceled")}
-						>
-							<FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-							<div style={{ width: 8 }}></div> {t("order_history")}
-						</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link
-							eventKey="/print"
-							style={{
-								color: "#FB6E3B",
-								border: "none",
-								height: 60,
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-							onClick={() => setFiltterModele("print")}
-						>
-							<FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
-							<div style={{ width: 8 }}></div> {t("printer")}
-						</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link
-							eventKey="/resetBill"
-							style={{
-								color: "#FB6E3B",
-								border: "none",
-								height: 60,
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-							onClick={() => setFiltterModele("resetBill")}
-						>
-							<FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
-							<div style={{ width: 8 }}></div> {t("edit_bill")}
-						</Nav.Link>
-					</Nav.Item>
-					<Nav.Item>
-						<Nav.Link
-							eventKey="/transferTable"
-							style={{
-								color: "#FB6E3B",
-								border: "none",
-								height: 60,
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-							}}
-							onClick={() => setFiltterModele("transferTable")}
-						>
-							<FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-							<div style={{ width: 8 }}></div> {t("change_combine_table")}
-						</Nav.Link>
-					</Nav.Item>
-				</Nav>
-			</div>
-			{isLoading ? (
-				<LoadingAppzap />
-			) : (
-				<div
-					className="col-sm-12"
-					style={{
-						overflowX: "auto",
-					}}
-				>
-					<table className="table table-hover">
-						<thead className="thead-light">
-							<tr>
-								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("no")}
-								</th>
-								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("manager_name")}
-								</th>
-								{/* <th scope="col">ສະຖານະ</th> */}
-								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("detial")}
-								</th>
-								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("cause")}
-								</th>
-								<th style={{ textWrap: "nowrap" }} scope="col">
-									{t("date_time")}
-								</th>
-							</tr>
-						</thead>
+  const formatMenuName = (name, options) => {
+    const optionNames =
+      options?.map((option) => `[${option.name}]`).join(" ") || "";
+    return `${name} ${optionNames}`;
+  };
 
-						<tbody>
-							{data?.map((item, index) => {
-								return (
-									<tr key={index}>
-										<td style={{ textWrap: "nowrap" }}>
-											{page * rowsPerPage + index + 1}
-										</td>
-										<td style={{ textWrap: "nowrap" }}>{item?.user}</td>
-										{/* <td
+  const _countAmount = (item) => {
+    let _amount = 0;
+    if (item?.length > 0) {
+      for (let i = 0; i < item.length; i++) {
+        const totalOptionPrice = item[i]?.totalOptionPrice ?? 0;
+        const totalPrice =
+          item[i]?.totalPrice ??
+          (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
+        _amount += totalPrice;
+      }
+    }
+    return _amount;
+  };
+  const handleClose = () => setShow(false);
+  const handleShow = (item) => {
+    setShow(true);
+    setDataModal(item);
+  };
+
+  return (
+    <div>
+      <div>
+        <Nav
+          fill
+          variant="tabs"
+          defaultActiveKey="/checkBill"
+          style={{
+            fontWeight: "bold",
+            backgroundColor: "#f8f8f8",
+            border: "none",
+            // height: 60,
+            marginBottom: 5,
+            overflowX: "scroll",
+            display: "flex",
+          }}
+        >
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/checkBill"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("checkBill")}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> {t("calculate_money")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/canceled"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("canceled")}
+            >
+              <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> {t("order_history")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/print"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("print")}
+            >
+              <FontAwesomeIcon icon={faPrint}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> {t("printer")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/resetBill"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("resetBill")}
+            >
+              <FontAwesomeIcon icon={faCertificate}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> {t("edit_bill")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/transferTable"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("transferTable")}
+            >
+              <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> {t("change_combine_table")}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/billPayBefore"
+              style={{
+                color: "#FB6E3B",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => setFiltterModele("billPayBefore")}
+            >
+              <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> ບິນຈ່າຍກ່ອນ{" "}
+              {/*{t("change_combine_table")} */}
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+      </div>
+      {isLoading ? (
+        <LoadingAppzap />
+      ) : (
+        <div
+          className="col-sm-12"
+          style={{
+            overflowX: "auto",
+          }}
+        >
+          {filtterModele === "billPayBefore" ? (
+            <div style={{ padding: 10, overflowX: "auto" }}>
+              <Table striped hover size="sm" style={{ fontSize: 15 }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("no")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("tableNumber")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("tableCode")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("price")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("paymentType")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("time")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("staffCheckBill")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.map((item, index) => (
+                    <tr
+                      key={"finance-" + index}
+                      onClick={() => {
+                        // setSelectOrder(item);
+                        handleShow(item?.orderId);
+                      }}
+                    >
+                      <td>{page * rowsPerPage + index + 1}</td>
+                      <td>{item?.tableId?.name ?? "-"}</td>
+                      <td>{item?.code}</td>
+                      <td>
+                        {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                          ? new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(_countAmount(item?.orderId))
+                          : new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(
+                              item?.payAmount +
+                                item?.taxAmount +
+                                item?.serviceChargeAmount
+                            )}{" "}
+                        {selectedCurrency}
+                      </td>
+                      <td
+                        style={{
+                          color:
+                            item?.paymentMethod === "CASH"
+                              ? "#00496e"
+                              : "#0D47A1",
+                        }}
+                      >
+                        {item?.paymentMethod === "CASH"
+                          ? t("payBycash")
+                          : item?.paymentMethod === "TRANSFER"
+                          ? t("transferPayment")
+                          : t("transfercash")}
+                      </td>
+                      <td>
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                      </td>
+                      <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                  bottom: 20,
+                }}
+              ></div>
+            </div>
+          ) : (
+            <table className="table table-hover">
+              <thead className="thead-light">
+                <tr>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("manager_name")}
+                  </th>
+                  {/* <th scope="col">ສະຖານະ</th> */}
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("detial")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("cause")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("date_time")}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {page * rowsPerPage + index + 1}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>{item?.user}</td>
+                      {/* <td
                       style={{
                         color: item?.event === "INFO" ? "green" : "red",
                       }}
                     >
                       {item?.event}
                     </td> */}
-										<td style={{ textWrap: "nowrap" }}>{item?.eventDetail}</td>
-										<td style={{ textWrap: "nowrap" }}>
-											{item?.reason === null ||
-											item?.reason === "" ||
-											item?.reason === undefined ||
-											item?.reason === "undefined" ||
-											item?.reason === "null"
-												? "-"
-												: item?.reason}
-										</td>
-										<td style={{ textWrap: "nowrap" }}>
-											{moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-										</td>
-									</tr>
-								);
-							})}
-						</tbody>
-					</table>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {item?.eventDetail}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {item?.reason === null ||
+                        item?.reason === "" ||
+                        item?.reason === undefined ||
+                        item?.reason === "undefined" ||
+                        item?.reason === "null"
+                          ? "-"
+                          : item?.reason}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          <PaginationAppzap
+            rowsPerPage={rowsPerPage}
+            page={page}
+            pageAll={pageAll}
+            onPageChange={handleChangePage}
+          />
+        </div>
+      )}
 
-					<PaginationAppzap
-						rowsPerPage={rowsPerPage}
-						page={page}
-						pageAll={pageAll}
-						onPageChange={handleChangePage}
-					/>
-				</div>
-			)}
-		</div>
-	);
+      <Modal show={show} onHide={handleClose} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>{t("menuModal")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 10,
+            }}
+          ></div>
+          <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
+            <thead>
+              <tr>
+                <th>{t("no")}</th>
+                <th>{t("menuname")}</th>
+                <th>{t("amount")}</th>
+                <th>{t("statusOfFood")}</th>
+                <th>{t("servedBy")}</th>
+                <th>{t("price")}</th>
+                <th>{t("time")}</th>
+                <th>ເວລາອັບເດດ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataModal
+                // ?.filter((item) => item?.status !== "PAID")
+                .map((item, index) => (
+                  <tr key={1 + index}>
+                    <td>{index + 1}</td>
+                    <td>{formatMenuName(item?.name, item?.options)}</td>
+                    <td>{item?.quantity}</td>
+                    <td
+                      style={{
+                        color:
+                          item?.status === "WAITING"
+                            ? "#2d00a8"
+                            : item?.status === "DOING"
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                            ? "green"
+                            : item?.status === "PAID"
+                            ? COLOR_APP
+                            : item?.status === "CART"
+                            ? "#00496e"
+                            : item?.status === "FEEDBACK"
+                            ? "#00496e"
+                            : "#bd0d00",
+                      }}
+                    >
+                      {orderStatus(item?.status)}
+                    </td>
+                    <td>
+                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
+                    </td>
+                    <td>
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(
+                        item?.totalPrice ??
+                          (item?.price + (item?.totalOptionPrice ?? 0)) *
+                            item?.quantity
+                      )}
+                    </td>
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+                    <td>
+                      {item?.updatedAt
+                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClose}>
+            {t("close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
 }

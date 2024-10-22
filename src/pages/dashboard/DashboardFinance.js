@@ -52,6 +52,8 @@ export default function DashboardFinance({
   const handleClose = () => setShow(false);
   const { storeDetail, profile } = useStore();
 
+  // console.log("data", data);
+
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();

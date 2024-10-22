@@ -1805,7 +1805,7 @@ export default function BillSplit() {
                       }}
                     >
                       <ButtonCustom
-                        disabled={!canCheckOut}
+                        disabled={!disableBtn}
                         onClick={() => _onCheckOut()}
                       >
                         {t("checkout")}
