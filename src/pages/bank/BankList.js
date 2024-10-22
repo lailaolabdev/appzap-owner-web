@@ -21,7 +21,7 @@ export default function BankList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const { profile } = useStore();
+  const { profile, storeDetail } = useStore();
   const [banks, setBanks] = useState([]);
   const [editBank, setEditBank] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
@@ -41,7 +41,9 @@ export default function BankList() {
 
   const fetchAllBanks = async () => {
     try {
-      const response = await Axios.get(`${END_POINT_SEVER}/v3/banks`);
+      const response = await Axios.get(
+        `${END_POINT_SEVER}/v3/banks?storeId=${storeDetail?._id}`
+      );
       setBanks(response.data.data);
     } catch (error) {
       console.error("Error fetching all banks:", error);
@@ -55,6 +57,7 @@ export default function BankList() {
   const _create = async (values) => {
     setIsLoading(true);
     const createdBy = profile.data?._id || "";
+    const storeId = storeDetail?._id || "";
 
     const existingBank = banks.find(
       (bank) => bank.bankName === values.bankName
@@ -67,6 +70,7 @@ export default function BankList() {
 
     try {
       await Axios.post(`${END_POINT_SEVER}/v3/bank/create`, {
+        storeId,
         bankName: values.bankName,
         createdBy,
       });
@@ -172,12 +176,16 @@ export default function BankList() {
                           <td className="text-left">
                             <FontAwesomeIcon
                               icon={faEdit}
-                              style={{ color: COLOR_APP,cursor:'pointer' }}
+                              style={{ color: COLOR_APP, cursor: "pointer" }}
                               onClick={() => handleShowEdit(data)}
                             />
                             <FontAwesomeIcon
                               icon={faTrashAlt}
-                              style={{ marginLeft: 20, color: "red",cursor:'pointer' }}
+                              style={{
+                                marginLeft: 20,
+                                color: "red",
+                                cursor: "pointer",
+                              }}
                               onClick={() => handleShowDelete(data)}
                             />
                           </td>
@@ -233,7 +241,7 @@ export default function BankList() {
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                    {t("bank_Name")} <span style={{ color: "red" }}>*</span>
+                      {t("bank_Name")} <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       type="text"
@@ -308,7 +316,8 @@ export default function BankList() {
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {"ຊື່ທະນາຄານທີຕ້ອງການຈະແກ້ໄຂ"} <span style={{ color: "red" }}>*</span>
+                      {"ຊື່ທະນາຄານທີຕ້ອງການຈະແກ້ໄຂ"}{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       type="text"

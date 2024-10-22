@@ -97,6 +97,48 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
+  const bankTotalAmount = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      let findBy = "?";
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+      }
+
+      const url =
+        END_POINT_EXPORT +
+        `/export/report-bank${findBy}&storeId=${storeDetail?._id}`;
+      const _res = await Axios.get(url);
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: "blob", // Important to get the response as a Blob
+        });
+
+        // Create a Blob from the response data
+        // console.log("response", response.data);
+        const fileBlob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Use the file-saver library to save the file with a new name
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("bank_total")}` + ".xlsx" || "export.xlsx"
+        );
+      }
+    } catch (err) {
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
   const Billdetail = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -348,6 +390,12 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
             onClick={Promotions}
           >
             <span>{t("promotion")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20, width: 200 }}
+            onClick={bankTotalAmount}
+          >
+            <span>{t("bank_total")}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20, width: 200 }}

@@ -73,7 +73,7 @@ export default function CheckOutPopup({
   const [membersData, setMembersData] = useState([]);
 
   const { setSelectedTable, getTableDataStore } = useStore();
-  const [banks, setBanks] = useState([]); // เริ่มต้นเป็น array
+  const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
   const navigate = useNavigate();
 
@@ -82,7 +82,9 @@ export default function CheckOutPopup({
   useEffect(() => {
     const fetchAllBanks = async () => {
       try {
-        const response = await axios.get(`${END_POINT_SEVER}/v3/banks`);
+        const response = await axios.get(
+          `${END_POINT_SEVER}/v3/banks?storeId=${storeDetail?._id}`
+        );
         setBanks(response.data.data);
       } catch (error) {
         console.error("Error fetching all banks:", error);
@@ -91,13 +93,17 @@ export default function CheckOutPopup({
     console.log("tab: ", tab);
     console.log("bank: ", banks);
     console.log("selectedBank: ", selectedBank);
-    fetchAllBanks()   
-  }, [tab,selectedBank]);
+    fetchAllBanks();
+  }, [tab, selectedBank]);
 
-
-  const handleChange = (event) => {
-    setSelectedBank(event.target.value);
+  const handleChange = (e) => {
+    const selectedOption = banks.find((bank) => bank._id === e.target.value);
+    setSelectedBank({
+      id: selectedOption._id,
+      name: selectedOption.bankName,
+    });
   };
+
   ////
 
   useEffect(() => {
@@ -257,7 +263,8 @@ export default function CheckOutPopup({
         {
           id: dataBill?._id,
           data: {
-            selectedBank:selectedBank,
+            selectedBank: selectedBank.name,
+            bankId: selectedBank.id,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -320,7 +327,7 @@ export default function CheckOutPopup({
       });
   };
 
-  console.log("SERVICE", storeDetail?.serviceChargePer);
+  // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
     saveServiceChargeDetails();
@@ -752,16 +759,23 @@ export default function CheckOutPopup({
                 ))}
               </Form.Control>
 
-              {(tab == "transfer"|| tab === "cash_transfer")  && (
-                <select value={selectedBank} onChange={handleChange}>
-                <option value="" disabled >ເລື່ອກທະນາຄານ</option>
-                {Array.isArray(banks) && banks.map((bank) => (
-                  <option key={bank._id} value={bank.bankName}>
-                    {bank.bankName}
+              {(tab == "transfer" || tab === "cash_transfer") && (
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
                   </option>
-                ))}
-              </select>
-              
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
               )}
             </div>
             <NumberKeyboard
