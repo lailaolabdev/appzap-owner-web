@@ -449,23 +449,18 @@ export default function TableList() {
       const _billIdNew = _billsNew?.[0]?.["_id"];
       setbillSplitNewId(selectNewTable?.billId);
 
-      console.log("=======log1");
-
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
       setbillSplitOldId(selectedTable?.billId);
-      console.log("=======log2");
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
-      console.log("=======log3");
 
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      console.log("=======log4");
 
       const changTable = await axios({
         method: "put",
@@ -2128,7 +2123,10 @@ export default function TableList() {
                         >
                           {t("closeTable")}
                         </ButtonCustom>
-                        <ButtonCustom onClick={handleShow}>
+                        <ButtonCustom
+                          disabled={tableOrderItems?.length === 0}
+                          onClick={handleShow}
+                        >
                           {t("combine_table")}
                         </ButtonCustom>
                         <ButtonCustom
@@ -2142,7 +2140,11 @@ export default function TableList() {
                         </ButtonCustom>
 
                         <ButtonCustom
-                          disabled={!canCheckOut || isWaitingCheckout}
+                          disabled={
+                            !canCheckOut ||
+                            isWaitingCheckout ||
+                            tableOrderItems?.length === 0
+                          }
                           onClick={() => _onCheckOut()}
                         >
                           {isWaitingCheckout && (
@@ -2174,7 +2176,7 @@ export default function TableList() {
                               navigate(`/bill/split/${selectedTable?._id}`)
                             }
                           >
-                            {t("bill_combine")}
+                            {t("bill_split")}
                           </ButtonCustom>
                         ) : (
                           ""

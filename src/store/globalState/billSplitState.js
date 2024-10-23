@@ -79,18 +79,18 @@ export const useBillState = (storeDetail) => {
       let res = await axios.get(url);
       const data = res.data;
 
-      if (selectedItems.includes(data[0])) {
-        if (selectedItems?.length >= 2) return;
-        setSelectedItems(selectedItems.filter((b) => b?._id === data[0]?._id));
-      } else {
-        setSelectedItems([...selectedItems, data[0]]);
-        const exitItems = selectedItems.filter((b) => b?._id === data[0]?._id);
-        if (exitItems?.length > 0) {
-          setSelectedItems(
-            selectedItems.filter((b) => b?._id !== data[0]?._id)
-          );
-        }
-      }
+      // if (selectedItems.includes(data[0])) {
+      //   if (selectedItems?.length >= 2) return;
+      //   setSelectedItems(selectedItems.filter((b) => b?._id === data[0]?._id));
+      // } else {
+      //   setSelectedItems([...selectedItems, data[0]]);
+      //   const exitItems = selectedItems.filter((b) => b?._id === data[0]?._id);
+      //   if (exitItems?.length > 0) {
+      //     setSelectedItems(
+      //       selectedItems.filter((b) => b?._id !== data[0]?._id)
+      //     );
+      //   }
+      // }
 
       if (res.status < 300) {
         setbillOrders(data);
