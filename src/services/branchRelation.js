@@ -13,9 +13,9 @@ export const createBranchRelation = async (body, token) => {
   }
 };
 
-export const GetAllBranchRelation = async (token) => {
+export const GetAllBranchRelation = async (token, userId) => {
   try {
-    const url = `${END_POINT_APP}/v4/branch`;
+    const url = `${END_POINT_APP}/v4/branch?userId=${userId}`;
     const res = await axios.get(url, {
       headers: token,
     });

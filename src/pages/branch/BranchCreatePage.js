@@ -59,7 +59,6 @@ export default function BranchCreatePage() {
         password: value?.password,
         storeId: value?.storeId,
         storeName: value?.storeName,
-        mainKey: DATA?.storeId,
       };
       const data = await createBranchRelation(_body, TOKEN);
       if (data.error) {

@@ -15,11 +15,6 @@ import {
 import { getLocalData } from "../../constants/api";
 import { FaEye } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import DashboardMenu from "./DashboardMenu";
-// import DashboardCategory from "./DashboardCategory";
-// import DashboardFinance from "./DashboardFinance";
-// import MoneyChart from "./MoneyChart";
-// import DashboardUser from "./DashboardUser";
 import "./index.css";
 import useQuery from "../../helpers/useQuery";
 import { COLOR_APP } from "../../constants";
@@ -84,7 +79,10 @@ export default function Dashboard() {
 
   const GetAllBranch = async () => {
     const { DATA, TOKEN } = await getLocalData();
-    GetAllBranchRelation(TOKEN)
+
+    console.log("DATA", DATA);
+
+    GetAllBranchRelation(TOKEN, DATA?._id)
       .then((data) => setBranch(data))
       .catch((err) => {
         console.log(err);
@@ -415,44 +413,6 @@ export default function Dashboard() {
           ))}
         </Box>
       </div>
-
-      {/* {changeUi === "MONEY_CHART" && (
-        <MoneyChart
-          startDate={startDate}
-          endDate={endDate}
-          selectedCurrency={selectedCurrency}
-        />
-      )}
-      {changeUi === "CHECKBILL" && (
-        <DashboardFinance
-          startDate={startDate}
-          endDate={endDate}
-          startTime={startTime}
-          endTime={endTime}
-          selectedCurrency={selectedCurrency}
-        />
-      )}
-      {changeUi === "MENUS" && (
-        <DashboardMenu
-          startDate={startDate}
-          endDate={endDate}
-          selectedCurrency={selectedCurrency}
-        />
-      )}
-      {changeUi === "CATEGORY" && (
-        <DashboardCategory
-          startDate={startDate}
-          endDate={endDate}
-          selectedCurrency={selectedCurrency}
-        />
-      )}
-      {changeUi === "STAFF" && (
-        <DashboardUser
-          startDate={startDate}
-          endDate={endDate}
-          selectedCurrency={selectedCurrency}
-        />
-      )} */}
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}
