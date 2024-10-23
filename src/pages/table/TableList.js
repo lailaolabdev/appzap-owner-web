@@ -2176,7 +2176,7 @@ export default function TableList() {
                               navigate(`/bill/split/${selectedTable?._id}`)
                             }
                           >
-                            {t("bill_combine")}
+                            {t("bill_split")}
                           </ButtonCustom>
                         ) : (
                           ""

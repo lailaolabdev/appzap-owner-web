@@ -884,7 +884,7 @@
   "ORDER_FEEDBACK": "ສົ່ງຄືນ",
   "ORDER_CANCEL": "ຍົກເລີກ",
   "ORDER_PAID": "ຈ່າຍແລ້ວ",
-  "ORDER_PRINTBILL":"ພີມບີນ",
+  "ORDER_PRINTBILL": "ພີມບີນ",
   "option_menu": "ອ໋ອບຊັນ",
   "example": "** ເຊັ່ນ: ຮ້ອນ,ເຢັນ,ປັ່ນ,ນ້ອຍ,ກາງ,ໃຫຍ່ (ບໍ່ຕັດສະຕ໋ອກ)",
   "chose_export_excel": "ເລືອກລາຍການທີ່ຈະ Export",
@@ -979,5 +979,7 @@
   "show_all_zone": "ສະແດງໂຊນທັງໝົດ",
   "zone_setting": "ການຕັ້ງຄ່າໂຊນ",
   "Open": "ເປີດ",
-  "Close": "ປິດ"
+  "Close": "ປິດ",
+  "bill_paid": "ບິນຈ່າຍກ່ອນ",
+  "bill_split": "ບິນແຍກຈ່າຍ"
 }

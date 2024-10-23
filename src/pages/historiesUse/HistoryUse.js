@@ -12,6 +12,8 @@ import {
   faCertificate,
   faCoins,
   faPeopleArrows,
+  faAddressCard,
+  faListAlt,
   faPrint,
   faTable,
 } from "@fortawesome/free-solid-svg-icons";
@@ -56,7 +58,11 @@ export default function HistoryUse() {
       let apiUrl;
 
       if (filtterModele === "billPayBefore") {
-        apiUrl = END_POINT_SEVER + `/v3/bills-split?storeId=${params?.id}`;
+        apiUrl =
+          END_POINT_SEVER +
+          `/v3/bills-split/skip/${
+            page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id}`;
       } else {
         apiUrl =
           END_POINT_SEVER +
@@ -222,9 +228,9 @@ export default function HistoryUse() {
               }}
               onClick={() => setFiltterModele("billPayBefore")}
             >
-              <FontAwesomeIcon icon={faPeopleArrows}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> ບິນຈ່າຍກ່ອນ{" "}
-              {/*{t("change_combine_table")} */}
+              <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div>
+              {t("bill_paid")}
             </Nav.Link>
           </Nav.Item>
         </Nav>

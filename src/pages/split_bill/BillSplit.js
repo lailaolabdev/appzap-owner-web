@@ -723,90 +723,6 @@ export default function BillSplit() {
     }
   };
 
-  // const onPrintQR = async (tokenQR) => {
-  //   try {
-  //     if (!tokenQR) {
-  //       return;
-  //     }
-  //     // alert(tokenQR);
-  //     // setTokenForSmartOrder(tokenQR, (ee) => {
-  //     //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
-  //     // });
-  //     // if (!tokenForSmartOrder) {
-  //     //   setTokenForSmartOrder(tokenQR);
-  //     //   await delay(1000);
-  //     //   return;
-  //     // }
-  //     // if (!tokenForSmartOrder) {
-  //     //   return;
-  //     // }
-  //     let urlForPrinter = "";
-  //     const _printerCounters = JSON.parse(printerCounter?.prints);
-  //     const printerBillData = printers?.find(
-  //       (e) => e?._id === _printerCounters?.BILL
-  //     );
-  //     let dataImageForPrint;
-  //     if (printerBillData?.width === "80mm") {
-  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
-  //         useCORS: true,
-  //         scrollX: 10,
-  //         scrollY: 0,
-  //         scale: 530 / widthBill80,
-  //       });
-  //     }
-
-  //     if (printerBillData?.width === "58mm") {
-  //       dataImageForPrint = await html2canvas(qrSmartOrder80Ref.current, {
-  //         useCORS: true,
-  //         scrollX: 10,
-  //         scrollY: 0,
-  //         scale: 350 / widthBill58,
-  //       });
-  //     }
-  //     if (printerBillData?.type === "ETHERNET") {
-  //       urlForPrinter = ETHERNET_PRINTER_PORT;
-  //     }
-  //     if (printerBillData?.type === "BLUETOOTH") {
-  //       urlForPrinter = BLUETOOTH_PRINTER_PORT;
-  //     }
-  //     if (printerBillData?.type === "USB") {
-  //       urlForPrinter = USB_PRINTER_PORT;
-  //     }
-
-  //     const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-  //     var bodyFormData = new FormData();
-  //     bodyFormData.append("ip", printerBillData?.ip);
-  //     bodyFormData.append("port", "9100");
-  //     bodyFormData.append("image", _file);
-  //     bodyFormData.append("beep1", 1);
-  //     bodyFormData.append("beep2", 9);
-
-  //     await axios({
-  //       method: "post",
-  //       url: urlForPrinter,
-  //       data: bodyFormData,
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-  //     setTokenForSmartOrder(null);
-  //     await Swal.fire({
-  //       icon: "success",
-  //       title: "ປິນສຳເລັດ",
-  //       showConfirmButton: false,
-  //       timer: 1500,
-  //     });
-  //     setTokenForSmartOrder(null);
-  //   } catch (err) {
-  //     setTokenForSmartOrder(null);
-  //     console.log(err);
-  //     await Swal.fire({
-  //       icon: "error",
-  //       title: "ປິນບໍ່ສຳເລັດ",
-  //       showConfirmButton: false,
-  //       timer: 1500,
-  //     });
-  //   }
-  // };
-
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
 
   const billForCher80 = useRef([]);
@@ -1804,24 +1720,28 @@ export default function BillSplit() {
                         paddingRight: 10,
                       }}
                     >
-                      <ButtonCustom
-                        disabled={!disableBtn}
-                        onClick={() => _onCheckOut()}
-                      >
-                        {t("checkout")}
-                      </ButtonCustom>
-                      <ButtonCustom
-                        disabled={disableBtn}
-                        onClick={() =>
-                          _goToAddOrder(
-                            billOrderItems[0]?.tableId?._id,
-                            billOrderItems[0]?.code,
-                            billOrderItems?.isBillSplit
-                          )
-                        }
-                      >
-                        + {t("addOrder")}
-                      </ButtonCustom>
+                      <div hidden={!disableBtn}>
+                        <ButtonCustom
+                          disabled={!disableBtn}
+                          onClick={() => _onCheckOut()}
+                        >
+                          {t("checkout")}
+                        </ButtonCustom>
+                      </div>
+                      <div hidden={disableBtn}>
+                        <ButtonCustom
+                          disabled={disableBtn}
+                          onClick={() =>
+                            _goToAddOrder(
+                              billOrderItems[0]?.tableId?._id,
+                              billOrderItems[0]?.code,
+                              billOrderItems?.isBillSplit
+                            )
+                          }
+                        >
+                          + {t("addOrder")}
+                        </ButtonCustom>
+                      </div>
                     </div>
                     <div
                       style={{
