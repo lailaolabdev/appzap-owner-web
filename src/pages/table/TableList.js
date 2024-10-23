@@ -1616,6 +1616,7 @@ export default function TableList() {
   };
 
   const getDataZone = async () => {
+    console.log("Params: ", storeDetail?._id);
     try {
       let header = await getHeaders();
       const headers = {
@@ -1626,7 +1627,7 @@ export default function TableList() {
         method: "get",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/zones`,
         params: {
-          storeId: params?.id,
+          storeId: storeDetail?._id,
           limit: 100,
         },
         headers: headers,
