@@ -1626,7 +1626,7 @@ export default function TableList() {
         method: "get",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/zones`,
         params: {
-          storeId: params?.id,
+          storeId: storeDetail?._id,
           limit: 100,
         },
         headers: headers,
