@@ -1,418 +1,316 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import moment from "moment";
-import { Nav, Button, Card, Form } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import Box from "../../components/Box";
+import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
-import { FaSearch, FaUser, FaPlusCircle } from "react-icons/fa";
-import {
-  faCertificate,
-  faCoins,
-  faPeopleArrows,
-  faTable,
-} from "@fortawesome/free-solid-svg-icons";
+import { FaSearch, FaPlusCircle } from "react-icons/fa";
 import { getLocalData } from "../../constants/api";
 import { FaEye } from "react-icons/fa";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./index.css";
-import useQuery from "../../helpers/useQuery";
 import { COLOR_APP } from "../../constants";
-import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
-import { END_POINT_SEVER } from "../../constants/api";
-import { useStore } from "../../store";
-import { MdOutlineCloudDownload } from "react-icons/md";
+// import { useStore } from "../../store";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import {
-  getMoneyReport,
-  getPromotionReport,
-  getReports,
-  getSalesInformationIgnoreCheckoutReport,
-  getSalesInformationReport,
-  getTotalBillActiveReport,
-} from "../../services/report";
-import { GetAllBranchRelation } from "../../services/branchRelation";
-import { getCountBills } from "../../services/bill";
+  GetAllBranchRelation,
+  GetAllBranchIncome,
+} from "../../services/branchRelation";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import convertNumber from "../../helpers/convertNumber";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const { accessToken } = useQuery();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const newDate = new Date();
 
   // state
-  const [reportData, setReportData] = useState([]); // ຂໍ້ມູນລາຍງານ
-  const [salesInformationReport, setSalesInformationReport] = useState();
-  const [totalBillActiveReport, setTotalBillActiveReport] = useState();
-  const [promotionReport, setPromotionReport] = useState();
-  const [countAllBillReport, setCountAllBillReport] = useState();
-  const [countBillActiveReport, setCountBillActiveReport] = useState();
-  const [moneyReport, setMoneyReport] = useState();
-  const [currency, setcurrency] = useState([]);
   const [popup, setPopup] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
-  const [selectedCurrency, setSelectedCurrency] = useState("LAK");
-  const [changeUi, setChangeUi] = useState("CHECKBILL");
-  const [changeText, setChangeText] = useState("CLICK1");
   const [filterValue, setFilterValue] = useState("");
-  const [branch, setBranch] = useState([]);
+  // const [branch, setBranch] = useState([]);
+  const [branchInCome, setBranchInCome] = useState([]);
+  const [loadingData, setLoadingData] = useState(false);
 
-  const { storeDetail } = useStore();
+  // const { storeDetail } = useStore();
 
   // useEffect
   useEffect(() => {
-    getReportData();
-    getSalesInformationReportData();
-    getMoneyReportData();
-    getPromotionReportData();
-    getCountAllBillReportData();
-    getCountBillActiveReportData();
-    getTotalBillActiveReportData();
-    GetAllBranch();
+    GetAllBranchData();
   }, [endDate, startDate, endTime, startTime]);
 
-  const GetAllBranch = async () => {
-    const { DATA, TOKEN } = await getLocalData();
+  useEffect(() => {
+    GetAllBranchData();
+  }, []);
 
-    console.log("DATA", DATA);
+  const GetAllBranchData = async () => {
+    setLoadingData(true);
+    try {
+      const { DATA, TOKEN } = await getLocalData();
 
-    GetAllBranchRelation(TOKEN, DATA?._id)
-      .then((data) => setBranch(data))
-      .catch((err) => {
-        console.log(err);
-      });
+      if (TOKEN && DATA?._id) {
+        const [branchData, incomeData] = await Promise.all([
+          GetAllBranchRelation(TOKEN, DATA._id, filterValue),
+          GetAllBranchIncome(TOKEN, DATA._id, filterValue, startDate, endDate),
+        ]);
+
+        // Combine branchData and incomeData into one object
+        const combinedData = branchData.map((branch) => {
+          const income = incomeData?.data?.find(
+            (inc) => inc._id === branch.storeId
+          );
+          return {
+            ...branch,
+            totalAmount: income?.totalAmount || 0,
+            nameBranch: income?.storeDetails?.name || "",
+          };
+        });
+        setBranchInCome(combinedData);
+        setLoadingData(false);
+      } else {
+        console.error("Token or User ID not found");
+        setLoadingData(false);
+      }
+    } catch (err) {
+      console.error("Error fetching combined branch data:", err);
+      setLoadingData(false);
+    }
   };
 
-  // function
-  const getReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(storeDetail?._id, findBy);
-    setReportData(data);
-  };
-  const getSalesInformationReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(storeDetail?._id, findBy);
-    setSalesInformationReport(data);
-  };
-  const getMoneyReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(storeDetail?._id, findBy);
-    setMoneyReport(data);
-  };
-  const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(storeDetail?._id, findBy);
-    setPromotionReport(data);
-  };
-  const getCountAllBillReportData = async () => {
-    const findBy = `?storeId=${storeDetail?._id}&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-    const data = await getCountBills(findBy);
-    setCountAllBillReport(data);
-  };
-
-  const getCountBillActiveReportData = async () => {
-    const findBy = `?storeId=${storeDetail?._id}&isCheckout=false&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-    const data = await getCountBills(findBy);
-    setCountBillActiveReport(data);
-  };
-
-  const getTotalBillActiveReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
-
-    // console.log("getTotalBillActiveReportData: ", data);
-
-    setTotalBillActiveReport(data);
+  // const GetAllBranch = async () => {
+  //   const { DATA, TOKEN } = await getLocalData();
+  //   GetAllBranchRelation(TOKEN, DATA?._id)
+  //     .then((data) => setBranch(data))
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+  // const GetAllBranchInCome = async () => {
+  //   const { DATA, TOKEN } = await getLocalData();
+  //   GetAllBranchIncome(TOKEN, DATA?._id)
+  //     .then((data) => setBranchInCome(data?.data))
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+  const TotalInCome = () => {
+    return branchInCome.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.totalAmount;
+    }, 0);
   };
 
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
       <div style={{ height: 10 }}></div>
-      <div
-        sx={{
-          fontWeight: "bold",
-          backgroundColor: "#f8f8f8",
-          border: "none",
-          display: "grid",
-          gridTemplateColumns: {
-            md: "repeat(5,1fr)",
-            sm: "repeat(3,1fr)",
-            xs: "repeat(2,1fr)",
-          },
-        }}
-      >
-        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-          <CardHeader>
-            <div className="box-search">
-              <Form.Control
-                placeholder={t("name_branch")}
-                value={filterValue}
-                onChange={(e) => setFilterValue(e.target.value)}
-                className="input-search"
-              />
+      {loadingData ? (
+        <Loading />
+      ) : (
+        <div
+          sx={{
+            fontWeight: "bold",
+            backgroundColor: "#f8f8f8",
+            border: "none",
+            display: "grid",
+            gridTemplateColumns: {
+              md: "repeat(5,1fr)",
+              sm: "repeat(3,1fr)",
+              xs: "repeat(2,1fr)",
+            },
+          }}
+        >
+          <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+            <CardHeader>
+              <div className="box-search">
+                <Form.Control
+                  placeholder={t("name_branch")}
+                  value={filterValue}
+                  onChange={(e) => setFilterValue(e.target.value)}
+                  className="input-search"
+                />
+                <Button
+                  onClick={() => GetAllBranchData()}
+                  variant="primary"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                >
+                  <FaSearch /> {t("search")}
+                </Button>
+              </div>
+
+              <div className="box-date-filter">
+                <span>ເລືອກວັນທີ : </span>
+                <Button
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setPopup({ popupfiltter: true })}
+                >
+                  <BsFillCalendarWeekFill />
+                  <div>
+                    {startDate} {startTime}
+                  </div>{" "}
+                  ~{" "}
+                  <div>
+                    {endDate} {endTime}
+                  </div>
+                </Button>
+              </div>
               <Button
-                // onClick={() => getMembersData()}
+                onClick={() => navigate("/branch/create")}
                 variant="primary"
                 style={{ display: "flex", gap: 10, alignItems: "center" }}
               >
-                <FaSearch /> {t("search")}
+                <FaPlusCircle /> {t("add")}
               </Button>
-            </div>
+            </CardHeader>
+            <div style={{ flex: 1 }} />
+          </div>
 
-            <div className="box-date-filter">
-              <span>ເລືອກວັນທີ : </span>
-              <Button
-                variant="outline-primary"
-                size="small"
-                style={{ display: "flex", gap: 10, alignItems: "center" }}
-                onClick={() => setPopup({ popupfiltter: true })}
-              >
-                <BsFillCalendarWeekFill />
-                <div>
-                  {startDate} {startTime}
-                </div>{" "}
-                ~{" "}
-                <div>
-                  {endDate} {endTime}
-                </div>
-              </Button>
-            </div>
-            <Button
-              onClick={() => navigate("/branch/create")}
-              variant="primary"
-              style={{ display: "flex", gap: 10, alignItems: "center" }}
-            >
-              <FaPlusCircle /> {t("add")}
-            </Button>
-          </CardHeader>
-          <div style={{ flex: 1 }} />
-        </div>
-
-        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
-          {t("total_branch")}
-        </p>
-        <div
-          style={{
-            // height: 20,
-            borderBottom: `1px solid ${COLOR_APP}`,
-            width: "100%",
-            marginBottom: 20,
-          }}
-        />
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              md: "1fr 1fr 1fr",
-              sm: "1fr 1fr",
-              xs: "1fr",
-            },
-            gap: 10,
-          }}
-        >
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("all_amount")}
-            </Card.Header>
-            <Card.Body>
-              <div>
-                {t("numberOfBill")}
-                {" : "}
-                {countAllBillReport?.count} ບິນ
-              </div>
-              <div>
-                {t("total_will_get")}
-                {" : "}
-                {convertNumber(
-                  totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
-                )}
-              </div>
-              <div>
-                {t("outstandingDebt")}
-                {" : "}
-                {convertNumber(countBillActiveReport?.count)} ບິນ
-              </div>
-              <div>
-                {t("money_crash")}
-                {" : "}
-                {convertNumber(totalBillActiveReport?.total)}
-              </div>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("income")}
-            </Card.Header>
-            <Card.Body>
-              <div>
-                {t("numberOfBill")}
-                {" : "}
-                {convertNumber(
-                  salesInformationReport?.noOfSalesTransactions
-                )}{" "}
-                ບິນ
-              </div>
-              <div>
-                {t("totalBalance")}
-                {" : "}
-                {convertNumber(salesInformationReport?.totalSales)}
-              </div>
-              <div>
-                {t("payBycash")}
-                {" : "}
-                {convertNumber(moneyReport?.cash?.totalBill)}
-              </div>
-              <div>
-                {t("transferPayment")}
-                {" : "}
-                {convertNumber(moneyReport?.transfer?.totalBill)}
-              </div>
-              <div>
-                {t("transfer_cash")}
-                {" : "}
-                {convertNumber(moneyReport?.transferCash?.totalBill)}
-              </div>
-              <div>
-                {t("cashDiscount")}
-                {" : "}
-                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
-                {convertNumber(promotionReport?.[0]?.count)}ບິນ
-              </div>
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("expe_lak")}
-            </Card.Header>
-            <Card.Body>
-              <div>
-                {t("numberOfBill")}
-                {" : "}
-                {convertNumber(countBillActiveReport?.count)} ບິນ
-              </div>
-              <div>
-                {t("money_crash")}
-                {" : "}
-                {convertNumber(totalBillActiveReport?.total)}
-              </div>
-            </Card.Body>
-          </Card>
-        </Box>
-        {/* ================== other branch ======================== */}
-        <div
-          style={{
-            // height: 20,
-            borderBottom: `1px solid ${COLOR_APP}`,
-            width: "100%",
-            margin: "20px 0",
-          }}
-        />
-
-        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
-          {t("list_branch")}
-        </p>
-
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              md: "1fr 1fr 1fr 1fr",
-              sm: "1fr 1fr",
-              xs: "1fr",
-            },
-            gap: 10,
-          }}
-        >
-          {branch.map((data, index) => (
-            <Card border="primary" style={{ margin: 0 }} key={index}>
+          <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
+            {t("total_branch")}
+          </p>
+          <div
+            style={{
+              // height: 20,
+              borderBottom: `1px solid ${COLOR_APP}`,
+              width: "100%",
+              marginBottom: 20,
+            }}
+          />
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                md: "1fr 1fr 1fr",
+                sm: "1fr 1fr",
+                xs: "1fr",
+              },
+              gap: 10,
+            }}
+          >
+            <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
                 style={{
                   backgroundColor: COLOR_APP,
                   color: "#fff",
                   fontSize: 18,
                   fontWeight: "bold",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
                 }}
               >
-                {t("branch")} {index + 1}
-                <Button
+                {t("all_amount")}
+              </Card.Header>
+              <Card.Body>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <p style={{ fontWeight: "bold", fontSize: 18 }}>
+                    {t("all_recieve")} {convertNumber(TotalInCome())} {t("lak")}
+                  </p>
+                </div>
+              </Card.Body>
+            </Card>
+            <Card border="primary" style={{ margin: 0 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {t("income")}
+              </Card.Header>
+              <Card.Body>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <p style={{ fontWeight: "bold", fontSize: 18 }}>
+                    Coming soon
+                  </p>
+                </div>
+              </Card.Body>
+            </Card>
+            <Card border="primary" style={{ margin: 0 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {t("expe_lak")}
+              </Card.Header>
+              <Card.Body>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <p style={{ fontWeight: "bold", fontSize: 18 }}>
+                    Coming soon
+                  </p>
+                </div>
+              </Card.Body>
+            </Card>
+          </Box>
+          {/* ================== other branch ======================== */}
+          <div
+            style={{
+              // height: 20,
+              borderBottom: `1px solid ${COLOR_APP}`,
+              width: "100%",
+              margin: "20px 0",
+            }}
+          />
+
+          <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
+            {t("list_branch")}
+          </p>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                md: "1fr 1fr 1fr 1fr",
+                sm: "1fr 1fr",
+                xs: "1fr",
+              },
+              gap: 10,
+            }}
+          >
+            {branchInCome?.length &&
+              branchInCome?.map((data, index) => (
+                <Card border="primary" style={{ margin: 0 }} key={index}>
+                  <Card.Header
+                    style={{
+                      backgroundColor: COLOR_APP,
+                      color: "#fff",
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    {/* {t("branch")} {index + 1} :{" "} */}
+                    {data?.nameBranch ? data?.nameBranch : "ບໍ່ມີຂໍ້ມູນຮ້ານ"}
+                    {/* <Button
                   variant="primary"
                   bg="primary"
                   onClick={() => navigate("/branch/detail/123")}
                 >
                   <FaEye /> {t("detail")}
-                </Button>
-              </Card.Header>
-              <Card.Body>
-                <div>
-                  {t("numberOfBill")}
-                  {" : "}
-                  {convertNumber(
-                    salesInformationReport?.noOfSalesTransactions
-                  )}{" "}
-                  ບິນ
-                </div>
-                <div>
-                  {t("totalBalance")}
-                  {" : "}
-                  {convertNumber(salesInformationReport?.totalSales)}
-                </div>
-                <div>
-                  {t("payBycash")}
-                  {" : "}
-                  {convertNumber(moneyReport?.cash?.totalBill)}
-                </div>
-                <div>
-                  {t("transferPayment")}
-                  {" : "}
-                  {convertNumber(moneyReport?.transfer?.totalBill)}
-                </div>
-                <div>
-                  {t("transfer_cash")}
-                  {" : "}
-                  {convertNumber(moneyReport?.transferCash?.totalBill)}
-                </div>
-                <div>
-                  {t("cashDiscount")}
-                  {" : "}
-                  {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
-                  {convertNumber(promotionReport?.[0]?.count)}ບິນ
-                </div>
-              </Card.Body>
-            </Card>
-          ))}
-        </Box>
-      </div>
+                </Button> */}
+                  </Card.Header>
+                  <Card.Body>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <p style={{ fontWeight: "bold", fontSize: 18 }}>
+                        {t("all_recieve")} {convertNumber(data?.totalAmount)}{" "}
+                        {t("lak")}
+                      </p>
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
+          </Box>
+        </div>
+      )}
+
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}
         onClose={() => setPopup()}

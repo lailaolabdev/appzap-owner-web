@@ -863,5 +863,9 @@
   "add_branch": "Add branch",
   "branch_name": "Branch name",
   "total_branch": "Total branch",
-  "list_branch": "List branch"
+  "list_branch": "List branch",
+  "exit_branch": "already this  branch  Exit",
+  "branch_require": "Branch name is required",
+  "branch_select": "Select branch",
+  "field_required": "All fields are required"
 }

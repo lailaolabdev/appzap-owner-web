@@ -974,5 +974,9 @@
   "add_branch": "ເພີ່ມສາຂາ",
   "name_branch": "ຊື່ສາຂາ",
   "total_branch": "ລວມທຸກສາຂາ",
-  "list_branch": "ລາຍການສາຂາ"
+  "list_branch": "ລາຍການສາຂາ",
+  "exit_branch": "ມີສາຂານີ້ມີແລ້ວ",
+  "branch_require": "ກະລຸນາປ້ອນຊື່ສາຂາ",
+  "branch_select": "ກະລຸນາເລຶອກຊື່ສາຂາ",
+  "field_required": "ກະລຸນາປ້ອນຂໍ້ມູນໃນແບບຟອມໃຫ້ຄົບ"
 }

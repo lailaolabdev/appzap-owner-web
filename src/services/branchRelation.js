@@ -9,13 +9,39 @@ export const createBranchRelation = async (body, token) => {
     });
     return res.data;
   } catch (error) {
-    return { error: true };
+    return { error };
   }
 };
 
-export const GetAllBranchRelation = async (token, userId) => {
+export const GetAllBranchRelation = async (token, userId, filterValue) => {
   try {
     const url = `${END_POINT_APP}/v4/branch?userId=${userId}`;
+    const res = await axios.get(url, {
+      headers: token,
+    });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+export const GetAllBranchIncome = async (
+  token,
+  userId,
+  filterValue,
+  startDate,
+  endDate
+) => {
+  try {
+    let findby = "?";
+    findby += `userId=${userId}&`;
+    if (filterValue) {
+      findby += `storeName=${filterValue}&`;
+    }
+    if (startDate && endDate) {
+      findby += `startDate=${startDate}&`;
+      findby += `endDate=${endDate}`;
+    }
+    const url = `${END_POINT_APP}/v4/branch/income${findby}`;
     const res = await axios.get(url, {
       headers: token,
     });
