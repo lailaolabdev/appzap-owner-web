@@ -43,7 +43,7 @@ export default function BranchCreatePage() {
 
   const getSearchStore = () => {
     setIsLoadingStore(true);
-    getStores(true, searchStore)
+    getStores(searchStore)
       .then((stores) => {
         setStores(stores);
         setIsLoadingStore(false);
@@ -78,7 +78,7 @@ export default function BranchCreatePage() {
         mainUserId: DATA?._id,
         mainStoreId: DATA?.storeId,
       };
-      const data = await createBranchRelation(_body, TOKEN).then((data) => {
+      await createBranchRelation(_body, TOKEN).then((data) => {
         if (data.error) {
           setIsLoading(false);
           errorAdd(`${t("save_fail")}`);
@@ -100,10 +100,6 @@ export default function BranchCreatePage() {
       console.log(err);
       return;
     }
-  };
-
-  const handleCreateBranch = async (value) => {
-    console.log("value: ", value);
   };
 
   const optionsBills = stores.map((data) => {
@@ -135,7 +131,7 @@ export default function BranchCreatePage() {
                 boxShadow: "0px 2px 8px 2px rgba(0,0,0,0.05)",
                 borderBottom: "2px solid rgba(0,0,0,0.05)",
                 borderRadius: 10,
-                marginTop: "60px",
+                marginTop: "40px",
               }}
             >
               <p

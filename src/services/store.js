@@ -2,16 +2,13 @@ import { END_POINT_APP } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 
-export const getStores = async (hasPos, search) => {
+export const getStores = async (search) => {
   try {
     let findBy = "?";
 
     if (search) {
       findBy += `name=${search}&`;
     }
-
-    findBy += `hasPOS=${hasPos}&`;
-
     const url = `${END_POINT_APP}/v3/stores${findBy}`;
     const res = await axios.get(url);
     return res.data;

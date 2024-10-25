@@ -204,7 +204,7 @@ export default function Dashboard() {
               <Card.Body>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                   <p style={{ fontWeight: "bold", fontSize: 18 }}>
-                    {t("all_recieve")} {convertNumber(TotalInCome())} {t("lak")}
+                    {convertNumber(TotalInCome())} {t("lak")}
                   </p>
                 </div>
               </Card.Body>
@@ -273,7 +273,7 @@ export default function Dashboard() {
               gap: 10,
             }}
           >
-            {branchInCome?.length &&
+            {branchInCome?.length > 0 &&
               branchInCome?.map((data, index) => (
                 <Card border="primary" style={{ margin: 0 }} key={index}>
                   <Card.Header
