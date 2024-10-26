@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "5.7.23",
+  "version": "5.7.24",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
