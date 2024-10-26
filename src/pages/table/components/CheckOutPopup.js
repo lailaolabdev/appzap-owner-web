@@ -75,6 +75,7 @@ export default function CheckOutPopup({
   const { setSelectedTable, getTableDataStore } = useStore();
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
+  const [currency, setCurrency] = useState("");
   const navigate = useNavigate();
 
   //select Bank
@@ -90,9 +91,7 @@ export default function CheckOutPopup({
         console.error("Error fetching all banks:", error);
       }
     };
-    console.log("tab: ", tab);
-    console.log("bank: ", banks);
-    console.log("selectedBank: ", selectedBank);
+
     fetchAllBanks();
   }, [tab, selectedBank]);
 
@@ -103,8 +102,22 @@ export default function CheckOutPopup({
       name: selectedOption.bankName,
     });
   };
-
-  ////
+  const handleChangeCurrencie = (e) => {
+    if (e.target.value === "LAK") {
+      setSelectCurrency({
+        id: "LAK",
+        name: storeDetail?.firstCurrency || "LAK",
+      });
+      return;
+    }
+    const selectedCurrencie = currencyList.find(
+      (item) => item?._id === e?.target?.value
+    );
+    setSelectCurrency({
+      id: selectedCurrencie._id,
+      name: selectedCurrencie.currencyName,
+    });
+  };
 
   useEffect(() => {
     setMemberData();
@@ -179,10 +192,10 @@ export default function CheckOutPopup({
     const totalReceived = cashAmount + transferAmount;
 
     moneyReceived = `${
-      selectCurrency == "LAK"
+      selectCurrency?.name == "LAK"
         ? moneyCurrency(totalReceived)
         : moneyCurrency(parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    } ${selectCurrency?.name}`;
 
     const changeAmount = totalReceived - discountedTotalBill;
     moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
@@ -195,21 +208,26 @@ export default function CheckOutPopup({
       moneyChange: moneyChange,
       dataStaffConfirm: staffConfirm,
     }));
-  }, [cash, transfer, selectCurrency]);
+  }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
     if (!open) return;
-    if (selectCurrency != "LAK") {
+    if (selectCurrency?.name != "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode == selectCurrency
+        (e) => e.currencyCode == selectCurrency?.name
       );
+      console.log("_currencyData", _currencyData);
       setRateCurrency(_currencyData?.buy || 1);
     } else {
       setCashCurrency();
       setCash();
       setRateCurrency(1);
     }
-  }, [selectCurrency, selectCurrency, storeDetail?.serviceChargePer]);
+  }, [
+    selectCurrency?.name,
+    selectCurrency?.name,
+    storeDetail?.serviceChargePer,
+  ]);
   useEffect(() => {
     if (!open) return;
     const amount = cashCurrency * rateCurrency;
@@ -247,7 +265,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
-  const _checkBill = async () => {
+  const _checkBill = async (currencyId) => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
     const serviceChargePer = storeDetail?.serviceChargePer;
@@ -257,6 +275,8 @@ export default function CheckOutPopup({
 
     const localZone = localStorage.getItem("selectedZone");
 
+    console.log("currencyId", currencyId);
+
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -265,6 +285,8 @@ export default function CheckOutPopup({
           data: {
             selectedBank: selectedBank.name,
             bankId: selectedBank.id,
+            currencyId: currencyId,
+            currency: cashCurrency,
             isCheckout: "true",
             status: "CHECKOUT",
             payAmount: cash,
@@ -331,7 +353,7 @@ export default function CheckOutPopup({
 
   const handleSubmit = () => {
     saveServiceChargeDetails();
-    _checkBill();
+    _checkBill(selectCurrency?.id);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
@@ -443,7 +465,7 @@ export default function CheckOutPopup({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCash();
         } else {
@@ -488,8 +510,6 @@ export default function CheckOutPopup({
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
   };
-
-  // console.log("textSearchMember", textSearchMember);
 
   return (
     <Modal
@@ -542,13 +562,13 @@ export default function CheckOutPopup({
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              <span hidden={selectCurrency === "LAK"}>
+              <span hidden={selectCurrency?.name === "LAK"}>
                 {" "}
                 <BiTransfer />{" "}
               </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
-                hidden={selectCurrency === "LAK"}
+                hidden={selectCurrency?.name === "LAK"}
               >
                 {moneyCurrency(
                   (dataBill && dataBill?.discountType === "LAK"
@@ -559,9 +579,12 @@ export default function CheckOutPopup({
                     ? totalBill - (totalBill * dataBill?.discount) / 100
                     : 0) / rateCurrency
                 )}{" "}
-                {selectCurrency}
+                {selectCurrency?.name}
               </span>
-              <span style={{ fontSize: 14 }} hidden={selectCurrency === "LAK"}>
+              <span
+                style={{ fontSize: 14 }}
+                hidden={selectCurrency?.name === "LAK"}
+              >
                 {" "}
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
@@ -575,8 +598,8 @@ export default function CheckOutPopup({
                 marginBottom: 10,
               }}
             >
-              <InputGroup hidden={selectCurrency == "LAK"}>
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+              <InputGroup hidden={selectCurrency.name == "LAK"}>
+                <InputGroup.Text>{selectCurrency.name}</InputGroup.Text>
                 <Form.Control
                   type="text"
                   placeholder="0"
@@ -589,7 +612,7 @@ export default function CheckOutPopup({
                   }}
                   size="lg"
                 />
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
               </InputGroup>
               <InputGroup>
                 <InputGroup.Text>{t("cash")}</InputGroup.Text>
@@ -718,7 +741,10 @@ export default function CheckOutPopup({
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: storeDetail?.firstCurrency || "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer(transferCal);
                   setTab("transfer");
@@ -733,7 +759,10 @@ export default function CheckOutPopup({
                 }
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: storeDetail?.firstCurrency || "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer();
                   setTab("cash_transfer");
@@ -748,14 +777,12 @@ export default function CheckOutPopup({
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency}
-                onChange={(e) => {
-                  setSelectCurrency(e?.target?.value);
-                }}
+                value={selectCurrency?.id}
+                onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
                 {currencyList?.map((e) => (
-                  <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                  <option value={e?._id}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
 

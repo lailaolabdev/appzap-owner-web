@@ -45,7 +45,6 @@ import {
   END_POINT_WEB_CLIENT,
   USERS,
   getLocalData,
-  
 } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
@@ -105,8 +104,7 @@ export default function TableList() {
 
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
-  const [createdAt , setCreatedAt] = useState()
-
+  const [createdAt, setCreatedAt] = useState();
 
   // provider
   const {
@@ -132,7 +130,6 @@ export default function TableList() {
     setCountOrderWaiting,
     profile,
     isWaitingCheckout,
-    
   } = useStore();
 
   const reLoadData = () => {
@@ -157,8 +154,8 @@ export default function TableList() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
-  const [serviceChangeAmount, setServiceChangeAmount] = useState(0)
-  
+  const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
+
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     const refs = {};
@@ -565,7 +562,6 @@ export default function TableList() {
     }
   };
 
-  
   const saveServiceChargeDetails = async () => {
     if (storeDetail?.serviceChargePer > 0) {
       try {
@@ -573,7 +569,7 @@ export default function TableList() {
           console.error("Missing profile data or selected table");
           return;
         }
-  
+
         const userId = profile.data._id || "";
         const billId = selectedTable.billId;
         const firstName = profile.data.firstname;
@@ -589,7 +585,7 @@ export default function TableList() {
         console.log("fname:", firstName);
         console.log("lname:", lastName);
         console.log("CreateAt:", createdAt);
-  
+
         const response = await axios.post(
           `${END_POINT_SEVER}/saveservice`,
           {
@@ -610,27 +606,20 @@ export default function TableList() {
             },
           }
         );
-  
+
         console.log("Service charge saved:", response.data);
       } catch (error) {
-        console.error("Error saving service charge:", error.response?.data || error.message);
+        console.error(
+          "Error saving service charge:",
+          error.response?.data || error.message
+        );
       }
     }
   };
-  
 
-  
- 
- 
-
-  
-
-
- 
   const onPrintBill = async (isPrintBill) => {
     try {
-      
-      setPrintBillLoading(true)
+      setPrintBillLoading(true);
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -688,6 +677,8 @@ export default function TableList() {
 
       await printFlutter(
         {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
           type: printerBillData?.type,
@@ -706,8 +697,8 @@ export default function TableList() {
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
-      
-      setPrintBillLoading(false)
+
+      setPrintBillLoading(false);
       await Swal.fire({
         icon: "success",
         title: `${t("checkbill_success")}`,
@@ -726,7 +717,7 @@ export default function TableList() {
       }
     } catch (err) {
       console.log("err printer", err);
-      setPrintBillLoading(false)
+      setPrintBillLoading(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -819,6 +810,8 @@ export default function TableList() {
 
       await printFlutter(
         {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
           type: printerBillData?.type,
@@ -1013,6 +1006,8 @@ export default function TableList() {
         }
         await printFlutter(
           {
+            drawer: false,
+            paper: _printer?.width === "58mm" ? 400 : 500,
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
@@ -1132,6 +1127,8 @@ export default function TableList() {
         }
         await printFlutter(
           {
+            drawer: false,
+            paper: _printer?.width === "58mm" ? 400 : 500,
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
@@ -1952,7 +1949,10 @@ export default function TableList() {
                           disabled={!canCheckOut || isWaitingCheckout}
                           onClick={() => _onCheckOut()}
                         >
-                          {isWaitingCheckout && <Spinner animation="border" size="sm" />} {" "} Checkout
+                          {isWaitingCheckout && (
+                            <Spinner animation="border" size="sm" />
+                          )}{" "}
+                          Checkout
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() =>
@@ -2373,9 +2373,9 @@ export default function TableList() {
       />
 
       <OrderCheckOut
-       setCreatedAt={setCreatedAt}
-       createdAt={createdAt}
-       totalMustPay={totalMustPay}
+        setCreatedAt={setCreatedAt}
+        createdAt={createdAt}
+        totalMustPay={totalMustPay}
         setTotalMustPay={setTotalMustPay}
         setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
