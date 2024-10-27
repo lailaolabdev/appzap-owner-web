@@ -68,15 +68,11 @@ export default function CheckOutPopup({
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [memberData, setMemberData] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
-
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
-
   const { setSelectedTable, getTableDataStore } = useStore();
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
-  const [currency, setCurrency] = useState("");
-  const navigate = useNavigate();
 
   //select Bank
 
@@ -128,6 +124,10 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     getMembersData();
+    setSelectCurrency({
+      id: "LAK",
+      name: storeDetail?.firstCurrency || "LAK",
+    });
   }, []);
 
   const handleSearchOne = async () => {
@@ -211,6 +211,7 @@ export default function CheckOutPopup({
   }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
+    console.log("object");
     if (!open) return;
     if (selectCurrency?.name != "LAK") {
       const _currencyData = currencyList.find(
@@ -265,7 +266,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
-  const _checkBill = async (currencyId) => {
+  const _checkBill = async (currencyId, currencyName) => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
     const serviceChargePer = storeDetail?.serviceChargePer;
@@ -275,40 +276,44 @@ export default function CheckOutPopup({
 
     const localZone = localStorage.getItem("selectedZone");
 
-    console.log("currencyId", currencyId);
+    let body = {
+      selectedBank: selectedBank.name,
+      bankId: selectedBank.id,
+      isCheckout: "true",
+      status: "CHECKOUT",
+      payAmount: cash,
+      transferAmount: transfer,
+      paymentMethod: forcus,
+      taxAmount: taxAmount,
+      taxPercent: taxPercent,
+      serviceChargePercent: serviceChargePer,
+      serviceChargeAmount: serviceChargeAmount,
+      customerId: selectDataOpption?._id,
+      userNanme: selectDataOpption?.username,
+      phone: selectDataOpption?.phone,
+      memberId: memberData?._id,
+      memberName: memberData?.name,
+      memberPhone: memberData?.phone,
+      billMode: tableData?.editBill,
+      tableName: tableData?.tableName,
+      tableCode: tableData?.code,
+      fullnameStaffCheckOut:
+        staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
+      staffCheckOutId: staffConfirm?.id,
+    };
+
+    if (currencyId !== "LAK") {
+      body.currencyId = currencyId;
+      body.currency = cashCurrency;
+      body.currencyName = currencyName;
+    }
 
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
         {
           id: dataBill?._id,
-          data: {
-            selectedBank: selectedBank.name,
-            bankId: selectedBank.id,
-            currencyId: currencyId,
-            currency: cashCurrency,
-            isCheckout: "true",
-            status: "CHECKOUT",
-            payAmount: cash,
-            transferAmount: transfer,
-            paymentMethod: forcus,
-            taxAmount: taxAmount,
-            taxPercent: taxPercent,
-            serviceChargePercent: serviceChargePer,
-            serviceChargeAmount: serviceChargeAmount,
-            customerId: selectDataOpption?._id,
-            userNanme: selectDataOpption?.username,
-            phone: selectDataOpption?.phone,
-            memberId: memberData?._id,
-            memberName: memberData?.name,
-            memberPhone: memberData?.phone,
-            billMode: tableData?.editBill,
-            tableName: tableData?.tableName,
-            tableCode: tableData?.code,
-            fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
-          },
+          data: body,
         },
         {
           headers: await getHeaders(),
@@ -319,7 +324,10 @@ export default function CheckOutPopup({
         getTableDataStore();
         setCashCurrency();
         setTab("cash");
-        setSelectCurrency("LAK");
+        setSelectCurrency({
+          id: "LAK",
+          name: storeDetail?.firstCurrency || "LAK",
+        });
         setSelectInput("inputCash");
         setForcus("CASH");
         setRateCurrency(1);
@@ -353,7 +361,7 @@ export default function CheckOutPopup({
 
   const handleSubmit = () => {
     saveServiceChargeDetails();
-    _checkBill(selectCurrency?.id);
+    _checkBill(selectCurrency?.id, selectCurrency?.name);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
@@ -478,7 +486,7 @@ export default function CheckOutPopup({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -505,7 +513,7 @@ export default function CheckOutPopup({
     };
   });
 
-  // console.log("optionsData", optionsData);
+  console.log("selectCurrency", selectCurrency?.name !== "LAK");
 
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
@@ -598,8 +606,8 @@ export default function CheckOutPopup({
                 marginBottom: 10,
               }}
             >
-              <InputGroup hidden={selectCurrency.name == "LAK"}>
-                <InputGroup.Text>{selectCurrency.name}</InputGroup.Text>
+              <InputGroup hidden={selectCurrency?.name == "LAK"}>
+                <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 <Form.Control
                   type="text"
                   placeholder="0"

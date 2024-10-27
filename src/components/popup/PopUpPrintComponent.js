@@ -13,6 +13,7 @@ import {
   getActiveBillReport,
   getBankReport,
   getBillReport,
+  getCurrencyReport,
 } from "../../services/report";
 import _ from "lodash";
 import {
@@ -31,6 +32,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [bills, setBill] = useState();
   const [bank, setBank] = useState([]);
+  const [currency, setcurrency] = useState([]);
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
     ຍອດທັງຫມົດ: 0,
@@ -141,7 +143,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const data = await getBillReport(storeDetail._id, findBy);
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
       const bankData = await getBankReport(storeDetail._id, findBy);
-      console.log("bankData", bankData);
+      const currencyData = await getCurrencyReport(storeDetail._id, findBy);
+      console.log("currencyData", currencyData);
       // logic
 
       const countBill = data.length || 0;
@@ -185,6 +188,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       });
       setBill(data);
       setBank(bankData);
+      setcurrency(currencyData);
     } catch (err) {}
   };
 
@@ -303,6 +307,27 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     </td>
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.bankTotalAmount)}
+                    </td>
+                  </tr>
+                ))}
+              </TableComponent>
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              <TableComponent>
+                <tr style={{ fontWeight: "bold" }}>
+                  <td style={{ textAlign: "left" }}>{t("no")}</td>
+                  <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
+                  <td style={{ textAlign: "right" }}>{t("amount")}</td>
+                </tr>
+                {currency?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency?.currencyName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.currencyTotal))}
                     </td>
                   </tr>
                 ))}

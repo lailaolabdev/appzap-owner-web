@@ -12,6 +12,7 @@ import { useStore } from "../../store";
 import {
   getBankReport,
   getCategoryReport,
+  getCurrencyReport,
   getMenuReport,
   getMoneyReport,
   getPromotionReport,
@@ -59,6 +60,7 @@ export default function DashboardPage() {
   const [popup, setPopup] = useState();
   const [tableList, setTableList] = useState([]);
   const [bankList, setBankList] = useState([]);
+  const [currencyList, setCurrencyList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
@@ -76,7 +78,7 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
-    getBankBillName();
+    getCurrencyName();
     getCategoryReportData();
     getBankBillName();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
@@ -141,6 +143,12 @@ export default function DashboardPage() {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const res = await getBankReport(storeDetail?._id, findBy);
     setBankList(res);
+  };
+  const getCurrencyName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const res = await getCurrencyReport(storeDetail?._id, findBy);
+    // setBankList(res);
+    setCurrencyList(res);
   };
 
   const getPromotionReportData = async () => {
@@ -677,6 +685,42 @@ export default function DashboardPage() {
                       </td>
                     </tr>
                   ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("all_curency")}
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>{t("code")}</th>
+                  <th style={{ textAlign: "center" }}>{t("ccrc")}</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                </tr>
+                {currencyList?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyCode}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.currencyTotal))}
+                    </td>
+                  </tr>
+                ))}
               </table>
             </Card.Body>
           </Card>

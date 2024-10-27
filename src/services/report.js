@@ -134,3 +134,13 @@ export const getBankReport = async (storeId, findBy) => {
     return error;
   }
 };
+export const getCurrencyReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/currencies-count${findBy}&storeId=${storeId}`;
+    const res = await axios.get(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
