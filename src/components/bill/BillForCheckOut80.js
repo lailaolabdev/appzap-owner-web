@@ -104,14 +104,8 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(_total);
     }
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
-
-    // Set total amount and related charges
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
-
-    // Calculate service charge
+    setTotal(totalBillBillForCheckOut80);
+    setTaxAmount((totalBillBillForCheckOut80 * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
       (_total * storeDetail?.serviceChargePer) / 100
     );
