@@ -24,7 +24,15 @@ const OrderCheckOut = ({
   printBillCalulate,
 }) => {
   const { t } = useTranslation();
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail,
+    setStoreDetail,
+    orderPayBefore,
+    setOrderPayBefore,
+    profile,
+    audioSetting,
+    setAudioSetting,
+  } = useStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
@@ -35,6 +43,71 @@ const OrderCheckOut = ({
   useEffect(() => {
     setIsServiceChargeEnabled(false);
   }, []);
+
+  useEffect(() => {
+    if (orderPayBefore) {
+      // console.log("DATA: ", data);
+      // console.log("Updated orderPayBefore: ", orderPayBefore);
+    }
+  }, [orderPayBefore]);
+
+  const calculateDiscountedTotal = (
+    total,
+    serviceAmount,
+    taxPercent,
+    discount,
+    discountType
+  ) => {
+    const totalWithServiceAndTax =
+      (total + serviceAmount) * (taxPercent * 0.01 + 1);
+
+    if (discountType === "LAK" || discountType === "MONEY") {
+      return totalWithServiceAndTax - discount > 0
+        ? totalWithServiceAndTax - discount
+        : 0;
+    } else {
+      const percentageDiscount = (totalWithServiceAndTax * discount) / 100;
+      return totalWithServiceAndTax - percentageDiscount > 0
+        ? totalWithServiceAndTax - percentageDiscount
+        : 0;
+    }
+  };
+
+  const discountedTotal = calculateDiscountedTotal(
+    total,
+    serviceAmount,
+    taxPercent,
+    data?.discount,
+    data?.discountType
+  );
+
+  const orderItem = (orders) => {
+    return orders.map((e, index) => {
+      const options =
+        e?.options
+          ?.map((option) =>
+            option.quantity > 1
+              ? `[${option.quantity} x ${option.name}]`
+              : `[${option.name}]`
+          )
+          .join(" ") || "";
+
+      const itemPrice = e?.price + (e?.totalOptionPrice ?? 0);
+      const itemTotal = e?.price ? moneyCurrency(itemPrice * e?.quantity) : "-";
+
+      return (
+        <tr key={getOrderItemKey(e)}>
+          <td>{index + 1}</td>
+          <td>
+            {e?.name ?? "-"} {options}
+          </td>
+          <td>{e?.quantity}</td>
+          <td>{moneyCurrency(itemPrice)}</td>
+          <td>{itemTotal}</td>
+        </tr>
+      );
+    });
+  };
 
   const _calculateTotal = () => {
     const serviceChargeAmount = isServiceChargeEnabled
@@ -119,41 +192,11 @@ const OrderCheckOut = ({
               </td>
             ) : (
               <tbody>
-                {data &&
-                  data?.orderId?.map((orderItem, index) => {
-                    const options =
-                      orderItem?.options
-                        ?.map((option) =>
-                          option.quantity > 1
-                            ? `[${option.quantity} x ${option.name}]`
-                            : `[${option.name}]`
-                        )
-                        .join(" ") || "";
-                    return (
-                      <tr key={getOrderItemKey(orderItem)}>
-                        <td>{index + 1}</td>
-                        <td>
-                          {orderItem?.name ?? "-"} {options}
-                        </td>
-                        <td>{orderItem?.quantity}</td>
-                        <td>
-                          {moneyCurrency(
-                            orderItem?.price +
-                              (orderItem?.totalOptionPrice ?? 0)
-                          )}
-                        </td>
-                        <td>
-                          {orderItem?.price
-                            ? moneyCurrency(
-                                (orderItem?.price +
-                                  (orderItem?.totalOptionPrice ?? 0)) *
-                                  orderItem?.quantity
-                              )
-                            : "-"}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                {orderPayBefore && orderPayBefore.length > 0
+                  ? orderItem(orderPayBefore)
+                  : data?.orderId
+                  ? orderItem(data?.orderId)
+                  : null}
                 <tr>
                   <td colSpan="4" style={{ textAlign: "center" }}>
                     {t("discount")}:
@@ -212,7 +255,7 @@ const OrderCheckOut = ({
               disabled={printBillLoading || printBillCalulate}
               onClick={() => onPrintBill(false)}
             >
-              {printBillLoading && (
+              {billDataLoading && (
                 <Spinner
                   animation="border"
                   size="sm"
@@ -292,8 +335,16 @@ const OrderCheckOut = ({
                   border: "solid 1px #FB6E3B",
                   fontSize: 26,
                 }}
+                // disabled={billDataLoading}
                 onClick={() => onSubmit()}
               >
+                {billDataLoading && (
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
                 <FontAwesomeIcon
                   icon={faCashRegister}
                   style={{ color: "#fff" }}

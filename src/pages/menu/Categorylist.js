@@ -31,7 +31,6 @@ export default function Categorylist() {
   // modal delete
   const [show3, setShow3] = useState(false);
   const handleClose3 = () => setShow3(false);
-  const [dateDelete, setdateDelete] = useState("");
   const handleShow3 = (id, name) => {
     setdateDelete({ name, id });
     setShow3(true);
@@ -39,6 +38,7 @@ export default function Categorylist() {
   // update
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
+  const [dateDelete, setdateDelete] = useState("");
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
@@ -73,7 +73,7 @@ export default function Categorylist() {
     }
   };
   const _createCategory = async (values) => {
-    console.log("DATA VALUES: ", values.categoryTypeId);
+    // console.log("DATA VALUES: ", values.categoryTypeId);
     const header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
@@ -171,7 +171,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER_TABLE_MENU + `/v3/categoroy-type?storeId=${id}`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/category-type?storeId=${id}`,
     });
     setCategorysType(_resCategoryType?.data?.data);
     setIsLoading(false);

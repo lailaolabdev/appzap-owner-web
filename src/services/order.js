@@ -40,13 +40,11 @@ export const getOrders = async (
     console.log("get orders error:", error);
   }
 };
-export const getCountOrderWaiting = async (
-  storeId
-) => {
+export const getCountOrderWaiting = async (storeId) => {
   try {
     const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders/count-order-waiting?storeId=${storeId}&status=WAITING`;
     const countOrder = await axios.get(url);
-    return countOrder?.data?.count || 0
+    return countOrder?.data?.count || 0;
   } catch (error) {
     console.log("get orders error:", error);
   }
@@ -85,7 +83,13 @@ export const getOrdersWithTableId = async (status = ACTIVE_STATUS, tableId) => {
   }
 };
 
-export const updateOrderItem = async (orderItems, storeId, menuId, seletedCancelOrderItem, selectedTable) => {
+export const updateOrderItem = async (
+  orderItems,
+  storeId,
+  menuId,
+  seletedCancelOrderItem,
+  selectedTable
+) => {
   try {
     const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders/updateMany`;
     const orders = await axios.put(
@@ -94,8 +98,8 @@ export const updateOrderItem = async (orderItems, storeId, menuId, seletedCancel
         orders: orderItems,
         storeId: storeId,
         menuId: menuId,
-        remark: seletedCancelOrderItem ?? "", 
-        dataTable: selectedTable ?? ""
+        remark: seletedCancelOrderItem ?? "",
+        dataTable: selectedTable ?? "",
       },
       {
         headers: await getHeaders(),
