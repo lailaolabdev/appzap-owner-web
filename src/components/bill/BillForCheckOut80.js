@@ -22,6 +22,7 @@ export default function BillForCheckOut80({
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
+  totalBillBillForCheckOut80,
   profile,
 }) {
   // state
@@ -54,7 +55,7 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
-  }, []);
+  }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
 
   // function
   const _calculateTotal = () => {
@@ -96,18 +97,30 @@ export default function BillForCheckOut80({
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(_total - dataBill?.discount);
+        setTotalAfterDiscount(totalBillBillForCheckOut80 - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-        setTotalAfterDiscount(_total - ddiscount);
+        const ddiscount = parseInt(
+          (totalBillBillForCheckOut80 * dataBill?.discount) / 100
+        );
+        setTotalAfterDiscount(totalBillBillForCheckOut80 - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(totalBillBillForCheckOut80);
     }
+
     setTotal(totalBillBillForCheckOut80);
     setTaxAmount((totalBillBillForCheckOut80 * taxPercent) / 100);
+
+    setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
+
+    // Set total amount and related charges
+    setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
+
+    // Calculate service charge
     const serviceChargeTotal = Math.floor(
-      (_total * storeDetail?.serviceChargePer) / 100
+      (totalBillBillForCheckOut80 * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };

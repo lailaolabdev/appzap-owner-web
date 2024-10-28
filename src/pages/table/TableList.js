@@ -167,6 +167,7 @@ export default function TableList() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
+  const [printBillCalulate, setPrintBillCalulate] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -195,16 +196,16 @@ export default function TableList() {
   useEffect(() => {
     if (!pinStatus) return;
     setPinStatus(false);
-    if (workAfterPin == "discount") {
+    if (workAfterPin === "discount") {
       setWorkAfterPin("");
       setPopup({ discount: true });
     }
-    if (workAfterPin == "cancle_order") {
+    if (workAfterPin === "cancle_order") {
       setWorkAfterPin("");
       setPopup();
       setShow1(true);
     }
-    if (workAfterPin == "cancle_order_and_print") {
+    if (workAfterPin === "cancle_order_and_print") {
       setPopup();
       setShow1(true);
     }
@@ -285,7 +286,7 @@ export default function TableList() {
   const updateCheckedOrderItems = (isCheckedOrderItem, tableOrderItems) => {
     if (
       isCheckedOrderItem.length <= 0 ||
-      tableOrderItems[0]["code"] != isCheckedOrderItem[0]["code"]
+      tableOrderItems[0]["code"] !== isCheckedOrderItem[0]["code"]
     ) {
       setIsCheckedOrderItem(tableOrderItems);
     } else {
@@ -323,6 +324,7 @@ export default function TableList() {
     // setOrderPayBefore([]);
     getData(selectedTable?.code, true);
     setMenuItemDetailModal(true);
+    calculateTotalBill();
   };
   const _goToAddOrder = (tableId, code) => {
     navigate(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -337,7 +339,6 @@ export default function TableList() {
   }, [tableOrderItems]);
 
   useEffect(() => {
-    console.log("ZONE23");
     if (zoneId) {
       getTableDataStore({ zone: zoneId });
     } else {
@@ -346,7 +347,6 @@ export default function TableList() {
   }, [zoneId]);
 
   useEffect(() => {
-    console.log("ZONEID");
     if (state?.zoneId) {
       getTableDataStore({ zone: state?.zoneId });
     } else {
@@ -357,7 +357,6 @@ export default function TableList() {
   // console.log("ZONE Out :", storeDetail?.zoneCheckBill);
 
   useEffect(() => {
-    console.log("ZONE In :", storeDetail?.zoneCheckBill);
     if (storeDetail?.zoneCheckBill === true) {
       getTableDataStore({ zone: state?.zoneId });
     } else {
@@ -591,7 +590,7 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
-    console.log("isPrintBill", isPrintBill);
+    // console.log("isPrintBill", isPrintBill);
     try {
       setPrintBillLoading(true);
       let _dataBill = {
@@ -705,12 +704,6 @@ export default function TableList() {
     getTableDataStore();
   }, [storeDetail?.ChangeColorTable]);
 
-  async function delay(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
   useEffect(() => {
     if (codeShortLink) {
       onPrintQR(codeShortLink);
@@ -722,19 +715,6 @@ export default function TableList() {
       if (!tokenQR) {
         return;
       }
-
-      // alert(tokenQR);
-      // setTokenForSmartOrder(tokenQR, (ee) => {
-      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
-      // });
-      // if (!tokenForSmartOrder) {
-      //   setTokenForSmartOrder(tokenQR);
-      //   await delay(1000);
-      //   return;
-      // }
-      // if (!tokenForSmartOrder) {
-      //   return;
-      // }
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -799,14 +779,6 @@ export default function TableList() {
         }
       );
 
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-
-      // setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
@@ -847,13 +819,6 @@ export default function TableList() {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
-
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
 
       await axios.post(urlForPrinter, {
         ip: printerBillData?.ip,
@@ -940,22 +905,7 @@ export default function TableList() {
       try {
         let urlForPrinter = "";
         let dataUrl = dataUrls[_index];
-        // if (_printer?.width === "80mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 530 / widthBill80,
-        //   });
-        // }
-        // if (_printer?.width === "58mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 350 / widthBill58,
-        //   });
-        // }
+
         if (_printer?.type === "ETHERNET") {
           urlForPrinter = ETHERNET_PRINTER_PORT;
         }
@@ -995,18 +945,7 @@ export default function TableList() {
             });
           }
         );
-        // printFlutter({
-        //   imageBuffer: dataUrl.toDataURL(),
-        //   ip: _printer?.ip,
-        //   type: _printer?.type,
-        //   port: "9100",
-        // });
-        // await axios({
-        //   method: "post",
-        //   url: urlForPrinter,
-        //   data: bodyFormData,
-        //   headers: { "Content-Type": "multipart/form-data" },
-        // });
+
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
@@ -1061,22 +1000,7 @@ export default function TableList() {
       try {
         let urlForPrinter = "";
         let dataUrl = dataUrls[_index];
-        // if (_printer?.width === "80mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 530 / widthBill80,
-        //   });
-        // }
-        // if (_printer?.width === "58mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 350 / widthBill58,
-        //   });
-        // }
+
         if (_printer?.type === "ETHERNET") {
           urlForPrinter = ETHERNET_PRINTER_PORT;
         }
@@ -1116,18 +1040,7 @@ export default function TableList() {
             });
           }
         );
-        // printFlutter({
-        //   imageBuffer: dataUrl.toDataURL(),
-        //   ip: _printer?.ip,
-        //   type: _printer?.type,
-        //   port: "9100",
-        // });
-        // await axios({
-        //   method: "post",
-        //   url: urlForPrinter,
-        //   data: bodyFormData,
-        //   headers: { "Content-Type": "multipart/form-data" },
-        // });
+
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
@@ -1217,6 +1130,7 @@ export default function TableList() {
   const handleUpdateOrderStatus = async (status) => {
     try {
       if (status === "SERVED") setIsServerdLoading(true);
+      calculateTotalBill();
       const storeId = storeDetail?._id;
       let menuId;
       let _updateItems = isCheckedOrderItem
@@ -1500,7 +1414,8 @@ export default function TableList() {
   }, [newTableTransaction]);
 
   useEffect(() => {
-    _calculateTotal();
+    // _calculateTotal();
+    calculateTotalBill();
   }, [dataBill]);
 
   useEffect(() => {
@@ -1518,13 +1433,45 @@ export default function TableList() {
   // console.log("TABLE: ", selectedTable);
 
   // function
-  const _calculateTotal = () => {
+  // const _calculateTotal = () => {
+  //   let _total = 0;
+  //   for (let _data of dataBill?.orderId || []) {
+  //     // console.log({ _data });
+  //     _total +=
+  //       (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+  //   }
+  //   if (dataBill?.discount > 0) {
+  //     if (
+  //       dataBill?.discountType == "LAK" ||
+  //       dataBill?.discountType == "MONEY"
+  //     ) {
+  //       setTotalAfterDiscount(_total - dataBill?.discount);
+  //     } else {
+  //       const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+  //       setTotalAfterDiscount(_total - ddiscount);
+  //     }
+  //   } else {
+  //     setTotalAfterDiscount(_total);
+  //   }
+  //   setTotal(_total);
+  // };
+
+  // ================ new function ================
+  // console.log("printBillCalulate", printBillCalulate);
+  const calculateTotalBill = () => {
+    setPrintBillCalulate(true);
     let _total = 0;
-    for (let _data of dataBill?.orderId || []) {
-      console.log({ _data });
-      _total +=
-        (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+    if (dataBill && dataBill?.orderId) {
+      for (let i = 0; i < dataBill?.orderId?.length; i++) {
+        if (dataBill?.orderId[i]?.status === "SERVED") {
+          _total +=
+            dataBill?.orderId[i]?.quantity *
+            (dataBill?.orderId[i]?.price +
+              (dataBill?.orderId[i]?.totalOptionPrice ?? 0));
+        }
+      }
     }
+
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType == "LAK" ||
@@ -1539,6 +1486,7 @@ export default function TableList() {
       setTotalAfterDiscount(_total);
     }
     setTotal(_total);
+    setPrintBillCalulate(false);
   };
 
   const getQrTokenForSelfOrdering = async () => {
@@ -2384,6 +2332,7 @@ export default function TableList() {
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+          totalBillBillForCheckOut80={total}
           taxPercent={taxPercent}
           profile={profile}
         />
@@ -2494,6 +2443,7 @@ export default function TableList() {
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
+        totalBillCheckOutPopup={total} // new props
         tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => {
@@ -2512,6 +2462,8 @@ export default function TableList() {
       <OrderCheckOut
         staffData={userData}
         data={dataBill}
+        totalBillOrderCheckOut={total} // new props
+        printBillCalulate={printBillCalulate}
         setDataBill={setDataBill}
         onPrintBill={onPrintBill}
         tableData={selectedTable}

@@ -1,24 +1,12 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import {
-  Modal,
-  Table,
-  Button,
-  Form,
-  Row,
-  Card,
-  Spinner,
-} from "react-bootstrap";
+import { Modal, Table, Button, Form, Row, Spinner } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
-import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
-import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
-
-import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
 import styled from "styled-components";
 
 const OrderCheckOut = ({
@@ -30,9 +18,10 @@ const OrderCheckOut = ({
   taxPercent = 0,
   onPrintBill = () => {},
   onSubmit = () => {},
-  staffData,
+  totalBillOrderCheckOut,
   printBillLoading,
   billDataLoading,
+  printBillCalulate,
 }) => {
   const { t } = useTranslation();
   const {
@@ -45,15 +34,15 @@ const OrderCheckOut = ({
     setAudioSetting,
   } = useStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
-  const [isBill, setIsBill] = useState(false);
-  const [isConfirmStaff, setIsConFirmStaff] = useState(false);
-  const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
 
   useEffect(() => {
     _calculateTotal();
-  }, [data, isServiceChargeEnabled]);
+  }, [totalBillOrderCheckOut, isServiceChargeEnabled]);
+  useEffect(() => {
+    setIsServiceChargeEnabled(false);
+  }, []);
 
   useEffect(() => {
     if (orderPayBefore) {
@@ -121,58 +110,11 @@ const OrderCheckOut = ({
   };
 
   const _calculateTotal = () => {
-    let _total = 0;
-
-    // Check for orderPayBefore; if available, use it, otherwise fall back to data?.orderId
-    const orders =
-      orderPayBefore && orderPayBefore.length > 0
-        ? orderPayBefore
-        : data?.orderId;
-
-    // Loop through the orders and calculate total for 'SERVED' status
-    if (orders) {
-      for (let i = 0; i < orders.length; i++) {
-        if (orders[i]?.status === "SERVED") {
-          _total +=
-            orders[i]?.quantity *
-            (orders[i]?.price + (orders[i]?.totalOptionPrice ?? 0));
-        }
-      }
-    }
-
-    // console.log("DATATOTAL: ", orderPayBefore);
-
-    // Calculate service charge
     const serviceChargeAmount = isServiceChargeEnabled
-      ? _total * (serviceCharge / 100)
-      : 0; // Apply service charge if enabled
-
+      ? totalBillOrderCheckOut * (serviceCharge / 100)
+      : 0; // 10% if enabled
     setServiceAmount(serviceChargeAmount);
-    setTotal(_total);
-  };
-
-  const onConfirmStaffToCheckBill = () => {
-    setIsConFirmStaff(true);
-    hide();
-  };
-
-  const onCancelConfirmStaff = () => {
-    setIsConFirmStaff(false);
-  };
-
-  const onConfirmToCheckOut = async (data) => {
-    let _staffConfirm = {
-      id: data?._id,
-      firstname: data?.firstname,
-      lastname: data?.lastname,
-      phone: data?.phone,
-    };
-    await localStorage.setItem(
-      "STAFFCONFIRM_DATA",
-      JSON.stringify(_staffConfirm)
-    );
-    onSubmit();
-    setIsConFirmStaff(false);
+    setTotal(totalBillOrderCheckOut);
   };
 
   const getOrderItemKey = (orderItem) => {
@@ -310,7 +252,7 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
-              disabled={printBillLoading}
+              disabled={printBillLoading || printBillCalulate}
               onClick={() => onPrintBill(false)}
             >
               {printBillLoading && (
@@ -332,26 +274,68 @@ const OrderCheckOut = ({
             >
               {t("total_must_pay")}:
             </div>
-            <div
-              className="p-2 col-example text-center"
-              style={{
-                backgroundColor: "#F1F1F1",
-                fontSize: 26,
-              }}
-            >
-              <span style={{ justifyContent: "flex-end", display: "flex" }}>
-                <b>{moneyCurrency(Math.floor(discountedTotal))}</b>
-              </span>
-            </div>
+            {billDataLoading ? (
+              <Spinner
+                animation="border"
+                size="sm"
+                style={{ marginRight: 8 }}
+              />
+            ) : (
+              <div
+                className="p-2 col-example text-center"
+                style={{
+                  backgroundColor: "#F1F1F1",
+                  fontSize: 26,
+                }}
+              >
+                <span style={{ justifyContent: "flex-end", display: "row" }}>
+                  <b>
+                    {data && data?.discountType === "LAK"
+                      ? moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              data?.discount >
+                              0
+                              ? (total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) -
+                                  data?.discount
+                              : 0
+                          )
+                        )
+                      : moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              ((total + serviceAmount) *
+                                (taxPercent * 0.01 + 1) *
+                                data?.discount) /
+                                100 >
+                              0
+                              ? total * (taxPercent * 0.01 + 1) +
+                                  serviceAmount -
+                                  ((total + serviceAmount) *
+                                    (taxPercent * 0.01 + 1) *
+                                    data?.discount) /
+                                    100
+                              : 0
+                          )
+                        )}
+                  </b>
+                </span>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
               <Button
                 className="ml-2 pl-4 pr-4"
+                disabled={printBillLoading || printBillCalulate}
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
                   fontSize: 26,
                 }}
+                // disabled={billDataLoading}
                 onClick={() => onSubmit()}
               >
                 <FontAwesomeIcon
