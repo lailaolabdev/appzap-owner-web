@@ -37,7 +37,10 @@ export default function Dashboard() {
 
   // const { storeDetail } = useStore();
 
+  console.log("branchInCome", branchInCome);
+
   // useEffect
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     GetAllBranchData();
   }, [endDate, startDate, endTime, startTime]);
@@ -104,7 +107,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
-      <div style={{ height: 10 }}></div>
+      <div style={{ height: 10 }} />
       {loadingData ? (
         <Loading />
       ) : (
@@ -274,8 +277,8 @@ export default function Dashboard() {
             }}
           >
             {branchInCome?.length > 0 &&
-              branchInCome?.map((data, index) => (
-                <Card border="primary" style={{ margin: 0 }} key={index}>
+              branchInCome?.map((data) => (
+                <Card border="primary" style={{ margin: 0 }} key={data._id}>
                   <Card.Header
                     style={{
                       backgroundColor: COLOR_APP,
@@ -283,12 +286,15 @@ export default function Dashboard() {
                       fontSize: 18,
                       fontWeight: "bold",
                       display: "flex",
-                      justifyContent: "space-between",
+                      justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
                     {/* {t("branch")} {index + 1} :{" "} */}
                     {data?.nameBranch ? data?.nameBranch : "ບໍ່ມີຂໍ້ມູນຮ້ານ"}
+                    {/* {data?.storeId?.name
+                      ? data?.storeId?.name
+                      : "ບໍ່ມີຂໍ້ມູນຮ້ານ"} */}
                     {/* <Button
                   variant="primary"
                   bg="primary"
