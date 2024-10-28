@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import styled from "styled-components";
 import Select from "react-select";
@@ -11,10 +10,6 @@ import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
-
-import _ from "lodash";
-
 import { useStore } from "../../../store";
 import {
   END_POINT_SEVER_TABLE_MENU,
@@ -41,6 +36,7 @@ export default function CheckOutPopup({
   onSubmit = () => {},
   dataBill,
   tableData,
+  totalBillCheckOutPopup,
   setDataBill,
   taxPercent = 0,
   billDataLoading,
@@ -59,7 +55,6 @@ export default function CheckOutPopup({
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
-  const [total, setTotal] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
@@ -83,8 +78,6 @@ export default function CheckOutPopup({
   } = useStore();
 
   // console.log({ dataBill });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     setMemberData();
@@ -130,23 +123,10 @@ export default function CheckOutPopup({
     } catch (err) {}
   };
 
-  // console.log("tableData:=======abc======>", tableData)
-
-  // console.log("membersData", membersData);
-
-  const orders =
-    orderPayBefore && orderPayBefore.length > 0
-      ? orderPayBefore
-      : dataBill?.orderId;
-
-  const totalBillDefualt = _.sumBy(
-    orders?.filter((e) => e?.status === "SERVED"),
-    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-  );
-  const taxAmount = (totalBillDefualt * taxPercent) / 100;
+  const taxAmount = (totalBillCheckOutPopup * taxPercent) / 100;
   const serviceAmount =
-    (totalBillDefualt * storeDetail?.serviceChargePer) / 100;
-  const totalBill = totalBillDefualt + taxAmount + serviceAmount;
+    (totalBillCheckOutPopup * storeDetail?.serviceChargePer) / 100;
+  const totalBill = totalBillCheckOutPopup + taxAmount + serviceAmount;
 
   useEffect(() => {
     if (!open) return;
@@ -212,14 +192,6 @@ export default function CheckOutPopup({
     setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
   }, [forcus]);
 
-  useEffect(() => {
-    if (!open) return;
-    for (let i = 0; i < dataBill?.orderId?.length; i++) {
-      _calculateTotal();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill, storeDetail?.serviceChargePer]);
-  // function
   const getDataCurrency = async () => {
     try {
       const { DATA } = await getLocalData();
@@ -227,9 +199,7 @@ export default function CheckOutPopup({
         const data = await axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
-
-        console.log("getDataCurrency", data);
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setCurrencyList(data?.data?.data);
         }
       }
@@ -243,7 +213,7 @@ export default function CheckOutPopup({
 
     const serviceChargePer = storeDetail?.serviceChargePer;
     const serviceChargeAmount = Math.floor(
-      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
+      (totalBillCheckOutPopup * storeDetail?.serviceChargePer) / 100
     );
 
     const localZone = localStorage.getItem("selectedZone");
@@ -333,28 +303,14 @@ export default function CheckOutPopup({
   };
   const handleSubmit = () => {
     _checkBill();
-    // onPrintBill(true);
-    // onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
   };
-
-  const _calculateTotal = () => {
-    let _total = 0;
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status === "SERVED") {
-        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
-      }
-    }
-    setTotal(_total);
-  };
-
   // useEffect
   useEffect(() => {
     getDataCurrency();
   }, []);
   useEffect(() => {
     if (!open) return;
-    if (forcus == "CASH") {
+    if (forcus === "CASH") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -376,7 +332,7 @@ export default function CheckOutPopup({
           setCanCheckOut(false);
         }
       }
-    } else if (forcus == "TRANSFER") {
+    } else if (forcus === "TRANSFER") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
@@ -387,7 +343,7 @@ export default function CheckOutPopup({
         setTransfer(totalBill);
       }
       setCanCheckOut(true);
-    } else if (forcus == "TRANSFER_CASH") {
+    } else if (forcus === "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
@@ -434,18 +390,10 @@ export default function CheckOutPopup({
             ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
-  let _selectDataOption = (option) => {
-    setSelectDataOpption(option);
-    setDataBill((prev) => ({
-      ...prev,
-      dataCustomer: option,
-    }));
-    // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
-  };
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCash();
         } else {
@@ -458,7 +406,7 @@ export default function CheckOutPopup({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -799,25 +747,6 @@ export default function CheckOutPopup({
                 }
               }}
             />
-            {/* <KeyboardComponents
-              onClickEvent={(e) => {
-                setCash((prev) => {
-                  let _number = prev ? `${prev}` + e : e;
-                  return parseInt(_number);
-                });
-                console.log(parseInt(cash ? cash + e : e));
-              }}
-              onDelete={() =>
-                setCash((prev) => {
-                  let _prev = prev + "";
-                  let _number =
-                    _prev?.length > 0
-                      ? _prev.substring(0, _prev.length - 1)
-                      : "";
-                  return parseInt(_number);
-                })
-              }
-            /> */}
           </div>
         </Box>
       </Modal.Body>
