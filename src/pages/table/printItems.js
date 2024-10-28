@@ -89,7 +89,7 @@ const runPrint = async (dataUrl, printer) => {
 // Convert HTML element to base64 for printing
 const convertHtmlToBase64 = (items, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
-
+  console.log("selectedTable", selectedTable);
   items.forEach((data, index) => {
     if (data) {
       const canvas = document.createElement("canvas");
@@ -127,13 +127,33 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.fillStyle = "#000"; // Black text
       context.font = "bold 32px NotoSansLao";
       let itemYPosition = 100;
+      // context.fillText(`${data?.name} (${data?.quantity})`, 10, itemYPosition);
+      // itemYPosition += 40; // Item name
       items.forEach((item) => {
-        context.fillText(
-          `${item.name} (x ${item.quantity})`,
-          10,
-          itemYPosition
-        ); // Item text
-        itemYPosition += 40; // Spacing between items
+        console.log("object", item);
+        // Combine the item name and menuOptions into a single line
+        let itemText = `${item.name} (x ${item.quantity})`;
+
+        // If the item has menuOptions, append them in square brackets
+        if (item.menuOptions && item.menuOptions.length > 0) {
+          const optionsText = item.menuOptions
+            .map((option) => `[${option.name} x ${option.quantity}]`)
+            .join(" "); // Concatenate options
+          itemText += ` ${optionsText}`; // Append options to the item name
+        }
+
+        // Draw the item name and options (main line)
+        context.fillText(itemText, 10, itemYPosition);
+
+        // Draw the item quantity, aligned to the right
+        // context.fillText(
+        //   `(x ${item.quantity})`,
+        //   width - 50, // Adjust for right alignment
+        //   itemYPosition
+        // );
+
+        // Adjust the Y position for the next item
+        itemYPosition += 40; // Space between items
       });
 
       // Draw the dotted line

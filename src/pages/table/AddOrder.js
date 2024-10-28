@@ -77,7 +77,7 @@ function AddOrder() {
   const [connectMenuId, setConnectMenuId] = useState("");
   const [menuOptions, setMenuOptions] = useState([]);
   const [selectedOptions, setselectedOptions] = useState();
-  const { profile } = useStore();
+  const { profile, setPrintBackground } = useStore();
   const [isPopup, setIsPupup] = useState(false);
   const [noteItems, setNoteItems] = useState();
   const [addComments, setAddComments] = useState();
@@ -306,7 +306,8 @@ function AddOrder() {
   //   }
   // };
 
-  const [onPrinting, setOnPrinting] = useEffect(false);
+  const [onPrinting, setOnPrinting] = useState(false);
+  const [countError, setCountError] = useState(false);
 
   const onPrintForCher = async () => {
     try {
@@ -432,15 +433,21 @@ function AddOrder() {
         context.font = "24px NotoSansLao";
         context.fillText(`${data?.note}`, 10, 150); // Item name
 
-        // Draw Price and Quantity
-        context.font = "28px NotoSansLao";
-        context.fillText(
-          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
-            data?.quantity
-          }`,
-          20,
-          210
-        ); // Price and quantity
+        // Draw Options from the menuOptions array, including prices
+        if (data.menuOptions && data.menuOptions.length > 0) {
+          context.fillStyle = "#000"; // Black text
+          context.font = "24px NotoSansLao";
+          data.menuOptions.forEach((option, idx) => {
+            const optionPriceText = option?.price
+              ? ` - ${moneyCurrency(option?.price)}`
+              : ""; // Show price if available
+            context.fillText(
+              `- ${option?.name}${optionPriceText}`,
+              10,
+              150 + idx * 30
+            ); // Draw each option with price
+          });
+        }
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
@@ -882,15 +889,18 @@ function AddOrder() {
 
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers).then(
-                  () => {
-                    onSelectTable(selectedTable);
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                      { state: { zoneId: localZone } }
-                    );
-                  }
-                );
+                printItems(
+                  groupedItems,
+                  combinedBillRefs,
+                  printers,
+                  selectedTable
+                ).then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
+                  );
+                });
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
