@@ -253,6 +253,14 @@ export default function ChildStores() {
                               salesInformationReport?.["totalSales"]
                             )}${storeDetail?.firstCurrency}`,
                           },
+
+                          // {
+                          //   title: "ລາຍຈ່າຍທັງໝົດ",
+                          //   amount: `${moneyCurrency(
+                          //     salesInformationReport?.["totalCost"]
+                          //   )}${storeDetail?.firstCurrency}`
+                          // },
+
                           {
                             title: `${t("sales_transaction")}`,
                             amount: `${moneyCurrency(
@@ -279,6 +287,13 @@ export default function ChildStores() {
                               salesInformationReport?.["grossProfitLAK"]
                             )}${storeDetail?.firstCurrency}`,
                           },
+
+                          // {
+                          //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
+                          //   amount: `${moneyCurrency(
+                          //     salesInformationReport?.["unpaidTransaction"]
+                          //   )}${storeDetail?.firstCurrency}`,
+                          // },
                         ].map((e) => (
                           <div
                             style={{
@@ -391,6 +406,7 @@ export default function ChildStores() {
                               <td>{moneyCurrency(e?.qty)}</td>
                               <td style={{ textAlign: "right" }}>
                                 {moneyCurrency(e?.amount)}
+                                {/* {storeDetail?.firstCurrency} */}
                               </td>
                             </tr>
                           ))}
@@ -526,7 +542,9 @@ export default function ChildStores() {
                             </th>
                           </tr>
                           {categoryReport
-                            ?.sort((x, y) => y.served - x.served)
+                            ?.sort((x, y) => {
+                              return y.served - x.served;
+                            })
                             ?.map((e) => (
                               <tr>
                                 <td style={{ textAlign: "left" }}>{e?.name}</td>
@@ -534,7 +552,7 @@ export default function ChildStores() {
                                   {e?.served}
                                 </td>
                                 <td style={{ textAlign: "center" }}>
-                                  {e?.canceled}
+                                  {e?.cenceled}
                                 </td>
                                 <td style={{ textAlign: "right" }}>
                                   {moneyCurrency(e?.totalSaleAmount)}
@@ -569,7 +587,9 @@ export default function ChildStores() {
                             <th style={{ textAlign: "right" }}>{t("sales")}</th>
                           </tr>
                           {menuReport
-                            ?.sort((x, y) => y.served - x.served)
+                            ?.sort((x, y) => {
+                              return y.served - x.served;
+                            })
                             ?.map((e) => (
                               <tr>
                                 <td style={{ textAlign: "left" }}>{e?.name}</td>

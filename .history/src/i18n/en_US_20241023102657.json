@@ -177,7 +177,7 @@
   "billCutPaperTitle": "Cut Paper",
   "billCut": "Cut",
   "billNoCut": "Not Cut",
-  "connect_pinter": "Connected",
+  "connect_pinter": "Printer connected",
   "unconnect_pinter": "Unconnected",
   "log_out": "Log Out",
   "table_status": "Table Management",

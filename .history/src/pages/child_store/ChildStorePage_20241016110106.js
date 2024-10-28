@@ -53,11 +53,6 @@ export default function ChildStores() {
   const [promotionReport, setPromotionReport] = useState();
   const { storeDetail } = useStore();
 
-  // Fetch branch stores on first load
-  useEffect(() => {
-    fetchBranchStore();
-  }, []);
-
   const fetchBranchStore = async () => {
     const { DATA } = await getLocalData();
     try {
@@ -71,74 +66,81 @@ export default function ChildStores() {
     }
   };
 
-  const getTable = async (childId) => {
-    const data = await getManyTables(childId);
-    setTableList(data);
-  };
-
-  // Fetch reports whenever the date or selected tables change
   useEffect(() => {
-    if (selectedStore) {
-      getReportData(selectedStore._id);
-      getSalesInformationReportData(selectedStore._id);
-      getUserReportData(selectedStore._id);
-      getMenuReportData(selectedStore._id);
-      getMoneyReportData(selectedStore._id);
-      getPromotionReportData(selectedStore._id);
-      getCategoryReportData(selectedStore._id);
-      getTable(selectedStore._id);
-    }
-  }, [endDate, startDate, endTime, startTime, selectedTableIds, selectedStore]);
+    fetchBranchStore();
+  }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
-  // Functions for fetching different types of reports
-  const getSalesInformationReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(
-      childId,
-      findBy,
-      selectedTableIds
-    );
-    setSalesInformationReport(data);
-  };
-
-  const getCategoryReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getCategoryReport(childId, findBy, selectedTableIds);
-    setCategoryReport(data);
-  };
-
-  const getPromotionReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(childId, findBy, selectedTableIds);
-    setPromotionReport(data);
-  };
-
-  const getMoneyReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(childId, findBy, selectedTableIds);
-    setMoneyReport(data);
-  };
-
-  const getUserReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getUserReport(childId, findBy, selectedTableIds);
-    setUserReport(data);
-  };
-
-  const getReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(childId, findBy, selectedTableIds);
-    setReportData(data);
-  };
-
-  const getMenuReportData = async (childId) => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMenuReport(childId, findBy, selectedTableIds);
-    setMenuReport(data);
-  };
-
-  const handleSelect = (e) => {
+  const handleSelect = async (e) => {
     const selected = branchStore?.childStores.find((store) => store._id === e);
+    const childId = selected?._id;
+
+    const getSalesInformationReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      try {
+        const data = await getSalesInformationReport(
+          childId,
+          findBy,
+          selectedTableIds
+        );
+        console.log("Sales Information Report:", data); // ตรวจสอบข้อมูลที่ถูกดึงมา
+        setSalesInformationReport(data);
+      } catch (error) {
+        console.error("Error fetching sales information report:", error);
+      }
+    };
+
+    const getCategoryReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getCategoryReport(childId, findBy, selectedTableIds);
+      setCategoryReport(data);
+    };
+
+    const getPromotionReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getPromotionReport(childId, findBy, selectedTableIds); // ใช้ childId สำหรับสาขา
+      setPromotionReport(data);
+    };
+
+    const getTable = async () => {
+      const data = await getManyTables(childId);
+      setTableList(data);
+    };
+
+    const getMoneyReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getMoneyReport(childId, findBy, selectedTableIds); // ใช้ childId สำหรับสาขา
+      setMoneyReport(data);
+    };
+
+    const getUserReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getUserReport(childId, findBy, selectedTableIds); // ใช้ childId สำหรับสาขา
+      setUserReport(data);
+    };
+
+    const getReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getReports(childId, findBy, selectedTableIds); // ใช้ childId สำหรับสาขา
+      setReportData(data);
+    };
+
+    const getMenuReportData = async () => {
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const data = await getMenuReport(childId, findBy, selectedTableIds); // ใช้ childId สำหรับสาขา
+      setMenuReport(data);
+    };
+
+    await Promise.all([
+      getSalesInformationReportData(),
+      getCategoryReportData(),
+      getPromotionReportData(),
+      getMoneyReportData(),
+      getUserReportData(),
+      getReportData(),
+      getMenuReportData(),
+      getTable(),
+    ]);
+
     setSelectedStore(selected);
   };
 
@@ -159,9 +161,11 @@ export default function ChildStores() {
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <div>
           {loading ? (
-            <center>
-              <Spinner animation="border" variant="warning" />
-            </center>
+            <div>
+              <center>
+                <Spinner animation="border" variant="warning" />
+              </center>
+            </div>
           ) : error ? (
             <div>Failed to load branch store data.</div>
           ) : (
@@ -187,6 +191,7 @@ export default function ChildStores() {
                   </Button>
                 ) : (
                   <DropdownButton
+                    style={{ margin: 0 }}
                     id="dropdown-basic-button"
                     title={
                       selectedStore
@@ -253,6 +258,14 @@ export default function ChildStores() {
                               salesInformationReport?.["totalSales"]
                             )}${storeDetail?.firstCurrency}`,
                           },
+
+                          // {
+                          //   title: "ລາຍຈ່າຍທັງໝົດ",
+                          //   amount: `${moneyCurrency(
+                          //     salesInformationReport?.["totalCost"]
+                          //   )}${storeDetail?.firstCurrency}`
+                          // },
+
                           {
                             title: `${t("sales_transaction")}`,
                             amount: `${moneyCurrency(
@@ -279,6 +292,13 @@ export default function ChildStores() {
                               salesInformationReport?.["grossProfitLAK"]
                             )}${storeDetail?.firstCurrency}`,
                           },
+
+                          // {
+                          //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
+                          //   amount: `${moneyCurrency(
+                          //     salesInformationReport?.["unpaidTransaction"]
+                          //   )}${storeDetail?.firstCurrency}`,
+                          // },
                         ].map((e) => (
                           <div
                             style={{
@@ -391,6 +411,7 @@ export default function ChildStores() {
                               <td>{moneyCurrency(e?.qty)}</td>
                               <td style={{ textAlign: "right" }}>
                                 {moneyCurrency(e?.amount)}
+                                {/* {storeDetail?.firstCurrency} */}
                               </td>
                             </tr>
                           ))}
@@ -526,7 +547,9 @@ export default function ChildStores() {
                             </th>
                           </tr>
                           {categoryReport
-                            ?.sort((x, y) => y.served - x.served)
+                            ?.sort((x, y) => {
+                              return y.served - x.served;
+                            })
                             ?.map((e) => (
                               <tr>
                                 <td style={{ textAlign: "left" }}>{e?.name}</td>
@@ -534,7 +557,7 @@ export default function ChildStores() {
                                   {e?.served}
                                 </td>
                                 <td style={{ textAlign: "center" }}>
-                                  {e?.canceled}
+                                  {e?.cenceled}
                                 </td>
                                 <td style={{ textAlign: "right" }}>
                                   {moneyCurrency(e?.totalSaleAmount)}
@@ -569,7 +592,9 @@ export default function ChildStores() {
                             <th style={{ textAlign: "right" }}>{t("sales")}</th>
                           </tr>
                           {menuReport
-                            ?.sort((x, y) => y.served - x.served)
+                            ?.sort((x, y) => {
+                              return y.served - x.served;
+                            })
                             ?.map((e) => (
                               <tr>
                                 <td style={{ textAlign: "left" }}>{e?.name}</td>
