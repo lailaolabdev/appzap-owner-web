@@ -157,6 +157,7 @@ export default function TableList() {
     isWaitingCheckout,
     setOrderPayBefore,
     orderPayBefore,
+    isWaitingPress,
   } = useStore();
 
   const reLoadData = () => {
@@ -238,7 +239,7 @@ export default function TableList() {
     const getDataTax = async () => {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+        `${END_POINT_SEVER}/v4/tax/${DATA?.storeId}`
       );
       setTaxPercent(_res?.data?.taxPercent);
     };
@@ -266,7 +267,7 @@ export default function TableList() {
 
   const getUserData = async () => {
     // setIsLoading(true);
-    await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
+    await fetch(`${USERS}/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -291,7 +292,7 @@ export default function TableList() {
   // };
 
   function handleSetQuantity(int, seletedOrderItem) {
-    let _data = seletedOrderItem?.quantity + int;
+    const _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
       setSeletedOrderItem({ ...seletedOrderItem, quantity: _data });
     }
@@ -1143,12 +1144,7 @@ export default function TableList() {
     }
   };
 
-  // console.log("DATA1 : ", ORM);
-  // console.log("DATA2 : ", orderPayBefore);
-
   const checkAllOrders = (item) => {
-    console.log("checkAllOrders tableList", item);
-
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
@@ -1186,7 +1182,7 @@ export default function TableList() {
       calculateTotalBill();
       const storeId = storeDetail?._id;
       let menuId;
-      let _updateItems = isCheckedOrderItem
+      const _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked && e.status !== "PRINTBILL")
         .map((i) => {
           return {
@@ -1196,9 +1192,9 @@ export default function TableList() {
           };
         });
 
-      console.log("isCheckedOrderItem", _updateItems);
+      // console.log("isCheckedOrderItem", _updateItems);
 
-      let _resOrderUpdate = await updateOrderItem(
+      const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
@@ -1214,7 +1210,7 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 2000,
         });
-        let _newOrderItems = isCheckedOrderItem.map((item) => {
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
           return {
             ...item,
             isChecked: false,
@@ -1240,7 +1236,7 @@ export default function TableList() {
       if (status === "PRINTBILL") setIsPrintedLoading(true);
       const storeId = storeDetail?._id;
       let menuId;
-      let _updateItems = isCheckedOrderItem
+      const _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked && e?.status === "PRINTBILL")
         .map((i) => {
           return {
@@ -1250,7 +1246,7 @@ export default function TableList() {
           };
         });
 
-      let _resOrderUpdate = await updateOrderItem(
+      const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
@@ -1266,7 +1262,7 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 2000,
         });
-        let _newOrderItems = isCheckedOrderItem.map((item) => {
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
           return {
             ...item,
             isChecked: false,
@@ -1291,7 +1287,7 @@ export default function TableList() {
   const handleUpdateOrderStatusgo = async (status) => {
     const storeId = storeDetail?._id;
     let menuId;
-    let _updateItems = isCheckedOrderItem
+    const _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
         return {
@@ -1300,7 +1296,7 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(
+    const _resOrderUpdate = await updateOrderItem(
       _updateItems,
       storeId,
       menuId,
@@ -1316,7 +1312,7 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
-      let _newOrderItems = isCheckedOrderItem.map((item) => {
+      const _newOrderItems = isCheckedOrderItem.map((item) => {
         return {
           ...item,
           isChecked: false,
@@ -1334,7 +1330,7 @@ export default function TableList() {
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
     let menuId;
-    let _updateItems = isCheckedOrderItem
+    const _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
         return {
@@ -1345,7 +1341,7 @@ export default function TableList() {
           // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(
+    const _resOrderUpdate = await updateOrderItem(
       _updateItems,
       storeId,
       menuId,
@@ -1363,7 +1359,7 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
-      let _newOrderItems = isCheckedOrderItem.map((item) => {
+      const _newOrderItems = isCheckedOrderItem.map((item) => {
         return {
           ...item,
           isChecked: false,
@@ -1382,7 +1378,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
       // let previousStatus = orderItems[0].status;
       let menuId;
-      let _updateItems = isCheckedOrderItem
+      const _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked)
         .map((i) => {
           return {
@@ -1398,7 +1394,7 @@ export default function TableList() {
       if (checkError?.error) {
         throw new Error(`${t("print_fial")}`);
       }
-      let _resOrderUpdate = await updateOrderItem(
+      const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
@@ -1417,7 +1413,7 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 2000,
         });
-        let _newOrderItems = isCheckedOrderItem.map((item) => {
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
           return {
             ...item,
             isChecked: false,
@@ -1444,11 +1440,6 @@ export default function TableList() {
     if (!onPrinting) {
       if (!reload) {
         if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-          console.log("newOrderTransaction: ", newOrderTransaction);
-          console.log(
-            "newOrderUpdateStatusTransaction: ",
-            newOrderUpdateStatusTransaction
-          );
           handleMessage();
           setNewOrderTransaction(false);
           setNewOrderUpdateStatusTransaction(false);
@@ -1524,7 +1515,7 @@ export default function TableList() {
 
   // ================ new function ================
   // console.log("printBillCalulate", printBillCalulate);
-  const calculateTotalBill = () => {
+  const calculateTotalBill = async () => {
     setPrintBillCalulate(true);
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
@@ -1540,18 +1531,18 @@ export default function TableList() {
 
     if (dataBill?.discount > 0) {
       if (
-        dataBill?.discountType == "LAK" ||
-        dataBill?.discountType == "MONEY"
+        dataBill?.discountType === "LAK" ||
+        dataBill?.discountType === "MONEY"
       ) {
         setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+        const ddiscount = Number.parseInt((_total * dataBill?.discount) / 100);
         setTotalAfterDiscount(_total - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      await setTotalAfterDiscount(_total);
     }
-    setTotal(_total);
+    await setTotal(_total);
     setPrintBillCalulate(false);
   };
 
@@ -1565,21 +1556,21 @@ export default function TableList() {
 
   const getDataZone = async () => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
       const data = await axios({
         method: "get",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/zones`,
+        url: `${END_POINT_SEVER_TABLE_MENU}/v3/zones`,
         params: {
           storeId: storeDetail?._id,
           limit: 100,
         },
         headers: headers,
       });
-      if (data?.status == 200) {
+      if (data?.status === 200) {
         setZoneData(data?.data?.data);
       }
     } catch (err) {
@@ -1836,7 +1827,7 @@ export default function TableList() {
                               right: 10,
                               top: 10,
                             }}
-                          ></div>
+                          />
                           <div>
                             <span
                               style={{
@@ -1950,9 +1941,7 @@ export default function TableList() {
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
                             dataBill?.orderId?.[0]?.updatedBy?.lastname
-                              ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              ? `${dataBill?.orderId[0]?.updatedBy?.firstname} ${dataBill?.orderId[0]?.updatedBy?.lastname}`
                               : ""}
                           </span>
                         </div>
@@ -1983,7 +1972,8 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                            {isWaitingPress ? moneyCurrency(total) : "0"}{" "}
+                            {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div
@@ -1998,7 +1988,9 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(totalAfterDiscount)}{" "}
+                            {isWaitingPress
+                              ? moneyCurrency(totalAfterDiscount)
+                              : "0"}{" "}
                             {storeDetail?.firstCurrency}
                           </span>
                         </div>
@@ -2008,11 +2000,11 @@ export default function TableList() {
                             color: "red",
                             display: isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK" &&
-                                e?.status != "PAID" &&
-                                e?.status != "PRINTBILL"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID" &&
+                                e?.status !== "PRINTBILL"
                             )?.length
                               ? "block"
                               : "none",
@@ -2021,10 +2013,10 @@ export default function TableList() {
                           {
                             isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK" &&
-                                e?.status != "PAID"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID"
                             )?.length
                           }{" "}
                           {t("itemNotServed")}
@@ -2032,11 +2024,11 @@ export default function TableList() {
                         <div>
                           <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
                             {isCheckedOrderItem?.filter(
-                              (e) => e?.status == "PAID"
+                              (e) => e?.status === "PAID"
                             )?.length
                               ? ` ${
                                   isCheckedOrderItem?.filter(
-                                    (e) => e?.status == "PAID"
+                                    (e) => e?.status === "PAID"
                                   )?.length
                                 } ${t("ORDER_PAID")}`
                               : ""}
@@ -2236,7 +2228,7 @@ export default function TableList() {
                                     .join(" ") || "";
                                 return (
                                   <tr
-                                    key={"order" + index}
+                                    key={`order${index}`}
                                     style={{ borderBottom: "1px solid #eee" }}
                                   >
                                     <td onClick={(e) => e.stopPropagation()}>
@@ -2263,7 +2255,7 @@ export default function TableList() {
                                     <td
                                       style={{
                                         color:
-                                          orderItem?.status === `SERVED`
+                                          orderItem?.status === "SERVED"
                                             ? "green"
                                             : orderItem?.status === "PAID"
                                             ? COLOR_APP
