@@ -35,8 +35,6 @@ export default function BillForCheckOut80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-<<<<<<< HEAD
-=======
   // console.log("storeDetail", storeDetail);
   // console.log("dataBill 80 code", dataBill?.orderId);
   // console.log("selectedTable 80", selectedTable);
@@ -54,7 +52,6 @@ export default function BillForCheckOut80({
     // console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
 
->>>>>>> development
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
@@ -62,8 +59,6 @@ export default function BillForCheckOut80({
 
   // function
   const _calculateTotal = () => {
-<<<<<<< HEAD
-=======
     let _total = 0;
     // for (let _data of dataBill?.orderId || []) {
     //   const totalOptionPrice = _data?.totalOptionPrice || 0;
@@ -92,7 +87,6 @@ export default function BillForCheckOut80({
     }
 
     // Handle discount logic
->>>>>>> development
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType === "LAK" ||
@@ -108,19 +102,8 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(totalBillBillForCheckOut80);
     }
-<<<<<<< HEAD
     setTotal(totalBillBillForCheckOut80);
     setTaxAmount((totalBillBillForCheckOut80 * taxPercent) / 100);
-=======
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
-
-    // Set total amount and related charges
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
-
-    // Calculate service charge
->>>>>>> development
     const serviceChargeTotal = Math.floor(
       (totalBillBillForCheckOut80 * storeDetail?.serviceChargePer) / 100
     );
