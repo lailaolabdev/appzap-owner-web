@@ -1483,24 +1483,34 @@ export default function TableList() {
           >
             <div
               style={{
-                backgroundColor: "#ff926a",
+                border: '1px solid red',
                 padding: "10px",
-                color: "#fff",
+                color: "gray",
+                display:'flex',
+                alignItems:'center',
               }}
             >
-              {t("total_table")} : {tableList?.length},{" "}
+              <div style={{ 
+                backgroundColor:'white', 
+                borderRadius:'5px',
+                padding:'20px 30px',
+                marginRight:'10px',
+              }}
+                >{t("total_table")} : {tableList?.length},{" "}
+              </div>
               {t("total_unavailable_table")} : {_checkStatusCode(tableList)},{" "}
               {t("total_available_table")} : {_checkStatusCodeA(tableList)},{" "}
               {t("total_bill_check")} : {_checkStatusCodeB(tableList)}
             </div>
 
             {zoneData?.length > 0 ? (
-              <div style={{ padding: "5px 15px" }}>
-                <Form.Label>{t("show_by_zone")}</Form.Label>
+              <div style={{ padding: "20px 15px" ,display:'flex', alignItems:'center', width:'100%'}}>
+                <Form.Label >{t("show_by_zone")}</Form.Label>
                 <Form.Control
                   as="select"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
+                  style={{width:'23%', marginLeft:'5px'}}
                 >
                   <option value="">{t("show_all_zone")}</option>
                   {zoneData?.map((item, index) => (
