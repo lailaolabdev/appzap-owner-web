@@ -694,11 +694,8 @@ export default function TableList() {
           });
         }
       );
-      // update bill status to call check out
-      // orderPayBefore.length > 0 ? console.log("1") : console.log("2");
-      orderPayBefore.length > 0
-        ? updateTable()
-        : callCheckOutPrintBillOnly(selectedTable?._id);
+
+      callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
@@ -2158,25 +2155,7 @@ export default function TableList() {
                         >
                           {t("cancel")}
                         </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            handleUpdateOrderPayBefore("PRINTBILL");
-                            // handleUpdateOrderStatusAndCallback(
-                            //   "DOING",
-                            //   async () => {
-                            //     // const data = await onPrintForCher();
-                            //     const data = await onPrintToKitchen();
-                            //     return data;
-                            //   }
-                            // ).then();
-                          }}
-                          disabled={!checkedBox || isPrintedLoading}
-                        >
-                          {isPrintedLoading && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("update_printed")}
-                        </ButtonCustom>
+
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
                           disabled={!checkedBox}
