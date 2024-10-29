@@ -77,7 +77,7 @@ const OrderCheckOut = ({
   );
 
   const orderItem = (orders) => {
-    return orders.map((e, index) => {
+    return orders?.map((e, index) => {
       const options =
         e?.options
           ?.map((option) =>
@@ -187,7 +187,7 @@ const OrderCheckOut = ({
               onChange={(e) => getToggleServiceCharge(e)}
             />
           </Row>
-          <div style={{ margin: 8 }}></div>
+          <div style={{ margin: 8 }} />
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
