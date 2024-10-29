@@ -1097,7 +1097,7 @@ export default function TableList() {
     }
   };
 
-  // console.log("DATA1 : ", ORM);
+  // console.log("DATA1 : ", checkedBox);
   // console.log("DATA2 : ", orderPayBefore);
 
   const checkAllOrders = (item) => {
@@ -1660,6 +1660,7 @@ export default function TableList() {
                                 ""
                           }
                           onClick={() => {
+                            setOrderPayBefore([]);
                             onSelectTable(table);
                           }}
                         >

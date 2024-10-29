@@ -27,6 +27,7 @@ import {
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import { callCheckOutPrintBillOnly } from "../../../services/code";
+import _ from "lodash";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -62,7 +63,7 @@ export default function CheckOutPopup({
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [memberData, setMemberData] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
-
+  const [paid, setPaid] = useState(0);
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
@@ -123,10 +124,28 @@ export default function CheckOutPopup({
     } catch (err) {}
   };
 
-  const taxAmount = (totalBillCheckOutPopup * taxPercent) / 100;
-  const serviceAmount =
-    (totalBillCheckOutPopup * storeDetail?.serviceChargePer) / 100;
-  const totalBill = totalBillCheckOutPopup + taxAmount + serviceAmount;
+  useEffect(() => {
+    if (orderPayBefore) {
+      const paidData = _.sumBy(orderPayBefore, (e) => {
+        const mainPrice = e?.price || 0;
+
+        const menuOptionPrice = _.sumBy(
+          e?.options || [],
+          (opt) => (opt?.price || 0) * (opt?.quantity || 1)
+        );
+
+        return mainPrice + menuOptionPrice;
+      });
+      setPaid(paidData);
+    }
+  }, [orderPayBefore]);
+
+  const totalAmount =
+    orderPayBefore && orderPayBefore.length > 0 ? paid : totalBillCheckOutPopup;
+
+  const taxAmount = (totalAmount * taxPercent) / 100;
+  const serviceAmount = (totalAmount * storeDetail?.serviceChargePer) / 100;
+  const totalBill = totalAmount + taxAmount + serviceAmount;
 
   useEffect(() => {
     if (!open) return;

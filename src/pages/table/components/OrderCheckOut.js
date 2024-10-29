@@ -8,6 +8,8 @@ import moment from "moment";
 import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
+import _ from "lodash";
+import { SettingsApplications } from "@material-ui/icons";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -39,17 +41,10 @@ const OrderCheckOut = ({
 
   useEffect(() => {
     _calculateTotal();
-  }, [totalBillOrderCheckOut, isServiceChargeEnabled]);
+  }, [totalBillOrderCheckOut, isServiceChargeEnabled, orderPayBefore]);
   useEffect(() => {
     setIsServiceChargeEnabled(false);
   }, []);
-
-  useEffect(() => {
-    if (orderPayBefore) {
-      // console.log("DATA: ", data);
-      // console.log("Updated orderPayBefore: ", orderPayBefore);
-    }
-  }, [orderPayBefore]);
 
   const calculateDiscountedTotal = (
     total,
@@ -110,11 +105,28 @@ const OrderCheckOut = ({
   };
 
   const _calculateTotal = () => {
+    console.log("orderPaid", orderPayBefore);
     const serviceChargeAmount = isServiceChargeEnabled
       ? totalBillOrderCheckOut * (serviceCharge / 100)
       : 0; // 10% if enabled
+    const paidData = _.sumBy(orderPayBefore, (e) => {
+      const mainPrice = e?.price || 0;
+
+      const menuOptionPrice = _.sumBy(
+        e?.options || [],
+        (opt) => (opt?.price || 0) * (opt?.quantity || 1)
+      );
+
+      console.log("menuOptionPrice", menuOptionPrice);
+      console.log("mainPrice", mainPrice);
+
+      return mainPrice + menuOptionPrice;
+    });
+    console.log("paidData", paidData);
     setServiceAmount(serviceChargeAmount);
-    setTotal(totalBillOrderCheckOut);
+    orderPayBefore && orderPayBefore.length > 0
+      ? setTotal(paidData)
+      : setTotal(totalBillOrderCheckOut);
   };
 
   const getOrderItemKey = (orderItem) => {
