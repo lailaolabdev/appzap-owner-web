@@ -1717,6 +1717,7 @@ export default function TableList() {
                                 ""
                           }
                           onClick={() => {
+                            setOrderPayBefore([]);
                             onSelectTable(table);
                           }}
                         >
