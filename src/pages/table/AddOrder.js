@@ -397,6 +397,7 @@ function AddOrder() {
     const base64ArrayAndPrinter = [];
 
     orderSelect.forEach((data, index) => {
+      console.log("optonDATA", data);
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
@@ -431,20 +432,25 @@ function AddOrder() {
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
         context.font = "24px NotoSansLao";
-        context.fillText(`${data?.note}`, 10, 150); // Item name
+        context.fillText(
+          `${data?.note !== undefined ? data?.note : ""}`,
+          10,
+          150
+        ); // Item name
 
         // Draw Options from the menuOptions array, including prices
         if (data.menuOptions && data.menuOptions.length > 0) {
           context.fillStyle = "#000"; // Black text
           context.font = "24px NotoSansLao";
-          data.menuOptions.forEach((option, idx) => {
+          data.options.forEach((option, idx) => {
+            console.log("option", option);
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : ""; // Show price if available
             context.fillText(
-              `- ${option?.name}${optionPriceText}`,
+              `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
               10,
-              150 + idx * 30
+              175 + idx * 30
             ); // Draw each option with price
           });
         }
