@@ -387,6 +387,7 @@ function AddOrder() {
     const base64ArrayAndPrinter = [];
 
     orderSelect.forEach((data, index) => {
+      console.log("optonDATA", data);
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
@@ -400,6 +401,25 @@ function AddOrder() {
         // Set white background
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, height);
+
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+        }
 
         // Draw the Table ID (left black block)
         context.fillStyle = "#000"; // Black background
@@ -415,23 +435,37 @@ function AddOrder() {
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 40px NotoSansLao";
-        context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
+        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          110,
+          width - 20,
+          40
+        ); // Item name with wrapping
 
-        // Draw Item Name and Quantity
+        // Draw Item Note
         context.fillStyle = "#000"; // Black text
-        context.font = "24px NotoSansLao";
-        context.fillText(`${data?.note}`, 10, 150); // Item name
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
 
-        // Draw Price and Quantity
-        context.font = "28px NotoSansLao";
-        context.fillText(
-          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
-            data?.quantity
-          }`,
-          20,
-          210
-        ); // Price and quantity
+        // Draw Options from the menuOptions array, including prices
+        if (data.menuOptions && data.menuOptions.length > 0) {
+          context.fillStyle = "#000"; // Black text
+          context.font = "24px NotoSansLao";
+          data.options.forEach((option, idx) => {
+            console.log("option", option);
+            const optionPriceText = option?.price
+              ? ` - ${moneyCurrency(option?.price)}`
+              : ""; // Show price if available
+            context.fillText(
+              `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
+              10,
+              175 + idx * 30
+            ); // Draw each option with price
+          });
+        }
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
@@ -864,23 +898,18 @@ function AddOrder() {
 
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(
-                  () => {
-                    onSelectTable(selectedTable);
-                    if (state?.key === false) {
-                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                      return;
-                    } else {
-                      navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                      );
-                    }
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                      { state: { zoneId: localZone } }
-                    );
-                  }
-                );
+                printItems(
+                  groupedItems,
+                  combinedBillRefs,
+                  printers,
+                  selectedTable
+                ).then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
+                  );
+                });
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
