@@ -302,7 +302,6 @@ export default function TableList() {
     (e) =>
       e?.status === "DOING" ||
       e?.status === "WAITING" ||
-      e?.status === "PRINTBILL" ||
       e?.tableOrderItems?.length === 0
   )?._id;
 
@@ -710,6 +709,9 @@ export default function TableList() {
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       // callPayBeforePrintBillOnly(selectedTable?._id);
+      orderPayBefore.length > 0
+        ? updateTable()
+        : callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setOrderPayBefore([]);
       // getTableDataStore();
