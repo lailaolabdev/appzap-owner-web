@@ -127,7 +127,7 @@ export default function CheckOutPopup({
   useEffect(() => {
     if (orderPayBefore) {
       const paidData = _.sumBy(orderPayBefore, (e) => {
-        const mainPrice = e?.price || 0;
+        const mainPrice = (e?.price || 0) * (e?.quantity || 1);
 
         const menuOptionPrice = _.sumBy(
           e?.options || [],

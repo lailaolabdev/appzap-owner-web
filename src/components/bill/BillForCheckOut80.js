@@ -86,26 +86,29 @@ export default function BillForCheckOut80({
       _total += _data?.quantity * itemPrice;
     }
 
+    const totalAmountAll =
+      orderPayBefore && orderPayBefore.length > 0
+        ? _total
+        : totalBillBillForCheckOut80;
+
     // Handle discount logic
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(totalBillBillForCheckOut80 - dataBill?.discount);
+        setTotalAfterDiscount(totalAmountAll - dataBill?.discount);
       } else {
-        const ddiscount = parseInt(
-          (totalBillBillForCheckOut80 * dataBill?.discount) / 100
-        );
-        setTotalAfterDiscount(totalBillBillForCheckOut80 - ddiscount);
+        const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
+        setTotalAfterDiscount(totalAmountAll - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(totalBillBillForCheckOut80);
+      setTotalAfterDiscount(totalAmountAll);
     }
-    setTotal(totalBillBillForCheckOut80);
-    setTaxAmount((totalBillBillForCheckOut80 * taxPercent) / 100);
+    setTotal(totalAmountAll);
+    setTaxAmount((totalAmountAll * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (totalBillBillForCheckOut80 * storeDetail?.serviceChargePer) / 100
+      (totalAmountAll * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
