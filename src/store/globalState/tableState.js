@@ -8,13 +8,17 @@ import {
   DOING_STATUS,
   CANCEL_STATUS,
 } from "../../constants";
-import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER, END_POINT_SEVER_TABLE_MENU, getLocalData } from "../../constants/api";
+import {
+  END_POINT_SEVER,
+  END_POINT_SEVER_BILL_ORDER,
+  END_POINT_SEVER_TABLE_MENU,
+  getLocalData,
+} from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
-import Axios from "axios";
 
-export const useTableState = () => {
+export const useTableState = (storeDetail) => {
   const [isTableOrderLoading, setIsTableOrderLoading] = useState(false);
   const [tableList, setTableList] = useState([]);
   const [tableListCheck, setTableListCheck] = useState([]);
@@ -25,12 +29,17 @@ export const useTableState = () => {
   const [selectTable2, setSelectTable2] = useState();
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
   const [isWaitingCheckout, setIsWaitingCheckout] = useState(false);
+  const [isWaitingPress, setIsWaitingPress] = useState(false);
 
   /**
    * Modify Order
+   *
    */
+
+  // console.log("tableOrders", tableOrders);
+
   useEffect(() => {
-    if (tableOrders.length > 0 && tableOrders[0].code != selectedTable?.code) {
+    if (tableOrders.length > 0 && tableOrders[0].code !== selectedTable?.code) {
       getTableOrders(selectedTable);
     } else {
       setTableOrderItems(tableOrders);
@@ -38,47 +47,30 @@ export const useTableState = () => {
   }, [tableOrders]);
 
   const getTableDataStore = useMemo(
-    () => async (query) => {
-      try {
-        let _userData = await getLocalData();
-        let params = {
-          status: true,
-          isCheckout: false,
-          storeId: _userData?.DATA?.storeId,
-        };
-        if (query) {
-          params = { ...params, ...query };
-        }
-
-        await Axios.get(`${END_POINT}/v3/codes`, {
-          params: params,
-        }).then((response) => {
-          if (response?.status !== 200) return;
-          setTableList(response?.data);
-          let _openTable = response?.data?.filter((table) => {
+    () => async () => {
+      let _userData = await getLocalData();
+      const url = `${END_POINT}/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
+      await fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.message === "server error") return;
+          setTableList(response);
+          let _openTable = response.filter((table) => {
             return table.isOpened && !table.isStaffConfirm;
           });
-
           setOpenTableData(_openTable);
-        });
-      } catch (error) {
-        console.log("error", error);
-      }
+        })
+        .catch((err) => {});
     },
     []
   );
-
   // useEffect(() => {
   //   getTableDataStore();
-  //   console.log("UseEffect", storeDetail?.statusPrintBill);
-  // }, [storeDetail?.statusPrintBill !== undefined]);
-
+  // }, []);
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();
-      const url =
-        END_POINT_SEVER_TABLE_MENU +
-        `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -94,24 +86,30 @@ export const useTableState = () => {
   const getTableOrders = async (table) => {
     try {
       if (!table?.billId) return;
-      const url =
-        END_POINT_SEVER_BILL_ORDER +
-        `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
-      let res = await axios.get(url);
+      const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
+      const res = await axios.get(url);
       const data = res.data;
+      if (data.length > 0) {
+        setIsWaitingPress(true);
+      } else {
+        setIsWaitingPress(false);
+      }
 
       if (res.status < 300) {
         setTableOrders(data);
         setIsTableOrderLoading(false);
+
         return data;
       } else {
         setTableOrders([]);
+
         setIsTableOrderLoading(false);
         return [];
       }
     } catch (err) {
       console.log(err);
       setIsTableOrderLoading(false);
+      setIsWaitingPress(false);
       return [];
     }
   };
@@ -125,11 +123,11 @@ export const useTableState = () => {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
       setSelectedTable(table);
-      setIsWaitingCheckout(true)
+      setIsWaitingCheckout(true);
       await getTableOrders(table);
-      setIsWaitingCheckout(false)
+      setIsWaitingCheckout(false);
     } else {
-      setIsWaitingCheckout(true)
+      setIsWaitingCheckout(true);
     }
   };
 
@@ -286,14 +284,17 @@ export const useTableState = () => {
 
   const mergeTable = async (_newTable) => {
     try {
-      const response = await axios.put(END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer", {
-        headers: await getHeaders(),
-        body: {
-          billOld: selectedTable["billId"],
-          billNew: _newTable["billId"] ?? "NOT_BILL",
-          codeId: _newTable["_id"],
-        },
-      });
+      const response = await axios.put(
+        END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer",
+        {
+          headers: await getHeaders(),
+          body: {
+            billOld: selectedTable["billId"],
+            billNew: _newTable["billId"] ?? "NOT_BILL",
+            codeId: _newTable["_id"],
+          },
+        }
+      );
 
       // print(response.body);
 
@@ -399,5 +400,6 @@ export const useTableState = () => {
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     isWaitingCheckout,
+    isWaitingPress,
   };
 };

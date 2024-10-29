@@ -73,6 +73,7 @@ export default function PopUpPrintStaffHistoryComponent({
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -92,7 +93,6 @@ export default function PopUpPrintStaffHistoryComponent({
           type: printerBillData?.type,
           port: "9100",
           width: myPrinter?.width === "58mm" ? 400 : 580,
-          // beep: 1,
         },
         async () => {
           await axios({
@@ -186,49 +186,53 @@ export default function PopUpPrintStaffHistoryComponent({
             <div style={{ fontWeight: "bold" }}>
               {t("to")}: {startDate} 23:59:59
             </div>
-            {userReport?.length > 0 && userReport?.map((e) => (
-              <div>
-                <hr style={{ borderBottom: "1px dotted #000" }} />
-                {[
-                  {
-                    name: `${t("staff_name")}:`,
-                    value: e?.["userId"]?.["userId"],
-                    type: "default",
-                  },
-                  // {
-                  //   name: "ຈຳນວນອໍເດີທັງໝົດ:",
-                  //   value: e["ຈຳນວນອໍເດີທັງໝົດ"],
-                  // },
-                  {
-                    name: `${t("order_success_amount")}`,
-                    value: e?.["served"],
-                  },
-                  // {
-                  //   name: "ຈຳນວນອໍເດີຍົກເລີກ:",
-                  //   value: e["ຈຳນວນອໍເດີຍົກເລີກ"],
-                  //   type: storeDetail?.firstCurrency,
-                  // },
-                  {
-                    name: `${t("total_success_order")}`,
-                    value: e?.["totalSaleAmount"],
-                    type: storeDetail?.firstCurrency,
-                  },
-                ].map((e) => (
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
-                    <span style={{ textAlign: "left", fontWeight: "bold" }}>
-                      {e?.name}
-                    </span>
-                    <span style={{ textAlign: "right", fontWeight: "bold" }}>
-                      {e?.type == "default"
-                        ? e?.value
-                        : `${moneyCurrency(e?.value)} ${e?.type || ""}`}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ))}
+            {userReport?.length > 0 &&
+              userReport?.map((e) => (
+                <div>
+                  <hr style={{ borderBottom: "1px dotted #000" }} />
+                  {[
+                    {
+                      name: `${t("staff_name")}:`,
+                      value: e?.["userId"]?.["userId"],
+                      type: "default",
+                    },
+                    // {
+                    //   name: "ຈຳນວນອໍເດີທັງໝົດ:",
+                    //   value: e["ຈຳນວນອໍເດີທັງໝົດ"],
+                    // },
+                    {
+                      name: `${t("order_success_amount")}`,
+                      value: e?.["served"],
+                    },
+                    // {
+                    //   name: "ຈຳນວນອໍເດີຍົກເລີກ:",
+                    //   value: e["ຈຳນວນອໍເດີຍົກເລີກ"],
+                    //   type: storeDetail?.firstCurrency,
+                    // },
+                    {
+                      name: `${t("total_success_order")}`,
+                      value: e?.["totalSaleAmount"],
+                      type: storeDetail?.firstCurrency,
+                    },
+                  ].map((e) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span style={{ textAlign: "left", fontWeight: "bold" }}>
+                        {e?.name}
+                      </span>
+                      <span style={{ textAlign: "right", fontWeight: "bold" }}>
+                        {e?.type == "default"
+                          ? e?.value
+                          : `${moneyCurrency(e?.value)} ${e?.type || ""}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
           </Container>
         </div>
       </Modal.Body>

@@ -89,7 +89,6 @@ const runPrint = async (dataUrl, printer) => {
 // Convert HTML element to base64 for printing
 const convertHtmlToBase64 = (items, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
-  console.log("selectedTable", selectedTable);
 
   items.forEach((data, index) => {
     if (data) {

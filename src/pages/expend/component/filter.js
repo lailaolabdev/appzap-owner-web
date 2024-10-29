@@ -15,6 +15,8 @@ export default function Filter({
   setFilterByYear,
   filterByMonth,
   setFilterByMonth,
+  setDateStart,
+  setDateEnd,
 }) {
   const { t } = useTranslation();
   const [years, setYears] = useState([]);
@@ -83,7 +85,11 @@ export default function Filter({
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item, index) => (
               <div
                 key={index}
-                onClick={() => setFilterByMonth(item)}
+                onClick={() => {
+                  setFilterByMonth(item);
+                  setDateStart("");
+                  setDateEnd("");
+                }}
                 className={item === filterByMonth ? "active" : ""}
               >
                 {item}

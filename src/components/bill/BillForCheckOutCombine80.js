@@ -12,17 +12,15 @@ import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
-import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
-export default function BillForCheckOut80({
+export default function BillForCheckOutCombine80({
   storeDetail,
-  orderPayBefore,
-  selectedTable,
+  selectedBill,
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
-  totalBillBillForCheckOut80,
   profile,
 }) {
   // state
@@ -36,79 +34,55 @@ export default function BillForCheckOut80({
   const [base64Image, setBase64Image] = useState("");
 
   // console.log("storeDetail", storeDetail);
-  // console.log("dataBill 80 code", dataBill?.orderId);
-  // console.log("selectedTable 80", selectedTable);
+  // console.log("dataBill", dataBill?.items);
+  // console.log("selectedBill 80", selectedBill);
 
-  // console.log("dataBill", dataBill);
-  const orders =
-    orderPayBefore && orderPayBefore.length > 0
-      ? orderPayBefore
-      : dataBill?.orderId;
   // useEffect
   useEffect(() => {
     _calculateTotal();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
+    // console.log("🚀 ~ file: BillForCheckOutCombine80.js:20 ~ dataBill:", dataBill);
     // console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
 
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
-  }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
+  }, []);
 
   // function
   const _calculateTotal = () => {
-    let _total = 0;
-    // for (let _data of dataBill?.orderId || []) {
+    // let _total = 0;
+    // for (let _data of dataBill?.items || []) {
     //   const totalOptionPrice = _data?.totalOptionPrice || 0;
     //   const itemPrice = _data?.price + totalOptionPrice;
     //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
     //   _total += _data?.quantity * itemPrice;
     // }
 
-    // const _total = _.sumBy(
-    //   dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-    //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-    // );
-    // let _total = 0;
-
-    // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
-    const orders =
-      orderPayBefore && orderPayBefore.length > 0
-        ? orderPayBefore
-        : dataBill?.orderId;
-
-    // Loop through the available orders
-    for (let _data of (orders || []).filter((e) => e?.status === "SERVED")) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      _total += _data?.quantity * itemPrice;
-    }
-
-    const totalAmountAll =
-      orderPayBefore && orderPayBefore.length > 0
-        ? _total
-        : totalBillBillForCheckOut80;
-
-    // Handle discount logic
+    const totalBillDefualt = _.sumBy(
+      dataBill?.items?.filter((e) => e?.status === "SERVED"),
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    );
     if (dataBill?.discount > 0) {
       if (
-        dataBill?.discountType === "LAK" ||
-        dataBill?.discountType === "MONEY"
+        dataBill?.discountType == "LAK" ||
+        dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(totalAmountAll - dataBill?.discount);
+        setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
-        setTotalAfterDiscount(totalAmountAll - ddiscount);
+        const ddiscount = parseInt(
+          (totalBillDefualt * dataBill?.discount) / 100
+        );
+        setTotalAfterDiscount(totalBillDefualt - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(totalAmountAll);
+      setTotalAfterDiscount(totalBillDefualt);
     }
-    setTotal(totalAmountAll);
-    setTaxAmount((totalAmountAll * taxPercent) / 100);
+    setTotal(totalBillDefualt);
+    setTaxAmount((totalBillDefualt * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (totalAmountAll * storeDetail?.serviceChargePer) / 100
+      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
@@ -145,7 +119,9 @@ export default function BillForCheckOut80({
 
   return (
     <Container>
-      <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+      <div
+        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+      >
         <div style={{ display: "flex", flexDirection: "row" }}>
           {base64Image ? (
             <Image
@@ -159,12 +135,21 @@ export default function BillForCheckOut80({
           ) : (
             ""
           )}
+          <span
+            style={{
+              fontSize: "24px",
+              fontWeight: "bold",
+              marginRight: "10px",
+            }}
+          >
+            # {dataBill?.queue}
+          </span>
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>
         {" "}
-        {`${t("tableNumber")} ${dataBill?.tableId?.name}`}
+        {`${selectedBill?.mergedTableNames}`}
       </div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
@@ -203,7 +188,7 @@ export default function BillForCheckOut80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {orders
+        {dataBill?.items
           ?.filter((e) => e?.status === "SERVED")
           ?.map((item, index) => {
             const optionsNames =
@@ -216,6 +201,7 @@ export default function BillForCheckOut80({
                 .join("") || "";
             const totalOptionPrice = item?.totalOptionPrice || 0;
             const itemPrice = item?.price + totalOptionPrice;
+            // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
             const itemTotal = itemPrice * item?.quantity;
 
             return (
@@ -356,30 +342,26 @@ export default function BillForCheckOut80({
           </span>
         ))}
       </div>
-
-      <div
-        style={{
-          textAlign: "center",
-          fontSize: 12,
-        }}
-      >
-        <div>
-          {dataBill?.paymentMethod === "CASH"
-            ? "ເງີນສົດ"
-            : dataBill?.paymentMethod === "TRANSFER"
-            ? "ເງີນໂອນ"
-            : dataBill?.paymentMethod === "TRANSFER_CASH"
-            ? "ເງີນສົດແລະໂອນ"
-            : ""}
+      {/* <Price>
+        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ display: "flex", gap: 10, fontSize: 12 }}>
+          <div>
+            {dataBill?.paymentMethod === "CASH"
+              ? "ເງີນສົດ"
+              : dataBill?.paymentMethod === "TRANSFER"
+              ? "ເງີນໂອນ"
+              : dataBill?.paymentMethod === "TRANSFER_CASH"
+              ? "ເງີນສົດແລະໂອນ"
+              : ""}
+          </div>
+          <div>
+            {t("getMoney")} {dataBill?.moneyReceived || 0}
+          </div>
+          <div>
+            {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+          </div>
         </div>
-        <div>
-          {t("getMoney")} {dataBill?.moneyReceived || 0}
-        </div>
-        <div>
-          {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
-        </div>
-      </div>
-
+      </Price> */}
       {/* <div
         style={{
           display: "flex",
