@@ -90,6 +90,7 @@ const runPrint = async (dataUrl, printer) => {
 const convertHtmlToBase64 = (items, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
   console.log("selectedTable", selectedTable);
+
   items.forEach((data, index) => {
     if (data) {
       const canvas = document.createElement("canvas");
@@ -97,10 +98,9 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
 
       // Calculate dynamic canvas height based on the number of items
       const width = 510;
-      const itemHeight = items.length * 40; // Adjust height based on the number of items
       const headerHeight = 60; // Height for the title block
       const footerHeight = 60; // Height for the footer (date/time)
-      const height = headerHeight + itemHeight + footerHeight; // Final canvas height without extra space
+      const height = headerHeight + items.length * 60 + footerHeight; // Final canvas height
 
       canvas.width = width;
       canvas.height = height;
@@ -113,47 +113,52 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       function wrapText(context, text, x, y, maxWidth, lineHeight) {
         const words = text.split(" ");
         let line = "";
+
         for (let n = 0; n < words.length; n++) {
-          let testLine = line + words[n] + " ";
-          let metrics = context.measureText(testLine);
-          let testWidth = metrics.width;
+          const testLine = line + words[n] + " ";
+          const metrics = context.measureText(testLine);
+          const testWidth = metrics.width;
+
+          // Check if the line exceeds the maximum width
           if (testWidth > maxWidth && n > 0) {
             context.fillText(line, x, y);
-            line = words[n] + " ";
-            y += lineHeight;
+            line = words[n] + " "; // Start a new line with the current word
+            y += lineHeight; // Move down for the next line
           } else {
-            line = testLine;
+            line = testLine; // Continue adding to the line
           }
         }
-        context.fillText(line, x, y);
+
+        // Draw the last line if there's remaining text
+        if (line) {
+          context.fillText(line, x, y);
+        }
       }
 
-      // Draw the Title Block (Left black background, right title)
-      const tableName = selectedTable?.tableName;
+      // Draw the Title Block with increased margin
+      const titleMargin = 20; // Set a margin for the title
+      const tableName = selectedTable?.tableName || "Table";
       context.fillStyle = "#000"; // Black background for left block
-      context.fillRect(0, 0, width / 2, 60); // Black block width / 2
+      context.fillRect(0, 0, width / 2, headerHeight); // Black block width / 2
       context.fillStyle = "#fff"; // White text
       context.font = "bold 36px NotoSansLao";
-      context.fillText(tableName, 10, 45); // Title text on the left
+      context.fillText(tableName, titleMargin, 45); // Title text on the left with margin
 
-      // Use selectedTable?.code instead of the hardcoded value for the right-side identifier
-      const tableCode = selectedTable?.code || "N/A"; // Fallback to "N/A" if selectedTable or code is not defined
+      const tableCode = selectedTable?.code || "N/A";
       context.fillStyle = "#000"; // Black text
       context.font = "bold 30px NotoSansLao";
       context.fillText(tableCode, width - 160, 44); // Dynamically display selectedTable's code
 
-      // Draw Items List (Orange (x 1), Apple (x 1))
+      // Draw Items List with increased margin
       context.fillStyle = "#000"; // Black text
-      context.font = "bold 32px NotoSansLao";
-      let itemYPosition = 100;
-      // context.fillText(`${data?.name} (${data?.quantity})`, 10, itemYPosition);
-      // itemYPosition += 40; // Item name
-      items.forEach((item) => {
-        console.log("object", item);
-        // Combine the item name and menuOptions into a single line
-        let itemText = `${item.name} (x ${item.quantity})`;
+      context.font = " 30px NotoSansLao";
+      let itemYPosition = headerHeight + 40; // Starting Y position for items with margin
 
-        // If the item has menuOptions, append them in square brackets
+      items.forEach((item) => {
+        // Combine the item name and menuOptions into a single line
+        let itemText = `- ${item.name} (x ${item.quantity})`;
+
+        // If the item has options, append them in square brackets
         if (item.options && item.options.length > 0) {
           const optionsText = item.options
             .map((option) => `[${option.name} x ${option.quantity}]`)
@@ -161,18 +166,22 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
           itemText += ` ${optionsText}`; // Append options to the item name
         }
 
-        // Draw the item name and options (main line)
-        context.fillText(itemText, 10, itemYPosition);
+        // Wrap and draw the item name and options with margin
+        const itemMaxWidth = 490; // Set a max width for wrapping
+        wrapText(
+          context,
+          itemText,
+          titleMargin,
+          itemYPosition,
+          itemMaxWidth,
+          40
+        ); // Call wrapText to draw the text
 
-        // Draw the item quantity, aligned to the right
-        // context.fillText(
-        //   `(x ${item.quantity})`,
-        //   width - 50, // Adjust for right alignment
-        //   itemYPosition
-        // );
-
-        // Adjust the Y position for the next item
-        itemYPosition += 40; // Space between items
+        // Update Y position after wrapping
+        const wrappedLines = Math.ceil(
+          context.measureText(itemText).width / itemMaxWidth
+        );
+        itemYPosition += wrappedLines * 40; // Increase Y position based on wrapped lines
       });
 
       // Draw the dotted line

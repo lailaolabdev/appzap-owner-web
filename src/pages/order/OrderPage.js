@@ -184,7 +184,6 @@ export default function OrderPage() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
-
     orderSelect.forEach((data, index) => {
       if (data) {
         const canvas = document.createElement("canvas");
@@ -200,30 +199,56 @@ export default function OrderPage() {
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, height);
 
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+        }
+
         // Draw the Table ID (left black block)
         context.fillStyle = "#000"; // Black background
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
-        context.font = "bold 36px NotoSansLao";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
         context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 30px NotoSansLao";
+        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
         context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 40px NotoSansLao";
-        context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
+        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          110,
+          width - 20,
+          40
+        ); // Item name with wrapping
 
-        // Draw Item Name and Quantity
+        // Draw Item Note
         context.fillStyle = "#000"; // Black text
-        context.font = "24px NotoSansLao";
-        context.fillText(`${data?.note}`, 10, 150); // Item name
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
 
         // Draw Price and Quantity
-        context.font = "28px NotoSansLao";
+        context.font = "28px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
             data?.quantity
@@ -236,13 +261,13 @@ export default function OrderPage() {
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
         context.beginPath();
-        context.moveTo(0, 230); // Start at (20, 150)
-        context.lineTo(width, 230); // End at (width - 20, 150)
+        context.moveTo(0, 230); // Start at (0, 230)
+        context.lineTo(width, 230); // End at (width, 230)
         context.stroke();
 
         // Draw Footer (Created By and Date)
         context.setLineDash([]); // Reset line style
-        context.font = "bold 24px NotoSansLao";
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillText(
           data?.createdBy?.firstname ||
             data?.updatedBy?.firstname ||
@@ -251,8 +276,8 @@ export default function OrderPage() {
           260
         ); // Created by name
 
-        context.fillStyle = "#6e6e6e"; // Black text
-        context.font = "22px NotoSansLao";
+        context.fillStyle = "#6e6e6e"; // Gray text for date and time
+        context.font = "22px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
