@@ -135,8 +135,8 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
         let itemText = `${item.name} (x ${item.quantity})`;
 
         // If the item has menuOptions, append them in square brackets
-        if (item.menuOptions && item.menuOptions.length > 0) {
-          const optionsText = item.menuOptions
+        if (item.options && item.options.length > 0) {
+          const optionsText = item.options
             .map((option) => `[${option.name} x ${option.quantity}]`)
             .join(" "); // Concatenate options
           itemText += ` ${optionsText}`; // Append options to the item name
