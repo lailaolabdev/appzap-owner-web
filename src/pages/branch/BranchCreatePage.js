@@ -15,7 +15,6 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // let limitData = 100;
-
 export default function BranchCreatePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();

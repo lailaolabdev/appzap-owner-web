@@ -866,5 +866,6 @@
   "exit_branch": "already this  branch  Exit",
   "branch_require": "Branch name is required",
   "branch_select": "Select branch",
+  "branch_recive": "Received from branch",
   "field_required": "All fields are required"
 }

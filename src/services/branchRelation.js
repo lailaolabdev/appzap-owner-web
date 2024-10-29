@@ -50,3 +50,15 @@ export const GetAllBranchIncome = async (
     return { error: true };
   }
 };
+
+export const DeleteBranchRelation = async (token, branchId, storeId) => {
+  try {
+    const url = `${END_POINT_APP}/v4/branch/delete?branchId=${branchId}&storeId=${storeId}`;
+    const res = await axios.delete(url, {
+      headers: token,
+    });
+    return res.data;
+  } catch (err) {
+    return { err };
+  }
+};

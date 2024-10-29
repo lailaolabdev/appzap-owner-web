@@ -7,7 +7,7 @@ export const getStores = async (search) => {
     let findBy = "?";
 
     if (search) {
-      findBy += `name=${search}&`;
+      findBy += `name=${search}`;
     }
     const url = `${END_POINT_APP}/v3/stores${findBy}`;
     const res = await axios.get(url);
