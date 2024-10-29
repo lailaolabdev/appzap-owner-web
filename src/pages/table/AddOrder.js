@@ -412,6 +412,25 @@ function AddOrder() {
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, height);
 
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+        }
+
         // Draw the Table ID (left black block)
         context.fillStyle = "#000"; // Black background
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
@@ -426,17 +445,20 @@ function AddOrder() {
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 40px NotoSansLao";
-        context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
-
-        // Draw Item Name and Quantity
-        context.fillStyle = "#000"; // Black text
-        context.font = "24px NotoSansLao";
-        context.fillText(
-          `${data?.note !== undefined ? data?.note : ""}`,
+        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
           10,
-          150
-        ); // Item name
+          110,
+          width - 20,
+          40
+        ); // Item name with wrapping
+
+        // Draw Item Note
+        context.fillStyle = "#000"; // Black text
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
 
         // Draw Options from the menuOptions array, including prices
         if (data.menuOptions && data.menuOptions.length > 0) {

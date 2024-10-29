@@ -109,6 +109,25 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.fillStyle = "#fff";
       context.fillRect(0, 0, width, height);
 
+      // Helper function for text wrapping
+      function wrapText(context, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(" ");
+        let line = "";
+        for (let n = 0; n < words.length; n++) {
+          let testLine = line + words[n] + " ";
+          let metrics = context.measureText(testLine);
+          let testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            context.fillText(line, x, y);
+            line = words[n] + " ";
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        context.fillText(line, x, y);
+      }
+
       // Draw the Title Block (Left black background, right title)
       const tableName = selectedTable?.tableName;
       context.fillStyle = "#000"; // Black background for left block
