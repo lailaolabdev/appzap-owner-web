@@ -70,7 +70,7 @@ export default function SettingList() {
     {
       id: "ab2dd4fe-d0e2-4808-89d1-ae6307b8abce",
       title: t("zone_setting"),
-      subTitle: t('zone_setting_desc'),
+      subTitle: t("zone_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
       path: `/settingStore/settingZone/${params?.id}`,
     },
@@ -135,7 +135,7 @@ export default function SettingList() {
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7101",
-      title: t("banner"),
+      title: t("Banner"),
       subTitle: t("banner_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
