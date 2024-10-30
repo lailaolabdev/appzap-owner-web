@@ -20,6 +20,8 @@ export const orderStatus = (status) => {
       return `ສົ່ງຄືນ`;
     case "PAID":
       return `ຈ່າຍແລ້ວ`;
+    case "PRINTBILL":
+      return `ພີມບີນ`;
     default:
       return "ຍົກເລີກ";
   }

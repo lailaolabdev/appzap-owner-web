@@ -564,6 +564,8 @@ export default function DashboardFinance({
                             ? "green"
                             : item?.status === "PAID"
                             ? COLOR_APP
+                            : item?.status === "PRINTBILL"
+                            ? "blue"
                             : item?.status === "CART"
                             ? "#00496e"
                             : item?.status === "FEEDBACK"
