@@ -529,8 +529,6 @@ export default function CheckOutPopup({
     };
   });
 
-  console.log("selectCurrency", selectCurrency?.name !== "LAK");
-
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
   };

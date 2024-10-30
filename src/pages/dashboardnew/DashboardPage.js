@@ -171,12 +171,8 @@ export default function DashboardPage() {
   };
   const getBankBillName = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getBankReport(
-      storeDetail?._id,
-      findBy,
-      selectedTableIds
-    );
-    console.log("data", data);
+    const data = await getBankReport(storeDetail?._id, findBy);
+    console.log("DATA BANK", data);
     setBankList(data);
   };
   const downloadCsv = async () => {
