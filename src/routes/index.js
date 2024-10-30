@@ -75,11 +75,8 @@ import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
-<<<<<<< HEAD
 import BankList from "../pages/bank/BankList";
-=======
 import BillSplit from "../pages/split_bill/BillSplit";
->>>>>>> development
 
 function Router() {
   return useRoutes([

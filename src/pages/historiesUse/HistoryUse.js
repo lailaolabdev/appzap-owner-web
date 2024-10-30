@@ -15,13 +15,8 @@ import {
   faPrint,
   faTable,
   faHistory,
-  faCertificate,
-  faCoins,
-  faPeopleArrows,
   faAddressCard,
   faListAlt,
-  faPrint,
-  faTable,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useParams } from "react-router-dom";

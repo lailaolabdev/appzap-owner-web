@@ -374,16 +374,10 @@
   "all_amount": "Total Bills",
   "total_will_get": "Final total amount",
   "money_crash": "Crash amount",
-<<<<<<< HEAD
   "success_amount": "Success amount",
   "transfer_cash": "Pay as tranfer+cash",
   "bill_crash": "Bill crash amount",
   "total_tax_service_charge": "Total Service Sharge & Tax",
-=======
-  "success_amount": "Success Bills",
-  "transfer_cash": "Pay as transfer + cash",
-  "bill_crash": "Pending Bills",
->>>>>>> development
   "report_sell": "Selling Report",
   "report_p_c": "Report income/expenses",
   "rp_build": "Production report",

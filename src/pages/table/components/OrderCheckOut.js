@@ -21,7 +21,6 @@ const OrderCheckOut = ({
   onPrintBill = () => {},
   onSubmit = () => {},
   staffData,
-  printBillLoading,
   selectedTable,
   setServiceChangeAmount,
   setTotalMustPay,

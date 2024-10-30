@@ -12,6 +12,7 @@ import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { useStore } from "../../../store";
 import {
+  END_POINT_SEVER,
   END_POINT_SEVER_TABLE_MENU,
   QUERY_CURRENCIES,
   getLocalData,

@@ -78,9 +78,9 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
-    getCurrencyName();
+    // getCurrencyName();
     getCategoryReportData();
-    getBankBillName();
+    // getBankBillName();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
