@@ -22,14 +22,14 @@ export default function PopUpDetaillBillFark({
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
   const [menusData, setMenusData] = useState();
-  const [orderFarkData, setOrderFarkData] = useState([]);
+  const [Data, setData] = useState([]);
   // store
   const { storeDetail } = useStore();
 
   // useEffect
   useEffect(() => {
     // getMenuData();
-    getOrderFarkDate();
+    getDate();
   }, [open]);
   // functions
   const getMenuData = async () => {
@@ -44,16 +44,16 @@ export default function PopUpDetaillBillFark({
       setIsLoading(false);
     }
   };
-  const getOrderFarkDate = async (menuId) => {
+  const getDate = async (menuId) => {
     try {
-      setOrderFarkData();
+      setData();
       if (billFarkData) {
         const { TOKEN, DATA } = await getLocalData();
         const url =
           END_POINT_SEVER + "/v4/order-farks?billFarkId=" + billFarkData?._id;
         const data = await Axios.get(url, { headers: TOKEN });
         console.log("data", data);
-        setOrderFarkData(data.data);
+        setData(data.data);
       }
     } catch (err) {
       console.log(err);
@@ -124,7 +124,7 @@ export default function PopUpDetaillBillFark({
               <th>ຊື່</th>
               <th style={{ textAlign: "center" }}>ຈຳນວນ</th>
             </tr>
-            {orderFarkData?.map((e) => (
+            {Data?.map((e) => (
               <tr>
                 <td style={{ textAlign: "start" }}>{e?.nameMenu}</td>
                 <td style={{ textAlign: "center" }}>{e?.amount}</td>

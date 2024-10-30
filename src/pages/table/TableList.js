@@ -121,6 +121,8 @@ export default function TableList() {
   const handleCloseQuantity = () => setQuantity(false);
 
   const { printerCounter, printers } = useStore();
+  const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
+  const [createdAt, setCreatedAt] = useState();
 
   // provider
   const {
@@ -183,6 +185,7 @@ export default function TableList() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
+  const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
 
   useEffect(() => {
@@ -255,8 +258,8 @@ export default function TableList() {
     // getDataServiceCharge();
     getUserData();
     getDataZone();
-    // getDataTax();
-    // getDataServiceCharge();
+    getDataTax();
+    getDataServiceCharge();
 
     setStoreDetail({
       ...storeDetail,
@@ -275,21 +278,21 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  // const getDataTax = async () => {
-  //   const { DATA } = await getLocalData();
-  //   const _res = await axios.get(
-  //     END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
-  //   );
-  //   setTaxPercent(_res?.data?.taxPercent);
-  // };
+  const getDataTax = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
+    );
+    setTaxPercent(_res?.data?.taxPercent);
+  };
 
-  // const getDataServiceCharge = async () => {
-  //   const { DATA } = await getLocalData();
-  //   const _res = await axios.get(
-  //     `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
-  //   );
-  //   setServiceChargePercent(_res?.data?.serviceCharge);
-  // };
+  const getDataServiceCharge = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
+    );
+    setServiceChargePercent(_res?.data?.serviceCharge);
+  };
 
   function handleSetQuantity(int, seletedOrderItem) {
     const _data = seletedOrderItem?.quantity + int;
@@ -635,6 +638,61 @@ export default function TableList() {
     }
   };
 
+  const saveServiceChargeDetails = async () => {
+    if (storeDetail?.serviceChargePer > 0) {
+      try {
+        if (!profile.data || !selectedTable) {
+          console.error("Missing profile data or selected table");
+          return;
+        }
+
+        const userId = profile.data._id || "";
+        const billId = selectedTable.billId;
+        const firstName = profile.data.firstname;
+        const lastName = profile.data.lastname;
+
+        console.log("User_Id:", userId);
+        console.log("Bill_Id:", billId);
+        console.log("taxPercent:", taxPercent);
+        console.log("total:", total);
+        console.log("serviceChargePercent:", serviceChargePercent);
+        console.log("serviceChangeAmount:", serviceChangeAmount);
+        console.log("totalMustPay:", totalMustPay);
+        console.log("fname:", firstName);
+        console.log("lname:", lastName);
+        console.log("CreateAt:", createdAt);
+
+        const response = await axios.post(
+          `${END_POINT_SEVER}/saveservice`,
+          {
+            userId,
+            billId,
+            taxPercent,
+            total,
+            serviceChargePercent,
+            serviceChangeAmount,
+            totalMustPay,
+            firstName,
+            lastName,
+            createdAt,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Service charge saved:", response.data);
+      } catch (error) {
+        console.error(
+          "Error saving service charge:",
+          error.response?.data || error.message
+        );
+      }
+    }
+  };
+
   const onPrintBill = async (isPrintBill) => {
     // console.log("isPrintBill", isPrintBill);
     try {
@@ -643,6 +701,7 @@ export default function TableList() {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
+      saveServiceChargeDetails();
       await _createHistoriesPrinter(_dataBill);
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -678,6 +737,8 @@ export default function TableList() {
 
       await printFlutter(
         {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
           type: printerBillData?.type,
@@ -809,6 +870,8 @@ export default function TableList() {
 
       await printFlutter(
         {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
           type: printerBillData?.type,
@@ -976,6 +1039,8 @@ export default function TableList() {
         }
         await printFlutter(
           {
+            drawer: false,
+            paper: _printer?.width === "58mm" ? 400 : 500,
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
@@ -1071,6 +1136,8 @@ export default function TableList() {
         }
         await printFlutter(
           {
+            drawer: false,
+            paper: _printer?.width === "58mm" ? 400 : 500,
             imageBuffer: dataUrl.toDataURL(),
             ip: _printer?.ip,
             type: _printer?.type,
@@ -1761,8 +1828,8 @@ export default function TableList() {
                                   right: -35,
                                 }}
                               >
-                                {table?.tableChildren.length > 0 &&
-                                  table?.tableChildren.length}
+                                {table?.tableChildren?.length > 0 &&
+                                  table?.tableChildren?.length}
                               </div>
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
@@ -2510,6 +2577,7 @@ export default function TableList() {
         // editMode={select}
       /> */}
       <CheckOutPopup
+        saveServiceChargeDetails={saveServiceChargeDetails}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
@@ -2530,6 +2598,11 @@ export default function TableList() {
       />
 
       <OrderCheckOut
+        setCreatedAt={setCreatedAt}
+        createdAt={createdAt}
+        totalMustPay={totalMustPay}
+        setTotalMustPay={setTotalMustPay}
+        setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
         data={dataBill}
         totalBillOrderCheckOut={total} // new props

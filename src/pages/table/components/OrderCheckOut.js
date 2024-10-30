@@ -20,6 +20,13 @@ const OrderCheckOut = ({
   taxPercent = 0,
   onPrintBill = () => {},
   onSubmit = () => {},
+  staffData,
+  selectedTable,
+  setServiceChangeAmount,
+  setTotalMustPay,
+  totalMustPay,
+  setCreatedAt,
+  createdAt,
   totalBillOrderCheckOut,
   printBillLoading,
   billDataLoading,
@@ -145,6 +152,39 @@ const OrderCheckOut = ({
       isServiceCharge: e.target.checked,
     });
   };
+  const calculateTotalWithDiscount = (
+    total,
+    taxPercent,
+    serviceAmount,
+    discount,
+    discountType
+  ) => {
+    if (discountType === "LAK") {
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discount
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    } else {
+      const discountInPercent =
+        (total + serviceAmount) * (taxPercent * 0.01 + 1) * (discount / 100);
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discountInPercent
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    }
+  };
+  useEffect(() => {
+    const calculatedTotal = calculateTotalWithDiscount(
+      total,
+      taxPercent,
+      serviceAmount,
+      data?.discount,
+      data?.discountType
+    );
+    setTotalMustPay(calculatedTotal);
+  }, [total, taxPercent, serviceAmount, data]);
+
+  setCreatedAt(tableData?.createdAt);
 
   return (
     <>
@@ -165,8 +205,7 @@ const OrderCheckOut = ({
             {t("code")}: {tableData?.code}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("open_at")}:{" "}
-            {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+            {t("open_at")}: {moment(createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
           <Row>
             <div

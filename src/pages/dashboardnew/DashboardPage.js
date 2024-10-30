@@ -10,7 +10,9 @@ import { AiFillPrinter } from "react-icons/ai";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import {
+  getBankReport,
   getCategoryReport,
+  getCurrencyReport,
   getMenuReport,
   getMoneyReport,
   getPromotionReport,
@@ -57,6 +59,8 @@ export default function DashboardPage() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [tableList, setTableList] = useState([]);
+  const [bankList, setBankList] = useState([]);
+  const [currencyList, setCurrencyList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
@@ -74,7 +78,9 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
+    getCurrencyName();
     getCategoryReportData();
+    getBankBillName();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
@@ -153,6 +159,25 @@ export default function DashboardPage() {
       selectedTableIds
     );
     setPromotionReport(data);
+  };
+  const getCurrencyName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getCurrencyReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
+    setCurrencyList(data);
+  };
+  const getBankBillName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getBankReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
+    console.log("data", data);
+    setBankList(data);
   };
   const downloadCsv = async () => {
     try {
@@ -405,6 +430,18 @@ export default function DashboardPage() {
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
+                    method: `${t("service_charge")}`,
+                    qty: moneyReport?.serviceAmount?.count,
+                    amount: Math.floor(
+                      moneyReport?.serviceAmount?.totalServiceCharge
+                    ),
+                  },
+                  {
+                    method: `${t("tax")}`,
+                    qty: moneyReport?.taxAmount?.count,
+                    amount: Math.floor(moneyReport?.taxAmount?.totalTax),
+                  },
+                  {
                     method: (
                       <div>
                         {t("tsf_cash")}
@@ -442,6 +479,7 @@ export default function DashboardPage() {
                       (moneyReport?.transferCash?.transfer || 0) +
                       (moneyReport?.transfer?.totalBill || 0),
                   },
+
                   {
                     method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
                     qty:
@@ -453,12 +491,60 @@ export default function DashboardPage() {
                       (moneyReport?.transferCash?.totalBill || 0) +
                       (moneyReport?.transfer?.totalBill || 0),
                   },
+                  {
+                    method: (
+                      <div style={{ fontWeight: 700 }}>
+                        {t("total_tax_service_charge")}
+                      </div>
+                    ),
+                    qty:
+                      (moneyReport?.serviceAmount?.count || 0) +
+                      (moneyReport?.taxAmount?.count || 0),
+                    amount:
+                      (Math.floor(
+                        moneyReport?.serviceAmount?.totalServiceCharge
+                      ) || 0) +
+                      (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
+                  },
                 ].map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.amount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("bank_total")}
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>{t("bank_Name")}</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                </tr>
+                {bankList?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.bankDetails.bankName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.bankTotalAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>
@@ -617,6 +703,42 @@ export default function DashboardPage() {
                       </td>
                     </tr>
                   ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("all_curency")}
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>{t("code")}</th>
+                  <th style={{ textAlign: "center" }}>{t("ccrc")}</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                </tr>
+                {currencyList?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyCode}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.currencyTotal))}
+                    </td>
+                  </tr>
+                ))}
               </table>
             </Card.Body>
           </Card>
