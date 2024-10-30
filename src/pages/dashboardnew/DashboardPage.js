@@ -78,9 +78,9 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
-    // getCurrencyName();
+    getCurrencyName();
     getCategoryReportData();
-    // getBankBillName();
+    getBankBillName();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
@@ -159,6 +159,24 @@ export default function DashboardPage() {
       selectedTableIds
     );
     setPromotionReport(data);
+  };
+  const getCurrencyName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getCurrencyReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
+    setCurrencyList(data);
+  };
+  const getBankBillName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getBankReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
+    setBankList(data);
   };
   const downloadCsv = async () => {
     try {

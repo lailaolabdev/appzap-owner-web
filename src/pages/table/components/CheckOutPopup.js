@@ -649,8 +649,8 @@ export default function CheckOutPopup({
                   marginBottom: 10,
                 }}
               >
-                <InputGroup hidden={selectCurrency == "LAK"}>
-                  <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                <InputGroup hidden={selectCurrency?.name == "LAK"}>
+                  <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                   <Form.Control
                     type="text"
                     placeholder="0"
@@ -663,7 +663,7 @@ export default function CheckOutPopup({
                     }}
                     size="lg"
                   />
-                  <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                  <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 </InputGroup>
                 <InputGroup>
                   <InputGroup.Text>{t("cash")}</InputGroup.Text>

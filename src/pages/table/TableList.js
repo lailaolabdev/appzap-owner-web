@@ -1828,8 +1828,8 @@ export default function TableList() {
                                   right: -35,
                                 }}
                               >
-                                {table?.tableChildren.length > 0 &&
-                                  table?.tableChildren.length}
+                                {table?.tableChildren?.length > 0 &&
+                                  table?.tableChildren?.length}
                               </div>
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
