@@ -64,6 +64,7 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { repeat } from "lodash";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -1456,6 +1457,7 @@ export default function TableList() {
         width: "100%",
       }}
     >
+      <p style={{ fontSize: '50px', fontWeight: '400' }}>Home</p>
       {/* popup */}
       <PopUpQRToken
         tableName={selectedTable?.tableName}
@@ -1483,40 +1485,59 @@ export default function TableList() {
           >
             <div
               style={{
-                border: '1px solid red',
+                width: '95%',
                 padding: "10px",
                 color: "gray",
-                display:'grid',
-                alignItems:'center',
-                gridTemplateColumns: {
-                  md: "1fr 1fr 1fr 1fr 1fr",
-                  sm: "1fr 1fr 1fr",
-                  xs: "1fr 1fr",
-                },
-                justifyContent:'center'
+                display: 'grid',
+                alignItems: 'center',
+                gap: 8,
+                gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                justifyContent: 'center'
               }}
             >
-              <div style={{ 
-                backgroundColor:'white', 
-                borderRadius:'5px',
-                padding:'20px 30px',
-                marginRight:'10px',
-              }}
-                >{t("total_table")} : {tableList?.length},{" "}
-              </div>
-              <div>{t("total_unavailable_table")} : {_checkStatusCode(tableList)},{" "}</div>
-              <div>{t("total_available_table")} : {_checkStatusCodeA(tableList)},{" "}</div>
-              <div>{t("total_bill_check")} : {_checkStatusCodeB(tableList)}</div>
+              {[
+                { label: t("total_table"), value: tableList?.length },
+                { label: t("total_available_table"), value: _checkStatusCodeA(tableList) },
+                { label: t("total_unavailable_table"), value: _checkStatusCode(tableList) },
+                { label: t("total_bill_check"), value: _checkStatusCodeB(tableList) },
+              ].map((item, index) => {
+                return (
+                  <div style={{
+                    display: "flex",
+                    backgroundColor: 'white',
+                    padding: '5px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '80px'
+                  }}>
+                    <div style={{
+                      backgroundColor: 'tomato',
+                      height: '40px',
+                      width: '40px',
+                      marginRight: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '5px',
+                      color: 'white'
+                    }}>1</div>
+                    <div>
+                      <div>{item.label}</div>
+                      <div style={{ fontWeight: 500 }}>{item.value}</div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
 
             {zoneData?.length > 0 ? (
-              <div style={{ padding: "20px 15px" ,display:'flex', alignItems:'center', width:'100%'}}>
+              <div style={{ padding: "20px 15px", display: 'flex', alignItems: 'center', width: '100%' }}>
                 <Form.Label >{t("show_by_zone")}</Form.Label>
                 <Form.Control
                   as="select"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
-                  style={{width:'23%', marginLeft:'5px'}}
+                  style={{ width: '23%', marginLeft: '5px' }}
                 >
                   <option value="">{t("show_all_zone")}</option>
                   {zoneData?.map((item, index) => (
@@ -1535,7 +1556,7 @@ export default function TableList() {
               <Box
                 sx={{
                   display: "grid",
-                  gap: 6,
+                  gap: 8,
                   gridTemplateColumns: {
                     md: "1fr 1fr 1fr 1fr ",
                     sm: "1fr 1fr 1fr",
@@ -1547,15 +1568,7 @@ export default function TableList() {
                   tableList?.map((table, index) => (
                     <div
                       style={{
-                        border:
-                          selectedTable?.code === table?.code
-                            ? "1px solid #C51605"
-                            : "1px solid #FB6E3B",
-                        backgroundColor:
-                          selectedTable?.code === table?.code
-                            ? "#404258"
-                            : "#FFF",
-                        borderRadius: 8,
+                        borderRadius: 4,
                         overflow: "hidden",
                         cursor: "pointer",
                       }}
@@ -1570,22 +1583,22 @@ export default function TableList() {
                           style={{
                             width: "100%",
                             height: "100%",
-                            boxShadow:'0 0 5px',
-                            borderRadius: 8,
-                            background:'white',
+                            boxShadow: '0 0 5px',
+                            borderRadius: 4,
+                            background: 'white',
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
                             textAlign: "center",
                             padding: 10,
-                            color:'gray'
+                            color: 'gray'
                           }}
                           className={
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1599,37 +1612,35 @@ export default function TableList() {
                               top: 10,
                             }}
                           ></div>
-                          <div>
-                            <span
-                              style={{
-                                fontSize: 16,
-                                // color: table?.staffConfirm
-                                //   ? "white"
-                                //   : "#616161",
-                                // fontWeight: "bold",
-                                fontWeight: table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? ""
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
-                                  : "",
-                                color: table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "#616161"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
-                                  : "#616161",
-                              }}
-                            >
-                              <div>{table?.tableName}</div>
-                              <div>{table?.code}</div>
-                              <div>
+                          <div style={{
+                            display:'flex', 
+                            alignContent:'center',
+                            justifyContent:'center',
+                            padding:'10px 0px'
+                          }}>
+                            <div style={{
+                              backgroundColor: 'tomato',
+                              height: '40px',
+                              width: '40px',
+                              marginRight: '10px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '5px',
+                              color: 'white'
+                            }}>{index + 1}
+                            </div>
+                            <span style={{
+                              textAlign:'start'
+                            }} >
+                              {/* <div>{table?.tableName}</div>
+                              <div>{table?.code}</div> */}
+                              <div style={{fontSize:20}}>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
                                   : `${t("avaliable")}`}
                               </div>
+                              <div>Zone: Nomal</div>
                             </span>
                           </div>
                         </div>
@@ -1667,8 +1678,8 @@ export default function TableList() {
                             table?.isOpened && !table?.isStaffConfirm
                               ? "blink_card"
                               : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
+                              //   ? "blink_cardCallCheckOut"
+                              ""
                           }
                           onClick={() => {
                             onSelectTable(table);
@@ -1799,10 +1810,10 @@ export default function TableList() {
                             }}
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
+                              dataBill?.orderId?.[0]?.updatedBy?.lastname
                               ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              " " +
+                              dataBill?.orderId[0]?.updatedBy?.lastname
                               : ""}
                           </span>
                         </div>
@@ -2040,68 +2051,68 @@ export default function TableList() {
                         <tbody>
                           {isCheckedOrderItem
                             ? isCheckedOrderItem?.map((orderItem, index) => {
-                                const options =
-                                  orderItem?.options
-                                    ?.map((option) =>
-                                      option.quantity > 1
-                                        ? `[${option.quantity} x ${option.name}]`
-                                        : `[${option.name}]`
-                                    )
-                                    .join(" ") || "";
-                                return (
-                                  <tr
-                                    key={"order" + index}
-                                    style={{ borderBottom: "1px solid #eee" }}
-                                  >
-                                    <td onClick={(e) => e.stopPropagation()}>
-                                      <Checkbox
-                                        disabled={
-                                          orderItem?.status === "CANCELED"
-                                        }
-                                        name="checked"
-                                        checked={orderItem?.isChecked || false}
-                                        onChange={(e) => {
-                                          onSelect({
-                                            ...orderItem,
-                                            isChecked: e.target.checked,
-                                          });
-                                        }}
-                                      />
-                                    </td>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                      {orderItem?.name} {options}
-                                    </td>
-                                    <td>{orderItem?.quantity}</td>
-                                    <td
-                                      style={{
-                                        color:
-                                          orderItem?.status === `SERVED`
-                                            ? "green"
-                                            : orderItem?.status === "DOING"
+                              const options =
+                                orderItem?.options
+                                  ?.map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ") || "";
+                              return (
+                                <tr
+                                  key={"order" + index}
+                                  style={{ borderBottom: "1px solid #eee" }}
+                                >
+                                  <td onClick={(e) => e.stopPropagation()}>
+                                    <Checkbox
+                                      disabled={
+                                        orderItem?.status === "CANCELED"
+                                      }
+                                      name="checked"
+                                      checked={orderItem?.isChecked || false}
+                                      onChange={(e) => {
+                                        onSelect({
+                                          ...orderItem,
+                                          isChecked: e.target.checked,
+                                        });
+                                      }}
+                                    />
+                                  </td>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    {orderItem?.name} {options}
+                                  </td>
+                                  <td>{orderItem?.quantity}</td>
+                                  <td
+                                    style={{
+                                      color:
+                                        orderItem?.status === `SERVED`
+                                          ? "green"
+                                          : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
-                                      }}
-                                    >
-                                      {orderItem?.status
-                                        ? t(
-                                            orderStatusTranslate(
-                                              orderItem?.status
-                                            )
-                                          )
-                                        : "-"}
-                                    </td>
-                                    <td>{orderItem?.createdBy?.firstname}</td>
-                                    <td>
-                                      {orderItem?.createdAt
-                                        ? moment(orderItem?.createdAt).format(
-                                            "HH:mm A"
-                                          )
-                                        : "-"}
-                                    </td>
-                                  </tr>
-                                );
-                              })
+                                    }}
+                                  >
+                                    {orderItem?.status
+                                      ? t(
+                                        orderStatusTranslate(
+                                          orderItem?.status
+                                        )
+                                      )
+                                      : "-"}
+                                  </td>
+                                  <td>{orderItem?.createdBy?.firstname}</td>
+                                  <td>
+                                    {orderItem?.createdAt
+                                      ? moment(orderItem?.createdAt).format(
+                                        "HH:mm A"
+                                      )
+                                      : "-"}
+                                  </td>
+                                </tr>
+                              );
+                            })
                             : ""}
                         </tbody>
                       </TableCustom>
@@ -2340,7 +2351,7 @@ export default function TableList() {
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
-        // editMode={select}
+      // editMode={select}
       />
       <CheckOutPopup
         onPrintBill={onPrintBill}
@@ -2624,8 +2635,8 @@ export default function TableList() {
                         seletedOrderItem?.status === `SERVED`
                           ? "green"
                           : seletedOrderItem?.status === "DOING"
-                          ? ""
-                          : "red",
+                            ? ""
+                            : "red",
                     }}
                   >
                     {seletedOrderItem?.status
@@ -2650,9 +2661,9 @@ export default function TableList() {
           <Button
             disabled
             variant="success"
-            // onClick={() => {
-            //   _orderTableQunatity();
-            // }}
+          // onClick={() => {
+          //   _orderTableQunatity();
+          // }}
           >
             {t("save")}
           </Button>
