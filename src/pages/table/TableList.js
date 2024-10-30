@@ -1486,8 +1486,14 @@ export default function TableList() {
                 border: '1px solid red',
                 padding: "10px",
                 color: "gray",
-                display:'flex',
+                display:'grid',
                 alignItems:'center',
+                gridTemplateColumns: {
+                  md: "1fr 1fr 1fr 1fr 1fr",
+                  sm: "1fr 1fr 1fr",
+                  xs: "1fr 1fr",
+                },
+                justifyContent:'center'
               }}
             >
               <div style={{ 
@@ -1498,9 +1504,9 @@ export default function TableList() {
               }}
                 >{t("total_table")} : {tableList?.length},{" "}
               </div>
-              {t("total_unavailable_table")} : {_checkStatusCode(tableList)},{" "}
-              {t("total_available_table")} : {_checkStatusCodeA(tableList)},{" "}
-              {t("total_bill_check")} : {_checkStatusCodeB(tableList)}
+              <div>{t("total_unavailable_table")} : {_checkStatusCode(tableList)},{" "}</div>
+              <div>{t("total_available_table")} : {_checkStatusCodeA(tableList)},{" "}</div>
+              <div>{t("total_bill_check")} : {_checkStatusCodeB(tableList)}</div>
             </div>
 
             {zoneData?.length > 0 ? (
@@ -1531,7 +1537,7 @@ export default function TableList() {
                   display: "grid",
                   gap: 6,
                   gridTemplateColumns: {
-                    md: "1fr 1fr 1fr 1fr 1fr",
+                    md: "1fr 1fr 1fr 1fr ",
                     sm: "1fr 1fr 1fr",
                     xs: "1fr 1fr",
                   },
@@ -1564,27 +1570,15 @@ export default function TableList() {
                           style={{
                             width: "100%",
                             height: "100%",
-                            border: "none",
+                            boxShadow:'0 0 5px',
                             borderRadius: 8,
-                            background: table?.isStaffConfirm
-                              ? "rgb(251,110,59)"
-                              : "white",
-                            background: table?.isStaffConfirm
-                              ? table?.editBill
-                                ? "#CECE5A"
-                                : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                              : "white",
-                            border:
-                              selectedTable?.code === table?.code
-                                ? "3px solid #C51605"
-                                : "3px solid  white",
+                            background:'white',
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
                             textAlign: "center",
                             padding: 10,
+                            color:'gray'
                           }}
                           className={
                             table?.isOpened && !table?.isStaffConfirm
