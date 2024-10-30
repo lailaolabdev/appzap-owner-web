@@ -1,11 +1,20 @@
 import axios from "axios";
-import { END_POINT_SEVER } from "../constants/api";
+import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getMembers = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
     return res?.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getMembersAll = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v4/members/all${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res.data;
   } catch (error) {
     return error;
   }
@@ -149,7 +158,7 @@ export const getAllMoneys = async (TOKEN) => {
 export const getMemberOrderMenu = async (memmberId, findby, TOKEN) => {
   // console.log({ TOKEN });
   try {
-    const url = `${END_POINT_SEVER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
+    const url = `${END_POINT_SEVER_BILL_ORDER}/v4/member/orders-menu?memberid=${memmberId}${findby}`;
     const response = await axios.get(url, { headers: TOKEN });
     return response?.data?.data;
   } catch (error) {

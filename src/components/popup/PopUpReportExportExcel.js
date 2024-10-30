@@ -24,7 +24,8 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
       // findBy += `endDate=${storeDetail?.endDayFilter}&`;
       // findBy += `startTime=${storeDetail?.startTimeFilter}&`;
       // findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      const findBy = `&dateFrom=${storeDetail?.startDayFilter}&dateTo=${storeDetail?.endDayFilter}&timeTo=${storeDetail?.endTimeFilter}&timeFrom=${storeDetail?.startTimeFilter}`;
+
+      const findBy = `&dateFrom=${storeDetail?.startDateReportExport}&dateTo=${storeDetail?.endDateReportExport}&timeTo=${storeDetail?.endTimeReportExport}&timeFrom=${storeDetail?.startTimeReportExport}`;
       // setLoadingExportCsv(true);
       const url =
         END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;

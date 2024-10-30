@@ -77,6 +77,7 @@ export default function PopUpPrintMenuHistoryComponent({
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -94,7 +95,6 @@ export default function PopUpPrintMenuHistoryComponent({
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          beep: 1,
           width: myPrinter?.width === "58mm" ? 400 : 580,
         },
         async () => {

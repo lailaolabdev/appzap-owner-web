@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MENUS, END_POINT_SEVER } from "../../../constants/api";
+import { MENUS, END_POINT_SEVER_TABLE_MENU } from "../../../constants/api";
 import { Modal } from "react-bootstrap";
 import { URL_PHOTO_AW3 } from "../../../constants/index";
 import { moneyCurrency } from "../../../helpers";
@@ -29,7 +29,7 @@ export default function MenuList() {
         setAllSelectedMenu(json);
       });
     await fetch(
-      END_POINT_SEVER +
+      END_POINT_SEVER_TABLE_MENU +
         `/v3/categories?storeId=${params?.storeId}&isDeleted=false`,
       {
         method: "GET",

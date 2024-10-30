@@ -424,12 +424,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              ຮ້ານຄາເຟ
+              {t("isCafe")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານຮ້ານຄາເຟ",
+                  title: t("enable_cafe"),
                   key: "fer",
                 },
               ].map((item, index) => (
@@ -453,7 +453,9 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-cafe-" + item?.key}>
-                      {storeDetail?.isRestuarant == "CAFE" ? "ເປີດ" : "ປິດ"}
+                      {storeDetail?.isRestuarant == "CAFE"
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"

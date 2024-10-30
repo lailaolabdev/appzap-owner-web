@@ -29,11 +29,12 @@ import { errorAdd, successAdd } from "../../helpers/sweetalert";
 export default function CreateMemberPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  // console.log("state: ", state);
   // state
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
-
-  const { state } = useLocation();
 
   console.log(" State ", state?.key);
 
@@ -46,7 +47,11 @@ export default function CreateMemberPage() {
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
-      navigate("/reports/members-report");
+      if (state?.key) {
+        navigate("/debt/create");
+      } else {
+        navigate("/reports/members-report");
+      }
     } catch (err) {
       errorAdd(`${t("add_fail")}`);
       setDisabledButton(false);

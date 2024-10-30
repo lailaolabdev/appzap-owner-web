@@ -46,12 +46,12 @@ export const createBillFark = async (body, token) => {
     });
     return res.data;
   } catch (error) {
-    return {error:true};
+    return { error: true };
   }
 };
 export const getBillFarks = async (findby, token) => {
   try {
-    console.log("token", token);
+    // console.log("token", token);
     const url = `${END_POINT_APP}/v4/bill-farks${findby}`;
     const res = await axios.get(url, {
       headers: token,

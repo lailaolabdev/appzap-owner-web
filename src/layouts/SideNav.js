@@ -27,6 +27,8 @@ import {
   faBoxes,
   faLayerGroup,
   faStoreAlt,
+  faMoneyBill,
+  faMoneyCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -234,6 +236,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "farkManagement",
     },
+    // {
+    //   title: `${t("debt")}`,
+    //   key: "debt",
+    //   typeStore: "",
+    //   icon: faMoneyBill,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);

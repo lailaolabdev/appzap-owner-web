@@ -1,13 +1,14 @@
 import moment from "moment";
 import { useState, useMemo, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
-import { END_POINT, WAITING_STATUS } from "../../constants";
-import { getLocalData } from "../../constants/api";
+import { WAITING_STATUS } from "../../constants";
+import { END_POINT_SEVER_BILL_ORDER, getLocalData } from "../../constants/api";
 import { updateOrderItem } from "../../services/order";
 import axios from "axios";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
+  const [orderPayBefore, setOrderPayBefore] = useState([]);
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] =
@@ -41,7 +42,7 @@ export const useOrderState = () => {
       await setOrderLoading(true);
       let _userData = await getLocalData();
       await fetch(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/bills?status=CALL_TO_CHECKOUT&storeId=${_userData?.DATA?.storeId}`,
         {
           method: "GET",
@@ -62,11 +63,11 @@ export const useOrderState = () => {
       let _userData = await getLocalData();
 
       const orderDoing = await axios.get(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=DOING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
       );
       const orderWaiting = await axios.get(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=WAITING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
       );
       // console.log("orderDoing?.data", orderDoing?.data);
@@ -91,7 +92,7 @@ export const useOrderState = () => {
       await setOrderLoading(true);
       let _userData = await getLocalData();
       await fetch(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}` +
           time,
         {
@@ -240,5 +241,7 @@ export const useOrderState = () => {
     setOrderWaiting,
     printBackground,
     setPrintBackground,
+    orderPayBefore,
+    setOrderPayBefore,
   };
 };

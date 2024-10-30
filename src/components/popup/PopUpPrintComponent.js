@@ -35,7 +35,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [currency, setcurrency] = useState([]);
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
-    ຍອດທັງຫມົດ: 0,
+    ຍອດທັງໝົດ: 0,
     ຈ່າຍເງິນສົດ: 0,
     ຈ່າຍເງິນໂອນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
@@ -49,6 +49,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
+    // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -85,6 +86,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -104,7 +106,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          beep: 1,
           width: myPrinter?.width === "58" ? 400 : 580,
         },
         async () => {
@@ -146,7 +147,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const currencyData = await getCurrencyReport(storeDetail._id, findBy);
       console.log("currencyData", currencyData);
       // logic
-
       const countBill = data.length || 0;
       // const bankReportData = bankReport.data.map((e) => e?.bankTotalAmount);
       // console.log("bankReportData", bankReportData);
@@ -176,7 +176,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       setReportBill({
         ຈຳນວນບິນ: countBill,
-        ຍອດທັງຫມົດ: totalBill,
+        ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
         ບິນສ່ວນຫຼຸດ: countDiscountBill,

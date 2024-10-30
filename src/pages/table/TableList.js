@@ -42,6 +42,7 @@ import { useStore } from "../../store";
 import {
   END_POINT_APP,
   END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   END_POINT_WEB_CLIENT,
   USERS,
   getLocalData,
@@ -52,17 +53,25 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import styled from "styled-components";
-import { callCheckOutPrintBillOnly, getCodes } from "../../services/code";
+import {
+  callCheckOutPrintBillOnly,
+  callPayBeforePrintBillOnly,
+  callToUpdatePrintBillBefore,
+  getCodes,
+} from "../../services/code";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
 import BillQRShortSmartOrdering80 from "../../components/bill/BillQRShortSmartOrdering80";
 import CheckOutPopup from "./components/CheckOutPopup";
+import CheckPopupDebt from "./components/CheckPopupDebt";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { padding_white } from "./../../constants/index";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -74,11 +83,18 @@ export default function TableList() {
 
   // state
   const [show, setShow] = useState(false);
+  const [popup, setPopup] = useState({
+    CheckOutType: false,
+  });
+  const [mobileMode, setMobileMode] = useState(false);
   const [show1, setShow1] = useState(false);
-  const [popup, setPopup] = useState({ CheckOutType: false });
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const handleClose1 = () => setShow1(false);
+
+  const handleShow1 = (e) => {
+    setShow1(true);
+  };
 
   const handleSelectedCancelOrder = (e) =>
     setSeletedCancelOrderItem(e.target.value);
@@ -99,6 +115,8 @@ export default function TableList() {
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
+  const [checkStatusItem, setCheckStatusItem] = useState(false);
+  const [showBtnCombine, setShowBtnCombine] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
 
@@ -126,10 +144,22 @@ export default function TableList() {
     setNewOrderTransaction,
     newOrderUpdateStatusTransaction,
     setNewOrderUpdateStatusTransaction,
+    // getTableDataStoreList,
+    // setPrintNowList,
+    // openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
     setCountOrderWaiting,
     profile,
+    setbillSplitNewId,
+    setbillSplitOldId,
+    // billSplitNewId,
+    // billSplitOldId,
+    userCallCheckout,
+    setUserCallCheckout,
     isWaitingCheckout,
+    setOrderPayBefore,
+    orderPayBefore,
+    isWaitingPress,
   } = useStore();
 
   const reLoadData = () => {
@@ -145,16 +175,18 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
-  const [checkedBox, setCheckedBox] = useState(true);
+  const [checkedBox, setCheckedBox] = useState(false);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
   const [userData, setuserData] = useState(null);
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
+  const [selectNewTable, setSelectNewTable] = useState([]);
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
+  const [printBillCalulate, setPrintBillCalulate] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -183,16 +215,16 @@ export default function TableList() {
   useEffect(() => {
     if (!pinStatus) return;
     setPinStatus(false);
-    if (workAfterPin == "discount") {
+    if (workAfterPin === "discount") {
       setWorkAfterPin("");
       setPopup({ discount: true });
     }
-    if (workAfterPin == "cancle_order") {
+    if (workAfterPin === "cancle_order") {
       setWorkAfterPin("");
       setPopup();
       setShow1(true);
     }
-    if (workAfterPin == "cancle_order_and_print") {
+    if (workAfterPin === "cancle_order_and_print") {
       setPopup();
       setShow1(true);
     }
@@ -207,10 +239,27 @@ export default function TableList() {
       getTableDataStore({ zone: localZone });
     }
 
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        `${END_POINT_SEVER}/v4/tax/${DATA?.storeId}`
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
+
+    // const getDataServiceCharge = async () => {
+    //   const { DATA } = await getLocalData();
+    //   const _res = await axios.get(
+    //     `${END_POINT_SEVER}/v4/service-charge?storeId=${DATA?.storeId}`
+    //   );
+    //   setServiceChargePercent(_res?.data?.serviceCharge);
+    // };
+    // getDataServiceCharge();
     getUserData();
     getDataZone();
-    getDataTax();
-    getDataServiceCharge();
+    // getDataTax();
+    // getDataServiceCharge();
 
     setStoreDetail({
       ...storeDetail,
@@ -221,7 +270,7 @@ export default function TableList() {
 
   const getUserData = async () => {
     // setIsLoading(true);
-    await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
+    await fetch(`${USERS}/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -229,22 +278,24 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  const getDataTax = async () => {
-    const { DATA } = await getLocalData();
-    const _res = await axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
-    setTaxPercent(_res?.data?.taxPercent);
-  };
+  // const getDataTax = async () => {
+  //   const { DATA } = await getLocalData();
+  //   const _res = await axios.get(
+  //     END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
+  //   );
+  //   setTaxPercent(_res?.data?.taxPercent);
+  // };
 
-  const getDataServiceCharge = async () => {
-    const { DATA } = await getLocalData();
-    const _res = await axios.get(
-      `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
-    );
-    setServiceChargePercent(_res?.data?.serviceCharge);
-  };
+  // const getDataServiceCharge = async () => {
+  //   const { DATA } = await getLocalData();
+  //   const _res = await axios.get(
+  //     `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
+  //   );
+  //   setServiceChargePercent(_res?.data?.serviceCharge);
+  // };
 
   function handleSetQuantity(int, seletedOrderItem) {
-    let _data = seletedOrderItem?.quantity + int;
+    const _data = seletedOrderItem?.quantity + int;
     if (_data > 0) {
       setSeletedOrderItem({ ...seletedOrderItem, quantity: _data });
     }
@@ -267,7 +318,7 @@ export default function TableList() {
   const updateCheckedOrderItems = (isCheckedOrderItem, tableOrderItems) => {
     if (
       isCheckedOrderItem.length <= 0 ||
-      tableOrderItems[0]["code"] != isCheckedOrderItem[0]["code"]
+      tableOrderItems[0]["code"] !== isCheckedOrderItem[0]["code"]
     ) {
       setIsCheckedOrderItem(tableOrderItems);
     } else {
@@ -300,8 +351,12 @@ export default function TableList() {
     );
   };
 
+  const [billDataLoading, setBillDataLoading] = useState(false);
   const _onCheckOut = async () => {
+    // setOrderPayBefore([]);
+    getData(selectedTable?.code, true);
     setMenuItemDetailModal(true);
+    calculateTotalBill();
   };
   const _goToAddOrder = (tableId, code) => {
     navigate(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -309,23 +364,22 @@ export default function TableList() {
 
   useEffect(() => {
     if (tableOrderItems?.length > 0) {
-      getData(tableOrderItems[0]?.code);
+      getData(tableOrderItems[0]?.code, false);
     } else {
       setDataBill();
     }
   }, [tableOrderItems]);
 
   useEffect(() => {
-    console.log("ZONE23");
     if (zoneId) {
       getTableDataStore({ zone: zoneId });
     } else {
       getTableDataStore();
+      // onSelectTable(selectNewTable)
     }
   }, [zoneId]);
 
   useEffect(() => {
-    console.log("ZONEID");
     if (state?.zoneId) {
       getTableDataStore({ zone: state?.zoneId });
     } else {
@@ -336,7 +390,6 @@ export default function TableList() {
   // console.log("ZONE Out :", storeDetail?.zoneCheckBill);
 
   useEffect(() => {
-    console.log("ZONE In :", storeDetail?.zoneCheckBill);
     if (storeDetail?.zoneCheckBill === true) {
       getTableDataStore({ zone: state?.zoneId });
     } else {
@@ -352,8 +405,9 @@ export default function TableList() {
     }
   };
 
-  const getData = async (code) => {
+  const getData = async (code, forBill) => {
     try {
+      if (forBill) setBillDataLoading(true);
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -365,16 +419,21 @@ export default function TableList() {
       const _billId = _bills?.[0]?.["_id"];
       const _resBill = await axios({
         method: "get",
-        url: END_POINT_SEVER + `/v3/bill-group/` + _billId,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-group/` + _billId,
         headers: headers,
       });
       setDataBill(_resBill?.data);
+      setTimeout(() => {
+        setBillDataLoading(false);
+      }, 1000);
     } catch (err) {
+      setBillDataLoading(false);
       console.log("err: ", err);
     }
   };
 
-  const [selectNewTable, setSelectNewTable] = useState();
+  // console.log("New", selectNewTable?.billId);
+  // console.log("Old", selectedTable?.billId);
 
   const _changeTable = async () => {
     if (!selectNewTable) {
@@ -390,9 +449,11 @@ export default function TableList() {
     try {
       const _billsNew = await getBills(`?_id=${selectNewTable?.billId}`);
       const _billIdNew = _billsNew?.[0]?.["_id"];
+      setbillSplitNewId(selectNewTable?.billId);
 
       const _billsOld = await getBills(`?_id=${selectedTable?.billId}`);
       const _billIdOld = _billsOld?.[0]?.["_id"];
+      setbillSplitOldId(selectedTable?.billId);
 
       const _codesNew = await getCodes(`?_id=${selectNewTable?._id}`);
       const _codeIdNew = _codesNew?.[0]?.["_id"];
@@ -415,10 +476,11 @@ export default function TableList() {
         },
         headers: headers,
       });
+      console.log("=======log5");
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
-        // getTableDataStore();
+        getTableDataStore();
         if (zoneId) {
           getTableDataStore({ zone: zoneId });
         } else {
@@ -430,6 +492,13 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 1500,
         });
+        setSelectedTable(selectNewTable);
+        onSelectTable(selectNewTable);
+        setShowBtnCombine(true);
+        // getTableDataStore();
+        // navigate(`/bill/split/${_billIdOld}/${_billIdNew}`);
+        // navigate(`/bill/split/${selectedTable?._id}/${selectNewTable?._id}`);
+        // navigate(`/bill/split/${selectNewTable?._id}`);
       }
     } catch (err) {
       console.log({ err });
@@ -442,6 +511,13 @@ export default function TableList() {
     }
     setSelectNewTable();
   };
+  useEffect(() => {
+    if (tableOrderItems?.length > 0) {
+      getData(tableOrderItems[0]?.code);
+    } else {
+      setDataBill();
+    }
+  }, [tableOrderItems]);
 
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
@@ -462,7 +538,7 @@ export default function TableList() {
       };
       const updateTable = await axios({
         method: "put",
-        url: END_POINT_SEVER + `/v3/code/update`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         data: {
           id: dataSettingModal?._id,
           data: {
@@ -618,6 +694,7 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
+    // console.log("isPrintBill", isPrintBill);
     try {
       setPrintBillLoading(true);
       let _dataBill = {
@@ -638,23 +715,6 @@ export default function TableList() {
         scrollY: 0,
         scale: 530 / widthBill80,
       });
-      // if (printerBillData?.width === "80mm") {
-      //   dataImageForPrint = await html2canvas(bill80Ref.current, {
-      //     useCORS: true,
-      //     scrollX: 10,
-      //     scrollY: 0,
-      //     scale: 530 / widthBill80,
-      //   });
-      // }
-
-      // if (printerBillData?.width === "58mm") {
-      //   dataImageForPrint = await html2canvas(bill58Ref.current, {
-      //     useCORS: true,
-      //     scrollX: 10,
-      //     scrollY: 0,
-      //     scale: 350 / widthBill58,
-      //   });
-      // }
       if (printerBillData?.type === "ETHERNET") {
         urlForPrinter = ETHERNET_PRINTER_PORT;
       }
@@ -683,6 +743,7 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -693,7 +754,7 @@ export default function TableList() {
           });
         }
       );
-      // update bill status to call check out
+
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
@@ -705,10 +766,15 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1800,
       });
-
+      setMenuItemDetailModal(false);
       // update bill status to call check out
-      callCheckOutPrintBillOnly(selectedTable?._id);
+      // callCheckOutPrintBillOnly(selectedTable?._id);
+      // callPayBeforePrintBillOnly(selectedTable?._id);
+      orderPayBefore.length > 0
+        ? updateTablePayBefore()
+        : callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
+      setOrderPayBefore([]);
       // getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -728,15 +794,22 @@ export default function TableList() {
     }
   };
 
+  const updateTablePayBefore = async () => {
+    const orderItem =
+      orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
+    const checkStatus = orderPayBefore.length > 0 ? "false" : "";
+    const checkStatusBill = orderPayBefore.length > 0 ? "PRINTBILL" : "";
+    const body = {
+      orderPayBefore: orderItem,
+      isCheckout: checkStatus,
+      status: checkStatusBill,
+    };
+    callToUpdatePrintBillBefore(selectedTable?.billId, body);
+  };
+
   useEffect(() => {
     getTableDataStore();
   }, [storeDetail?.ChangeColorTable]);
-
-  async function delay(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
 
   useEffect(() => {
     if (codeShortLink) {
@@ -749,19 +822,6 @@ export default function TableList() {
       if (!tokenQR) {
         return;
       }
-
-      // alert(tokenQR);
-      // setTokenForSmartOrder(tokenQR, (ee) => {
-      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
-      // });
-      // if (!tokenForSmartOrder) {
-      //   setTokenForSmartOrder(tokenQR);
-      //   await delay(1000);
-      //   return;
-      // }
-      // if (!tokenForSmartOrder) {
-      //   return;
-      // }
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -816,6 +876,7 @@ export default function TableList() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9000",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -827,14 +888,6 @@ export default function TableList() {
         }
       );
 
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-
-      // setCodeShortLink(null);
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
@@ -876,13 +929,6 @@ export default function TableList() {
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
 
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-
       await axios.post(urlForPrinter, {
         ip: printerBillData?.ip,
         port: 9100,
@@ -899,6 +945,7 @@ export default function TableList() {
   };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
+  // console.log("CHECKED ORDER: ", isCheckedOrderItem);
 
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -967,22 +1014,7 @@ export default function TableList() {
       try {
         let urlForPrinter = "";
         let dataUrl = dataUrls[_index];
-        // if (_printer?.width === "80mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 530 / widthBill80,
-        //   });
-        // }
-        // if (_printer?.width === "58mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 350 / widthBill58,
-        //   });
-        // }
+
         if (_printer?.type === "ETHERNET") {
           urlForPrinter = ETHERNET_PRINTER_PORT;
         }
@@ -997,6 +1029,7 @@ export default function TableList() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
@@ -1012,6 +1045,7 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1022,18 +1056,7 @@ export default function TableList() {
             });
           }
         );
-        // printFlutter({
-        //   imageBuffer: dataUrl.toDataURL(),
-        //   ip: _printer?.ip,
-        //   type: _printer?.type,
-        //   port: "9100",
-        // });
-        // await axios({
-        //   method: "post",
-        //   url: urlForPrinter,
-        //   data: bodyFormData,
-        //   headers: { "Content-Type": "multipart/form-data" },
-        // });
+
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
@@ -1088,22 +1111,7 @@ export default function TableList() {
       try {
         let urlForPrinter = "";
         let dataUrl = dataUrls[_index];
-        // if (_printer?.width === "80mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 530 / widthBill80,
-        //   });
-        // }
-        // if (_printer?.width === "58mm") {
-        //   dataUrl = await html2canvas(printDate[_index], {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //     scale: 350 / widthBill58,
-        //   });
-        // }
+
         if (_printer?.type === "ETHERNET") {
           urlForPrinter = ETHERNET_PRINTER_PORT;
         }
@@ -1118,6 +1126,7 @@ export default function TableList() {
         const _file = await base64ToBlob(dataUrl.toDataURL());
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
         bodyFormData.append("port", "9100");
         bodyFormData.append("image", _file);
         bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
@@ -1133,6 +1142,7 @@ export default function TableList() {
             ip: _printer?.ip,
             type: _printer?.type,
             port: "9100",
+            width: _printer?.width === "58mm" ? 400 : 580,
           },
           async () => {
             await axios({
@@ -1143,18 +1153,7 @@ export default function TableList() {
             });
           }
         );
-        // printFlutter({
-        //   imageBuffer: dataUrl.toDataURL(),
-        //   ip: _printer?.ip,
-        //   type: _printer?.type,
-        //   port: "9100",
-        // });
-        // await axios({
-        //   method: "post",
-        //   url: urlForPrinter,
-        //   data: bodyFormData,
-        //   headers: { "Content-Type": "multipart/form-data" },
-        // });
+
         if (_index === 0) {
           await Swal.fire({
             icon: "success",
@@ -1182,6 +1181,7 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
+    setOrderPayBefore({ ...orderPayBefore, data });
     const _data = isCheckedOrderItem.map((e) => {
       if (data?._id === e?._id) {
         return data;
@@ -1189,7 +1189,12 @@ export default function TableList() {
         return e;
       }
     });
+
+    const res = _data.filter((e) => e?.isChecked);
+    setOrderPayBefore(res);
     setIsCheckedOrderItem(_data);
+
+    // console.log("CHECKER5: ", _data);
 
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
@@ -1199,9 +1204,9 @@ export default function TableList() {
     });
 
     if (_isChecked.length === 0) {
-      setCheckedBox(true);
-    } else {
       setCheckedBox(false);
+    } else {
+      setCheckedBox(true);
     }
   };
 
@@ -1209,7 +1214,12 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (item?.status === "CANCELED") return item;
+        if (
+          item?.status === "CANCELED" ||
+          item.status === "PAID" ||
+          item.status === "PRINTBILL"
+        )
+          return item;
         return {
           ...item,
           isChecked: true,
@@ -1222,48 +1232,128 @@ export default function TableList() {
           isChecked: false,
         };
       });
+      setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
+
+    setCheckedBox(!checkedBox);
+    setOrderPayBefore(!checkedBox);
     setIsCheckedOrderItem(_newOrderItems);
   };
 
+  const [isServedLoading, setIsServerdLoading] = useState(false);
+  const [isPrintedLoading, setIsPrintedLoading] = useState(false);
   const handleUpdateOrderStatus = async (status) => {
-    const storeId = storeDetail?._id;
-    let menuId;
-    let _updateItems = isCheckedOrderItem
-      ?.filter((e) => e?.isChecked)
-      .map((i) => {
-        return {
-          status: status,
-          _id: i?._id,
-          menuId: i?.menuId,
-        };
-      });
-    let _resOrderUpdate = await updateOrderItem(
-      _updateItems,
-      storeId,
-      menuId,
-      seletedCancelOrderItem,
-      selectedTable
-    );
-    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-      reLoadData();
-      setCheckedBox(!checkedBox);
-      Swal.fire({
-        icon: "success",
-        title: `${t("update_order_status_success")}`,
-        showConfirmButton: false,
-        timer: 2000,
-      });
+    try {
+      if (status === "SERVED") setIsServerdLoading(true);
+      calculateTotalBill();
+      const storeId = storeDetail?._id;
+      let menuId;
+      const _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked && e.status !== "PRINTBILL")
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
 
-      const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0);
+      // console.log("isCheckedOrderItem", _updateItems);
+
+      const _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        Swal.fire({
+          icon: "success",
+          title: `${t("update_order_status_success")}`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
+
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+        setIsServerdLoading(false);
+      } else {
+        setIsServerdLoading(false);
+      }
+
+      setIsServerdLoading(false);
+    } catch (error) {
+      setIsServerdLoading(false);
+      console.log(error);
+    }
+  };
+  const handleUpdateOrderPayBefore = async (status) => {
+    try {
+      if (status === "PRINTBILL") setIsPrintedLoading(true);
+      const storeId = storeDetail?._id;
+      let menuId;
+      const _updateItems = isCheckedOrderItem
+        ?.filter((e) => e?.isChecked && e?.status === "PRINTBILL")
+        .map((i) => {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+          };
+        });
+
+      const _resOrderUpdate = await updateOrderItem(
+        _updateItems,
+        storeId,
+        menuId,
+        seletedCancelOrderItem,
+        selectedTable
+      );
+      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+        reLoadData();
+        setCheckedBox(!checkedBox);
+        Swal.fire({
+          icon: "success",
+          title: `${t("update_order_status_success")}`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
+
+        const count = await getCountOrderWaiting(storeId);
+        setCountOrderWaiting(count || 0);
+        setIsPrintedLoading(false);
+      } else {
+        setIsPrintedLoading(false);
+      }
+      setOrderPayBefore([]);
+      setIsPrintedLoading(false);
+    } catch (error) {
+      setIsPrintedLoading(false);
+      console.log(error);
     }
   };
 
   const handleUpdateOrderStatusgo = async (status) => {
     const storeId = storeDetail?._id;
     let menuId;
-    let _updateItems = isCheckedOrderItem
+    const _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
         return {
@@ -1272,7 +1362,7 @@ export default function TableList() {
           menuId: i?.menuId,
         };
       });
-    let _resOrderUpdate = await updateOrderItem(
+    const _resOrderUpdate = await updateOrderItem(
       _updateItems,
       storeId,
       menuId,
@@ -1288,6 +1378,13 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
+      const _newOrderItems = isCheckedOrderItem.map((item) => {
+        return {
+          ...item,
+          isChecked: false,
+        };
+      });
+      setIsCheckedOrderItem(_newOrderItems);
 
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
@@ -1299,7 +1396,7 @@ export default function TableList() {
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
     let menuId;
-    let _updateItems = isCheckedOrderItem
+    const _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
         return {
@@ -1310,7 +1407,7 @@ export default function TableList() {
           // remark: seletedCancelOrderItem
         };
       });
-    let _resOrderUpdate = await updateOrderItem(
+    const _resOrderUpdate = await updateOrderItem(
       _updateItems,
       storeId,
       menuId,
@@ -1328,7 +1425,14 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 2000,
       });
-
+      const _newOrderItems = isCheckedOrderItem.map((item) => {
+        return {
+          ...item,
+          isChecked: false,
+        };
+      });
+      setIsCheckedOrderItem(_newOrderItems);
+      console.log("CHECKER6:", _newOrderItems);
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
     }
@@ -1340,7 +1444,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
       // let previousStatus = orderItems[0].status;
       let menuId;
-      let _updateItems = isCheckedOrderItem
+      const _updateItems = isCheckedOrderItem
         ?.filter((e) => e?.isChecked)
         .map((i) => {
           return {
@@ -1356,7 +1460,7 @@ export default function TableList() {
       if (checkError?.error) {
         throw new Error(`${t("print_fial")}`);
       }
-      let _resOrderUpdate = await updateOrderItem(
+      const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
@@ -1375,9 +1479,19 @@ export default function TableList() {
           showConfirmButton: false,
           timer: 2000,
         });
+        const _newOrderItems = isCheckedOrderItem.map((item) => {
+          return {
+            ...item,
+            isChecked: false,
+          };
+        });
+        setIsCheckedOrderItem(_newOrderItems);
 
         const count = await getCountOrderWaiting(storeId);
         setCountOrderWaiting(count || 0);
+        setIsPrintedLoading(false);
+      } else {
+        setIsServerdLoading(false);
       }
     } catch (err) {
       errorAdd(`${t("fail")}`);
@@ -1392,11 +1506,6 @@ export default function TableList() {
     if (!onPrinting) {
       if (!reload) {
         if (newOrderTransaction || newOrderUpdateStatusTransaction) {
-          console.log("newOrderTransaction: ", newOrderTransaction);
-          console.log(
-            "newOrderUpdateStatusTransaction: ",
-            newOrderUpdateStatusTransaction
-          );
           handleMessage();
           setNewOrderTransaction(false);
           setNewOrderUpdateStatusTransaction(false);
@@ -1415,33 +1524,92 @@ export default function TableList() {
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
+  useEffect(() => {
+    if (userCallCheckout) {
+      // getTableDataStore();
+      if (zoneId) {
+        getTableDataStore({ zone: zoneId });
+      } else {
+        getTableDataStore();
+      }
+      setUserCallCheckout(false);
+    }
+  }, [userCallCheckout]);
 
   useEffect(() => {
-    _calculateTotal();
+    // _calculateTotal();
+    calculateTotalBill();
   }, [dataBill]);
 
+  useEffect(() => {
+    getStatusItem();
+  }, [isCheckedOrderItem]);
+
+  const getStatusItem = async () => {
+    isCheckedOrderItem.map((e) => {
+      const PrintItem = e?.status === "PRINTBILL";
+      setCheckStatusItem(PrintItem);
+    });
+  };
+
+  // console.log("BILL: ", dataBill);
+  // console.log("TABLE: ", selectedTable);
+
   // function
-  const _calculateTotal = () => {
+  // const _calculateTotal = () => {
+  //   let _total = 0;
+  //   for (let _data of dataBill?.orderId || []) {
+  //     // console.log({ _data });
+  //     _total +=
+  //       (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+  //   }
+  //   if (dataBill?.discount > 0) {
+  //     if (
+  //       dataBill?.discountType == "LAK" ||
+  //       dataBill?.discountType == "MONEY"
+  //     ) {
+  //       setTotalAfterDiscount(_total - dataBill?.discount);
+  //     } else {
+  //       const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+  //       setTotalAfterDiscount(_total - ddiscount);
+  //     }
+  //   } else {
+  //     setTotalAfterDiscount(_total);
+  //   }
+  //   setTotal(_total);
+  // };
+
+  // ================ new function ================
+  // console.log("printBillCalulate", printBillCalulate);
+  const calculateTotalBill = async () => {
+    setPrintBillCalulate(true);
     let _total = 0;
-    for (let _data of dataBill?.orderId || []) {
-      // console.log({ _data });
-      _total +=
-        (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
+    if (dataBill && dataBill?.orderId) {
+      for (let i = 0; i < dataBill?.orderId?.length; i++) {
+        if (dataBill?.orderId[i]?.status === "SERVED") {
+          _total +=
+            dataBill?.orderId[i]?.quantity *
+            (dataBill?.orderId[i]?.price +
+              (dataBill?.orderId[i]?.totalOptionPrice ?? 0));
+        }
+      }
     }
+
     if (dataBill?.discount > 0) {
       if (
-        dataBill?.discountType == "LAK" ||
-        dataBill?.discountType == "MONEY"
+        dataBill?.discountType === "LAK" ||
+        dataBill?.discountType === "MONEY"
       ) {
         setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
+        const ddiscount = Number.parseInt((_total * dataBill?.discount) / 100);
         setTotalAfterDiscount(_total - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      await setTotalAfterDiscount(_total);
     }
-    setTotal(_total);
+    await setTotal(_total);
+    setPrintBillCalulate(false);
   };
 
   const getQrTokenForSelfOrdering = async () => {
@@ -1454,21 +1622,21 @@ export default function TableList() {
 
   const getDataZone = async () => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
       const data = await axios({
         method: "get",
-        url: END_POINT_SEVER + `/v3/zones`,
+        url: `${END_POINT_SEVER_TABLE_MENU}/v3/zones`,
         params: {
           storeId: storeDetail?._id,
           limit: 100,
         },
         headers: headers,
       });
-      if (data?.status == 200) {
+      if (data?.status === 200) {
         setZoneData(data?.data?.data);
       }
     } catch (err) {
@@ -1493,7 +1661,6 @@ export default function TableList() {
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
       />
-      {isWaitingCheckout && <Loading />}
       <div>
         <Box
           sx={{
@@ -1594,6 +1761,8 @@ export default function TableList() {
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
                                 ? "#FFE17B"
+                                : table?.statusBill === "CALL_TO_PAYBEFORE"
+                                ? "#F08080"
                                 : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
@@ -1614,6 +1783,7 @@ export default function TableList() {
                                 ""
                           }
                           onClick={() => {
+                            setOrderPayBefore([]);
                             onSelectTable(table);
                           }}
                         >
@@ -1629,6 +1799,7 @@ export default function TableList() {
                             <span
                               style={{
                                 fontSize: 16,
+                                position: "relative",
                                 // color: table?.staffConfirm
                                 //   ? "white"
                                 //   : "#616161",
@@ -1649,6 +1820,17 @@ export default function TableList() {
                                   : "#616161",
                               }}
                             >
+                              <div
+                                style={{
+                                  fontWeight: "bold",
+                                  position: "absolute",
+                                  top: -5,
+                                  right: -35,
+                                }}
+                              >
+                                {table?.tableChildren.length > 0 &&
+                                  table?.tableChildren.length}
+                              </div>
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
                               <div>
@@ -1712,7 +1894,7 @@ export default function TableList() {
                               right: 10,
                               top: 10,
                             }}
-                          ></div>
+                          />
                           <div>
                             <span
                               style={{
@@ -1826,9 +2008,7 @@ export default function TableList() {
                           >
                             {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
                             dataBill?.orderId?.[0]?.updatedBy?.lastname
-                              ? dataBill?.orderId[0]?.updatedBy?.firstname +
-                                " " +
-                                dataBill?.orderId[0]?.updatedBy?.lastname
+                              ? `${dataBill?.orderId[0]?.updatedBy?.firstname} ${dataBill?.orderId[0]?.updatedBy?.lastname}`
                               : ""}
                           </span>
                         </div>
@@ -1847,7 +2027,6 @@ export default function TableList() {
                               : storeDetail?.firstCurrency}
                           </span>
                         </div>
-
                         <div
                           style={{
                             fontSize: 16,
@@ -1860,7 +2039,8 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                            {isWaitingPress ? moneyCurrency(total) : "0"}{" "}
+                            {storeDetail?.firstCurrency}
                           </span>
                         </div>
                         <div
@@ -1875,7 +2055,9 @@ export default function TableList() {
                               color: COLOR_APP,
                             }}
                           >
-                            {moneyCurrency(totalAfterDiscount)}{" "}
+                            {isWaitingPress
+                              ? moneyCurrency(totalAfterDiscount)
+                              : "0"}{" "}
                             {storeDetail?.firstCurrency}
                           </span>
                         </div>
@@ -1885,9 +2067,11 @@ export default function TableList() {
                             color: "red",
                             display: isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID" &&
+                                e?.status !== "PRINTBILL"
                             )?.length
                               ? "block"
                               : "none",
@@ -1896,12 +2080,26 @@ export default function TableList() {
                           {
                             isCheckedOrderItem?.filter(
                               (e) =>
-                                e?.status != "SERVED" &&
-                                e?.status != "CANCELED" &&
-                                e?.status != "FEEDBACK"
+                                e?.status !== "SERVED" &&
+                                e?.status !== "CANCELED" &&
+                                e?.status !== "FEEDBACK" &&
+                                e?.status !== "PAID"
                             )?.length
                           }{" "}
-                          {t("itemNotServed")} !
+                          {t("itemNotServed")}
+                        </div>
+                        <div>
+                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                            {isCheckedOrderItem?.filter(
+                              (e) => e?.status === "PAID"
+                            )?.length
+                              ? ` ${
+                                  isCheckedOrderItem?.filter(
+                                    (e) => e?.status === "PAID"
+                                  )?.length
+                                } ${t("ORDER_PAID")}`
+                              : ""}
+                          </p>
                         </div>
                       </div>
                       <div
@@ -1932,7 +2130,10 @@ export default function TableList() {
                         >
                           {t("closeTable")}
                         </ButtonCustom>
-                        <ButtonCustom onClick={handleShow}>
+                        <ButtonCustom
+                          disabled={tableOrderItems?.length === 0}
+                          onClick={handleShow}
+                        >
                           {t("combine_table")}
                         </ButtonCustom>
                         <ButtonCustom
@@ -1946,7 +2147,11 @@ export default function TableList() {
                         </ButtonCustom>
 
                         <ButtonCustom
-                          disabled={!canCheckOut || isWaitingCheckout}
+                          disabled={
+                            !canCheckOut ||
+                            isWaitingCheckout ||
+                            tableOrderItems?.length === 0
+                          }
                           onClick={() => _onCheckOut()}
                         >
                           {isWaitingCheckout && (
@@ -1971,6 +2176,18 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
+                        {selectedTable?.tableChildren?.length > 0 ||
+                        showBtnCombine ? (
+                          <ButtonCustom
+                            onClick={() =>
+                              navigate(`/bill/split/${selectedTable?._id}`)
+                            }
+                          >
+                            {t("bill_split")}
+                          </ButtonCustom>
+                        ) : (
+                          ""
+                        )}
                       </div>
                       <div
                         style={{
@@ -1984,14 +2201,14 @@ export default function TableList() {
                           padding: "0 10px",
                           marginBottom: 10,
                         }}
-                        hidden={checkedBox}
+                        hidden={!checkedBox}
                       >
                         <ButtonCustom
                           onClick={() => {
                             setWorkAfterPin("cancle_order_and_print");
                             setPopup({ PopUpPin: true });
                           }}
-                          disabled={checkedBox || onPrinting}
+                          disabled={!checkedBox || onPrinting}
                         >
                           {onPrinting && (
                             <Spinner animation="border" size="sm" />
@@ -2003,38 +2220,24 @@ export default function TableList() {
                             setWorkAfterPin("cancle_order");
                             setPopup({ PopUpPin: true });
                           }}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
                           {t("cancel")}
                         </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            handleUpdateOrderStatusAndCallback(
-                              "DOING",
-                              async () => {
-                                // const data = await onPrintForCher();
-                                const data = await onPrintToKitchen();
-                                return data;
-                              }
-                            ).then();
-                          }}
-                          disabled={checkedBox || onPrinting}
-                        >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("update_and_send_to_kitchen")}
-                        </ButtonCustom>
+
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatusgo("DOING")}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
                           {t("sendToKitchen")}
                         </ButtonCustom>
                         <ButtonCustom
                           onClick={() => handleUpdateOrderStatus("SERVED")}
-                          disabled={checkedBox}
+                          disabled={!checkedBox}
                         >
+                          {isServedLoading && (
+                            <Spinner animation="border" size="sm" />
+                          )}{" "}
                           {t("servedBy")}
                         </ButtonCustom>
                       </div>
@@ -2045,9 +2248,11 @@ export default function TableList() {
                             <th>
                               <Checkbox
                                 name="checked"
+                                checked={checkedBox}
                                 onChange={(e) => {
+                                  setOrderPayBefore(e);
                                   checkAllOrders(e);
-                                  setCheckedBox(!e.target.checked);
+                                  setCheckedBox(!checkedBox);
                                 }}
                               />
                             </th>
@@ -2072,13 +2277,14 @@ export default function TableList() {
                                     .join(" ") || "";
                                 return (
                                   <tr
-                                    key={"order" + index}
+                                    key={`order${index}`}
                                     style={{ borderBottom: "1px solid #eee" }}
                                   >
                                     <td onClick={(e) => e.stopPropagation()}>
                                       <Checkbox
                                         disabled={
-                                          orderItem?.status === "CANCELED"
+                                          orderItem?.status === "CANCELED" ||
+                                          orderItem?.status === "PAID"
                                         }
                                         name="checked"
                                         checked={orderItem?.isChecked || false}
@@ -2098,8 +2304,12 @@ export default function TableList() {
                                     <td
                                       style={{
                                         color:
-                                          orderItem?.status === `SERVED`
+                                          orderItem?.status === "SERVED"
                                             ? "green"
+                                            : orderItem?.status === "PAID"
+                                            ? COLOR_APP
+                                            : orderItem?.status === "PRINTBILL"
+                                            ? "blue"
                                             : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
@@ -2255,9 +2465,11 @@ export default function TableList() {
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
+          orderPayBefore={orderPayBefore}
           storeDetail={storeDetail}
           selectedTable={selectedTable}
           dataBill={dataBill}
+          totalBillBillForCheckOut80={total}
           taxPercent={taxPercent}
           profile={profile}
         />
@@ -2353,11 +2565,23 @@ export default function TableList() {
         ))}
       </div>
 
+      {/* <CheckPopupDebt
+        onPrintBill={onPrintBill}
+        onPrintDrawer={onPrintDrawer}
+        dataBill={dataBill}
+        tableData={selectedTable}
+        open={popup?.CheckPopUpDebt}
+        onClose={() => setPopup()}
+        setDataBill={setDataBill}
+        taxPercent={taxPercent}
+        // editMode={select}
+      /> */}
       <CheckOutPopup
         saveServiceChargeDetails={saveServiceChargeDetails}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
+        totalBillCheckOutPopup={total} // new props
         tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => {
@@ -2370,6 +2594,7 @@ export default function TableList() {
         }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}
+        billDataLoading={billDataLoading}
       />
 
       <OrderCheckOut
@@ -2380,6 +2605,8 @@ export default function TableList() {
         setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
         data={dataBill}
+        totalBillOrderCheckOut={total} // new props
+        printBillCalulate={printBillCalulate}
         setDataBill={setDataBill}
         onPrintBill={onPrintBill}
         tableData={selectedTable}
@@ -2393,6 +2620,7 @@ export default function TableList() {
           setPopup({ CheckOutType: true });
         }}
         printBillLoading={printBillLoading}
+        billDataLoading={billDataLoading}
       />
 
       <PopUpPin
@@ -2448,7 +2676,7 @@ export default function TableList() {
         }}
         onSubmit={async () => {
           // handleMessage();
-          getData();
+          getData(selectedTable?.code, false);
         }}
       />
       <Modal show={show} onHide={handleClose}>
@@ -2487,6 +2715,12 @@ export default function TableList() {
                         ? true
                         : false
                     }
+                    style={{
+                      backgroundColor:
+                        selectedTable?.tableName === item?.tableName
+                          ? "orange"
+                          : "",
+                    }}
                   >
                     {t("table")} {item?.tableName}
                   </option>

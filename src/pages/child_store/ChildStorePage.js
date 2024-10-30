@@ -47,7 +47,7 @@ export default function ChildStores() {
 	const [salesInformationReport, setSalesInformationReport] = useState();
 	const [menuReport, setMenuReport] = useState();
 	const [moneyReport, setMoneyReport] = useState();
-	const [userReport, setUserReport] = useState();
+	const [userReport, setUserReport] = useState([]);
 	const [reportData, setReportData] = useState([]);
 	const [categoryReport, setCategoryReport] = useState();
 	const [promotionReport, setPromotionReport] = useState();
@@ -449,7 +449,7 @@ export default function ChildStores() {
 															{t("total_balance")}
 														</th>
 													</tr>
-													{userReport?.map((e) => (
+													{userReport?.length > 0 && userReport?.map((e) => (
 														<tr>
 															<td style={{ textAlign: "left" }}>
 																{e?.userId?.userId}

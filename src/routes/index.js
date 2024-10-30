@@ -41,6 +41,7 @@ import CreateMembers from "../pages/member/CreateMembers";
 // import SettingTheme from "../pages/setting_theme/SettingTheme";
 import SettingPromotion from "../pages/settingStore/settingPromotion";
 import _404 from "../pages/404";
+import CreateMemberPageWithDebt from "../pages/member/CreateMemberPageWithDebt";
 
 import MenuRoutes from "./Menu.routes";
 import PrinterRoutes from "./Printer.routes";
@@ -67,13 +68,18 @@ import BannerList from "../pages/banner/BannerList";
 
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
+import DebtRoutes from "./Debt.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
+<<<<<<< HEAD
 import BankList from "../pages/bank/BankList";
+=======
+import BillSplit from "../pages/split_bill/BillSplit";
+>>>>>>> development
 
 function Router() {
   return useRoutes([
@@ -108,6 +114,10 @@ function Router() {
     },
 
     {
+      path: "/create/members",
+      element: <CreateMemberPageWithDebt />,
+    },
+    {
       path: "/",
       element: <MainLayout />,
       children: [
@@ -130,6 +140,11 @@ function Router() {
         {
           path: "/tables",
           element: <Table />,
+        },
+        {
+          // path: "/bill/split/:oldId/:newId",
+          path: "/bill/split/:newId",
+          element: <BillSplit />,
         },
 
         // ຢຸດໃຊ້ເວຊັ້ນ v6^--------->
@@ -300,6 +315,7 @@ function Router() {
         ConfigRoutes,
         SelfOrderingOrderRoutes,
         FarkRoutes,
+        DebtRoutes,
         UserRoutes,
         PinRoutes,
       ],

@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { useStore } from "../../store";
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import html2canvas from "html2canvas";
-import { base64ToBlob } from "../../helpers";
+import { base64ToBlob, moneyCurrency } from "../../helpers";
 import { toPng, toJpeg, toBlob, toPixelData, toSvg } from "html-to-image";
 import axios from "axios";
 import BillForChef58 from "../../components/bill/BillForChef58";
@@ -29,6 +29,7 @@ import CanceledOrderTab from "./CanceledOrderTab";
 import Loading from "../../components/Loading";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
+import moment from "moment";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -90,106 +91,29 @@ export default function OrderPage() {
       getOrderItemsStore(selectOrderStatus);
       const count = await getCountOrderWaiting(storeDetail?._id);
       setCountOrderWaiting(count || 0);
-      // fetchData();
       return;
     } catch (err) {}
   };
+
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {
-    setOnPrinting(true);
     try {
+      setOnPrinting(true);
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
-      let _index = 0;
-      const printDate = [...billForCher80.current].filter((e) => e != null);
-      let array2canvas = [];
-      let array_ref = [];
-      for (const _ref of printDate) {
-        // array2canvas.push(
-        //   html2canvas(_ref, {
-        //     useCORS: true,
-        //     scrollX: 10,
-        //     scrollY: 0,
-        //   })
-        // );
-        array_ref.push(_ref);
-      }
+      console.log("orderSelect", orderSelect);
+      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
+      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
-      for (const _ref of printDate) {
-        const _printer = printers.find((e) => {
-          return e?._id === orderSelect?.[_index]?.printer;
-        });
-
-        try {
-          let urlForPrinter = "";
-          const item_ref = array_ref[_index];
-          if (_printer?.type === "ETHERNET") {
-            urlForPrinter = ETHERNET_PRINTER_PORT;
-          }
-          if (_printer?.type === "BLUETOOTH") {
-            urlForPrinter = BLUETOOTH_PRINTER_PORT;
-          }
-          if (_printer?.type === "USB") {
-            urlForPrinter = USB_PRINTER_PORT;
-          }
-          const runPrint = async () => {
-            try {
-              const dataUrl = await html2canvas(item_ref, {
-                useCORS: true,
-                scrollX: 10,
-                scrollY: 0,
-              });
-              const _file = await base64ToBlob(await dataUrl.toDataURL());
-              // const _file = await toBlob(dataUrl, { cacheBust: true });
-              // const _file = dataUrl;
-              var bodyFormData = new FormData();
-
-              bodyFormData.append("ip", _printer?.ip);
-              if (_index === 0) {
-                bodyFormData.append("beep1", 1);
-                bodyFormData.append("beep2", 9);
-              }
-              bodyFormData.append("isdrawer", false);
-              bodyFormData.append("port", "9100");
-              bodyFormData.append("image", _file);
-              bodyFormData.append(
-                "paper",
-                _printer?.width === "58mm" ? 58 : 80
-              );
-
-              await printFlutter(
-                {
-                  imageBuffer: dataUrl.toDataURL(),
-                  ip: _printer?.ip,
-                  type: _printer?.type,
-                  port: "9100",
-                  beep: 1,
-                  width: _printer?.width === "58mm" ? 400 : 580,
-                },
-                async () => {
-                  await axios({
-                    method: "post",
-                    url: urlForPrinter,
-                    data: bodyFormData,
-                    headers: { "Content-Type": "multipart/form-data" },
-                  });
-                }
-              );
-              return true;
-            } catch {
-              return false;
-            }
-          };
-          arrayPrint.push(runPrint());
-        } catch (err) {
-          if (err) {
-            setCountError("ERR");
-            setIsLoading(false);
-            console.log("err::::", err);
-          }
-        }
-        _index++;
+      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+        arrayPrint.push(
+          runPrint(
+            base64ArrayAndPrinter[index].dataUrl,
+            index,
+            base64ArrayAndPrinter[index].printer
+          )
+        );
       }
       if (countError == "ERR") {
         setIsLoading(false);
@@ -213,6 +137,164 @@ export default function OrderPage() {
       setIsLoading(false);
       setOnPrinting(false);
     }
+  };
+
+  const runPrint = async (dataUrl, index, printer) => {
+    try {
+      const printFile = base64ToBlob(dataUrl);
+      var bodyFormData = new FormData();
+
+      bodyFormData.append("ip", printer?.ip);
+      if (index === 0) {
+        bodyFormData.append("beep1", 1);
+        bodyFormData.append("beep2", 9);
+      }
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", printFile);
+      bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
+
+      let urlForPrinter = "";
+      if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
+      if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
+
+      await printFlutter(
+        {
+          imageBuffer: dataUrl,
+          ip: printer?.ip,
+          type: printer?.type,
+          port: "9100",
+          width: printer?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const convertHtmlToBase64 = (orderSelect) => {
+    const base64ArrayAndPrinter = [];
+    orderSelect.forEach((data, index) => {
+      if (data) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // Define canvas dimensions based on the image layout you want to replicate
+        const width = 510;
+        const height = 290;
+        canvas.width = width;
+        canvas.height = height;
+
+        // Set white background
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, width, height);
+
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+        }
+
+        // Draw the Table ID (left black block)
+        context.fillStyle = "#000"; // Black background
+        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
+        context.fillStyle = "#fff"; // White text
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
+
+        // Draw the Table Code (right side)
+        context.fillStyle = "#000"; // Black text
+        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
+
+        // Draw Item Name and Quantity
+        context.fillStyle = "#000"; // Black text
+        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          110,
+          width - 20,
+          40
+        ); // Item name with wrapping
+
+        // Draw Item Note
+        context.fillStyle = "#000"; // Black text
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
+
+        // Draw Price and Quantity
+        context.font = "28px NotoSansLao, Arial, sans-serif";
+        context.fillText(
+          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
+            data?.quantity
+          }`,
+          20,
+          210
+        ); // Price and quantity
+
+        // Draw the dotted line
+        context.strokeStyle = "#000"; // Black dotted line
+        context.setLineDash([4, 2]); // Dotted line style
+        context.beginPath();
+        context.moveTo(0, 230); // Start at (0, 230)
+        context.lineTo(width, 230); // End at (width, 230)
+        context.stroke();
+
+        // Draw Footer (Created By and Date)
+        context.setLineDash([]); // Reset line style
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.fillText(
+          data?.createdBy?.firstname ||
+            data?.updatedBy?.firstname ||
+            "lailaolab",
+          20,
+          260
+        ); // Created by name
+
+        context.fillStyle = "#6e6e6e"; // Gray text for date and time
+        context.font = "22px NotoSansLao, Arial, sans-serif";
+        context.fillText(
+          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+            data?.createdAt
+          ).format("LT")}`,
+          width - 180,
+          260
+        ); // Date and time
+
+        // Convert canvas to base64
+        const dataUrl = canvas.toDataURL("image/png");
+
+        const printer = printers.find((e) => e?._id === data?.printer);
+        if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
+      }
+    });
+
+    return base64ArrayAndPrinter;
   };
 
   useEffect(() => {
@@ -252,6 +334,7 @@ export default function OrderPage() {
       }
     }
   }, [onPrinting]);
+
   // function
   async function waitForPrinting() {
     // alert("gogo");
@@ -325,7 +408,7 @@ export default function OrderPage() {
           </Button>
         </div>
 
-        <div>ປຸ່ມພິມບິນອັດຕະໂນມັດ</div>
+        <div>{t("auto_print")}</div>
       </div>
     );
   };
@@ -425,7 +508,6 @@ export default function OrderPage() {
                 <BillForChef80
                   storeDetail={storeDetail}
                   selectedTable={selectedTable}
-                  // dataBill={dataBill}
                   val={val}
                 />
               </div>
