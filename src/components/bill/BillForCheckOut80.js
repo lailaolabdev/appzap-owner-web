@@ -80,7 +80,9 @@ export default function BillForCheckOut80({
         : dataBill?.orderId;
 
     // Loop through the available orders
-    for (let _data of (orders || []).filter((e) => e?.status === "SERVED")) {
+    for (let _data of (orders || []).filter(
+      (e) => e?.status === "SERVED" || e?.status === "PRINTBILL"
+    )) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
@@ -196,7 +198,7 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
-        <div style={{ textAlign: "left", width: "10px" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
         <div style={{ textAlign: "left" }}>{t("price")}</div>
@@ -204,7 +206,7 @@ export default function BillForCheckOut80({
       </Name>
       <Order>
         {orders
-          ?.filter((e) => e?.status === "SERVED")
+          ?.filter((e) => e?.status === "SERVED" || e?.status === "PRINTBILL")
           ?.map((item, index) => {
             const optionsNames =
               item?.options

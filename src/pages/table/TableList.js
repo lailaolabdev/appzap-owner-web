@@ -710,7 +710,7 @@ export default function TableList() {
       // callCheckOutPrintBillOnly(selectedTable?._id);
       // callPayBeforePrintBillOnly(selectedTable?._id);
       orderPayBefore.length > 0
-        ? updateTable()
+        ? updateTablePayBefore()
         : callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       setOrderPayBefore([]);
@@ -733,7 +733,7 @@ export default function TableList() {
     }
   };
 
-  const updateTable = async () => {
+  const updateTablePayBefore = async () => {
     const orderItem =
       orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
     const checkStatus = orderPayBefore.length > 0 ? "false" : "";
