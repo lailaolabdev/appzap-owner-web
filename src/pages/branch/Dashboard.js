@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { FaSearch, FaPlusCircle } from "react-icons/fa";
 import { FaEye, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import useWindowDimensions2 from "../../helpers/useWindowDimension2";
 
 import { getLocalData } from "../../constants/api";
 import {
@@ -27,7 +28,7 @@ import PieChart from "./PieChart";
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
+  const { width, height } = useWindowDimensions2();
   // state
   const [popup, setPopup] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
@@ -43,7 +44,7 @@ export default function Dashboard() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     GetAllBranchData();
-  }, [endDate, startDate, endTime, startTime]);
+  }, [endDate, startDate, endTime, startTime, filterValue]);
 
   useEffect(() => {
     GetAllBranchData();
@@ -89,7 +90,7 @@ export default function Dashboard() {
 
   const DeleteBranch = async () => {
     try {
-      const { DATA, TOKEN } = await getLocalData();
+      const { TOKEN } = await getLocalData();
       await DeleteBranchRelation(TOKEN, branchData?._id, branchData?.storeId);
       setShowPopupDelete(false);
       await GetAllBranchData();
@@ -201,54 +202,56 @@ export default function Dashboard() {
             ${convertNumber(TotalInCome())} ${t("lak")})`}
           </p>
           <CardBody>
-            <div id="sub-card-body-right">
-              <div style={{ display: "block", justifyContent: "center" }}>
-                {branchInCome?.length > 0 &&
-                  branchInCome?.map((data) => (
-                    <p
-                      style={{
-                        fontWeight: "bold",
-                        fontSize: 15,
-                        border: `1px solid ${COLOR_APP}`,
-                        padding: 5,
-                      }}
-                    >
-                      {`${data?.nameBranch} : ${convertNumber(
-                        data?.totalAmount
-                      )} ${t("lak")}`}{" "}
-                      <span
-                        style={{
-                          cursor: "pointer",
-                          color: COLOR_APP,
-                          margin: 10,
-                        }}
-                      >
-                        {<FaEye />}
-                      </span>
-                      <span
-                        style={{ cursor: "pointer", color: COLOR_APP }}
-                        onClick={() => handleShowPopup(data)}
-                      >
-                        {<FaTrash />}
-                      </span>
-                    </p>
-                  ))}
-              </div>
-            </div>
             <div id="sub-card-body-left">
-              <PieChart DatabranchInCome={branchInCome} />
+              <table
+                style={{ width: width > 900 ? "60%" : "100%" }}
+                className="table-bordered"
+              >
+                <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
+                  {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
+                  <th style={{ textAlign: "right" }}>ຊື່ຮ້ານ</th>
+                  <th style={{ textAlign: "right" }}>ລາຍຮັບທັງໝົດ</th>
+                  <th style={{ textAlign: "right" }}>ຈັດການ</th>
+                </tr>
+                {branchInCome?.length > 0 &&
+                  branchInCome?.map((data, index) => (
+                    <tr key={data._id} hidden={data?.totalAmount === 0}>
+                      {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
+                      <td style={{ textAlign: "right" }}>{data?.nameBranch}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {convertNumber(data?.totalAmount)} {t("lak")}
+                      </td>
+                      <td style={{ textAlign: "right", fontWeight: "bold" }}>
+                        <Button
+                          onClick={() => handleShowPopup(data)}
+                          variant="primary"
+                          style={{ marginLeft: 10, fontWeight: "bold" }}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+              </table>
+            </div>
+
+            <div id="sub-card-body-right">
+              <PieChart
+                DatabranchInCome={branchInCome}
+                TotalInCome={TotalInCome}
+              />
             </div>
           </CardBody>
           {/* ================== other branch ======================== */}
-          <div
+          {/* <div
             style={{
-              // height: 20,
-              // borderBottom: `1px solid ${COLOR_APP}`,
+              height: 20,
+              borderBottom: `1px solid ${COLOR_APP}`,
               width: "100%",
               margin: "20px 0",
             }}
           />
-          {/* <Box
+          <Box
             sx={{
               display: "grid",
               gridTemplateColumns: {
@@ -261,7 +264,12 @@ export default function Dashboard() {
           >
             {branchInCome?.length > 0 &&
               branchInCome?.map((data) => (
-                <Card border="primary" style={{ margin: 0 }} key={data._id}>
+                <Card
+                  border="primary"
+                  style={{ margin: 0 }}
+                  key={data._id}
+                  hidden={data?.totalAmount === 0}
+                >
                   <Card.Header
                     style={{
                       backgroundColor: COLOR_APP,
@@ -273,9 +281,7 @@ export default function Dashboard() {
                       alignItems: "center",
                     }}
                   >
-                   
                     {data?.nameBranch ? data?.nameBranch : "ບໍ່ມີຂໍ້ມູນຮ້ານ"}
-                   
                   </Card.Header>
                   <Card.Body>
                     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -463,22 +469,41 @@ const CardHeader = styled.div`
 `;
 
 const CardBody = styled.div`
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  #sub-card-body-left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #sub-card-body-right {
+    width: calc(100% - 22%);
+    height: calc(100% - 35%);
+  }
+
+  /* display: flex;
+  /* justify-content: center; 
   align-items: center;
   gap: 15;
   width: 100%;
   #sub-card-body-left {
     width: calc(100% - 60%); // 35%";
     height: 35%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   #sub-card-body-right {
     margin-top: 30;
     width: 50;
     margin-right: 20rem;
+    display: flex;
+    justify-content: start;
+    align-items: start;
   }
 
   @media (max-width: 768px) {
     display: block;
-  }
+  } */
 `;
