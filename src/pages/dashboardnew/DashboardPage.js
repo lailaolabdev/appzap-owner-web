@@ -176,6 +176,7 @@ export default function DashboardPage() {
       findBy,
       selectedTableIds
     );
+    console.log("data", data);
     setBankList(data);
   };
   const downloadCsv = async () => {

@@ -129,6 +129,7 @@ export const getBankReport = async (storeId, findBy) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v3/count-bank${findBy}&storeId=${storeId}`;
     const res = await axios.get(url, { headers: _header });
+    console.log("res", res);
     return res.data;
   } catch (error) {
     return error;

@@ -258,8 +258,8 @@ export default function TableList() {
     // getDataServiceCharge();
     getUserData();
     getDataZone();
-    // getDataTax();
-    // getDataServiceCharge();
+    getDataTax();
+    getDataServiceCharge();
 
     setStoreDetail({
       ...storeDetail,
@@ -278,21 +278,21 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-  // const getDataTax = async () => {
-  //   const { DATA } = await getLocalData();
-  //   const _res = await axios.get(
-  //     END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
-  //   );
-  //   setTaxPercent(_res?.data?.taxPercent);
-  // };
+  const getDataTax = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
+    );
+    setTaxPercent(_res?.data?.taxPercent);
+  };
 
-  // const getDataServiceCharge = async () => {
-  //   const { DATA } = await getLocalData();
-  //   const _res = await axios.get(
-  //     `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
-  //   );
-  //   setServiceChargePercent(_res?.data?.serviceCharge);
-  // };
+  const getDataServiceCharge = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await axios.get(
+      `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
+    );
+    setServiceChargePercent(_res?.data?.serviceCharge);
+  };
 
   function handleSetQuantity(int, seletedOrderItem) {
     const _data = seletedOrderItem?.quantity + int;
