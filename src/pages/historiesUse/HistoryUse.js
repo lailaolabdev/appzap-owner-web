@@ -33,7 +33,7 @@ export default function HistoryUse() {
   const { t } = useTranslation();
   const params = useParams();
   const [data, setData] = useState([]);
-  const [totalLogs, setTotalLogs] = useState();
+  const [totalLogs, setTotalLogs] = useState(0);
   const [filtterModele, setFiltterModele] = useState("checkBill");
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +42,7 @@ export default function HistoryUse() {
   const rowsPerPage = 100;
   const [page, setPage] = useState(0);
   const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
   }, []);
@@ -107,7 +108,192 @@ export default function HistoryUse() {
 
   return (
     <div>
-      {/* Modal Logic */}
+      <Nav
+        fill
+        variant="tabs"
+        defaultActiveKey="/checkBill"
+        style={{
+          fontWeight: "bold",
+          backgroundColor: "#f8f8f8",
+          border: "none",
+          marginBottom: 5,
+          overflowX: "scroll",
+          display: "flex",
+        }}
+      >
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/checkBill"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("checkBill")}
+          >
+            <FontAwesomeIcon icon={faTable} /> <div style={{ width: 8 }}></div>{" "}
+            {t("calculate_money")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/canceled"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("canceled")}
+          >
+            <FontAwesomeIcon icon={faCoins} /> <div style={{ width: 8 }}></div>{" "}
+            {t("order_history")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/print"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("print")}
+          >
+            <FontAwesomeIcon icon={faPrint} /> <div style={{ width: 8 }}></div>{" "}
+            {t("printer")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/resetBill"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("resetBill")}
+          >
+            <FontAwesomeIcon icon={faCertificate} />{" "}
+            <div style={{ width: 8 }}></div> {t("edit_bill")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/transferTable"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("transferTable")}
+          >
+            <FontAwesomeIcon icon={faPeopleArrows} />{" "}
+            <div style={{ width: 8 }}></div> {t("change_combine_table")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/historyServiceChange"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("historyServiceChange")}
+          >
+            <FontAwesomeIcon icon={faHistory} />{" "}
+            <div style={{ width: 8 }}></div> {t("history service change")}
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
+      {isLoading ? (
+        <LoadingAppzap />
+      ) : (
+        <div className="col-sm-12" style={{ overflowX: "auto" }}>
+          <table className="table table-hover">
+            <thead className="thead-light">
+              <tr>
+                <th>{t("no")}</th>
+                <th>
+                  {filtterModele === "historyServiceChange"
+                    ? t("surnameAndLastName")
+                    : t("manager_name")}
+                </th>
+                <th>
+                  {filtterModele === "historyServiceChange"
+                    ? "ຍອດບິນ"
+                    : t("cause")}
+                </th>
+                <th>
+                  {filtterModele === "historyServiceChange"
+                    ? `${t("service_charge")} (${serviceChargePercent}%)`
+                    : t("detail")}
+                </th>
+                {filtterModele === "historyServiceChange" && (
+                  <th>vat ({taxPercent}%)</th>
+                )}
+                {filtterModele === "historyServiceChange" && (
+                  <th>{t("total_Amount_of_Money")}</th>
+                )}
+                <th>{t("date_time")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item, index) => (
+                <tr key={index}>
+                  <td>{page * rowsPerPage + index + 1}</td>
+                  <td>
+                    {filtterModele === "historyServiceChange"
+                      ? `${item.firstName} ${item.lastName}`
+                      : item?.user}
+                  </td>
+                  <td>
+                    {filtterModele === "historyServiceChange"
+                      ? ` ${formatNumber(item.total)} ກີບ`
+                      : item?.reason || "-"}
+                  </td>
+                  <td>
+                    {filtterModele === "historyServiceChange"
+                      ? ` ${formatNumber(item.serviceChangeAmount)} ກີບ`
+                      : `${item?.eventDetail}`}
+                  </td>
+                  {filtterModele === "historyServiceChange" && (
+                    <td>
+                      {formatNumber((item.taxPercent * item.total) / 100)} ກີບ
+                    </td>
+                  )}
+                  {filtterModele === "historyServiceChange" && (
+                    <td>{formatNumber(item.totalMustPay)} ກີບ</td>
+                  )}
+                  <td>
+                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <Modal show={show} onHide={() => setShow(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{t("menuModal")}</Modal.Title>
@@ -134,7 +320,13 @@ export default function HistoryUse() {
                   <td>{item?.quantity}</td>
                   <td>{item?.status}</td>
                   <td>{item?.createdBy?.firstname || "-"}</td>
-                  <td>{item?.totalPrice}</td>
+                  <td>
+                    {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+                      item?.totalPrice ||
+                        (item?.price + (item?.totalOptionPrice || 0)) *
+                          item?.quantity
+                    )}
+                  </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                   <td>
                     {item?.updatedAt
