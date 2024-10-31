@@ -1621,6 +1621,7 @@ export default function TableList() {
   };
 
   const getDataZone = async () => {
+    console.log("Params: ", storeDetail?._id);
     try {
       const header = await getHeaders();
       const headers = {
