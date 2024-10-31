@@ -1,18 +1,34 @@
-import React, { useState, useMemo } from "react";
+// import React, { useState, useMemo } from "react";
+// import { Form, Button, Carousel, Spinner } from "react-bootstrap";
+// import packetJson from "../../../package.json";
+// import ReactGA from "react-ga4";
+
+// import { Formik } from "formik";
+// import * as Yup from "yup";
+// import * as axios from "axios";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+// import { useNavigate } from "react-router-dom";
+// import { useStore } from "../../store";
+// import { getStore } from "../../services/store";
+// import Box from "../../components/Box";
+// import { toast } from "react-toastify";  ////////// Original Import //////////////
+
+import React, { useState, useMemo } from "react";                   ///// Ton fix errors ////////
 import { Form, Button, Carousel, Spinner } from "react-bootstrap";
 import packetJson from "../../../package.json";
 import ReactGA from "react-ga4";
-
 import { Formik } from "formik";
 import * as Yup from "yup";
-import * as axios from "axios";
+import axios from "axios";  // Correct import for Axios
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify";   ///// Ton fix errors ////////
+
 
 // style
 import "./login.css";
