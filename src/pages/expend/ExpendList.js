@@ -313,7 +313,7 @@ export default function ExpendList() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 20 ,backgroundColor:"#F9F9F9"}}>
       <div
         class="account-payment"
         style={{
@@ -322,6 +322,7 @@ export default function ExpendList() {
           justifyContent: "space-between",
           alignItems: "center",
           gap: 5,
+          
         }}
       >
         <TitleComponent title={t("paid_account")} />
@@ -349,7 +350,7 @@ export default function ExpendList() {
             onChange={(e) => setDateEnd(e?.target?.value)}
             style={{ width: 150 }}
           />
-          <Form.Control
+          {/* <Form.Control
             as="select"
             name="payment"
             value={filterByPayment}
@@ -359,7 +360,7 @@ export default function ExpendList() {
             <option value="ALL">{t("show_shape")}</option>
             <option value="CASH">{t("real_money")}</option>
             <option value="TRANSFER">{t("e_money")}</option>
-          </Form.Control>
+          </Form.Control> */}
           {/* <Form.Control
             as="select"
             name="payment"
@@ -383,7 +384,7 @@ export default function ExpendList() {
           />
         </div>
       </div>
-      <Filter
+      {/* <Filter
         filterByYear={filterByYear}
         setFilterByYear={setFilterByYear}
         filterByMonth={filterByMonth}
@@ -392,7 +393,7 @@ export default function ExpendList() {
         setDateStart={setDateStart}
         dateEnd={dateEnd}
         setDateEnd={setDateEnd}
-      />
+      /> */}
 
       <div
         class="column"
@@ -404,8 +405,9 @@ export default function ExpendList() {
         // }}
       >
         {/* responsive column */}
+        {[]}
 
-        <div
+        {/* <div
           className="p-2 hover-me"
           style={{
             backgroundColor: "#1d6a9f",
@@ -440,12 +442,56 @@ export default function ExpendList() {
               {expendData?.total}
             </div>
           </div>
+        </div> */}
+         <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "white",
+            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
+            width: 230,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
+          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
+        >
+          <div
+            style={{
+              backgroundColor: "#fb6e3b",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "white", marginTop: 3 }}
+              icon={isGraphDisplay ? faChartLine : faListAlt}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ fontWeight: "bold", color: "gray" }}>
+              {" "}
+              {t("total_in_lak")}
+            </div>
+            <div style={{ fontSize: 24, color: "black" }}>
+              {moneyCurrency(totalReport?.totalSumInLAK)}
+            </div>
+          </div>
         </div>
         <div
           className="p-2 hover-me"
           style={{
-            backgroundColor: "#fb6e3b",
-            width: 180,
+            backgroundColor: "white",
+            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
+            width: 230,
             height: 80,
             borderRadius: 8,
             display: "flex",
@@ -457,22 +503,22 @@ export default function ExpendList() {
         >
           <div
             style={{
-              backgroundColor: "#eeeeee",
+              backgroundColor: "#fb6e3b",
               padding: 12,
               borderRadius: 100,
             }}
           >
             <FontAwesomeIcon
-              style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+              style={{ fontSize: "1.2rem", color: "white" }}
               icon={faMoneyBillWave}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}>
+            <div style={{ fontWeight: "bold", color: "gray" }}>
               {" "}
               {t("paid_lak")}
             </div>
-            <div style={{ fontSize: 24, color: "white" }}>
+            <div style={{ fontSize: 24, color: "black" }}>
               {moneyCurrency(totalReport?.priceLAK)}
             </div>
           </div>
@@ -480,8 +526,9 @@ export default function ExpendList() {
         <div
           className="p-2 hover-me"
           style={{
-            backgroundColor: "#fb6e3b",
-            width: 180,
+            backgroundColor: "white",
+            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
+            width: 230,
             height: 80,
             borderRadius: 8,
             display: "flex",
@@ -493,7 +540,7 @@ export default function ExpendList() {
         >
           <div
             style={{
-              backgroundColor: "#eeeeee",
+              backgroundColor: "#fb6e3b",
               padding: 12,
               borderRadius: 100,
               width: 50,
@@ -504,16 +551,16 @@ export default function ExpendList() {
             }}
           >
             <FontAwesomeIcon
-              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              style={{ fontSize: "1.2rem", color: "white", marginTop: 3 }}
               icon={faBold}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}>
+            <div style={{ fontWeight: "bold", color: "gray" }}>
               {" "}
               {t("paid_thb")}
             </div>
-            <div style={{ fontSize: 24, color: "white" }}>
+            <div style={{ fontSize: 24, color: "black" }}>
               {moneyCurrency(totalReport?.priceTHB)}
             </div>
           </div>
@@ -521,8 +568,9 @@ export default function ExpendList() {
         <div
           className="p-2 hover-me"
           style={{
-            backgroundColor: "#fb6e3b",
-            width: 180,
+            backgroundColor: "white",
+            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
+            width: 230,
             height: 80,
             borderRadius: 8,
             display: "flex",
@@ -534,7 +582,7 @@ export default function ExpendList() {
         >
           <div
             style={{
-              backgroundColor: "#eeeeee",
+              backgroundColor: "#fb6e3b",
               padding: 12,
               borderRadius: 100,
               width: 50,
@@ -545,21 +593,21 @@ export default function ExpendList() {
             }}
           >
             <FontAwesomeIcon
-              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              style={{ fontSize: "1.2rem", color: "white", marginTop: 3 }}
               icon={faDollarSign}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}>
+            <div style={{ fontWeight: "bold", color: "gray" }}>
               {" "}
               {t("paid_usd")}
             </div>
-            <div style={{ fontSize: 24, color: "white" }}>
+            <div style={{ fontSize: 24, color: "black" }}>
               {moneyCurrency(totalReport?.priceUSD)}
             </div>
           </div>
         </div>
-        <div
+        {/* <div
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
@@ -599,50 +647,8 @@ export default function ExpendList() {
               {moneyCurrency(totalReport?.priceCNY)}
             </div>
           </div>
-        </div>
-        <div
-          className="p-2 hover-me"
-          style={{
-            backgroundColor: "#fb6e3b",
-            width: 180,
-            height: 80,
-            borderRadius: 8,
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            margin: 10,
-          }}
-          onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
-        >
-          <div
-            style={{
-              backgroundColor: "#eeeeee",
-              padding: 12,
-              borderRadius: 100,
-              width: 50,
-              height: 50,
-              display: "flex",
-              justifyContent: "center",
-              alignContent: "center",
-            }}
-          >
-            <FontAwesomeIcon
-              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
-              icon={isGraphDisplay ? faChartLine : faListAlt}
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}>
-              {" "}
-              {t("total_in_lak")}
-            </div>
-            <div style={{ fontSize: 24, color: "white" }}>
-              {moneyCurrency(totalReport?.totalSumInLAK)}
-            </div>
-          </div>
-        </div>
-        <div
+        </div>       */}
+        {/* <div
           className="p-2 hover-me"
           style={{
             backgroundColor: "#fb6e3b",
@@ -683,7 +689,7 @@ export default function ExpendList() {
               {isGraphDisplay ? "Graph" : `${t("detial")}`}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       {isGraphDisplay && <ExpendatureChart series={series} options={options} />}
 
@@ -694,7 +700,7 @@ export default function ExpendList() {
           </center>
         </div>
       ) : (
-        <Table responsive="xl" className="mt-3 table-hover table-bordered">
+        <Table responsive="xl" className="mt-3 table-hover table-bordered" style={{backgroundColor:'white'}}>
           <thead>
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>

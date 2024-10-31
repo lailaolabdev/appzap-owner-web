@@ -337,7 +337,7 @@ export default function OrderPage() {
           }}
         >
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            style={{ color: "white", backgroundColor: "gray", border:'none' }}
             onClick={async () => {
               await onPrintForCher();
               // await handleUpdateOrderStatus("DOING");
@@ -349,19 +349,10 @@ export default function OrderPage() {
             {t("print_to_kitchen")}
           </Button>
 
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              setWorkAfterPin("cancle_order");
-              setPopup({ PopUpPin: true });
-            }}
-          >
-            {/* ຍົກເລີກ */}
-            {t("cancel")}
-          </Button>
+          
 
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            style={{ color: "white", backgroundColor: "#FB6E3B",border:'none' }}
             onClick={async () => {
               await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
@@ -372,7 +363,7 @@ export default function OrderPage() {
           </Button>
 
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            style={{ color: "white", backgroundColor: "#30EB36",border:'none' }}
             onClick={async () => {
               await handleUpdateOrderStatus("SERVED");
               getOrderWaitingAndDoingByStore();
@@ -381,9 +372,19 @@ export default function OrderPage() {
             {/* ເສີບແລ້ວ */}
             {t("served")}
           </Button>
+          <Button
+            style={{ color: "white", backgroundColor: "red",border:'none' }}
+            onClick={async () => {
+              setWorkAfterPin("cancle_order");
+              setPopup({ PopUpPin: true });
+            }}
+          >
+            {/* ຍົກເລີກ */}
+            {t("cancel")}
+          </Button>
         </div>
 
-        <div>{t("auto_print")}</div>
+        {/* <div>{t("auto_print")}</div> */}
       </div>
     );
   };
@@ -471,7 +472,7 @@ export default function OrderPage() {
           </Tab> */}
         </Tabs>
       </div>
-      <div style={{ padding: "20px" }}>
+      <div style={{ padding: "20px"}}>
         {orderItems
           ?.filter((e) => e?.isChecked)
           .map((val, i) => {

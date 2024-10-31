@@ -55,7 +55,10 @@ export default function WaitingOrderTab() {
 				<div style={{ overflowX: "auto" }}>
 					<TableCustom responsive>
 						<thead>
-							<tr>
+							<tr style={{
+								backgroundColor:'white',
+								borderBottom:'3px solid black',
+								}} >
 								<th>
 									<FormControlLabel
 										control={
@@ -67,7 +70,7 @@ export default function WaitingOrderTab() {
 										style={{ marginLeft: 2 }}
 									/>
 								</th>
-								<th style={{ textWrap: "nowrap" }}>{t("no")}</th>
+								{/* <th style={{ textWrap: "nowrap" }}>{t("no")}</th> */}
 								<th style={{ textWrap: "nowrap" }}>{t("menu_name")}</th>
 								<th style={{ textWrap: "nowrap" }}>{t("amount")}</th>
 								<th style={{ textWrap: "nowrap" }}>{t("from_table")}</th>
@@ -89,7 +92,7 @@ export default function WaitingOrderTab() {
 												inputProps={{ "aria-label": "secondary checkbox" }}
 											/>
 										</td>
-										<td>{index + 1} </td>
+										{/* <td>{index + 1} </td> */}
 										<td style={{ fontWeight: "bold", textWrap: "nowrap" }}>
 											{order?.name ?? "-"}{" "}
 										</td>

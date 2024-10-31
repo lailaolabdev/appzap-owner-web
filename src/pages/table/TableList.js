@@ -65,6 +65,12 @@ import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { repeat } from "lodash";
+import {
+ 
+  faCheck
+} from "@fortawesome/free-solid-svg-icons";
+
+
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -1457,7 +1463,11 @@ export default function TableList() {
         width: "100%",
       }}
     >
-      <p style={{ fontSize: '50px', fontWeight: '400' }}>Home</p>
+      <p style={{
+         fontSize: '30px', 
+         fontWeight: '400',
+         padding: " 0 10px",
+          }}>Home</p>
       {/* popup */}
       <PopUpQRToken
         tableName={selectedTable?.tableName}
@@ -1496,7 +1506,7 @@ export default function TableList() {
               }}
             >
               {[
-                { label: t("total_table"), value: tableList?.length },
+                { label: t("total_table"), value: tableList?.length,  },
                 { label: t("total_available_table"), value: _checkStatusCodeA(tableList) },
                 { label: t("total_unavailable_table"), value: _checkStatusCode(tableList) },
                 { label: t("total_bill_check"), value: _checkStatusCodeB(tableList) },
@@ -1508,7 +1518,9 @@ export default function TableList() {
                     padding: '5px',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: '80px'
+                    height: '70px',
+                    boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
+
                   }}>
                     <div style={{
                       backgroundColor: 'tomato',
@@ -1537,7 +1549,7 @@ export default function TableList() {
                   as="select"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
-                  style={{ width: '23%', marginLeft: '5px' }}
+                  style={{ width: '20%', marginLeft: '5px' }}
                 >
                   <option value="">{t("show_all_zone")}</option>
                   {zoneData?.map((item, index) => (
@@ -1571,6 +1583,7 @@ export default function TableList() {
                         borderRadius: 4,
                         overflow: "hidden",
                         cursor: "pointer",
+                        boxShadow: '2px 2px 7px  rgba(0,0,0,0.1)',
                       }}
                       key={"table" + index}
                     >
@@ -1583,7 +1596,6 @@ export default function TableList() {
                           style={{
                             width: "100%",
                             height: "100%",
-                            boxShadow: '0 0 5px',
                             borderRadius: 4,
                             background: 'white',
                             display: "flex",
@@ -1591,7 +1603,6 @@ export default function TableList() {
                             alignItems: "center",
                             textAlign: "center",
                             padding: 10,
-                            color: 'gray'
                           }}
                           className={
                             table?.isOpened && !table?.isStaffConfirm
@@ -1613,13 +1624,13 @@ export default function TableList() {
                             }}
                           ></div>
                           <div style={{
-                            display:'flex', 
-                            alignContent:'center',
+                            display: 'flex',
+                            alignItems:'center',
                             justifyContent:'center',
-                            padding:'10px 0px'
+                            padding: '5px 0px',
+                            height:'100%'
                           }}>
                             <div style={{
-                              backgroundColor: 'tomato',
                               height: '40px',
                               width: '40px',
                               marginRight: '10px',
@@ -1627,20 +1638,42 @@ export default function TableList() {
                               alignItems: 'center',
                               justifyContent: 'center',
                               borderRadius: '5px',
-                              color: 'white'
+                              color: 'white',
+                              background: table?.isStaffConfirm
+                                ? "rgb(251,110,59)"
+                                : "gray",
+                              background: table?.isStaffConfirm
+                                ? table?.editBill
+                                  ? "#39DB5F"
+                                  : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "#FFE17B"
+                                    : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                : "gray",
                             }}>{index + 1}
                             </div>
                             <span style={{
-                              textAlign:'start'
+                              textAlign: 'start'
                             }} >
                               {/* <div>{table?.tableName}</div>
                               <div>{table?.code}</div> */}
-                              <div style={{fontSize:20}}>
+                              <div style={{
+                                 fontSize: 20 ,
+                                 color: table?.isStaffConfirm
+                                 ? "rgb(251,110,59)"
+                                 : "gray",
+                                 color: table?.isStaffConfirm
+                                 ? table?.editBill
+                                   ? "#39DB5F"
+                                   : table?.statusBill === "CALL_TO_CHECKOUT"
+                                     ? "#FFE17B"
+                                     : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                 : "gray",
+                                 }}>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
                                   : `${t("avaliable")}`}
                               </div>
-                              <div>Zone: Nomal</div>
+                              <div style={{color:'gray',fontSize:'15px'}}>Zone: Nomal</div>
                             </span>
                           </div>
                         </div>

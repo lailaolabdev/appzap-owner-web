@@ -4,7 +4,7 @@ import { COLOR_APP } from "../../constants";
 
 export default function ExpendatureChart({ series,options }) {
   return (
-    <div id="chart">
+    <div id="chart" style={{backgroundColor:'white'}}>
       <ReactApexChart
         options={options}
         series={series}
