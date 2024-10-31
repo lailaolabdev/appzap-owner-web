@@ -73,6 +73,7 @@ export default function Dashboard() {
           };
         });
         setBranchInCome(combinedData);
+        console.log("combinedData", combinedData);
         setLoadingData(false);
       } else {
         console.error("Token or User ID not found");
@@ -202,48 +203,75 @@ export default function Dashboard() {
             ${convertNumber(TotalInCome())} ${t("lak")})`}
           </p>
           {branchInCome?.length > 0 ? (
-            <CardBody>
-              <div id="sub-card-body-left">
-                <table
-                  style={{ width: width > 900 ? "60%" : "100%" }}
-                  className="table-bordered"
+            branchInCome?.map((value, index) =>
+              value.totalAmount === 0 ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    height: "100%",
+                    alignItems: "center",
+                  }}
+                  key={value._id}
                 >
-                  <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
-                    {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                    <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
-                    <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
-                    <th style={{ textAlign: "center" }}>ຈັດການ</th>
-                  </tr>
-                  {branchInCome?.length > 0 &&
-                    branchInCome?.map((data, index) => (
-                      <tr key={data._id} hidden={data?.totalAmount === 0}>
-                        {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                        <td style={{ textAlign: "center" }}>
-                          {data?.nameBranch}
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          {convertNumber(data?.totalAmount)} {t("lak")}
-                        </td>
-                        <td style={{ textAlign: "center", fontWeight: "bold" }}>
-                          <Button
-                            onClick={() => handleShowPopup(data)}
-                            variant="primary"
-                            style={{ marginLeft: 10, fontWeight: "bold" }}
-                          >
-                            <FaTrash />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                </table>
-              </div>
-              <div id="sub-card-body-right">
-                <PieChart
-                  DatabranchInCome={branchInCome}
-                  TotalInCome={TotalInCome}
-                />
-              </div>
-            </CardBody>
+                  <h3 style={{ fontSize: 18, fontWeight: "bold" }}>
+                    ບໍ່ມີຂໍ້ມູນ
+                  </h3>
+                </div>
+              ) : (
+                <>
+                  <CardBody key={value._id}>
+                    <div id="sub-card-body-left">
+                      <table
+                        style={{ width: width > 900 ? "60%" : "100%" }}
+                        className="table-bordered"
+                      >
+                        <tr
+                          style={{ backgroundColor: COLOR_APP, color: "white" }}
+                        >
+                          {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
+                          <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
+                          <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
+                          <th style={{ textAlign: "center" }}>ຈັດການ</th>
+                        </tr>
+                        {branchInCome?.length > 0 &&
+                          branchInCome?.map((data, index) => (
+                            <tr key={data._id} hidden={data?.totalAmount === 0}>
+                              {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
+                              <td style={{ textAlign: "center" }}>
+                                {data?.nameBranch}
+                              </td>
+                              <td style={{ textAlign: "center" }}>
+                                {convertNumber(data?.totalAmount)} {t("lak")}
+                              </td>
+                              <td
+                                style={{
+                                  textAlign: "center",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                <Button
+                                  onClick={() => handleShowPopup(data)}
+                                  variant="primary"
+                                  style={{ marginLeft: 10, fontWeight: "bold" }}
+                                >
+                                  <FaTrash />
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                      </table>
+                    </div>
+                    <div id="sub-card-body-right">
+                      <PieChart
+                        DatabranchInCome={branchInCome}
+                        TotalInCome={TotalInCome}
+                      />
+                    </div>
+                  </CardBody>
+                </>
+              )
+            )
           ) : (
             <div
               style={{
@@ -334,13 +362,6 @@ export default function Dashboard() {
   );
 }
 
-const Option = styled.option`
-  cursor: pointer;
-  padding: 10px;
-  &:hover {
-    background-color: #ffffff !important;
-  }
-`;
 const CardHeader = styled.div`
   display: flex;
   align-items: center;
