@@ -73,19 +73,32 @@ export default function HistoryUse() {
     try {
       const headers = await getHeaders();
       setIsLoading(true);
-
-      let apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-        page * rowsPerPage
-      }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
+      let apiUrl;
 
       if (filtterModele === "historyServiceChange") {
         apiUrl = `${END_POINT_SEVER}/saveservice`;
+      } else if (filtterModele === "billPayBefore") {
+        apiUrl =
+          END_POINT_SEVER +
+          `/v3/bills-split/skip/${
+            page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id}`;
+      } else {
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
+          page * rowsPerPage
+        }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
       }
 
       const res = await axios.get(apiUrl, { headers });
 
       if (res?.status < 300) {
-        setData(res?.data?.data);
+        if (filtterModele === "billPayBefore") {
+          setData(res?.data);
+        } else if (filtterModele === "historyServiceChange") {
+          setData(res?.data?.data);
+        } else {
+          setData(res?.data?.data);
+        }
         setTotalLogs(res?.data?.total);
       }
     } catch (error) {
@@ -99,6 +112,31 @@ export default function HistoryUse() {
       return "-";
     }
     return num.toLocaleString("en-US").replace(/,/g, ".");
+  };
+
+  const formatMenuName = (name, options) => {
+    const optionNames =
+      options?.map((option) => `[${option.name}]`).join(" ") || "";
+    return `${name} ${optionNames}`;
+  };
+
+  const _countAmount = (item) => {
+    let _amount = 0;
+    if (item?.length > 0) {
+      for (let i = 0; i < item.length; i++) {
+        const totalOptionPrice = item[i]?.totalOptionPrice ?? 0;
+        const totalPrice =
+          item[i]?.totalPrice ??
+          (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
+        _amount += totalPrice;
+      }
+    }
+    return _amount;
+  };
+  const handleClose = () => setShow(false);
+  const handleShow = (item) => {
+    setShow(true);
+    setDataModal(item);
   };
 
   return (
@@ -218,77 +256,240 @@ export default function HistoryUse() {
             <div style={{ width: 8 }}></div> {t("history service change")}
           </Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/billPayBefore"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("billPayBefore")}
+          >
+            <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
+            <div style={{ width: 8 }}></div>
+            {t("bill_paid")}
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
-
       {isLoading ? (
         <LoadingAppzap />
       ) : (
         <div className="col-sm-12" style={{ overflowX: "auto" }}>
-          <table className="table table-hover">
-            <thead className="thead-light">
-              <tr>
-                <th>{t("no")}</th>
-                <th>
-                  {filtterModele === "historyServiceChange"
-                    ? t("surnameAndLastName")
-                    : t("manager_name")}
-                </th>
-                <th>
-                  {filtterModele === "historyServiceChange"
-                    ? "ຍອດບິນ"
-                    : t("cause")}
-                </th>
-                <th>
-                  {filtterModele === "historyServiceChange"
-                    ? `${t("service_charge")} (${serviceChargePercent}%)`
-                    : t("detail")}
-                </th>
-                {filtterModele === "historyServiceChange" && (
-                  <th>vat ({taxPercent}%)</th>
-                )}
-                {filtterModele === "historyServiceChange" && (
-                  <th>{t("total_Amount_of_Money")}</th>
-                )}
-                <th>{t("date_time")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index}>
-                  <td>{page * rowsPerPage + index + 1}</td>
-                  <td>
+          {filtterModele === "billPayBefore" ? (
+            <div style={{ padding: 10, overflowX: "auto" }}>
+              <Table striped hover size="sm" style={{ fontSize: 15 }}>
+                <thead>
+                  <tr>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("no")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("tableNumber")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("tableCode")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("price")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("paymentType")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("time")}
+                    </th>
+                    <th
+                      style={{
+                        textWrap: "nowrap",
+                      }}
+                    >
+                      {t("staffCheckBill")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.map((item, index) => (
+                    <tr
+                      key={"finance-" + index}
+                      onClick={() => {
+                        // setSelectOrder(item);
+                        handleShow(item?.orderId);
+                      }}
+                    >
+                      <td>{page * rowsPerPage + index + 1}</td>
+                      <td>{item?.tableId?.name ?? "-"}</td>
+                      <td>{item?.code}</td>
+                      <td>
+                        {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                          ? new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(_countAmount(item?.orderId))
+                          : new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(
+                              item?.payAmount +
+                                item?.taxAmount +
+                                item?.serviceChargeAmount
+                            )}{" "}
+                        {selectedCurrency}
+                      </td>
+                      <td
+                        style={{
+                          color:
+                            item?.paymentMethod === "CASH"
+                              ? "#00496e"
+                              : "#0D47A1",
+                        }}
+                      >
+                        {item?.paymentMethod === "CASH"
+                          ? t("payBycash")
+                          : item?.paymentMethod === "TRANSFER"
+                          ? t("transferPayment")
+                          : t("transfercash")}
+                      </td>
+                      <td>
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                      </td>
+                      <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                  bottom: 20,
+                }}
+              ></div>
+            </div>
+          ) : (
+            <table className="table table-hover">
+              <thead className="thead-light">
+                <tr>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
                     {filtterModele === "historyServiceChange"
-                      ? `${item.firstName} ${item.lastName}`
-                      : item?.user}
-                  </td>
-                  <td>
+                      ? t("surnameAndLastName")
+                      : t("manager_name")}
+                  </th>
+                  {/* <th scope="col">ສະຖານະ</th> */}
+                  <th style={{ textWrap: "nowrap" }} scope="col">
                     {filtterModele === "historyServiceChange"
-                      ? ` ${formatNumber(item.total)} ກີບ`
-                      : item?.reason || "-"}
-                  </td>
-                  <td>
+                      ? `${t("service_charge")} (${serviceChargePercent}%)`
+                      : t("detail")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
                     {filtterModele === "historyServiceChange"
-                      ? ` ${formatNumber(item.serviceChangeAmount)} ກີບ`
-                      : `${item?.eventDetail}`}
-                  </td>
+                      ? "ຍອດບິນ"
+                      : t("cause")}
+                  </th>
                   {filtterModele === "historyServiceChange" && (
-                    <td>
-                      {formatNumber((item.taxPercent * item.total) / 100)} ກີບ
-                    </td>
+                    <th>vat ({taxPercent}%)</th>
                   )}
                   {filtterModele === "historyServiceChange" && (
-                    <td>{formatNumber(item.totalMustPay)} ກີບ</td>
+                    <th>{t("total_Amount_of_Money")}</th>
                   )}
-                  <td>
-                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                  </td>
+
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("date_time")}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {data?.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {page * rowsPerPage + index + 1}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {filtterModele === "historyServiceChange"
+                          ? `${item.firstName} ${item.lastName}`
+                          : item?.user}
+                      </td>
+                      {/* <td
+                      style={{
+                        color: item?.event === "INFO" ? "green" : "red",
+                      }}
+                    >
+                      {item?.event}
+                    </td> */}
+                      <td style={{ textWrap: "nowrap" }}>
+                        {filtterModele === "historyServiceChange"
+                          ? ` ${formatNumber(item.serviceChangeAmount)} ກີບ`
+                          : `${item?.eventDetail}`}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {filtterModele === "historyServiceChange"
+                          ? ` ${formatNumber(item.total)} ກີບ`
+                          : item?.reason === null ||
+                            item?.reason === "" ||
+                            item?.reason === undefined ||
+                            item?.reason === "undefined" ||
+                            item?.reason === "null"
+                          ? "-"
+                          : item?.reason}
+                      </td>
+                      {filtterModele === "historyServiceChange" && (
+                        <td>
+                          {formatNumber((item.taxPercent * item.total) / 100)}{" "}
+                          ກີບ
+                        </td>
+                      )}
+                      {filtterModele === "historyServiceChange" && (
+                        <td>{formatNumber(item.totalMustPay)} ກີບ</td>
+                      )}
+
+                      <td style={{ textWrap: "nowrap" }}>
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+          <PaginationAppzap
+            rowsPerPage={rowsPerPage}
+            page={page}
+            pageAll={pageAll}
+            onPageChange={handleChangePage}
+          />
         </div>
       )}
-
       <Modal show={show} onHide={() => setShow(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{t("menuModal")}</Modal.Title>
@@ -335,6 +536,90 @@ export default function HistoryUse() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={() => setShow(false)}>
+            {t("close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={show} onHide={handleClose} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>{t("menuModal")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: 10,
+            }}
+          ></div>
+          <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
+            <thead>
+              <tr>
+                <th>{t("no")}</th>
+                <th>{t("menuname")}</th>
+                <th>{t("amount")}</th>
+                <th>{t("statusOfFood")}</th>
+                <th>{t("servedBy")}</th>
+                <th>{t("price")}</th>
+                <th>{t("time")}</th>
+                <th>ເວລາອັບເດດ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataModal
+                // ?.filter((item) => item?.status !== "PAID")
+                .map((item, index) => (
+                  <tr key={1 + index}>
+                    <td>{index + 1}</td>
+                    <td>{formatMenuName(item?.name, item?.options)}</td>
+                    <td>{item?.quantity}</td>
+                    <td
+                      style={{
+                        color:
+                          item?.status === "WAITING"
+                            ? "#2d00a8"
+                            : item?.status === "DOING"
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                            ? "green"
+                            : item?.status === "PAID"
+                            ? COLOR_APP
+                            : item?.status === "CART"
+                            ? "#00496e"
+                            : item?.status === "FEEDBACK"
+                            ? "#00496e"
+                            : "#bd0d00",
+                      }}
+                    >
+                      {orderStatus(item?.status)}
+                    </td>
+                    <td>
+                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
+                    </td>
+                    <td>
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(
+                        item?.totalPrice ??
+                          (item?.price + (item?.totalOptionPrice ?? 0)) *
+                            item?.quantity
+                      )}
+                    </td>
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+                    <td>
+                      {item?.updatedAt
+                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClose}>
             {t("close")}
           </Button>
         </Modal.Footer>

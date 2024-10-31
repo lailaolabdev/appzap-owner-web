@@ -335,7 +335,7 @@ export default function BillForCheckOut80({
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency((total + taxAmount) / item?.buy)}
+                {moneyCurrency((total + taxAmount) / item?.sell)}
               </div>
             </Col>
           </Row>
@@ -349,7 +349,7 @@ export default function BillForCheckOut80({
         <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
-            {item?.currencyCode}: {moneyCurrency(item?.buy)}
+            {item?.currencyCode}: {moneyCurrency(item?.sell)}
             {index + 1 < currencyData?.length ? (
               <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
             ) : (
