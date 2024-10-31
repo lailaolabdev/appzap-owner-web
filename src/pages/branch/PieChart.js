@@ -9,122 +9,57 @@ const PieChart = ({ DatabranchInCome, TotalInCome }) => {
   const { t } = useTranslation();
   const ArrayNameBranch = [];
   const ArrayTotalAmount = [];
+  const backgroundColors = [];
+  const borderColors = [];
+
+  const getRandomRGBA = () => {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    const a = Math.random().toFixed(2); // Alpha value between 0 and 1
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  };
 
   for (const dataObj of DatabranchInCome) {
-    ArrayNameBranch.push(dataObj.nameBranch);
-    ArrayTotalAmount.push(dataObj.totalAmount);
+    ArrayNameBranch.push(dataObj?.nameBranch);
+    ArrayTotalAmount.push(dataObj?.totalAmount);
+    const randomColor = getRandomRGBA();
+    backgroundColors.push(randomColor);
+    borderColors.push(randomColor.replace(/0\.\d{2}\)/, "1)"));
   }
   const data = {
     labels: ArrayNameBranch,
     datasets: [
       {
         data: ArrayTotalAmount,
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-        ],
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
         borderWidth: 1,
       },
     ],
   };
 
-  // const options = {
-  //   plugins: {
-  //     legend: {
-  //       position: "right",
-  //       labels: {
-  //         font: {
-  //           size: 16, // Font size for legend labels
-  //           family: "Noto Sans Lao", // Font family
-  //         },
-  //       },
-  //       title: {
-  //         display: true,
-  //         text: `${t("all_recieve")} ${convertNumber(TotalInCome())} ${t(
-  //           "lak"
-  //         )}`,
-  //         // text: t("list_branch"),
-  //         font: {
-  //           size: 16, // Font size for legend labels
-  //           family: "Noto Sans Lao", // Font family
-  //           bold: true,
-  //         },
-  //       },
-  //     },
-
-  //     tooltip: {
-  //       titleFont: {
-  //         size: 14, // Font size for tooltips
-  //         family: "Noto Sans Lao", // Font family for tooltips
-  //       },
-  //       bodyFont: {
-  //         size: 12,
-  //         family: "Noto Sans Lao",
-  //       },
-  //     },
-  //   },
-  //   scales: {
-  //     // Add this section if you have scales, for example in bar or line charts
-  //     // y: {
-  //     //   ticks: {
-  //     //     font: {
-  //     //       family: 'Georgia', // Custom font for scales
-  //     //     },
-  //     //   },
-  //     // },
-  //   },
-  // };
-
   const options = {
     plugins: {
-      title: {
-        display: true, // Ensures that the title is displayed
-        text: `${t("all_recieve")} ${convertNumber(TotalInCome())} ${t("lak")}`, // Title text
-        font: {
-          size: 16, // Font size for the title
-          family: "Noto Sans Lao", // Font family for the title
-          weight: "bold", // Font weight for the title
-        },
-        align: "center", // Aligns the title at the center of the chart
-        padding: {
-          top: 20, // Adds padding between the top of the chart and the title
-          bottom: 20, // Adds padding between the title and the chart
-        },
-      },
       legend: {
         position: "right",
         labels: {
           font: {
             size: 16, // Font size for legend labels
-            family: "Noto Sans Lao", // Font family for legend labels
+            family: "Noto Sans Lao", // Font family
           },
         },
-        padding: {
-          left: 50, // Padding to separate legend from chart
-          top: 0, // Padding to separate title from chart
-          bottom: 30, // Padding to separate title from chart
+        title: {
+          display: true,
+          text: t("list_branch"),
+          font: {
+            size: 16, // Font size for legend labels
+            family: "Noto Sans Lao", // Font family
+            bold: true,
+          },
         },
       },
+
       tooltip: {
         titleFont: {
           size: 14, // Font size for tooltips

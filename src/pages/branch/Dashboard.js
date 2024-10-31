@@ -116,7 +116,7 @@ export default function Dashboard() {
   //     });
   // };
   const TotalInCome = () => {
-    return branchInCome.reduce((currentValue, nextValue) => {
+    return branchInCome?.reduce((currentValue, nextValue) => {
       return currentValue + nextValue.totalAmount;
     }, 0);
   };
@@ -201,47 +201,61 @@ export default function Dashboard() {
             {`${t("total_branch")} (${t("all_recieve")}
             ${convertNumber(TotalInCome())} ${t("lak")})`}
           </p>
-          <CardBody>
-            <div id="sub-card-body-left">
-              <table
-                style={{ width: width > 900 ? "60%" : "100%" }}
-                className="table-bordered"
-              >
-                <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
-                  {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                  <th style={{ textAlign: "right" }}>ຊື່ຮ້ານ</th>
-                  <th style={{ textAlign: "right" }}>ລາຍຮັບທັງໝົດ</th>
-                  <th style={{ textAlign: "right" }}>ຈັດການ</th>
-                </tr>
-                {branchInCome?.length > 0 &&
-                  branchInCome?.map((data, index) => (
-                    <tr key={data._id} hidden={data?.totalAmount === 0}>
-                      {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                      <td style={{ textAlign: "right" }}>{data?.nameBranch}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {convertNumber(data?.totalAmount)} {t("lak")}
-                      </td>
-                      <td style={{ textAlign: "right", fontWeight: "bold" }}>
-                        <Button
-                          onClick={() => handleShowPopup(data)}
-                          variant="primary"
-                          style={{ marginLeft: 10, fontWeight: "bold" }}
-                        >
-                          <FaTrash />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-              </table>
+          {branchInCome?.length > 0 ? (
+            <CardBody>
+              <div id="sub-card-body-left">
+                <table
+                  style={{ width: width > 900 ? "60%" : "100%" }}
+                  className="table-bordered"
+                >
+                  <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
+                    {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
+                    <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
+                    <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
+                    <th style={{ textAlign: "center" }}>ຈັດການ</th>
+                  </tr>
+                  {branchInCome?.length > 0 &&
+                    branchInCome?.map((data, index) => (
+                      <tr key={data._id} hidden={data?.totalAmount === 0}>
+                        {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
+                        <td style={{ textAlign: "center" }}>
+                          {data?.nameBranch}
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {convertNumber(data?.totalAmount)} {t("lak")}
+                        </td>
+                        <td style={{ textAlign: "center", fontWeight: "bold" }}>
+                          <Button
+                            onClick={() => handleShowPopup(data)}
+                            variant="primary"
+                            style={{ marginLeft: 10, fontWeight: "bold" }}
+                          >
+                            <FaTrash />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                </table>
+              </div>
+              <div id="sub-card-body-right">
+                <PieChart
+                  DatabranchInCome={branchInCome}
+                  TotalInCome={TotalInCome}
+                />
+              </div>
+            </CardBody>
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                height: "100%",
+                alignItems: "center",
+              }}
+            >
+              <h3 style={{ fontSize: 18, fontWeight: "bold" }}>ບໍ່ມີຂໍ້ມູນ</h3>
             </div>
-
-            <div id="sub-card-body-right">
-              <PieChart
-                DatabranchInCome={branchInCome}
-                TotalInCome={TotalInCome}
-              />
-            </div>
-          </CardBody>
+          )}
           {/* ================== other branch ======================== */}
           {/* <div
             style={{
@@ -470,7 +484,14 @@ const CardHeader = styled.div`
 
 const CardBody = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-auto-flow: dense;
+
+  /* display: flex;
+  gap: 15px;
+  width: 100%; */
+  /* flex-wrap: wrap-reverse; */
+
   #sub-card-body-left {
     display: flex;
     justify-content: center;
@@ -480,30 +501,11 @@ const CardBody = styled.div`
   #sub-card-body-right {
     width: calc(100% - 22%);
     height: calc(100% - 35%);
-  }
-
-  /* display: flex;
-  /* justify-content: center; 
-  align-items: center;
-  gap: 15;
-  width: 100%;
-  #sub-card-body-left {
-    width: calc(100% - 60%); // 35%";
-    height: 35%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  #sub-card-body-right {
-    margin-top: 30;
-    width: 50;
-    margin-right: 20rem;
-    display: flex;
-    justify-content: start;
-    align-items: start;
+    /* width: calc(100% - 22%);
+    height: calc(100% - 35%); */
   }
 
   @media (max-width: 768px) {
     display: block;
-  } */
+  }
 `;
