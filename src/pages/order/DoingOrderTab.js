@@ -114,7 +114,10 @@ const DoingOrderTab = () => {
 							className="staff-table-list borderless table-hover"
 						>
 							<thead>
-								<tr>
+								<tr style={{
+								backgroundColor:'white',
+								borderBottom:'3px solid black',
+								}}>
 									<th>
 										<FormControlLabel
 											control={
@@ -181,8 +184,11 @@ const DoingOrderTab = () => {
 							</thead>
 							<tbody>
 								{orderItems?.map((order, index) => (
-									<tr key={index}>
-										<td>
+									<tr key={index} style={{borderBottom:'0.5px solid rgb(0,0,0,0.1)'}}>
+										<td style={{
+											backgroundColor:'white',
+											marginTop:'3px'
+											}}>
 											<Checkbox
 												checked={order?.isChecked ? true : false}
 												onChange={(e) => handleCheckbox(order)}
@@ -193,6 +199,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>{index + 1}</p>
@@ -200,6 +207,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>{order?.name ?? "-"}</p>
@@ -207,6 +215,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p>
@@ -214,6 +223,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>{order?.tableId?.name ?? "-"}</p>
@@ -224,6 +234,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>
@@ -234,6 +245,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>
@@ -245,6 +257,7 @@ const DoingOrderTab = () => {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											<p style={{ margin: 0 }}>{order?.note ?? "-"}</p>

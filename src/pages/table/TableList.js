@@ -1543,7 +1543,7 @@ export default function TableList() {
             </div>
 
             {zoneData?.length > 0 ? (
-              <div style={{ padding: "20px 15px", display: 'flex', alignItems: 'center', width: '100%' }}>
+              <div style={{ padding: "15px 15px", display: 'flex', alignItems: 'center', width: '100%', }}>
                 <Form.Label >{t("show_by_zone")}</Form.Label>
                 <Form.Control
                   as="select"
@@ -1563,7 +1563,7 @@ export default function TableList() {
               ""
             )}
 
-            <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
+            <Container style={{ overflowY: "scroll", flexGrow: 1 , paddingBottom:'100px'}}>
               <div style={{ height: 10 }} />
               <Box
                 sx={{
@@ -1583,6 +1583,7 @@ export default function TableList() {
                         borderRadius: 4,
                         overflow: "hidden",
                         cursor: "pointer",
+
                         boxShadow: '2px 2px 7px  rgba(0,0,0,0.1)',
                       }}
                       key={"table" + index}

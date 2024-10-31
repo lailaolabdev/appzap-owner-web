@@ -83,7 +83,7 @@ export default function WaitingOrderTab() {
 						<tbody>
 							{orderItems?.map((order, index) => {
 								return (
-									<tr key={index}>
+									<tr key={index}  style={{borderBottom:'0.5px solid rgb(0,0,0,0.1)'}}>
 										<td>
 											<Checkbox
 												checked={order?.isChecked ? true : false}
@@ -93,12 +93,13 @@ export default function WaitingOrderTab() {
 											/>
 										</td>
 										{/* <td>{index + 1} </td> */}
-										<td style={{ fontWeight: "bold", textWrap: "nowrap" }}>
+										<td style={{ fontWeight: "bold", textWrap: "nowrap" ,backgroundColor:'white'}}>
 											{order?.name ?? "-"}{" "}
 										</td>
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.quantity ?? "-"}{" "}
@@ -106,6 +107,7 @@ export default function WaitingOrderTab() {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.tableId?.name ?? "-"}
@@ -113,6 +115,7 @@ export default function WaitingOrderTab() {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.code ?? "-"}{" "}
@@ -122,6 +125,7 @@ export default function WaitingOrderTab() {
 												color: "red",
 												fontWeight: "bold",
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.status ? orderStatus(order?.status) : "-"}
@@ -129,6 +133,7 @@ export default function WaitingOrderTab() {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.createdAt
@@ -138,6 +143,7 @@ export default function WaitingOrderTab() {
 										<td
 											style={{
 												textWrap: "nowrap",
+												backgroundColor:'white'
 											}}
 										>
 											{order?.note ?? "-"}{" "}

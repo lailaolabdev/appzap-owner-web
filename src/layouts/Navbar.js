@@ -73,7 +73,7 @@ export default function NavBar() {
           boxShadow: "3px 0px 3px rgba(0, 0, 0, 0.16)",
           color: "#CC0000",
           width: "100%",
-          height: 64,
+          height: 50,
           position: "fixed",
           top: 0,
           left: 0,
