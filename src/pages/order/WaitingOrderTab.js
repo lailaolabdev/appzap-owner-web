@@ -84,12 +84,13 @@ export default function WaitingOrderTab() {
 							{orderItems?.map((order, index) => {
 								return (
 									<tr key={index}  style={{borderBottom:'0.5px solid rgb(0,0,0,0.1)'}}>
-										<td>
+										<td style={{ backgroundColor:'white'}}>
 											<Checkbox
 												checked={order?.isChecked ? true : false}
 												onChange={(e) => handleCheckbox(order)}
 												color="primary"
 												inputProps={{ "aria-label": "secondary checkbox" }}
+												
 											/>
 										</td>
 										{/* <td>{index + 1} </td> */}

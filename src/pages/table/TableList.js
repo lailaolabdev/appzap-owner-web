@@ -1506,7 +1506,7 @@ export default function TableList() {
                 gap: 8,
                 gridTemplateColumns: '1fr 1fr 1fr 1fr',
                 justifyContent: 'center',
-                padding:'30px'
+                padding:'30px 30px 30px 15px'
               }} 
             >
               {[

@@ -325,7 +325,9 @@ export default function ExpendList() {
           
         }}
       >
-        <TitleComponent title={t("paid_account")} />
+        <TitleComponent
+         title={t("paid_account")}
+          />
         <div
           className="account"
           // style={{
@@ -375,9 +377,11 @@ export default function ExpendList() {
           </Form.Control> */}
           {/* Button ລົງບັນຊີປະຈຳວັນ */}
           <ButtonComponent
-            title={t("daily_account")}
-            icon={faPlusCircle}
-            colorbg={"#1d6a9f"}
+            // title={t("daily_account")}
+            title={"Create Expense"}
+            // icon={faPlusCircle}
+            colorbg={"#F5610B"}
+            // colorbg={"#1d6a9f"}
             hoverbg={"orange"}
             width={"150px"}
             handleClick={() => navigate("/add-expend")}
