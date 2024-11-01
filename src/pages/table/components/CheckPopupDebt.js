@@ -168,7 +168,7 @@ export default function CheckPopupDebt({
         storeId: DATA?.storeId,
       };
 
-      console.log("Frontend body =======>\n",_body);
+      console.log("Frontend body =======>\n", _body);
       // return;
 
       const data = await createBilldebt(_body, TOKEN);
@@ -301,10 +301,11 @@ export default function CheckPopupDebt({
   const _checkBill = async () => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
     const validPayAmount = cash && !isNaN(cash) ? cash : amountBefore;
-    const validTransferAmount = transfer && !isNaN(transfer) ? transfer : remainingAmount;
+    const validTransferAmount =
+      transfer && !isNaN(transfer) ? transfer : remainingAmount;
 
     console.log("Before Checkbill amountBefore =======> ", validPayAmount);
-    console.log("Before Checkbill remainingAmount ====> ", validTransferAmount); 
+    console.log("Before Checkbill remainingAmount ====> ", validTransferAmount);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -363,7 +364,7 @@ export default function CheckPopupDebt({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  
+
   console.log("transfer", transfer);
   const handleSubmit = () => {
     _checkBill();
@@ -514,7 +515,8 @@ export default function CheckPopupDebt({
     });
   };
 
-  const onChangeAmountBeforeInput = (inputData) => {  // Ton update
+  const onChangeAmountBeforeInput = (inputData) => {
+    // Ton update
     console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setAmountBefore(value);
@@ -529,7 +531,8 @@ export default function CheckPopupDebt({
     });
   };
 
-  const onChangeRemainingAmountInput = (inputData) => { // Ton update
+  const onChangeRemainingAmountInput = (inputData) => {
+    // Ton update
     console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setRemainingAmount(value);
@@ -562,7 +565,7 @@ export default function CheckPopupDebt({
   //   };
   // });
 
-  const optionsData = membersData.map((data) => {
+  const optionsData = membersData?.map((data) => {
     return {
       id: data?._id,
       value: data?.name,
@@ -571,7 +574,8 @@ export default function CheckPopupDebt({
     };
   });
 
-  useEffect(() => {   //update
+  useEffect(() => {
+    //update
     const remainingCalculate = totalBill - (amountBefore || 0);
     setRemainingShow(remainingCalculate);
     setRemainingAmount(remainingCalculate);
@@ -701,7 +705,11 @@ export default function CheckPopupDebt({
                 <Form.Control
                   disabled
                   type="text"
-                  placeholder={tab !== "cash" ? convertNumber(totalBill) : convertNumber(remainingAmount)}
+                  placeholder={
+                    tab !== "cash"
+                      ? convertNumber(totalBill)
+                      : convertNumber(remainingAmount)
+                  }
                   value={convertNumber(remainingAmount)}
                   onClick={() => {
                     setSelectInput("inputRemainingAmount");
@@ -709,7 +717,6 @@ export default function CheckPopupDebt({
                   onChange={(e) => {
                     onChangeRemainingAmountInput(e.target.value);
                   }}
-                  
                   size="lg"
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
@@ -745,40 +752,41 @@ export default function CheckPopupDebt({
                 {t("customer_name")} <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <BoxInput>
-              <div className="debt-input">
-                <Select
-                  options={optionsData}
-                  placeholder={t("ctm_tel")}
-                  onChange={(e) => {
-                    setCustomerPhone(e.tel);
-                    setCustomerName(e.value);
-                  }}
-                />
-              </div>
-              <div className="debt-btn-group">
-                <button style={{color:"white"}} ////////////////////////////////////////////////////////////////////////////////////
-                  className="btn btn-primary"
-                  onClick={() => getMembersData()}
-                >
+                <div className="debt-input">
+                  <Select
+                    options={optionsData}
+                    placeholder={t("ctm_tel")}
+                    onChange={(e) => {
+                      setCustomerPhone(e.tel);
+                      setCustomerName(e.value);
+                    }}
+                  />
+                </div>
+                <div className="debt-btn-group">
+                  <button
+                    style={{ color: "white" }} ////////////////////////////////////////////////////////////////////////////////////
+                    className="btn btn-primary"
+                    onClick={() => getMembersData()}
+                  >
                     {/* {isLoading ? (
                     <Spinner animation="border" size="sm" />
                     ) : ( */}
                     <MdRefresh />
                     {/* )} */}
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={
-                    () => window.open("/create/members", "_blank").focus()
-                    // navigate("/reports/members-report/create-member", "_blank", {
-                    //   state: { key: "create-debt" },
-                    // })
-                  }
-                >
-                  ເພີ່ມໃໝ່
-                </button>
-              </div>
-            </BoxInput>
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={
+                      () => window.open("/create/members", "_blank").focus()
+                      // navigate("/reports/members-report/create-member", "_blank", {
+                      //   state: { key: "create-debt" },
+                      // })
+                    }
+                  >
+                    ເພີ່ມໃໝ່
+                  </button>
+                </div>
+              </BoxInput>
 
               <Form.Label>
                 {t("ctm_tel")}
@@ -860,9 +868,8 @@ export default function CheckPopupDebt({
                 }}
               >
                 {t("debt_total")}
-               
               </Button>
-              
+
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
@@ -919,7 +926,6 @@ export default function CheckPopupDebt({
                 if (selectInput === "inputRemainingAmount") {
                   return remainingAmount;
                 }
-                
               })()}
               setSelectInput={(e) => {
                 if (selectInput === "inputCash") {
@@ -928,9 +934,9 @@ export default function CheckPopupDebt({
                   onChangeTransferInput(e);
                 } else if (selectInput === "inputCurrency") {
                   onChangeCurrencyInput(e);
-                } else if (selectInput === "inputAmountBefore"){
+                } else if (selectInput === "inputAmountBefore") {
                   onChangeAmountBeforeInput(e);
-                } else if (selectInput === "inputRemainingAmount"){
+                } else if (selectInput === "inputRemainingAmount") {
                   onChangeRemainingAmountInput(e);
                 }
               }}
