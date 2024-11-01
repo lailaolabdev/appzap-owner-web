@@ -13,13 +13,12 @@ import {
   Modal,
 } from "react-bootstrap";
 import { getLocalData } from "../../constants/api";
-import { getBilldebts } from "../../services/debt";
-import { getdebtHistory } from "../../services/debt";
+import { getBilldebts, getdebtHistory } from "../../services/debt";
 import { useStore } from "../../store";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import PopUpDetaillBillDebt from "../../components/popup/PopUpDetaillBillDebt";
-import PopUpDebtExport from "../../components/popup/PopUpDebtExport";
+// import PopUpDebtExport from "../../components/popup/PopUpDebtExport";
 import { moneyCurrency } from "../../helpers";
 import ImageEmpty from "../../image/empty.png";
 import { IoBeerOutline } from "react-icons/io5";
@@ -524,7 +523,7 @@ export default function DebtPage() {
             }}
           />
         )}
-        {popup?.PopUpDebtExport && (
+        {/* {popup?.PopUpDebtExport && (
           <PopUpDebtExport
             open={popup?.PopUpDebtExport}
             onClose={() => {
@@ -539,7 +538,7 @@ export default function DebtPage() {
               await getDataHistory();
             }}
           />
-        )}
+        )} */}
       </div>
     </>
   );
