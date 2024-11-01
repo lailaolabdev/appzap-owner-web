@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import moment from "moment";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button, Pagination, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { FaSearch, FaPlusCircle } from "react-icons/fa";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaSearch, FaPlusCircle, FaTrash, FaEllipsisH } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
-
 import { getLocalData } from "../../constants/api";
 import {
   GetAllBranchRelation,
   GetAllBranchIncome,
   DeleteBranchRelation,
 } from "../../services/branchRelation";
-
+import { useStore } from "../../store";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Loading from "../../components/Loading";
-import Box from "../../components/Box";
 import "./index.css";
 import { COLOR_APP } from "../../constants";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
@@ -28,7 +26,9 @@ import PieChart from "./PieChart";
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { storeDetail } = useStore();
   const { width, height } = useWindowDimensions2();
+  const limitData = 4;
   // state
   const [popup, setPopup] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
@@ -40,11 +40,13 @@ export default function Dashboard() {
   const [branchInCome, setBranchInCome] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
   const [showPopupDelete, setShowPopupDelete] = useState(false);
+  const [paginations, setPaginations] = useState(1);
+  const [paginationTotal, setPaginationTotal] = useState();
   // useEffect
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     GetAllBranchData();
-  }, [endDate, startDate, endTime, startTime, filterValue]);
+  }, [endDate, startDate, endTime, startTime, filterValue, paginations]);
 
   useEffect(() => {
     GetAllBranchData();
@@ -56,15 +58,31 @@ export default function Dashboard() {
       const { DATA, TOKEN } = await getLocalData();
 
       if (TOKEN && DATA?._id) {
-        const [branchData, incomeData] = await Promise.all([
-          GetAllBranchRelation(TOKEN, DATA._id, filterValue),
-          GetAllBranchIncome(TOKEN, DATA._id, filterValue, startDate, endDate),
-        ]);
+        let findby = "?";
+        findby += `userId=${DATA?._id}&`;
+        findby += `skip=${(paginations - 1) * limitData}&`;
+        findby += `limit=${limitData}&`;
+        if (filterValue) {
+          findby += `storeName=${filterValue}`;
+        }
 
+        let findbyIncome = "?";
+        findbyIncome += `userId=${DATA?._id}&`;
+        if (filterValue) {
+          findbyIncome += `storeName=${filterValue}&`;
+        }
+        if (startDate && endDate) {
+          findbyIncome += `startDate=${startDate}&`;
+          findbyIncome += `endDate=${endDate}`;
+        }
+        const [branchData, incomeData] = await Promise.all([
+          GetAllBranchRelation(TOKEN, findby),
+          GetAllBranchIncome(TOKEN, findbyIncome),
+        ]);
         // Combine branchData and incomeData into one object
-        const combinedData = branchData.map((branch) => {
+        const combinedData = branchData?.branchRelations?.map((branch) => {
           const income = incomeData?.data?.find(
-            (inc) => inc._id === branch.storeId
+            (inc) => inc._id === branch.storeId._id
           );
           return {
             ...branch,
@@ -73,7 +91,7 @@ export default function Dashboard() {
           };
         });
         setBranchInCome(combinedData);
-        console.log("combinedData", combinedData);
+        setPaginationTotal(Math.ceil(branchData?.count / limitData));
         setLoadingData(false);
       } else {
         console.error("Token or User ID not found");
@@ -100,22 +118,6 @@ export default function Dashboard() {
     }
   };
 
-  // const GetAllBranch = async () => {
-  //   const { DATA, TOKEN } = await getLocalData();
-  //   GetAllBranchRelation(TOKEN, DATA?._id)
-  //     .then((data) => setBranch(data))
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
-  // const GetAllBranchInCome = async () => {
-  //   const { DATA, TOKEN } = await getLocalData();
-  //   GetAllBranchIncome(TOKEN, DATA?._id)
-  //     .then((data) => setBranchInCome(data?.data))
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
   const TotalInCome = () => {
     return branchInCome?.reduce((currentValue, nextValue) => {
       return currentValue + nextValue.totalAmount;
@@ -125,167 +127,200 @@ export default function Dashboard() {
   return (
     <div style={{ padding: 10, overflow: "auto" }}>
       <div style={{ height: 10 }} />
-      {loadingData ? (
-        <Loading />
-      ) : (
-        <div
-          sx={{
-            fontWeight: "bold",
-            backgroundColor: "#f8f8f8",
-            border: "none",
-            display: "grid",
-            gridTemplateColumns: {
-              md: "repeat(5,1fr)",
-              sm: "repeat(3,1fr)",
-              xs: "repeat(2,1fr)",
-            },
-          }}
-        >
-          <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-            <CardHeader>
-              <div className="box-search">
-                <Form.Control
-                  placeholder={t("name_branch")}
-                  value={filterValue}
-                  onChange={(e) => setFilterValue(e.target.value)}
-                  className="input-search"
-                  onKeyPress={(event) => {
-                    if (event.key === "Enter") {
-                      GetAllBranchData();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={() => GetAllBranchData()}
-                  variant="primary"
-                  style={{ display: "flex", gap: 10, alignItems: "center" }}
-                >
-                  <FaSearch /> {t("search")}
-                </Button>
-              </div>
 
-              <div className="box-date-filter">
-                <span>ເລືອກວັນທີ : </span>
-                <Button
-                  variant="outline-primary"
-                  size="small"
-                  style={{ display: "flex", gap: 10, alignItems: "center" }}
-                  onClick={() => setPopup({ popupfiltter: true })}
-                >
-                  <BsFillCalendarWeekFill />
-                  <div>
-                    {startDate} {startTime}
-                  </div>{" "}
-                  ~{" "}
-                  <div>
-                    {endDate} {endTime}
-                  </div>
-                </Button>
-                <Button
-                  onClick={() => navigate("/branch/create")}
-                  variant="primary"
-                  style={{
-                    display: "flex",
-                    gap: 10,
-                    alignItems: "center",
-                    marginLeft: 25,
-                  }}
-                >
-                  <FaPlusCircle /> {t("add")}
-                </Button>
-              </div>
-            </CardHeader>
-            <div style={{ flex: 1 }} />
-          </div>
-
-          <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
-            {`${t("total_branch")} (${t("all_recieve")}
-            ${convertNumber(TotalInCome())} ${t("lak")})`}
-          </p>
-          {branchInCome?.length > 0 ? (
-            branchInCome?.map((value, index) =>
-              value.totalAmount === 0 ? (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    height: "100%",
-                    alignItems: "center",
-                  }}
-                  key={value._id}
-                >
-                  <h3 style={{ fontSize: 18, fontWeight: "bold" }}>
-                    ບໍ່ມີຂໍ້ມູນ
-                  </h3>
-                </div>
-              ) : (
-                <>
-                  <CardBody key={value._id}>
-                    <div id="sub-card-body-left">
-                      <table
-                        style={{ width: width > 900 ? "60%" : "100%" }}
-                        className="table-bordered"
-                      >
-                        <tr
-                          style={{ backgroundColor: COLOR_APP, color: "white" }}
-                        >
-                          {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                          <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
-                          <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
-                          <th style={{ textAlign: "center" }}>ຈັດການ</th>
-                        </tr>
-                        {branchInCome?.length > 0 &&
-                          branchInCome?.map((data, index) => (
-                            <tr key={data._id} hidden={data?.totalAmount === 0}>
-                              {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                              <td style={{ textAlign: "center" }}>
-                                {data?.nameBranch}
-                              </td>
-                              <td style={{ textAlign: "center" }}>
-                                {convertNumber(data?.totalAmount)} {t("lak")}
-                              </td>
-                              <td
-                                style={{
-                                  textAlign: "center",
-                                  fontWeight: "bold",
-                                }}
-                              >
-                                <Button
-                                  onClick={() => handleShowPopup(data)}
-                                  variant="primary"
-                                  style={{ marginLeft: 10, fontWeight: "bold" }}
-                                >
-                                  <FaTrash />
-                                </Button>
-                              </td>
-                            </tr>
-                          ))}
-                      </table>
-                    </div>
-                    <div id="sub-card-body-right">
-                      <PieChart
-                        DatabranchInCome={branchInCome}
-                        TotalInCome={TotalInCome}
-                      />
-                    </div>
-                  </CardBody>
-                </>
-              )
-            )
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                height: "100%",
-                alignItems: "center",
-              }}
-            >
-              <h3 style={{ fontSize: 18, fontWeight: "bold" }}>ບໍ່ມີຂໍ້ມູນ</h3>
+      <div
+        sx={{
+          fontWeight: "bold",
+          backgroundColor: "#f8f8f8",
+          border: "none",
+          display: "grid",
+          gridTemplateColumns: {
+            md: "repeat(5,1fr)",
+            sm: "repeat(3,1fr)",
+            xs: "repeat(2,1fr)",
+          },
+        }}
+      >
+        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+          <CardHeader>
+            <div className="box-search">
+              <Form.Control
+                placeholder={t("name_branch")}
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
+                className="input-search"
+                onKeyPress={(event) => {
+                  if (event.key === "Enter") {
+                    GetAllBranchData();
+                  }
+                }}
+              />
+              <Button
+                onClick={() => GetAllBranchData()}
+                variant="primary"
+                style={{ display: "flex", gap: 10, alignItems: "center" }}
+              >
+                <FaSearch /> {t("search")}
+              </Button>
             </div>
-          )}
-          {/* ================== other branch ======================== */}
-          {/* <div
+
+            <div className="box-date-filter">
+              <span>ເລືອກວັນທີ : </span>
+              <Button
+                variant="outline-primary"
+                size="small"
+                style={{ display: "flex", gap: 10, alignItems: "center" }}
+                onClick={() => setPopup({ popupfiltter: true })}
+              >
+                <BsFillCalendarWeekFill />
+                <div>
+                  {startDate} {startTime}
+                </div>{" "}
+                ~{" "}
+                <div>
+                  {endDate} {endTime}
+                </div>
+              </Button>
+              <Button
+                onClick={() => navigate("/branch/create")}
+                variant="primary"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  marginLeft: 25,
+                }}
+              >
+                <FaPlusCircle /> {t("add")}
+              </Button>
+            </div>
+          </CardHeader>
+          <div style={{ flex: 1 }} />
+        </div>
+
+        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
+          {`${t("total_branch")} (${t("all_recieve")}
+            ${convertNumber(TotalInCome())} ${t("lak")})`}
+        </p>
+        {loadingData ? (
+          <Loading />
+        ) : branchInCome?.length > 0 ? (
+          <>
+            <CardBody>
+              <div id="sub-card-body-left">
+                <table
+                  style={{ width: width > 900 ? "60%" : "100%" }}
+                  className="table-bordered"
+                >
+                  <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
+                    {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
+                    <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
+                    <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
+                    <th style={{ textAlign: "center" }}>ຈັດການ</th>
+                  </tr>
+                  {branchInCome?.length > 0 &&
+                    branchInCome?.map((data, index) => (
+                      <tr key={data._id}>
+                        {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
+                        <td style={{ textAlign: "center" }}>
+                          {data?.storeId?.name}
+                        </td>
+                        <td style={{ textAlign: "center" }}>
+                          {convertNumber(data?.totalAmount)} {t("lak")}
+                        </td>
+                        <td
+                          style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <Button
+                            onClick={() =>
+                              navigate(`/branch/detail/${data?.storeId?._id}`, {
+                                state: { storeId: data?.storeId?._id },
+                              })
+                            }
+                            variant="primary"
+                            style={{ marginLeft: 10, fontWeight: "bold" }}
+                          >
+                            <FaEllipsisH />
+                          </Button>
+                          <Button
+                            onClick={() => handleShowPopup(data)}
+                            variant="primary"
+                            style={{ marginLeft: 10, fontWeight: "bold" }}
+                            hidden={data?.storeId?._id === storeDetail?._id}
+                          >
+                            <FaTrash />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  <tr>
+                    <td
+                      style={{
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        backgroundColor: "#f8f8f8",
+                      }}
+                      colSpan={3}
+                    >
+                      <ReactPaginate
+                        previousLabel={
+                          <span className="glyphicon glyphicon-chevron-left">
+                            {"ກ່ອນໜ້າ"}
+                          </span>
+                        }
+                        nextLabel={
+                          <span className="glyphicon glyphicon-chevron-right">
+                            {"ຕໍ່ໄປ"}
+                          </span>
+                        }
+                        breakLabel={
+                          <Pagination.Item disabled>...</Pagination.Item>
+                        }
+                        breakClassName={"break-me"}
+                        pageCount={paginationTotal} // Replace with the actual number of pages
+                        marginPagesDisplayed={1}
+                        pageRangeDisplayed={3}
+                        onPageChange={(e) => {
+                          setPaginations(e?.selected + 1);
+                        }}
+                        containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        activeClassName={"active"}
+                        previousClassName={"page-item"}
+                        nextClassName={"page-item"}
+                        previousLinkClassName={"page-link"}
+                        nextLinkClassName={"page-link"}
+                      />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div id="sub-card-body-right">
+                <PieChart
+                  DatabranchInCome={branchInCome}
+                  TotalInCome={TotalInCome}
+                />
+              </div>
+            </CardBody>
+          </>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              height: "100%",
+              alignItems: "center",
+            }}
+          >
+            <h3 style={{ fontSize: 18, fontWeight: "bold" }}>ບໍ່ມີຂໍ້ມູນ</h3>
+          </div>
+        )}
+        {/* ================== other branch ======================== */}
+        {/* <div
             style={{
               height: 20,
               borderBottom: `1px solid ${COLOR_APP}`,
@@ -336,8 +371,7 @@ export default function Dashboard() {
                 </Card>
               ))}
           </Box> */}
-        </div>
-      )}
+      </div>
 
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}

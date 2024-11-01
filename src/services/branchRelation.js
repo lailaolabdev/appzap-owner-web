@@ -13,9 +13,9 @@ export const createBranchRelation = async (body, token) => {
   }
 };
 
-export const GetAllBranchRelation = async (token, userId, filterValue) => {
+export const GetAllBranchRelation = async (token, findbyIncome) => {
   try {
-    const url = `${END_POINT_APP}/v4/branch?userId=${userId}`;
+    const url = `${END_POINT_APP}/v4/branch${findbyIncome}`;
     const res = await axios.get(url, {
       headers: token,
     });
@@ -24,23 +24,8 @@ export const GetAllBranchRelation = async (token, userId, filterValue) => {
     return { error: true };
   }
 };
-export const GetAllBranchIncome = async (
-  token,
-  userId,
-  filterValue,
-  startDate,
-  endDate
-) => {
+export const GetAllBranchIncome = async (token, findby) => {
   try {
-    let findby = "?";
-    findby += `userId=${userId}&`;
-    if (filterValue) {
-      findby += `storeName=${filterValue}&`;
-    }
-    if (startDate && endDate) {
-      findby += `startDate=${startDate}&`;
-      findby += `endDate=${endDate}`;
-    }
     const url = `${END_POINT_APP}/v4/branch/income${findby}`;
     const res = await axios.get(url, {
       headers: token,

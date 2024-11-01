@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Card, Breadcrumb, Button } from "react-bootstrap";
-import { COLOR_APP, END_POINT } from "../../constants";
-import {
-  BsFillCalendarWeekFill,
-  BsFillCalendarEventFill,
-} from "react-icons/bs";
-import { MdOutlineCloudDownload } from "react-icons/md";
+import moment from "moment";
+import Axios from "axios";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
+
+import { Card, Button } from "react-bootstrap";
 import { AiFillPrinter } from "react-icons/ai";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
+import { MdOutlineCloudDownload } from "react-icons/md";
+
+import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import {
@@ -18,31 +21,25 @@ import {
   getSalesInformationReport,
   getUserReport,
 } from "../../services/report";
-import fileDownload from "js-file-download";
-import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { getManyTables } from "../../services/table";
-import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
 import PopUpSetStartAndEndDateFilterExport from "../../components/popup/PopUpSetStartAndEndDateFilterExport";
-import moment from "moment";
 import PopUpPrintReport from "../../components/popup/PopUpPrintReport";
 import PopUpPrintComponent from "../../components/popup/PopUpPrintComponent";
 import BillForReport80 from "../../components/bill/BillForReport80";
-import { base64ToBlob } from "../../helpers";
 import PopUpPrintStaffHistoryComponent from "../../components/popup/PopUpPrintStaffHistoryComponent";
 import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMenuHistoryComponent";
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
-import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
 import { errorAdd } from "../../helpers/sweetalert";
-import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
-import { useTranslation } from "react-i18next";
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
 export default function DetailBrancPage() {
   const { t } = useTranslation();
+  const { state } = useLocation();
+  console.log("====>", state);
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
@@ -67,6 +64,7 @@ export default function DetailBrancPage() {
   useEffect(() => {
     getTable();
   }, []);
+
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
@@ -96,13 +94,13 @@ export default function DetailBrancPage() {
 
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
+    const data = await getReports(state?.storeId, findBy, selectedTableIds);
     setReportData(data);
   };
   const getSalesInformationReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getSalesInformationReport(
-      storeDetail?._id,
+      state?.storeId,
       findBy,
       selectedTableIds
     );
@@ -110,26 +108,18 @@ export default function DetailBrancPage() {
   };
   const getUserReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getUserReport(
-      storeDetail?._id,
-      findBy,
-      selectedTableIds
-    );
+    const data = await getUserReport(state?.storeId, findBy, selectedTableIds);
     setUserReport(data);
   };
   const getMenuReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMenuReport(
-      storeDetail?._id,
-      findBy,
-      selectedTableIds
-    );
+    const data = await getMenuReport(state?.storeId, findBy, selectedTableIds);
     setMenuReport(data);
   };
   const getCategoryReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getCategoryReport(
-      storeDetail?._id,
+      state?.storeId,
       findBy,
       selectedTableIds
     );
@@ -137,11 +127,7 @@ export default function DetailBrancPage() {
   };
   const getMoneyReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(
-      storeDetail?._id,
-      findBy,
-      selectedTableIds
-    );
+    const data = await getMoneyReport(state?.storeId, findBy, selectedTableIds);
     setMoneyReport(data);
   };
 
@@ -150,58 +136,13 @@ export default function DetailBrancPage() {
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(
-      storeDetail?._id,
+      state?.storeId,
       findBy,
       selectedTableIds
     );
     setPromotionReport(data);
   };
-  const downloadCsv = async () => {
-    try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
-      // fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
 
-  const downloadExcel = async () => {
-    try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
-
-      console.log("_res: " + _res?.data?.exportUrl);
-
-      if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
-
-        // Create a Blob from the response data
-        console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-
-        // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      }
-
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -330,6 +271,7 @@ export default function DetailBrancPage() {
                     padding: "10px 0",
                     borderBottom: `1px dotted ${COLOR_APP}`,
                   }}
+                  key={e}
                 >
                   <div>{e?.title}</div>
                   <div>{e?.amount}</div>

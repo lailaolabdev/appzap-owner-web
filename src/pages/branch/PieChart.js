@@ -21,7 +21,7 @@ const PieChart = ({ DatabranchInCome, TotalInCome }) => {
   };
 
   for (const dataObj of DatabranchInCome) {
-    ArrayNameBranch.push(dataObj?.nameBranch);
+    ArrayNameBranch.push(dataObj?.storeId?.name);
     ArrayTotalAmount.push(dataObj?.totalAmount);
     const randomColor = getRandomRGBA();
     backgroundColors.push(randomColor);
@@ -34,6 +34,24 @@ const PieChart = ({ DatabranchInCome, TotalInCome }) => {
         data: ArrayTotalAmount,
         backgroundColor: backgroundColors,
         borderColor: borderColors,
+        // backgroundColor: [
+        //   "rgba(255, 125, 0, 0.8)",
+        //   "rgba(255, 99, 132, 1)",
+        //   "rgba(54, 162, 235, 1)",
+        //   "rgba(255, 206, 86, 1)",
+        //   "rgba(75, 192, 192, 1)",
+        //   "rgba(153, 102, 255, 1)",
+        //   "rgba(24, 207, 0, 0.8)",
+        // ],
+        // borderColor: [
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        //   "rgba(171, 171, 171, 0.8)",
+        // ],
         borderWidth: 1,
       },
     ],

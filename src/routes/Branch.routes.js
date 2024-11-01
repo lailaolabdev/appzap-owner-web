@@ -18,7 +18,7 @@ export default {
       element: <BranchCreatePage />,
     },
     {
-      path: "detail/:id",
+      path: "detail/:storeId",
       element: <DetailBrancPage />,
     },
   ],
