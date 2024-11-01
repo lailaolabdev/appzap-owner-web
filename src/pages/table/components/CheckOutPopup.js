@@ -239,7 +239,6 @@ export default function CheckOutPopup({
       const _currencyData = currencyList.find(
         (e) => e.currencyCode == selectCurrency?.name
       );
-      console.log("_currencyData", _currencyData);
       setRateCurrency(_currencyData?.sell || 1);
     } else {
       setCashCurrency();
@@ -584,13 +583,19 @@ export default function CheckOutPopup({
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              <span hidden={selectCurrency?.name === "LAK"}>
+              <span
+                hidden={
+                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                }
+              >
                 {" "}
                 <BiTransfer />{" "}
               </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
-                hidden={selectCurrency?.name === "LAK"}
+                hidden={
+                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                }
               >
                 {moneyCurrency(
                   (dataBill && dataBill?.discountType === "LAK"
@@ -605,7 +610,9 @@ export default function CheckOutPopup({
               </span>
               <span
                 style={{ fontSize: 14 }}
-                hidden={selectCurrency?.name === "LAK"}
+                hidden={
+                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                }
               >
                 {" "}
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
@@ -623,7 +630,11 @@ export default function CheckOutPopup({
                   marginBottom: 10,
                 }}
               >
-                <InputGroup hidden={selectCurrency?.name == "LAK"}>
+                <InputGroup
+                  hidden={
+                    selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                  }
+                >
                   <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                   <Form.Control
                     type="text"
@@ -899,7 +910,7 @@ export default function CheckOutPopup({
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
-        {/* <Button onClick={() => onSubmit()}>{t("debt")}</Button> */}
+        <Button onClick={() => onSubmit()}>{t("debt")}</Button>
       </Modal.Footer>
     </Modal>
   );
