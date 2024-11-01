@@ -13,7 +13,6 @@ import { Form } from "react-bootstrap";
 import { createUser } from "../../services/user";
 import { useStore } from "../../store";
 
-
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 export default function PopUpCreateUser({ open, onClose, callback }) {
@@ -41,13 +40,13 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   };
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>{t('add_staff')}</Modal.Header>
+      <Modal.Header closeButton>{t("add_staff")}</Modal.Header>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div>
-            <Form.Label>{t('name')}</Form.Label>
+            <Form.Label>{t("name")}</Form.Label>
             <Form.Control
-              placeholder={t('name')}
+              placeholder={t("enter_name")}
               value={formData?.firstname}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, firstname: e.target.value }))
@@ -55,9 +54,9 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>{t('l_name')}</Form.Label>
+            <Form.Label>{t("l_name")}</Form.Label>
             <Form.Control
-              placeholder={t('l_name')}
+              placeholder={t("enter_lname")}
               value={formData?.lastname}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, lastname: e.target.value }))
@@ -65,7 +64,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>{t('use_system_policy')}</Form.Label>
+            <Form.Label>{t("use_system_policy")}</Form.Label>
             <select
               className="form-control"
               value={formData?.role}
@@ -73,18 +72,18 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
                 setFormData((prev) => ({ ...prev, role: e.target.value }))
               }
             >
-              <option value="">{t('chose_policy_type')}</option>
-              <option value="APPZAP_ADMIN">{t('ceo')}</option>
-              <option value="APPZAP_STAFF">{t('server_staff')}</option>
-              <option value="APPZAP_COUNTER">{t('counter_staff')}</option>
-              <option value="APPZAP_KITCHEN">{t('chef')}</option>
-              <option value="APPZAP_CUSTOM_ROLE">{t('selft_define')}</option>
+              <option value="">{t("chose_policy_type")}</option>
+              <option value="APPZAP_ADMIN">{t("ceo")}</option>
+              <option value="APPZAP_STAFF">{t("server_staff")}</option>
+              <option value="APPZAP_COUNTER">{t("counter_staff")}</option>
+              <option value="APPZAP_KITCHEN">{t("chef")}</option>
+              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
             </select>
           </div>
           <div>
-            <Form.Label>{t('tel')}</Form.Label>
+            <Form.Label>{t("phonenumber")}</Form.Label>
             <Form.Control
-              placeholder="login username"
+              placeholder={t("enter_phone")}
               value={formData?.phone}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, phone: e.target.value }))
@@ -92,9 +91,9 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>{t('username')}</Form.Label>
+            <Form.Label>{t("username_login")}</Form.Label>
             <Form.Control
-              placeholder="login username"
+              placeholder={t("enter_username")}
               value={formData?.userId}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, userId: e.target.value }))
@@ -102,7 +101,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             />
           </div>
           <div>
-            <Form.Label>{t('password')}</Form.Label>
+            <Form.Label>{t("password")}</Form.Label>
             <Form.Control
               placeholder="******"
               value={formData?.password}
@@ -127,7 +126,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
             }
           }}
         >
-          {t('save_add_staff')}
+          {t("save_add_staff")}
         </Button>
       </Modal.Footer>
     </Modal>

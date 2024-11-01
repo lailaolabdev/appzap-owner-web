@@ -15,7 +15,7 @@ import _ from "lodash";
 
 import { useStore } from "../../../store";
 import {
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   QUERY_CURRENCIES,
   getLocalData,
 } from "../../../constants/api";
@@ -69,7 +69,7 @@ export default function CheckOutPopupCafe({
   const { t } = useTranslation();
   // val
   // console.log("tableData:=======abc======>", tableData);
-  // console.log("dataBill:=======abc======>", dataBill);
+  // console.log("dataBill:=============>", dataBill);
 
   useEffect(() => {
     setMemberData();
@@ -80,7 +80,7 @@ export default function CheckOutPopupCafe({
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU + "/v4/member/search-one?phone=" + textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -115,16 +115,6 @@ export default function CheckOutPopupCafe({
   );
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBills = totalBillDefualt + taxAmount;
-
-  console.log({ totalBillDefualt, taxAmount, totalBills });
-
-  // console.log(TotalPrice())
-
-  // const taxAmount = TotalPrice() * taxPercent;
-
-  // const totalBill = TotalPrice();
-
-  // console.log(totalBill)
 
   useEffect(() => {
     setCash();
@@ -245,7 +235,7 @@ export default function CheckOutPopupCafe({
     setIsLoading(true);
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
-    const Orders = dataBill.map((itemOrder) => itemOrder);
+    const Orders = dataBill?.map((itemOrder) => itemOrder);
 
     const datas = {
       order: Orders,

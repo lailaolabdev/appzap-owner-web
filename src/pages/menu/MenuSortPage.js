@@ -10,7 +10,7 @@ import {
 import Box from "../../components/Box";
 import { Breadcrumb, Button } from "react-bootstrap";
 import { useStore } from "../../store";
-import { END_POINT_SEVER } from "../../constants/api";
+import { END_POINT_SEVER_TABLE_MENU } from "../../constants/api";
 
 export default function MenuSortPage() {
   // state
@@ -31,7 +31,7 @@ export default function MenuSortPage() {
   async function onSaveSort() {
     const data = items.map((e, i) => ({ id: e._id, sort: i + 1 }));
     
-    await axios.post(`${END_POINT_SEVER}/v4/menus-sort/update`, data);
+    await axios.post(`${END_POINT_SEVER_TABLE_MENU}/v4/menus-sort/update`, data);
   }
   function onChange(sourceId, sourceIndex, targetIndex, targetId) {
     const nextState = swap(items, sourceIndex, targetIndex);

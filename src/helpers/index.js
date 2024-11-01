@@ -1,9 +1,8 @@
 import * as _ from "lodash";
 import { USER_KEY } from "../constants";
-import moment from "moment"
+import moment from "moment";
 
 // import { useTranslation } from 'react-i18next';
-
 
 export const orderStatus = (status) => {
   switch (status) {
@@ -13,10 +12,16 @@ export const orderStatus = (status) => {
       return "ກໍາລັງຄົວ";
     case "SERVED":
       return `ເສີບແລ້ວ`;
+    case "PAID":
+      return `ຈ່າຍແລ້ວ`;
     case "CART":
       return `ກຳລັງຈະສັງ`;
     case "FEEDBACK":
       return `ສົ່ງຄືນ`;
+    case "PAID":
+      return `ຈ່າຍແລ້ວ`;
+    case "PRINTBILL":
+      return `ພີມບີນ`;
     default:
       return "ຍົກເລີກ";
   }
@@ -31,10 +36,16 @@ export const orderStatusTranslate = (status) => {
       return "ORDER_PROCESSING";
     case "SERVED":
       return "ORDER_SERVED";
+    case "PAID":
+      return "ORDER_PAID";
     case "CART":
       return "ORDER_CART";
     case "FEEDBACK":
       return "ORDER_FEEDBACK";
+    case "PAID":
+      return "ORDER_PAID";
+    case "PRINTBILL":
+      return "ORDER_PRINTBILL";
     default:
       return "ORDER_CANCEL";
   }
@@ -156,13 +167,14 @@ export const resizeImage = (base64Str, maxWidth = 400, maxHeight = 350) => {
   });
 };
 
-
 export const convertPayment = (status) => {
   switch (status) {
     case "CASH":
       return "ເງິນສົດ";
     case "TRANSFER":
       return "ເງິນໂອນ";
+    case "DEBT":
+      return "ຕິດໜີ້";
     case "OTHER":
       return `ອື່ນໆ`;
     default:
@@ -171,7 +183,6 @@ export const convertPayment = (status) => {
 };
 export const convertExpendatureType = (status) => {
   switch (status) {
-
     case "INGREDIENT_FOOD":
       return "ຊື້ວັດຖຸດິບອາຫານ";
     case "INGREDIENT_DRINK":
@@ -219,8 +230,7 @@ export const formatDateTime = (dateTime) => {
 
 export const generateRandomTextAndNumber = (length) => {
   let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const charactersLength = characters.length;
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -232,14 +242,10 @@ export const numberFormat = (_number) => {
   return new Intl.NumberFormat("en-US").format(_number);
 };
 
-
 export const convertImageToBase64 = async (imageUrl) => {
   try {
-    console.log("convertImage:---->", typeof (imageUrl));
     const response = await fetch(imageUrl);
-    console.log("convertResponse:---->", typeof (response));
     const blob = await response.blob();
-    console.log("convertblob:---->", blob);
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
@@ -251,4 +257,3 @@ export const convertImageToBase64 = async (imageUrl) => {
     return null;
   }
 };
-

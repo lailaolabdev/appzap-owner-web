@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
@@ -20,7 +21,7 @@ import {
   getMembers,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
 import { useTranslation } from "react-i18next";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
@@ -35,9 +36,7 @@ export default function CreateMemberPage() {
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
 
-  // provider
-
-  // useEffect
+  console.log(" State ", state?.key);
 
   // function
   const createMember = async () => {

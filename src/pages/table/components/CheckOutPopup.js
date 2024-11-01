@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
+import styled from "styled-components";
 import Select from "react-select";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
@@ -8,41 +9,45 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
-import { BiSolidPrinter } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
-
-import _ from "lodash";
-
+import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { useStore } from "../../../store";
 import {
   END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   QUERY_CURRENCIES,
   getLocalData,
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import { getMembers } from "../../../services/member.service";
+import {
+  getMembers,
+  getMemberAllCount,
+} from "../../../services/member.service";
 
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
+import { callCheckOutPrintBillOnly } from "../../../services/code";
+import _ from "lodash";
 
 export default function CheckOutPopup({
   onPrintDrawer,
-  onPrintBill,
+  onPrintBill = () => {},
   open,
   onClose,
   onSubmit = () => {},
   dataBill,
   tableData,
+  totalBillCheckOutPopup,
   setDataBill,
   taxPercent = 0,
+  saveServiceChargeDetails,
+  billDataLoading,
 }) {
   const { t } = useTranslation();
   // ref
-  const inputCashRef = useRef(null);
-  const inputTransferRef = useRef(null);
-  const { storeDetail, profile } = useStore();
+  // const inputCashRef = useRef(null);
+  // const inputTransferRef = useRef(null);
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -53,18 +58,72 @@ export default function CheckOutPopup({
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
-  const [total, setTotal] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
   const [hasCRM, setHasCRM] = useState(false);
+  const [printBillLoading, setPrintBillLoading] = useState(false);
   const [memberData, setMemberData] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
-
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
+  const [paid, setPaid] = useState(0);
+  const [banks, setBanks] = useState([]);
+  const [selectedBank, setSelectedBank] = useState("");
 
-  const { setSelectedTable, getTableDataStore } = useStore();
+  //select Bank
+
+  useEffect(() => {
+    const fetchAllBanks = async () => {
+      try {
+        const response = await axios.get(
+          `${END_POINT_SEVER}/v3/banks?storeId=${storeDetail?._id}`
+        );
+        setBanks(response.data.data);
+      } catch (error) {
+        console.error("Error fetching all banks:", error);
+      }
+    };
+
+    fetchAllBanks();
+  }, [tab, selectedBank]);
+
+  const handleChange = (e) => {
+    const selectedOption = banks.find((bank) => bank._id === e.target.value);
+    setSelectedBank({
+      id: selectedOption._id,
+      name: selectedOption.bankName,
+    });
+  };
+  const handleChangeCurrencie = (e) => {
+    if (e.target.value === "LAK") {
+      setSelectCurrency({
+        id: "LAK",
+        name: storeDetail?.firstCurrency || "LAK",
+      });
+      return;
+    }
+    const selectedCurrencie = currencyList.find(
+      (item) => item?._id === e?.target?.value
+    );
+    setSelectCurrency({
+      id: selectedCurrencie._id,
+      name: selectedCurrencie.currencyName,
+    });
+  };
+
+  const {
+    setSelectedTable,
+    getTableDataStore,
+    setOrderPayBefore,
+    orderPayBefore,
+    selectedTable,
+    storeDetail,
+    setStoreDetail,
+    profile,
+  } = useStore();
+
+  // console.log({ dataBill });
 
   useEffect(() => {
     setMemberData();
@@ -75,12 +134,18 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     getMembersData();
+    setSelectCurrency({
+      id: "LAK",
+      name: storeDetail?.firstCurrency || "LAK",
+    });
   }, []);
 
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU +
+        "/v4/member/search-one?phone=" +
+        textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -88,8 +153,10 @@ export default function CheckOutPopup({
       setDataBill((prev) => ({
         ...prev,
         memberId: _res.data?._id,
-        memberName: _res.data?.name,
         memberPhone: _res.data?.phone,
+        memberName: _res.data?.name,
+        Name: _res.data?.name,
+        Point: _res.data?.point,
       }));
     } catch (err) {
       console.log(err);
@@ -100,26 +167,34 @@ export default function CheckOutPopup({
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      const _data = await getMembers(findby, TOKEN);
+      const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
-      setMembersData(_data?.data?.data);
-    } catch (err) {
-      console.error("Error fetching members data", err);
-    }
+      setMembersData(_data?.data);
+    } catch (err) {}
   };
 
-  // console.log("tableData:=======abc======>", tableData)
+  useEffect(() => {
+    if (orderPayBefore) {
+      const paidData = _.sumBy(orderPayBefore, (e) => {
+        const mainPrice = (e?.price || 0) * (e?.quantity || 1);
 
-  // console.log("membersData", membersData);
+        const menuOptionPrice = _.sumBy(
+          e?.options || [],
+          (opt) => (opt?.price || 0) * (opt?.quantity || 1)
+        );
 
-  const totalBillDefualt = _.sumBy(
-    dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-  );
-  const taxAmount = (totalBillDefualt * taxPercent) / 100;
-  const totalBill = totalBillDefualt + taxAmount;
+        return mainPrice + menuOptionPrice;
+      });
+      setPaid(paidData);
+    }
+  }, [orderPayBefore]);
+
+  const totalAmount =
+    orderPayBefore && orderPayBefore.length > 0 ? paid : totalBillCheckOutPopup;
+
+  const taxAmount = (totalAmount * taxPercent) / 100;
+  const serviceAmount = (totalAmount * storeDetail?.serviceChargePer) / 100;
+  const totalBill = totalAmount + taxAmount + serviceAmount;
 
   useEffect(() => {
     if (!open) return;
@@ -139,10 +214,10 @@ export default function CheckOutPopup({
     const totalReceived = cashAmount + transferAmount;
 
     moneyReceived = `${
-      selectCurrency == "LAK"
+      selectCurrency?.name == "LAK"
         ? moneyCurrency(totalReceived)
         : moneyCurrency(parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    } ${selectCurrency?.name}`;
 
     const changeAmount = totalReceived - discountedTotalBill;
     moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
@@ -155,21 +230,27 @@ export default function CheckOutPopup({
       moneyChange: moneyChange,
       dataStaffConfirm: staffConfirm,
     }));
-  }, [cash, transfer, selectCurrency]);
+  }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
+    console.log("object");
     if (!open) return;
-    if (selectCurrency != "LAK") {
+    if (selectCurrency?.name != "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode == selectCurrency
+        (e) => e.currencyCode == selectCurrency?.name
       );
-      setRateCurrency(_currencyData?.buy || 1);
+      console.log("_currencyData", _currencyData);
+      setRateCurrency(_currencyData?.sell || 1);
     } else {
       setCashCurrency();
       setCash();
       setRateCurrency(1);
     }
-  }, [selectCurrency, selectCurrency]);
+  }, [
+    selectCurrency?.name,
+    selectCurrency?.name,
+    storeDetail?.serviceChargePer,
+  ]);
   useEffect(() => {
     if (!open) return;
     const amount = cashCurrency * rateCurrency;
@@ -184,14 +265,6 @@ export default function CheckOutPopup({
     setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
   }, [forcus]);
 
-  useEffect(() => {
-    if (!open) return;
-    for (let i = 0; i < dataBill?.orderId?.length; i++) {
-      _calculateTotal();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataBill]);
-  // function
   const getDataCurrency = async () => {
     try {
       const { DATA } = await getLocalData();
@@ -199,7 +272,7 @@ export default function CheckOutPopup({
         const data = await axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setCurrencyList(data?.data?.data);
         }
       }
@@ -207,34 +280,64 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
-  const _checkBill = async () => {
+  const _checkBill = async (currencyId, currencyName) => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+
+    const serviceChargePer = storeDetail?.serviceChargePer;
+    const serviceChargeAmount = Math.floor(
+      (totalBillCheckOutPopup * storeDetail?.serviceChargePer) / 100
+    );
+
+    const localZone = localStorage.getItem("selectedZone");
+
+    const orderItem =
+      orderPayBefore && orderPayBefore.length > 0
+        ? orderPayBefore?.map((e) => e?._id)
+        : [];
+    const checkStatus =
+      orderPayBefore && orderPayBefore.length > 0 ? "false" : "true";
+    const checkStatusBill =
+      orderPayBefore && orderPayBefore.length > 0 ? "PAID" : "CHECKOUT";
+
+    let body = {
+      selectedBank: selectedBank.name,
+      bankId: selectedBank.id,
+      orderPayBefore: orderItem,
+      isCheckout: checkStatus,
+      status: checkStatusBill,
+      payAmount: cash,
+      transferAmount: transfer,
+      paymentMethod: forcus,
+      taxAmount: taxAmount,
+      taxPercent: taxPercent,
+      serviceChargePercent: serviceChargePer,
+      serviceChargeAmount: serviceChargeAmount,
+      customerId: selectDataOpption?._id,
+      userNanme: selectDataOpption?.username,
+      phone: selectDataOpption?.phone,
+      memberId: memberData?._id,
+      memberName: memberData?.name,
+      memberPhone: memberData?.phone,
+      billMode: tableData?.editBill,
+      tableName: tableData?.tableName,
+      tableCode: tableData?.code,
+      fullnameStaffCheckOut:
+        staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
+      staffCheckOutId: staffConfirm?.id,
+    };
+
+    if (currencyId !== "LAK") {
+      body.currencyId = currencyId;
+      body.currency = cashCurrency;
+      body.currencyName = currencyName;
+    }
+
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
         {
           id: dataBill?._id,
-          data: {
-            isCheckout: "true",
-            status: "CHECKOUT",
-            payAmount: cash,
-            transferAmount: transfer,
-            paymentMethod: forcus,
-            taxAmount: taxAmount,
-            taxPercent: taxPercent,
-            customerId: selectDataOpption?._id,
-            userNanme: selectDataOpption?.username,
-            phone: selectDataOpption?.phone,
-            memberId: memberData?._id,
-            memberName: memberData?.name,
-            memberPhone: memberData?.phone,
-            billMode: tableData?.editBill,
-            tableName: tableData?.tableName,
-            tableCode: tableData?.code,
-            fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-            staffCheckOutId: staffConfirm?.id,
-          },
+          data: body,
         },
         {
           headers: await getHeaders(),
@@ -245,7 +348,10 @@ export default function CheckOutPopup({
         getTableDataStore();
         setCashCurrency();
         setTab("cash");
-        setSelectCurrency("LAK");
+        setSelectCurrency({
+          id: "LAK",
+          name: storeDetail?.firstCurrency || "LAK",
+        });
         setSelectInput("inputCash");
         setForcus("CASH");
         setRateCurrency(1);
@@ -253,6 +359,9 @@ export default function CheckOutPopup({
         setTextSearchMember("");
         setCash();
         setTransfer();
+        setOrderPayBefore([]);
+        // callCheckOutPrintBillOnly(selectedTable?._id);
+        // setStoreDetail({ ...storeDetail, ChangeColorTable: true });
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
@@ -262,35 +371,34 @@ export default function CheckOutPopup({
           showConfirmButton: false,
           timer: 1800,
         });
+
+        setStoreDetail({
+          ...storeDetail,
+          serviceChargePer: 0,
+          isServiceCharge: false,
+          zoneCheckBill: true,
+        });
       })
       .catch(function (error) {
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-  // console.log("transfer", transfer);
+
+  // console.log("SERVICE", storeDetail?.serviceChargePer);
+
   const handleSubmit = () => {
-    _checkBill();
-    onSubmit();
+    saveServiceChargeDetails();
+    _checkBill(selectCurrency?.id, selectCurrency?.name);
+    // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };
-
-  const _calculateTotal = () => {
-    let _total = 0;
-    for (let i = 0; i < dataBill?.orderId.length; i++) {
-      if (dataBill?.orderId[i]?.status === "SERVED") {
-        _total += dataBill?.orderId[i]?.quantity * dataBill?.orderId[i]?.price;
-      }
-    }
-    setTotal(_total);
-  };
-
   // useEffect
   useEffect(() => {
     getDataCurrency();
   }, []);
   useEffect(() => {
     if (!open) return;
-    if (forcus == "CASH") {
+    if (forcus === "CASH") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -312,7 +420,7 @@ export default function CheckOutPopup({
           setCanCheckOut(false);
         }
       }
-    } else if (forcus == "TRANSFER") {
+    } else if (forcus === "TRANSFER") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
@@ -323,7 +431,7 @@ export default function CheckOutPopup({
         setTransfer(totalBill);
       }
       setCanCheckOut(true);
-    } else if (forcus == "TRANSFER_CASH") {
+    } else if (forcus === "TRANSFER_CASH") {
       const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
@@ -370,7 +478,6 @@ export default function CheckOutPopup({
             ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
-
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -382,7 +489,7 @@ export default function CheckOutPopup({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCash();
         } else {
@@ -395,7 +502,7 @@ export default function CheckOutPopup({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -412,7 +519,7 @@ export default function CheckOutPopup({
     });
   };
 
-  const optionsData = membersData.map((item) => {
+  const optionsData = membersData?.map((item) => {
     // console.log(item);
     return {
       value: item.phone,
@@ -422,13 +529,9 @@ export default function CheckOutPopup({
     };
   });
 
-  // console.log("optionsData", optionsData);
-
   const handleSearchInput = (option) => {
     setTextSearchMember(option.value);
   };
-
-  // console.log("textSearchMember", textSearchMember);
 
   return (
     <Modal
@@ -466,24 +569,28 @@ export default function CheckOutPopup({
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
+                      Math.floor(
+                        totalBill - dataBill?.discount > 0
+                          ? totalBill - dataBill?.discount
+                          : 0
+                      )
                     )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
+                      Math.floor(
+                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                          ? totalBill - (totalBill * dataBill?.discount) / 100
+                          : 0
+                      )
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              <span hidden={selectCurrency === "LAK"}>
+              <span hidden={selectCurrency?.name === "LAK"}>
                 {" "}
                 <BiTransfer />{" "}
               </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
-                hidden={selectCurrency === "LAK"}
+                hidden={selectCurrency?.name === "LAK"}
               >
                 {moneyCurrency(
                   (dataBill && dataBill?.discountType === "LAK"
@@ -494,118 +601,125 @@ export default function CheckOutPopup({
                     ? totalBill - (totalBill * dataBill?.discount) / 100
                     : 0) / rateCurrency
                 )}{" "}
-                {selectCurrency}
+                {selectCurrency?.name}
               </span>
-              <span style={{ fontSize: 14 }} hidden={selectCurrency === "LAK"}>
+              <span
+                style={{ fontSize: 14 }}
+                hidden={selectCurrency?.name === "LAK"}
+              >
                 {" "}
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 10,
-              }}
-            >
-              <InputGroup hidden={selectCurrency == "LAK"}>
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(cashCurrency)}
-                  onClick={() => {
-                    setSelectInput("inputCurrency");
-                  }}
-                  onChange={(e) => {
-                    onChangeCurrencyInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>{t("cash")}</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash" && tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(cash)}
-                  onClick={() => {
-                    setSelectInput("inputCash");
-                  }}
-                  onChange={(e) => {
-                    onChangeCashInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>{t("transfer")}</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(transfer)}
-                  onClick={() => {
-                    setSelectInput("inputTransfer");
-                  }}
-                  onChange={(e) => {
-                    onChangeTransferInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              {/* <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>{t("member")}</InputGroup.Text>
-                <InputGroup.Text>+856 20</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="xxxx xxxx"
-                  maxLength={8}
-                  value={textSearchMember}
-                  // onClick={() => {
-                  //   setSelectInput("inputTransfer");
-                  // }}
-                  onChange={(e) => {
-                    setTextSearchMember(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <Button>
-                  <FaSearch />
-                </Button>
-                <div style={{ width: 30 }} />
-                <InputGroup.Text>
-                  {t("name")}: {memberData?.name}
-                </InputGroup.Text>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point}
-                </InputGroup.Text>
-              </InputGroup> */}
 
-              {/* Click Add member */}
-              <div style={{ display: "flex", gap: "2px" }} hidden={!hasCRM}>
-                <div style={{ width: "100%" }}>
-                  <Select
-                    placeholder={<div>ພິມຊື່ ຫຼື ເບີໂທ</div>}
-                    options={optionsData}
-                    onChange={handleSearchInput}
+            {billDataLoading ? (
+              <Spinner animation="border" />
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <InputGroup hidden={selectCurrency?.name == "LAK"}>
+                  <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
+                  <Form.Control
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(cashCurrency)}
+                    onClick={() => {
+                      setSelectInput("inputCurrency");
+                    }}
+                    onChange={(e) => {
+                      onChangeCurrencyInput(e.target.value);
+                    }}
+                    size="lg"
                   />
-                </div>
-                <div style={{ width: "9rem" }}>
+                  <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
+                </InputGroup>
+                <InputGroup>
+                  <InputGroup.Text>{t("cash")}</InputGroup.Text>
+                  <Form.Control
+                    disabled={tab !== "cash" && tab !== "cash_transfer"}
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(cash)}
+                    onClick={() => {
+                      setSelectInput("inputCash");
+                    }}
+                    onChange={(e) => {
+                      onChangeCashInput(e.target.value);
+                    }}
+                    size="lg"
+                  />
                   <InputGroup.Text>
-                    {t("name")}: {memberData?.name}
+                    {storeDetail?.firstCurrency}
                   </InputGroup.Text>
-                </div>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point ? memberData?.point : "0"}
-                </InputGroup.Text>
+                </InputGroup>
+                <InputGroup>
+                  <InputGroup.Text>{t("transfer")}</InputGroup.Text>
+                  <Form.Control
+                    disabled={tab !== "cash_transfer"}
+                    type="text"
+                    placeholder="0"
+                    value={convertNumber(transfer)}
+                    onClick={() => {
+                      setSelectInput("inputTransfer");
+                    }}
+                    onChange={(e) => {
+                      onChangeTransferInput(e.target.value);
+                    }}
+                    size="lg"
+                  />
+                  <InputGroup.Text>
+                    {storeDetail?.firstCurrency}
+                  </InputGroup.Text>
+                </InputGroup>
+                <BoxMember hidden={!hasCRM}>
+                  <div className="box-left">
+                    <div className="box-search">
+                      <Select
+                        placeholder={<div>{t("enter_phone_and_name")}</div>}
+                        options={optionsData}
+                        onChange={handleSearchInput}
+                      />
+                    </div>
+                    <Button
+                      className="primary"
+                      onClick={() => getMembersData()}
+                    >
+                      <BiRotateRight />
+                    </Button>
+                    <Button
+                      className="primary"
+                      onClick={() => {
+                        // navigate("/add/newMembers", {
+                        //   state: { key: "newMembers" },
+                        // });
+                        window.open("/add/newMembers");
+                      }}
+                    >
+                      {t("add_new")}{" "}
+                    </Button>
+                  </div>
+                  <div className="box-right">
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
+                      </InputGroup.Text>
+                    </div>
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
+                      </InputGroup.Text>
+                    </div>
+                  </div>
+                </BoxMember>
               </div>
-            </div>
+            )}
+
             <div
               style={{
                 marginBottom: 10,
@@ -643,6 +757,7 @@ export default function CheckOutPopup({
                 marginBottom: 30,
               }}
             >
+              {/* ເງິີນສົດ */}
               <Button
                 variant={tab === "cash" ? "primary" : "outline-primary"}
                 onClick={() => {
@@ -659,7 +774,10 @@ export default function CheckOutPopup({
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: storeDetail?.firstCurrency || "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer(transferCal);
                   setTab("transfer");
@@ -674,7 +792,10 @@ export default function CheckOutPopup({
                 }
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: storeDetail?.firstCurrency || "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer();
                   setTab("cash_transfer");
@@ -689,16 +810,33 @@ export default function CheckOutPopup({
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency}
-                onChange={(e) => {
-                  setSelectCurrency(e?.target?.value);
-                }}
+                value={selectCurrency?.id}
+                onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
                 {currencyList?.map((e) => (
-                  <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                  <option value={e?._id}>{e?.currencyCode}</option>
                 ))}
               </Form.Control>
+
+              {(tab == "transfer" || tab === "cash_transfer") && (
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
+                  </option>
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {
@@ -728,25 +866,6 @@ export default function CheckOutPopup({
                 }
               }}
             />
-            {/* <KeyboardComponents
-              onClickEvent={(e) => {
-                setCash((prev) => {
-                  let _number = prev ? `${prev}` + e : e;
-                  return parseInt(_number);
-                });
-                console.log(parseInt(cash ? cash + e : e));
-              }}
-              onDelete={() =>
-                setCash((prev) => {
-                  let _prev = prev + "";
-                  let _number =
-                    _prev?.length > 0
-                      ? _prev.substring(0, _prev.length - 1)
-                      : "";
-                  return parseInt(_number);
-                })
-              }
-            /> */}
           </div>
         </Box>
       </Modal.Body>
@@ -761,12 +880,18 @@ export default function CheckOutPopup({
         </div>
         <Button
           onClick={() => {
+            setPrintBillLoading(true);
+            saveServiceChargeDetails();
             onPrintBill().then(() => {
+              setPrintBillLoading(false);
               handleSubmit();
             });
           }}
-          disabled={!canCheckOut}
+          disabled={!canCheckOut || printBillLoading}
         >
+          {printBillLoading && (
+            <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />
+          )}
           <BiSolidPrinter />
           {t("print_checkbill")}
         </Button>
@@ -774,8 +899,59 @@ export default function CheckOutPopup({
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
-        <Button onClick={() => onSubmit()}>{t("debt")}</Button>
+        {/* <Button onClick={() => onSubmit()}>{t("debt")}</Button> */}
       </Modal.Footer>
     </Modal>
   );
 }
+
+const BoxMember = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+
+  .box-left {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+
+    .box-search {
+      width: calc(100% - 35%);
+    }
+  }
+
+  .box-right {
+    display: flex;
+    justify-content: flex-end;
+    width: 50%;
+    gap: 10px;
+    .box-name {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+
+    .box-left {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      margin-bottom: 10px;
+      .box-search {
+        width: calc(100% - 18%);
+      }
+    }
+
+    .box-right {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+      gap: 10px;
+      .box-name {
+        width: 100%;
+      }
+    }
+  }
+`;

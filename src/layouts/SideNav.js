@@ -236,14 +236,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "farkManagement",
     },
-    {
-      title: `${t("debt")}`,
-      key: "debt",
-      typeStore: "",
-      icon: faMoneyBill,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: `${t("debt")}`,
+    //   key: "debt",
+    //   typeStore: "",
+    //   icon: faMoneyBill,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
@@ -357,9 +357,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
         <hr style={{ marginTop: "-.05em" }} />
         {listForRole
           .filter((e) => !e?.hidden)
-          .map((e) => (
+          .map((e, index) => (
             <NavItem
               eventKey={e?.key}
+              key={index}
               style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
             >
               <NavIcon>
@@ -391,6 +392,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 return (
                   <NavItem
                     eventKey={element?.key}
+                    key={index}
                     style={{
                       backgroundColor: selected === element?.key ? "#ffff" : "",
                     }}
@@ -487,8 +489,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )}
-        {settingNavItem?.map((e) => (
-          <NavItem eventKey={e?.key}>
+        {settingNavItem?.map((e, index) => (
+          <NavItem key={index} eventKey={e?.key}>
             <NavIcon>
               <FontAwesomeIcon
                 className={openTableData.length > 0 ? "scale-animation" : ""}

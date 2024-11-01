@@ -164,12 +164,12 @@ export default function UserList() {
         },
       })
         .then((data) => {
-          successDelete("ລືບຂໍ້ມູນສຳເລັດ");
+          successDelete("ລຶບຂໍ້ມູນສຳເລັດ");
           handleClose3();
           _selectPromotion();
         })
         .catch(() => {
-          errorAdd("ລືບຂໍ້ມູນບໍ່ສຳເລັດ");
+          errorAdd("ລຶບຂໍ້ມູນບໍ່ສຳເລັດ");
         });
     } catch (error) {
       console.log(error);
@@ -214,12 +214,12 @@ export default function UserList() {
         },
       })
         .then((res) => {
-          successAdd("ແກ້ໃຂຂໍ້ມູນສຳເລັດ");
+          successAdd("ແກ້ໄຂຂໍ້ມູນສຳເລັດ");
           setShow2(false);
           _selectPromotion();
         })
         .catch(() => {
-          errorAdd("ແກ້ໃຂຂໍ້ມູນບໍ່ສຳເລັດ");
+          errorAdd("ແກ້ໄຂຂໍ້ມູນບໍ່ສຳເລັດ");
         });
     } catch (error) {
       console.log(error);

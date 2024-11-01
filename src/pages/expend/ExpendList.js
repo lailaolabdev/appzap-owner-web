@@ -13,13 +13,17 @@ import PaginationComponent from "../../components/PaginationComponent";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 
-
 /**
  * function
  */
 
 import { getHeadersAccount } from "../../services/auth";
-import { moneyCurrency, convertPayment, formatDate, convertExpendatureType } from "../../helpers";
+import {
+  moneyCurrency,
+  convertPayment,
+  formatDate,
+  convertExpendatureType,
+} from "../../helpers";
 /**
  * api
  */
@@ -76,11 +80,15 @@ export default function ExpendList() {
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
 
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+
   // const startDate = new Date(year, month, 1);
   // const endDate = new Date(year, month + 1, 0);
   const time = new Date();
   const month = time.getMonth();
   const year = time.getFullYear();
+
   const [dateStart, setDateStart] = useState(
     // !parsed?.dateStart ? "" : parsed?.dateStart
     new Date(year, month, 1)
@@ -89,10 +97,12 @@ export default function ExpendList() {
     // !parsed?.dateEnd ? "" : parsed?.dateEnd
     new Date(year, month + 1, 0)
   );
+
+  console.log("dateStart:::", dateStart, "dateEnd:::", dateEnd);
+
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
-
 
   useEffect(() => {
     let filter = {
@@ -103,11 +113,24 @@ export default function ExpendList() {
       filterByPayment: filterByPayment,
     };
 
-    console.log("parame?.skip:::", parame?.skip)
+    // console.log("parame?.skip:::", parame?.skip);
 
-    fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
+    fetchExpend(
+      filterByYear,
+      filterByMonth,
+      dateStart,
+      dateEnd,
+      filterByPayment
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment, parame?.skip]);
+  }, [
+    filterByYear,
+    filterByMonth,
+    dateStart,
+    dateEnd,
+    filterByPayment,
+    parame?.skip,
+  ]);
 
   const [series, setSeries] = useState([
     {
@@ -128,7 +151,6 @@ export default function ExpendList() {
     },
     dataLabels: {
       enabled: false,
-
     },
     stroke: {
       curve: "straight",
@@ -137,11 +159,11 @@ export default function ExpendList() {
     dataLabels: {
       enabled: true,
       formatter: function (value) {
-        return value.toLocaleString('en-US');
-      }
+        return value.toLocaleString("en-US");
+      },
     },
     title: {
-      text: "ລາຍຈ່າຍ",
+      text: t("pay"),
       align: "left",
     },
     grid: {
@@ -153,51 +175,67 @@ export default function ExpendList() {
     yaxis: {
       labels: {
         formatter: function (value) {
-          return value.toLocaleString('en-US');
-        }
+          return value.toLocaleString("en-US");
+        },
       },
     },
     xaxis: {
-      categories: [
-      ],
+      categories: [],
     },
   });
 
   const modifyData = () => {
-    let _createdAtGraph = expendGraphData?.createdAt
-    let _xAxisData = []
-    _createdAtGraph.map((x) => _xAxisData.push(x))
-    let _options = options
+    let _createdAtGraph = expendGraphData?.createdAt;
+    let _xAxisData = [];
+    _createdAtGraph.map((x) => _xAxisData.push(x));
+    let _options = options;
     _options.xaxis.categories = _xAxisData;
 
-    let _dataAtGraph = expendGraphData?.totalExpendLAK
-    let _lakData = []
-    _dataAtGraph.map((x) => _lakData.push(x))
+    let _dataAtGraph = expendGraphData?.totalExpendLAK;
+    let _lakData = [];
+    _dataAtGraph.map((x) => _lakData.push(x));
     let _series = [...series];
     _series[0] = {
-      data: [..._lakData]
-    }
-    setSeries(_series)
-    setOptions(_options)
-  }
+      data: [..._lakData],
+    };
+    setSeries(_series);
+    setOptions(_options);
+  };
 
   useEffect(() => {
     if (!expendGraphData) return;
-    modifyData()
-  }, [expendGraphData])
+    modifyData();
+  }, [expendGraphData]);
 
   //function()
-  const fetchExpend = async (filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment) => {
+  const fetchExpend = async (
+    filterByYear,
+    filterByMonth,
+    dateStart,
+    dateEnd,
+    filterByPayment
+  ) => {
+    console.log("fetchExpend::", dateStart, dateEnd);
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
-      let findby = `accountId=${_localData?.DATA?.storeId}&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      if (filterByYear) findby += `&year=${filterByYear}`
-      if (filterByMonth) findby += `&month=${filterByMonth}`
-      if (dateStart && dateEnd) findby += `&date_gte==${dateStart}&date_lt=${moment(moment(dateEnd).add(1, "days")).format("YYYY/MM/DD")}`
-      if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
+      let findby = `accountId=${
+        _localData?.DATA?.storeId
+      }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
+      if (filterByYear) findby += `&year=${filterByYear}`;
+      if (filterByMonth) findby += `&month=${filterByMonth}`;
+      if (dateStart && dateEnd) {
+        findby += `&date_gte=${moment(dateStart).format("YYYY/MM/DD")}`;
+        findby += `&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
+      }
+      if (startTime && endTime) {
+        findby += `&startTime=${startTime}&endTime=${endTime}`;
+      }
 
-      console.log("findby::", findby)
+      if (filterByPayment !== "ALL" && filterByPayment !== undefined)
+        findby += `&payment=${filterByPayment}`;
+
+      // console.log("findby::", findby);
 
       let header = await getHeadersAccount();
       const headers = {
@@ -208,24 +246,29 @@ export default function ExpendList() {
         method: "get",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expends?${findby}`,
         headers: headers,
-      }).then((res) => {
-        setExpendData(res.data);
-      }).finally(() => {
-        setIsLoading(false);
-      });
+      })
+        .then((res) => {
+          setExpendData(res.data);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
 
       await axios({
         method: "get",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend-report?${findby}`,
         headers: headers,
-      }).then((res) => {
-        setTotalReport(res?.data?.data);
-        console.log(res?.data?.data);
-        setExpendGraphData(res?.data?.data?.chartExpend)
-        setIsLoading(false);
-      }).finally(() => {
-        setIsLoading(false);
-      });;
+      })
+        .then((res) => {
+          setTotalReport(res?.data?.data);
+          // setExpendData(res?.data?.expends);
+          // console.log("Reports", res?.data?.expends);
+          setExpendGraphData(res?.data?.data?.chartExpend);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     } catch (err) {
       console.log("err:::", err);
     }
@@ -234,7 +277,7 @@ export default function ExpendList() {
   //_confirmeDelete
   const _confirmeDelete = async () => {
     try {
-      await setFilterByPayment('ALL')
+      await setFilterByPayment("ALL");
       await setIsLoading(true);
       await setShowConfirmDelete(false);
       const _localData = await getLocalData();
@@ -249,12 +292,18 @@ export default function ExpendList() {
         headers: headers,
       }).then(async () => {
         await setExpendDetail();
-        await successAdd(`${t('delete_success')}`);
-        await fetchExpend(filterByYear, filterByMonth, dateStart, dateEnd, filterByPayment);
+        await successAdd(`${t("delete_success")}`);
+        await fetchExpend(
+          filterByYear,
+          filterByMonth,
+          dateStart,
+          dateEnd,
+          filterByPayment
+        );
         await setIsLoading(false);
       });
     } catch (err) {
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
       console.log("err:::", err);
     }
   };
@@ -274,6 +323,7 @@ export default function ExpendList() {
   return (
     <div style={{ padding: 20 }}>
       <div
+        class="account-payment"
         style={{
           display: "flex",
           flexDirection: "row",
@@ -282,24 +332,25 @@ export default function ExpendList() {
           gap: 5,
         }}
       >
-        <TitleComponent title={t('paid_account')} />
+        <TitleComponent title={t("paid_account")} />
         <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "end",
-            alignItems: "center",
-            gap: 5,
-          }}
+          className="account"
+          // style={{
+          //   display: "flex",
+          //   flexDirection: "row",
+          //   justifyContent: "end",
+          //   alignItems: "center",
+          //   gap: 5,
+          // }}
         >
-          <Form.Label>{t('date')}</Form.Label>
+          <Form.Label>{t("date")}</Form.Label>
           <Form.Control
             type="date"
             value={dateStart}
             onChange={(e) => setDateStart(e?.target?.value)}
             style={{ width: 150 }}
           />{" "}
-          ~
+          {t("toXX")}
           <Form.Control
             type="date"
             value={dateEnd}
@@ -313,9 +364,9 @@ export default function ExpendList() {
             onChange={(e) => setFilterByPayment(e?.target?.value)}
             style={{ width: 150 }}
           >
-            <option value="ALL">{t('show_shape')}</option>
-            <option value="CASH">{t('real_money')}</option>
-            <option value="TRANSFER">{t('e_money')}</option>
+            <option value="ALL">{t("show_shape")}</option>
+            <option value="CASH">{t("real_money")}</option>
+            <option value="TRANSFER">{t("e_money")}</option>
           </Form.Control>
           {/* <Form.Control
             as="select"
@@ -329,10 +380,11 @@ export default function ExpendList() {
             <option value="100">100</option>
             <option value="200">200</option>
           </Form.Control> */}
+          {/* Button ລົງບັນຊີປະຈຳວັນ */}
           <ButtonComponent
-            title={t('daily_account')}
+            title={t("daily_account")}
             icon={faPlusCircle}
-            colorbg={"#fb6e3b"}
+            colorbg={"#1d6a9f"}
             hoverbg={"orange"}
             width={"150px"}
             handleClick={() => navigate("/add-expend")}
@@ -345,119 +397,299 @@ export default function ExpendList() {
         filterByMonth={filterByMonth}
         setFilterByMonth={setFilterByMonth}
         dateStart={dateStart}
-        setDateStart={setDateStart}
         dateEnd={dateEnd}
+        setDateStart={setDateStart}
         setDateEnd={setDateEnd}
       />
 
-      <div style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}
+      <div
+        class="column"
+        // style={{
+        //   display: "flex",
+        //   flexDirection: "row",
+        //   justifyContent: "space-between",
+        //   alignItems: "center",
+        // }}
+      >
+        {/* responsive column */}
 
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#1d6a9f",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
         >
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faBalanceScaleRight} />
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+              icon={faBalanceScaleRight}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('all_list')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{expendData?.total}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("all_list")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {expendData?.total}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}>
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100 }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b" }} icon={faMoneyBillWave} />
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+              icon={faMoneyBillWave}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_lak')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceLAK)}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("paid_lak")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {moneyCurrency(totalReport?.priceLAK)}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}>
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faBold} />
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              icon={faBold}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_thb')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceTHB)}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("paid_thb")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {moneyCurrency(totalReport?.priceTHB)}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}>
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faDollarSign} />
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              icon={faDollarSign}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_usd')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceUSD)}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("paid_usd")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {moneyCurrency(totalReport?.priceUSD)}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}>
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={faYenSign} />
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              icon={faYenSign}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('paid_cny')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.priceCNY)}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("paid_cny")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {moneyCurrency(totalReport?.priceCNY)}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              icon={isGraphDisplay ? faChartLine : faListAlt}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('total_in_lak')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{moneyCurrency(totalReport?.totalSumInLAK)}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("total_in_lak")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {moneyCurrency(totalReport?.totalSumInLAK)}
+            </div>
           </div>
         </div>
-        <div className="p-2 hover-me" style={{
-          backgroundColor: "#fb6e3b", width: 200, height: 80, borderRadius: 8, display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around", alignItems: "center",
-          margin: 12
-        }}
+        <div
+          className="p-2 hover-me"
+          style={{
+            backgroundColor: "#fb6e3b",
+            width: 180,
+            height: 80,
+            borderRadius: 8,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            margin: 10,
+          }}
           onClick={() => setIsShowGraphDisplay(!isGraphDisplay)}
         >
-          <div style={{ backgroundColor: "#eeeeee", padding: 12, borderRadius: 100, width: 50, height: 50, display: "flex", justifyContent: 'center', alignContent: "center" }}>
-            <FontAwesomeIcon style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }} icon={isGraphDisplay ? faChartLine : faListAlt} />
+          <div
+            style={{
+              backgroundColor: "#eeeeee",
+              padding: 12,
+              borderRadius: 100,
+              width: 50,
+              height: 50,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+            }}
+          >
+            <FontAwesomeIcon
+              style={{ fontSize: "1.2rem", color: "#fb6e3b", marginTop: 3 }}
+              icon={isGraphDisplay ? faChartLine : faListAlt}
+            />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "white" }}> {t('show_in')}</div>
-            <div style={{ fontSize: 24, color: "white" }}>{isGraphDisplay ? "Graph" : `${t('detial')}`}</div>
+            <div style={{ fontWeight: "bold", color: "white" }}>
+              {" "}
+              {t("show_in")}
+            </div>
+            <div style={{ fontSize: 24, color: "white" }}>
+              {isGraphDisplay ? "Graph" : `${t("detial")}`}
+            </div>
           </div>
         </div>
       </div>
@@ -474,47 +706,65 @@ export default function ExpendList() {
           <thead>
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
-              <th>{t('date')}</th>
-              <th width="30%">{t('detial')}</th>
-              <th>{t('paid_type')}</th>
-              <th>{t('paid_mode')}</th>
-              <th>{t('jam')}</th>
-              <th>{t('payer')}</th>
-              <th style={{ textAlign: "right" }}>{t('lak')}</th>
-              <th style={{ textAlign: "right" }}>{t('thb')}</th>
-              <th style={{ textAlign: "right" }}>{t('cny')}</th>
-              <th style={{ textAlign: "right" }}>{t('usd')}</th>
-              <th>{t('manage')}</th>
+              <th>{t("date")}</th>
+              <th style={{ textWrap: "nowrap" }} width="30%">
+                {t("detial")}
+              </th>
+              <th>{t("paid_type")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("paid_mode")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("jam")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("payer")}</th>
+              <th style={{ textAlign: "right" }}>{t("lak")}</th>
+              <th style={{ textAlign: "right" }}>{t("thb")}</th>
+              <th style={{ textAlign: "right" }}>{t("cny")}</th>
+              <th style={{ textAlign: "right" }}>{t("usd")}</th>
+              <th style={{ textWrap: "nowrap" }}>{t("manage")}</th>
             </tr>
           </thead>
           <tbody>
             {expendData?.data &&
-              expendData?.data.length > 0 &&
-              expendData?.data.map((item, index) => (
+              expendData?.data?.length > 0 &&
+              expendData?.data?.map((item, index) => (
                 <tr
                   key={"expend" + index}
                   style={{ cursor: "pointer" }}
                   onClick={() => navigate(`/detail-expend/${item?._id}`)}
                 >
                   <td>{index + 1 + _limit * (parame?.skip - 1)}</td>
-                  <td style={{ textAlign: "left" }}>
+                  <td style={{ textAlign: "left", textWrap: "nowrap" }}>
                     {formatDate(item?.dateExpend)}
                   </td>
                   <td style={{ textAlign: "left" }}>
                     {limitText(item?.detail, 50)}
                   </td>
-                  <td>{convertExpendatureType(item?.type)}</td>
+                  <td style={{ textWrap: "nowrap" }}>
+                    {convertExpendatureType(item?.type)}
+                  </td>
                   <td>{convertPayment(item?.payment)}</td>
-                  <td style={{ padding: 0, display: "flex", justifyContent: "center", height: 50, alignItems: "center" }}><Image
-                    src={item?.expendImages?.length > 0 ? URL_PHOTO_AW3 + item?.expendImages[0] : EMPTY_LOGO}
-                    // width="100"
-                    // height="100"
+                  <td
                     style={{
-                      height: 40,
-                      width: 40,
-                      objectFit: "cover"
+                      padding: 0,
+                      display: "flex",
+                      justifyContent: "center",
+                      height: 50,
+                      alignItems: "center",
                     }}
-                  /></td>
+                  >
+                    <Image
+                      src={
+                        item?.expendImages?.length > 0
+                          ? URL_PHOTO_AW3 + item?.expendImages[0]
+                          : EMPTY_LOGO
+                      }
+                      // width="100"
+                      // height="100"
+                      style={{
+                        height: 40,
+                        width: 40,
+                        objectFit: "cover",
+                      }}
+                    />
+                  </td>
                   <td>{item?.paidBy}</td>
                   <td style={{ textAlign: "right", fontWeight: "bold" }}>
                     {moneyCurrency(item?.priceLAK)}
@@ -563,7 +813,9 @@ export default function ExpendList() {
         </Table>
       )}
 
-      {expendData?.data.length == 0 && <EmptyState text={`${t('still_not_paid')}`} />}
+      {expendData?.data.length == 0 && (
+        <EmptyState text={`${t("still_not_paid")}`} />
+      )}
       {Pagination_component(
         expendData?.total,
         "/expends",

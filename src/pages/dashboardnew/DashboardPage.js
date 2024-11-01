@@ -10,7 +10,9 @@ import { AiFillPrinter } from "react-icons/ai";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import {
+  getBankReport,
   getCategoryReport,
+  getCurrencyReport,
   getMenuReport,
   getMoneyReport,
   getPromotionReport,
@@ -24,7 +26,7 @@ import { saveAs } from "file-saver";
 import { getManyTables } from "../../services/table";
 import PopupDaySplitView from "../../components/popup/report/PopupDaySplitView";
 import { moneyCurrency } from "../../helpers";
-import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
+import PopUpSetStartAndEndDateFilterExport from "../../components/popup/PopUpSetStartAndEndDateFilterExport";
 import moment from "moment";
 import PopUpPrintReport from "../../components/popup/PopUpPrintReport";
 import PopUpPrintComponent from "../../components/popup/PopUpPrintComponent";
@@ -39,13 +41,14 @@ import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
 import { useTranslation } from "react-i18next";
+import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
-  const [userReport, setUserReport] = useState();
+  const [userReport, setUserReport] = useState([]);
   const [menuReport, setMenuReport] = useState();
   const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
@@ -56,11 +59,13 @@ export default function DashboardPage() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
   const [tableList, setTableList] = useState([]);
+  const [bankList, setBankList] = useState([]);
+  const [currencyList, setCurrencyList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
 
   // provider
-  const { storeDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {
@@ -73,7 +78,9 @@ export default function DashboardPage() {
     getMenuReportData();
     getMoneyReportData();
     getPromotionReportData();
+    getCurrencyName();
     getCategoryReportData();
+    getBankBillName();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
@@ -81,6 +88,18 @@ export default function DashboardPage() {
     const data = await getManyTables(storeDetail?._id);
     setTableList(data);
   };
+
+  const onExportData = async () => {
+    setStoreDetail({
+      ...storeDetail,
+      startDateReportExport: startDate,
+      endDateReportExport: endDate,
+      startTimeReportExport: startTime,
+      endTimeReportExport: endTime,
+    });
+    setPopup({ ReportExport: true });
+  };
+
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
@@ -132,8 +151,6 @@ export default function DashboardPage() {
     setMoneyReport(data);
   };
 
-  console.log("moneyReport", moneyReport);
-
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(
@@ -142,6 +159,21 @@ export default function DashboardPage() {
       selectedTableIds
     );
     setPromotionReport(data);
+  };
+  const getCurrencyName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getCurrencyReport(
+      storeDetail?._id,
+      findBy,
+      selectedTableIds
+    );
+    setCurrencyList(data);
+  };
+  const getBankBillName = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getBankReport(storeDetail?._id, findBy);
+    console.log("DATA BANK", data);
+    setBankList(data);
   };
   const downloadCsv = async () => {
     try {
@@ -165,8 +197,6 @@ export default function DashboardPage() {
       const url =
         END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
       const _res = await Axios.get(url);
-
-      console.log("_res: " + _res?.data?.exportUrl);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -237,9 +267,7 @@ export default function DashboardPage() {
           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
-            // onClick={downloadCsv}
-            onClick={downloadExcel}
-            disabled={loadingExportCsv}
+            onClick={() => onExportData()}
           >
             <MdOutlineCloudDownload /> EXPORT
           </Button>
@@ -292,18 +320,18 @@ export default function DashboardPage() {
                   )}${storeDetail?.firstCurrency}`,
                 },
 
-                {
-                  title: `${t("paid_lak")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["totalCostLAK"]
-                  )} ${t("lak")}`,
-                },
-                {
-                  title: `${t("defult_profit")}`,
-                  amount: `${moneyCurrency(
-                    salesInformationReport?.["grossProfitLAK"]
-                  )}${storeDetail?.firstCurrency}`,
-                },
+                // {
+                //   title: `${t("paid_lak")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["totalCostLAK"]
+                //   )} ${t("lak")}`,
+                // },
+                // {
+                //   title: `${t("defult_profit")}`,
+                //   amount: `${moneyCurrency(
+                //     salesInformationReport?.["grossProfitLAK"]
+                //   )}${storeDetail?.firstCurrency}`,
+                // },
                 // {
                 //   title: "ຈຳນວນເງິນທີ່ຖືກຍົກເລີກທັງໝົດ",
                 //   amount: `${moneyCurrency(
@@ -398,6 +426,18 @@ export default function DashboardPage() {
                     amount: moneyReport?.transfer?.totalBill,
                   },
                   {
+                    method: `${t("service_charge")}`,
+                    qty: moneyReport?.serviceAmount?.count,
+                    amount: Math.floor(
+                      moneyReport?.serviceAmount?.totalServiceCharge
+                    ),
+                  },
+                  {
+                    method: `${t("tax")}`,
+                    qty: moneyReport?.taxAmount?.count,
+                    amount: Math.floor(moneyReport?.taxAmount?.totalTax),
+                  },
+                  {
                     method: (
                       <div>
                         {t("tsf_cash")}
@@ -435,6 +475,7 @@ export default function DashboardPage() {
                       (moneyReport?.transferCash?.transfer || 0) +
                       (moneyReport?.transfer?.totalBill || 0),
                   },
+
                   {
                     method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
                     qty:
@@ -446,12 +487,60 @@ export default function DashboardPage() {
                       (moneyReport?.transferCash?.totalBill || 0) +
                       (moneyReport?.transfer?.totalBill || 0),
                   },
+                  {
+                    method: (
+                      <div style={{ fontWeight: 700 }}>
+                        {t("total_tax_service_charge")}
+                      </div>
+                    ),
+                    qty:
+                      (moneyReport?.serviceAmount?.count || 0) +
+                      (moneyReport?.taxAmount?.count || 0),
+                    amount:
+                      (Math.floor(
+                        moneyReport?.serviceAmount?.totalServiceCharge
+                      ) || 0) +
+                      (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
+                  },
                 ].map((e) => (
                   <tr>
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.amount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("bank_total")}
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>{t("bank_Name")}</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                </tr>
+                {bankList?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.bankDetails.bankName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.bankTotalAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>
@@ -478,17 +567,18 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
-                {userReport?.map((e) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                    <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.totalSaleAmount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
+                {userReport?.length > 0 &&
+                  userReport?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  ))}
               </table>
             </Card.Body>
           </Card>
@@ -612,6 +702,42 @@ export default function DashboardPage() {
               </table>
             </Card.Body>
           </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("all_curency")}
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>{t("code")}</th>
+                  <th style={{ textAlign: "center" }}>{t("ccrc")}</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                </tr>
+                {currencyList?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyCode}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency.currencyName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.currencyTotal))}
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            </Card.Body>
+          </Card>
         </Box>
       </Box>
       {/* popup */}
@@ -647,12 +773,19 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuAndCategoryHistoryComponent>
+
       <PopUpPrintReport
         open={popup?.printReport}
         setPopup={setPopup}
         onClose={() => setPopup()}
       />
-      <PopUpSetStartAndEndDate
+      <PopUpReportExportExcel
+        open={popup?.ReportExport}
+        setPopup={setPopup}
+        onClose={() => setPopup()}
+      />
+
+      <PopUpSetStartAndEndDateFilterExport
         open={popup?.popupfiltter}
         onClose={() => setPopup()}
         startDate={startDate}

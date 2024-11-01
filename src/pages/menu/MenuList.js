@@ -19,7 +19,7 @@ import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import {
   MENUS,
   getLocalData,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   master_menu_api_dev,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
@@ -42,8 +42,6 @@ export default function MenuList() {
 
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
-
-  
 
   const [isOpened, setIsOpened] = useState(true);
   const [show, setShow] = useState(false);
@@ -90,9 +88,8 @@ export default function MenuList() {
   const [Menus, setMenus] = useState();
 
   const location = useLocation();
-  const pathParts = location.pathname.split('/');
+  const pathParts = location.pathname.split("/");
   const defaultActiveKey = `/settingStore/${pathParts[2]}`;
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,7 +143,8 @@ export default function MenuList() {
   const getcategory = async (id) => {
     try {
       await fetch(
-        END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/categories?storeId=${id}&isDeleted=false`,
         {
           method: "GET",
         }
@@ -159,7 +157,7 @@ export default function MenuList() {
   };
 
   const handleUpdateMenuOptionsCount = (menuId, count) => {
-    setMenuOptionsCount(prev => ({ ...prev, [menuId]: count }));
+    setMenuOptionsCount((prev) => ({ ...prev, [menuId]: count }));
   };
 
   const getMenu = async (id, categoryId) => {
@@ -189,8 +187,6 @@ export default function MenuList() {
     }
   };
 
-  
-
   const _addMenuOption = () => {
     setDataMenuOption([
       ...dataMenuOption,
@@ -217,13 +213,13 @@ export default function MenuList() {
   };
 
   const _removeItem = (index) => {
-    let remove = dataMenuOption.splice(index, 1);
-    let _newData = dataMenuOption?.filter((item) => item !== remove[0]);
+    const remove = dataMenuOption.splice(index, 1);
+    const _newData = dataMenuOption?.filter((item) => item !== remove[0]);
     setDataMenuOption(_newData);
   };
   const _removeItemUpdate = (index) => {
-    let remove = dataUpdateMenuOption.splice(index, 1);
-    let _newData = dataUpdateMenuOption?.filter((item) => item !== remove[0]);
+    const remove = dataUpdateMenuOption.splice(index, 1);
+    const _newData = dataUpdateMenuOption?.filter((item) => item !== remove[0]);
     setDataUpdateMenuOption(_newData);
   };
 
@@ -243,7 +239,7 @@ export default function MenuList() {
 
   // ======> create menu
   const _createMenu = async (values) => {
-    let header = await getHeaders();
+    const header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
       Authorization: header.authorization,
@@ -272,7 +268,7 @@ export default function MenuList() {
         createData = { ...createData, menuId: connectMenuId };
       const resData = await axios({
         method: "POST",
-        url: END_POINT_SEVER + "/v3/menu/create",
+        url: END_POINT_SEVER_TABLE_MENU + "/v3/menu/create",
         data: createData,
         headers: headers,
       });
@@ -310,14 +306,14 @@ export default function MenuList() {
   };
   const _confirmeDelete = async () => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
       const resData = await axios({
         method: "DELETE",
-        url: END_POINT_SEVER + `/v3/menu/delete/${dateDelete?.id}`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/delete/${dateDelete?.id}`,
         headers: headers,
       });
       if (resData?.data) {
@@ -344,14 +340,14 @@ export default function MenuList() {
     setShow2(true);
   };
   const _updateCategory = async (values) => {
-    let header = await getHeaders();
+    const header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
       Authorization: header.authorization,
     };
     const resData = await axios({
       method: "PUT",
-      url: END_POINT_SEVER + `/v3/menu/update`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update`,
       data: {
         id: dataUpdate?._id,
         data: {
@@ -383,15 +379,15 @@ export default function MenuList() {
   const _updateQtyCategory = async (values) => {
     await axios({
       method: "PUT",
-      url: END_POINT_SEVER + "/v3/menu-stock/update",
+      url: END_POINT_SEVER_TABLE_MENU + "/v3/menu-stock/update",
       data: {
         id: getIdMenu,
         data: {
-          quantity: parseInt(qtyMenu),
+          quantity: Number.parseInt(qtyMenu),
         },
       },
     })
-      .then(async function () {
+      .then(async () => {
         handleClose4();
         successAdd(`${t("edd_amount_success")}`);
         handleClose();
@@ -399,7 +395,7 @@ export default function MenuList() {
           window.location.reload();
         }, 2000);
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd(`${t("add_amount_fail")}`);
       });
   };
@@ -427,7 +423,7 @@ export default function MenuList() {
 
   const _onOpenMenu = async (id, isOpenMenuCustomerWeb, index) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -435,7 +431,7 @@ export default function MenuList() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
           id: id,
           data: {
@@ -446,12 +442,12 @@ export default function MenuList() {
         headers: headers,
       });
 
-      let _newData = [...Menus];
+      const _newData = [...Menus];
 
       _newData[index].isShowCustomerWeb =
         isOpenMenuCustomerWeb === "true" ? "false" : "true";
       setMenus(_newData);
-      let data = _newData[index];
+      const data = _newData[index];
       setDetailMenu({ data, index });
     } catch (err) {
       console.log("err:", err);
@@ -460,7 +456,7 @@ export default function MenuList() {
 
   const _onOpenMenuCustomerApp = async (id, isOpenMenuCustomerApp, index) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -468,7 +464,7 @@ export default function MenuList() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
           id: id,
           data: {
@@ -479,12 +475,12 @@ export default function MenuList() {
         headers: headers,
       });
 
-      let _newData = [...Menus];
+      const _newData = [...Menus];
 
       _newData[index].isShowCustomerApp =
         isOpenMenuCustomerApp === "true" ? "false" : "true";
       setMenus(_newData);
-      let data = _newData[index];
+      const data = _newData[index];
       setDetailMenu({ data, index });
     } catch (err) {
       console.log("err:", err);
@@ -493,7 +489,7 @@ export default function MenuList() {
 
   const _onOpenMenuStaff = async (id, isOpenMenuStaff, index) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -501,7 +497,7 @@ export default function MenuList() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
           id: id,
           data: {
@@ -511,12 +507,12 @@ export default function MenuList() {
         headers: headers,
       });
 
-      let _newData = [...Menus];
+      const _newData = [...Menus];
 
       _newData[index].isShowStaffApp =
         isOpenMenuStaff === "true" ? "false" : "true";
       setMenus(_newData);
-      let data = _newData[index];
+      const data = _newData[index];
       setDetailMenu({ data, index });
     } catch (err) {
       console.log("err:", err);
@@ -525,14 +521,14 @@ export default function MenuList() {
 
   const _onOpenMenuCounter = async (id, isShowCounterApp, index) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/menu/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
           id: id,
           data: {
@@ -542,11 +538,11 @@ export default function MenuList() {
         headers: headers,
       });
 
-      let _newData = [...Menus];
+      const _newData = [...Menus];
       _newData[index].isShowCounterApp =
         isShowCounterApp === "true" ? "false" : "true";
       setMenus(_newData);
-      let data = _newData[index];
+      const data = _newData[index];
       setDetailMenu({ data, index });
     } catch (err) {
       console.log("err:", err);
@@ -581,6 +577,8 @@ export default function MenuList() {
     }
   };
 
+  console.log("PRINT: ", Menus);
+
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -603,7 +601,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t('option_menu')}
+                {t("option_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -629,7 +627,7 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>{t("chose_food_type")}</label>
+                <label>{t("chose_type")}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
@@ -697,20 +695,43 @@ export default function MenuList() {
               </Col>
             </Row>
           </Col>
-          <Col md="12">
-            <table className="table table-hover" style={{ minWidth: 700 }}>
+          <Col
+            md="12"
+            style={{
+              overflowX: "auto",
+            }}
+          >
+            <table
+              className="table table-hover"
+              // style={{ maxWidth: 700 }}
+              // style={{
+              // 	width: "100%",
+              // 	overflowX: "scroll",
+              // }}
+            >
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">{t('no_show')}</th>
-                  <th scope="col">{t('picture')}</th>
-                  <th scope="col">{t('type_name')}</th>
-                  <th scope="col">{t('menu_type')}</th>
-                  <th scope="col">{t('food_name')}</th>
-                  <th scope="col">{t('price')}</th>
-                  <th scope="col">{t('setting_show')}</th>
-                  <th scope="col">{t('options')}</th>
-                  <th scope="col">{t('manage_data')}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no_show")}
+                  </th>
+                  <th scope="col">{t("picture")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("type_name")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("menu_type")}
+                  </th>
+                  <th scope="col">{t("food_name")}</th>
+                  <th scope="col">{t("price")}</th>
+                  <th scope="col">{t("ປິດເປີດສະຖານະ")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("setting_show")}
+                  </th>
+                  <th scope="col">{t("options")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("manage_data")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -765,6 +786,23 @@ export default function MenuList() {
                           {data?.name_kr ?? ""}
                         </td>
                         <td>{moneyCurrency(data?.price)}</td>
+                        <td style={{ textAlign: "center", color: "red" }}>
+                          {data?.isShowStaffApp === "false"
+                            ? t("staff") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCounterApp === "false"
+                            ? t("counter") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCustomerApp === "false"
+                            ? t("app") + " : " + t("Close")
+                            : ""}
+                          <br />
+                          {data?.isShowCustomerWeb === "false"
+                            ? t("web") + " : " + t("Close")
+                            : ""}
+                        </td>
                         <td>
                           <button
                             type="button"
@@ -787,11 +825,21 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ ({menuOptionsCount[data._id] || data?.menuOptions?.length || 0})
+                            +ອ໋ອບຊັນເສີມ (
+                            {menuOptionsCount[data._id] ||
+                              data?.menuOptions?.length ||
+                              0}
+                            )
                           </button>
                         </td>
-
-                        <td>
+                        {/* manage icon */}
+                        <td
+                          // className="manage"
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
                           <FontAwesomeIcon
                             icon={faEdit}
                             onClick={() => handleShow2(data)}
@@ -876,7 +924,10 @@ export default function MenuList() {
                 errors.name = `${t("fill_food_name")}`;
               }
 
-              if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
+              if (
+                Number.parseInt(values.price) < 0 ||
+                isNaN(Number.parseInt(values.price))
+              ) {
                 errors.price = `${t("fill_price")}`;
               }
               if (!values.categoryId) {
@@ -977,7 +1028,7 @@ export default function MenuList() {
                       }}
                     >
                       <option selected={true} disabled={true} value="">
-                        {t("chose_food_type")}
+                        {t("chose_type")}
                       </option>
                       {Categorys?.map((item, index) => {
                         return <option value={item?._id}>{item?.name}</option>;
@@ -1325,7 +1376,10 @@ export default function MenuList() {
               if (!values.name) {
                 errors.name = `${t("fill_food_name")}`;
               }
-              if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
+              if (
+                Number.parseInt(values.price) < 0 ||
+                isNaN(Number.parseInt(values.price))
+              ) {
                 errors.price = `${t("fill_price")}`;
               }
               return errors;
@@ -1775,18 +1829,16 @@ export default function MenuList() {
           }
         />
 
-      <PopUpAddMenuOption
+        <PopUpAddMenuOption
           showSetting={showOptionSetting}
           detailMenu={detailMenuOption}
           handleClose={() => {
-              setShowOptionSetting(false);
-              setDetailMenuOption(null);
+            setShowOptionSetting(false);
+            setDetailMenuOption(null);
           }}
           getTokken={getTokken}
           updateMenuOptionsCount={handleUpdateMenuOptionsCount}
-      />
-
-
+        />
       </Box>
     </div>
   );

@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
-import { CATEGORY, getLocalData, END_POINT_SEVER } from "../../constants/api";
+import {
+  CATEGORY,
+  getLocalData,
+  END_POINT_SEVER_TABLE_MENU,
+} from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
@@ -27,7 +31,6 @@ export default function Categorylist() {
   // modal delete
   const [show3, setShow3] = useState(false);
   const handleClose3 = () => setShow3(false);
-  const [dateDelete, setdateDelete] = useState("");
   const handleShow3 = (id, name) => {
     setdateDelete({ name, id });
     setShow3(true);
@@ -35,12 +38,10 @@ export default function Categorylist() {
   // update
   const [show2, setShow2] = useState(false);
   const handleClose2 = () => setShow2(false);
+  const [dateDelete, setdateDelete] = useState("");
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
-  const [updateType, setUpdateType] = useState();
-
-  console.log("Categorys::", Categorys);
 
   const handleShow2 = async (item) => {
     // console.log("ITEM: ", item.categoryTypeId.name);
@@ -50,14 +51,14 @@ export default function Categorylist() {
   // =======>
   const _confirmeDelete = async () => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      let _resData = await axios.delete(
+      const _resData = await axios.delete(
         // CATEGORY + `/${dateDelete?.id}`
-        END_POINT_SEVER + `/v3/category/delete/${dateDelete?.id}`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/category/delete/${dateDelete?.id}`,
         {
           headers: headers,
         }
@@ -72,15 +73,15 @@ export default function Categorylist() {
     }
   };
   const _createCategory = async (values) => {
-    console.log("DATA VALUES: ", values.categoryTypeId);
-    let header = await getHeaders();
+    // console.log("DATA VALUES: ", values.categoryTypeId);
+    const header = await getHeaders();
     const headers = {
       "Content-Type": "application/json",
       Authorization: header.authorization,
     };
     const resData = await axios({
       method: "POST",
-      url: END_POINT_SEVER + "/v3/category/create",
+      url: END_POINT_SEVER_TABLE_MENU + "/v3/category/create",
       data: {
         storeId: getTokken?.DATA?.storeId,
         name: values?.name,
@@ -93,18 +94,18 @@ export default function Categorylist() {
       },
       headers: headers,
     })
-      .then(async function (response) {
+      .then(async (response) => {
         setCategorys(response?.data);
         handleClose();
         successAdd(`${t("add_success")}}`);
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd(`${t("add_fail")}`);
       });
   };
   const _updateCategory = async (values) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -112,7 +113,7 @@ export default function Categorylist() {
       console.log("============>", values);
 
       const resData = await axios.put(
-        END_POINT_SEVER + `/v3/category/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/category/update`,
         {
           id: dataUpdate?._id,
           data: {
@@ -147,7 +148,7 @@ export default function Categorylist() {
       if (_localData) {
         setgetTokken(_localData);
         getData(_localData?.DATA?.storeId);
-        getCategoryTypeData();
+        getCategoryTypeData(_localData?.DATA?.storeId);
       }
     };
     fetchData();
@@ -157,20 +158,21 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategory = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categories?isDeleted=false&storeId=${id}`,
+      url:
+        END_POINT_SEVER_TABLE_MENU +
+        `/v3/categories?isDeleted=false&storeId=${id}`,
     });
     console.log("-----", _resCategory?.data);
     setCategorys(_resCategory?.data);
     setIsLoading(false);
   };
 
-  const getCategoryTypeData = async () => {
+  const getCategoryTypeData = async (id) => {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER + `/v3/categoroy-type`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/category-type?storeId=${id}`,
     });
-    console.log("CATEGORYTYPE: ", _resCategoryType?.data.data);
     setCategorysType(_resCategoryType?.data?.data);
     setIsLoading(false);
   };
@@ -207,7 +209,7 @@ export default function Categorylist() {
 
   const _changeStatusCate = async (id, showForCustomer, index) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -215,7 +217,7 @@ export default function Categorylist() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER + `/v3/category/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/category/update/`,
         data: {
           id: id,
           data: {
@@ -225,7 +227,7 @@ export default function Categorylist() {
         headers: headers,
       });
 
-      let _newData = [...Categorys];
+      const _newData = [...Categorys];
 
       _newData[index].showForCustomer = !showForCustomer;
       setCategorys(_newData);
@@ -238,17 +240,14 @@ export default function Categorylist() {
   return (
     <div style={BODY}>
       <Breadcrumb>
-        <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
-        <Breadcrumb.Item active>{t('food_type')}</Breadcrumb.Item>
+        <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+        <Breadcrumb.Item active>{t("food_type")}</Breadcrumb.Item>
       </Breadcrumb>
       <div>
-        <Nav variant="tabs" defaultActiveKey='/settingStore/category'>
+        <Nav variant="tabs" defaultActiveKey="/settingStore/category">
           <Nav.Item>
-            <Nav.Link
-              eventKey="/settingStore/menu"
-              onClick={() => _menuList()}
-            >
-              {t('menu')}
+            <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
+              {t("menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -256,7 +255,7 @@ export default function Categorylist() {
               eventKey="/settingStore/menu-option"
               onClick={() => _menuOptionList()}
             >
-              {t('option_menu')}
+              {t("option_menu")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -264,7 +263,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t('food_type')}
+              {t("food_type")}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -290,18 +289,37 @@ export default function Categorylist() {
         </div>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className="col-sm-12">
+          <div
+            className="col-sm-12"
+            style={{
+              overflowX: "auto",
+            }}
+          >
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
-                  <th scope="col">{t("no")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
-                  <th scope="col">{t("foodTypeName")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("foodTypeName")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("foodTypeName")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("foodTypeName")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("foodTypeName")}
+                  </th>
                   {/* <th scope="col">{t('note')}</th> */}
-                  <th scope="col">{t("manage")}</th>
-                  <th scope="col">{t("status")}</th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("manage")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("status")}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -330,7 +348,7 @@ export default function Categorylist() {
                         {/*adamHere*/}
                         <td
                           style={{
-                            color: data?.showForCustomer ? "green" : "red"
+                            color: data?.showForCustomer ? "green" : "red",
                           }}
                         >
                           <label className="switch">
@@ -370,7 +388,7 @@ export default function Categorylist() {
           validate={(values) => {
             const errors = {};
             if (!values.name) {
-              errors.name = `${t("file_type_name")}`;
+              errors.name = `${t("foodTypeName")}`;
             }
             return errors;
           }}
@@ -397,7 +415,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t("no")}
+                    placeholder={t("no_")}
                     value={values?.sort}
                     onChange={handleChange}
                   />
@@ -480,7 +498,7 @@ export default function Categorylist() {
                     onBlur={handleBlur}
                     value={values.categoryTypeId}
                   >
-                    <option value="">ເລືອກປະເພດ</option>
+                    <option value="">{t("chose_type")}</option>
                     {categorysType &&
                       categorysType.map((data, index) => (
                         <option key={"categorytype" + index} value={data._id}>
@@ -526,7 +544,7 @@ export default function Categorylist() {
               errors.name = `${t("fill_type_name")}`;
             }
 
-            console.log("ERORR: ", values.categoryTypeId);
+            console.log("CATEGORYID: ", values.categoryTypeId);
 
             return errors;
           }}
@@ -553,7 +571,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder="{t('no')}"
+                    placeholder={t("no")}
                     value={values.sort}
                     onChange={handleChange}
                   />
@@ -639,7 +657,7 @@ export default function Categorylist() {
                   />
                 </Form.Group> */}
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຫົວຂໍປະເພດອາຫານ</Form.Label>
+                  <Form.Label>{t("food_title")}</Form.Label>
                   <Form.Control
                     as="select"
                     name="categoryTypeId"
@@ -648,7 +666,7 @@ export default function Categorylist() {
                     value={values.categoryTypeId}
                   >
                     <option value="">
-                      {dataUpdate?.categoryTypeId?.name ?? "ເລືອກປະເພດ"}
+                      {dataUpdate?.categoryTypeId?.name ?? t("chose_type")}
                     </option>
                     {categorysType &&
                       categorysType.map((data, index) => (

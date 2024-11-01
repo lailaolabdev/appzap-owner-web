@@ -15,9 +15,11 @@ import {
   getSetting,
   updateSetting,
   updateSettingCafe,
-  getSettingCafe
+  getSettingCafe,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
+import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
+import PopUpCreateServiceCharge from "../../components/popup/PopUpCreateServiceCharge";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -29,20 +31,42 @@ export default function ConfigPage() {
   const [switchState, setSwitchState] = useState({});
   const [switchCafeState, setSwitchCafeState] = useState(false);
   const [tax, setTax] = useState(0);
+  const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
 
   // provider
-  const { audioSetting, setAudioSetting,setStoreDetail, storeDetail, profile } = useStore();
+  const {
+    audioSetting,
+    setAudioSetting,
+    setStoreDetail,
+    storeDetail,
+    profile,
+  } = useStore();
 
   // console.log(audioSetting)
 
   // useEffect
   useEffect(() => {
     getSettingData();
+    getServiceCharge();
     getDataTax();
   }, []);
 
   // function
+  const handleCreateServiceCharge = async (serviceCharge) => {
+    try {
+      const { DATA } = await getLocalData();
+      const _res = await Axios.post(
+        END_POINT_SEVER + "/v4/create/service-charge",
+        { serviceCharge: parseInt(serviceCharge), storeId: DATA.storeId }
+      );
+      console.log("SUCCESS: ", _res);
+      getServiceCharge();
+      setPopup();
+    } catch (error) {
+      console.error("Failed to create service charge", error);
+    }
+  };
   const handleChangeTax = async (newTax) => {
     const { DATA } = await getLocalData();
     const _res = await Axios.put(
@@ -52,10 +76,27 @@ export default function ConfigPage() {
     getDataTax();
     setPopup();
   };
+  const handleChangeServiceCharge = async (serviceCharge) => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.put(
+      END_POINT_SEVER + "/v4/update/service-charge/" + DATA.storeId,
+      { serviceCharge: parseInt(serviceCharge) }
+    );
+    getServiceCharge();
+    setPopup();
+  };
   const getDataTax = async () => {
     const { DATA } = await getLocalData();
     const _res = await Axios.get(END_POINT_SEVER + "/v4/tax/" + DATA?.storeId);
     setTax(_res?.data?.taxPercent);
+  };
+
+  const getServiceCharge = async () => {
+    const { DATA } = await getLocalData();
+    const _res = await Axios.get(
+      `${END_POINT_SEVER}/v4/service-charge/${DATA?.storeId}`
+    );
+    setServiceCharge(_res?.data?.serviceCharge);
   };
 
   const getSettingData = async () => {
@@ -64,7 +105,6 @@ export default function ConfigPage() {
     setSetting(data);
   };
 
-
   const changeSwitchData = async (dataUpdate) => {
     const data = await updateSetting(setting?._id, dataUpdate);
     setSwitchState((prev) => ({ ...prev, ...data?.smartMenu }));
@@ -72,11 +112,10 @@ export default function ConfigPage() {
 
   const changeCafe = async (e) => {
     const isCafe = e.target.checked;
-    const _type = isCafe ? "CAFE" : "GENERAL"
-    await updateSettingCafe(profile?.data.storeId, { data: _type })
+    const _type = isCafe ? "CAFE" : "GENERAL";
+    await updateSettingCafe(profile?.data.storeId, { data: _type });
     const dataStore = await getStore(storeDetail?._id);
     setStoreDetail(dataStore);
-      
   };
 
   const TooltipFunc = ({ id, children, title }) => (
@@ -133,6 +172,33 @@ export default function ConfigPage() {
                   }}
                 >
                   <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                    {t("edit")}
+                  </Button>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>
+                  {t("service_charge")}: {serviceCharge}%
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    onClick={() => setPopup({ PopUpEditServiceCharge: true })}
+                  >
                     {t("edit")}
                   </Button>
                 </div>
@@ -358,12 +424,12 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              ຮ້ານຄາເຟ
+              {t("isCafe")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: "ເປີດໃຊ້ງານຮ້ານຄາເຟ",
+                  title: t("enable_cafe"),
                   key: "fer",
                 },
               ].map((item, index) => (
@@ -387,7 +453,9 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-cafe-" + item?.key}>
-                      {storeDetail?.isRestuarant == "CAFE" ? "ເປີດ" : "ປິດ"}
+                      {storeDetail?.isRestuarant == "CAFE"
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -408,6 +476,17 @@ export default function ConfigPage() {
         onClose={() => setPopup()}
         prevTax={tax}
         onSubmit={handleChangeTax}
+      />
+      <PopUpEditServiceCharge
+        open={popup?.PopUpEditServiceCharge}
+        onClose={() => setPopup()}
+        prevServiceCharge={serviceCharge}
+        onSubmit={handleChangeServiceCharge}
+      />
+      <PopUpCreateServiceCharge
+        open={popup?.PopUpCreateServiceCharge}
+        onClose={() => setPopup()}
+        onSubmit={handleCreateServiceCharge}
       />
     </>
   );

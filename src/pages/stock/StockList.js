@@ -36,6 +36,11 @@ import { FaSearch } from "react-icons/fa";
 import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
 import { useTranslation } from "react-i18next";
 
+import { useStore } from "../../store";
+import { saveAs } from "file-saver";
+import { END_POINT_EXPORT } from "../../constants/api";
+import Axios from "axios";
+
 // ------------------------------------------------------------------------------- //
 
 export default function MenuList() {
@@ -71,7 +76,6 @@ export default function MenuList() {
   }, []);
 
   useEffect(() => {
-
     const getData = async () => {
       getCategory();
     };
@@ -127,7 +131,7 @@ export default function MenuList() {
       }
     } catch (err) {
       console.log("err:", err);
-      errorAdd(`${t('delete_fail')}`);
+      errorAdd(`${t("delete_fail")}`);
     }
   };
 
@@ -205,7 +209,7 @@ export default function MenuList() {
       setPrepaDatas([]);
       setIsSelectAll(false);
     } else {
-      let _stocksNew = [];
+      const _stocksNew = [];
       // console.log("stocks:--new-->", stocks);
       for (var i = 0; i < stocks.length; i++) {
         _stocksNew.push(stocks[i]);
@@ -279,11 +283,17 @@ export default function MenuList() {
           // gridTemplateColumns: "1fr 90px 200px"
           gap: 10,
           padding: "10px 0",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
         }}
       >
-        <div style={{ display: "flex", gap: 10 }}>
+        <div
+          className="d-flex align-items-center"
+          style={{ gap: 10, flexWrap: "wrap" }}
+        >
           <Form.Control
-            placeholder={t('member_name')}
+            placeholder={t("member_name")}
             value={filterName}
             onChange={(e) => setFilterName(e?.target?.value)}
           />
@@ -291,34 +301,38 @@ export default function MenuList() {
             variant="primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
           >
-            <FaSearch /> {t('search')}
+            <FaSearch /> {t("search")}
+          </Button>
+
+          <Button
+            style={{ textWrap: "nowrap" }}
+            variant="outline-primary"
+            onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
+          >
+            {t("chose_type")}
+          </Button>
+          <select
+            className="btn btn-outline-primary"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="All">{t("arranged")}</option>
+            <option value="asc">{t("ascend")}</option>
+            <option value="desc">{t("descend")}</option>
+          </select>
+        </div>
+
+        <div className="d-flex align-items-center" style={{ gap: 10 }}>
+          <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
+            {t("create_stock")}
+          </Button>
+          <Button
+            variant="success"
+            onClick={() => setPopup({ PopUpPreViewsPage: true })}
+          >
+            Print
           </Button>
         </div>
-        <Button
-          variant="outline-primary"
-          onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
-        >
-          {t('chose_type')}
-        </Button>
-        <select
-          className="btn btn-outline-primary"
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-        >
-          <option value="All">{t('arranged')}</option>
-          <option value="asc">{t('ascend')}</option>
-          <option value="desc">{t('descend')}</option>
-        </select>
-        <div style={{ flex: 1 }} />
-        <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
-          {t('create_stock')}
-        </Button>
-        <Button
-          variant="success"
-          onClick={() => setPopup({ PopUpPreViewsPage: true })}
-        >
-          Print
-        </Button>
       </div>
       <div>
         <div style={{ overflow: "auto", backgroundColor: "#fff" }}>
@@ -328,20 +342,30 @@ export default function MenuList() {
             <table className="table">
               <thead className="thead-light">
                 <tr>
-                  <th scope="col" style={{ width: 50 }}>
+                  <th scope="col" style={{ width: 50, textWrap: "nowrap" }}>
                     <Form.Check
                       onClick={() => onSelectStocksAll()}
-                      label={t('no')}
-                      id={t('no')}
+                      label={t("no")}
+                      id={t("no")}
                     />
                   </th>
-                  <th scope="col" style={{ textAlign: "start" }}>
-                    {t('product_name')}
+                  <th
+                    scope="col"
+                    style={{ textAlign: "start", textWrap: "nowrap" }}
+                  >
+                    {t("product_name")}
                   </th>
-                  <th scope="col">{t('product_type')}</th>
-                  <th scope="col">{t('stock_amount')}</th>
-                  <th scope="col" style={{ textAlign: "end" }}>
-                    {t('manage_data')}
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("product_type")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("stock_amount")}
+                  </th>
+                  <th
+                    scope="col"
+                    style={{ textAlign: "end", textWrap: "nowrap" }}
+                  >
+                    {t("manage_data")}
                   </th>
                 </tr>
               </thead>
@@ -498,7 +522,7 @@ export default function MenuList() {
         onClose={() => setPopup()}
         categoryData={categorys}
         setSelectedCategory={(_array) => {
-          let data = _array.join("||");
+          const data = _array.join("||");
           setSelectCategories(data);
         }}
       />

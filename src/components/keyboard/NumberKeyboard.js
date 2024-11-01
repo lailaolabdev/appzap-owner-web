@@ -1,6 +1,7 @@
 import React from "react";
 import { COLOR_APP } from "../../constants";
 import { Button } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export default function NumberKeyboard({
   totalBill,
@@ -61,6 +62,8 @@ export default function NumberKeyboard({
     },
   ];
 
+  const { t } = useTranslation();
+
   // function
   async function clickButton(text) {
     console.log("object", text);
@@ -115,7 +118,7 @@ export default function NumberKeyboard({
               onClickMember();
             }}
           >
-            ສະມາຊິກ
+            {t("member")}
           </Button>
           <Button
             disabled={payType != "cash"}
@@ -124,14 +127,14 @@ export default function NumberKeyboard({
               setSelectInput(totalBill + "");
             }}
           >
-            ເຕັມຈຳນວນ
+            {t("quantity_full")}
           </Button>
-          <Button onClick={onClickButtonDrawer}>Drawer</Button>
+          <Button onClick={onClickButtonDrawer}>{t("Drawer")}</Button>
           <Button
             onClick={() => setSelectInput("")}
             disabled={payType === "transfer"}
           >
-            ລົບທັງໝົດ
+            {t("delete_all")}
           </Button>
         </div>
         <div

@@ -18,8 +18,9 @@ import { stringify } from "query-string";
 import Loading from "../../components/Loading";
 import ReactPaginate from "react-paginate";
 import { getCountBills } from "../../services/bill";
+import { COLOR_APP } from "../../constants";
 
-let limitData = 50;
+const limitData = 50;
 
 export default function DashboardFinance({
   startDate,
@@ -51,10 +52,12 @@ export default function DashboardFinance({
   const handleClose = () => setShow(false);
   const { storeDetail, profile } = useStore();
 
+  // console.log("data", data);
+
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      let query =
+      const query =
         "?storeId=" +
         params?.storeId +
         "&dateFrom=" +
@@ -100,7 +103,7 @@ export default function DashboardFinance({
 
   const getCurrency = async () => {
     try {
-      let x = await fetch(
+      const x = await fetch(
         END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
         {
           method: "GET",
@@ -114,7 +117,7 @@ export default function DashboardFinance({
   };
 
   const exportJsonToExceltyty = () => {
-    let _export = data?.checkOut.map((item, index) => ({
+    const _export = data?.checkOut.map((item, index) => ({
       ລຳດັບ: index + 1,
       ເລກບິນ: item?.code,
       ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
@@ -177,9 +180,7 @@ export default function DashboardFinance({
     );
 
     const _checkOut = getDataDashBoard.data;
-    const totalPrice = _.sumBy(_checkOut, function (o) {
-      return o.billAmount;
-    });
+    const totalPrice = _.sumBy(_checkOut, (o) => o.billAmount);
     const _formatJson = {
       checkOut: _checkOut,
       amount: totalPrice,
@@ -193,13 +194,13 @@ export default function DashboardFinance({
     let _disCountDataAon = 0;
     let _cash = 0;
     let _aon = 0;
-    let _notCheckBill = {
+    const _notCheckBill = {
       total: 0,
       amount: 0,
       discountCash: 0,
       discountPercent: 0,
     };
-    let _checkBill = {
+    const _checkBill = {
       total: 0,
       amount: 0,
       discountCash: 0,
@@ -263,6 +264,7 @@ export default function DashboardFinance({
       for (let i = 0; i < item.length; i++) {
         if (item[i]?.status === "SERVED")
           _countOrderSuccess += item[i]?.quantity;
+        if (item[i]?.status === "PAID") _countOrderSuccess += item[i]?.quantity;
         if (item[i]?.status === "CANCELED")
           _countOrderCancel += item[i]?.quantity;
       }
@@ -275,7 +277,9 @@ export default function DashboardFinance({
     if (item?.length > 0) {
       for (let i = 0; i < item.length; i++) {
         const totalOptionPrice = item[i]?.totalOptionPrice ?? 0;
-        const totalPrice = item[i]?.totalPrice ?? (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
+        const totalPrice =
+          item[i]?.totalPrice ??
+          (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
         _amount += totalPrice;
       }
     }
@@ -283,33 +287,88 @@ export default function DashboardFinance({
   };
 
   const formatMenuName = (name, options) => {
-    const optionNames = options
-      ?.map(option => `[${option.name}]`)
-      .join(" ") || "";
+    const optionNames =
+      options?.map((option) => `[${option.name}]`).join(" ") || "";
     return `${name} ${optionNames}`;
   };
 
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
-      <div style={{ padding: 10 }}>
+      <div style={{ padding: 10, overflowX: "auto" }}>
         <Table striped hover size="sm" style={{ fontSize: 15 }}>
           <thead>
             <tr>
-              <th>{t("no")}</th>
-              <th>{t("tableNumber")}</th>
-              <th>{t("tableCode")}</th>
-              <th>{t("tableDiscount")}</th>
-              <th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("no")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("tableNumber")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("tableCode")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("tableDiscount")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
                 {t("price")} / {t("bill")}
               </th>
-              <th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
                 {t("served")} / {t("cancel")}
               </th>
-              <th>{t("tableStatus")}</th>
-              <th>{t("paymentType")}</th>
-              <th>{t("time")}</th>
-              <th>{t("staffCheckBill")}</th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("tableStatus")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("paymentType")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("time")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("staffCheckBill")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -348,7 +407,11 @@ export default function DashboardFinance({
                       }).format(_countAmount(item?.orderId))
                     : new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(item?.billAmount)}{" "}
+                      }).format(
+                        item?.billAmount +
+                          item?.taxAmount +
+                          item?.serviceChargeAmount
+                      )}{" "}
                   {selectedCurrency}
                 </td>
                 <td>
@@ -457,7 +520,11 @@ export default function DashboardFinance({
             }}
           >
             <Button
-              disabled={disabledEditBill || selectOrder?.status === "ACTIVE" || profile?.data?.role != "APPZAP_ADMIN"}
+              disabled={
+                disabledEditBill ||
+                selectOrder?.status === "ACTIVE" ||
+                profile?.data?.role != "APPZAP_ADMIN"
+              }
               onClick={handleEditBill}
             >
               {selectOrder?.status === "ACTIVE"
@@ -479,43 +546,57 @@ export default function DashboardFinance({
               </tr>
             </thead>
             <tbody>
-              {dataModal?.map((item, index) => (
-                <tr key={1 + index}>
-                  <td>{index + 1}</td>
-                  <td>{formatMenuName(item?.name, item?.options)}</td>
-                  <td>{item?.quantity}</td>
-                  <td
-                    style={{
-                      color:
-                        item?.status === "WAITING"
-                          ? "#2d00a8"
-                          : item?.status === "DOING"
-                          ? "#c48a02"
-                          : item?.status === "SERVED"
-                          ? "green"
-                          : item?.status === "CART"
-                          ? "#00496e"
-                          : item?.status === "FEEDBACK"
-                          ? "#00496e"
-                          : "#bd0d00",
-                    }}
-                  >
-                    {orderStatus(item?.status)}
-                  </td>
-                  <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
-                  <td>
-                    {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-                      item?.totalPrice ?? (item?.price + (item?.totalOptionPrice ?? 0)) * item?.quantity
-                    )}
-                  </td>
-                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
-                  <td>
-                    {item?.updatedAt
-                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
-                      : "-"}
-                  </td>
-                </tr>
-              ))}
+              {dataModal
+                // ?.filter((item) => item?.status !== "PAID")
+                .map((item, index) => (
+                  <tr key={1 + index}>
+                    <td>{index + 1}</td>
+                    <td>{formatMenuName(item?.name, item?.options)}</td>
+                    <td>{item?.quantity}</td>
+                    <td
+                      style={{
+                        color:
+                          item?.status === "WAITING"
+                            ? "#2d00a8"
+                            : item?.status === "DOING"
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                            ? "green"
+                            : item?.status === "PAID"
+                            ? COLOR_APP
+                            : item?.status === "PRINTBILL"
+                            ? "blue"
+                            : item?.status === "CART"
+                            ? "#00496e"
+                            : item?.status === "FEEDBACK"
+                            ? "#00496e"
+                            : "#bd0d00",
+                      }}
+                    >
+                      {orderStatus(item?.status)}
+                    </td>
+                    <td>
+                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
+                    </td>
+                    <td>
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(
+                        item?.totalPrice ??
+                          (item?.price + (item?.totalOptionPrice ?? 0)) *
+                            item?.quantity
+                      )}
+                    </td>
+                    <td>
+                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </td>
+                    <td>
+                      {item?.updatedAt
+                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </Table>
         </Modal.Body>

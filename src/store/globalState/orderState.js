@@ -1,13 +1,14 @@
 import moment from "moment";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Swal from "sweetalert2";
-import { END_POINT, WAITING_STATUS } from "../../constants";
-import { getLocalData } from "../../constants/api";
+import { WAITING_STATUS } from "../../constants";
+import { END_POINT_SEVER_BILL_ORDER, getLocalData } from "../../constants/api";
 import { updateOrderItem } from "../../services/order";
 import axios from "axios";
 
 export const useOrderState = () => {
   const [userData, setUserData] = useState();
+  const [orderPayBefore, setOrderPayBefore] = useState([]);
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderItems, setOrderItems] = useState([]);
   const [orderItemForPrintBillSelect, setorderItemForPrintBillSelect] =
@@ -19,6 +20,10 @@ export const useOrderState = () => {
   const [orderServed, setOrderServed] = useState([]);
   const [orderDoing, setOrderDoing] = useState([]);
   const [orderWaiting, setOrderWaiting] = useState([]);
+
+  const [printBackground, setPrintBackground] = useState([]);
+  const [onProcessPrintBackground, setOnProcessPrintBackground] =
+    useState(false);
 
   const initialOrderSocket = useMemo(
     () => async () => {
@@ -37,7 +42,7 @@ export const useOrderState = () => {
       await setOrderLoading(true);
       let _userData = await getLocalData();
       await fetch(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/bills?status=CALL_TO_CHECKOUT&storeId=${_userData?.DATA?.storeId}`,
         {
           method: "GET",
@@ -58,14 +63,14 @@ export const useOrderState = () => {
       let _userData = await getLocalData();
 
       const orderDoing = await axios.get(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=DOING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
       );
       const orderWaiting = await axios.get(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=WAITING&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
       );
-      console.log("orderDoing?.data", orderDoing?.data);
+      // console.log("orderDoing?.data", orderDoing?.data);
       setOrderDoing(orderDoing?.data);
       setOrderWaiting(orderWaiting?.data);
     } catch (err) {}
@@ -74,7 +79,7 @@ export const useOrderState = () => {
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
     // console.log("getOrderItemsStore runnnnn");
     try {
-      setOrderItems([]);
+      // setOrderItems([]);
       let time = "";
       if (status === "SERVED" || status === "CANCELED") {
         time = `&startDate=${moment(moment())
@@ -87,7 +92,7 @@ export const useOrderState = () => {
       await setOrderLoading(true);
       let _userData = await getLocalData();
       await fetch(
-        END_POINT +
+        END_POINT_SEVER_BILL_ORDER +
           `/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}` +
           time,
         {
@@ -106,7 +111,7 @@ export const useOrderState = () => {
               }
               return false;
             });
-            console.log("findData", findData);
+            // console.log("findData", findData);
             if (!findData) {
               return e;
             } else {
@@ -192,6 +197,27 @@ export const useOrderState = () => {
     setorderItemForPrintBillSelect(_newOrderItems);
     setOrderItems(_newOrderItems);
   };
+
+  useEffect(() => {
+    if (onProcessPrintBackground) return;
+    if (printBackground.length <= 0) return;
+
+    const processChunks = async (items, limit) => {
+      for (let i = 0; i < items.length; i += limit) {
+        const chunk = items.slice(i, i + limit);
+        await Promise.all(chunk);
+      }
+    };
+
+    setOnProcessPrintBackground(true);
+    const printItems = [...printBackground]; // Create a copy to avoid mutation
+    setPrintBackground([]);
+
+    processChunks(printItems, 5).then(() => {
+      setOnProcessPrintBackground(false);
+    });
+  }, [printBackground, onProcessPrintBackground]);
+
   return {
     soundPlayer,
     callCheckBill,
@@ -213,5 +239,9 @@ export const useOrderState = () => {
     setOrderDoing,
     orderWaiting,
     setOrderWaiting,
+    printBackground,
+    setPrintBackground,
+    orderPayBefore,
+    setOrderPayBefore,
   };
 };

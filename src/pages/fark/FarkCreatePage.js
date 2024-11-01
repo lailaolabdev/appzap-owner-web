@@ -40,8 +40,10 @@ import BillFark80 from "../../components/bill/BillFark80";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
+import useWindowDimensions from "../../helpers/useWindowDimension2";
+import { RiListOrdered2 } from "react-icons/ri";
 
-let limitData = 50;
+const limitData = 50;
 
 export default function FarkCreatePage() {
   const { t } = useTranslation();
@@ -65,20 +67,23 @@ export default function FarkCreatePage() {
   const [printCode, setPrintCode] = useState();
 
   const [widthBill80, setWidthBill80] = useState(0);
-  let billFark80Ref = useRef();
+  const billFark80Ref = useRef();
   // store
   const { storeDetail } = useStore();
   const { printerCounter, printers } = useStore();
+  const { width } = useWindowDimensions();
+  const [cartModal, setCartModal] = useState(false);
+
   // useEffect
   useEffect(() => {
     getData();
   }, []);
   useEffect(() => {
-    const element = billFark80Ref.current;
+    const element = billFark80Ref?.current;
     console.log(element); // 👈️ element here
   }, []);
   useLayoutEffect(() => {
-    setWidthBill80(billFark80Ref.current.offsetWidth);
+    setWidthBill80(billFark80Ref?.current?.offsetWidth);
   }, [billFark80Ref]);
   useEffect(() => {
     if (printCode) {
@@ -227,6 +232,7 @@ export default function FarkCreatePage() {
       var bodyFormData = new FormData();
 
       bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -240,6 +246,7 @@ export default function FarkCreatePage() {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -288,7 +295,7 @@ export default function FarkCreatePage() {
           overflow: "hidden",
         }}
       >
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 20, overflow: "auto" }}>
           <Breadcrumb>
             <Breadcrumb.Item>{t("bury_deposit_layer")}</Breadcrumb.Item>
             <Breadcrumb.Item active>{t("add_list")}</Breadcrumb.Item>

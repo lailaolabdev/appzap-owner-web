@@ -12,7 +12,7 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
   const _createCategory = async (values) => {
     const _localData = await getLocalData();
     if (_localData) {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -33,13 +33,13 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
           // successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
           callback(response);
         })
-        .catch(function (error) {
+        .catch((error) => {
           // errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
         });
     }
   };
   return (
-    <Modal show={open} onHide={onClose}>
+    <Modal show={open} onHide={onClose} centered>
       <Formik
         initialValues={{
           name: "",
@@ -48,13 +48,14 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = `${t('fill_stock_type_name')}`;
+            errors.name = `${t("fill_stock_type_name")}`;
           }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
           _createCategory(values);
-        }}>
+        }}
+      >
         {({
           values,
           errors,
@@ -66,38 +67,38 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
         }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Header closeButton>
-              <Modal.Title>{t('add_stock_type')}</Modal.Title>
+              <Modal.Title>{t("add_stock_type")}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group controlId='exampleForm.ControlInput1'>
-                <Form.Label>{t('stock_type_name')}</Form.Label>
+              <Form.Group controlId="exampleForm.ControlInput1">
+                <Form.Label>{t("stock_type_name")}</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='name'
+                  type="text"
+                  name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder={t('stock_type_name')}
+                  placeholder={t("stock_type_name")}
                 />
               </Form.Group>
               <div style={{ color: "red" }}>
                 {errors.name && touched.name && errors.name}
               </div>
-              <Form.Group controlId='exampleForm.ControlInput1'>
-                <Form.Label>{t('note')}</Form.Label>
+              <Form.Group controlId="exampleForm.ControlInput1">
+                <Form.Label>{t("note")}</Form.Label>
                 <Form.Control
-                  type='text'
-                  name='note'
+                  type="text"
+                  name="note"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.note}
-                  placeholder={t('note...')}
+                  placeholder={t("note...")}
                 />
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant='danger' onClick={onClose}>
-                {t('cancel')}
+              <Button variant="danger" onClick={onClose}>
+                {t("cancel")}
               </Button>
               <Button
                 style={{
@@ -105,8 +106,9 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
                   color: "#ffff",
                   border: 0,
                 }}
-                onClick={() => handleSubmit()}>
-                {t('add')}
+                onClick={() => handleSubmit()}
+              >
+                {t("add")}
               </Button>
             </Modal.Footer>
           </form>

@@ -4,11 +4,26 @@ import axios from "axios";
 import { Formik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Modal, Form, Nav, Image, Row, Col, Spinner, Breadcrumb } from "react-bootstrap";
+import {
+  Button,
+  Modal,
+  Form,
+  Nav,
+  Image,
+  Row,
+  Col,
+  Spinner,
+  Breadcrumb,
+} from "react-bootstrap";
 
 // Local Imports
 import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
-import { MENUS, getLocalData, END_POINT_SEVER, master_menu_api_dev} from "../../constants/api";
+import {
+  MENUS,
+  getLocalData,
+  END_POINT_SEVER,
+  master_menu_api_dev,
+} from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import profileImage from "../../image/profile.png";
@@ -18,6 +33,7 @@ import Box from "../../components/Box";
 import Upload from "../../components/Upload";
 import { useStore } from "../../store";
 import { useNavigate, useParams } from "react-router-dom";
+import { t } from "i18next";
 // import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 
 // Styles and Resources
@@ -26,13 +42,12 @@ export default function FoodList() {
   const navigate = useNavigate();
   const params = useParams();
   const { storeDetail } = useStore();
-  const [showSetting, setShowSetting] = useState(false)
+  const [showSetting, setShowSetting] = useState(false);
   const [isOpened, setIsOpened] = useState(true);
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
 
   const [getIdMenu, setGetIdMenu] = useState();
   const [qtyMenu, setQtyMenu] = useState(0);
@@ -45,18 +60,18 @@ export default function FoodList() {
 
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
-  const [filterCategory, setFilterCategory] = useState("All")
+  const [filterCategory, setFilterCategory] = useState("All");
 
-  const [menuType, setMenuType] = useState("MENU")
-  const [connectMenues, setConnectMenues] = useState([])
-  const [connectMenuId, setConnectMenuId] = useState("")
-  const [dataMenuOption, setDataMenuOption] = useState([])
-  const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([])
+  const [menuType, setMenuType] = useState("MENU");
+  const [connectMenues, setConnectMenues] = useState([]);
+  const [connectMenuId, setConnectMenuId] = useState("");
+  const [dataMenuOption, setDataMenuOption] = useState([]);
+  const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   //update show menu
-  const [detailMenu, setDetailMenu] = useState()
+  const [detailMenu, setDetailMenu] = useState();
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
@@ -82,26 +97,21 @@ export default function FoodList() {
         try {
           const _localData = await getLocalData();
 
-          setIsLoading(true)
-          await fetch(master_menu_api_dev + `/api/menus`, {method: "GET"})
+          setIsLoading(true);
+          await fetch(master_menu_api_dev + `/api/menus`, { method: "GET" })
             .then((response) => response.json())
             .then((json) => {
-              setMenus(json)
+              setMenus(json);
             });
-          setIsLoading(false)
+          setIsLoading(false);
         } catch (err) {
           console.log(err);
-          setIsLoading(false)
+          setIsLoading(false);
         }
-      }
+      };
       fetchFilter();
-
     }
-
-
-  }, [filterName, filterCategory])
-
-
+  }, [filterName, filterCategory]);
 
   const getcategory = async (id) => {
     try {
@@ -118,74 +128,70 @@ export default function FoodList() {
     }
   };
 
-
   const getMenu = async (id, categoryId) => {
     try {
-      setIsLoading(true)
-      await fetch(
-         + `/api/menus`, {
+      setIsLoading(true);
+      await fetch(+`/api/menus`, {
         method: "GET",
       })
         .then((response) => response.json())
         .then((json) => {
-          console.log('json: ', json);
-          setMenus(json)
+          console.log("json: ", json);
+          setMenus(json);
         });
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
-
-
 
   const _addMenuOption = () => {
     setDataMenuOption([
       ...dataMenuOption,
       {
-        name: '',
-        name_en: '',
-        name_cn: '',
-        name_kr: '',
-        price: 0
-      }
-    ])
-  }
+        name: "",
+        name_en: "",
+        name_cn: "",
+        name_kr: "",
+        price: 0,
+      },
+    ]);
+  };
   const _addUpdateMenuOption = () => {
     setDataUpdateMenuOption([
       ...dataUpdateMenuOption,
       {
-        name: '',
-        name_en: '',
-        name_cn: '',
-        name_kr: '',
-        price: 0
-      }
-    ])
-  }
+        name: "",
+        name_en: "",
+        name_cn: "",
+        name_kr: "",
+        price: 0,
+      },
+    ]);
+  };
 
   const _removeItem = (index) => {
     let remove = dataMenuOption.splice(index, 1);
     let _newData = dataMenuOption?.filter((item) => item !== remove[0]);
     setDataMenuOption(_newData);
-  }
+  };
   const _removeItemUpdate = (index) => {
     let remove = dataUpdateMenuOption.splice(index, 1);
     let _newData = dataUpdateMenuOption?.filter((item) => item !== remove[0]);
     setDataUpdateMenuOption(_newData);
-  }
+  };
 
   const _handleChangeMenuOption = (index, field, value) => {
     const updateMenuOption = [...dataMenuOption];
     updateMenuOption[index][field] = value;
     setDataMenuOption(updateMenuOption);
-  }
+  };
   const _handleChangeUpdateMenuOption = (index, field, value) => {
     const updateMenuOption = [...dataUpdateMenuOption];
     updateMenuOption[index][field] = value;
     setDataUpdateMenuOption(updateMenuOption);
-  }
+  };
 
   const [menuOptions, setMenuOptions] = useState([]);
   // lung jak upload leo pic ja ma so u nee
@@ -214,9 +220,10 @@ export default function FoodList() {
         storeId: getTokken?.DATA?.storeId,
         type: menuType,
         sort: values?.sort,
-        menuOption: dataMenuOption
-      }
-      if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION") createData = { ...createData, menuId: connectMenuId }
+        menuOption: dataMenuOption,
+      };
+      if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
+        createData = { ...createData, menuId: connectMenuId };
       const resData = await axios({
         method: "POST",
         url: END_POINT_SEVER + "/v3/menu/create",
@@ -230,18 +237,18 @@ export default function FoodList() {
         handleShow();
         setgetTokken(_localData);
         getMenu(_localData?.DATA?.storeId);
-        setMenuType("MENU")
-        setConnectMenuId("")
+        setMenuType("MENU");
+        setConnectMenuId("");
         successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
-        values.name = ""
-        values.name_en = ""
-        values.name_cn = ""
-        values.name_kr = ""
-        values.quantity = ""
-        values.categoryId = ""
-        values.price = ""
-        values.detail = ""
-        values.unit = ""
+        values.name = "";
+        values.name_en = "";
+        values.name_cn = "";
+        values.name_kr = "";
+        values.quantity = "";
+        values.categoryId = "";
+        values.price = "";
+        values.detail = "";
+        values.unit = "";
       }
     } catch (err) {
       errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
@@ -287,7 +294,7 @@ export default function FoodList() {
   const [dataUpdate, setdataUpdate] = useState("");
   const handleShow2 = async (item) => {
     setdataUpdate(item);
-    setDataUpdateMenuOption(item?.menuOption)
+    setDataUpdateMenuOption(item?.menuOption);
     setShow2(true);
   };
   const _updateCategory = async (values) => {
@@ -316,7 +323,7 @@ export default function FoodList() {
           images: [...values?.images],
           type: values?.type,
           sort: values?.sort,
-          menuOption: dataUpdateMenuOption
+          menuOption: dataUpdateMenuOption,
         },
       },
       headers: headers,
@@ -351,69 +358,72 @@ export default function FoodList() {
   };
 
   const handleChangeMenuType = async (e) => {
-    setMenuType(e.target.value)
+    setMenuType(e.target.value);
 
     if (e.target.value === "MENUOPTION") {
-      await fetch(MENUS + `/?isOpened=true&storeId=${getTokken?.DATA?.storeId}&type=MENU`, {
-        method: "GET",
-      })
+      await fetch(
+        MENUS + `/?isOpened=true&storeId=${getTokken?.DATA?.storeId}&type=MENU`,
+        {
+          method: "GET",
+        }
+      )
         .then((response) => response.json())
         .then((json) => {
-          setConnectMenues(json)
+          setConnectMenues(json);
         });
     }
-  }
+  };
 
   const handleChangeConnectMenu = (e) => {
-    setConnectMenuId(e.target.value)
-  }
-
+    setConnectMenuId(e.target.value);
+  };
 
   const _menuList = () => {
     navigate(`/food-setting/limit/40/page/1`);
   };
 
   const _category = () => {
-    navigate(
-      `/food-setting/food-type/limit/40/page/1`
-    );
+    navigate(`/food-setting/food-type/limit/40/page/1`);
   };
   const _setting = () => {
-    navigate(
-      `/settingStore/${storeDetail?._id}`
-    );
+    navigate(`/settingStore/${storeDetail?._id}`);
   };
 
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item onClick={() => _setting()}>ຕັ້ງຄ່າຮ້ານອາຫານ</Breadcrumb.Item>
+          <Breadcrumb.Item onClick={() => _setting()}>
+            ຕັ້ງຄ່າຮ້ານອາຫານ
+          </Breadcrumb.Item>
           <Breadcrumb.Item active>ເມນູອາຫານ</Breadcrumb.Item>
         </Breadcrumb>
         <div style={{ marginBottom: 8 }}>
           <Nav variant="tabs" defaultActiveKey="/settingStore/menu">
             <Nav.Item>
-              <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
+              <Nav.Link
+                eventKey="/settingStore/menu"
+                onClick={() => _menuList()}
+              >
                 ເມນູອາຫານ
               </Nav.Link>
             </Nav.Item>
-            
+
             <Nav.Item>
-              <Nav.Link eventKey="/settingStore/food-type" onClick={() => _category()} >
+              <Nav.Link
+                eventKey="/settingStore/food-type"
+                onClick={() => _category()}
+              >
                 ປະເພດອາຫານ
               </Nav.Link>
             </Nav.Item>
-
-            
-            
           </Nav>
         </div>
         <Row>
           <Col md="12">
             <Row>
               <Col md="5">
-                <label>ເລືອກປະເພດ</label>
+                <label>{t("chose_type")}</label>
                 <select
                   className="form-control"
                   value={filterCategory}
@@ -441,9 +451,20 @@ export default function FoodList() {
                   }}
                 />
               </Col>
-              <Col md="2" style={{ marginTop: 32, display: "flex", justifyContent: "end" }}>
+              <Col
+                md="2"
+                style={{
+                  marginTop: 32,
+                  display: "flex",
+                  justifyContent: "end",
+                }}
+              >
                 <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#ffff",
+                    border: 0,
+                  }}
                   onClick={handleShow}
                 >
                   + ເພີ່ມເມນູອາຫານ
@@ -467,42 +488,48 @@ export default function FoodList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {isLoading ?
+                  {isLoading ? (
                     <td colSpan={9}>
                       <Spinner animation="border" variant="warning" />
                     </td>
-                    : Menus?.map(
-                      (data, index) => {
-                        return (
-                          <tr key={index} >
-                            <td>{index + 1}</td>
-                            <td>{data?.sort ?? 0}</td>
-                            <td>
-                             
-                            </td>
-                            <td>{data?.categoryId?.name}</td>
-                            <td style={{ textAlign: "start" }}>{data?.name ?? ""}<br />{data?.name_en ?? ""}<br />{data?.name_cn ?? ""}<br />{data?.name_kr ?? ""}</td>
-                            <td>{moneyCurrency(data?.price)}</td>
-                            <td>
-                              <FontAwesomeIcon
-                                icon={faEdit}
-                                onClick={() => handleShow2(data)}
-                                style={{ color: COLOR_APP, cursor: "pointer" }}
-                              />
-                              <FontAwesomeIcon
-                                icon={faTrashAlt}
-                                style={{
-                                  marginLeft: 20,
-                                  color: "red",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => handleShow3(data?._id, data?.name)}
-                              />
-                            </td>
-                          </tr>
-                        );
-                      }
-                    )}
+                  ) : (
+                    Menus?.map((data, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{data?.sort ?? 0}</td>
+                          <td></td>
+                          <td>{data?.categoryId?.name}</td>
+                          <td style={{ textAlign: "start" }}>
+                            {data?.name ?? ""}
+                            <br />
+                            {data?.name_en ?? ""}
+                            <br />
+                            {data?.name_cn ?? ""}
+                            <br />
+                            {data?.name_kr ?? ""}
+                          </td>
+                          <td>{moneyCurrency(data?.price)}</td>
+                          <td>
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              onClick={() => handleShow2(data)}
+                              style={{ color: COLOR_APP, cursor: "pointer" }}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              style={{
+                                marginLeft: 20,
+                                color: "red",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => handleShow3(data?._id, data?.name)}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -516,17 +543,13 @@ export default function FoodList() {
           onSubmit={_confirmeDelete}
         />
         {/* add menu */}
-        <Modal
-          show={show}
-          onHide={handleClose}
-          keyboard={false}
-        >
+        <Modal show={show} onHide={handleClose} keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>ເພີ່ມເມນູອາຫານ</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
-              recommended:false,
+              recommended: false,
               name: "",
               name_en: "",
               name_cn: "",
@@ -588,25 +611,33 @@ export default function FoodList() {
                       }}
                     />
                   </Box>
-                  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
                     <label>ສະຖານະເປີດ/ປິດ</label>
                     <input
                       type="checkbox"
                       id="isOpened"
                       checked={values?.isOpened}
-                      onChange={() => setFieldValue("isOpened", !values.isOpened)}
+                      onChange={() =>
+                        setFieldValue("isOpened", !values.isOpened)
+                      }
                     />
                     <label for="isOpened">
                       {values?.isOpened ? "ເປີດ" : "ປິດ"}
                     </label>
                   </div>
-                   <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
                     <label>ເມນູແນະນຳ</label>
                     <input
                       type="checkbox"
                       id="recommended"
                       checked={values?.recommended}
-                      onChange={() => setFieldValue("recommended", !values.recommended)}
+                      onChange={() =>
+                        setFieldValue("recommended", !values.recommended)
+                      }
                     />
                     <label for="recommended">
                       {values?.recommended ? "ເປີດ" : "ປິດ"}
@@ -623,7 +654,9 @@ export default function FoodList() {
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ປະເພດອາຫານ<span style={{ color: "red" }}>*</span></Form.Label>
+                    <Form.Label>
+                      ປະເພດອາຫານ<span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control
                       as="select"
                       name="categoryId"
@@ -633,8 +666,8 @@ export default function FoodList() {
                       style={{
                         border:
                           errors.categoryId &&
-                            touched.categoryId &&
-                            errors.categoryId
+                          touched.categoryId &&
+                          errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
@@ -661,23 +694,33 @@ export default function FoodList() {
                     </Form.Control>
                   </Form.Group>
 
-                  {menuType === "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="connectMenuId"
-                      onChange={handleChangeConnectMenu}
-                      value={connectMenuId}
-                    >
-                      <option selected={true} disabled={true} value="">ເລືອກເມນູທີ່ເຊື່ອມ</option>
-                      {connectMenues.map((item, index) => <option key={index} value={item?._id}>{item?.name}</option>)}
-                    </Form.Control>
-                  </Form.Group>}
+                  {menuType === "MENUOPTION" && (
+                    <Form.Group controlId="exampleForm.ControlSelect1">
+                      <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="connectMenuId"
+                        onChange={handleChangeConnectMenu}
+                        value={connectMenuId}
+                      >
+                        <option selected={true} disabled={true} value="">
+                          ເລືອກເມນູທີ່ເຊື່ອມ
+                        </option>
+                        {connectMenues.map((item, index) => (
+                          <option key={index} value={item?._id}>
+                            {item?.name}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                  )}
 
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>ຊື່ອາຫານ<span style={{ color: "red" }}>*</span></Form.Label>
+                        <Form.Label>
+                          ຊື່ອາຫານ<span style={{ color: "red" }}>*</span>
+                        </Form.Label>
                         <Form.Control
                           type="text"
                           name="name"
@@ -773,92 +816,135 @@ export default function FoodList() {
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
-                    {dataMenuOption?.length > 0 && dataMenuOption?.map((item, index) => (
-                      <div key={index}>
-                        <div className="pl-4 row">
-                          <Col xs={11}>
-                            <Row>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name"
-                                    onChange={(e) => _handleChangeMenuOption(index, "name", e.target.value)}
-                                    value={item?.name}
-                                    placeholder="ຊື່ອາຫານ..."
-                                    isInvalid={!item?.name}
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_en"
-                                    onChange={(e) => _handleChangeMenuOption(index, "name_en", e.target.value)}
-                                    value={item?.name_en}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_cn"
-                                    onChange={(e) => _handleChangeMenuOption(index, "name_cn", e.target.value)}
-                                    value={item?.name_cn}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_kr"
-                                    onChange={(e) => _handleChangeMenuOption(index, "name_kr", e.target.value)}
-                                    value={item?.name_kr}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col xs={6}>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ລາຄາ</Form.Label>
-                                  <Form.Control
-                                    type="number"
-                                    name="price"
-                                    onChange={(e) => _handleChangeMenuOption(index, "price", e.target.value)}
-                                    value={item?.price}
-                                    placeholder="ລາຄາ..."
-                                    min="0"
-                                    isInvalid={!item?.price ? "required" : ""}
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col className="d-flex align-items-center justify-content-center">
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              style={{ color: "red", cursor: 'pointer' }}
-                              onClick={() => _removeItem(index)}
-                            />
-                          </Col>
+                    {dataMenuOption?.length > 0 &&
+                      dataMenuOption?.map((item, index) => (
+                        <div key={index}>
+                          <div className="pl-4 row">
+                            <Col xs={11}>
+                              <Row>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name"
+                                      onChange={(e) =>
+                                        _handleChangeMenuOption(
+                                          index,
+                                          "name",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name}
+                                      placeholder="ຊື່ອາຫານ..."
+                                      isInvalid={!item?.name}
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_en"
+                                      onChange={(e) =>
+                                        _handleChangeMenuOption(
+                                          index,
+                                          "name_en",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_en}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_cn"
+                                      onChange={(e) =>
+                                        _handleChangeMenuOption(
+                                          index,
+                                          "name_cn",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_cn}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_kr"
+                                      onChange={(e) =>
+                                        _handleChangeMenuOption(
+                                          index,
+                                          "name_kr",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_kr}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col xs={6}>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ລາຄາ</Form.Label>
+                                    <Form.Control
+                                      type="number"
+                                      name="price"
+                                      onChange={(e) =>
+                                        _handleChangeMenuOption(
+                                          index,
+                                          "price",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.price}
+                                      placeholder="ລາຄາ..."
+                                      min="0"
+                                      isInvalid={!item?.price ? "required" : ""}
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col className="d-flex align-items-center justify-content-center">
+                              <FontAwesomeIcon
+                                icon={faTrashAlt}
+                                style={{ color: "red", cursor: "pointer" }}
+                                onClick={() => _removeItem(index)}
+                              />
+                            </Col>
+                          </div>
+                          <hr />
                         </div>
-                        <hr />
-                      </div>
-                    ))}
-                    <div><Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
+                      ))}
+                    <div>
+                      <Button
+                        style={{
+                          backgroundColor: COLOR_APP,
+                          color: "#ffff",
+                          border: 0,
+                          marginTop: 10,
+                        }}
+                        onClick={() => _addMenuOption()}
+                      >
+                        + ເມນູສັ່ງເພີ່ມ
+                      </Button>
+                    </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ໝາຍເຫດ</Form.Label>
@@ -873,7 +959,13 @@ export default function FoodList() {
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                  <Button variant="danger" onClick={() => { handleClose(); setDataMenuOption([]) }}>
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      handleClose();
+                      setDataMenuOption([]);
+                    }}
+                  >
                     ຍົກເລີກ
                   </Button>
                   <Button
@@ -904,7 +996,7 @@ export default function FoodList() {
           </Modal.Header>
           <Formik
             initialValues={{
-              recommended:dataUpdate?.recommended,
+              recommended: dataUpdate?.recommended,
               name: dataUpdate?.name,
               name_en: dataUpdate?.name_en,
               name_cn: dataUpdate?.name_cn,
@@ -918,7 +1010,7 @@ export default function FoodList() {
               detail: dataUpdate?.detail,
               unit: dataUpdate?.unit,
               isOpened: dataUpdate?.isOpened,
-              type: dataUpdate?.type
+              type: dataUpdate?.type,
             }}
             validate={(values) => {
               const errors = {};
@@ -963,25 +1055,33 @@ export default function FoodList() {
                       }}
                     />
                   </Box>
-                  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
                     <label>ສະຖານະເປີດ/ປິດ</label>
                     <input
                       type="checkbox"
                       id="isOpened"
                       checked={values?.isOpened}
-                      onChange={() => setFieldValue("isOpened", !values.isOpened)}
+                      onChange={() =>
+                        setFieldValue("isOpened", !values.isOpened)
+                      }
                     />
                     <label for="isOpened">
                       {values?.isOpened ? "ເປີດ" : "ປິດ"}
                     </label>
                   </div>
-                  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
                     <label>ເມນູແນະນຳ</label>
                     <input
                       type="checkbox"
                       id="recommended"
                       checked={values?.recommended}
-                      onChange={() => setFieldValue("recommended", !values.recommended)}
+                      onChange={() =>
+                        setFieldValue("recommended", !values.recommended)
+                      }
                     />
                     <label for="recommended">
                       {values?.recommended ? "ເປີດ" : "ປິດ"}
@@ -1027,18 +1127,26 @@ export default function FoodList() {
                     </Form.Control>
                   </Form.Group>
 
-                  {menuType === "MENUOPTION" && <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="connectMenuId"
-                      onChange={handleChangeConnectMenu}
-                      value={connectMenuId}
-                    >
-                      <option selected={true} disabled={true} value="">ເລືອກເມນູທີ່ເຊື່ອມ</option>
-                      {connectMenues.map((item, index) => <option key={index} value={item?._id}>{item?.name}</option>)}
-                    </Form.Control>
-                  </Form.Group>}
+                  {menuType === "MENUOPTION" && (
+                    <Form.Group controlId="exampleForm.ControlSelect1">
+                      <Form.Label>ເມນູທີ່ເຊື່ອມ</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="connectMenuId"
+                        onChange={handleChangeConnectMenu}
+                        value={connectMenuId}
+                      >
+                        <option selected={true} disabled={true} value="">
+                          ເລືອກເມນູທີ່ເຊື່ອມ
+                        </option>
+                        {connectMenues.map((item, index) => (
+                          <option key={index} value={item?._id}>
+                            {item?.name}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                  )}
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
@@ -1071,7 +1179,9 @@ export default function FoodList() {
                           placeholder="ຊື່ອາຫານ..."
                           style={{
                             border:
-                              errors.name_en && touched.name_en && errors.name_en
+                              errors.name_en &&
+                              touched.name_en &&
+                              errors.name_en
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1092,7 +1202,9 @@ export default function FoodList() {
                           placeholder="ຊື່ອາຫານ..."
                           style={{
                             border:
-                              errors.name_cn && touched.name_cn && errors.name_cn
+                              errors.name_cn &&
+                              touched.name_cn &&
+                              errors.name_cn
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1111,7 +1223,9 @@ export default function FoodList() {
                           placeholder="ຊື່ອາຫານ..."
                           style={{
                             border:
-                              errors.name_kr && touched.name_kr && errors.name_kr
+                              errors.name_kr &&
+                              touched.name_kr &&
+                              errors.name_kr
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -1138,92 +1252,135 @@ export default function FoodList() {
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ເມນູສັ່ງເພີ່ມ</Form.Label>
-                    {dataUpdateMenuOption?.length > 0 && dataUpdateMenuOption?.map((item, index) => (
-                      <div key={index}>
-                        <div className="pl-4 row">
-                          <Col xs={11}>
-                            <Row>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name"
-                                    onChange={(e) => _handleChangeUpdateMenuOption(index, "name", e.target.value)}
-                                    value={item?.name}
-                                    placeholder="ຊື່ອາຫານ..."
-                                    isInvalid={!item?.name}
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_en"
-                                    onChange={(e) => _handleChangeUpdateMenuOption(index, "name_en", e.target.value)}
-                                    value={item?.name_en}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_cn"
-                                    onChange={(e) => _handleChangeUpdateMenuOption(index, "name_cn", e.target.value)}
-                                    value={item?.name_cn}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                              <Col>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
-                                  <Form.Control
-                                    type="text"
-                                    name="name_kr"
-                                    onChange={(e) => _handleChangeUpdateMenuOption(index, "name_kr", e.target.value)}
-                                    value={item?.name_kr}
-                                    placeholder="ຊື່ອາຫານ..."
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                            <Row>
-                              <Col xs={6}>
-                                <Form.Group controlId="exampleForm.ControlInput1">
-                                  <Form.Label>ລາຄາ</Form.Label>
-                                  <Form.Control
-                                    type="number"
-                                    name="price"
-                                    onChange={(e) => _handleChangeUpdateMenuOption(index, "price", e.target.value)}
-                                    value={item?.price}
-                                    placeholder="ລາຄາ..."
-                                    min="0"
-                                    isInvalid={!item?.price ? "required" : ""}
-                                  />
-                                </Form.Group>
-                              </Col>
-                            </Row>
-                          </Col>
-                          <Col className="d-flex align-items-center justify-content-center">
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              style={{ color: "red", cursor: 'pointer' }}
-                              onClick={() => _removeItemUpdate(index)}
-                            />
-                          </Col>
+                    {dataUpdateMenuOption?.length > 0 &&
+                      dataUpdateMenuOption?.map((item, index) => (
+                        <div key={index}>
+                          <div className="pl-4 row">
+                            <Col xs={11}>
+                              <Row>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name"
+                                      onChange={(e) =>
+                                        _handleChangeUpdateMenuOption(
+                                          index,
+                                          "name",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name}
+                                      placeholder="ຊື່ອາຫານ..."
+                                      isInvalid={!item?.name}
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_en"
+                                      onChange={(e) =>
+                                        _handleChangeUpdateMenuOption(
+                                          index,
+                                          "name_en",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_en}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_cn"
+                                      onChange={(e) =>
+                                        _handleChangeUpdateMenuOption(
+                                          index,
+                                          "name_cn",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_cn}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                                <Col>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                                    <Form.Control
+                                      type="text"
+                                      name="name_kr"
+                                      onChange={(e) =>
+                                        _handleChangeUpdateMenuOption(
+                                          index,
+                                          "name_kr",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.name_kr}
+                                      placeholder="ຊື່ອາຫານ..."
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                              <Row>
+                                <Col xs={6}>
+                                  <Form.Group controlId="exampleForm.ControlInput1">
+                                    <Form.Label>ລາຄາ</Form.Label>
+                                    <Form.Control
+                                      type="number"
+                                      name="price"
+                                      onChange={(e) =>
+                                        _handleChangeUpdateMenuOption(
+                                          index,
+                                          "price",
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item?.price}
+                                      placeholder="ລາຄາ..."
+                                      min="0"
+                                      isInvalid={!item?.price ? "required" : ""}
+                                    />
+                                  </Form.Group>
+                                </Col>
+                              </Row>
+                            </Col>
+                            <Col className="d-flex align-items-center justify-content-center">
+                              <FontAwesomeIcon
+                                icon={faTrashAlt}
+                                style={{ color: "red", cursor: "pointer" }}
+                                onClick={() => _removeItemUpdate(index)}
+                              />
+                            </Col>
+                          </div>
+                          <hr />
                         </div>
-                        <hr />
-                      </div>
-                    ))}
-                    <div><Button style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0, marginTop: 10 }} onClick={() => _addUpdateMenuOption()}>+ ເມນູສັ່ງເພີ່ມ</Button></div>
+                      ))}
+                    <div>
+                      <Button
+                        style={{
+                          backgroundColor: COLOR_APP,
+                          color: "#ffff",
+                          border: 0,
+                          marginTop: 10,
+                        }}
+                        onClick={() => _addUpdateMenuOption()}
+                      >
+                        + ເມນູສັ່ງເພີ່ມ
+                      </Button>
+                    </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>ໝາຍເຫດ</Form.Label>

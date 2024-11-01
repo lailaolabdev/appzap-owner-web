@@ -16,7 +16,7 @@ import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
   const { t } = useTranslation();
-  let billRef = useRef(null);
+  const billRef = useRef(null);
 
   const [selectPrinter, setSelectPrinter] = useState();
 
@@ -35,7 +35,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
         (e) => e?._id === _printerCounters?.BILL
       );
 
-      let imageFormater = await html2canvas(billRef.current, {
+      const imageFormater = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
@@ -60,6 +60,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -69,6 +70,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
           ip: myPrinter?.ip,
           type: myPrinter?.type,
           port: "9100",
+          width: myPrinter?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -103,7 +105,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
   };
 
   return (
-    <Modal show={open} onHide={onClose}>
+    <Modal show={open} onHide={onClose} centered>
       <div ref={billRef}>
         <Modal.Body>
           <div className="d-flex justify-content-center align-items-center flex-column">

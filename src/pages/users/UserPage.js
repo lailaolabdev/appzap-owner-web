@@ -36,7 +36,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
 
-let limitData = 10;
+const limitData = 10;
 
 export default function UserPage() {
   const { t } = useTranslation();
@@ -90,7 +90,7 @@ export default function UserPage() {
       findby += `storeId=${storeDetail?._id}&`;
 
       const _data = await getUserCountV5(findby, TOKEN);
-      console.log("newLimit:---->", _data?.count)
+      console.log("newLimit:---->", _data?.count);
       setTotalPagination(Math.ceil(_data?.count / limitData));
     } catch (err) {
       console.log("err", err);
@@ -107,8 +107,8 @@ export default function UserPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('staff')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('staff_report')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
         </Breadcrumb>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
@@ -132,7 +132,7 @@ export default function UserPage() {
             }}
           >
             <span>
-              <IoPeople /> {t('staff_report')}
+              <IoPeople /> {t("staff_report")}
             </span>
             <Button
               variant="dark"
@@ -141,10 +141,14 @@ export default function UserPage() {
                 setPopup({ PopUpCreateUser: true });
               }}
             >
-              <MdAssignmentAdd /> {t('add_list')}
+              <MdAssignmentAdd /> {t("add_list")}
             </Button>
           </Card.Header>
-          <Card.Body>
+          <Card.Body
+            style={{
+              overflowX: "auto",
+            }}
+          >
             {isLoading ? (
               <div
                 style={{
@@ -160,12 +164,48 @@ export default function UserPage() {
               <table style={{ width: "100%" }}>
                 <tr>
                   <th>#</th>
-                  <th>{t('image')}</th>
-                  <th>{t('name')}</th>
-                  <th>Username</th>
-                  <th>{t('tel')}</th>
-                  <th>{t('permision')}</th>
-                  <th>{t('manage')}</th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("image")}
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("name")}
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("user_name")}
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("tel")}
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("permision")}
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("manage")}
+                  </th>
                 </tr>
                 {userData?.map((e, i) => (
                   <tr>
@@ -215,7 +255,7 @@ export default function UserPage() {
                             setPopup({ PopUpConfirmDeletion: true });
                           }}
                         >
-                          {t('delete')}
+                          {t("delete")}
                         </Button>
                       </div>
                     </td>
@@ -234,10 +274,14 @@ export default function UserPage() {
           >
             <ReactPaginate
               previousLabel={
-                <span className="glyphicon glyphicon-chevron-left">{`${t('previous')}`}</span>
+                <span className="glyphicon glyphicon-chevron-left">{`${t(
+                  "previous"
+                )}`}</span>
               }
               nextLabel={
-                <span className="glyphicon glyphicon-chevron-right">{`${t('next')}`}</span>
+                <span className="glyphicon glyphicon-chevron-right">{`${t(
+                  "next"
+                )}`}</span>
               }
               breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
               breakClassName={"break-me"}

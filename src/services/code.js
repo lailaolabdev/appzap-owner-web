@@ -25,7 +25,7 @@ export const callCheckOutPrintBillOnly = async (id) => {
   try {
     const url = `${END_POINT_APP}/v3/code/call-check-out-print-bill-only/${id}`;
     const token = await getHeaders();
-    console.log({token})
+    console.log({ token });
     const reservation = await axios.put(
       url,
       {},
@@ -33,7 +33,48 @@ export const callCheckOutPrintBillOnly = async (id) => {
         headers: token,
       }
     );
-    console.log({reservation})
+    console.log({ reservation });
+    return reservation;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callPayBeforePrintBillOnly = async (id) => {
+  try {
+    const url = `${END_POINT_APP}/v3/code/call-pay-before-print-bill/${id}`;
+    const token = await getHeaders();
+    console.log({ token });
+    const reservation = await axios.put(
+      url,
+      {},
+      {
+        headers: token,
+      }
+    );
+    console.log({ reservation });
+    return reservation;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const callToUpdatePrintBillBefore = async (id, body) => {
+  try {
+    console.log("BODY: ", body);
+    const url = `${END_POINT_APP}/v3/bill-checkout`;
+    const token = await getHeaders();
+    const reservation = await axios.put(
+      url,
+      {
+        id: id,
+        data: body,
+      },
+      {
+        headers: token,
+      }
+    );
+    console.log({ reservation });
     return reservation;
   } catch (error) {
     return error;

@@ -17,7 +17,7 @@ import { BODY, COLOR_APP } from "../../constants";
 import {
   MENUS,
   getLocalData,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
@@ -28,9 +28,9 @@ import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 
 const OPTION_PRICE_CURRENCY = {
-    LAK: "LAK",
+  LAK: "LAK",
   THB: "THB",
-  USD: "USD"
+  USD: "USD",
 };
 
 export default function MenuListOption() {
@@ -52,7 +52,9 @@ export default function MenuListOption() {
   const [getTokken, setgetTokken] = useState();
   const [filterName, setFilterName] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
-  const [optionPriceCurrency, setOptionPriceCurrency] = useState(OPTION_PRICE_CURRENCY.LAK);
+  const [optionPriceCurrency, setOptionPriceCurrency] = useState(
+    OPTION_PRICE_CURRENCY.LAK
+  );
   const [dataMenuOption, setDataMenuOption] = useState([]);
   const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([]);
   const [detailMenu, setDetailMenu] = useState();
@@ -86,8 +88,8 @@ export default function MenuListOption() {
           setIsLoading(true);
           await fetch(
             MENUS +
-            `/?storeId=${_localData?.DATA?.storeId}${(filterCategory === "All") ? ""
-              : `&categoryId=${filterCategory}`
+              `/?storeId=${_localData?.DATA?.storeId}${
+                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
               }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
@@ -110,7 +112,8 @@ export default function MenuListOption() {
   const getcategory = async (id) => {
     try {
       await fetch(
-        END_POINT_SEVER + `/v3/categories?storeId=${id}&isDeleted=false`,
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/categories?storeId=${id}&isDeleted=false`,
         {
           method: "GET",
         }
@@ -126,7 +129,7 @@ export default function MenuListOption() {
     try {
       setIsLoading(true);
       const res = await axios.get(
-        END_POINT_SEVER + `/v3/restaurant/${storeId}/menu-options`
+        END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`
       );
       setMenuOptions(res.data);
       setIsLoading(false);
@@ -135,7 +138,6 @@ export default function MenuListOption() {
       setIsLoading(false);
     }
   };
-  
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -159,7 +161,7 @@ export default function MenuListOption() {
   const _createMenuOption = async (values) => {
     try {
       const _localData = await getLocalData();
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -173,7 +175,8 @@ export default function MenuListOption() {
       };
 
       const resData = await axios.post(
-        END_POINT_SEVER + `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
         createData,
         { headers: headers }
       );
@@ -181,16 +184,16 @@ export default function MenuListOption() {
       if (resData?.data) {
         getMenuOptions(_localData?.DATA?.storeId);
         handleClose();
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+        successAdd(t("add_success"));
       }
     } catch (err) {
-      errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("add_fail"));
     }
   };
 
   const _updateMenuOption = async (values) => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
@@ -203,7 +206,8 @@ export default function MenuListOption() {
       };
 
       const resData = await axios.put(
-        END_POINT_SEVER + `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
         updateData,
         { headers: headers }
       );
@@ -211,33 +215,33 @@ export default function MenuListOption() {
       if (resData?.data) {
         handleClose2();
         getMenuOptions(getTokken?.DATA?.storeId);
-        successAdd("ການແກ້ໄຂຂໍ້ມູນສຳເລັດ");
+        successAdd(t("edit_success"));
       }
     } catch (err) {
-      errorAdd("ການແກ້ໄຂຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("edit_failed"));
     }
   };
 
   const _confirmeDelete = async () => {
     try {
-      let header = await getHeaders();
+      const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
 
       const resData = await axios.delete(
-        END_POINT_SEVER + `/v3/menu-option/${dateDelete?.id}/delete`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${dateDelete?.id}/delete`,
         { headers: headers }
       );
 
       if (resData?.data) {
         getMenuOptions(getTokken?.DATA?.storeId);
         handleClose3();
-        successAdd("ການລົບຂໍ້ມູນສຳເລັດ");
+        successAdd(t("delete_success"));
       }
     } catch (err) {
-      errorAdd("ການລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("delete_failed"));
     }
   };
 
@@ -254,22 +258,25 @@ export default function MenuListOption() {
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
+  const _categoryType = () => {
+    navigate(`/settingStore/menu/category-type`);
+  };
 
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('restaurant_setting')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('option_menu')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("option_menu")}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
-          <Nav variant="tabs" defaultActiveKey='/settingStore/menu-option'>
+          <Nav variant="tabs" defaultActiveKey="/settingStore/menu-option">
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                {t('menu')}
+                {t("menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -277,7 +284,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t('option_menu')}
+                {t("option_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -285,7 +292,15 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t('food_type')}
+                {t("food_type")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/category-type"
+                onClick={() => _categoryType()}
+              >
+                {t("categoryType")}
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -293,7 +308,13 @@ export default function MenuListOption() {
 
         <Row>
           <Col sm="12">
-            <Row style={{ marginTop: 14, marginBottom: 14, justifyContent: "flex-end" }}>
+            <Row
+              style={{
+                marginTop: 14,
+                marginBottom: 14,
+                justifyContent: "flex-end",
+              }}
+            >
               <Col
                 md="10"
                 style={{
@@ -302,7 +323,7 @@ export default function MenuListOption() {
                   justifyContent: "end",
                 }}
               >
-                ** ເຊັ່ນ: ຮ້ອນ,ເຢັນ,ປັ່ນ,ນ້ອຍ,ກາງ,ໃຫຍ່ (ບໍ່ຕັດສະຕ໋ອກ)
+                {t("example")}
               </Col>
 
               <Col
@@ -321,7 +342,7 @@ export default function MenuListOption() {
                   }}
                   onClick={handleShow}
                 >
-                  + ເພີ່ມອ໋ອບຊັນໃຫມ່
+                  + {t("add_new_options")}
                 </Button>
               </Col>
             </Row>
@@ -332,9 +353,9 @@ export default function MenuListOption() {
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">ຊື່ອ໋ອບຊັນ</th>
-                  <th scope="col">ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</th>
-                  <th scope="col">ຈັດການ</th>
+                  <th scope="col">{t("options_name")}</th>
+                  <th scope="col">{t("price_addjust")}</th>
+                  <th scope="col">{t("manage_options")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -386,21 +407,21 @@ export default function MenuListOption() {
         {/* add menu */}
         <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>ເພີ່ມອ໋ອບຊັນ</Modal.Title>
+            <Modal.Title>{t("add_options")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
               name: "",
               price: 0,
-              currency: OPTION_PRICE_CURRENCY.LAK
+              currency: OPTION_PRICE_CURRENCY.LAK,
             }}
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່";
+                errors.name = "Please Enter Option Name...";
               }
               if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາທີ່ເພີ່ມຂຶ້ນ";
+                errors.price = "Please Enter Price Adjustment...";
               }
               return errors;
             }}
@@ -419,14 +440,14 @@ export default function MenuListOption() {
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ອ໋ອບຊັນ</Form.Label>
+                    <Form.Label>{t("options_name")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ອ໋ອບຊັນ..."
+                      placeholder="Enter Option Name..."
                       style={{
                         border:
                           errors.name && touched.name && errors.name
@@ -437,14 +458,14 @@ export default function MenuListOption() {
                   </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</Form.Label>
+                    <Form.Label>{t("price_addjust")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values?.price}
-                      placeholder="ລາຄາ..."
+                      placeholder="Enter Price Adjustment..."
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -469,7 +490,7 @@ export default function MenuListOption() {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -479,22 +500,18 @@ export default function MenuListOption() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
             )}
           </Formik>
         </Modal>
+
         {/* update menu */}
-        <Modal
-          show={show2}
-          onHide={handleClose2}
-          keyboard={false}
-          size="lg"
-        >
+        <Modal show={show2} onHide={handleClose2} keyboard={false} size="lg">
           <Modal.Header closeButton>
-            <Modal.Title>ອັບເດດອ໋ອບຊັນ</Modal.Title>
+            <Modal.Title>{t("update_options")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -527,14 +544,14 @@ export default function MenuListOption() {
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ອ໋ອບຊັນ</Form.Label>
+                    <Form.Label>{t("options_name")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ອ໋ອບຊັນ..."
+                      placeholder={t("enter_options_name")}
                       style={{
                         border:
                           errors.name && touched.name && errors.name
@@ -545,14 +562,14 @@ export default function MenuListOption() {
                   </Form.Group>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ລາຄາທີ່ຈະເພີ່ມຂຶ້ນ</Form.Label>
+                    <Form.Label>{t("price_addjust")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="price"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values?.price}
-                      placeholder="ລາຄາ..."
+                      placeholder={t("enter_price_adjust")}
                       style={{
                         border:
                           errors.price && touched.price && errors.price
@@ -577,7 +594,7 @@ export default function MenuListOption() {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -587,14 +604,13 @@ export default function MenuListOption() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
             )}
           </Formik>
         </Modal>
-        
       </Box>
     </div>
   );

@@ -16,7 +16,11 @@ import {
   getUserReport,
 } from "../../services/report";
 import _ from "lodash";
-import { BLUETOOTH_PRINTER_PORT, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
@@ -33,7 +37,7 @@ export default function PopUpPrintMenuHistoryComponent({
   const [menuReport, setMenuReport] = useState([]);
 
   // provider
-  const {printerCounter, printers, storeDetail } = useStore();
+  const { printerCounter, printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     getMenuReportData(startDate);
@@ -73,6 +77,7 @@ export default function PopUpPrintMenuHistoryComponent({
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
@@ -90,6 +95,7 @@ export default function PopUpPrintMenuHistoryComponent({
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: myPrinter?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -102,7 +108,7 @@ export default function PopUpPrintMenuHistoryComponent({
       );
       await Swal.fire({
         icon: "success",
-        title: `${t('print_success')}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -110,7 +116,7 @@ export default function PopUpPrintMenuHistoryComponent({
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fail')}`,
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -135,7 +141,7 @@ export default function PopUpPrintMenuHistoryComponent({
       //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
       //   ຈ່າຍເງິນໂອນ: transferTotalBill,
       // });
-    } catch (err) { }
+    } catch (err) {}
   };
 
   return (
@@ -144,7 +150,7 @@ export default function PopUpPrintMenuHistoryComponent({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('print')}
+        <BsPrinter /> {t("print")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -170,20 +176,22 @@ export default function PopUpPrintMenuHistoryComponent({
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              {t('sale_report_by_menu')}
+              {t("sale_report_by_menu")}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t('start')}: {startDate} 00:00:00
+              {t("start")}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("to")}: {startDate} 23:59:59
+            </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <TableComponent>
               <tr style={{ fontWeight: "bold" }}>
                 <td style={{ textAlign: "left" }}>#</td>
-                <td style={{ textAlign: "center" }}>{t('menu')}</td>
-                <td style={{ textAlign: "center" }}>{t('success_order')}</td>
-                <td style={{ textAlign: "center" }}>{t('cancel')}</td>
-                <td style={{ textAlign: "right" }}>{t('sale_price_amount')}</td>
+                <td style={{ textAlign: "center" }}>{t("menu")}</td>
+                <td style={{ textAlign: "center" }}>{t("success_order")}</td>
+                <td style={{ textAlign: "center" }}>{t("cancel")}</td>
+                <td style={{ textAlign: "right" }}>{t("sale_price_amount")}</td>
               </tr>
               {menuReport?.map((e, i) => (
                 <tr>

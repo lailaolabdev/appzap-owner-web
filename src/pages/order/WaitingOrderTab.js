@@ -25,118 +25,153 @@ import Notification from "../../vioceNotification/ding.mp3";
 // import { socket } from "../../services/socket";
 
 export default function WaitingOrderTab() {
-  const { t } = useTranslation();
-  const {
-    soundPlayer,
-    orderItems,
-    getOrderItemsStore,
-    handleCheckbox,
-    checkAllOrders,
-    setNewOrderTransaction,
-    setNewOrderUpdateStatusTransaction,
-    newOrderTransaction,
-    newOrderUpdateStatusTransaction,
-    getOrderWaitingAndDoingByStore,
-  } = useStore();
-  /**
-   * Initial Component
-   */
-  const { storeDetail, selectOrderStatus, setSelectOrderStatus } = useStore();
-  const { printers, selectedTable } = useStore();
-  const billForCher80 = useRef([]);
-  const billForCher58 = useRef([]);
+	const { t } = useTranslation();
+	const {
+		soundPlayer,
+		orderItems,
+		getOrderItemsStore,
+		handleCheckbox,
+		checkAllOrders,
+		setNewOrderTransaction,
+		setNewOrderUpdateStatusTransaction,
+		newOrderTransaction,
+		newOrderUpdateStatusTransaction,
+		getOrderWaitingAndDoingByStore,
+	} = useStore();
+	/**
+	 * Initial Component
+	 */
+	const { storeDetail, selectOrderStatus, setSelectOrderStatus } = useStore();
+	const { printers, selectedTable } = useStore();
+	const billForCher80 = useRef([]);
+	const billForCher58 = useRef([]);
 
-  return (
-    <RootStyle>
-      <div>
-        <div>
-          <ReactAudioPlayer src={Notification} ref={soundPlayer} />
-        </div>
-        <TableCustom responsive>
-          <thead>
-            <tr>
-              <th>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="checkedC"
-                      onChange={(e) => checkAllOrders(e)}
-                    />
-                  }
-                  style={{ marginLeft: 2 }}
-                />
-              </th>
-              <th>{t('no')}</th>
-              <th>{t('menu_name')}</th>
-              <th>{t('amount')}</th>
-              <th>{t('from_table')}</th>
-              <th>{t('table_code')}</th>
-              <th>{t('status')}</th>
-              <th>{t('status')}</th>
-              <th>{t('commend')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderItems &&
-              orderItems?.map((order, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <Checkbox
-                        checked={order?.isChecked ? true : false}
-                        onChange={(e) => handleCheckbox(order)}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                      />
-                    </td>
-                    <td>{index + 1} </td>
-                    <td style={{ fontWeight: "bold" }}>
-                      {order?.name ?? "-"}{" "}
-                    </td>
-                    <td>{order?.quantity ?? "-"} </td>
-                    <td>{order?.tableId?.name ?? "-"}</td>
-                    <td>{order?.code ?? "-"} </td>
-                    <td style={{ color: "red", fontWeight: "bold" }}>
-                      {order?.status ? orderStatus(order?.status) : "-"}
-                    </td>
-                    <td>
-                      {order?.createdAt
-                        ? moment(order?.createdAt).format("HH:mm ")
-                        : "-"}{" "}
-                    </td>
-                    <td>{order?.note ?? "-"} </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </TableCustom>
-      </div>
-    </RootStyle>
-  );
+	return (
+		<RootStyle>
+			<div>
+				<div>
+					<ReactAudioPlayer src={Notification} ref={soundPlayer} />
+				</div>
+				<div style={{ overflowX: "auto" }}>
+					<TableCustom responsive>
+						<thead>
+							<tr>
+								<th>
+									<FormControlLabel
+										control={
+											<Checkbox
+												name="checkedC"
+												onChange={(e) => checkAllOrders(e)}
+											/>
+										}
+										style={{ marginLeft: 2 }}
+									/>
+								</th>
+								<th style={{ textWrap: "nowrap" }}>{t("no")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("menu_name")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("amount")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("from_table")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("table_code")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("status")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("status")}</th>
+								<th style={{ textWrap: "nowrap" }}>{t("commend")}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{orderItems?.map((order, index) => {
+								return (
+									<tr key={index}>
+										<td>
+											<Checkbox
+												checked={order?.isChecked ? true : false}
+												onChange={(e) => handleCheckbox(order)}
+												color="primary"
+												inputProps={{ "aria-label": "secondary checkbox" }}
+											/>
+										</td>
+										<td>{index + 1} </td>
+										<td style={{ fontWeight: "bold", textWrap: "nowrap" }}>
+											{order?.name ?? "-"}{" "}
+										</td>
+										<td
+											style={{
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.quantity ?? "-"}{" "}
+										</td>
+										<td
+											style={{
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.tableId?.name ?? "-"}
+										</td>
+										<td
+											style={{
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.code ?? "-"}{" "}
+										</td>
+										<td
+											style={{
+												color: "red",
+												fontWeight: "bold",
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.status ? orderStatus(order?.status) : "-"}
+										</td>
+										<td
+											style={{
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.createdAt
+												? moment(order?.createdAt).format("HH:mm ")
+												: "-"}{" "}
+										</td>
+										<td
+											style={{
+												textWrap: "nowrap",
+											}}
+										>
+											{order?.note ?? "-"}{" "}
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</TableCustom>
+				</div>
+			</div>
+		</RootStyle>
+	);
 }
 
 const RootStyle = styled("div")({
-  padding: 10,
+	padding: 10,
 });
 
 const TableCustom = styled("table")({
-  width: "100%",
-  fontSize: 18,
-  ["th,td"]: {
-    padding: 0,
-  },
-  ["th:first-child"]: {
-    maxWidth: 40,
-    width: 40,
-  },
-  ["td:first-child"]: {
-    maxWidth: 40,
-    width: 40,
-  },
-  ["tr:nth-child(2n+0)"]: {
-    backgroundColor: "#ffe9d8",
-  },
-  thead: {
-    backgroundColor: "#ffd6b8",
-  },
+	width: "100%",
+	fontSize: 18,
+	["th,td"]: {
+		padding: 0,
+	},
+	["th:first-child"]: {
+		maxWidth: 40,
+		width: 40,
+	},
+	["td:first-child"]: {
+		maxWidth: 40,
+		width: 40,
+	},
+	["tr:nth-child(2n+0)"]: {
+		backgroundColor: "#ffe9d8",
+	},
+	thead: {
+		backgroundColor: "#ffd6b8",
+	},
 });

@@ -8,7 +8,12 @@ import {
   DOING_STATUS,
   CANCEL_STATUS,
 } from "../../constants";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import {
+  END_POINT_SEVER,
+  END_POINT_SEVER_BILL_ORDER,
+  END_POINT_SEVER_TABLE_MENU,
+  getLocalData,
+} from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
@@ -23,20 +28,28 @@ export const useTableState = (storeDetail) => {
   const [selectedTable, setSelectedTable] = useState();
   const [selectTable2, setSelectTable2] = useState();
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
+  const [isWaitingCheckout, setIsWaitingCheckout] = useState(false);
+  const [isWaitingPress, setIsWaitingPress] = useState(false);
 
   /**
    * Modify Order
+   *
    */
+
+  // console.log("tableOrders", tableOrders);
+
   useEffect(() => {
-    setTableOrderItems(tableOrders);
+    if (tableOrders.length > 0 && tableOrders[0].code !== selectedTable?.code) {
+      getTableOrders(selectedTable);
+    } else {
+      setTableOrderItems(tableOrders);
+    }
   }, [tableOrders]);
 
   const getTableDataStore = useMemo(
     () => async () => {
       let _userData = await getLocalData();
-      const url =
-        END_POINT +
-        `/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
+      const url = `${END_POINT}/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -50,15 +63,14 @@ export const useTableState = (storeDetail) => {
         .catch((err) => {});
     },
     []
-  ); // useEffect(() => {
+  );
+  // useEffect(() => {
   //   getTableDataStore();
   // }, []);
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();
-      const url =
-        END_POINT +
-        `/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v3/codes?isCheckout=false&storeId=${_userData?.DATA?.storeId}&isDeleted=false`;
       await fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -73,27 +85,31 @@ export const useTableState = (storeDetail) => {
    */
   const getTableOrders = async (table) => {
     try {
-      setTableOrders([]);
       if (!table?.billId) return;
-      setIsTableOrderLoading(true);
-      const url =
-        END_POINT +
-        `/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
-      let res = await axios.get(url);
+      const url = `${END_POINT_SEVER_BILL_ORDER}/v3/orders?code=${table?.code}&storeId=${table?.storeId}&storeId=${table?.storeId}&billId=${table?.billId}`;
+      const res = await axios.get(url);
       const data = res.data;
+      if (data.length > 0) {
+        setIsWaitingPress(true);
+      } else {
+        setIsWaitingPress(false);
+      }
 
       if (res.status < 300) {
         setTableOrders(data);
         setIsTableOrderLoading(false);
+
         return data;
       } else {
         setTableOrders([]);
+
         setIsTableOrderLoading(false);
         return [];
       }
     } catch (err) {
       console.log(err);
       setIsTableOrderLoading(false);
+      setIsWaitingPress(false);
       return [];
     }
   };
@@ -103,12 +119,15 @@ export const useTableState = (storeDetail) => {
    */
 
   const onSelectTable = async (table) => {
-    if (table) {
+    if (table && !isWaitingCheckout) {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
       setSelectedTable(table);
+      setIsWaitingCheckout(true);
       await getTableOrders(table);
+      setIsWaitingCheckout(false);
     } else {
+      setIsWaitingCheckout(true);
     }
   };
 
@@ -127,7 +146,7 @@ export const useTableState = (storeDetail) => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -167,7 +186,7 @@ export const useTableState = (storeDetail) => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -217,7 +236,7 @@ export const useTableState = (storeDetail) => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
         {
           id: code?._id,
           data: {
@@ -265,14 +284,17 @@ export const useTableState = (storeDetail) => {
 
   const mergeTable = async (_newTable) => {
     try {
-      const response = await axios.put(END_POINT_SEVER + "v3/bill-transfer", {
-        headers: await getHeaders(),
-        body: {
-          billOld: selectedTable["billId"],
-          billNew: _newTable["billId"] ?? "NOT_BILL",
-          codeId: _newTable["_id"],
-        },
-      });
+      const response = await axios.put(
+        END_POINT_SEVER_BILL_ORDER + "v3/bill-transfer",
+        {
+          headers: await getHeaders(),
+          body: {
+            billOld: selectedTable["billId"],
+            billNew: _newTable["billId"] ?? "NOT_BILL",
+            codeId: _newTable["_id"],
+          },
+        }
+      );
 
       // print(response.body);
 
@@ -377,5 +399,7 @@ export const useTableState = (storeDetail) => {
     setSelectTable2,
     openTableAndReturnTokenOfBill,
     openTableAndReturnCodeShortLink,
+    isWaitingCheckout,
+    isWaitingPress,
   };
 };

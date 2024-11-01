@@ -36,7 +36,6 @@ export default function PrinterCounter() {
         _setting = { ...data?.data?.[0] };
       }
 
-      console.log("_setting", _setting);
       if (!_setting?.printer) {
         _setting = { ..._setting, printer: "6540c7782fe98cf0bff87433" };
       }

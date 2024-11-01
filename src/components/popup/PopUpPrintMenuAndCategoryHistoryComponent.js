@@ -22,7 +22,7 @@ import {
   USB_PRINTER_PORT,
 } from "../../constants";
 import { useTranslation } from "react-i18next";
-import printFlutter from "../../helpers/printFlutter"
+import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPrintMenuAndCategoryHistoryComponent({
   open,
@@ -38,7 +38,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
   const [categoryMenu, setCategoryMenu] = useState([]);
 
   // provider
-  const {printerCounter, printers, storeDetail } = useStore();
+  const { printerCounter, printers, storeDetail } = useStore();
   // useEffect
   useEffect(() => {
     let _objectA = {};
@@ -117,6 +117,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: myPrinter?.width === "58mm" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -129,7 +130,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
       );
       await Swal.fire({
         icon: "success",
-        title: `${t('print_success')}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -137,7 +138,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: `${t('print_fail')}`,
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -162,7 +163,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
       //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
       //   ຈ່າຍເງິນໂອນ: transferTotalBill,
       // });
-    } catch (err) { }
+    } catch (err) {}
   };
 
   return (
@@ -171,7 +172,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('print')}
+        <BsPrinter /> {t("print")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -197,12 +198,14 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              {t('report_sales_by_type')}
+              {t("report_sales_by_type")}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t('start')}: {startDate} 00:00:00
+              {t("start")}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("to")}: {startDate} 23:59:59
+            </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {categoryMenu?.map((item) => (
               <div>
@@ -210,10 +213,14 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
                 <TableComponent>
                   <tr style={{ fontWeight: "bold" }}>
                     <td style={{ textAlign: "left" }}>#</td>
-                    <td style={{ textAlign: "center" }}>{t('menu')}</td>
-                    <td style={{ textAlign: "center" }}>{t('success_order')}</td>
-                    <td style={{ textAlign: "center" }}>{t('cancel')}</td>
-                    <td style={{ textAlign: "right" }}>{t('sale_price_amount')}</td>
+                    <td style={{ textAlign: "center" }}>{t("menu")}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {t("success_order")}
+                    </td>
+                    <td style={{ textAlign: "center" }}>{t("cancel")}</td>
+                    <td style={{ textAlign: "right" }}>
+                      {t("sale_price_amount")}
+                    </td>
                   </tr>
                   {item?.value?.map((e, i) => (
                     <tr>

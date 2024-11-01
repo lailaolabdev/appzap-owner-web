@@ -9,15 +9,20 @@ import axios from "axios";
 import { base64ToBlob } from "../../helpers";
 import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers/index";
-import { getActiveBillReport, getBillReport } from "../../services/report";
+import {
+  getActiveBillReport,
+  getBankReport,
+  getBillReport,
+  getCurrencyReport,
+} from "../../services/report";
 import _ from "lodash";
 import {
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
-  USB_PRINTER_PORT
+  USB_PRINTER_PORT,
 } from "../../constants";
 import { useTranslation } from "react-i18next";
-import printFlutter from "../../helpers/printFlutter"
+import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
@@ -26,22 +31,25 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [selectPrinter, setSelectPrinter] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [bills, setBill] = useState();
+  const [bank, setBank] = useState([]);
+  const [currency, setcurrency] = useState([]);
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
-    ຍອດທັງຫມົດ: 0,
+    ຍອດທັງໝົດ: 0,
     ຈ່າຍເງິນສົດ: 0,
     ຈ່າຍເງິນໂອນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
+    servicechange: 0,
     ສ່ວນຫຼຸດ: 0,
     ບິນຄ້າງ: 0,
-    ເງິນຄ້າງ: 0
+    ເງິນຄ້າງ: 0,
   });
 
   // provider
   const { printers, storeDetail, printerCounter } = useStore();
   // useEffect
   useEffect(() => {
-    console.log("printers: ", billRef.current)
+    // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
   }, [startDate]);
 
@@ -58,7 +66,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
-        scale: 1
+        scale: 1,
       });
 
       urlForPrinter = USB_PRINTER_PORT;
@@ -78,6 +86,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
       bodyFormData.append("image", _file);
       bodyFormData.append("beep1", 1);
@@ -97,6 +106,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
+          width: myPrinter?.width === "58" ? 400 : 580,
         },
         async () => {
           await axios({
@@ -107,12 +117,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           });
         }
       );
-      
+
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     } catch (err) {
       console.log(err);
@@ -120,10 +130,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         icon: "error",
         title: "ປິນບໍ່ສຳເລັດ",
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
       });
     }
   };
+
   const getDataBillReport = async (startDate) => {
     try {
       const endDate = startDate;
@@ -132,15 +143,23 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
       const data = await getBillReport(storeDetail._id, findBy);
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-
+      const bankData = await getBankReport(storeDetail._id, findBy);
+      const currencyData = await getCurrencyReport(storeDetail._id, findBy);
+      console.log("currencyData", currencyData);
       // logic
-
       const countBill = data.length || 0;
+      // const bankReportData = bankReport.data.map((e) => e?.bankTotalAmount);
+      // console.log("bankReportData", bankReportData);
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
+      const totalServiceCharge =
+        _.sumBy(data, (e) => e.serviceChargeAmount) || 0;
+      const totalTax = _.sumBy(data, (e) => e.taxAmount) || 0;
       const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
       const transferTotalBill = _.sumBy(data, (e) => e.transferAmount) || 0;
       const discountBill = data.filter((e) => e.discount != 0);
       const countDiscountBill = discountBill.length;
+      // const service = totalBill * 0.03;
+      // const newServicechange = totalBill - service;
       const discountTotalBill = _.sumBy(discountBill, (e) => {
         let discountMomeny = 0;
         if (e.discountType == "PERCENT") {
@@ -157,16 +176,20 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       setReportBill({
         ຈຳນວນບິນ: countBill,
-        ຍອດທັງຫມົດ: totalBill,
+        ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
         ບິນສ່ວນຫຼຸດ: countDiscountBill,
+        servicechange: totalServiceCharge,
+        tax: totalTax,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
-        ເງິນຄ້າງ: totalActiveBill
+        ເງິນຄ້າງ: totalActiveBill,
       });
       setBill(data);
-    } catch (err) { }
+      setBank(bankData);
+      setcurrency(currencyData);
+    } catch (err) {}
   };
 
   return (
@@ -175,7 +198,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('print')}
+        <BsPrinter /> {t("print")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -185,7 +208,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <div>
@@ -201,46 +224,58 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         >
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
-              {t('sale_amount_list')}
+              {t("sale_amount_list")}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t('start')}: {startDate} 00:00:00
+              {t("start")}: {startDate} 00:00:00
             </div>
-            <div style={{ fontWeight: "bold" }}>{t('to')}: {startDate} 23:59:59</div>
+            <div style={{ fontWeight: "bold" }}>
+              {t("to")}: {startDate} 23:59:59
+            </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {[
               {
-                name: `${t('bill_amount')}:`,
-                value: reportBill[`${t('bill_amount')}`]
+                name: `${t("bill_amount")}:`,
+                value: reportBill[`${t("bill_amount")}`],
               },
               {
-                name: `${t('total_amount')}:`,
-                value: reportBill[`${t('total_amount')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("total_amount")}:`,
+                value: reportBill[`${t("total_amount")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('pay_cash')}:`,
-                value: reportBill[`${t('pay_cash')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("pay_cash")}:`,
+                value: reportBill[`${t("pay_cash")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('pay_transfer')}:`,
-                value: reportBill[`${t('pay_transfer')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("pay_transfer")}:`,
+                value: reportBill[`${t("pay_transfer")}`],
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('discount_bill')}:`,
-                value: reportBill[`${t('discount_bill')}`]
+                name: `${t("discount_bill")}:`,
+                value: reportBill[`${t("discount_bill")}`],
               },
               {
-                name: `${t('discount')}:`,
-                value: reportBill[`${t('discount')}`],
-                type: storeDetail?.firstCurrency
+                name: `${t("service_charge")}:`,
+                value: reportBill.servicechange,
+                type: storeDetail?.firstCurrency,
               },
               {
-                name: `${t('active_bill')}:`,
-                value: reportBill[`${t('active_bill')}`]
-              }
+                name: `${t("tax")}:`,
+                value: reportBill.tax,
+                type: storeDetail?.firstCurrency,
+              },
+              {
+                name: `${t("discount")}:`,
+                value: reportBill[`${t("discount")}`],
+                type: storeDetail?.firstCurrency,
+              },
+              {
+                name: `${t("active_bill")}:`,
+                value: reportBill[`${t("active_bill")}`],
+              },
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],
@@ -260,11 +295,53 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <div>
               <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
+                  <td style={{ textAlign: "left" }}>{t("no")}</td>
+                  <td style={{ textAlign: "center" }}>{t("bank_Name")}</td>
+                  <td style={{ textAlign: "right" }}>{t("amount")}</td>
+                </tr>
+                {bank?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.bankDetails?.bankName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(e?.bankTotalAmount)}
+                    </td>
+                  </tr>
+                ))}
+              </TableComponent>
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              <TableComponent>
+                <tr style={{ fontWeight: "bold" }}>
+                  <td style={{ textAlign: "left" }}>{t("no")}</td>
+                  <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
+                  <td style={{ textAlign: "right" }}>{t("amount")}</td>
+                </tr>
+                {currency?.data?.map((e, index) => (
+                  <tr>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {e?.currency?.currencyName}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.currencyTotal))}
+                    </td>
+                  </tr>
+                ))}
+              </TableComponent>
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              <TableComponent>
+                <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>{t('no')}</td>
-                  <td style={{ textAlign: "center" }}>{t('order')}</td>
-                  <td style={{ textAlign: "center" }}>{t('discount')}</td>
-                  <td style={{ textAlign: "right" }}>{t('total_bill')}</td>
+                  <td style={{ textAlign: "center" }}>{t("no")}</td>
+                  <td style={{ textAlign: "center" }}>{t("order")}</td>
+                  <td style={{ textAlign: "center" }}>{t("discount")}</td>
+                  <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
                 {bills?.map((e, i) => (
                   <tr>
@@ -321,8 +398,8 @@ const TableComponent = styled("table")({
   color: "#000",
   td: {
     padding: 0,
-    color: "#000"
-  }
+    color: "#000",
+  },
 });
 const Price = styled.div`
   display: flex;

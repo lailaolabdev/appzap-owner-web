@@ -33,7 +33,7 @@ export default function BillForCheckOutCafe80({
 
   // console.log("storeDetail",storeDetail)
   // console.log("profile",profile)
-  // console.log("dataBill",dataBill)
+  // console.log("dataBill", dataBill);
 
   // useEffect
   useEffect(() => {
@@ -109,24 +109,33 @@ export default function BillForCheckOutCafe80({
 
   return (
     <Container>
-      {/* <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-        {base64Image ? (
-          <Image
+      <div
+        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+      >
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {base64Image ? (
+            <Image
+              style={{
+                maxWidth: 120,
+                maxHeight: 120,
+              }}
+              src={base64Image}
+              alt="logo"
+            />
+          ) : (
+            ""
+          )}
+          <span
             style={{
-              maxWidth: 120,
-              maxHeight: 120
-              // border: "1px solid #ddd",
-              // borderRadius: "10em",
-              // overflow: "hidden",
+              fontSize: "24px",
+              fontWeight: "bold",
+              marginRight: "10px",
             }}
-            src={base64Image}
-            alt="logo"
-          />
-        ) : (
-          ""
-        )}
-
-      </div> */}
+          >
+            # {dataBill?.queue}
+          </span>
+        </div>
+      </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       {/* <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div> */}
       <Price>

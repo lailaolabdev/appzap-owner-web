@@ -6,7 +6,6 @@ import { BsPrinter } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 
-
 export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
   const { t } = useTranslation();
   // state
@@ -14,10 +13,9 @@ export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
 
   // useEffect
   useEffect(() => {
-    setTax(prevTax)
-  }, [prevTax])
+    setTax(prevTax);
+  }, [prevTax]);
   // functions
-
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -25,7 +23,7 @@ export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        {t('edit_tax')}
+        {t("edit_tax")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -34,11 +32,14 @@ export default function PopUpEditTax({ open, onClose, onSubmit, prevTax }) {
           width: "100%",
         }}
       >
-        <Form.Control type="number" value={tax} onChange={(e) => setTax(e.target.value)} />
-
+        <Form.Control
+          type="number"
+          value={tax}
+          onChange={(e) => setTax(e.target.value)}
+        />
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => onSubmit(tax)}>Save</Button>
+        <Button onClick={() => onSubmit(tax)}>{t("save")}</Button>
       </Modal.Footer>
     </Modal>
   );

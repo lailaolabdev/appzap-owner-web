@@ -11,6 +11,7 @@ import PopUpAddCategory from "./components/popup/PopUpAddCategory";
 import PopUpEditCategory from "./components/popup/PopUpEditCategory";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
+import { useTranslation } from "react-i18next";
 
 export default function Categorylist() {
   // state
@@ -20,7 +21,7 @@ export default function Categorylist() {
   const [select, setSelect] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [loadStatus, setLoadStatus] = useState("");
-
+  const { t } = useTranslation();
   const [Categorys, setCategorys] = useState([]);
   // functions
   const _confirmeDelete = async () => {
@@ -77,26 +78,27 @@ export default function Categorylist() {
   // -------------------------------------------------------------------------- //
   return (
     <div style={BODY}>
-      <NavList ActiveKey='/settingStore/stock/category' />
+      <NavList ActiveKey="/settingStore/stock/category" />
       <div>
-        <div className='col-sm-12 text-right'>
+        <div className="col-sm-12 text-right">
           <Button
-            className='col-sm-2'
+            className="col-sm-2"
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => setPopAddCategory(true)}>
-            ເພີ່ມປະເພດສະຕ໊ອກ
+            onClick={() => setPopAddCategory(true)}
+          >
+            {t("add_stock_type")}
           </Button>
         </div>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className='col-sm-12'>
-            <table className='table table-hover'>
-              <thead className='thead-light'>
+          <div className="col-sm-12">
+            <table className="table table-hover">
+              <thead className="thead-light">
                 <tr>
-                  <th scope='col'>#</th>
-                  <th scope='col'>ຊື່ປະເພດສະຕ໊ອກ</th>
-                  <th scope='col'>ໝາຍເຫດ</th>
-                  <th scope='col'>ຈັດການຂໍ້ມູນ</th>
+                  <th scope="col">#</th>
+                  <th scope="col">{t("stock_type_name")}</th>
+                  <th scope="col">{t("note")}</th>
+                  <th scope="col">{t("manage")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,7 +133,7 @@ export default function Categorylist() {
               </tbody>
             </table>
             <div style={{ display: "flex", justifyContent: "center" }}>
-              {isLoading ? <Spinner animation='border' /> : ""}
+              {isLoading ? <Spinner animation="border" /> : ""}
             </div>
           </div>
         </div>

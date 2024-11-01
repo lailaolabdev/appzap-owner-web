@@ -123,7 +123,7 @@ export default function Dashboard() {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
 
-    console.log("getTotalBillActiveReportData: ", data)
+    console.log("getTotalBillActiveReportData: ", data);
 
     setTotalBillActiveReport(data);
   };

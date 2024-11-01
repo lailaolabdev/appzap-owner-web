@@ -1,19 +1,23 @@
 import React from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
+// Assuming you are using a translation library like i18next
+import { useTranslation } from "react-i18next";
 
-const PopUpAddCategoryType = ({ open, onClose, onSubmit }) => {
+const PopUpAddCategoryType = ({ open, onClose, onSubmit, storeId }) => {
+  const { t } = useTranslation(); // Translation hook
+
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>ສ້າງໝວດໝູ່</Modal.Title>
+        <Modal.Title>{t("create_category")}</Modal.Title>
       </Modal.Header>
       <Formik
-        initialValues={{ name: "" }}
+        initialValues={{ name: "", storeId: storeId }}
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = "ກະລຸນາເພີ່ມສາຂາ";
+            errors.name = t("please_add_category"); // Ensure error message is localized
           }
           return errors;
         }}
@@ -35,14 +39,14 @@ const PopUpAddCategoryType = ({ open, onClose, onSubmit }) => {
           <form onSubmit={handleSubmit}>
             <Modal.Body>
               <Form.Group controlId="name">
-                <Form.Label>ຊື່ໝວດໝູ່</Form.Label>
+                <Form.Label htmlFor="name">{t("food_category")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="name"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder="ກະລຸນາເພີ່ມໝວດໝູ່"
+                  placeholder={t("enter_category")}
                   isInvalid={errors.name && touched.name}
                 />
                 {errors.name && touched.name && (
@@ -54,10 +58,10 @@ const PopUpAddCategoryType = ({ open, onClose, onSubmit }) => {
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={onClose}>
-                ຍົກເລີກ
+                {t("cancel")}
               </Button>
               <Button variant="primary" type="submit" disabled={isSubmitting}>
-                ເພີ່ມໝວດໝູ່
+                {t("add")}
               </Button>
             </Modal.Footer>
           </form>

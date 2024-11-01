@@ -54,8 +54,14 @@ export default function PopUpSetStartAndEndDate({
   };
 
   const onGetLastMonth = () => {
-    const startOfLastMonth = moment().subtract(1, "months").startOf("month").format("YYYY-MM-DD");
-    const endOfLastMonth = moment().subtract(1, "months").endOf("month").format("YYYY-MM-DD");
+    const startOfLastMonth = moment()
+      .subtract(1, "months")
+      .startOf("month")
+      .format("YYYY-MM-DD");
+    const endOfLastMonth = moment()
+      .subtract(1, "months")
+      .endOf("month")
+      .format("YYYY-MM-DD");
     setValueStartDate(startOfLastMonth);
     setValueEndDate(endOfLastMonth);
     setSelectedButton("lastMonth");
@@ -70,8 +76,14 @@ export default function PopUpSetStartAndEndDate({
   };
 
   const onGetLastYear = () => {
-    const startOfLastYear = moment().subtract(1, "years").startOf("year").format("YYYY-MM-DD");
-    const endOfLastYear = moment().subtract(1, "years").endOf("year").format("YYYY-MM-DD");
+    const startOfLastYear = moment()
+      .subtract(1, "years")
+      .startOf("year")
+      .format("YYYY-MM-DD");
+    const endOfLastYear = moment()
+      .subtract(1, "years")
+      .endOf("year")
+      .format("YYYY-MM-DD");
     setValueStartDate(startOfLastYear);
     setValueEndDate(endOfLastYear);
     setSelectedButton("lastYear");
@@ -104,31 +116,41 @@ export default function PopUpSetStartAndEndDate({
           </Button>
           <Button
             onClick={onGetYesterday}
-            variant={selectedButton === "yesterday" ? "primary" : "outline-primary"}
+            variant={
+              selectedButton === "yesterday" ? "primary" : "outline-primary"
+            }
           >
             ມື້ວານ
           </Button>
           <Button
             onClick={onGetThisMonth}
-            variant={selectedButton === "thisMonth" ? "primary" : "outline-primary"}
+            variant={
+              selectedButton === "thisMonth" ? "primary" : "outline-primary"
+            }
           >
             ເດືອນນີ້
           </Button>
           <Button
             onClick={onGetLastMonth}
-            variant={selectedButton === "lastMonth" ? "primary" : "outline-primary"}
+            variant={
+              selectedButton === "lastMonth" ? "primary" : "outline-primary"
+            }
           >
             ເດືອນກ່ອນ
           </Button>
           <Button
             onClick={onGetThisYear}
-            variant={selectedButton === "thisYear" ? "primary" : "outline-primary"}
+            variant={
+              selectedButton === "thisYear" ? "primary" : "outline-primary"
+            }
           >
             ປີນີ້
           </Button>
           <Button
             onClick={onGetLastYear}
-            variant={selectedButton === "lastYear" ? "primary" : "outline-primary"}
+            variant={
+              selectedButton === "lastYear" ? "primary" : "outline-primary"
+            }
           >
             ປີກ່ອນ
           </Button>

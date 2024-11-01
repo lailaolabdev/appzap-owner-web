@@ -13,6 +13,7 @@ import ReactPaginate from "react-paginate";
 import { FaUser } from "react-icons/fa";
 import { getLocalData } from "../../constants/api";
 import { getMembers, getMemberAllCount } from "../../services/member.service";
+import { useStore } from "../../store";
 
 export default function PopUpMemberOrder({
   open,
@@ -25,6 +26,8 @@ export default function PopUpMemberOrder({
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState(0);
   const limitData = 20; // Set your limit value
+
+  const { storeDetail, setStoreDetail } = useStore();
 
   const getMembersData = async () => {
     try {
@@ -55,6 +58,8 @@ export default function PopUpMemberOrder({
   };
 
   const handleMemberClick = async (member) => {
+    // console.log(member);
+    setStoreDetail({ ...storeDetail, selectedMemberID: member._id });
     onSelectMember(member._id);
     setData(member.name);
     onClose();

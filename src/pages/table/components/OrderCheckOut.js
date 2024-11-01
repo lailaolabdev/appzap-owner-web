@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Modal, Table, Button, Form } from "react-bootstrap";
+import { Modal, Table, Button, Form, Row, Spinner } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import { useStore } from "../../../store";
 import { useTranslation } from "react-i18next";
-import BillForCheckOut80 from "../../../components/bill/BillForCheckOut80";
-import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
-import { URL_PHOTO_AW3 } from "../../../constants";
+import styled from "styled-components";
+import _ from "lodash";
+import { SettingsApplications } from "@material-ui/icons";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
+  serviceCharge = 0,
   tableData = {},
   show = false,
   hide,
@@ -20,56 +21,119 @@ const OrderCheckOut = ({
   onPrintBill = () => {},
   onSubmit = () => {},
   staffData,
+  selectedTable,
+  setServiceChangeAmount,
+  setTotalMustPay,
+  totalMustPay,
+  setCreatedAt,
+  createdAt,
+  totalBillOrderCheckOut,
+  printBillLoading,
+  billDataLoading,
+  printBillCalulate,
 }) => {
   const { t } = useTranslation();
-  const { storeDetail, profile } = useStore();
-  const [total, setTotal] = useState();
-  const [isBill, setIsBill] = useState(false);
-  const [isConfirmStaff, setIsConFirmStaff] = useState(false);
-  const [defualtRoleUser, setDefualtRoleUser] = useState("APPZAP_COUNTER");
+  const {
+    storeDetail,
+    setStoreDetail,
+    orderPayBefore,
+    setOrderPayBefore,
+    profile,
+    audioSetting,
+    setAudioSetting,
+  } = useStore();
+  const [total, setTotal] = useState(0); // Initialize total to 0
+  const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
+  const [serviceAmount, setServiceAmount] = useState(0);
 
   useEffect(() => {
     _calculateTotal();
-  }, [data, data?.orderId]);
+  }, [totalBillOrderCheckOut, isServiceChargeEnabled, orderPayBefore]);
+  useEffect(() => {
+    setIsServiceChargeEnabled(false);
+  }, []);
+
+  const calculateDiscountedTotal = (
+    total,
+    serviceAmount,
+    taxPercent,
+    discount,
+    discountType
+  ) => {
+    const totalWithServiceAndTax =
+      (total + serviceAmount) * (taxPercent * 0.01 + 1);
+
+    if (discountType === "LAK" || discountType === "MONEY") {
+      return totalWithServiceAndTax - discount > 0
+        ? totalWithServiceAndTax - discount
+        : 0;
+    } else {
+      const percentageDiscount = (totalWithServiceAndTax * discount) / 100;
+      return totalWithServiceAndTax - percentageDiscount > 0
+        ? totalWithServiceAndTax - percentageDiscount
+        : 0;
+    }
+  };
+
+  const discountedTotal = calculateDiscountedTotal(
+    total,
+    serviceAmount,
+    taxPercent,
+    data?.discount,
+    data?.discountType
+  );
+
+  const orderItem = (orders) => {
+    return orders?.map((e, index) => {
+      const options =
+        e?.options
+          ?.map((option) =>
+            option.quantity > 1
+              ? `[${option.quantity} x ${option.name}]`
+              : `[${option.name}]`
+          )
+          .join(" ") || "";
+
+      const itemPrice = e?.price + (e?.totalOptionPrice ?? 0);
+      const itemTotal = e?.price ? moneyCurrency(itemPrice * e?.quantity) : "-";
+
+      return (
+        <tr key={getOrderItemKey(e)}>
+          <td>{index + 1}</td>
+          <td>
+            {e?.name ?? "-"} {options}
+          </td>
+          <td>{e?.quantity}</td>
+          <td>{moneyCurrency(itemPrice)}</td>
+          <td>{itemTotal}</td>
+        </tr>
+      );
+    });
+  };
 
   const _calculateTotal = () => {
-    setTotal();
-    let _total = 0;
-    if (data?.orderId) {
-      for (let i = 0; i < data?.orderId?.length; i++) {
-        if (data?.orderId[i]?.status === "SERVED") {
-          _total +=
-            data?.orderId[i]?.quantity *
-            (data?.orderId[i]?.price +
-              (data?.orderId[i]?.totalOptionPrice ?? 0));
-        }
-      }
-    }
-    setTotal(_total);
-  };
+    console.log("orderPaid", orderPayBefore);
+    const serviceChargeAmount = isServiceChargeEnabled
+      ? totalBillOrderCheckOut * (serviceCharge / 100)
+      : 0; // 10% if enabled
+    const paidData = _.sumBy(orderPayBefore, (e) => {
+      const mainPrice = (e?.price || 0) * (e?.quantity || 1);
 
-  const onConfirmStaffToCheckBill = () => {
-    setIsConFirmStaff(true);
-    hide();
-  };
+      const menuOptionPrice = _.sumBy(
+        e?.options || [],
+        (opt) => (opt?.price || 0) * (opt?.quantity || 1)
+      );
 
-  const onCancelConfirmStaff = () => {
-    setIsConFirmStaff(false);
-  };
+      console.log("menuOptionPrice", menuOptionPrice);
+      console.log("mainPrice", mainPrice);
 
-  const onConfirmToCheckOut = async (data) => {
-    let _staffConfirm = {
-      id: data?._id,
-      firstname: data?.firstname,
-      lastname: data?.lastname,
-      phone: data?.phone,
-    };
-    await localStorage.setItem(
-      "STAFFCONFIRM_DATA",
-      JSON.stringify(_staffConfirm)
-    );
-    onSubmit();
-    setIsConFirmStaff(false);
+      return mainPrice + menuOptionPrice;
+    });
+    console.log("paidData", paidData);
+    setServiceAmount(serviceChargeAmount);
+    orderPayBefore && orderPayBefore.length > 0
+      ? setTotal(paidData)
+      : setTotal(totalBillOrderCheckOut);
   };
 
   const getOrderItemKey = (orderItem) => {
@@ -80,28 +144,89 @@ const OrderCheckOut = ({
     return `${orderItem?.id}-${options}`;
   };
 
+  const getToggleServiceCharge = (e) => {
+    setIsServiceChargeEnabled(e.target.checked);
+    setStoreDetail({
+      ...storeDetail,
+      serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
+      isServiceCharge: e.target.checked,
+    });
+  };
+  const calculateTotalWithDiscount = (
+    total,
+    taxPercent,
+    serviceAmount,
+    discount,
+    discountType
+  ) => {
+    if (discountType === "LAK") {
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discount
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    } else {
+      const discountInPercent =
+        (total + serviceAmount) * (taxPercent * 0.01 + 1) * (discount / 100);
+      const discountedTotal = Math.floor(
+        total * (taxPercent * 0.01 + 1) + serviceAmount - discountInPercent
+      );
+      return discountedTotal > 0 ? discountedTotal : 0;
+    }
+  };
+  useEffect(() => {
+    const calculatedTotal = calculateTotalWithDiscount(
+      total,
+      taxPercent,
+      serviceAmount,
+      data?.discount,
+      data?.discountType
+    );
+    setTotalMustPay(calculatedTotal);
+  }, [total, taxPercent, serviceAmount, data]);
+
+  setCreatedAt(tableData?.createdAt);
+
   return (
     <>
       <Modal
         show={show}
         size={"lg"}
         onHide={hide}
-        arialabelledby="contained-modal-title-vcenter"
+        aria-labelledby="contained-modal-title-vcenter"
       >
         <Modal.Header closeButton>
           <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <pre style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
-            {t("table")}:{tableData?.tableName}
-          </pre>
-          <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("code")}:{tableData?.code}
-          </pre>
-          <pre style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("open_at")}:
-            {moment(tableData?.createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
-          </pre>
+          <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
+            {t("table")}: {tableData?.tableName}
+          </div>
+          <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+            {t("code")}: {tableData?.code}
+          </div>
+          <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
+            {t("open_at")}: {moment(createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
+          </div>
+          <Row>
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: "bold",
+                marginLeft: 16,
+                marginRight: 8,
+              }}
+            >
+              {t("service_charge")}
+            </div>
+            <Form.Check
+              style={{ margin: 2 }}
+              type="switch"
+              checked={storeDetail?.isServiceCharge}
+              id={"switch-audio"}
+              onChange={(e) => getToggleServiceCharge(e)}
+            />
+          </Row>
+          <div style={{ margin: 8 }} />
           <Table responsive className="staff-table-list borderless table-hover">
             <thead style={{ backgroundColor: "#F1F1F1" }}>
               <tr>
@@ -112,80 +237,64 @@ const OrderCheckOut = ({
                 <th>{t("total_price")}</th>
               </tr>
             </thead>
-            <tbody>
-              {data &&
-                data?.orderId?.map((orderItem, index) => {
-                  const options =
-                    orderItem?.options
-                      ?.map((option) =>
-                        option.quantity > 1
-                          ? `[${option.quantity} x ${option.name}]`
-                          : `[${option.name}]`
+            {billDataLoading ? (
+              <td colSpan={9} style={{ textAlign: "center" }}>
+                <Spinner animation="border" variant="primary" />
+              </td>
+            ) : (
+              <tbody>
+                {orderPayBefore && orderPayBefore.length > 0
+                  ? orderItem(orderPayBefore)
+                  : data?.orderId
+                  ? orderItem(data?.orderId)
+                  : null}
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("discount")}:
+                  </td>
+                  <td colSpan="1">
+                    {moneyCurrency(data?.discount)}{" "}
+                    {data?.discountType !== "LAK"
+                      ? "%"
+                      : storeDetail?.firstCurrency}
+                  </td>
+                </tr>
+                {storeDetail?.isServiceCharge && (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      {t("service_charge")}:
+                    </td>
+                    <td colSpan="1">{serviceCharge}%</td>
+                  </tr>
+                )}
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("total_price")}:
+                  </td>
+                  <td colSpan="1">
+                    {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    {t("total_price")} + {t("tax")} {taxPercent}%:
+                  </td>
+                  <td colSpan="1">
+                    {moneyCurrency(
+                      Math.floor(
+                        total * (taxPercent * 0.01 + 1) + serviceAmount
                       )
-                      .join(" ") || "";
-                  return (
-                    <tr key={getOrderItemKey(orderItem)}>
-                      <td>{index + 1}</td>
-                      <td>
-                        {orderItem?.name ?? "-"} {options}
-                      </td>
-                      <td>{orderItem?.quantity}</td>
-                      <td>
-                        {moneyCurrency(
-                          orderItem?.price + (orderItem?.totalOptionPrice ?? 0)
-                        )}
-                      </td>
-                      <td>
-                        {orderItem?.price
-                          ? moneyCurrency(
-                              (orderItem?.price +
-                                (orderItem?.totalOptionPrice ?? 0)) *
-                                orderItem?.quantity
-                            )
-                          : "-"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
-                  {t("discount")}:
-                </td>
-                <td colspan="1">
-                  {moneyCurrency(data?.discount)}{" "}
-                  {data?.discountType !== "LAK"
-                    ? "%"
-                    : storeDetail?.firstCurrency}
-                </td>
-              </tr>
-              <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
-                  {t("total_price")}:
-                </td>
-                <td colspan="1">
-                  {moneyCurrency(total)} {storeDetail?.firstCurrency}
-                </td>
-              </tr>
-              <tr>
-                <td colspan="4" style={{ textAlign: "center" }}>
-                  {t("total_price")} + {t("tax")} {taxPercent}%:
-                </td>
-                <td colspan="1">
-                  {moneyCurrency(total * (taxPercent * 0.01 + 1))}{" "}
-                  {storeDetail?.firstCurrency}
-                </td>
-              </tr>
-            </tbody>
+                    )}{" "}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
+              </tbody>
+            )}
           </Table>
         </Modal.Body>
-        <Modal.Footer>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-          >
+        <CardFooterModal>
+          <Modal.Footer>
             <Button
               className="ml-2 pl-4 pr-4"
               style={{
@@ -194,8 +303,16 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 26,
               }}
-              onClick={() => onPrintBill()}
+              disabled={printBillLoading || printBillCalulate}
+              onClick={() => onPrintBill(false)}
             >
+              {billDataLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
               <FontAwesomeIcon
                 icon={faCashRegister}
                 style={{ color: "#fff" }}
@@ -208,63 +325,77 @@ const OrderCheckOut = ({
             >
               {t("total_must_pay")}:
             </div>
-            <div
-              className="p-2 col-example text-center"
-              style={{
-                backgroundColor: "#F1F1F1",
-                fontSize: 26,
-              }}
-            >
-              <span style={{ justifyContent: "flex-end", display: "row" }}>
-                <b>
-                  {data && data?.discountType === "LAK"
-                    ? moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) - data?.discount > 0
-                          ? total * (taxPercent * 0.01 + 1) - data?.discount
-                          : 0
-                      )
-                    : moneyCurrency(
-                        total * (taxPercent * 0.01 + 1) -
-                          (total * (taxPercent * 0.01 + 1) * data?.discount) /
-                            100 >
-                          0
-                          ? total * (taxPercent * 0.01 + 1) -
-                              (total *
+            {billDataLoading ? (
+              <Spinner
+                animation="border"
+                size="sm"
+                style={{ marginRight: 8 }}
+              />
+            ) : (
+              <div
+                className="p-2 col-example text-center"
+                style={{
+                  backgroundColor: "#F1F1F1",
+                  fontSize: 26,
+                }}
+              >
+                <span style={{ justifyContent: "flex-end", display: "row" }}>
+                  <b>
+                    {data && data?.discountType === "LAK"
+                      ? moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              data?.discount >
+                              0
+                              ? (total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) -
+                                  data?.discount
+                              : 0
+                          )
+                        )
+                      : moneyCurrency(
+                          Math.floor(
+                            total * (taxPercent * 0.01 + 1) +
+                              serviceAmount -
+                              ((total + serviceAmount) *
                                 (taxPercent * 0.01 + 1) *
                                 data?.discount) /
-                                100
-                          : 0
-                      )}
-                </b>
-              </span>
-            </div>
+                                100 >
+                              0
+                              ? total * (taxPercent * 0.01 + 1) +
+                                  serviceAmount -
+                                  ((total + serviceAmount) *
+                                    (taxPercent * 0.01 + 1) *
+                                    data?.discount) /
+                                    100
+                              : 0
+                          )
+                        )}
+                  </b>
+                </span>
+              </div>
+            )}
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
-              {/* <Button
-                  className="ml-2 pl-4 pr-4"
-                  style={{
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffff",
-                    border: "solid 1px #FB6E3B",
-                    fontSize: 26,
-                  }}
-                  onClick={onConfirmStaffToCheckBill}
-                >
-                  <FontAwesomeIcon
-                    icon={faCashRegister}
-                    style={{ color: "#fff" }}
-                  />{" "}
-                  {t("change_who_check_bill")}
-                </Button> */}
               <Button
                 className="ml-2 pl-4 pr-4"
+                disabled={printBillLoading || printBillCalulate}
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
                   fontSize: 26,
                 }}
+                // disabled={billDataLoading}
                 onClick={() => onSubmit()}
               >
+                {billDataLoading && (
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    style={{ marginRight: 8 }}
+                  />
+                )}
                 <FontAwesomeIcon
                   icon={faCashRegister}
                   style={{ color: "#fff" }}
@@ -272,78 +403,9 @@ const OrderCheckOut = ({
                 {t("check_bill")}
               </Button>
             </div>
-          </div>
-        </Modal.Footer>
+          </Modal.Footer>
+        </CardFooterModal>
       </Modal>
-
-      {/* <Modal
-        size="lg"
-        centered
-        show={isConfirmStaff}
-        onHide={onCancelConfirmStaff}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <b>{t("chose_staff_check_bill")}</b>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div style={{ display: "flex", gap: 20 }}>
-            <Button onClick={() => setDefualtRoleUser("APPZAP_COUNTER")}>
-              {t("counter")}
-            </Button>
-            <Button onClick={() => setDefualtRoleUser("APPZAP_STAFF")}>
-              {t("server")}
-            </Button>
-            <Button
-              disabled={profile?.data?.role != "APPZAP_ADMIN"}
-              onClick={() => setDefualtRoleUser("APPZAP_ADMIN")}
-            >
-              {t("ceo")}
-            </Button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 15,
-              padding: "1em 0",
-            }}
-          >
-            {staffData?.users
-              ?.filter((e) => e?.role == defualtRoleUser)
-              ?.map((data, index) => {
-                return (
-                  <Button
-                    onClick={() => onConfirmToCheckOut(data)}
-                    variant="outline-danger"
-                    key={index}
-                    style={{ width: "100%", padding: "1em 0" }}
-                  >
-                    {data?.image ? (
-                      <img
-                        style={{
-                          width: 35,
-                          height: 35,
-                          background: "#ffffff",
-                          borderRadius: "50em",
-                          border: "1px solid #ddd",
-                        }}
-                        src={URL_PHOTO_AW3 + data?.image}
-                        alt=""
-                      />
-                    ) : (
-                      <FaUserCircle style={{ fontSize: 35 }} />
-                    )}
-                    <p>
-                      {data?.firstname ?? "-"} {data?.lastname ?? "-"}
-                    </p>
-                  </Button>
-                );
-              })}
-          </div>
-        </Modal.Body>
-      </Modal> */}
     </>
   );
 };
@@ -353,5 +415,12 @@ OrderCheckOut.propTypes = {
   hide: PropTypes.func,
   data: PropTypes.array,
 };
+
+const CardFooterModal = styled.div`
+  display: flex;
+  justify-content: center !important;
+  align-items: center;
+  margin-bottom: 20px;
+`;
 
 export default OrderCheckOut;
