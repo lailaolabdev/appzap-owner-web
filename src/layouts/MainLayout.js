@@ -24,8 +24,6 @@ export default function MainLayout({ children }) {
         sx={{
           display: { md: "block", xs: "block" },
           height: 64,
-          maxHeight: 64,
-          width: 64,
           overflow: { md: "visible", xs: expanded ? "visible" : "hidden" },
           transform: "translate3d(0,0,0)",
           position: "fixed",
@@ -43,13 +41,13 @@ export default function MainLayout({ children }) {
       <Navbar />
       <div
         style={{
-          marginTop: 65,
           minHeight: "calc( 100dvh - 65px )",
           height: "calc( 100dvh - 65px )",
           maxHeight: "calc( 100dvh - 65px )",
           overflow: "auto",
           overflowY: "scroll",
           position: "relative",
+          paddingLeft:'13%'
         }}
       >
         <Outlet />

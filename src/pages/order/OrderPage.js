@@ -337,7 +337,7 @@ export default function OrderPage() {
           }}
         >
           <Button
-            style={{ color: "white", backgroundColor: "gray", border:'none' }}
+            style={{ color: "white", backgroundColor: "gray", border: "none" }}
             onClick={async () => {
               await onPrintForCher();
               // await handleUpdateOrderStatus("DOING");
@@ -349,10 +349,12 @@ export default function OrderPage() {
             {t("print_to_kitchen")}
           </Button>
 
-          
-
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B",border:'none' }}
+            style={{
+              color: "white",
+              backgroundColor: "#FB6E3B",
+              border: "none",
+            }}
             onClick={async () => {
               await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
@@ -363,7 +365,11 @@ export default function OrderPage() {
           </Button>
 
           <Button
-            style={{ color: "white", backgroundColor: "#30EB36",border:'none' }}
+            style={{
+              color: "white",
+              backgroundColor: "#30EB36",
+              border: "none",
+            }}
             onClick={async () => {
               await handleUpdateOrderStatus("SERVED");
               getOrderWaitingAndDoingByStore();
@@ -373,7 +379,7 @@ export default function OrderPage() {
             {t("served")}
           </Button>
           <Button
-            style={{ color: "white", backgroundColor: "red",border:'none' }}
+            style={{ color: "white", backgroundColor: "red", border: "none" }}
             onClick={async () => {
               setWorkAfterPin("cancle_order");
               setPopup({ PopUpPin: true });
@@ -389,116 +395,127 @@ export default function OrderPage() {
     );
   };
   return (
-    <RootStyle>
-      {/* {orderLoading || (isLoading && <Loading />)} */}
-      <div style={{ backgroundColor: "white" }}>
-        <Tabs
-          defaultActiveKey={WAITING_STATUS}
-          id="OrderTabs"
-          onSelect={(select) => {
-            setorderItemForPrintBillSelect([]);
-            getOrderItemsStore(select);
-            setSelectOrderStatus(select);
-            getOrderWaitingAndDoingByStore();
-          }}
-          className="myClass"
-        >
-          <Tab
-            eventKey={WAITING_STATUS}
-            title={`${t("new_order")}(${orderWaiting?.length})`}
+    <div style={{backgroundColor:'#F9F9F9'}}>
+      <div>
+      <p style={{
+         fontSize: '25px', 
+         fontWeight: '400',
+         padding: " 0 10px",
+         fontWeight:'700',
+         paddingTop:"20px",
+         paddingLeft:'20px'
+          }}>orders</p>
+      </div>
+      <RootStyle>
+        {/* {orderLoading || (isLoading && <Loading />)} */}
+        <div style={{ backgroundColor: "white" }}>
+          <Tabs
+            defaultActiveKey={WAITING_STATUS}
+            id="OrderTabs"
+            onSelect={(select) => {
+              setorderItemForPrintBillSelect([]);
+              getOrderItemsStore(select);
+              setSelectOrderStatus(select);
+              getOrderWaitingAndDoingByStore();
+            }}
+            className="myClass"
           >
-            <Tool />
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
-            <WaitingOrderTab />
-          </Tab>
-          <Tab
-            eventKey={DOING_STATUS}
-            title={`${t("cooking")}(${orderDoing?.length})`}
-          >
-            <Tool />
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
-            <DoingOrderTab />
-          </Tab>
-          <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
-            {/* <Tool /> */}
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
-            <ServedOrderTab />
-          </Tab>
-          <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
-            {/* <Tool /> */}
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
-            <CanceledOrderTab />
-          </Tab>
-          {/* <Tab eventKey="contact" title="Contact" disabled>
+            <Tab
+              eventKey={WAITING_STATUS}
+              title={`${t("new_order")}(${orderWaiting?.length})`}
+            >
+              <Tool />
+              {orderLoading && (
+                <div>
+                  <Spinner
+                    animation="border"
+                    style={{ marginLeft: 20 }}
+                    size="sm"
+                  />{" "}
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <WaitingOrderTab />
+            </Tab>
+            <Tab
+              eventKey={DOING_STATUS}
+              title={`${t("cooking")}(${orderDoing?.length})`}
+            >
+              <Tool />
+              {orderLoading && (
+                <div>
+                  <Spinner
+                    animation="border"
+                    style={{ marginLeft: 20 }}
+                    size="sm"
+                  />{" "}
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <DoingOrderTab />
+            </Tab>
+            <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
+              {/* <Tool /> */}
+              {orderLoading && (
+                <div>
+                  <Spinner
+                    animation="border"
+                    style={{ marginLeft: 20 }}
+                    size="sm"
+                  />{" "}
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <ServedOrderTab />
+            </Tab>
+            <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
+              {/* <Tool /> */}
+              {orderLoading && (
+                <div>
+                  <Spinner
+                    animation="border"
+                    style={{ marginLeft: 20 }}
+                    size="sm"
+                  />{" "}
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <CanceledOrderTab />
+            </Tab>
+            {/* <Tab eventKey="contact" title="Contact" disabled>
             <Tool />
 
             <span>test</span>
           </Tab> */}
-        </Tabs>
-      </div>
-      <div style={{ padding: "20px"}}>
-        {orderItems
-          ?.filter((e) => e?.isChecked)
-          .map((val, i) => {
-            return (
-              <div
-                style={{ display: "inline-block", margin: 10 }}
-                ref={(el) => (billForCher80.current[i] = el)}
-              >
-                <BillForChef80
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  val={val}
-                />
-              </div>
-            );
-          })}
-      </div>
-      <PopUpPin
-        open={popup?.PopUpPin}
-        onClose={() => setPopup()}
-        setPinStatus={(e) => {
-          setPinStatus(e);
-          setPopup();
-        }}
-      />
-      {/* <div>
+          </Tabs>
+        </div>
+        <div style={{ padding: "20px" }}>
+          {orderItems
+            ?.filter((e) => e?.isChecked)
+            .map((val, i) => {
+              return (
+                <div
+                  style={{ display: "inline-block", margin: 10 }}
+                  ref={(el) => (billForCher80.current[i] = el)}
+                >
+                  <BillForChef80
+                    storeDetail={storeDetail}
+                    selectedTable={selectedTable}
+                    val={val}
+                  />
+                </div>
+              );
+            })}
+        </div>
+        <PopUpPin
+          open={popup?.PopUpPin}
+          onClose={() => setPopup()}
+          setPinStatus={(e) => {
+            setPinStatus(e);
+            setPopup();
+          }}
+        />
+        {/* <div>
         {orderItems
           ?.filter((e) => e?.isChecked)
           .map((val, i) => {
@@ -517,7 +534,8 @@ export default function OrderPage() {
             );
           })}
       </div> */}
-    </RootStyle>
+      </RootStyle>
+    </div>
   );
 }
 

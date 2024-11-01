@@ -7,12 +7,35 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
-import { MdPrint, MdPrintDisabled } from "react-icons/md";
+import { MdPrint, MdPrintDisabled,MdAccountCircle  } from "react-icons/md";
+import { TbWorld } from "react-icons/tb";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
-
+import {
+  faBoxOpen,
+  faCogs,
+  faHome,
+  faList,
+  faTachometerAlt,
+  faChartBar,
+  faAddressCard,
+  faIcicles,
+  faChartLine,
+  faUser,
+  faBook,
+  faMusic,
+  faUsers,
+  faBeer,
+  faShoppingCart,
+  faBox,
+  faBoxes,
+  faLayerGroup,
+  faStoreAlt,
+  faMoneyBill,
+  faMoneyCheck,
+} from "@fortawesome/free-solid-svg-icons";
 // sound
 import messageSound from "../sound/message.mp3";
 
@@ -69,8 +92,7 @@ export default function NavBar() {
     <div>
       <Navbar
         style={{
-          backgroundColor: "#fff",
-          boxShadow: "3px 0px 3px rgba(0, 0, 0, 0.16)",
+          backgroundColor:"transparent",
           color: "#CC0000",
           width: "100%",
           height: 50,
@@ -101,11 +123,12 @@ export default function NavBar() {
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
 
+          <TbWorld  style={{color:'#0E0D0D', fontSize:'50px',padding:'0 10px'}} />
+
           <div
             style={{
               marginRight: "30px",
               backgroundColor: "orange",
-              boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
             }}
           >
             {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
@@ -118,7 +141,7 @@ export default function NavBar() {
               <option value="km">KM</option>
             </select>
           </div>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {isConnectPrinter ? (
               <div
                 style={{
@@ -152,10 +175,13 @@ export default function NavBar() {
                 </div>
               </a>
             )}
-          </Box>
+          </Box> */}
+
+          <MdAccountCircle style={{color:'gray', fontSize:'30px',margin:'0 10px 0 -10px'}} />
 
           <div style={{ width: 10 }} />
-          <Form inline>
+          
+          {/* <Form inline>
             <Dropdown>
               <Dropdown.Toggle
                 style={{
@@ -184,7 +210,7 @@ export default function NavBar() {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-          </Form>
+          </Form> */}
         </Navbar.Collapse>
       </Navbar>
     </div>

@@ -274,14 +274,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   // console.log("=====::::===", { countOrderWaiting })
 
+
   return (
     <SideNav
-      style={{
+    expanded={true}
+      style={{  
         backgroundColor: "#FFFFFF",
         border: "solid 1px #E4E4E4",
         height: "100vh",
         display: "block",
-        position: "fixed",
+        width:'30px'
       }}
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
@@ -348,28 +350,32 @@ export default function Sidenav({ location, navigate, onToggle }) {
           navigate(to);
         }
       }}
-      onToggle={(expanded) => {
-        onToggle(expanded);
-      }}
     >
-      <Toggle />
+      <div style={{
+        display:"flex",
+        alignItems:'center',
+        justifyContent:'center',
+        height:50
+        
+        
+      }}>
+        <p style={{fontWeight:'700',fontSize:'20px'}}>OrderMouy</p>
+      </div>
       <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <hr style={{ marginTop: "-.05em" }} />
         {listForRole
           .filter((e) => !e?.hidden)
           .map((e, index) => (
             <NavItem
               eventKey={e?.key}
               key={index}
-              style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
+              style={{ backgroundColor: selected === e?.key ? "#EEEEEEFF" : "" }}
             >
               <NavIcon>
                 <FontAwesomeIcon
                   className={openTableData.length > 0 ? "scale-animation" : ""}
                   icon={e?.icon}
                   style={{
-                    color:
-                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                    color: UN_SELECTED_TAB_TEXT,
                     fontSize: 16,
                   }}
                 />
@@ -380,8 +386,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               <NavText>
                 <b
                   style={{
-                    color:
-                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                    color: UN_SELECTED_TAB_TEXT,
                   }}
                 >
                   {" "}

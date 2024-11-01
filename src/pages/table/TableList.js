@@ -65,11 +65,10 @@ import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { repeat } from "lodash";
-import {
- 
-  faCheck
-} from "@fortawesome/free-solid-svg-icons";
-
+import { FaCheck } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
+import { PiSpinnerLight } from "react-icons/pi";
+import { MdOutlineTableRestaurant } from "react-icons/md";
 
 
 export default function TableList() {
@@ -1461,12 +1460,16 @@ export default function TableList() {
         height: "calc(100vh - 66px)",
         overflow: "hidden",
         width: "100%",
+
       }}
     >
       <p style={{
-         fontSize: '30px', 
+         fontSize: '25px', 
          fontWeight: '400',
          padding: " 0 10px",
+         fontWeight:'700',
+         paddingTop:"20px",
+         paddingLeft:'20px'
           }}>Home</p>
       {/* popup */}
       <PopUpQRToken
@@ -1476,7 +1479,7 @@ export default function TableList() {
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
       />
-      <div>
+      <div >
         <Box
           sx={{
             display: "flex",
@@ -1491,25 +1494,26 @@ export default function TableList() {
               height: "100%",
               display: "flex",
               flexDirection: "column",
+              
             }}
           >
             <div
               style={{
-                width: '95%',
                 padding: "10px",
                 color: "gray",
                 display: 'grid',
                 alignItems: 'center',
                 gap: 8,
                 gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                justifyContent: 'center'
-              }}
+                justifyContent: 'center',
+                padding:'30px'
+              }} 
             >
               {[
-                { label: t("total_table"), value: tableList?.length,  },
-                { label: t("total_available_table"), value: _checkStatusCodeA(tableList) },
-                { label: t("total_unavailable_table"), value: _checkStatusCode(tableList) },
-                { label: t("total_bill_check"), value: _checkStatusCodeB(tableList) },
+                { label: t("total_table"), value: tableList?.length,icon: <MdOutlineTableRestaurant />  },
+                { label: t("total_available_table"), value: _checkStatusCodeA(tableList) ,icon: <FaCheck /> },
+                { label: t("total_unavailable_table"), value: _checkStatusCode(tableList),icon: <FaTimes  /> },
+                { label: t("total_bill_check"), value: _checkStatusCodeB(tableList),icon: <PiSpinnerLight  style={{fontSize:'50px'}}/> },
               ].map((item, index) => {
                 return (
                   <div style={{
@@ -1519,6 +1523,7 @@ export default function TableList() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: '70px',
+                    borderRadius:3,
                     boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
 
                   }}>
@@ -1532,10 +1537,10 @@ export default function TableList() {
                       justifyContent: 'center',
                       borderRadius: '5px',
                       color: 'white'
-                    }}>1</div>
+                    }}>{item.icon}</div>
                     <div>
                       <div>{item.label}</div>
-                      <div style={{ fontWeight: 500 }}>{item.value}</div>
+                      <div style={{ fontWeight: "700" }}>{item.value}</div>
                     </div>
                   </div>
                 )
@@ -1543,13 +1548,13 @@ export default function TableList() {
             </div>
 
             {zoneData?.length > 0 ? (
-              <div style={{ padding: "15px 15px", display: 'flex', alignItems: 'center', width: '100%', }}>
+              <div style={{ padding: "15px 20px", display: 'flex', alignItems: 'center', width: '100%', }}>
                 <Form.Label >{t("show_by_zone")}</Form.Label>
                 <Form.Control
                   as="select"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
-                  style={{ width: '20%', marginLeft: '5px' }}
+                  style={{ width: '150px', marginLeft: '5px' }}
                 >
                   <option value="">{t("show_all_zone")}</option>
                   {zoneData?.map((item, index) => (
@@ -1563,7 +1568,7 @@ export default function TableList() {
               ""
             )}
 
-            <Container style={{ overflowY: "scroll", flexGrow: 1 , paddingBottom:'100px'}}>
+            <Container style={{ overflowY: "scroll", flexGrow: 1 , paddingBottom:'100px',}}>
               <div style={{ height: 10 }} />
               <Box
                 sx={{
@@ -1760,11 +1765,12 @@ export default function TableList() {
             </Container>
           </Box>
           {/* Detail Table */}
-          <Box
+          {/* <Box
             sx={{
               display: { xs: "none", sm: "block" },
               minWidth: 420,
               width: 420,
+              border:'1px solid green',
               maxWidth: 420,
               boxShadow: "-1px 0px 10px rgba(0,0,0,0.1)",
             }}
@@ -2273,7 +2279,7 @@ export default function TableList() {
                 </p>
               </div>
             )}
-          </Box>
+          </Box> */}
         </Box>
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
