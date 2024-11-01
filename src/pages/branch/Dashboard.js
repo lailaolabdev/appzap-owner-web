@@ -26,7 +26,7 @@ import PieChart from "./PieChart";
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { storeDetail } = useStore();
+  const { storeDetail, setStoreDetail } = useStore();
   const { width, height } = useWindowDimensions2();
   const limitData = 4;
   // state
@@ -42,11 +42,23 @@ export default function Dashboard() {
   const [showPopupDelete, setShowPopupDelete] = useState(false);
   const [paginations, setPaginations] = useState(1);
   const [paginationTotal, setPaginationTotal] = useState();
+
   // useEffect
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     GetAllBranchData();
-  }, [endDate, startDate, endTime, startTime, filterValue, paginations]);
+  }, [
+    endDate,
+    startDate,
+    endTime,
+    startTime,
+    filterValue,
+    paginations,
+    storeDetail?.branchStartDate,
+    storeDetail?.branchEndDate,
+    storeDetail?.branchStartTime,
+    storeDetail?.branchEndTime,
+  ]);
 
   useEffect(() => {
     GetAllBranchData();
@@ -71,9 +83,9 @@ export default function Dashboard() {
         if (filterValue) {
           findbyIncome += `storeName=${filterValue}&`;
         }
-        if (startDate && endDate) {
-          findbyIncome += `startDate=${startDate}&`;
-          findbyIncome += `endDate=${endDate}`;
+        if (storeDetail?.branchStartDate && storeDetail?.branchEndDate) {
+          findbyIncome += `startDate=${storeDetail?.branchStartDate}&`;
+          findbyIncome += `endDate=${storeDetail?.branchEndDate}`;
         }
         const [branchData, incomeData] = await Promise.all([
           GetAllBranchRelation(TOKEN, findby),

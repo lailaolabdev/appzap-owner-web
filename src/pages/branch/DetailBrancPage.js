@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import Axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 
@@ -21,8 +20,6 @@ import {
   getSalesInformationReport,
   getUserReport,
 } from "../../services/report";
-import { saveAs } from "file-saver";
-import { getManyTables } from "../../services/table";
 import { moneyCurrency } from "../../helpers";
 import PopUpSetStartAndEndDateFilterExport from "../../components/popup/PopUpSetStartAndEndDateFilterExport";
 import PopUpPrintReport from "../../components/popup/PopUpPrintReport";
@@ -32,14 +29,13 @@ import PopUpPrintStaffHistoryComponent from "../../components/popup/PopUpPrintSt
 import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMenuHistoryComponent";
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
-import { errorAdd } from "../../helpers/sweetalert";
-import { END_POINT_EXPORT } from "../../constants/api";
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
+import Loading from "../../components/Loading";
 
 export default function DetailBrancPage() {
   const { t } = useTranslation();
   const { state } = useLocation();
-  console.log("====>", state);
+
   // state
   const [reportData, setReportData] = useState([]);
   const [salesInformationReport, setSalesInformationReport] = useState();
@@ -53,18 +49,12 @@ export default function DetailBrancPage() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
-  const [tableList, setTableList] = useState([]);
-  const [selectedTableIds, setSelectedTableIds] = useState([]);
-  const [loadingExportCsv, setLoadingExportCsv] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // provider
   const { storeDetail, setStoreDetail } = useStore();
 
-  // useEffect
-  useEffect(() => {
-    getTable();
-  }, []);
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
@@ -73,13 +63,18 @@ export default function DetailBrancPage() {
     getMoneyReportData();
     getPromotionReportData();
     getCategoryReportData();
-  }, [endDate, startDate, endTime, startTime, selectedTableIds]);
+  }, [
+    endDate,
+    startDate,
+    endTime,
+    startTime,
+    storeDetail?.branchStartDate,
+    storeDetail?.branchEndDate,
+    storeDetail?.branchStartTime,
+    storeDetail?.branchEndTime,
+  ]);
 
   // function
-  const getTable = async () => {
-    const data = await getManyTables(storeDetail?._id);
-    setTableList(data);
-  };
 
   const onExportData = async () => {
     setStoreDetail({
@@ -93,64 +88,183 @@ export default function DetailBrancPage() {
   };
 
   const getReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(state?.storeId, findBy, selectedTableIds);
-    setReportData(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getReports(state?.storeId, findBy);
+
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setLoading(false);
+      setReportData(data);
+      return;
+    }
   };
   const getSalesInformationReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(
-      state?.storeId,
-      findBy,
-      selectedTableIds
-    );
-    setSalesInformationReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getSalesInformationReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setSalesInformationReport(data);
+      setLoading(false);
+      return;
+    }
   };
   const getUserReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getUserReport(state?.storeId, findBy, selectedTableIds);
-    setUserReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getUserReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setLoading(false);
+      setUserReport(data);
+      return;
+    }
   };
   const getMenuReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMenuReport(state?.storeId, findBy, selectedTableIds);
-    setMenuReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getMenuReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setLoading(false);
+      setMenuReport(data);
+      return;
+    }
   };
   const getCategoryReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getCategoryReport(
-      state?.storeId,
-      findBy,
-      selectedTableIds
-    );
-    setCategoryReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getCategoryReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setCategoryReport(data);
+      setLoading(false);
+      return;
+    }
   };
   const getMoneyReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(state?.storeId, findBy, selectedTableIds);
-    setMoneyReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getMoneyReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setMoneyReport(data);
+      setLoading(false);
+      return;
+    }
   };
 
   // console.log("moneyReport", moneyReport);
 
   const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(
-      state?.storeId,
-      findBy,
-      selectedTableIds
-    );
-    setPromotionReport(data);
+    setLoading(true);
+    let findBy = "";
+    if (
+      storeDetail?.branchStartDate !== undefined &&
+      storeDetail?.branchEndDate !== undefined &&
+      storeDetail?.branchStartTime !== undefined &&
+      storeDetail?.branchEndTime !== undefined
+    ) {
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+    } else {
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    }
+    const data = await getPromotionReport(state?.storeId, findBy);
+    if (data.error) {
+      setLoading(false);
+      return;
+    }
+    if (data) {
+      setLoading(false);
+      setPromotionReport(data);
+
+      return;
+    }
   };
 
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
-        {/* <Breadcrumb>
-          <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
-          <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
-        </Breadcrumb> */}
-        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+        {/* <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <div style={{ display: "flex", gap: 10 }}>
             <Button
               variant="outline-primary"
@@ -171,17 +285,17 @@ export default function DetailBrancPage() {
               onClick={() => setPopup({ popUpChooseTableComponent: true })}
             >
               {t("chose_table")}
-            </Button> */}
+            </Button> 
           </div>
-          {/* <Button
+           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ PopupDaySplitView: true })}
           >
             <BsFillCalendarEventFill /> DAY SPLIT VIEW
-          </Button> */}
+          </Button> 
           <div style={{ flex: 1 }} />
-          <Button
+           <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ printReport: true })}
@@ -194,8 +308,8 @@ export default function DetailBrancPage() {
             onClick={() => onExportData()}
           >
             <MdOutlineCloudDownload /> EXPORT
-          </Button>
-        </div>
+          </Button> 
+        </div> */}
         <Box
           sx={{
             display: "grid",
@@ -204,6 +318,7 @@ export default function DetailBrancPage() {
             gridTemplateRows: "masonry",
           }}
         >
+          {loading && <Loading />}
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -279,7 +394,6 @@ export default function DetailBrancPage() {
               ))}
             </Card.Body>
           </Card>
-
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -400,7 +514,7 @@ export default function DetailBrancPage() {
                       (moneyReport?.transfer?.totalBill || 0),
                   },
                 ].map((e) => (
-                  <tr>
+                  <tr key={e}>
                     <td style={{ textAlign: "left" }}>{e?.method}</td>
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
@@ -433,7 +547,7 @@ export default function DetailBrancPage() {
                 </tr>
                 {userReport?.length > 0 &&
                   userReport?.map((e) => (
-                    <tr>
+                    <tr key={e}>
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.canceled}</td>
@@ -469,7 +583,7 @@ export default function DetailBrancPage() {
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {reportData.map((e) => (
-                  <tr>
+                  <tr key={e}>
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
@@ -514,7 +628,7 @@ export default function DetailBrancPage() {
                     return y.served - x.served;
                   })
                   ?.map((e) => (
-                    <tr>
+                    <tr key={e}>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
@@ -551,7 +665,7 @@ export default function DetailBrancPage() {
                     return y.served - x.served;
                   })
                   ?.map((e) => (
-                    <tr>
+                    <tr key={e}>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
                       <td style={{ textAlign: "center" }}>
@@ -625,12 +739,6 @@ export default function DetailBrancPage() {
         endTime={endTime}
         endDate={endDate}
       />
-      {/* <PopUpChooseTableComponent
-        open={popup?.popUpChooseTableComponent}
-        onClose={() => setPopup()}
-        tableList={tableList || []}
-        setSelectedTable={setSelectedTableIds}
-      /> */}
     </>
   );
 }
