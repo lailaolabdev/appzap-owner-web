@@ -77,6 +77,7 @@ import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
+import PermissionsForCounters from "../pages/PermissionsForCounter/PermissonForCounter";
 
 function Router() {
   return useRoutes([
@@ -133,6 +134,10 @@ function Router() {
         {
           path: "/settingStore/banner",
           element: <BannerList />,
+        },
+        {
+          path: "/settingStore/permissionsForCounters",
+          element: <PermissionsForCounters />,
         },
         {
           path: "/tables",

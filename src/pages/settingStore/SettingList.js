@@ -159,6 +159,13 @@ export default function SettingList() {
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
     },
+    {
+      id: "f962968d-1bed-48da-9049-92551dcd7102",
+      title: t("ກຳນົດສິດໄຫ້ເຄົ້າເຕີ"),
+      subTitle: t("pin_desc"),
+      icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
+      path: `/permissionsForCounters`,
+    },
 
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
