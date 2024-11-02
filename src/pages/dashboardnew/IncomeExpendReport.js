@@ -26,6 +26,8 @@ import Filter from "../expend/component/filter";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
+ import { useStore } from "../../store";
+
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -39,6 +41,8 @@ export default function IncomeExpendExport() {
   const currentMonth = new Date().getMonth() + 1;
   const [dateStart, setDateStart] = useState(new Date(year, month, 1));
   const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
+  const {profile } = useStore();
+
 
   // console.log("dateStart::", dateStart, "dateEnd::", dateEnd);
 
@@ -60,6 +64,15 @@ export default function IncomeExpendExport() {
   const [incomeExpendData, setIncomeExpendData] = useState([]);
 
   // console.log("incomeExpendData::", incomeExpendData);
+
+  const user_role = profile.data?.role
+  console.log(user_role)
+  const day = 7
+  
+
+  if(user_role == "APPZAP_ADMIN" && day === 7){
+    console.log("hahahah")
+  }
 
   const OPTION = {
     chart: {
@@ -320,6 +333,7 @@ export default function IncomeExpendExport() {
         }}
       >
         <TitleComponent title={t("inc_expe")} />
+        <p>What the fuck</p>
         <div
           style={{
             display: "flex",

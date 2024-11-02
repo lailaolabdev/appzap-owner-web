@@ -164,7 +164,7 @@ export default function SettingList() {
       title: t("ກຳນົດສິດໄຫ້ເຄົ້າເຕີ"),
       subTitle: t("pin_desc"),
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
-      path: `/permissionsForCounters`,
+      path: `/settingStore/permissionsForCounters`,
     },
 
     // {

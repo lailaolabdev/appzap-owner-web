@@ -1,34 +1,62 @@
-import React, { useState } from "react";
-import { Button, Modal, Card, Breadcrumb, Tab, Tabs } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Card, Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import { BsCurrencyExchange } from "react-icons/bs";
 import Box from "../../components/Box";
-import { MdAssignmentAdd } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+import { COLOR_APP } from "../../constants";
+import Switch from "react-switch";
+//import { useStore } from "../../store";
 
 export default function PermissionsForCounters() {
   const { t } = useTranslation();
-  const [showAdd, setShowAdd] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
 
-  const handleShowAdd = () => setShowAdd(true);
-  const handleCloseAdd = () => setShowAdd(false);
-  const handleCloseEdit = () => setShowEdit(false);
-  const handleCloseDelete = () => setShowDelete(false);
+  // ข้อมูลสำหรับแต่ละแถว
+  const dayLabels = [7, 5, 3, 1];
+
+  // สถานะสำหรับสวิตช์ทั้งหมด (เปิดได้ทีละอัน)
+  const [switchStates, setSwitchStates] = useState([false, false, false, false]);
+  const [selectedValues, setSelectedValues] = useState([]); // สถานะเก็บค่า value ของแถวที่เปิด
+  //const {profile } = useStore();
+
+
+
+  useEffect(() => {
+    console.log(`${selectedValues} day`);
+    //console.log(profile.data?.role)
+  }, [selectedValues]);
+
+  // ฟังก์ชันสำหรับการ toggle สวิตช์ โดยให้เปิดได้ทีละอันเท่านั้น
+  const toggleSwitch = (index) => {
+    const newStates = [...switchStates];
+
+    // ตรวจสอบว่าต้องการปิดหรือเปิดสวิตช์
+    if (newStates[index]) {
+      // ถ้าสวิตช์ถูกเปิดอยู่ ให้ปิด
+      newStates[index] = false;
+      setSelectedValues([]); // รีเซ็ตค่า selectedValues
+    } else {
+      // ถ้าสวิตช์ถูกปิด ให้เปิดเฉพาะอันที่เลือกและปิดอันอื่น
+      newStates.fill(false); // ปิดสวิตช์ทั้งหมด
+      newStates[index] = true; // เปิดเฉพาะอันที่เลือก
+      setSelectedValues([dayLabels[index]]); // อัปเดต selectedValues
+    }
+
+    setSwitchStates(newStates);
+  };
 
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("bank")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>ກຳນົດສິດໄຫ້ເຄົ້າເຕີ</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
           <Tab eventKey="currency-list" style={{ paddingTop: 20 }}>
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
                 style={{
-                  backgroundColor: "#007bff",
+                  backgroundColor: COLOR_APP,
                   color: "#fff",
                   fontSize: 18,
                   fontWeight: "bold",
@@ -39,108 +67,36 @@ export default function PermissionsForCounters() {
                 }}
               >
                 <span>
-                  <BsCurrencyExchange /> {t("main_Bank")}
+                  <BsCurrencyExchange /> {"ກຳນົດສິດ"}
                 </span>
-                <Button variant="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {t("add_Bank")}
-                </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%" }}>
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th style={{ textWrap: "nowrap" }}>{t("bank_Name")}</th>
-                      <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                      <th style={{ textWrap: "nowrap" }}>{"ຈຳນວນມື້"}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Sample data for display */}
-                    <tr>
-                      <td className="text-left">1</td>
-                      <td className="text-left">Sample Bank</td>
-                      <td className="text-left">
-                        <Button variant="link" onClick={() => setShowEdit(true)}>
-                          {t("edit")}
-                        </Button>
-                        <Button
-                          variant="link"
-                          style={{ color: "red" }}
-                          onClick={() => setShowDelete(true)}
-                        >
-                          {t("delete")}
-                        </Button>
-                      </td>
-                    </tr>
+                    {dayLabels.map((label, index) => (
+                      <tr key={index}>
+                        <td className="text-left">{index + 1}</td>
+                        <td className="text-left">{label} day</td>
+                        <td className="text-left">
+                          <Switch
+                            checked={switchStates[index]}
+                            onChange={() => toggleSwitch(index)} // ให้เปิดแค่สวิตช์เดียวและสามารถปิดได้
+                          />
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </Card.Body>
             </Card>
           </Tab>
         </Tabs>
-
-        {/* Create Modal */}
-        <Modal
-          show={showAdd}
-          onHide={handleCloseAdd}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>{t("add_Bank")}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>{t("please_enter_the_bank_name")}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseAdd}>
-              {t("cancel")}
-            </Button>
-            <Button variant="primary">{t("save")}</Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* Edit Modal */}
-        <Modal
-          show={showEdit}
-          onHide={handleCloseEdit}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>{t("edit_Bank")}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>{t("edit_the_bank_name")}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseEdit}>
-              {t("cancel")}
-            </Button>
-            <Button variant="primary">{t("save")}</Button>
-          </Modal.Footer>
-        </Modal>
-
-        {/* Delete Modal */}
-        <Modal
-          show={showDelete}
-          onHide={handleCloseDelete}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>{t("delete_Bank")}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>{t("confirm_delete_bank")}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseDelete}>
-              {t("cancel")}
-            </Button>
-            <Button variant="danger">{t("delete")}</Button>
-          </Modal.Footer>
-        </Modal>
       </Box>
     </>
   );
