@@ -26,8 +26,7 @@ import Filter from "../expend/component/filter";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
- import { useStore } from "../../store";
-
+import { useStore } from "../../store";
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -39,10 +38,9 @@ export default function IncomeExpendExport() {
   const parsed = queryString?.parse(location?.state);
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const [dateStart, setDateStart] = useState(new Date(year, month, 1));
-  const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
-  const {profile } = useStore();
-
+  // const [dateStart, setDateStart] = useState(new Date(year, month, 1));
+  // const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
+  const { profile } = useStore();
 
   // console.log("dateStart::", dateStart, "dateEnd::", dateEnd);
 
@@ -65,14 +63,31 @@ export default function IncomeExpendExport() {
 
   // console.log("incomeExpendData::", incomeExpendData);
 
-  const user_role = profile.data?.role
-  console.log(user_role)
-  const day = 7
-  
+  const user_role = profile.data?.role;
+  console.log(user_role);
+  const day = 7;
 
-  if(user_role == "APPZAP_ADMIN" && day === 7){
-    console.log("hahahah")
-  }
+  // Calculate initial dates based on user role
+  const calculateInitialDates = () => {
+    if (user_role === "APPZAP_ADMIN" && day === 7) {
+      // For admin, show last 7 days
+      return {
+        start: new Date(new Date().setDate(new Date().getDate() - 7)),
+        end: new Date(),
+      };
+    } else {
+      // For other users, show full month
+      return {
+        start: new Date(year, month, 1),
+        end: new Date(year, month + 1, 0),
+      };
+    }
+  };
+
+  // Initialize date states
+  const initialDates = calculateInitialDates();
+  const [dateStart, setDateStart] = useState(initialDates.start);
+  const [dateEnd, setDateEnd] = useState(initialDates.end);
 
   const OPTION = {
     chart: {
@@ -87,13 +102,9 @@ export default function IncomeExpendExport() {
       enabled: false,
       formatter: (value) => (value ? value?.toLocaleString("en-US") : 0),
     },
-    // title: {
-    //   text: "ລາຍຮັບ ແລະ ລາຍຈ່າຍ",
-    //   align: "left",
-    // },
     grid: {
       row: {
-        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+        colors: ["#f3f3f3", "transparent"],
         opacity: 0.5,
       },
     },
@@ -118,41 +129,15 @@ export default function IncomeExpendExport() {
       categories: [],
     },
   };
+  // Initialize series data
   const [series, setSeries] = useState([
     {
       name: `${t("expe_lak")}`,
-      data: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 5, 4, 6, 6, 7, 8, 3, 2, 3, 4, 5, 6,
-      ],
+      data: [0],
     },
     {
       name: `${t("recieve_lak")}`,
-      data: [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        2,
-        4,
-        ,
-        9,
-        5,
-        3,
-        6,
-        6,
-        6,
-        9,
-        4,
-        4,
-        5,
-        4,
-        7,
-        8,
-      ],
+      data: [0],
     },
   ]);
 
@@ -182,13 +167,24 @@ export default function IncomeExpendExport() {
       let findby = `accountId=${
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      // if (filterByYear) findby += `&year=${filterByYear}`
-      // if (filterByMonth) findby += `&month=${filterByMonth}`
-      if (dateStart && dateEnd)
-        findby += `&date_gte=${moment(dateStart).format(
+
+      if (user_role === "APPZAP_ADMIN" && day === 7) {
+        // กำหนดช่วงเวลา 7 วันย้อนหลังโดยไม่สนใจ dateStart, dateEnd ที่เลือก
+        const endDate = new Date();
+        const startDate = new Date(
+          new Date().setDate(new Date().getDate() - 7)
+        );
+        findby += `&date_gte=${moment(startDate).format(
           "YYYY/MM/DD"
-        )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
-      // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
+        )}&date_lt=${moment(endDate).format("YYYY/MM/DD")}`;
+      } else {
+        // กรณีไม่ใช่ admin ใช้ dateStart, dateEnd ปกติ
+        if (dateStart && dateEnd) {
+          findby += `&date_gte=${moment(dateStart).format(
+            "YYYY/MM/DD"
+          )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
+        }
+      }
 
       const header = await getHeadersAccount();
       const headers = {
@@ -201,29 +197,38 @@ export default function IncomeExpendExport() {
         headers: headers,
       })
         .then((res) => {
-          // console.log(res);
           setExpendGraphData(res?.data?.data?.chartExpend);
-          console.log("ExpendGraphData", res?.data);
         })
         .finally(() => {
           setIsLoading(false);
         });
 
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      if (dateStart && dateEnd)
-        findIncomeby += `startDate=${moment(dateStart).format(
+      // ใช้เงื่อนไขเดียวกันกับด้านบน
+      if (user_role === "APPZAP_ADMIN" && day === 7) {
+        const endDate = new Date();
+        const startDate = new Date(
+          new Date().setDate(new Date().getDate() - 7)
+        );
+        findIncomeby += `startDate=${moment(startDate).format(
           "YYYY-MM-DD"
-        )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
+        )}&endDate=${moment(endDate).format("YYYY-MM-DD")}`;
+      } else {
+        if (dateStart && dateEnd) {
+          findIncomeby += `startDate=${moment(dateStart).format(
+            "YYYY-MM-DD"
+          )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
+        }
+      }
       findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
+
       await axios({
         method: "post",
         url: `${END_POINT_SEVER}/v4/report-daily/${findIncomeby}`,
         headers: headers,
       })
         .then((res) => {
-          // console.log("IncomeGraphData", res?.data);
           setIncomeGraphData(res?.data);
-          setIsLoading(false);
         })
         .finally(() => {
           setIsLoading(false);
@@ -240,19 +245,29 @@ export default function IncomeExpendExport() {
     setOptions(null);
     setGraphData(null);
 
-    const _createdAtGraph = expendGraphData?.createdAt;
+    let _createdAtGraph = expendGraphData?.createdAt;
+
+    if (user_role === "APPZAP_ADMIN" && day === 7) {
+      // กรองข้อมูลให้เหลือแค่ 7 วันล่าสุด โดยไม่สนใจ dateStart, dateEnd ที่เลือก
+      const endDate = new Date();
+      const startDate = new Date(new Date().setDate(new Date().getDate() - 7));
+      _createdAtGraph = _createdAtGraph.filter((date) => {
+        const dateObj = new Date(date);
+        return dateObj >= startDate && dateObj <= endDate;
+      });
+    }
+
     const _xAxisData = [];
     const bbb = [..._createdAtGraph];
     bbb.reverse();
     bbb.map((x) => _xAxisData.push(`${moment(x).format("YYYY-MM-DD")}`));
-    const _options = OPTION;
-    _options.xaxis.categories = _xAxisData;
 
     const _dataAtGraph = expendGraphData?.totalExpendLAK;
     const _lakData = [];
     const ccc = [..._dataAtGraph];
     ccc.reverse();
     ccc.map((x) => _lakData.push(x));
+
     const _incomeData = [];
     _xAxisData.map((y) => {
       const _isMatchDate = incomeGraphData.filter((z) => z?.date == y);
@@ -271,6 +286,9 @@ export default function IncomeExpendExport() {
       name: `${t("paid_lak")}`,
       data: [..._lakData],
     };
+
+    const _options = OPTION;
+    _options.xaxis.categories = _xAxisData;
 
     const _graphData = {};
     _graphData.options = _options;
@@ -319,6 +337,21 @@ export default function IncomeExpendExport() {
     }
   };
 
+  const calculateDateRange = () => {
+    if (user_role === "APPZAP_ADMIN" && day === 7) {
+      const endDate = new Date();
+      const startDate = new Date(new Date().setDate(new Date().getDate() - 7));
+      return {
+        min: moment(startDate).format("YYYY-MM-DD"),
+        max: moment(endDate).format("YYYY-MM-DD"),
+      };
+    }
+    return {
+      min: null,
+      max: null,
+    };
+  };
+
   return (
     <>
       <div
@@ -346,28 +379,37 @@ export default function IncomeExpendExport() {
           <Form.Label>{t("date")}</Form.Label>
           <Form.Control
             type="date"
-            value={dateStart}
-            onChange={(e) => setDateStart(e?.target?.value)}
+            value={moment(dateStart).format("YYYY-MM-DD")}
+            min={
+              user_role === "APPZAP_ADMIN" && day === 7
+                ? calculateDateRange().min
+                : undefined
+            }
+            max={
+              user_role === "APPZAP_ADMIN" && day === 7
+                ? calculateDateRange().max
+                : undefined
+            }
+            onChange={(e) => setDateStart(new Date(e.target.value))}
             style={{ width: 150 }}
           />{" "}
-          ~
+          ~{" "}
           <Form.Control
             type="date"
-            value={dateEnd}
-            onChange={(e) => setDateEnd(e?.target?.value)}
+            value={moment(dateEnd).format("YYYY-MM-DD")}
+            min={
+              user_role === "APPZAP_ADMIN" && day === 7
+                ? calculateDateRange().min
+                : undefined
+            }
+            max={
+              user_role === "APPZAP_ADMIN" && day === 7
+                ? calculateDateRange().max
+                : undefined
+            }
+            onChange={(e) => setDateEnd(new Date(e.target.value))}
             style={{ width: 150 }}
           />
-          {/* <Form.Control
-            as="select"
-            name="payment"
-            // value={filterByPayment}
-            // onChange={(e) => setFilterByPayment(e?.target?.value)}
-            style={{ width: 150 }}
-          >
-            <option value="ALL">ສະແດງຮູບແບບ</option>
-            <option value="CASH">ເງິນສົດ</option>
-            <option value="TRANSFER">ເງິນໂອນ</option>
-          </Form.Control> */}
         </div>
       </div>
       {/* <Filter
