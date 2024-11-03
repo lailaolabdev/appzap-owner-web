@@ -63,14 +63,17 @@ export default function IncomeExpendExport() {
 
   // console.log("incomeExpendData::", incomeExpendData);
 
+  const role = "counter";
+
   //const user_role = profile.data?.role;
-  const user_role = "counter";
+  const user_role = role;
+
   console.log(user_role);
-  const day = 3 - 1;
+  const day = 5 - 1;
 
   // Calculate initial dates based on user role
   const calculateInitialDates = () => {
-    if (user_role === "APPZAP_ADMIN" && day) {
+    if (user_role === role && day) {
       // ใช้ค่า day แทนการกำหนดตายตัว
       return {
         start: new Date(new Date().setDate(new Date().getDate() - day)),
@@ -169,7 +172,7 @@ export default function IncomeExpendExport() {
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
 
-      if (user_role === "APPZAP_ADMIN" && day) {
+      if (user_role === role && day) {
         // ใช้ค่า day แทนการกำหนดตายตัว
         const endDate = new Date();
         const startDate = new Date(
@@ -207,7 +210,7 @@ export default function IncomeExpendExport() {
 
       // Fetch income data
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      if (user_role === "APPZAP_ADMIN" && day) {
+      if (user_role === role && day) {
         const endDate = new Date();
         const startDate = new Date(
           new Date().setDate(new Date().getDate() - day)
@@ -247,7 +250,7 @@ export default function IncomeExpendExport() {
 
     let _createdAtGraph = expendGraphData?.createdAt;
 
-    if (user_role === "APPZAP_ADMIN" && day) {
+    if (user_role === role && day) {
       // ใช้ค่า day แทนการกำหนดตายตัว
       const endDate = new Date();
       const startDate = new Date(
@@ -340,7 +343,7 @@ export default function IncomeExpendExport() {
   };
 
   const calculateDateRange = () => {
-    if (user_role === "APPZAP_ADMIN" && day) {
+    if (user_role === role && day) {
       const endDate = new Date();
       const startDate = new Date(
         new Date().setDate(new Date().getDate() - day)
@@ -384,12 +387,12 @@ export default function IncomeExpendExport() {
             type="date"
             value={moment(dateStart).format("YYYY-MM-DD")}
             min={
-              user_role === "APPZAP_ADMIN" && day
+              user_role === role && day
                 ? calculateDateRange().min
                 : undefined
             }
             max={
-              user_role === "APPZAP_ADMIN" && day
+              user_role === role && day
                 ? calculateDateRange().max
                 : undefined
             }
@@ -401,12 +404,12 @@ export default function IncomeExpendExport() {
             type="date"
             value={moment(dateEnd).format("YYYY-MM-DD")}
             min={
-              user_role === "APPZAP_ADMIN" && day
+              user_role === role && day
                 ? calculateDateRange().min
                 : undefined
             }
             max={
-              user_role === "APPZAP_ADMIN" && day
+              user_role === role && day
                 ? calculateDateRange().max
                 : undefined
             }

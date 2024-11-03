@@ -5,7 +5,7 @@ import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 import { COLOR_APP } from "../../constants";
 import Switch from "react-switch";
-//import { useStore } from "../../store";
+import axios from 'axios'; // นำเข้า axios
 
 export default function PermissionsForCounters() {
   const { t } = useTranslation();
@@ -15,30 +15,47 @@ export default function PermissionsForCounters() {
 
   // สถานะสำหรับสวิตช์ทั้งหมด (เปิดได้ทีละอัน)
   const [switchStates, setSwitchStates] = useState([false, false, false, false]);
-  const [selectedValues, setSelectedValues] = useState([]); // สถานะเก็บค่า value ของแถวที่เปิด
-  //const {profile } = useStore();
-
-
+  const [selectedValues, setSelectedValues] = useState([]);
 
   useEffect(() => {
     console.log(`${selectedValues} day`);
-    //console.log(profile.data?.role)
   }, [selectedValues]);
 
   // ฟังก์ชันสำหรับการ toggle สวิตช์ โดยให้เปิดได้ทีละอันเท่านั้น
-  const toggleSwitch = (index) => {
+  const toggleSwitch = async (index) => {
     const newStates = [...switchStates];
 
-    // ตรวจสอบว่าต้องการปิดหรือเปิดสวิตช์
     if (newStates[index]) {
       // ถ้าสวิตช์ถูกเปิดอยู่ ให้ปิด
       newStates[index] = false;
-      setSelectedValues([]); // รีเซ็ตค่า selectedValues
+      setSelectedValues([]);
+
+      // ตรวจสอบว่าปิดสวิตช์ทั้งหมดหรือไม่
+      const allOff = newStates.every(state => !state);
+      if (allOff) {
+        try {
+          const response = await axios.put(`http://localhost:7070/permissionCounter/6727da4ccf2a2b16108a14c6`, {
+            permissionsCounter: "" // ให้ permissionsCounter เป็นค่าว่าง
+          });
+          console.log('Response:', response.data);
+        } catch (error) {
+          console.error('Error updating permission counter:', error);
+        }
+      }
     } else {
       // ถ้าสวิตช์ถูกปิด ให้เปิดเฉพาะอันที่เลือกและปิดอันอื่น
       newStates.fill(false); // ปิดสวิตช์ทั้งหมด
       newStates[index] = true; // เปิดเฉพาะอันที่เลือก
       setSelectedValues([dayLabels[index]]); // อัปเดต selectedValues
+
+      try {
+        const response = await axios.put(`http://localhost:7070/permissionCounter/6727da4ccf2a2b16108a14c6`, {
+          permissionsCounter: dayLabels[index] // ค่าสำหรับ permissionsCounter
+        });
+        console.log('Response:', response.data);
+      } catch (error) {
+        console.error('Error updating permission counter:', error);
+      }
     }
 
     setSwitchStates(newStates);
