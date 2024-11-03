@@ -65,14 +65,14 @@ export default function IncomeExpendExport() {
 
   const user_role = profile.data?.role;
   console.log(user_role);
-  const day = 7;
+  const day = 9 - 1;
 
   // Calculate initial dates based on user role
   const calculateInitialDates = () => {
-    if (user_role === "APPZAP_ADMIN" && day === 7) {
-      // For admin, show last 7 days
+    if (user_role === "APPZAP_ADMIN" && day) {
+      // ใช้ค่า day แทนการกำหนดตายตัว
       return {
-        start: new Date(new Date().setDate(new Date().getDate() - 7)),
+        start: new Date(new Date().setDate(new Date().getDate() - day)),
         end: new Date(),
       };
     } else {
@@ -168,17 +168,16 @@ export default function IncomeExpendExport() {
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
 
-      if (user_role === "APPZAP_ADMIN" && day === 7) {
-        // กำหนดช่วงเวลา 7 วันย้อนหลังโดยไม่สนใจ dateStart, dateEnd ที่เลือก
+      if (user_role === "APPZAP_ADMIN" && day) {
+        // ใช้ค่า day แทนการกำหนดตายตัว
         const endDate = new Date();
         const startDate = new Date(
-          new Date().setDate(new Date().getDate() - 7)
+          new Date().setDate(new Date().getDate() - day)
         );
         findby += `&date_gte=${moment(startDate).format(
           "YYYY/MM/DD"
         )}&date_lt=${moment(endDate).format("YYYY/MM/DD")}`;
       } else {
-        // กรณีไม่ใช่ admin ใช้ dateStart, dateEnd ปกติ
         if (dateStart && dateEnd) {
           findby += `&date_gte=${moment(dateStart).format(
             "YYYY/MM/DD"
@@ -191,6 +190,8 @@ export default function IncomeExpendExport() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+
+      // Fetch expenditure data
       await axios({
         method: "get",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend-report?${findby}`,
@@ -203,22 +204,20 @@ export default function IncomeExpendExport() {
           setIsLoading(false);
         });
 
+      // Fetch income data
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      // ใช้เงื่อนไขเดียวกันกับด้านบน
-      if (user_role === "APPZAP_ADMIN" && day === 7) {
+      if (user_role === "APPZAP_ADMIN" && day) {
         const endDate = new Date();
         const startDate = new Date(
-          new Date().setDate(new Date().getDate() - 7)
+          new Date().setDate(new Date().getDate() - day)
         );
         findIncomeby += `startDate=${moment(startDate).format(
           "YYYY-MM-DD"
         )}&endDate=${moment(endDate).format("YYYY-MM-DD")}`;
-      } else {
-        if (dateStart && dateEnd) {
-          findIncomeby += `startDate=${moment(dateStart).format(
-            "YYYY-MM-DD"
-          )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
-        }
+      } else if (dateStart && dateEnd) {
+        findIncomeby += `startDate=${moment(dateStart).format(
+          "YYYY-MM-DD"
+        )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
       }
       findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
 
@@ -247,10 +246,12 @@ export default function IncomeExpendExport() {
 
     let _createdAtGraph = expendGraphData?.createdAt;
 
-    if (user_role === "APPZAP_ADMIN" && day === 7) {
-      // กรองข้อมูลให้เหลือแค่ 7 วันล่าสุด โดยไม่สนใจ dateStart, dateEnd ที่เลือก
+    if (user_role === "APPZAP_ADMIN" && day) {
+      // ใช้ค่า day แทนการกำหนดตายตัว
       const endDate = new Date();
-      const startDate = new Date(new Date().setDate(new Date().getDate() - 7));
+      const startDate = new Date(
+        new Date().setDate(new Date().getDate() - day)
+      );
       _createdAtGraph = _createdAtGraph.filter((date) => {
         const dateObj = new Date(date);
         return dateObj >= startDate && dateObj <= endDate;
@@ -338,9 +339,11 @@ export default function IncomeExpendExport() {
   };
 
   const calculateDateRange = () => {
-    if (user_role === "APPZAP_ADMIN" && day === 7) {
+    if (user_role === "APPZAP_ADMIN" && day) {
       const endDate = new Date();
-      const startDate = new Date(new Date().setDate(new Date().getDate() - 7));
+      const startDate = new Date(
+        new Date().setDate(new Date().getDate() - day)
+      );
       return {
         min: moment(startDate).format("YYYY-MM-DD"),
         max: moment(endDate).format("YYYY-MM-DD"),
@@ -381,12 +384,12 @@ export default function IncomeExpendExport() {
             type="date"
             value={moment(dateStart).format("YYYY-MM-DD")}
             min={
-              user_role === "APPZAP_ADMIN" && day === 7
+              user_role === "APPZAP_ADMIN" && day
                 ? calculateDateRange().min
                 : undefined
             }
             max={
-              user_role === "APPZAP_ADMIN" && day === 7
+              user_role === "APPZAP_ADMIN" && day
                 ? calculateDateRange().max
                 : undefined
             }
@@ -398,12 +401,12 @@ export default function IncomeExpendExport() {
             type="date"
             value={moment(dateEnd).format("YYYY-MM-DD")}
             min={
-              user_role === "APPZAP_ADMIN" && day === 7
+              user_role === "APPZAP_ADMIN" && day
                 ? calculateDateRange().min
                 : undefined
             }
             max={
-              user_role === "APPZAP_ADMIN" && day === 7
+              user_role === "APPZAP_ADMIN" && day
                 ? calculateDateRange().max
                 : undefined
             }
