@@ -285,6 +285,12 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
           >
             <span>{t("menu_info")}</span>
           </Button>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={() => exportMenu()}
+          >
+            <span>{t("all_curency")}</span>
+          </Button>
         </div>
       </Modal.Body>
     </Modal>

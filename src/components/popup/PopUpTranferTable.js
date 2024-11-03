@@ -17,15 +17,10 @@ export default function PopUpTranferTable({
   onSubmit,
   tableList,
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   // state
 
   const [FromBillData, setFromBillData] = useState();
-  const [ToBillData, setToBillData] = useState();
-  const [orderData, setOrderData] = useState();
-  const [selectOrder, setSelectOrder] = useState([]);
-  const [selectToBillId, setSelectToBillId] = useState();
-
   const [FormData, setFormData] = useState({
     storeId: "",
     fromBillId: "",
@@ -134,13 +129,13 @@ export default function PopUpTranferTable({
   return (
     <Modal show={open} onHide={onClose} keyboard={false} size="xl">
       <Modal.Header closeButton>
-        <Modal.Title>{t('transfer_table')}</Modal.Title>
+        <Modal.Title>{t("transfer_table")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h5>{t('how_to_move')}</h5>
-        <li>{t('chose_move_table')}</li>
-        <li>{t('chose_move_order')}</li>
-        <li>{t('approve_move_order')}</li>
+        <h5>{t("how_to_move")}</h5>
+        <li>{t("chose_move_table")}</li>
+        <li>{t("chose_move_order")}</li>
+        <li>{t("approve_move_order")}</li>
         <br />
         <div
           style={{
@@ -162,7 +157,7 @@ export default function PopUpTranferTable({
                   fontWeight: "bold",
                 }}
               >
-                {t('from_table')}: {FromBillData?.tableId?.name}
+                {t("from_table")}: {FromBillData?.tableId?.name}
               </Card.Header>
               <Card.Body style={{ padding: 0 }}>
                 <Table>
@@ -170,9 +165,9 @@ export default function PopUpTranferTable({
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>{t('order_name')}</th>
-                        <th>{t('quantity')}</th>
-                        <th>{t('time')}</th>
+                        <th>{t("order_name")}</th>
+                        <th>{t("quantity")}</th>
+                        <th>{t("time")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -246,7 +241,7 @@ export default function PopUpTranferTable({
                 setFormData((prev) => ({ ...prev, toBillId: e.target.value }))
               }
             >
-              <option value="">{t('chose_table')}</option>
+              <option value="">{t("chose_table")}</option>
               {tableList?.map((item, index) => (
                 <option
                   key={"talbe-" + index}
@@ -270,8 +265,11 @@ export default function PopUpTranferTable({
                   fontWeight: "bold",
                 }}
               >
-                {t('move_to')}:{" "}
-                {tableList.find((e) => e?.billId == FormData?.toBillId)?.tableName}
+                {t("move_to")}:{" "}
+                {
+                  tableList.find((e) => e?.billId == FormData?.toBillId)
+                    ?.tableName
+                }
               </Card.Header>
               <Card.Body style={{ padding: 0 }}>
                 <Table>
@@ -279,9 +277,9 @@ export default function PopUpTranferTable({
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>{t('move_order_name')}</th>
-                        <th>{t('quantity')}</th>
-                        <th>{t('time')}</th>
+                        <th>{t("move_order_name")}</th>
+                        <th>{t("quantity")}</th>
+                        <th>{t("time")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -314,7 +312,7 @@ export default function PopUpTranferTable({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleSubmit}>
-          {t('approve_move_order')}
+          {t("approve_move_order")}
         </Button>
       </Modal.Footer>
     </Modal>

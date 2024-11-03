@@ -104,6 +104,7 @@ export const getBillReport = async (storeId, findBy, tableIds) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/bill-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
+    console.log("RES: ", res);
     return res.data;
   } catch (error) {
     return error;
@@ -118,6 +119,27 @@ export const getActiveBillReport = async (storeId, findBy, tableIds) => {
       { tableIds: tableIds ? tableIds : [] },
       { headers: _header }
     );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getBankReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/count-bank${findBy}&storeId=${storeId}`;
+    const res = await axios.get(url, { headers: _header });
+    console.log("res", res);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getCurrencyReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/currencies-count${findBy}&storeId=${storeId}`;
+    const res = await axios.get(url, { headers: _header });
     return res.data;
   } catch (error) {
     return error;

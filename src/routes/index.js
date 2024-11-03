@@ -76,6 +76,8 @@ import PolicyRoutes from "./Policy.routes";
 import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
+import BankList from "../pages/bank/BankList";
+import BillSplit from "../pages/split_bill/BillSplit";
 
 function Router() {
   return useRoutes([
@@ -137,6 +139,11 @@ function Router() {
           path: "/tables",
           element: <Table />,
         },
+        {
+          // path: "/bill/split/:oldId/:newId",
+          path: "/bill/split/:newId",
+          element: <BillSplit />,
+        },
 
         // ຢຸດໃຊ້ເວຊັ້ນ v6^--------->
         {
@@ -183,6 +190,10 @@ function Router() {
         {
           path: "/settingStore/currency/:id",
           element: <CurrencyList />,
+        },
+        {
+          path: "/settingStore/bank/:id",
+          element: <BankList />,
         },
         {
           path: "/settingStore/menu/category/limit/:limit/page/:page/:id",

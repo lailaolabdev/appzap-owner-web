@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 
 // sound
 import messageSound from "../sound/message.mp3";
+import { use } from "i18next";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -43,6 +44,13 @@ export default function NavBar() {
     };
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // const lang = localStorage.getItem("i18nextLng");
+    // if (lang) {
+    //   // const _localJson = JSON.parse(lang);
+    //   i18n.changeLanguage(lang);
+
+    // }
   }, []);
 
   const _onLogout = () => {
@@ -52,6 +60,9 @@ export default function NavBar() {
   };
 
   const switchLanguage = (language) => {
+    // localStorage.setItem("i18nextLng", language);
+    // const lang = localStorage.getItem("i18nextLng");
+
     i18n.changeLanguage(language);
     localStorage.setItem("language", language); // ເກັບຄ່າພາສາໃນ localStorage
     setSelectedLanguage(language); // ອັບເດດ state ຂອງພາສາ
