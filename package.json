@@ -1,10 +1,6 @@
 {
   "name": "admin.selfordering",
-<<<<<<< HEAD
   "version": "5.7.36",
-=======
-  "version": "5.7.8",
->>>>>>> c305dcc (update path and version)
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.5",
