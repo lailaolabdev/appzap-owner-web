@@ -103,7 +103,7 @@ export default function OrderPage() {
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
       console.log("orderSelect", orderSelect);
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
-      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
+      // console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -288,6 +288,8 @@ export default function OrderPage() {
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
+
+        // console.log(dataUrl);
 
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });

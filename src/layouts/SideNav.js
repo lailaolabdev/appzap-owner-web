@@ -27,7 +27,7 @@ import {
   faBoxes,
   faLayerGroup,
   faStoreAlt,
-  faMoneyBill,
+  faBuilding,
   faMoneyCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
@@ -221,6 +221,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const settingNavItem = [
     {
+      title: `${t("branch")}`,
+      key: "branch",
+      typeStore: "",
+      icon: faBuilding,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
+    {
       title: `${t("shop_setting")}`,
       key: "settingStore",
       typeStore: "",
@@ -228,6 +236,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
+
     {
       title: `${t("deposit_goods")}`,
       key: "fark",

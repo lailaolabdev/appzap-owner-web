@@ -16,6 +16,7 @@ export default function PopUpSetStartAndEndDate({
   endTime,
   endDate,
 }) {
+  const { storeDetail, setStoreDetail } = useStore();
   // state
   const [valueStartDate, setValueStartDate] = useState(startDate);
   const [valueEndDate, setValueEndDate] = useState(endDate);
@@ -214,6 +215,14 @@ export default function PopUpSetStartAndEndDate({
             setEndDate(valueEndDate);
             setStartTime(valueStartTime);
             setEndTime(valueEndTime);
+
+            setStoreDetail({
+              ...storeDetail,
+              branchStartDate: valueStartDate,
+              branchEndDate: valueEndDate,
+              branchStartTime: valueStartTime,
+              branchEndTime: valueEndTime,
+            });
             onClose();
           }}
         >
