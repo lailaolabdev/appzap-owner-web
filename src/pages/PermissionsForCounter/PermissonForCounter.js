@@ -16,10 +16,36 @@ export default function PermissionsForCounters() {
   // สถานะสำหรับสวิตช์ทั้งหมด (เปิดได้ทีละอัน)
   const [switchStates, setSwitchStates] = useState([false, false, false, false]);
   const [selectedValues, setSelectedValues] = useState([]);
+  
 
   useEffect(() => {
     console.log(`${selectedValues} day`);
   }, [selectedValues]);
+
+
+  // เพิ่มฟังก์ชันใหม่เข้าไป
+useEffect(() => {
+  const fetchInitialSwitchState = async () => {
+    try {
+      const response = await axios.get('http://localhost:7070/permissionCounter/6727da4ccf2a2b16108a14c6');
+      const currentCounter = response.data.permissionsCounter;
+
+      // อัปเดต switchStates ตามค่า permissionsCounter ที่ดึงมา
+      const initialStates = dayLabels.map(label => label === currentCounter);
+      setSwitchStates(initialStates);
+
+      // ตั้งค่า selectedValues เพื่อแสดงค่าวันที่เลือก
+      if (currentCounter) {
+        setSelectedValues([currentCounter]);
+      }
+    } catch (error) {
+      console.error('Error fetching initial switch state:', error);
+    }
+  };
+
+  // เรียกใช้ฟังก์ชันเพื่อดึงสถานะเริ่มต้น
+  fetchInitialSwitchState();
+}, []);
 
   // ฟังก์ชันสำหรับการ toggle สวิตช์ โดยให้เปิดได้ทีละอันเท่านั้น
   const toggleSwitch = async (index) => {

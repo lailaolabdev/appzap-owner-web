@@ -60,16 +60,37 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
-
+  const [days, setDays] = useState(null)
+  
+ 
   // console.log("incomeExpendData::", incomeExpendData);
 
   const role = "counter";
-
   //const user_role = profile.data?.role;
   const user_role = role;
 
   console.log(user_role);
-  const day = 5 - 1;
+  let day = days ;
+
+  useEffect(() => {
+    const fetchPermissionCounters = async () => {
+        try {
+            const response = await axios.get('http://localhost:7070/permissionCounter');
+            setDays(response.data[0].permissionsCounter
+            );
+        } catch (err) {
+            console.log(err.message);
+        } 
+    };
+    fetchPermissionCounters();
+}, [days]);
+
+console.log("days:", days);
+
+
+
+  
+ 
 
   // Calculate initial dates based on user role
   const calculateInitialDates = () => {
