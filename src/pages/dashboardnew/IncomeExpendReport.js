@@ -63,9 +63,10 @@ export default function IncomeExpendExport() {
 
   // console.log("incomeExpendData::", incomeExpendData);
 
-  const user_role = profile.data?.role;
+  //const user_role = profile.data?.role;
+  const user_role = "counter";
   console.log(user_role);
-  const day = 9 - 1;
+  const day = 3 - 1;
 
   // Calculate initial dates based on user role
   const calculateInitialDates = () => {
@@ -369,7 +370,6 @@ export default function IncomeExpendExport() {
         }}
       >
         <TitleComponent title={t("inc_expe")} />
-        <p>What the fuck</p>
         <div
           style={{
             display: "flex",
