@@ -987,7 +987,6 @@
   "clear": "ລ້າງຄ່າ",
   "show_all_zone": "ສະແດງໂຊນທັງໝົດ",
   "zone_setting": "ການຕັ້ງຄ່າໂຊນ",
-<<<<<<< HEAD
   "branch": "ສາຂາ",
   "add_branch": "ເພີ່ມສາຂາ",
   "name_branch": "ຊື່ສາຂາ",
@@ -997,11 +996,9 @@
   "branch_require": "ກະລຸນາປ້ອນຊື່ສາຂາ",
   "branch_select": "ກະລຸນາເລຶອກຊື່ສາຂາ",
   "branch_recive": "ລາຍຮັບແຕ່ລະສາຂາ",
-  "field_required": "ກະລຸນາປ້ອນຂໍ້ມູນໃນແບບຟອມໃຫ້ຄົບ"
-=======
+  "field_required": "ກະລຸນາປ້ອນຂໍ້ມູນໃນແບບຟອມໃຫ້ຄົບ",
   "Open": "ເປີດ",
   "Close": "ປິດ",
   "bill_paid": "ບິນຈ່າຍກ່ອນ",
   "bill_split": "ບິນແຍກຈ່າຍ"
->>>>>>> development
 }

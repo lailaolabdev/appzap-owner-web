@@ -151,11 +151,6 @@ export default function DashboardPage() {
     setMoneyReport(data);
   };
 
-<<<<<<< HEAD
-  // console.log("moneyReport", moneyReport);
-
-=======
->>>>>>> development
   const getPromotionReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(

@@ -869,7 +869,6 @@
   "Drawer": "Drawer",
   "enter_phone_and_name": "Enter name or phone number",
   "show_by_zone": "Show by zone",
-<<<<<<< HEAD
   "show_all_zone": "Show all zone",
   "zone_setting": "Zone setting",
   "branch": "branch",
@@ -881,16 +880,11 @@
   "branch_require": "Branch name is required",
   "branch_select": "Select branch",
   "branch_recive": "Received from branch",
-  "field_required": "All fields are required"
-=======
-
+  "field_required": "All fields are required",
   "clear": "clear",
   "bill_combine": "Bill combine",
-  "show_all_zone": "Show all zone",
-  "zone_setting": "Zone setting",
   "Open": "Open",
   "Close": "Close",
   "bill_paid": "bill paid",
   "bill_split": "bill split"
->>>>>>> development
 }
