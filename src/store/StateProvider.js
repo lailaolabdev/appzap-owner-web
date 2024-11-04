@@ -11,9 +11,11 @@ import { useSoundState } from "./globalState/soundState";
 import { useSocketState } from "./globalState/socketState";
 import { UserState } from "./globalState/userState";
 import { useThemeState } from "./globalState/themeState";
+import { useBillState } from "./globalState/billSplitState";
 
 export const StateProvider = ({ children }) => {
   const storeDetail = useStoreDetailState();
+  const splitBill = useBillState();
   const order = useOrderState();
   const table = useTableState(storeDetail);
   const menuCategory = useMenuCategoryState(storeDetail);
@@ -35,7 +37,8 @@ export const StateProvider = ({ children }) => {
     sound,
     socket,
     user,
-    themeState
+    themeState,
+    splitBill
   );
   return <Context.Provider value={store}>{children}</Context.Provider>;
 };

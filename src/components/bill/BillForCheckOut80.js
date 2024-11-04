@@ -13,6 +13,7 @@ import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
 import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import _ from "lodash";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -21,6 +22,7 @@ export default function BillForCheckOut80({
   dataBill,
   taxPercent = 0,
   serviceCharge = 0,
+  totalBillBillForCheckOut80,
   profile,
 }) {
   // state
@@ -34,6 +36,9 @@ export default function BillForCheckOut80({
   const [base64Image, setBase64Image] = useState("");
 
   // console.log("storeDetail", storeDetail);
+  // console.log("dataBill 80 code", dataBill?.orderId);
+  // console.log("selectedTable 80", selectedTable);
+
   // console.log("dataBill", dataBill);
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -50,11 +55,23 @@ export default function BillForCheckOut80({
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
-  }, []);
+  }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
 
   // function
   const _calculateTotal = () => {
     let _total = 0;
+    // for (let _data of dataBill?.orderId || []) {
+    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
+    //   const itemPrice = _data?.price + totalOptionPrice;
+    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+    //   _total += _data?.quantity * itemPrice;
+    // }
+
+    // const _total = _.sumBy(
+    //   dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    // );
+    // let _total = 0;
 
     // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
     const orders =
@@ -63,11 +80,18 @@ export default function BillForCheckOut80({
         : dataBill?.orderId;
 
     // Loop through the available orders
-    for (let _data of orders || []) {
+    for (let _data of (orders || []).filter(
+      (e) => e?.status === "SERVED" || e?.status === "PRINTBILL"
+    )) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
     }
+
+    const totalAmountAll =
+      orderPayBefore && orderPayBefore.length > 0
+        ? _total
+        : totalBillBillForCheckOut80;
 
     // Handle discount logic
     if (dataBill?.discount > 0) {
@@ -75,22 +99,18 @@ export default function BillForCheckOut80({
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(_total - dataBill?.discount);
+        setTotalAfterDiscount(totalAmountAll - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-        setTotalAfterDiscount(_total - ddiscount);
+        const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
+        setTotalAfterDiscount(totalAmountAll - ddiscount);
       }
     } else {
-      setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(totalAmountAll);
     }
-
-    // Set total amount and related charges
-    setTotal(_total);
-    setTaxAmount((_total * taxPercent) / 100);
-
-    // Calculate service charge
+    setTotal(totalAmountAll);
+    setTaxAmount((totalAmountAll * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (_total * storeDetail?.serviceChargePer) / 100
+      (totalAmountAll * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
@@ -144,7 +164,10 @@ export default function BillForCheckOut80({
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
-      <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div>
+      <div style={{ textAlign: "center" }}>
+        {" "}
+        {`${t("tableNumber")} ${dataBill?.tableId?.name}`}
+      </div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
@@ -175,57 +198,59 @@ export default function BillForCheckOut80({
         <div style={{ flexGrow: 1 }}></div>
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
-        <div style={{ textAlign: "left", width: "10px" }}>ລຳດັບ </div>
+        <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
         <div style={{ textAlign: "left" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {orders?.map((item, index) => {
-          const optionsNames =
-            item?.options
-              ?.map((option) =>
-                option.quantity > 1
-                  ? `[${option.quantity} x ${option.name}]`
-                  : `[${option.name}]`
-              )
-              .join("") || "";
-          const totalOptionPrice = item?.totalOptionPrice || 0;
-          const itemPrice = item?.price + totalOptionPrice;
-          const itemTotal = itemPrice * item?.quantity;
+        {orders
+          ?.filter((e) => e?.status === "SERVED" || e?.status === "PRINTBILL")
+          ?.map((item, index) => {
+            const optionsNames =
+              item?.options
+                ?.map((option) =>
+                  option.quantity > 1
+                    ? `[${option.quantity} x ${option.name}]`
+                    : `[${option.name}]`
+                )
+                .join("") || "";
+            const totalOptionPrice = item?.totalOptionPrice || 0;
+            const itemPrice = item?.price + totalOptionPrice;
+            const itemTotal = itemPrice * item?.quantity;
 
-          return (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                fontSize: 12,
-              }}
-              key={index}
-            >
-              <div style={{ textAlign: "left", width: "10px" }}>
-                {index + 1}
-              </div>
+            return (
               <div
                 style={{
-                  textAlign: "left",
-                  marginLeft: "-20px",
-                  width: "6rem",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
+                  fontSize: 12,
                 }}
+                key={index}
               >
-                {item?.name} {optionsNames}
+                <div style={{ textAlign: "left", width: "10px" }}>
+                  {index + 1}
+                </div>
+                <div
+                  style={{
+                    textAlign: "left",
+                    marginLeft: "-20px",
+                    width: "6rem",
+                  }}
+                >
+                  {item?.name} {optionsNames}
+                </div>
+                <div style={{ textAlign: "center" }}>{item?.quantity}</div>
+                <div style={{ textAlign: "left" }}>
+                  {itemPrice ? moneyCurrency(itemPrice) : "-"}
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  {itemTotal ? moneyCurrency(itemTotal) : "-"}
+                </div>
               </div>
-              <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-              <div style={{ textAlign: "left" }}>
-                {itemPrice ? moneyCurrency(itemPrice) : "-"}
-              </div>
-              <div style={{ textAlign: "right" }}>
-                {itemTotal ? moneyCurrency(itemTotal) : "-"}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </Order>
       <div style={{ height: 10 }}></div>
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
@@ -310,7 +335,7 @@ export default function BillForCheckOut80({
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency((total + taxAmount) / item?.buy)}
+                {moneyCurrency((total + taxAmount) / item?.sell)}
               </div>
             </Col>
           </Row>
@@ -324,7 +349,7 @@ export default function BillForCheckOut80({
         <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
-            {item?.currencyCode}: {moneyCurrency(item?.buy)}
+            {item?.currencyCode}: {moneyCurrency(item?.sell)}
             {index + 1 < currencyData?.length ? (
               <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
             ) : (

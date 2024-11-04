@@ -556,7 +556,6 @@ function Homecafe() {
   };
 
   const calculateTotalPrice = (menu, selectedOptionsArray) => {
-    console.log({ menu });
     if (!menu || !menu._id) {
       return 0;
     }

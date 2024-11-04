@@ -253,7 +253,7 @@
   "choose_food_type": "ជ្រើសរើសប្រភេទម្ហូប",
   "all": "ទាំងអស់",
   "cancel_and_send_to_kitchen": "បោះបង់ និងបោះពុម្ពវិក្កយបត្រទៅផ្ទះបាយ",
-  "update_and_send_to_kitchen": "ធ្វើបច្ចុប្បន្នភាពនិងផ្ញើទៅផ្ទះបាយ",
+  "update_printed": "ធ្វើបច្ចុប្បន្នភាពនិងផ្ញើទៅផ្ទះបាយ",
   "amount_exist": "ចំនួនដែលមាន",
   "order_food": "បញ្ជាទិញម្ហូប",
   "order_and_send_to_kitchen": "បញ្ជាទិញនិងផ្ញើទៅផ្ទះបាយ",
@@ -348,6 +348,8 @@
   "show_to_app": "បង្ហាញទៅអតិថិជន (កម្មវិធី)",
   "show_to_web": "បង្ហាញទៅអតិថិជន (គេហទំព័រ)",
   "show_to_staff": "បង្ហាញទៅបុគ្គលិក",
+  "app": "កម្មវិធី",
+  "web": "បណ្តាញ",
   "close_out": "បិទ",
   "define_show_menu": "កំណត់បង្ហាញម៉ឺនុយ",
   "notice": "ការជូនដំណឹង",
@@ -777,6 +779,7 @@
   "ORDER_FEEDBACK": "មតិរបស់អតិថិជន",
   "ORDER_CANCEL": "បានបោះបង់",
   "ORDER_PAID": "បង់ប្រាក់រួចហើយ",
+  "ORDER_PRINTBILL":"បោះពុម្ពវិក្កយបត្រ",
   "option_menu": "ជម្រើសម៉ឺនុយ",
   "update_options": "កែប្រែជម្រើស",
   "chose_export_excel": "ជ្រើសធាតុសម្រាប់នាំចេញ",
@@ -848,5 +851,7 @@
   "enter_phone_and_name": "បញ្ចូលឈ្មោះ ឬ លេខទូរស័ព្ទ",
    "show_by_zone": "បង្ហាញតាមតំបន់",
   "show_all_zone": "បង្ហាញតំបន់ទាំងអស់",
-  "zone_setting": "ការកំណត់តំបន់"
+  "zone_setting": "ការកំណត់តំបន់",
+  "Open": "បើក",
+  "Close": "បិទ"
 }

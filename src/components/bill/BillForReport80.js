@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import { useStore } from "../../store";
 export default function BillForReport80({}) {
-  const {storeDetail}=useStore()
+  const { storeDetail } = useStore();
   return (
     <Container>
       <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍ</div>
