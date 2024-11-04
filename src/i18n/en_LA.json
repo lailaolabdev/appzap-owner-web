@@ -1000,5 +1000,9 @@
   "Open": "ເປີດ",
   "Close": "ປິດ",
   "bill_paid": "ບິນຈ່າຍກ່ອນ",
-  "bill_split": "ບິນແຍກຈ່າຍ"
+  "bill_split": "ບິນແຍກຈ່າຍ",
+  "bank_payment_available": "ການຊຳລະເງິນຜ່ານທະນາຄານ",
+  "enable_bank_payment": "ເປີດໃຊ້ງານການຊຳລະເງິນຜ່ານທະນາຄານ",
+  "callToCheckout": "ເອີ້ນເຊັກບິນ",
+  "callStaff": "ເອີ້ນພະນັກງານ"
 }
