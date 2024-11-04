@@ -869,5 +869,9 @@
   "Open": "Open",
   "Close": "Close",
   "bill_paid": "bill paid",
-  "bill_split": "bill split"
+  "bill_split": "bill split",
+  "bank_payment_available": "Bank Payment Available",
+  "enable_bank_payment": "Enable Bank Payment",
+  "callToCheckout": "Call to Checkout",
+  "callStaff": "Call Staff"
 }

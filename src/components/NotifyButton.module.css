@@ -1,0 +1,65 @@
+.notifyContainer {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 360px;
+  height: auto;
+  font-size: 16px;
+  color: var(--content-color);
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 12px;
+  z-index: 100;
+  cursor: default;
+}
+
+.notifyHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 8px;
+}
+
+.notifyTitle {
+  padding: 4px;
+  color: var(--primary-color);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.notifyContent {
+  max-height: 400px;
+  min-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notifyButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 10px;
+  color: var(--primary-color);
+  background-color: inherit;
+  border: none;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+
+.wrapWord {
+  white-space: pre-wrap !important; /* Ensures text wraps and respects newlines */
+  word-wrap: break-word; /* Breaks long words */
+  word-break: break-word; /* Breaks words at appropriate points */
+}
+
+@media (max-width: 600px) {
+  .notifyContainer {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

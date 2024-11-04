@@ -864,23 +864,26 @@ function AddOrder() {
 
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(
-                  () => {
-                    onSelectTable(selectedTable);
-                    if (state?.key === false) {
-                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                      return;
-                    } else {
-                      navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                      );
-                    }
+                printItems(
+                  groupedItems,
+                  combinedBillRefs,
+                  printers,
+                  selectedTable
+                ).then(() => {
+                  onSelectTable(selectedTable);
+                  if (state?.key === false) {
+                    navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
+                    return;
+                  } else {
                     navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                      { state: { zoneId: localZone } }
+                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
                     );
                   }
-                );
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
+                  );
+                });
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
@@ -943,6 +946,8 @@ function AddOrder() {
       setDisabledButton(false);
     }
   };
+
+  console.log("selectedMenu: ", selectedMenu);
 
   const onSubmit = async (isPrinted) => {
     try {
