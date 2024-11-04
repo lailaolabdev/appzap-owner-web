@@ -247,3 +247,8 @@ td {
     width: 400px;
   }
 }
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

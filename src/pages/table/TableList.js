@@ -1679,13 +1679,7 @@ export default function TableList() {
               flexDirection: "column",
             }}
           >
-            <div
-              style={{
-                backgroundColor: "#ff926a",
-                padding: "10px",
-                color: "#fff",
-              }}
-            >
+            <div className="bg-colorHover p-[10px] text-colorWhite">
               {t("totalTable")} : {tableList?.length},{" "}
               {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
               {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
