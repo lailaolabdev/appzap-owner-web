@@ -77,7 +77,7 @@ export const getdebtHistory = async (findby, token) => {
 
 export const getMenuDebt = async (findby, token) => {
   try {
-    // console.log("token", token);
+    console.log("token", token);
     const url = `${END_POINT_APP}/v4/bill-debt-order${findby}`;
     const res = await axios.get(url, {
       headers: token,
