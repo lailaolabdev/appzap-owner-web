@@ -28,6 +28,7 @@ import {
   faLayerGroup,
   faStoreAlt,
   faBuilding,
+  faMoneyBill,
   faMoneyCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
