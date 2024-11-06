@@ -823,6 +823,9 @@
   "debt_list": "List debt",
   "debt_create": "Create Debt",
   "debt_deposit": "Debt layer",
+  "partial_payment": "Partial",
+  "debt_Export": "Total Bill and Export",
+  "total_debt_export" : "Total debt remaining",
   "debt_list_all": "List debt all",
   "debt_list_history": "List debt history",
   "start_date_debt": "Start date",
@@ -870,7 +873,6 @@
   "Drawer": "Drawer",
   "enter_phone_and_name": "Enter name or phone number",
   "show_by_zone": "Show by zone",
-
   "clear": "clear",
   "bill_combine": "Bill combine",
   "show_all_zone": "Show all zone",
@@ -878,5 +880,10 @@
   "Open": "Open",
   "Close": "Close",
   "bill_paid": "bill paid",
-  "bill_split": "bill split"
+  "bill_split": "bill split",
+  "debt_add_remaining": "increase debt",
+  "payment_datetime_debt": "Debt payment Date-Time ",
+  "money_remaining": "Debt Remaining",
+  "money_cash": "Debt Amount Paid"
+  
 }

@@ -585,7 +585,7 @@ export default function CheckOutPopup({
               </span>
               <span
                 hidden={
-                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                  selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
                 }
               >
                 {" "}
@@ -594,7 +594,7 @@ export default function CheckOutPopup({
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
                 hidden={
-                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                  selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
                 }
               >
                 {moneyCurrency(
@@ -611,7 +611,7 @@ export default function CheckOutPopup({
               <span
                 style={{ fontSize: 14 }}
                 hidden={
-                  selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                  selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
                 }
               >
                 {" "}
@@ -632,7 +632,7 @@ export default function CheckOutPopup({
               >
                 <InputGroup
                   hidden={
-                    selectCurrency?.name === "LAK" || storeDetail?.firstCurrency
+                    selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
                   }
                 >
                   <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>

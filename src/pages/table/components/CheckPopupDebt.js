@@ -565,7 +565,7 @@ export default function CheckPopupDebt({
   //   };
   // });
 
-  const optionsData = membersData?.map((data) => {
+  const optionsData = membersData.map((data) => {
     return {
       id: data?._id,
       value: data?.name,
