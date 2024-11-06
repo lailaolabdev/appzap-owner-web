@@ -394,7 +394,7 @@ function AddOrder() {
 
         // Define canvas dimensions based on the image layout you want to replicate
         const width = 510;
-        const height = 290;
+        const height = 350; // Slightly increased height to accommodate content spacing
         canvas.width = width;
         canvas.height = height;
 
@@ -448,7 +448,14 @@ function AddOrder() {
         // Draw Item Note
         context.fillStyle = "#000"; // Black text
         context.font = "24px NotoSansLao, Arial, sans-serif";
-        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
+        wrapText(
+          context,
+          `${data?.note === undefined ? "" : data?.note}`,
+          10,
+          150,
+          width - 20,
+          30
+        ); // Item note with wrapping
 
         // Draw Options from the menuOptions array, including prices
         if (data.menuOptions && data.menuOptions.length > 0) {

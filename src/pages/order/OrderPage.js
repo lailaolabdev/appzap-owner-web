@@ -184,14 +184,15 @@ export default function OrderPage() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
+
     orderSelect.forEach((data, index) => {
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        // Define canvas dimensions based on the image layout you want to replicate
+        // Define canvas dimensions
         const width = 510;
-        const height = 290;
+        const height = 350; // Slightly increased height to accommodate content spacing
         canvas.width = width;
         canvas.height = height;
 
@@ -218,79 +219,98 @@ export default function OrderPage() {
           context.fillText(line, x, y);
         }
 
-        // Draw the Table ID (left black block)
-        context.fillStyle = "#000"; // Black background
-        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
-        context.fillStyle = "#fff"; // White text
+        // Table ID Block
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, width / 2, 60);
+        context.fillStyle = "#fff";
         context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
+        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
 
-        // Draw the Table Code (right side)
-        context.fillStyle = "#000"; // Black text
+        // Table Code on the right
+        context.fillStyle = "#000";
         context.font = "bold 30px NotoSansLao, Arial, sans-serif";
-        context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
+        context.fillText(data?.code || selectedTable?.code, width - 150, 44); // Adjusted position for better alignment
 
-        // Draw Item Name and Quantity
-        context.fillStyle = "#000"; // Black text
+        // Item Name and Quantity
+        context.fillStyle = "#000";
         context.font = "bold 35px NotoSansLao, Arial, sans-serif";
         wrapText(
           context,
           `${data?.name} (${data?.quantity})`,
           10,
-          110,
+          100,
           width - 20,
           40
-        ); // Item name with wrapping
+        );
 
-        // Draw Item Note
-        context.fillStyle = "#000"; // Black text
+        // Item Note
         context.font = "24px NotoSansLao, Arial, sans-serif";
-        wrapText(context, `${data?.note}`, 10, 150, width - 20, 30); // Item note with wrapping
+        wrapText(context, `${data?.note || ""}`, 10, 160, width - 20, 30);
 
-        // Draw Price and Quantity
+        // Options with prices
+        context.fillStyle = "#000"; // Black text for options
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        const baseY = 190; // Starting Y position for options
+        const lineHeight = 25; // Space between each option line
+
+        // Draw options with incremental Y positions
+        data.options.forEach((option, idx) => {
+          const optionPriceText = option?.price
+            ? ` - ${moneyCurrency(option.price)}`
+            : "";
+          context.fillText(
+            `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
+            15,
+            baseY + idx * lineHeight // Incremental positioning for each option line
+          );
+        });
+
+        // Calculate position for Price and Quantity below options
+        const totalY = baseY + data.options.length * lineHeight + 20; // 20px padding below options
         context.font = "28px NotoSansLao, Arial, sans-serif";
         context.fillText(
-          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
-            data?.quantity
+          `${moneyCurrency(data.price + (data.totalOptionPrice ?? 0))} x ${
+            data.quantity
           }`,
-          20,
-          210
-        ); // Price and quantity
+          15,
+          totalY
+        );
 
-        // Draw the dotted line
-        context.strokeStyle = "#000"; // Black dotted line
-        context.setLineDash([4, 2]); // Dotted line style
+        // Dotted Line Position below Price and Quantity
+        const dottedLineY = totalY + 30; // 30px padding below price and quantity
+        context.strokeStyle = "#000";
+        context.setLineDash([4, 2]);
         context.beginPath();
-        context.moveTo(0, 230); // Start at (0, 230)
-        context.lineTo(width, 230); // End at (width, 230)
+        context.moveTo(0, dottedLineY);
+        context.lineTo(width, dottedLineY);
         context.stroke();
 
-        // Draw Footer (Created By and Date)
-        context.setLineDash([]); // Reset line style
+        // Footer Position: Created By and Date below Dotted Line
+        const footerY = dottedLineY + 30; // Position footer 30px below the dotted line
+        context.setLineDash([]); // Reset line style for solid text
         context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillText(
           data?.createdBy?.firstname ||
             data?.updatedBy?.firstname ||
             "lailaolab",
-          20,
-          260
-        ); // Created by name
+          10,
+          footerY
+        );
 
-        context.fillStyle = "#6e6e6e"; // Gray text for date and time
+        // Date and Time in Footer with 10px additional margin
+        const dateY = footerY + 10;
+        context.fillStyle = "#6e6e6e";
         context.font = "22px NotoSansLao, Arial, sans-serif";
         context.fillText(
-          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
-            data?.createdAt
+          `${moment(data.createdAt).format("DD/MM/YY")} | ${moment(
+            data.createdAt
           ).format("LT")}`,
           width - 180,
-          260
-        ); // Date and time
+          dateY
+        );
 
-        // Convert canvas to base64
+        // Convert canvas to base64 and store in array for printing
         const dataUrl = canvas.toDataURL("image/png");
-
-        // console.log(dataUrl);
-
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
