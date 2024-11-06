@@ -8,30 +8,19 @@ import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
-import { BiSolidPrinter } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
 
 import { useStore } from "../../../store";
-import {
-  END_POINT_SEVER,
-  QUERY_CURRENCIES,
-  getLocalData,
-} from "../../../constants/api";
+import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
 
 import { createBilldebt, getMenuDebt } from "../../../services/debt";
-
-import { Spinner } from "react-bootstrap";
 import { MdRefresh } from "react-icons/md";
 
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import {
-  getMembers,
-  getMemberAllCount,
-} from "../../../services/member.service";
+
 import moment from "moment";
 import styled from "styled-components";
 
@@ -130,7 +119,7 @@ export default function CheckPopupDebt({
 
   // const handleSearchOne = async () => {
   //   try {
-  //     let url =
+  //    const url =
   //       END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
   //     const _header = await getHeaders();
   //     const _res = await axios.get(url, { headers: _header });
@@ -167,8 +156,6 @@ export default function CheckPopupDebt({
         endDate: expirtDate,
         storeId: DATA?.storeId,
       };
-
-      console.log("Frontend body =======>\n", _body);
       // return;
 
       const data = await createBilldebt(_body, TOKEN);
@@ -219,20 +206,20 @@ export default function CheckPopupDebt({
     if (!open) return;
     let moneyReceived = "";
     let remainingAmount = "";
-    let amountBefore = "";
+    const amountBefore = "";
     const discountedTotalBill =
       dataBill?.discountType === "LAK"
         ? Math.max(totalBill - dataBill?.discount, 0)
         : Math.max(totalBill - (totalBill * dataBill?.discount) / 100, 0);
 
-    const cashAmount = parseFloat(cash) || 0;
-    const transferAmount = parseFloat(transfer) || 0;
+    const cashAmount = Number.parseFloat(cash) || 0;
+    const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
     moneyReceived = `${
-      selectCurrency == "LAK"
+      selectCurrency === "LAK"
         ? moneyCurrency(totalReceived)
-        : moneyCurrency(parseFloat(cashCurrency) || 0)
+        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
     } ${selectCurrency}`;
 
     const remainingAmountValue = discountedTotalBill - totalReceived;
@@ -250,9 +237,9 @@ export default function CheckPopupDebt({
 
   useEffect(() => {
     if (!open) return;
-    if (selectCurrency != "LAK") {
+    if (selectCurrency !== "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode == selectCurrency
+        (e) => e.currencyCode === selectCurrency
       );
       setRateCurrency(_currencyData?.buy || 1);
     } else {
@@ -290,7 +277,7 @@ export default function CheckPopupDebt({
         const data = await axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setCurrencyList(data?.data?.data);
         }
       }
@@ -299,16 +286,16 @@ export default function CheckPopupDebt({
     }
   };
   const _checkBill = async () => {
-    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-    const validPayAmount = cash && !isNaN(cash) ? cash : amountBefore;
+    const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+    const validPayAmount = cash && !Number.isNaN(cash) ? cash : amountBefore;
     const validTransferAmount =
-      transfer && !isNaN(transfer) ? transfer : remainingAmount;
+      transfer && !Number.isNaN(transfer) ? transfer : remainingAmount;
 
     console.log("Before Checkbill amountBefore =======> ", validPayAmount);
     console.log("Before Checkbill remainingAmount ====> ", validTransferAmount);
     await axios
       .put(
-        END_POINT + `/v3/bill-checkout`,
+        `${END_POINT}/v3/bill-checkout`,
         {
           id: dataBill?._id,
           data: {
@@ -329,7 +316,7 @@ export default function CheckPopupDebt({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
+              `${staffConfirm?.firstname} ${staffConfirm?.lastname}` ?? "-",
             staffCheckOutId: staffConfirm?.id,
           },
         },
@@ -337,7 +324,7 @@ export default function CheckPopupDebt({
           headers: await getHeaders(),
         }
       )
-      .then(async function (response) {
+      .then(async (response) => {
         setSelectedTable();
         getTableDataStore();
         setCashCurrency();
@@ -360,7 +347,7 @@ export default function CheckPopupDebt({
           timer: 1800,
         });
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
@@ -397,7 +384,7 @@ export default function CheckPopupDebt({
   }, []);
   useEffect(() => {
     if (!open) return;
-    if (forcus == "CASH") {
+    if (forcus === "CASH") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -419,7 +406,7 @@ export default function CheckPopupDebt({
           setCanCheckOut(false);
         }
       }
-    } else if (forcus == "TRANSFER") {
+    } else if (forcus === "TRANSFER") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
@@ -430,8 +417,9 @@ export default function CheckPopupDebt({
         setTransfer(totalBill);
       }
       setCanCheckOut(true);
-    } else if (forcus == "TRANSFER_CASH") {
-      const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
+    } else if (forcus === "TRANSFER_CASH") {
+      const _sum =
+        (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -456,7 +444,7 @@ export default function CheckPopupDebt({
     }
   }, [cash, transfer, totalBill, forcus]);
 
-  let transferCal =
+  const transferCal =
     dataBill?.discountType === "PERCENT"
       ? totalBill - dataBill?.discount > 0
         ? totalBill - dataBill?.discount
@@ -465,20 +453,20 @@ export default function CheckPopupDebt({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
-  let totalBillMoney =
+  const totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
-      ? parseFloat(
+      ? Number.parseFloat(
           totalBill - dataBill?.discount > 0
             ? totalBill - dataBill?.discount
             : 0
         )
-      : parseFloat(
+      : Number.parseFloat(
           totalBill - (totalBill * dataBill?.discount) / 100 > 0
             ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
 
-  let _selectDataOption = (option) => {
+  const _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
       ...prev,
@@ -489,11 +477,11 @@ export default function CheckPopupDebt({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCash();
         } else {
-          const amount = parseFloat(value * rateCurrency);
+          const amount = Number.parseFloat(value * rateCurrency);
           setCash(amount.toFixed(2));
         }
       }
@@ -504,7 +492,7 @@ export default function CheckPopupDebt({
     console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -520,7 +508,7 @@ export default function CheckPopupDebt({
     console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setAmountBefore(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -536,7 +524,7 @@ export default function CheckPopupDebt({
     console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setRemainingAmount(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -546,8 +534,6 @@ export default function CheckPopupDebt({
       }
     });
   };
-
-  console.log(cash - transfer);
 
   const onChangeTransferInput = (inputData) => {
     console.log({ inputData });
@@ -666,7 +652,7 @@ export default function CheckPopupDebt({
               }}
             >
               {/* Input lakha */}
-              <InputGroup hidden={selectCurrency == "LAK"}>
+              <InputGroup hidden={selectCurrency === "LAK"}>
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -721,35 +707,9 @@ export default function CheckPopupDebt({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
-              {/* <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>{t("member")}</InputGroup.Text>
-                <InputGroup.Text>+856 20</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="xxxx xxxx"
-                  maxLength={8}
-                  value={textSearchMember}
-                  // onClick={() => {
-                  //   setSelectInput("inputTransfer");
-                  // }}
-                  onChange={(e) => {
-                    setTextSearchMember(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <Button>
-                  <FaSearch />
-                </Button>
-                <div style={{ width: 30 }} />
-                <InputGroup.Text>
-                  {t("name")}: {memberData?.name}
-                </InputGroup.Text>
-                <InputGroup.Text>
-                  {t("point")}: {memberData?.point}
-                </InputGroup.Text>
-              </InputGroup> */}
+
               <Form.Label>
-                {t("customer_name")} <span style={{ color: "red" }}>*</span>
+                {t("ctm_tel")} <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <BoxInput>
                 <div className="debt-input">
@@ -764,7 +724,8 @@ export default function CheckPopupDebt({
                 </div>
                 <div className="debt-btn-group">
                   <button
-                    style={{ color: "white" }} ////////////////////////////////////////////////////////////////////////////////////
+                    type="button"
+                    style={{ color: "white" }}
                     className="btn btn-primary"
                     onClick={() => getMembersData()}
                   >
@@ -775,6 +736,7 @@ export default function CheckPopupDebt({
                     {/* )} */}
                   </button>
                   <button
+                    type="button"
                     className="btn btn-primary"
                     onClick={
                       () => window.open("/create/members", "_blank").focus()
@@ -789,7 +751,7 @@ export default function CheckPopupDebt({
               </BoxInput>
 
               <Form.Label>
-                {t("ctm_tel")}
+                {t("customer_name")}
                 <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Form.Control
@@ -798,7 +760,6 @@ export default function CheckPopupDebt({
                 value={customerName}
                 onChange={(e) => setCustomerPhone(e?.target.value)}
               />
-              <Form.Label></Form.Label>
 
               <Form.Label>{t("start_date_debt")}</Form.Label>
               <Form.Control
@@ -823,8 +784,8 @@ export default function CheckPopupDebt({
             >
               {t("return")}:{" "}
               {moneyCurrency(
-                (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
+                (Number.parseInt(cash) || 0) +
+                  (Number.parseInt(transfer) || 0) -
                   (dataBill && dataBill?.discountType === "LAK"
                     ? totalBill - dataBill?.discount > 0
                       ? totalBill - dataBill?.discount
@@ -834,8 +795,8 @@ export default function CheckPopupDebt({
                     : 0) <=
                   0
                   ? 0
-                  : (parseInt(cash) || 0) +
-                      (parseInt(transfer) || 0) -
+                  : (Number.parseInt(cash) || 0) +
+                      (Number.parseInt(transfer) || 0) -
                       (dataBill && dataBill?.discountType === "LAK"
                         ? totalBill - dataBill?.discount > 0
                           ? totalBill - dataBill?.discount
@@ -899,7 +860,9 @@ export default function CheckPopupDebt({
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
                 {currencyList?.map((e) => (
-                  <option value={e?.currencyCode}>{e?.currencyCode}</option>
+                  <option key={e?.currencyCode} value={e?.currencyCode}>
+                    {e?.currencyCode}
+                  </option>
                 ))}
               </Form.Control>
             </div>
@@ -941,25 +904,6 @@ export default function CheckPopupDebt({
                 }
               }}
             />
-            {/* <KeyboardComponents
-              onClickEvent={(e) => {
-                setCash((prev) => {
-                  let _number = prev ? `${prev}` + e : e;
-                  return parseInt(_number);
-                });
-                console.log(parseInt(cash ? cash + e : e));
-              }}
-              onDelete={() =>
-                setCash((prev) => {
-                  let _prev = prev + "";
-                  let _number =
-                    _prev?.length > 0
-                      ? _prev.substring(0, _prev.length - 1)
-                      : "";
-                  return parseInt(_number);
-                })
-              }
-            /> */}
           </div>
         </Box>
       </Modal.Body>
@@ -984,7 +928,7 @@ export default function CheckPopupDebt({
           <BiSolidPrinter />
           {t("debt_create")}
         </Button> */}
-        <div style={{ width: "20%" }}></div>
+        <div style={{ width: "20%" }} />
         <Button onClick={handleClickCreateDebt}>{t("debt_create")}</Button>
       </Modal.Footer>
     </Modal>

@@ -48,7 +48,7 @@ export default function CreateMemberPage() {
       if (_data.error) throw new Error("can not create member");
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
       if (state?.key) {
-        navigate("/debt/create");
+        // navigate("/debt/create");
       } else {
         navigate("/reports/members-report");
       }

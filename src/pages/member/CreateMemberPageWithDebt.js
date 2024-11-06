@@ -52,7 +52,7 @@ export default function CreateMemberPageWithDebt() {
         setTimeout(() => {
           window.close();
         }, 1000);
-        navigate("/debt/create", { state: { key: "create-debt" } });
+        // navigate("/debt/create", { state: { key: "create-debt" } });
       }
     } catch (err) {
       errorAdd(`${t("add_fail")}`);
