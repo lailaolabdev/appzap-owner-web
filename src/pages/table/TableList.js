@@ -982,6 +982,7 @@ export default function TableList() {
       // Print with cut
       onPrintForCher();
     }
+    setOrderPayBefore([]);
   };
 
   const onPrintForCher = async () => {
@@ -1290,7 +1291,7 @@ export default function TableList() {
       } else {
         setIsServerdLoading(false);
       }
-
+      setOrderPayBefore([]);
       setIsServerdLoading(false);
     } catch (error) {
       setIsServerdLoading(false);
@@ -2632,6 +2633,7 @@ export default function TableList() {
         onClose={() => setPopup()}
         setPinStatus={(e) => {
           setPinStatus(e);
+          setOrderPayBefore([]);
         }}
       />
 
