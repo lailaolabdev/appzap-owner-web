@@ -72,11 +72,11 @@ export default function NumberKeyboard({
     if (text === "Delete") {
       if (!selectInput) return setSelectInput("");
       if (selectInput.length <= 0) return setSelectInput("");
-      let _prev = selectInput || "";
-      let _text = _prev.substr(0, _prev.length - 1);
+      const _prev = selectInput || "";
+      const _text = _prev.substr(0, _prev.length - 1);
       setSelectInput(_text);
     } else {
-      let _text = (selectInput || "") + text;
+      const _text = (selectInput || "") + text;
       setSelectInput(_text);
     }
   }

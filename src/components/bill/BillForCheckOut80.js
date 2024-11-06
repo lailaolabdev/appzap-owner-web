@@ -122,7 +122,7 @@ export default function BillForCheckOut80({
         const data = await Axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setCurrencyData(data?.data?.data);
           const _currencyData = data?.data?.data?.find(
             (e) => e.currencyCode === "THB"
@@ -195,7 +195,26 @@ export default function BillForCheckOut80({
             </span>
           </div>
         </div>
-        <div style={{ flexGrow: 1 }}></div>
+        {dataBill?.Name && dataBill?.Point ? (
+          <div style={{ textAlign: "right", fontSize: 12, width: "100%" }}>
+            <div>
+              {t("customer_name")}: {""}
+              <span style={{ fontWeight: "bold" }}>
+                {dataBill?.Name ? dataBill?.Name : ""}
+              </span>
+            </div>
+            <div>
+              {t("point")}:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {dataBill?.Point ? dataBill?.Point : "0"}
+              </span>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+
+        <div style={{ flexGrow: 1 }} />
       </Price>
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
         <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
@@ -227,7 +246,7 @@ export default function BillForCheckOut80({
                   gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
                   fontSize: 12,
                 }}
-                key={index}
+                key={item?._id}
               >
                 <div style={{ textAlign: "left", width: "10px" }}>
                   {index + 1}
@@ -252,7 +271,7 @@ export default function BillForCheckOut80({
             );
           })}
       </Order>
-      <div style={{ height: 10 }}></div>
+      <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <Row>
@@ -280,7 +299,7 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
-        {dataBill?.memberName ? (
+        {/* {dataBill?.memberName ? (
           <Row>
             <Col xs={8}>
               <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
@@ -293,7 +312,7 @@ export default function BillForCheckOut80({
           </Row>
         ) : (
           ""
-        )}
+        )} */}
       </div>
       <Row>
         <Col xs={8}>
@@ -417,6 +436,7 @@ const Name = styled.div`
 `;
 const Price = styled.div`
   display: flex;
+  justify-content: space-between;
 `;
 const Container = styled.div`
   margin: 10px;
