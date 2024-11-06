@@ -822,6 +822,9 @@
   "debt_list": "List debt",
   "debt_create": "Create Debt",
   "debt_deposit": "Debt layer",
+  "partial_payment": "Partial",
+  "debt_Export": "Total Bill and Export",
+  "total_debt_export" : "Total debt remaining",
   "debt_list_all": "List debt all",
   "debt_list_history": "List debt history",
   "start_date_debt": "Start date",
@@ -890,5 +893,10 @@
   "bank_payment_available": "Bank Payment Available",
   "enable_bank_payment": "Enable Bank Payment",
   "callToCheckout": "Call to Checkout",
-  "callStaff": "Call Staff"
+  "callStaff": "Call Staff",
+  "debt_add_remaining": "increase debt",
+  "payment_datetime_debt": "Debt payment Date-Time ",
+  "money_remaining": "Debt Remaining",
+  "money_cash": "Debt Amount Paid"
+  
 }

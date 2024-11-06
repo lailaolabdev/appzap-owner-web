@@ -9,7 +9,7 @@ export const convertBillDebtStatus = (status, t) => {
           variant="dark"
           bg="dark"
           disabled
-          style={{ backgroundColor: "red" }}
+          style={{ backgroundColor: "red", color: "white"}}
         >
           {t("debt")}
         </Button>
@@ -20,9 +20,20 @@ export const convertBillDebtStatus = (status, t) => {
           variant="dark"
           bg="dark"
           disabled
-          style={{ backgroundColor: "green" }}
+          style={{ backgroundColor: "green", color: "white" }}
         >
           {t("debt_pay")}
+        </Button>
+      );
+    case "PARTIAL_PAYMENT":
+      return (
+        <Button
+          variant="dark"
+          bg="dark"
+          disabled
+          style={{ backgroundColor: "DarkOrange", color: "white" }}
+        >
+          {t("partial_payment")}
         </Button>
       );
     default:
