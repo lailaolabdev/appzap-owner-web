@@ -549,7 +549,7 @@ export default function OrderPage() {
 
 const RootStyle = styled("div")({
   backgroundColor: "#f9f9f9",
-  minHeight: "calc(100vh - 64px)",
+  maxHeight: "calc(100vh - 64px)",
   padding: 10,
   width: "100%",
 });

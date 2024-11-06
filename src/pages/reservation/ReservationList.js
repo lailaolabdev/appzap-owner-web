@@ -124,7 +124,7 @@ export default function ReservationList() {
       {isLoading ? (
         <Loading />
       ) : (
-        <div style={{ paddingLeft: 10 }}>
+        <div style={{ paddingLeft: 10, maxHeight: "100vh" }}>
           <div
             style={{
               display: "flex",
@@ -205,7 +205,7 @@ export default function ReservationList() {
               <Form.Label>{t("search")}</Form.Label>
               <InputGroup>
                 <Form.Control
-                  placeholder={t('ex_phone')}
+                  placeholder={t("ex_phone")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />

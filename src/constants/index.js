@@ -24,7 +24,7 @@ export const ALL_STATUS = [
   { value: "SERVED", label: "	ເສີບແລ້ວ" },
 ];
 export const COLOR_APP = "#FF6700";
-export const COLOR_GRAY = "#3D3C3A"
+export const COLOR_GRAY = "#3D3C3A";
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {
   // paddingLeft: 55,
@@ -32,16 +32,18 @@ export const TITLE_HEADER = {
   backgroundColor: "#F9F9F9",
   width: "100%",
 };
-export const EMPTY_LOGO = "https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg";
+export const EMPTY_LOGO =
+  "https://www.generationsforpeace.org/wp-content/uploads/2018/03/empty.jpg";
 export const ETHERNET_PRINTER_PORT = "http://localhost:9150/ethernet/image";
 export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
 
 // No Cut Endpoint
-export const NOCUT_ETHERNET_PRINTER_PORT = "http://localhost:9150/nocut/ethernet/image";
-export const NOCUT_BLUETOOTH_PRINTER_PORT = "http://localhost:9150/nocut/bluetooth/image";
+export const NOCUT_ETHERNET_PRINTER_PORT =
+  "http://localhost:9150/nocut/ethernet/image";
+export const NOCUT_BLUETOOTH_PRINTER_PORT =
+  "http://localhost:9150/nocut/bluetooth/image";
 export const NOCUT_USB_PRINTER_PORT = "http://localhost:9150/nocut/usb/image";
-
 
 export const HEADER = {
   color: "#5C5C5C",
@@ -54,14 +56,14 @@ export const HEADER = {
 };
 export const BODY = {
   width: "100%",
-  minHeight: "100vh",
+  maxHeight: "100vh",
   // marginRight: 32,
   // marginLeft: 32,
   // paddingLeft: 32,
   // paddingTop: 32,
   // paddingRight: 32,
   // paddingBottom: 40,
-  padding:20,
+  padding: 20,
 };
 
 export const DIV_NAV = {

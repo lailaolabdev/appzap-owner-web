@@ -203,6 +203,8 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
             style={{
               display: "flex",
               padding: "6px 0",
+              justifyContent: "flex-end",
+              width: "100%",
             }}
           >
             <button
@@ -238,7 +240,7 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
               />
               Confirm
             </button>
-            <button
+            {/* <button
               style={{
                 border: `1px solid ${COLOR_APP}`,
                 padding: "4px 10px",
@@ -271,7 +273,7 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
                 }}
               />
               Cancel
-            </button>
+            </button> */}
           </div>
         )}
       </div>
@@ -329,7 +331,7 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
   // Constants
   const filterList = ["all", "callToCheckout", "callStaff"];
   const defaultLimit = 10;
-  const defaultLatestDays = 3;
+  const defaultLatestDays = 1;
 
   // State variables
   const [isShow, setIsShow] = useState(false);
@@ -350,7 +352,7 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
   const ref = useRef(null);
   const scrollRef = useRef(null);
 
-  console.log("data", data);
+  // console.log("data", data);
 
   const handleClickOutside = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
