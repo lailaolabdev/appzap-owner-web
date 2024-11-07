@@ -699,7 +699,15 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = printers.some(
+              const selectedPrinterIds = selectedMenu.map((e) => e.printer);
+
+              // Filter the printers to only those that are in the selectedPrinterIds
+              const pickedUpPrinters = printers.filter((printer) =>
+                selectedPrinterIds.includes(printer._id)
+              );
+
+              // Check if any of the picked-up printers have `cutPaper` set to "not_cut"
+              const hasNoCut = pickedUpPrinters.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
 
