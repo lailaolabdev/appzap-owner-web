@@ -118,14 +118,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       system: "reportManagement",
     },
-    {
-      title: `${t("booking_manage")}`,
-      key: "reservations",
-      icon: faList,
-      typeStore: "",
-      hidden: !storeDetail?.hasReservation,
-      system: "reservationManagement",
-    },
+    // {
+    //   title: `${t("booking_manage")}`,
+    //   key: "reservations",
+    //   icon: faList,
+    //   typeStore: "",
+    //   hidden: !storeDetail?.hasReservation,
+    //   system: "reservationManagement",
+    // },
 
     // {
     //   title: "ລາຍງານການຈອງ",
@@ -143,14 +143,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "orderManagement",
     // },
 
-    {
-      title: `${t("menu_manage")}`,
-      key: "menu",
-      typeStore: "",
-      icon: faBoxOpen,
-      hidden: !storeDetail?.hasSmartMenu,
-      system: "menuManagement",
-    },
+    // {
+    //   title: `${t("menu_manage")}`,
+    //   key: "menu",
+    //   typeStore: "",
+    //   icon: faBoxOpen,
+    //   hidden: !storeDetail?.hasSmartMenu,
+    //   system: "menuManagement",
+    // },
 
     // {
     //   title: "ລາຍງານ (ໃໝ່)",
@@ -196,21 +196,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => e.typeStore != "GENERAL");
 
   const itemReports = [
-    {
-      title: `${t("statistic_money")}`,
-      key: "report",
-      icon: faLayerGroup,
-      typeStore: "",
-      system: "reportManagement",
-    },
-    {
-      title: `${t("report_new")}`,
-      key: "reports/sales-report",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: `${t("statistic_money")}`,
+    //   key: "report",
+    //   icon: faLayerGroup,
+    //   typeStore: "",
+    //   system: "reportManagement",
+    // },
+    // {
+    //   title: `${t("report_new")}`,
+    //   key: "reports/sales-report",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
@@ -274,16 +274,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   // console.log("=====::::===", { countOrderWaiting })
 
-
   return (
     <SideNav
-    expanded={true}
-      style={{  
+      expanded={true}
+      style={{
         backgroundColor: "#FFFFFF",
         border: "solid 1px #E4E4E4",
         height: "100vh",
         display: "block",
-        width:'30px'
+        width: "30px",
       }}
       onSelect={(selected) => {
         setSelectStatus(selected.split("/")[0].split("-")[0]);
@@ -351,15 +350,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
         }
       }}
     >
-      <div style={{
-        display:"flex",
-        alignItems:'center',
-        justifyContent:'center',
-        height:50
-        
-        
-      }}>
-        <p style={{fontWeight:'700',fontSize:'20px'}}>OrderMouy</p>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 50,
+        }}
+      >
+        <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
       </div>
       <SideNav.Nav value={location.pathname.split("/")[1]}>
         {listForRole
@@ -368,7 +367,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
             <NavItem
               eventKey={e?.key}
               key={index}
-              style={{ backgroundColor: selected === e?.key ? "#EEEEEEFF" : "" }}
+              style={{
+                backgroundColor: selected === e?.key ? "#EEEEEEFF" : "",
+              }}
             >
               <NavIcon>
                 <FontAwesomeIcon
