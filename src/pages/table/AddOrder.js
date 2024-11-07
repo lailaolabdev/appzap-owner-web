@@ -852,6 +852,7 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     // console.log({ data, header, isPrinted });
+
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -899,11 +900,16 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = printers.some(
-                (printer) => printer.cutPaper === "not_cut"
-              );
+              let hasNoCut = false;
+              const selectedPrinterIds = selectedMenu.map((e) => e.printer);
 
-              console.log("CUT:", hasNoCut);
+              printers.forEach((printer) => {
+                if (selectedPrinterIds.includes(printer._id)) {
+                  hasNoCut = printers.some(
+                    (printer) => printer.cutPaper === "not_cut"
+                  );
+                }
+              });
 
               if (hasNoCut) {
                 // Print with no cut
