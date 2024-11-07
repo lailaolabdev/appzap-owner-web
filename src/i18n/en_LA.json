@@ -1014,5 +1014,6 @@
   "enable_bank_payment": "ເປີດໃຊ້ງານການຊຳລະເງິນຜ່ານທະນາຄານ",
   "callToCheckout": "ເອີ້ນເຊັກບິນ",
   "callStaff": "ເອີ້ນພະນັກງານ",
-  "bank_transfer_history": "ຊຳລະຜ່ານທະນາຄານ"
+  "bank_transfer_history": "ຊຳລະຜ່ານທະນາຄານ",
+  "PAID": "ຈ່າຍແລ້ວ"
 }
