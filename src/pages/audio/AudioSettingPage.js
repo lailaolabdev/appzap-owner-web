@@ -18,10 +18,17 @@ export default function AudioSettingPage() {
 
   return (
     <>
-      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+      <Box
+        sx={{ padding: { md: 20, xs: 10 } }}
+        style={{
+          maxHeight: "100vh",
+          height: "100%",
+          overflow: "auto",
+        }}
+      >
         <Breadcrumb>
-          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('menage_sound')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("menage_sound")}</Breadcrumb.Item>
         </Breadcrumb>
         <Box
           sx={{
@@ -40,16 +47,16 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('restaurant_sound')}
+              {t("restaurant_sound")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('has_order')}`,
+                  title: `${t("has_order")}`,
                   key: "order",
                 },
                 {
-                  title: `${t('oppen_tb_sound')}`,
+                  title: `${t("oppen_tb_sound")}`,
                   key: "openTable",
                 },
               ].map((item, index) => (
@@ -73,7 +80,9 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
+                      {audioSetting?.[item?.key]
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -101,12 +110,12 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('mg_sound')}
+              {t("mg_sound")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('mg_in_sound')}`,
+                  title: `${t("mg_in_sound")}`,
                   key: "message",
                 },
               ].map((item, index) => (
@@ -130,7 +139,9 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
+                      {audioSetting?.[item?.key]
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -158,12 +169,12 @@ export default function AudioSettingPage() {
                 fontWeight: "bold",
               }}
             >
-              {t('other_sound')}
+              {t("other_sound")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: `${t('song_sound')}`,
+                  title: `${t("song_sound")}`,
                   key: "music",
                 },
               ].map((item, index) => (
@@ -187,7 +198,9 @@ export default function AudioSettingPage() {
                     }}
                   >
                     <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key] ? `${t('oppen')}` : `${t('close')}`}
+                      {audioSetting?.[item?.key]
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"

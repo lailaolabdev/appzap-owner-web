@@ -89,7 +89,14 @@ export default function FarkPage() {
   };
   return (
     <>
-      <div style={{ padding: 20, maxHeight: "100vh" }}>
+      <div
+        style={{
+          padding: "20px 20px 80px 20px",
+          maxHeight: "100vh",
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
         <Breadcrumb>
           <Breadcrumb.Item>{t("bury_deposit")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("deposit_list")}</Breadcrumb.Item>

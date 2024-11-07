@@ -92,10 +92,17 @@ export default function PinPage() {
 
   return (
     <>
-      <div style={{ padding: 20 }}>
+      <div
+        style={{
+          maxHeight: "100vh",
+          height: "100%",
+          overflowY: "auto",
+          padding: "20px 20px 80px 20px",
+        }}
+      >
         <Breadcrumb>
-          <Breadcrumb.Item>{t('setting')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('setting_prod_code')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("setting_prod_code")}</Breadcrumb.Item>
         </Breadcrumb>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
@@ -119,13 +126,13 @@ export default function PinPage() {
             }}
           >
             <span>
-              <IoPeople /> {t('setting_prod_code')}
+              <IoPeople /> {t("setting_prod_code")}
             </span>
           </Card.Header>
           <Card.Body>
             {[
               {
-                title: `${t('enable_pin')}`,
+                title: `${t("enable_pin")}`,
                 key: "pin",
                 default: false,
                 disabled: true,
@@ -151,7 +158,7 @@ export default function PinPage() {
                   }}
                 >
                   <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                    {storeDetail?.usePin ? `${t('oppen')}` : `${t('close')}`}
+                    {storeDetail?.usePin ? `${t("oppen")}` : `${t("close")}`}
                   </Form.Label>
                   <Form.Check
                     type="switch"
@@ -186,7 +193,7 @@ export default function PinPage() {
             }}
           >
             <span>
-              <IoPeople /> {t('code_list')}
+              <IoPeople /> {t("code_list")}
             </span>
             <Button
               variant="dark"
@@ -195,7 +202,7 @@ export default function PinPage() {
                 handleRandomPassword();
               }}
             >
-              <MdAssignmentAdd /> {t('change_code')}
+              <MdAssignmentAdd /> {t("change_code")}
             </Button>
           </Card.Header>
           <Card.Body>
@@ -214,7 +221,7 @@ export default function PinPage() {
               <table style={{ width: "100%" }}>
                 <tr>
                   <th>#</th>
-                  <th>{t('pin_code')}</th>
+                  <th>{t("pin_code")}</th>
                 </tr>
                 {PINs?.map((e, i) => (
                   <tr>

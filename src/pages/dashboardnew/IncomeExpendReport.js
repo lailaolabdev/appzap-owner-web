@@ -307,7 +307,7 @@ export default function IncomeExpendExport() {
   };
 
   return (
-    <>
+    <div>
       <div
         style={{
           display: "flex",
@@ -543,6 +543,6 @@ export default function IncomeExpendExport() {
           ))}
         </table>
       </div>
-    </>
+    </div>
   );
 }

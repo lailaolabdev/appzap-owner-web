@@ -105,7 +105,14 @@ export default function UserPage() {
   };
   return (
     <>
-      <div style={{ padding: 20 }}>
+      <div
+        style={{
+          padding: "20px 20px 80px 20px",
+          maxHeight: "100vh",
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
         <Breadcrumb>
           <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>

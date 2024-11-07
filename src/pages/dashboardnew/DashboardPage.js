@@ -220,7 +220,7 @@ export default function DashboardPage() {
     }
   };
   return (
-    <>
+    <div>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         {/* <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
@@ -803,6 +803,6 @@ export default function DashboardPage() {
         tableList={tableList || []}
         setSelectedTable={setSelectedTableIds}
       />
-    </>
+    </div>
   );
 }

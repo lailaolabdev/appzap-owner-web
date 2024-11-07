@@ -131,7 +131,15 @@ export default function BankList() {
   return (
     <>
       {isLoading ? <Loading /> : ""}
-      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+      <Box
+        sx={{ padding: { md: 20, xs: 10 } }}
+        style={{
+          maxHeight: "100vh",
+          height: "100%",
+          overflowY: "auto",
+          padding: "20px 20px 80px 20px",
+        }}
+      >
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("bank")}</Breadcrumb.Item>

@@ -140,7 +140,14 @@ export default function HistoryUse() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        maxHeight: "100vh",
+        height: "100%",
+        overflow: "auto",
+        padding: "0px 0px 80px 0px",
+      }}
+    >
       <Nav
         fill
         variant="tabs"
@@ -274,6 +281,24 @@ export default function HistoryUse() {
             {t("bill_paid")}
           </Nav.Link>
         </Nav.Item>
+        {/* <Nav.Item>
+          <Nav.Link
+            eventKey="/bankTransfer"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("bankTransfer")}
+          >
+            <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
+            <div style={{ width: 8 }}></div>
+            {t("bank_transfer_history")}
+          </Nav.Link>
+        </Nav.Item> */}
       </Nav>
       {isLoading ? (
         <LoadingAppzap />

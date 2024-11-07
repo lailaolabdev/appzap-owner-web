@@ -57,13 +57,15 @@ export const HEADER = {
 export const BODY = {
   width: "100%",
   maxHeight: "100vh",
+  height: "100%",
+  overflowY: "auto",
   // marginRight: 32,
   // marginLeft: 32,
   // paddingLeft: 32,
   // paddingTop: 32,
   // paddingRight: 32,
   // paddingBottom: 40,
-  padding: 20,
+  padding: "20px 20px 80px 20px",
 };
 
 export const DIV_NAV = {

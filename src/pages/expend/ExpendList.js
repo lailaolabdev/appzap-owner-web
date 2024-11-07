@@ -321,7 +321,14 @@ export default function ExpendList() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div
+      style={{
+        padding: "20px 20px 80px 20px",
+        maxHeight: "100vh",
+        height: "100%",
+        overflow: "auto",
+      }}
+    >
       <div
         class="account-payment"
         style={{
