@@ -2133,7 +2133,10 @@ export default function TableList() {
                           {t("closeTable")}
                         </ButtonCustom>
                         <ButtonCustom
-                          disabled={tableOrderItems?.length === 0}
+                          disabled={
+                            tableOrderItems?.length === 0 ||
+                            selectedTable?.tableChildren?.length > 0
+                          }
                           onClick={handleShow}
                         >
                           {t("combine_table")}
