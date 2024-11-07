@@ -699,17 +699,17 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = false;
               const selectedPrinterIds = selectedMenu.map((e) => e.printer);
 
-              printers.forEach((printer) => {
-                if (selectedPrinterIds.includes(printer._id)) {
-                  console.log("Picked up printer:", printer);
-                  hasNoCut = printer.some(
-                    (printerItem) => printerItem.cutPaper === "not_cut"
-                  );
-                }
-              });
+              // Filter the printers to only those that are in the selectedPrinterIds
+              const pickedUpPrinters = printers.filter((printer) =>
+                selectedPrinterIds.includes(printer._id)
+              );
+
+              // Check if any of the picked-up printers have `cutPaper` set to "not_cut"
+              const hasNoCut = pickedUpPrinters.some(
+                (printer) => printer.cutPaper === "not_cut"
+              );
 
               if (hasNoCut) {
                 // Print with no cut
