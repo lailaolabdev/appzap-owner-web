@@ -900,16 +900,17 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              let hasNoCut = false;
               const selectedPrinterIds = selectedMenu.map((e) => e.printer);
 
-              printers.forEach((printer) => {
-                if (selectedPrinterIds.includes(printer._id)) {
-                  hasNoCut = printers.some(
-                    (printer) => printer.cutPaper === "not_cut"
-                  );
-                }
-              });
+              const pickedUpPrinters = printers.filter((printer) =>
+                selectedPrinterIds.includes(printer._id)
+              );
+
+              const hasNoCut = pickedUpPrinters.some(
+                (printer) => printer.cutPaper === "not_cut"
+              );
+
+              console.log("CUT :", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut
