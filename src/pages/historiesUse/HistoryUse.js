@@ -23,6 +23,7 @@ import { useParams } from "react-router-dom";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
+import { BsBank2 } from "react-icons/bs";
 
 export default function HistoryUse() {
   const { t } = useTranslation();
@@ -302,8 +303,7 @@ export default function HistoryUse() {
             }}
             onClick={() => setFiltterModele("bankTransfer")}
           >
-            <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div>
+            <BsBank2 /> <div style={{ width: 8 }}></div>
             {t("bank_transfer_history")}
           </Nav.Link>
         </Nav.Item>
