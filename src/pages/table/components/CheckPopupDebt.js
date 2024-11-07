@@ -352,7 +352,6 @@ export default function CheckPopupDebt({
       });
   };
 
-  console.log("transfer", transfer);
   const handleSubmit = () => {
     _checkBill();
     onSubmit();

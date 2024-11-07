@@ -524,7 +524,7 @@ function AddOrder() {
     Object.keys(grouped).forEach((printerIp) => {
       refs[printerIp] = React.createRef();
     });
-    console.log("refs: ", refs);
+
     setCombinedBillRefs(refs);
     setGroupedItems(grouped);
   }, [selectedMenu]);
@@ -899,9 +899,11 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = !printers.some(
+              const hasNoCut = printers.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
+
+              console.log("CUT:", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut
@@ -979,8 +981,6 @@ function AddOrder() {
       setDisabledButton(false);
     }
   };
-
-  console.log("selectedMenu: ", selectedMenu);
 
   const onSubmit = async (isPrinted) => {
     try {
