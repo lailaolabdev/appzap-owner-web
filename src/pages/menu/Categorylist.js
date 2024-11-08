@@ -171,7 +171,7 @@ export default function Categorylist() {
     setIsLoading(true);
     const _resCategoryType = await axios({
       method: "get",
-      url: END_POINT_SEVER_TABLE_MENU + `/v3/categoroy-type?storeId=${id}`,
+      url: END_POINT_SEVER_TABLE_MENU + `/v3/category-type?storeId=${id}`,
     });
     setCategorysType(_resCategoryType?.data?.data);
     setIsLoading(false);
