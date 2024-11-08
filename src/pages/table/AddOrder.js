@@ -524,7 +524,7 @@ function AddOrder() {
     Object.keys(grouped).forEach((printerIp) => {
       refs[printerIp] = React.createRef();
     });
-    console.log("refs: ", refs);
+
     setCombinedBillRefs(refs);
     setGroupedItems(grouped);
   }, [selectedMenu]);
@@ -852,6 +852,7 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     // console.log({ data, header, isPrinted });
+
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -899,9 +900,17 @@ function AddOrder() {
 
             // Send print command
             if (isPrinted) {
-              const hasNoCut = !printers.some(
+              const selectedPrinterIds = selectedMenu.map((e) => e.printer);
+
+              const pickedUpPrinters = printers.filter((printer) =>
+                selectedPrinterIds.includes(printer._id)
+              );
+
+              const hasNoCut = pickedUpPrinters.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
+
+              console.log("CUT :", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut
@@ -979,8 +988,6 @@ function AddOrder() {
       setDisabledButton(false);
     }
   };
-
-  console.log("selectedMenu: ", selectedMenu);
 
   const onSubmit = async (isPrinted) => {
     try {

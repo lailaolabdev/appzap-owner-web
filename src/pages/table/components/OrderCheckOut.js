@@ -112,7 +112,6 @@ const OrderCheckOut = ({
   };
 
   const _calculateTotal = () => {
-    console.log("orderPaid", orderPayBefore);
     const serviceChargeAmount = isServiceChargeEnabled
       ? totalBillOrderCheckOut * (serviceCharge / 100)
       : 0; // 10% if enabled
@@ -129,7 +128,6 @@ const OrderCheckOut = ({
 
       return mainPrice + menuOptionPrice;
     });
-    console.log("paidData", paidData);
     setServiceAmount(serviceChargeAmount);
     orderPayBefore && orderPayBefore.length > 0
       ? setTotal(paidData)

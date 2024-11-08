@@ -233,7 +233,6 @@ export default function CheckOutPopup({
   }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
-    console.log("object");
     if (!open) return;
     if (selectCurrency?.name != "LAK") {
       const _currencyData = currencyList.find(
