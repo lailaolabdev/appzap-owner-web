@@ -56,8 +56,9 @@ export const addMenu = async (data) => {
 
 export const getCategoryType = async (storeId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/categoroy-type?storeId=${storeId}`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/category-type?storeId=${storeId}`;
     const res = await axios.get(url);
+
     return res.data?.data;
   } catch (error) {
     return error;
