@@ -126,36 +126,118 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       });
     }
   };
+  // const getDataBillReport = async (startDate) => {
+  //   try {
+  //     const endDate = startDate;
+  //     const startTime = "00:00:00";
+  //     const endTime = "23:59:59";
+  //     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+  //     const data = await getBillReport(storeDetail._id, findBy);
+
+  //     console.log("BILLDATE: ", data)
+
+  //     const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
+
+  //     console.log("activeBillData: ", activeBillData)
+
+  //     // logic
+  //     const countBill = data.length || 0;
+  //     const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
+  //     const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
+  //     const transferTotalBill = _.sumBy(data, (e) => e.transferAmount) || 0;
+  //     const discountBill = data.filter((e) => e.discount != 0);
+  //     const countDiscountBill = discountBill.length;
+  //     const discountTotalBill = _.sumBy(discountBill, (e) => {
+  //       let discountMomeny = 0;
+  //       if (e.discountType == "PERCENT") {
+  //         discountMomeny = (e.billAmountBefore * e.discount) / 100;
+  //       } else {
+  //         discountMomeny = e.discount || 0;
+  //       }
+  //       return discountMomeny;
+  //     });
+  //     const activeBill = data.filter(
+  //       (e) => !e.isCheckout || e.status != "CHECKOUT"
+  //     ).length;
+  //     const totalActiveBill = _.sumBy(activeBillData, (e) => e.totalBill);
+
+  //     console.log("REPORT_BILL: ", {
+  //       ຈຳນວນບິນ: countBill,
+  //       ຍອດທັງໝົດ: totalBill,
+  //       ຈ່າຍເງິນສົດ: cashTotalBill,
+  //       ຈ່າຍເງິນໂອນ: transferTotalBill,
+  //       ບິນສ່ວນຫຼຸດ: countDiscountBill,
+  //       ສ່ວນຫຼຸດ: discountTotalBill,
+  //       ບິນຄ້າງ: activeBill,
+  //       ເງິນຄ້າງ: totalActiveBill,
+  //     })
+
+  //     setReportBill({
+  //       ຈຳນວນບິນ: countBill,
+  //       ຍອດທັງໝົດ: totalBill,
+  //       ຈ່າຍເງິນສົດ: cashTotalBill,
+  //       ຈ່າຍເງິນໂອນ: transferTotalBill,
+  //       ບິນສ່ວນຫຼຸດ: countDiscountBill,
+  //       ສ່ວນຫຼຸດ: discountTotalBill,
+  //       ບິນຄ້າງ: activeBill,
+  //       ເງິນຄ້າງ: totalActiveBill,
+  //     });
+  //     setBill(data);
+  //   } catch (err) {}
+  // };
+
   const getDataBillReport = async (startDate) => {
     try {
       const endDate = startDate;
       const startTime = "00:00:00";
       const endTime = "23:59:59";
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      
+      // Fetch all bills
       const data = await getBillReport(storeDetail._id, findBy);
+  
+      // Fetch active bills separately
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-
-      // logic
+  
+      console.log("BILLDATE: ", data);
+      console.log("activeBillData: ", activeBillData);
+  
+      // Logic to calculate summary
       const countBill = data.length || 0;
+  
+      // Total Bill Amount
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
-      const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
-      const transferTotalBill = _.sumBy(data, (e) => e.transferAmount) || 0;
-      const discountBill = data.filter((e) => e.discount != 0);
+  
+      // Cash Total Bill (include "TRANSFER_CASH" partial cash amounts)
+      const cashTotalBill = _.sumBy(
+        data.filter((e) => e.paymentMethod === "CASH" || e.paymentMethod === "TRANSFER_CASH"),
+        (e) => e.paymentMethod === "TRANSFER_CASH" ? e.payAmount : e.billAmount
+      ) || 0;
+  
+      // Transfer Total Bill (include "TRANSFER_CASH" partial transfer amounts)
+      const transferTotalBill = _.sumBy(
+        data.filter((e) => e.paymentMethod === "TRANSFER" || e.paymentMethod === "TRANSFER_CASH"),
+        (e) => e.paymentMethod === "TRANSFER_CASH" ? e.transferAmount : e.billAmount
+      ) || 0;
+  
+      // Discount Bills and Total Discount
+      const discountBill = data.filter((e) => e.discount > 0);
       const countDiscountBill = discountBill.length;
       const discountTotalBill = _.sumBy(discountBill, (e) => {
-        let discountMomeny = 0;
-        if (e.discountType == "PERCENT") {
-          discountMomeny = (e.billAmountBefore * e.discount) / 100;
+        let discountAmount = 0;
+        if (e.discountType === "PERCENT") {
+          discountAmount = (e.billAmountBefore * e.discount) / 100; // Calculate percentage-based discount
         } else {
-          discountMomeny = e.discount || 0;
+          discountAmount = e.discount || 0; // Use discount value directly for MONEY or other types
         }
-        return discountMomeny;
-      });
-      const activeBill = data.filter(
-        (e) => !e.isCheckout || e.status != "CHECKOUT"
-      ).length;
-      const totalActiveBill = _.sumBy(activeBillData, (e) => e.totalBill);
-
+        return discountAmount;
+      }) || 0;
+  
+      // Active Bills and Total Active Bill Amount
+      const activeBill = data.filter((e) => !e.isCheckout).length;
+      const totalActiveBill = _.sumBy(activeBillData, (e) => e.billAmount || 0);
+  
+      // Update report
       setReportBill({
         ຈຳນວນບິນ: countBill,
         ຍອດທັງໝົດ: totalBill,
@@ -166,9 +248,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ບິນຄ້າງ: activeBill,
         ເງິນຄ້າງ: totalActiveBill,
       });
+  
       setBill(data);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error fetching bill report:", err);
+    }
   };
+  
+  
+  
 
   return (
     <Modal show={open} onHide={onClose} size="md">
