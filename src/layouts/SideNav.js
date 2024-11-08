@@ -302,7 +302,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   return (
     <SideNav
-      expanded={true}
+      expanded={false}
       style={{
         backgroundColor: "#FFFFFF",
         border: "solid 1px #E4E4E4",
