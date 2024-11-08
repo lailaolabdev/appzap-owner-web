@@ -198,6 +198,29 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => !e?.hidden)
     .filter((e) => e.typeStore !== "GENERAL");
 
+  const itemReports = [
+    // {
+    //   title: `${t("statistic_money")}`,
+    //   key: "report",
+    //   icon: faLayerGroup,
+    //   typeStore: "",
+    //   system: "reportManagement",
+    // },
+    // {
+    //   title: `${t("report_new")}`,
+    //   key: "reports/sales-report",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
+  ]
+    .filter((e) => e.title) // Filter out items with empty title
+    .filter((e) => {
+      const verify = role(profile?.data?.role, profile?.data);
+      return verify?.[e?.system] ?? false;
+    })
+    .filter((e) => !e?.hidden);
   // const itemReports = [
   //   {
   //     title: `${t("statistic_money")}`,
@@ -358,7 +381,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           height: 50,
         }}
       >
-        <p style={{ fontWeight: "bolder", fontSize: "20px" }}>OrderMouy</p>
+        <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
       </div>
       <SideNav.Nav value={location.pathname.split("/")[1]}>
         {listForRole
@@ -366,7 +389,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           .map((e, index) => (
             <NavItem
               eventKey={e?.key}
-              key={e?.id}
+              key={index}
               style={{
                 backgroundColor: selected === e?.key ? "#EEEEEEFF" : "",
               }}
