@@ -29,6 +29,8 @@ import {
   faStoreAlt,
   faMoneyBill,
   faMoneyCheck,
+  faConciergeBell,
+  faMinusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -65,6 +67,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     })();
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const fetchCountOrderWaiting = async () => {
       const count = await getCountOrderWaiting(storeDetail?._id);
@@ -92,7 +95,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       title: `${t("order_list")}`,
       key: "orders",
       typeStore: "",
-      icon: faAddressCard,
+      icon: faConciergeBell,
       hidden: !storeDetail?.hasPOS,
       system: "orderManagement",
     },
@@ -114,7 +117,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     {
       title: `${t("paid_manage")}`,
       key: "expends",
-      icon: faBook,
+      icon: faMinusCircle,
       typeStore: "",
       system: "reportManagement",
     },
@@ -193,7 +196,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden)
-    .filter((e) => e.typeStore != "GENERAL");
+    .filter((e) => e.typeStore !== "GENERAL");
 
   // const itemReports = [
   //   {
@@ -284,46 +287,44 @@ export default function Sidenav({ location, navigate, onToggle }) {
         display: "block",
         width: "30px",
       }}
-      onSelect={(selected) => {
-        setSelectStatus(selected.split("/")[0].split("-")[0]);
+      onSelect={(select) => {
+        const baseRoute = select;
+        setSelectStatus(baseRoute.split("/")[0].split("-")[0]);
+        let selected = baseRoute;
         if (selected === "dashboard") {
-          selected = selected + "/" + storeDetail?._id;
+          selected = `${selected}/${storeDetail?._id}`;
         }
         if (selected === "report") {
-          selected = selected + "/" + storeDetail?._id;
+          selected = `${selected}/${storeDetail?._id}`;
         }
         if (selected === "histories") {
-          selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
+          selected = `${selected}/pagenumber/${1}/${storeDetail?._id}`;
         }
         if (selected === "users") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          selected = `${selected}/limit/${40}/page/${1}/${storeDetail?._id}`;
         }
         if (selected === "settingStore/stock") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          selected = `${selected}/limit/${40}/page/${1}/${storeDetail?._id}`;
         }
         if (selected === "expends") {
-          selected = selected + "/limit/" + 40 + "/skip/" + 1;
+          selected = `${selected}/limit/${40}/skip/${1}`;
         }
         if (selected === "category") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          selected = `${selected}/limit/${40}/page/${1}/${storeDetail?._id}`;
         }
         if (selected === "settingStore") {
-          selected = selected + `/${storeDetail?._id}`;
+          selected = `${selected}/${storeDetail?._id}`;
         }
         if (selected === "depositBeer") {
-          selected = selected + `/${storeDetail?._id}`;
+          selected = `${selected}/${storeDetail?._id}`;
         }
         if (selected === "cafe") {
-          selected = selected;
+          selected = select;
         }
         if (selected === "songlist") {
           window
             .open(
-              "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                `${storeDetail?._id}?token=${token}`,
+              `https://dtf6wpulhnd0r.cloudfront.net/store/songs/${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -332,8 +333,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         if (selected === "customerList") {
           window
             .open(
-              "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-                `${storeDetail?._id}?token=${token}`,
+              `https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/${storeDetail?._id}?token=${token}`,
               "_blank"
             )
             .focus();
@@ -343,7 +343,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           window.open("https://supplier.appzap.la", "_blank").focus();
           return;
         }
-        const to = "/" + selected;
+        const to = `/${selected}`;
 
         if (location.pathname !== to) {
           navigate(to);
@@ -358,7 +358,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           height: 50,
         }}
       >
-        <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
+        <p style={{ fontWeight: "bolder", fontSize: "20px" }}>OrderMouy</p>
       </div>
       <SideNav.Nav value={location.pathname.split("/")[1]}>
         {listForRole
@@ -366,7 +366,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           .map((e, index) => (
             <NavItem
               eventKey={e?.key}
-              key={index}
+              key={e?.id}
               style={{
                 backgroundColor: selected === e?.key ? "#EEEEEEFF" : "",
               }}
@@ -398,7 +398,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 return (
                   <NavItem
                     eventKey={element?.key}
-                    key={index}
+                    key={element?.id}
                     style={{
                       backgroundColor: selected === element?.key ? "#ffff" : "",
                     }}
@@ -542,7 +542,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-        <NavItem eventKey="songlist">
+        {/* <NavItem eventKey="songlist">
           <NavIcon>
             <FontAwesomeIcon
               className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -586,7 +586,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               {t("market")}
             </b>
           </NavText>
-        </NavItem>
+        </NavItem> */}
       </SideNav.Nav>
     </SideNav>
   );
