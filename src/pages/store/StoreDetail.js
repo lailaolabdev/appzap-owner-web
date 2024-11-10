@@ -99,7 +99,13 @@ export default function StoreDetail() {
     );
   }
   return (
-    <div>
+    <div
+      style={{
+        maxHeight: "100vh",
+        overflowX: "hidden",
+        overflowY: "auto",
+      }}
+    >
       <div className="row" style={{ padding: 40 }}>
         <div className="col-sm-10" style={{ fontWeight: "bold", fontSize: 18 }}>
           {t("detail")}

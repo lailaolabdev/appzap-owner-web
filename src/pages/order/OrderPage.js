@@ -571,6 +571,8 @@ export default function OrderPage() {
 const RootStyle = styled("div")({
   backgroundColor: "#f9f9f9",
   maxHeight: "calc(100vh - 64px)",
+  height: "100%",
+  overflow: "auto",
   padding: 10,
   width: "100%",
 });

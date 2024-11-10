@@ -8,7 +8,11 @@
   background-color: #606060 !important;
 }
 
-.sc-ifAKCX .iAgGBH .sidenav-navitem---3r9ER .selected---91VwC .highlighted---1vG8Y {
+.sc-ifAKCX
+  .iAgGBH
+  .sidenav-navitem---3r9ER
+  .selected---91VwC
+  .highlighted---1vG8Y {
   background-color: #cc2000;
 }
 
@@ -127,8 +131,6 @@
   padding: 20px;
 }
 
-
-
 /* @media screen and (max-width:1200px){
   .column{
     grid-template-columns: repeat(2, 1fr);
@@ -156,8 +158,6 @@
 
   }
 } */
-
-
 
 /* .column{
   display: grid;

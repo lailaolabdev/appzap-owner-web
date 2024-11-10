@@ -157,7 +157,12 @@ export default function ZoneList() {
   };
 
   return (
-    <Box sx={{ padding: { md: 20, xs: 10 } }}>
+    <Box
+      sx={{ padding: { md: 20, xs: 10 } }}
+      style={{
+        maxHeight: "100vh",
+      }}
+    >
       <Breadcrumb>
         <Breadcrumb.Item
           onClick={() => navigate(`/settingStore/${params?.id}`)}

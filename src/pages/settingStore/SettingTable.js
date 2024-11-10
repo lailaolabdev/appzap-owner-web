@@ -211,7 +211,15 @@ export default function SettingTable() {
     }
   };
   return (
-    <div style={{ padding: 10 }} className="col-sm-12">
+    <div
+      style={{
+        padding: "10px 10px 80px 10px",
+        maxHeight: "100vh",
+        height: "100%",
+        overflow: "auto",
+      }}
+      className="col-sm-12"
+    >
       <div style={{ padding: 10, borderRadius: 8 }}>
         <div className="col-sm-12 text-right">
           <button

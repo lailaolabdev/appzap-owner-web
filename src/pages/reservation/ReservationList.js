@@ -124,7 +124,15 @@ export default function ReservationList() {
       {isLoading ? (
         <Loading />
       ) : (
-        <div style={{ paddingLeft: 10, maxHeight: "100vh" }}>
+        <div
+          style={{
+            paddingLeft: 10,
+            maxHeight: "100vh",
+            height: "100%",
+            overflow: "auto",
+            paddingBottom: 80,
+          }}
+        >
           <div
             style={{
               display: "flex",

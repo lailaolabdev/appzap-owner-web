@@ -16,7 +16,7 @@ import {
   faDatabase,
   faTh,
   faBuilding,
-  faBuildingColumns
+  faBuildingColumns,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -73,7 +73,7 @@ export default function SettingList() {
     {
       id: "ab2dd4fe-d0e2-4808-89d1-ae6307b8abce",
       title: t("zone_setting"),
-      subTitle: t('zone_setting_desc'),
+      subTitle: t("zone_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
       path: `/settingStore/settingZone/${params?.id}`,
     },
@@ -139,9 +139,9 @@ export default function SettingList() {
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
       title: t("bank"),
-      subTitle: t('bank_manage_desc'),
+      subTitle: t("bank_manage_desc"),
       icon: (
-        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBuilding } />
+        <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBuilding} />
       ),
       path: `/settingStore/bank/${params?.id}`,
     },
@@ -201,7 +201,14 @@ export default function SettingList() {
   };
 
   return (
-    <div style={{ height: "100%" }}>
+    <div
+      style={{
+        height: "100%",
+        maxHeight: "100vh",
+        overflow: "auto",
+        padding: "0 0 40px 0",
+      }}
+    >
       <Box
         sx={{
           padding: 15,

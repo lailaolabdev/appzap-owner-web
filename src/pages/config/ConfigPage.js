@@ -7,7 +7,7 @@ import {
   Tooltip,
   Button,
 } from "react-bootstrap";
-import { COLOR_APP } from "../../constants";
+import { COLOR_APP, padding } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import { BsExclamationDiamondFill } from "react-icons/bs";
@@ -133,7 +133,15 @@ export default function ConfigPage() {
 
   return (
     <>
-      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+      <Box
+        sx={{ padding: { md: 20, xs: 10 } }}
+        style={{
+          maxHeight: "100vh",
+          overflowY: "auto",
+          height: "100%",
+          padding: "20px 20px 80px 20px",
+        }}
+      >
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
           <Breadcrumb.Item active>POS config</Breadcrumb.Item>

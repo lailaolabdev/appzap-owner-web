@@ -137,7 +137,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ padding: 10, overflow: "auto" }}>
+    <div
+      style={{
+        padding: 10,
+        overflow: "auto",
+        maxHeight: "100vh",
+      }}
+    >
       <div style={{ height: 10 }} />
 
       <div

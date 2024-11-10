@@ -17,7 +17,6 @@ import Loading from "../../components/Loading";
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import { useTranslation } from "react-i18next";
 
-
 export default function PrinterList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -32,13 +31,12 @@ export default function PrinterList() {
 
   // function
   const handleAddPrinter = async (value) => {
-    
     const data = await addPrinter(value);
     getPrintersState();
     setPopup();
   };
   const handleEditPrinter = async (value) => {
-    console.log("value edit printer: ", value)
+    console.log("value edit printer: ", value);
     const data = await updatePrinter(value, selectPrinter?._id);
     getPrintersState();
     setPopup();
@@ -52,7 +50,14 @@ export default function PrinterList() {
   return (
     <>
       {isPrintersLoading ? <Loading /> : ""}
-      <div style={{ padding: 10 }}>
+      <div
+        style={{
+          padding: "10px 10px 80px 10px",
+          maxHeight: "100vh",
+          height: "100%",
+          overflow: "auto",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -61,12 +66,14 @@ export default function PrinterList() {
             marginBottom: 10,
           }}
         >
-          <div>{t('all_printer')} ({printers?.length})</div>
+          <div>
+            {t("all_printer")} ({printers?.length})
+          </div>
           <ButtonPrimary
             style={{ color: "white" }}
             onClick={() => setPopup({ add: true })}
           >
-            {t('add_printer')}
+            {t("add_printer")}
           </ButtonPrimary>
         </div>
         <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
@@ -74,13 +81,13 @@ export default function PrinterList() {
             style={{ color: "white" }}
             onClick={() => navigate("/printer/counter")}
           >
-            {t('config_counter_printer')}
+            {t("config_counter_printer")}
           </ButtonPrimary>
           <ButtonPrimary
             style={{ color: "white" }}
             onClick={() => navigate("/printer/menu-type")}
           >
-            {t('config_menu_type')}
+            {t("config_menu_type")}
           </ButtonPrimary>
         </div>
         <div style={{ width: "100%", overflow: "auto" }}>
@@ -89,9 +96,9 @@ export default function PrinterList() {
               <tr>
                 <th>#</th>
                 <th>{t("printer_name")}</th>
-                <th>{t('size')}</th>
+                <th>{t("size")}</th>
                 <th>IP</th>
-                <th>{t('manage')}</th>
+                <th>{t("manage")}</th>
               </tr>
             </thead>
             <tbody>
@@ -150,7 +157,7 @@ export default function PrinterList() {
       <PopUpConfirm
         open={popup?.delete}
         onClose={() => setPopup()}
-        text1={t('sure_to_remove_printer')}
+        text1={t("sure_to_remove_printer")}
         text2={selectPrinter?.name}
         onSubmit={handleDeleterinter}
       />

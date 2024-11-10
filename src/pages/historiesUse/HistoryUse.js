@@ -23,6 +23,7 @@ import { useParams } from "react-router-dom";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
+import { BsBank2 } from "react-icons/bs";
 
 export default function HistoryUse() {
   const { t } = useTranslation();
@@ -83,6 +84,12 @@ export default function HistoryUse() {
           `/v3/bills-split/skip/${
             page * rowsPerPage
           }/limit/${rowsPerPage}?storeId=${params?.id}`;
+      } else if (filtterModele === "bankTransfer") {
+        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${
+          page * rowsPerPage
+        }/limit/${rowsPerPage}?storeId=${
+          params?.id
+        }&paymentMethod=BANK_TRANSFER`;
       } else {
         apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
           page * rowsPerPage
@@ -96,6 +103,8 @@ export default function HistoryUse() {
           setData(res?.data);
         } else if (filtterModele === "historyServiceChange") {
           setData(res?.data?.data);
+        } else if (filtterModele === "bankTransfer") {
+          setData(res?.data);
         } else {
           setData(res?.data?.data);
         }
@@ -140,7 +149,14 @@ export default function HistoryUse() {
   };
 
   return (
-    <div>
+    <div
+      style={{
+        maxHeight: "100vh",
+        height: "100%",
+        overflow: "auto",
+        padding: "0px 0px 80px 0px",
+      }}
+    >
       <Nav
         fill
         variant="tabs"
@@ -274,6 +290,23 @@ export default function HistoryUse() {
             {t("bill_paid")}
           </Nav.Link>
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/bankTransfer"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setFiltterModele("bankTransfer")}
+          >
+            <BsBank2 /> <div style={{ width: 8 }}></div>
+            {t("bank_transfer_history")}
+          </Nav.Link>
+        </Nav.Item>
       </Nav>
       {isLoading ? (
         <LoadingAppzap />
@@ -392,6 +425,68 @@ export default function HistoryUse() {
                 }}
               ></div>
             </div>
+          ) : filtterModele === "bankTransfer" ? (
+            <table className="table table-hover">
+              <thead className="thead-light">
+                <tr>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("no")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("tableNumber")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("tableCode")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("amount")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("detail")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("status")}
+                  </th>
+                  <th style={{ textWrap: "nowrap" }} scope="col">
+                    {t("date_time")}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {data?.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {page * rowsPerPage + index + 1}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {item?.tableName ?? "-"}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {item?.code ?? "-"}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {item?.totalAmount
+                          ? `${item?.totalAmount.toLocaleString()} ${
+                              item?.currency ?? "LAK"
+                            }`
+                          : "-"}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {t("checkout") ?? "-"}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {t(item.status) ?? "-"}
+                      </td>
+                      <td style={{ textWrap: "nowrap" }}>
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           ) : (
             <table className="table table-hover">
               <thead className="thead-light">

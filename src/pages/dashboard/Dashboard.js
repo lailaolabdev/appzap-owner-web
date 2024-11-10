@@ -129,7 +129,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ padding: 10, overflow: "auto" }}>
+    <div
+      style={{
+        overflow: "auto",
+        maxHeight: "100vh",
+        padding: "10px 10px 80px 10px",
+      }}
+    >
       <Box
         sx={{
           fontWeight: "bold",
