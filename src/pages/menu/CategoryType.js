@@ -221,10 +221,10 @@ export default function CategoryType() {
                 </tr>
               </thead>
               <tbody>
-                {categoryTypes.map((categoryType, index) => (
-                  <tr key={categoryType.id}>
+                {categoryTypes?.map((categoryType, index) => (
+                  <tr key={categoryType?.id}>
                     <td>{index + 1}</td>
-                    <td>{categoryType.name}</td>
+                    <td>{categoryType?.name}</td>
                     {/* manage icon */}
                     <td
                       // className="manage"
