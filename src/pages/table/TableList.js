@@ -260,6 +260,7 @@ export default function TableList() {
     getDataZone();
     getDataTax();
     getDataServiceCharge();
+    setZoneId("");
 
     setStoreDetail({
       ...storeDetail,

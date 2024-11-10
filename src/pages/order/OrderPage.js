@@ -255,11 +255,12 @@ export default function OrderPage() {
 
         // Draw options with incremental Y positions
         data.options.forEach((option, idx) => {
+          console.log("OPTION: ", option);
           const optionPriceText = option?.price
-            ? ` - ${moneyCurrency(option.price)}`
+            ? ` - ${moneyCurrency(option?.price)} ${option?.currency}`
             : "";
           context.fillText(
-            `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
+            `- ${option?.name}${optionPriceText}`,
             15,
             baseY + idx * lineHeight // Incremental positioning for each option line
           );
