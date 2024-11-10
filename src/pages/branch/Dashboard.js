@@ -405,7 +405,7 @@ export default function Dashboard() {
         open={showPopupDelete}
         onClose={() => setShowPopupDelete(false)}
         onSubmit={DeleteBranch}
-        text={branchData?.nameBranch}
+        text={branchData?.storeId?.name}
       />
     </div>
   );
