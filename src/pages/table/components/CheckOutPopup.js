@@ -99,7 +99,7 @@ export default function CheckOutPopup({
     if (e.target.value === "LAK") {
       setSelectCurrency({
         id: "LAK",
-        name: storeDetail?.firstCurrency || "LAK",
+        name: "LAK",
       });
       return;
     }
@@ -136,7 +136,7 @@ export default function CheckOutPopup({
     getMembersData();
     setSelectCurrency({
       id: "LAK",
-      name: storeDetail?.firstCurrency || "LAK",
+      name: "LAK",
     });
   }, []);
 
@@ -348,7 +348,7 @@ export default function CheckOutPopup({
         setTab("cash");
         setSelectCurrency({
           id: "LAK",
-          name: storeDetail?.firstCurrency || "LAK",
+          name: "LAK",
         });
         setSelectInput("inputCash");
         setForcus("CASH");
@@ -786,7 +786,7 @@ export default function CheckOutPopup({
                   setCash();
                   setSelectCurrency({
                     id: "LAK",
-                    name: storeDetail?.firstCurrency || "LAK",
+                    name: "LAK",
                   });
                   setRateCurrency(1);
                   setTransfer(transferCal);
@@ -804,7 +804,7 @@ export default function CheckOutPopup({
                   setCash();
                   setSelectCurrency({
                     id: "LAK",
-                    name: storeDetail?.firstCurrency || "LAK",
+                    name: "LAK",
                   });
                   setRateCurrency(1);
                   setTransfer();
