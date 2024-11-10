@@ -49,6 +49,7 @@ export const printItems = async (groupedItems, combinedBillRefs, printers) => {
       const bodyFormData = new FormData();
       bodyFormData.append("ip", _printer?.ip);
       bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", false);
       bodyFormData.append("image", _file);
       bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
 

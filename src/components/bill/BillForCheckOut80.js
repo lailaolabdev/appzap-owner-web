@@ -64,6 +64,18 @@ export default function BillForCheckOut80({
       dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
       (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
     );
+    // for (let _data of dataBill?.orderId || []) {
+    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
+    //   const itemPrice = _data?.price + totalOptionPrice;
+    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+    //   _total += _data?.quantity * itemPrice;
+    // }
+
+    // const _total = _.sumBy(
+    //   dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
+    //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+    // );
+    // let _total = 0;
 
     // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
     const orders =
@@ -72,7 +84,7 @@ export default function BillForCheckOut80({
         : dataBill?.orderId;
 
     // Loop through the available orders
-    for (let _data of orders || []) {
+    for (let _data of (orders || []).filter((e) => e?.status === "SERVED")) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
@@ -92,8 +104,8 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(_total);
     }
-    setTotal(totalBillDefualt);
-    setTaxAmount((totalBillDefualt * taxPercent) / 100);
+    setTotal(_total);
+    setTaxAmount((_total * taxPercent) / 100);
 
     // Set total amount and related charges
     setTotal(_total);
