@@ -108,7 +108,7 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto" />
-          <p
+          {/* <p
             style={{ marginTop: 20, color: "#bfbfbf" }}
             onClick={() => {
               setSwitchToDev((prev) => prev + 1);
@@ -119,7 +119,7 @@ export default function NavBar() {
             }}
           >
             v{packageJson?.version}
-          </p>
+          </p> */}
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
 

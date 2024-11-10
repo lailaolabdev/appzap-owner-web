@@ -39,6 +39,7 @@ import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
 import { getLocalData, getToken } from "../constants/api";
 import { getCountOrderWaiting } from "../services/order";
+import useWindowDimensions2 from "../helpers/useWindowDimension2";
 import _ from "lodash";
 
 export default function Sidenav({ location, navigate, onToggle }) {
@@ -55,10 +56,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+  const { width, hight } = useWindowDimensions2();
 
   const isPathInclude = (condition) =>
     _.includes(condition, selected.split("/page")[0]);
 
+  console.log("width:", width);
+  console.log("hight:", hight);
   // useEffect
   useEffect(() => {
     (async () => {
@@ -302,7 +306,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   return (
     <SideNav
-      expanded={false}
+      expanded={width < 900 ? false : true}
+      //expanded={false}
       style={{
         backgroundColor: "#FFFFFF",
         border: "solid 1px #E4E4E4",
@@ -372,17 +377,22 @@ export default function Sidenav({ location, navigate, onToggle }) {
           navigate(to);
         }
       }}
+      onToggle={(expanded) => {
+        onToggle(expanded);
+      }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: 50,
-        }}
-      >
-        <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
-      </div>
+      {width > 900 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: 50,
+          }}
+        >
+          <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
+        </div>
+      )}
       <SideNav.Nav value={location.pathname.split("/")[1]}>
         {listForRole
           .filter((e) => !e?.hidden)
