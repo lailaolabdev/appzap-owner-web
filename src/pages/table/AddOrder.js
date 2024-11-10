@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
@@ -53,13 +54,15 @@ import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import printFlutter from "../../helpers/printFlutter";
+import moment from "moment";
 
 function AddOrder() {
+  const { state } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
-  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
+  const [billId, setBillId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
   const [Categorys, setCategorys] = useState();
@@ -76,7 +79,7 @@ function AddOrder() {
   const [connectMenuId, setConnectMenuId] = useState("");
   const [menuOptions, setMenuOptions] = useState([]);
   const [selectedOptions, setselectedOptions] = useState();
-  const { profile } = useStore();
+  const { profile, setPrintBackground } = useStore();
   const [isPopup, setIsPupup] = useState(false);
   const [noteItems, setNoteItems] = useState();
   const [addComments, setAddComments] = useState();
@@ -91,6 +94,8 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  // console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -136,8 +141,6 @@ function AddOrder() {
       ? sortOptionsById([...data.options])
       : [];
 
-    console.log({ selectedMenu });
-
     for (const i of selectedMenu) {
       let _data = { ...i };
 
@@ -158,9 +161,6 @@ function AddOrder() {
         dataArray.push(_data);
       }
     }
-
-    console.log("ORDER DATA: ", dataArray);
-
     setSelectedMenu(dataArray);
   };
 
@@ -172,8 +172,8 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
-  const [currency, setCurrency] = useState([]);
+  const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
+    useStore();
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -200,13 +200,12 @@ function AddOrder() {
       .map((_, i) => billForCher58?.current[i]);
   }
 
+  const [onPrinting, setOnPrinting] = useState(false);
+  const [countError, setCountError] = useState("");
   const onPrintForCher = async () => {
-    const orderSelect = selectedMenu;
-    let _index = 0;
-    for (const _ref of billForCher80.current) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
+    try {
+      setOnPrinting(true);
+      setCountError("");
 
       const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
       console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
@@ -377,49 +376,50 @@ function AddOrder() {
             headers: { "Content-Type": "multipart/form-data" },
           });
         }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            // scale: 350 / widthBill58,
-          });
-        }
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = ETHERNET_PRINTER_PORT;
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = USB_PRINTER_PORT;
-        }
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+  const convertHtmlToBase64 = (orderSelect) => {
+    const base64ArrayAndPrinter = [];
 
-        console.log("dataUrl=5555==========>", dataUrl);
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("_file===========>", _file);
-        var bodyFormData = new FormData();
-        bodyFormData.append("isdrawer", false);
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("port", "9100");
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+    orderSelect.forEach((data, index) => {
+      console.log("optonDATA", data);
+      if (data) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
 
         // Define canvas dimensions based on the image layout you want to replicate
         const width = 510;
-        const height = 290;
+        const height = 350; // Slightly increased height to accommodate content spacing
         canvas.width = width;
         canvas.height = height;
 
         // Set white background
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, height);
+
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+        }
 
         // Draw the Table ID (left black block)
         context.fillStyle = "#000"; // Black background
@@ -435,23 +435,44 @@ function AddOrder() {
 
         // Draw Item Name and Quantity
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 40px NotoSansLao";
-        context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
+        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          110,
+          width - 20,
+          40
+        ); // Item name with wrapping
 
-        // Draw Item Name and Quantity
+        // Draw Item Note
         context.fillStyle = "#000"; // Black text
-        context.font = "24px NotoSansLao";
-        context.fillText(`${data?.note}`, 10, 150); // Item name
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        wrapText(
+          context,
+          `${data?.note === undefined ? "" : data?.note}`,
+          10,
+          150,
+          width - 20,
+          30
+        ); // Item note with wrapping
 
-        // Draw Price and Quantity
-        context.font = "28px NotoSansLao";
-        context.fillText(
-          `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
-            data?.quantity
-          }`,
-          20,
-          210
-        ); // Price and quantity
+        // Draw Options from the menuOptions array, including prices
+        if (data.menuOptions && data.menuOptions.length > 0) {
+          context.fillStyle = "#000"; // Black text
+          context.font = "24px NotoSansLao";
+          data.options.forEach((option, idx) => {
+            console.log("option", option);
+            const optionPriceText = option?.price
+              ? ` - ${moneyCurrency(option?.price)}`
+              : ""; // Show price if available
+            context.fillText(
+              `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
+              10,
+              175 + idx * 30
+            ); // Draw each option with price
+          });
+        }
 
         // Draw the dotted line
         context.strokeStyle = "#000"; // Black dotted line
@@ -488,8 +509,9 @@ function AddOrder() {
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
-      _index++;
-    }
+    });
+
+    return base64ArrayAndPrinter;
   };
 
   /**
@@ -502,7 +524,7 @@ function AddOrder() {
     Object.keys(grouped).forEach((printerIp) => {
       refs[printerIp] = React.createRef();
     });
-    console.log("refs: ", refs);
+
     setCombinedBillRefs(refs);
     setGroupedItems(grouped);
   }, [selectedMenu]);
@@ -536,12 +558,12 @@ function AddOrder() {
     // getcurrency();
   }, []);
 
-  useEffect(() => {
-    // TODO: check selectTable
-    if (!selectedTable) {
-      navigate("/tables");
-    }
-  }, [selectedTable]);
+  // useEffect(() => {
+  //   // TODO: check selectTable
+  //   if (!selectedTable || !selectedBill) {
+  //     navigate("/tables");
+  //   }
+  // }, [selectedTable]);
 
   useEffect(() => {
     (async () => {
@@ -602,7 +624,6 @@ function AddOrder() {
   };
 
   const calculateTotalPrice = (menu, selectedOptionsArray) => {
-    console.log({ menu });
     if (!menu || !menu._id) {
       return 0;
     }
@@ -616,11 +637,6 @@ function AddOrder() {
   };
 
   const handleConfirmOptions = () => {
-    console.log("menuOptions: ", menuOptions);
-    console.log("selectedItem: ", selectedItem);
-    console.log("SelectedOptionsArray: ", selectedOptionsArray);
-    console.log("selectedMenu: ", selectedMenu);
-
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
         (option) => option.quantity >= 1
@@ -776,11 +792,11 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    console.log("addToCart: ", menu);
+    // console.log("addToCart: ", menu);
 
     const _menuOptions = _checkMenuOption(menu);
 
-    console.log("menuOptions: ", _menuOptions);
+    // console.log("menuOptions: ", _menuOptions);
 
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
@@ -835,7 +851,8 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    console.log({ data, header, isPrinted });
+    // console.log({ data, header, isPrinted });
+
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -866,12 +883,7 @@ function AddOrder() {
         billId: _billId,
       };
 
-      console.log("CreateOrder: ", _body);
       const localZone = localStorage.getItem("selectedZone");
-
-      console.log("ZONE : ", localZone);
-
-      // const localZone = localStorage.getItem("selectedZone");
 
       axios
         .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
@@ -890,35 +902,30 @@ function AddOrder() {
             if (isPrinted) {
               const selectedPrinterIds = selectedMenu.map((e) => e.printer);
 
-              // Filter the printers to only those that are in the selectedPrinterIds
               const pickedUpPrinters = printers.filter((printer) =>
                 selectedPrinterIds.includes(printer._id)
               );
 
-              // Check if any of the picked-up printers have `cutPaper` set to "not_cut"
               const hasNoCut = pickedUpPrinters.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
 
+              console.log("CUT :", hasNoCut);
+
               if (hasNoCut) {
                 // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(
-                  () => {
-                    onSelectTable(selectedTable);
-                    if (state?.key === false) {
-                      navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                      return;
-                    } else {
-                      navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                      );
-                    }
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                      { state: { zoneId: localZone } }
-                    );
-                  }
-                );
+                printItems(
+                  groupedItems,
+                  combinedBillRefs,
+                  printers,
+                  selectedTable
+                ).then(() => {
+                  onSelectTable(selectedTable);
+                  navigate(
+                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                    { state: { zoneId: localZone } }
+                  );
+                });
               } else {
                 // Print with cut
                 onPrintForCher().then(() => {
@@ -1009,9 +1016,7 @@ function AddOrder() {
   };
 
   const onEditOrder = (menu) => {
-    console.log("onEditOrder: ", menu);
     const menuOptions = _checkMenuOption(menu);
-    console.log("menuOptions: ", menuOptions);
 
     // Get the selected options from the menu with their quantities
     const selectedOptions = menu.options || [];
