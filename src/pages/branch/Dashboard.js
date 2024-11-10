@@ -86,6 +86,9 @@ export default function Dashboard() {
         if (storeDetail?.branchStartDate && storeDetail?.branchEndDate) {
           findbyIncome += `startDate=${storeDetail?.branchStartDate}&`;
           findbyIncome += `endDate=${storeDetail?.branchEndDate}`;
+        } else {
+          findbyIncome += `startDate=${startDate}&`;
+          findbyIncome += `endDate=${endDate}`;
         }
         const [branchData, incomeData] = await Promise.all([
           GetAllBranchRelation(TOKEN, findby),
@@ -408,7 +411,7 @@ export default function Dashboard() {
         open={showPopupDelete}
         onClose={() => setShowPopupDelete(false)}
         onSubmit={DeleteBranch}
-        text={branchData?.nameBranch}
+        text={branchData?.storeId?.name}
       />
     </div>
   );
