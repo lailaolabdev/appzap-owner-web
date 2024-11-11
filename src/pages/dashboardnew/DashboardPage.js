@@ -204,7 +204,7 @@ export default function DashboardPage() {
   };
   return (
     <>
-      <Box sx={{ padding: { md: 20, xs: 10 } }}>
+      <Box sx={{ padding: { md: 20, xs: 10 }}}>
         {/* <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>

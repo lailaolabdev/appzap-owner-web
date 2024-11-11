@@ -14,9 +14,6 @@ export default function MainLayout({ children }) {
   };
 
   const { width, hight } = useWindowDimensions2();
-  console.log("widthtt:", width);
-  console.log("highttt:", hight);
-
   return (
     <Box
       sx={{
@@ -47,13 +44,22 @@ export default function MainLayout({ children }) {
       <Navbar />
       <div
         style={{
-          minHeight: "calc(100dvh - 65px)",
+          minHeight: "100dvh",
           backgroundColor: "#F9F9F9",
-          height: "calc(100dvh - 65px)",
-          maxHeight: "calc(100dvh - 65px)",
+          height: "100dvh",
+          maxHeight: "100vh",
           overflowY: "auto",
           position: "relative",
-          paddingLeft: width < 500?"12%": width< 600 ? "10%": width < 900 ? "8%" : width < 1200 ? "20%" : "14%",
+          paddingLeft:
+            width < 500
+              ? "12%"
+              : width < 600
+              ? "10%"
+              : width < 900
+              ? "8%"
+              : width < 1200
+              ? "20%"
+              : "14%",
         }}
       >
         <Outlet />

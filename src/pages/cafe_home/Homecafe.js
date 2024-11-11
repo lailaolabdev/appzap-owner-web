@@ -1885,6 +1885,7 @@ function Homecafe() {
 const CafeContent = styled.div`
   display: flex;
   overflow: hidden;
+  margin-top: 35px;
 `;
 
 const CafeMenu = styled.div`

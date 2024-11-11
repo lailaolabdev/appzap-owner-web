@@ -82,7 +82,7 @@ export default function History() {
     navigate(`/histories/HistoryDetail/${code}/` + params?.id);
 
   return (
-    <div style={{ minHeight: 400 }}>
+    <div style={{ minHeight: 400, marginTop: 35 }}>
       <Container fluid>
         <div className="row mt-5">
           <Nav.Item>

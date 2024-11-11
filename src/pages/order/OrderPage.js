@@ -395,16 +395,19 @@ export default function OrderPage() {
     );
   };
   return (
-    <div style={{backgroundColor:'#F9F9F9'}}>
+    <div style={{ backgroundColor: "#F9F9F9" }}>
       <div>
-      <p style={{
-         fontSize: '25px', 
-         fontWeight: '400',
-         padding: " 0 10px",
-         fontWeight:'700',
-         paddingTop:"20px",
-         paddingLeft:'20px'
-          }}>orders</p>
+        <p
+          style={{
+            fontSize: "25px",
+            padding: " 0 10px",
+            fontWeight: "700",
+            paddingTop: "35px",
+            paddingLeft: "20px",
+          }}
+        >
+          orders
+        </p>
       </div>
       <RootStyle>
         {/* {orderLoading || (isLoading && <Loading />)} */}
@@ -541,7 +544,7 @@ export default function OrderPage() {
 
 const RootStyle = styled("div")({
   backgroundColor: "#f9f9f9",
-  minHeight: "calc(100vh - 64px)",
+  height: "100vh",
   padding: 10,
   width: "100%",
 });

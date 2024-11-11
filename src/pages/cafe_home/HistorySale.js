@@ -193,6 +193,8 @@ function HistorySale() {
         style={{
           display: "flex",
           overflow: "hidden",
+          height: "100vh",
+          marginTop: 55,
         }}
       >
         <div
@@ -264,7 +266,7 @@ function HistorySale() {
                         bottom: 20,
                       }}
                     >
-                      <ReactPaginate
+                      {/* <ReactPaginate
                         previousLabel={
                           <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
                         }
@@ -290,7 +292,7 @@ function HistorySale() {
                         nextClassName={"page-item"}
                         previousLinkClassName={"page-link"}
                         nextLinkClassName={"page-link"}
-                      />
+                      /> */}
                     </div>
                   </div>
                   <Modal show={show} onHide={handleClose} size="lg">

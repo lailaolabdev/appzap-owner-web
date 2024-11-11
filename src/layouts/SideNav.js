@@ -110,20 +110,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   typeStore: "",
     //   system: "reportManagement",
     // },
-    // {
-    //   title: `${t("is_cafe")}`,
-    //   key: "cafe",
-    //   icon: faStoreAlt,
-    //   typeStore: storeDetail?.isRestuarant,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "tableManagement",
-    // },
+
     {
       title: `${t("paid_manage")}`,
       key: "expends",
       icon: faMinusCircle,
       typeStore: "",
       system: "reportManagement",
+    },
+    {
+      title: `${t("is_cafe")}`,
+      key: "cafe",
+      icon: faStoreAlt,
+      typeStore: storeDetail?.isRestuarant,
+      hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
     },
     // {
     //   title: `${t("booking_manage")}`,
@@ -159,14 +160,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "menuManagement",
     // },
 
-    // {
-    //   title: "ລາຍງານ (ໃໝ່)",
-    //   key: "reports/sales-report",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
+    {
+      title: "ລາຍງານ (ໃໝ່)",
+      key: "reports/sales-report",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
 
     // {
     //   title: "ລາຍງານສະຕ໋ອກ",
@@ -184,14 +185,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   hidden: !storeDetail?.hasPOS,
     //   system: "stockManagement",
     // },
-    // {
-    //   title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-    //   key: "settingStore",
-    //   typeStore: "",
-    //   icon: faCogs,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "settingManagement",
-    // },
+    {
+      title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
+      key: "settingStore",
+      typeStore: "",
+      icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+      system: "settingManagement",
+    },
   ]
     .filter((e) => e.title) // Filter out items with empty title
 

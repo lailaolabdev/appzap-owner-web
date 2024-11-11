@@ -7,7 +7,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
-import { MdPrint, MdPrintDisabled,MdAccountCircle  } from "react-icons/md";
+import { MdPrint, MdPrintDisabled, MdAccountCircle } from "react-icons/md";
 import { TbWorld } from "react-icons/tb";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
@@ -92,7 +92,7 @@ export default function NavBar() {
     <div>
       <Navbar
         style={{
-          backgroundColor:"transparent",
+          backgroundColor: "transparent",
           color: "#CC0000",
           width: "100%",
           height: 50,
@@ -123,7 +123,9 @@ export default function NavBar() {
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
 
-          <TbWorld  style={{color:'#0E0D0D', fontSize:'50px',padding:'0 10px'}} />
+          <TbWorld
+            style={{ color: "#0E0D0D", fontSize: "50px", padding: "0 10px" }}
+          />
 
           <div
             style={{
@@ -177,10 +179,16 @@ export default function NavBar() {
             )}
           </Box> */}
 
-          <MdAccountCircle style={{color:'gray', fontSize:'30px',margin:'0 10px 0 -10px'}} />
+          <MdAccountCircle
+            style={{
+              color: "gray",
+              fontSize: "30px",
+              margin: "0 10px 0 -10px",
+            }}
+          />
 
           <div style={{ width: 10 }} />
-          
+
           {/* <Form inline>
             <Dropdown>
               <Dropdown.Toggle
