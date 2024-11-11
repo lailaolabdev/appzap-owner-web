@@ -204,21 +204,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => e.typeStore !== "GENERAL");
 
   const itemReports = [
-    // {
-    //   title: `${t("statistic_money")}`,
-    //   key: "report",
-    //   icon: faLayerGroup,
-    //   typeStore: "",
-    //   system: "reportManagement",
-    // },
-    // {
-    //   title: `${t("report_new")}`,
-    //   key: "reports/sales-report",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
+    {
+      title: `${t("statistic_money")}`,
+      key: "report",
+      icon: faLayerGroup,
+      typeStore: "",
+      system: "reportManagement",
+    },
+    {
+      title: `${t("report_new")}`,
+      key: "reports/sales-report",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
@@ -455,7 +455,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
         {/* <hr /> */}
 
-        {/* {itemReports?.length !== 0 ? (
+        {itemReports?.length !== 0 ? (
           <NavItem
             eventKey="reportGroups"
             style={{
@@ -487,7 +487,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               </b>
             </NavText>
 
-            {/* {itemReports.map((elm, index) => (
+            {itemReports.map((elm, index) => (
               <NavItem key={index} eventKey={elm?.key}>
                 <NavText>
                   <div
@@ -524,11 +524,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   </div>
                 </NavText>
               </NavItem>
-            ))} 
+            ))}
           </NavItem>
         ) : (
           ""
-        )} */}
+        )}
         {/* {settingNavItem?.map((e, index) => (
           <NavItem key={index} eventKey={e?.key}>
             <NavIcon>

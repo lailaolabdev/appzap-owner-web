@@ -1151,7 +1151,7 @@ function Homecafe() {
                   <Table responsive className="table">
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr style={{ fontSize: "bold", border: "none" }}>
-                        <th style={{ border: "none" }}>#</th>
+                        {/* <th style={{ border: "none" }}>#</th> */}
                         <th style={{ border: "none", textAlign: "left" }}>
                           {t("menu_name")}
                         </th>

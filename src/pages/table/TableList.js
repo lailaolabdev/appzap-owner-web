@@ -1510,11 +1510,11 @@ export default function TableList() {
                   sm: "1fr 1fr 1fr",
                   xs: "1fr 1fr",
                 },
-                padding: "10px",
+                padding: "40px",
                 color: "gray",
                 alignItems: "center",
-                justifyContent: "center",
-                padding: "0px 30px 30px 15px",
+                justifyContent: "space-between",
+                // padding: "0px 30px 30px 15px",
               }}
             >
               {[
@@ -1544,7 +1544,7 @@ export default function TableList() {
                     style={{
                       display: "flex",
                       backgroundColor: "white",
-                      padding: "5px",
+                      padding: "0 45px",
                       justifyContent: "center",
                       alignItems: "center",
                       height: "70px",
@@ -1579,7 +1579,7 @@ export default function TableList() {
             {zoneData?.length > 0 ? (
               <div
                 style={{
-                  padding: "15px 20px",
+                  padding: "5px 50px",
                   display: "flex",
                   alignItems: "center",
                   width: "100%",
