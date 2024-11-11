@@ -387,20 +387,22 @@ function AddOrder() {
     const base64ArrayAndPrinter = [];
 
     orderSelect.forEach((data, index) => {
-      console.log("optonDATA", data);
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
         // Define canvas dimensions based on the image layout you want to replicate
+        const baseHeight = 350;
+        const extraHeightPerOption = 30;
+        const dynamicHeight =
+          baseHeight + data.menuOptions.length * extraHeightPerOption;
         const width = 510;
-        const height = 350; // Slightly increased height to accommodate content spacing
         canvas.width = width;
-        canvas.height = height;
+        canvas.height = dynamicHeight;
 
         // Set white background
         context.fillStyle = "#fff";
-        context.fillRect(0, 0, width, height);
+        context.fillRect(0, 0, width, dynamicHeight);
 
         // Helper function for text wrapping
         function wrapText(context, text, x, y, maxWidth, lineHeight) {
@@ -462,25 +464,27 @@ function AddOrder() {
           context.fillStyle = "#000"; // Black text
           context.font = "24px NotoSansLao";
           data.options.forEach((option, idx) => {
-            console.log("option", option);
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
-              : ""; // Show price if available
+              : "";
+            const yPosition = 180 + idx * 35;
+
+            // Draw each option with price
             context.fillText(
               `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
               10,
-              175 + idx * 30
-            ); // Draw each option with price
+              yPosition
+            );
           });
-        }
 
-        // Draw the dotted line
-        context.strokeStyle = "#000"; // Black dotted line
-        context.setLineDash([4, 2]); // Dotted line style
-        context.beginPath();
-        context.moveTo(0, 230); // Start at (20, 150)
-        context.lineTo(width, 230); // End at (width - 20, 150)
-        context.stroke();
+          const dottedLineYPosition = 200 + data.menuOptions.length * 35; // Adjust position based on number of options
+          context.strokeStyle = "#000"; // Black dotted line
+          context.setLineDash([4, 2]); // Dotted line style
+          context.beginPath();
+          context.moveTo(0, dottedLineYPosition); // Start at (0, dynamic position)
+          context.lineTo(width, dottedLineYPosition); // End at (width, dynamic position)
+          context.stroke();
+        }
 
         // Draw Footer (Created By and Date)
         context.setLineDash([]); // Reset line style
@@ -490,21 +494,23 @@ function AddOrder() {
             data?.updatedBy?.firstname ||
             "lailaolab",
           20,
-          260
-        ); // Created by name
+          dynamicHeight - 30
+        );
 
-        context.fillStyle = "#6e6e6e"; // Black text
+        context.fillStyle = "#6e6e6e"; // Gray text for date
         context.font = "22px NotoSansLao";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
           ).format("LT")}`,
           width - 180,
-          260
-        ); // Date and time
+          dynamicHeight - 30
+        );
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
+
+        console.log("dataUrl", dataUrl);
 
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });

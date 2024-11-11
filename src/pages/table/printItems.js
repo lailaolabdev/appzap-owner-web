@@ -95,113 +95,105 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
-      // Calculate dynamic canvas height based on the number of items
+      // Constants for layout
       const width = 510;
-      const headerHeight = 60; // Height for the title block
-      const footerHeight = 60; // Height for the footer (date/time)
-      const height = headerHeight + items.length * 60 + footerHeight; // Final canvas height
+      const baseHeight = 350;
+      const extraHeightPerItem = 40; // Height for each main item line
+      const extraHeightPerOption = 30; // Height for each option under an item
+      const footerHeight = 60;
+      const titleMarginLeft = 20; // Margin for main item titles
+      const optionMarginLeft = 40; // Increased indentation for options
+      const spaceAfterDottedLine = 30; // Extra space after the dotted line
 
+      // Calculate dynamic canvas height based on items and options
+      let contentHeight = baseHeight;
+
+      items.forEach((item) => {
+        contentHeight += extraHeightPerItem; // Add height for each main item line
+        if (item.options && item.options.length > 0) {
+          contentHeight += item.options.length * extraHeightPerOption; // Add height for each option under the item
+        }
+      });
+
+      contentHeight += footerHeight + spaceAfterDottedLine; // Add height for the footer and extra space after dotted line
       canvas.width = width;
-      canvas.height = height;
+      canvas.height = contentHeight;
 
       // Set white background
       context.fillStyle = "#fff";
-      context.fillRect(0, 0, width, height);
+      context.fillRect(0, 0, width, contentHeight);
 
-      // Helper function for text wrapping
-      function wrapText(context, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(" ");
-        let line = "";
-
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + " ";
-          const metrics = context.measureText(testLine);
-          const testWidth = metrics.width;
-
-          // Check if the line exceeds the maximum width
-          if (testWidth > maxWidth && n > 0) {
-            context.fillText(line, x, y);
-            line = words[n] + " "; // Start a new line with the current word
-            y += lineHeight; // Move down for the next line
-          } else {
-            line = testLine; // Continue adding to the line
-          }
-        }
-
-        // Draw the last line if there's remaining text
-        if (line) {
-          context.fillText(line, x, y);
-        }
-      }
-
-      // Draw the Title Block with increased margin
-      const titleMargin = 20; // Set a margin for the title
-      const tableName = selectedTable?.tableName || "Table";
-      context.fillStyle = "#000"; // Black background for left block
-      context.fillRect(0, 0, width / 2, headerHeight); // Black block width / 2
-      context.fillStyle = "#fff"; // White text
+      // Draw Title Block
+      context.fillStyle = "#000";
+      context.fillRect(0, 0, width / 2, 60);
+      context.fillStyle = "#fff";
       context.font = "bold 36px NotoSansLao";
-      context.fillText(tableName, titleMargin, 45); // Title text on the left with margin
+      context.fillText(
+        selectedTable?.tableName || "Table",
+        titleMarginLeft,
+        45
+      );
 
-      const tableCode = selectedTable?.code || "N/A";
-      context.fillStyle = "#000"; // Black text
+      context.fillStyle = "#000";
       context.font = "bold 30px NotoSansLao";
-      context.fillText(tableCode, width - 160, 44); // Dynamically display selectedTable's code
+      context.fillText(selectedTable?.code || "N/A", width - 160, 44);
 
-      // Draw Items List with increased margin
-      context.fillStyle = "#000"; // Black text
-      context.font = " 30px NotoSansLao";
-      let itemYPosition = headerHeight + 40; // Starting Y position for items with margin
+      // Draw Items List with increased margins
+      context.font = "30px NotoSansLao";
+      let itemYPosition = 100; // Starting position below the title block
 
       items.forEach((item) => {
-        // Combine the item name and menuOptions into a single line
-        let itemText = `- ${item.name} (x ${item.quantity})`;
-
-        // If the item has options, append them in square brackets
-        if (item.options && item.options.length > 0) {
-          const optionsText = item.options
-            .map((option) => `[${option.name} x ${option.quantity}]`)
-            .join(" "); // Concatenate options
-          itemText += ` ${optionsText}`; // Append options to the item name
-        }
-
-        // Wrap and draw the item name and options with margin
-        const itemMaxWidth = 490; // Set a max width for wrapping
-        wrapText(
-          context,
-          itemText,
-          titleMargin,
-          itemYPosition,
-          itemMaxWidth,
-          40
-        ); // Call wrapText to draw the text
-
-        // Update Y position after wrapping
-        const wrappedLines = Math.ceil(
-          context.measureText(itemText).width / itemMaxWidth
+        // Main item text with title margin
+        context.font = "bold 30px NotoSansLao";
+        context.fillText(
+          `- ${item.name} (x ${item.quantity || 1})`,
+          titleMarginLeft,
+          itemYPosition
         );
-        itemYPosition += wrappedLines * 40; // Increase Y position based on wrapped lines
+        itemYPosition += extraHeightPerItem;
+
+        // Draw options with increased left margin
+        if (item.options && item.options.length > 0) {
+          context.font = "24px NotoSansLao"; // Smaller font for options
+          item.options.forEach((option) => {
+            context.fillText(
+              `- ${option.name} - ${option.price || ""} x ${
+                option.quantity || 1
+              }`,
+              optionMarginLeft,
+              itemYPosition
+            );
+            itemYPosition += extraHeightPerOption;
+          });
+        }
       });
 
-      // Draw the dotted line
-      context.strokeStyle = "#000"; // Black dotted line
-      context.setLineDash([4, 2]); // Dotted line style
+      // Draw the dotted line after the last item, with extra spacing
+      context.strokeStyle = "#000";
+      context.setLineDash([4, 2]);
       context.beginPath();
-      context.moveTo(0, itemYPosition + 10); // Just below the last item
-      context.lineTo(width, itemYPosition + 10); // Across the canvas width
+      context.moveTo(0, itemYPosition + 10);
+      context.lineTo(width, itemYPosition + 10);
       context.stroke();
+      context.setLineDash([]); // Reset line dash
 
-      // Footer with Date and Time
-      const footerYPosition = itemYPosition + 40; // Adjust position closer to the dotted line
-      context.setLineDash([]); // Reset line style
+      // Footer with Created By and Date, positioned with extra margin
       context.font = "bold 24px NotoSansLao";
       context.fillText(
-        `${moment(data.createdAt).format("DD/MM/YY")} | ${moment(
-          data.createdAt
+        data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
+        20,
+        contentHeight - 30
+      );
+
+      context.fillStyle = "#6e6e6e"; // Gray text for date
+      context.font = "22px NotoSansLao";
+      context.fillText(
+        `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+          data?.createdAt
         ).format("LT")}`,
-        width - 200,
-        footerYPosition
-      ); // Date and time
+        width - 180,
+        contentHeight - 30
+      );
 
       // Convert canvas to base64
       const dataUrl = canvas.toDataURL("image/png");
