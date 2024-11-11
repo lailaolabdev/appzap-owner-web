@@ -771,11 +771,11 @@ export default function TableList() {
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       // callPayBeforePrintBillOnly(selectedTable?._id);
-      orderPayBefore.length > 0
-        ? updateTablePayBefore()
-        : callCheckOutPrintBillOnly(selectedTable?._id);
-      setSelectedTable();
-      setOrderPayBefore([]);
+      // orderPayBefore.length > 0
+      //   ? updateTablePayBefore()
+      //   : callCheckOutPrintBillOnly(selectedTable?._id);
+      // setSelectedTable();
+      // setOrderPayBefore([]);
       // getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -795,18 +795,18 @@ export default function TableList() {
     }
   };
 
-  const updateTablePayBefore = async () => {
-    const orderItem =
-      orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
-    const checkStatus = orderPayBefore.length > 0 ? "false" : "";
-    const checkStatusBill = orderPayBefore.length > 0 ? "PRINTBILL" : "";
-    const body = {
-      orderPayBefore: orderItem,
-      isCheckout: checkStatus,
-      status: checkStatusBill,
-    };
-    callToUpdatePrintBillBefore(selectedTable?.billId, body);
-  };
+  // const updateTablePayBefore = async () => {
+  //   const orderItem =
+  //     orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
+  //   const checkStatus = orderPayBefore.length > 0 ? "false" : "";
+  //   const checkStatusBill = orderPayBefore.length > 0 ? "PRINTBILL" : "";
+  //   const body = {
+  //     orderPayBefore: orderItem,
+  //     isCheckout: checkStatus,
+  //     status: checkStatusBill,
+  //   };
+  //   callToUpdatePrintBillBefore(selectedTable?.billId, body);
+  // };
 
   useEffect(() => {
     getTableDataStore();
@@ -1216,12 +1216,7 @@ export default function TableList() {
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
-        if (
-          item?.status === "CANCELED" ||
-          item.status === "PAID" ||
-          item.status === "PRINTBILL"
-        )
-          return item;
+        if (item?.status === "CANCELED" || item.status === "PAID") return item;
         return {
           ...item,
           isChecked: true,
@@ -1251,7 +1246,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
       let menuId;
       const _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked && e.status !== "PRINTBILL")
+        ?.filter((e) => e?.isChecked)
         .map((i) => {
           return {
             status: status,
@@ -1543,16 +1538,16 @@ export default function TableList() {
     calculateTotalBill();
   }, [dataBill]);
 
-  useEffect(() => {
-    getStatusItem();
-  }, [isCheckedOrderItem]);
+  // useEffect(() => {
+  //   getStatusItem();
+  // }, [isCheckedOrderItem]);
 
-  const getStatusItem = async () => {
-    isCheckedOrderItem.map((e) => {
-      const PrintItem = e?.status === "PRINTBILL";
-      setCheckStatusItem(PrintItem);
-    });
-  };
+  // const getStatusItem = async () => {
+  //   isCheckedOrderItem.map((e) => {
+  //     const PrintItem = e?.status === "PRINTBILL";
+  //     setCheckStatusItem(PrintItem);
+  //   });
+  // };
 
   // console.log("BILL: ", dataBill);
   // console.log("TABLE: ", selectedTable);
@@ -1764,8 +1759,6 @@ export default function TableList() {
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
                                 ? "#FFE17B"
-                                : table?.statusBill === "CALL_TO_PAYBEFORE"
-                                ? "#F08080"
                                 : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
@@ -2073,8 +2066,7 @@ export default function TableList() {
                                 e?.status !== "SERVED" &&
                                 e?.status !== "CANCELED" &&
                                 e?.status !== "FEEDBACK" &&
-                                e?.status !== "PAID" &&
-                                e?.status !== "PRINTBILL"
+                                e?.status !== "PAID"
                             )?.length
                               ? "block"
                               : "none",
@@ -2314,8 +2306,6 @@ export default function TableList() {
                                             ? "green"
                                             : orderItem?.status === "PAID"
                                             ? COLOR_APP
-                                            : orderItem?.status === "PRINTBILL"
-                                            ? "blue"
                                             : orderItem?.status === "DOING"
                                             ? ""
                                             : "red",
