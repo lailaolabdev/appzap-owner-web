@@ -565,6 +565,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("user")}</th>
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {userReport?.length > 0 &&
@@ -573,6 +574,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                      <td style={{ textAlign: "center" }}>{e?.paid}</td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
@@ -643,6 +645,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("menu_type")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_success")}</th>
                   <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
                   <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
                 </tr>
                 {categoryReport
@@ -652,8 +655,11 @@ export default function DashboardPage() {
                   ?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.cenceled || 0}
+                      </td>
+                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
@@ -680,6 +686,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("menu")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_success")}</th>
                   <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
                   <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
                 </tr>
                 {menuReport
@@ -693,6 +700,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "center" }}>
                         {e?.canceled || 0}
                       </td>
+                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}

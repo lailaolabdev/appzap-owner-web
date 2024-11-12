@@ -102,22 +102,17 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
     setPopup({ ReportExport: false });
     try {
       let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
+      findBy += `startDate=${storeDetail?.startDayFilter}&`;
+      findBy += `endDate=${storeDetail?.endDayFilter}&`;
+      findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+      findBy += `endTime=${storeDetail?.endTimeFilter}`;
 
       const url =
         END_POINT_EXPORT +
         `/export/report-bank${findBy}&storeId=${storeDetail?._id}`;
+      console.log("url: ", url);
       const _res = await Axios.get(url);
+      console.log("_res: ", url);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -144,17 +139,10 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
     setPopup({ ReportExport: false });
     try {
       let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
+      findBy += `startDate=${storeDetail?.startDayFilter}&`;
+      findBy += `endDate=${storeDetail?.endDayFilter}&`;
+      findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+      findBy += `endTime=${storeDetail?.endTimeFilter}`;
 
       const url =
         END_POINT_EXPORT +
@@ -175,7 +163,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("bank_total")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("all_curency")}` + ".xlsx" || "export.xlsx"
         );
       }
     } catch (err) {
