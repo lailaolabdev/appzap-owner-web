@@ -137,59 +137,87 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const getDataBillReport = async (startDate) => {
     try {
-      const endDate = startDate;
+      const endDate = startDate; // Same date range for a single day
       const startTime = "00:00:00";
       const endTime = "23:59:59";
       const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+  
+      // Fetch bill data and active bill data
       const data = await getBillReport(storeDetail._id, findBy);
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-      const bankData = await getBankReport(storeDetail._id, findBy);
-      const currencyData = await getCurrencyReport(storeDetail._id, findBy);
-      console.log("currencyData", currencyData);
-      // logic
+  
+      console.log("Fetched Bill Data:", data); // Debug fetched data
+      console.log("Fetched Active Bill Data:", activeBillData); // Debug active data
+  
+      // Calculate fields
       const countBill = data.length || 0;
-      // const bankReportData = bankReport.data.map((e) => e?.bankTotalAmount);
-      // console.log("bankReportData", bankReportData);
+  
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
-      const totalServiceCharge =
-        _.sumBy(data, (e) => e.serviceChargeAmount) || 0;
-      const totalTax = _.sumBy(data, (e) => e.taxAmount) || 0;
-      const cashTotalBill = _.sumBy(data, (e) => e.payAmount) || 0;
-      const transferTotalBill = _.sumBy(data, (e) => e.transferAmount) || 0;
-      const discountBill = data.filter((e) => e.discount != 0);
-      const countDiscountBill = discountBill.length;
-      // const service = totalBill * 0.03;
-      // const newServicechange = totalBill - service;
+  
+      const cashTotalBill = _.sumBy(
+        data.filter((e) => e.paymentMethod === "CASH" || e.paymentMethod === "TRANSFER_CASH"),
+        (e) => (e.paymentMethod === "TRANSFER_CASH" ? e.payAmount : e.billAmount)
+      ) || 0;
+  
+      const transferTotalBill = _.sumBy(
+        data.filter((e) => e.paymentMethod === "TRANSFER" || e.paymentMethod === "TRANSFER_CASH"),
+        (e) => (e.paymentMethod === "TRANSFER_CASH" ? e.transferAmount : e.billAmount)
+      ) || 0;
+  
+      const discountBill = data.filter((e) => e.discount > 0);
       const discountTotalBill = _.sumBy(discountBill, (e) => {
-        let discountMomeny = 0;
-        if (e.discountType == "PERCENT") {
-          discountMomeny = (e.billAmountBefore * e.discount) / 100;
+        let discountAmount = 0;
+        if (e.discountType === "PERCENT") {
+          discountAmount = (e.billAmountBefore * e.discount) / 100;
         } else {
-          discountMomeny = e.discount || 0;
+          discountAmount = e.discount || 0; // Assume non-PERCENT discounts are fixed values
         }
-        return discountMomeny;
-      });
+        return discountAmount;
+      }) || 0;
+  
       const activeBill = data.filter(
-        (e) => !e.isCheckout || e.status != "CHECKOUT"
+        (e) => !e.isCheckout || e.status !== "CHECKOUT"
       ).length;
-      const totalActiveBill = _.sumBy(activeBillData, (e) => e.totalBill);
-
+  
+      const totalActiveBill = _.sumBy(activeBillData, (e) => e.totalBill) || 0;
+  
+      // Debug intermediate calculations
+      console.log({
+        countBill,
+        totalBill,
+        cashTotalBill,
+        transferTotalBill,
+        discountTotalBill,
+        activeBill,
+        totalActiveBill,
+      });
+  
+      // Final validation: Check if calculated total matches totalBill
+      const calculatedTotal = (cashTotalBill + transferTotalBill) - discountTotalBill;
+      if (calculatedTotal !== totalBill) {
+        console.error("Calculation Mismatch Detected!");
+        console.error(`Expected Total (totalBill): ${totalBill}`);
+        console.error(`Calculated Total: ${calculatedTotal}`);
+      } else {
+        console.log("Calculation validated: Total matches!");
+      }
+  
+      // Update state or return result
       setReportBill({
         ຈຳນວນບິນ: countBill,
         ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
-        ບິນສ່ວນຫຼຸດ: countDiscountBill,
-        servicechange: totalServiceCharge,
-        tax: totalTax,
+        ບິນສ່ວນຫຼຸດ: discountBill.length,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
         ເງິນຄ້າງ: totalActiveBill,
       });
-      setBill(data);
-      setBank(bankData);
-      setcurrency(currencyData);
-    } catch (err) {}
+  
+      setBill(data); // Set bill data for rendering
+    } catch (err) {
+      console.error("Error in getDataBillReport:", err);
+    }
   };
 
   return (
