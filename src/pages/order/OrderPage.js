@@ -346,76 +346,64 @@ export default function OrderPage() {
 
   const Tool = () => {
     return (
-      <div
-        style={{
-          display: "flex",
-          padding: "10px",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          className="d-flex align-items-center"
-          style={{
-            gap: "6px",
-            flexWrap: "wrap",
+      <div className="flex items-center justify-between p-2.5">
+      <div className="flex items-center flex-wrap gap-1.5">
+        <button
+          className={`flex items-center justify-center px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+          onClick={async () => {
+            await onPrintForCher();
+            getOrderWaitingAndDoingByStore();
+          }}
+          disabled={onPrinting}
+        >
+          {onPrinting && (
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          )}
+          {t("send_to_kitchen")}
+        </button>
+
+        <button
+          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+          onClick={() => {
+            setWorkAfterPin("cancle_order");
+            setPopup({ PopUpPin: true });
           }}
         >
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              await onPrintForCher();
-              // await handleUpdateOrderStatus("DOING");
-              getOrderWaitingAndDoingByStore();
-            }}
-            disabled={onPrinting}
-          >
-            {onPrinting && <Spinner animation="border" size="sm" />}
-            {t("send_to_kitchen")}
-          </Button>
+          {t("cancel")}
+        </button>
 
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              setWorkAfterPin("cancle_order");
-              setPopup({ PopUpPin: true });
-            }}
-          >
-            {/* ຍົກເລີກ */}
-            {t("cancel")}
-          </Button>
+        <button
+          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+          onClick={async () => {
+            await handleUpdateOrderStatus("DOING");
+            getOrderWaitingAndDoingByStore();
+          }}
+        >
+          {t("cooking")}
+        </button>
 
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              await handleUpdateOrderStatus("DOING");
-              getOrderWaitingAndDoingByStore();
-            }}
-          >
-            {/* ສົ່ງໄປຄົວ */}
-            {t("cooking")}
-          </Button>
-
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              await handleUpdateOrderStatus("SERVED");
-              getOrderWaitingAndDoingByStore();
-            }}
-          >
-            {/* ເສີບແລ້ວ */}
-            {t("served")}
-          </Button>
-        </div>
-
-        <div>{t("auto_print")}</div>
+        <button
+          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+          onClick={async () => {
+            await handleUpdateOrderStatus("SERVED");
+            getOrderWaitingAndDoingByStore();
+          }}
+        >
+          {t("served")}
+        </button>
       </div>
+
+      <div>
+        {t("auto_print")}
+      </div>
+    </div>
     );
   };
   return (
     <RootStyle>
       {/* {orderLoading || (isLoading && <Loading />)} */}
-      <div style={{ backgroundColor: "white" }}>
+
+      <div className="bg-white">
         <Tabs
           defaultActiveKey={WAITING_STATUS}
           id="OrderTabs"
@@ -425,77 +413,62 @@ export default function OrderPage() {
             setSelectOrderStatus(select);
             getOrderWaitingAndDoingByStore();
           }}
-          className="myClass"
+          className="[&>ul>li>a]:bg-white [&>ul>li>a]:text-red-500 
+                   [&>ul>li>a:hover]:bg-pink-200
+                   [&>ul>li.active>a]:bg-red-500 [&>ul>li.active>a]:text-white 
+                   [&>ul>li.active>a:hover]:bg-red-500 [&>ul>li.active>a:focus]:bg-red-500
+                   [&>ul>li.disabled>a]:bg-gray-200 [&>ul>li.disabled>a]:text-gray-600"
         >
-          <Tab
+          <div
             eventKey={WAITING_STATUS}
             title={`${t("hasOrder")}(${orderWaiting?.length})`}
           >
             <Tool />
             {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
+              <div className="flex items-center gap-2">
+                <Spinner animation="border" className="ml-5" size="sm" />
                 <span>Load new data...</span>
               </div>
             )}
             <WaitingOrderTab />
-          </Tab>
-          <Tab
+          </div>
+
+          <div
             eventKey={DOING_STATUS}
             title={`${t("cooking")}(${orderDoing?.length})`}
           >
             <Tool />
             {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
+              <div className="flex items-center gap-2">
+                <Spinner animation="border" className="ml-5" size="sm" />
                 <span>Load new data...</span>
               </div>
             )}
             <DoingOrderTab />
-          </Tab>
-          <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
-            {/* <Tool /> */}
+          </div>
+
+          <div eventKey={SERVE_STATUS} title={`${t("served")}`}>
             {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
+              <div className="flex items-center gap-2">
+                <Spinner animation="border" className="ml-5" size="sm" />
                 <span>Load new data...</span>
               </div>
             )}
             <ServedOrderTab />
-          </Tab>
-          <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
-            {/* <Tool /> */}
+          </div>
+
+          <div eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
             {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
+              <div className="flex items-center gap-2">
+                <Spinner animation="border" className="ml-5" size="sm" />
                 <span>Load new data...</span>
               </div>
             )}
             <CanceledOrderTab />
-          </Tab>
-          {/* <Tab eventKey="contact" title="Contact" disabled>
-            <Tool />
-
-            <span>test</span>
-          </Tab> */}
+          </div>
         </Tabs>
       </div>
+
       <div style={{ padding: "20px" }}>
         {orderItems
           ?.filter((e) => e?.isChecked)

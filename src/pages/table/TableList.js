@@ -1679,14 +1679,59 @@ export default function TableList() {
               flexDirection: "column",
             }}
           >
-            <div className="bg-colorHover p-[10px] text-colorWhite">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {t("totalTable")} : {tableList?.length},{" "}
               {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
               {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
+            </div> */}
+
+            <div className="grid grid-cols-1 p-3 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                {
+                  title: t("totalTable"),
+                  value: tableList?.length || 0,
+                  icon: "",
+                  color: "bg-blue-500",
+                },
+                {
+                  title: t("totalUnavailableTable"),
+                  value: _checkStatusCode(tableList),
+                  icon: "",
+                  color: "bg-red-500",
+                },
+                {
+                  title: t("totalAvailableTable"),
+                  value: _checkStatusCodeA(tableList),
+                  icon: "",
+                  color: "bg-green-500",
+                },
+                {
+                  title: t("totalBillCheck"),
+                  value: _checkStatusCodeB(tableList),
+                  icon: "",
+                  color: "bg-yellow-500",
+                },
+              ].map((item, index) => (
+                <div key={index} className="px-3 py-1  bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className={`${item.color} p-2 rounded-lg`}>
+                      <div className="w-5 h-5 text-white">{item.icon}</div>
+                    </div>
+                    <div className="flex    flex-col">
+                      <span className="text-gray-600 text-sm font-medium">
+                        {item.title}
+                      </span>
+                      <span className="text-xl font-bold text-gray-900">
+                        {item.value}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {zoneData?.length > 0 ? (
+            {/* {zoneData?.length > 0 ? (
               <div style={{ padding: "5px 15px" }}>
                 <Form.Label>{t("show_by_zone")}</Form.Label>
                 <Form.Control
@@ -1704,9 +1749,28 @@ export default function TableList() {
               </div>
             ) : (
               ""
-            )}
+            )} */}
+            {zoneData?.length > 0 ? (
+              <div className="px-4 py-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("show_by_zone")}
+                </label>
+                <select
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 pr-3 text-sm"
+                  value={zoneId}
+                  onChange={(e) => onSelectedZone(e?.target?.value)}
+                >
+                  <option value="">{t("show_all_zone")}</option>
+                  {zoneData?.map((item, index) => (
+                    <option key={index} value={item?._id}>
+                      {item?.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
-            <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
+            {/* <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
               <div style={{ height: 10 }} />
               <Box
                 sx={{
@@ -1915,7 +1979,137 @@ export default function TableList() {
                   ))}
               </Box>
               <div style={{ height: 20 }} />
-            </Container>
+            </Container> */}
+            <div className="flex-grow overflow-y-scroll">
+              <div className="h-10" />
+              <div className="grid gap-1 p-2 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 grid-cols-2">
+                {tableList?.map((table, index) => (
+                  <div
+                    key={`table${index}`}
+                    className={` overflow-hidden  cursor-pointer rounded-xl shadow-sm   ${
+                      selectedTable?.code === table?.code
+                        ? "border border-[#C51605]"
+                        : "border border-[#FB6E3B]"
+                    } 
+                    
+                    `}
+                  >
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                      <div
+                        className={`w-full h-full rounded-xl px-3 py-1  relative flex flex-col items-center text-center
+                  ${
+                    table?.isOpened && !table?.isStaffConfirm
+                      ? "blink_card"
+                      : ""
+                  }
+                  ${
+                    table?.isStaffConfirm
+                      ? table?.editBill
+                        ? "bg-[#CECE5A]"
+                        : table?.statusBill === "CALL_TO_CHECKOUT"
+                        ? "bg-[#FFE17B]"
+                        : table?.statusBill === "CALL_TO_PAYBEFORE"
+                        ? "bg-[#F08080]"
+                        : "bg-gradient-to-t from-[#FB6E3B] via-[#FF926A] to-[#FF926A]"
+                      : "bg-white"
+                  }
+                  ${
+                    selectedTable?.code === table?.code
+                      ? "border-[3px] border-[#C51605]"
+                      : "border-[3px] border-white"
+                  }`}
+                        onClick={() => {
+                          setOrderPayBefore([]);
+                          onSelectTable(table);
+                        }}
+                      >
+                        <div className="absolute right-2.5 top-2.5"></div>
+                        <div>
+                          <span
+                            className={`text-base relative
+                    ${
+                      table?.isStaffConfirm
+                        ? table?.editBill
+                          ? "text-[#616161]"
+                          : table?.statusBill === "CALL_TO_CHECKOUT"
+                          ? "text-[#616161]"
+                          : "font-bold text-white"
+                        : "text-[#616161]"
+                    }`}
+                          >
+                            {table?.tableChildren?.length > 0 && (
+                              <div className="font-bold absolute -top-[5px] -right-[35px]">
+                                {table?.tableChildren?.length}
+                              </div>
+                            )}
+                            <div>{table?.tableName}</div>
+                            <div>{table?.code}</div>
+                            <div>
+                              {table?.isStaffConfirm
+                                ? `${t("unavailable")}`
+                                : `${t("avaliable")}`}
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden">
+                      <div
+                        className={`w-full h-full rounded-lg p-2.5 relative flex flex-col items-center text-center
+                  ${
+                    table?.isOpened && !table?.isStaffConfirm
+                      ? "blink_card"
+                      : ""
+                  }
+                  ${
+                    table?.isStaffConfirm
+                      ? table?.editBill
+                        ? "bg-[#bfff00]"
+                        : "bg-gradient-to-t from-[#FB6E3B] via-[#FF926A] to-[#FF926A]"
+                      : "bg-white"
+                  }
+                  ${
+                    selectedTable?.tableName === table?.tableName
+                      ? "border-[3px] border-[#404258]"
+                      : "border-[3px] border-white"
+                  }`}
+                        onClick={() => {
+                          onSelectTable(table);
+                          if (table?.isOpened) {
+                            navigate(`/staff/tableDetail/${table?._id}`);
+                          } else {
+                            setPopup({ openTable: true });
+                          }
+                        }}
+                      >
+                        <div className="absolute right-2.5 top-2.5" />
+                        <div>
+                          <span
+                            className={`text-base font-bold ${
+                              table?.staffConfirm
+                                ? "text-white"
+                                : "text-[#616161]"
+                            }`}
+                          >
+                            <div>{table?.tableName}</div>
+                            <div>{table?.code}</div>
+                            <div>
+                              {table?.isStaffConfirm
+                                ? `${t("unavailable")}`
+                                : `${t("avaliable")}`}
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="h-20" />
+            </div>
           </Box>
           {/* Detail Table */}
           <Box

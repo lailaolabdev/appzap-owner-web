@@ -1036,38 +1036,34 @@ function Homecafe() {
         }}
       >
         <CafeMenu>
-          <div
-            style={{
-              padding: 10,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridGap: 20,
-            }}
-          >
+          <div className="grid grid-cols-2 gap-5 p-2.5">
             <div>
-              <label>{t("choose_food_type")}</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                {t("choose_food_type")}
+              </label>
               <select
-                className="form-control"
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  pr-10"
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
                 <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
-                    return (
-                      <option key={"category" + index} value={data?._id}>
-                        {data?.name}
-                      </option>
-                    );
-                  })}
+                {Categorys?.map((data, index) => (
+                  <option key={`category${index}`} value={data?._id}>
+                    {data?.name}
+                  </option>
+                ))}
               </select>
             </div>
+
             <div>
-              <label>{t("search")}</label>
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                {t("search")}
+              </label>
               <input
+                type="text"
                 placeholder={t("search")}
-                className="form-control"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                className="w-full p-2.5 bg-white border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>

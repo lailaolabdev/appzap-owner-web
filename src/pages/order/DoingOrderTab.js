@@ -30,258 +30,117 @@ import { useStore } from "../../store";
 import { socket } from "../../services/socket";
 
 const DoingOrderTab = () => {
-	const { t } = useTranslation();
-	// if (billForCher80.current.length !== arrLength) {
-	//   // add or remove refs
-	//   billForCher80.current = Array(arrLength)
-	//     .fill()
-	//     .map((_, i) => billForCher80.current[i]);
-	// }
-	// if (billForCher58.current.length !== arrLength) {
-	//   // add or remove refs
-	//   billForCher58.current = Array(arrLength)
-	//     .fill()
-	//     .map((_, i) => billForCher58?.current[i]);
-	// }
-	const { storeDetail } = useStore();
-	const storeId = storeDetail._id;
-	/**
-	 * routes
-	 */
+  const { t } = useTranslation();
+  // if (billForCher80.current.length !== arrLength) {
+  //   // add or remove refs
+  //   billForCher80.current = Array(arrLength)
+  //     .fill()
+  //     .map((_, i) => billForCher80.current[i]);
+  // }
+  // if (billForCher58.current.length !== arrLength) {
+  //   // add or remove refs
+  //   billForCher58.current = Array(arrLength)
+  //     .fill()
+  //     .map((_, i) => billForCher58?.current[i]);
+  // }
+  const { storeDetail } = useStore();
+  const storeId = storeDetail._id;
+  /**
+   * routes
+   */
 
-	const {
-		orderItems,
-		getOrderItemsStore,
-		handleCheckbox,
-		checkAllOrders,
-		handleUpdateOrderStatus,
-		newOrderTransaction,
-		getOrderWaitingAndDoingByStore,
-	} = useStore();
+  const {
+    orderItems,
+    getOrderItemsStore,
+    handleCheckbox,
+    checkAllOrders,
+    handleUpdateOrderStatus,
+    newOrderTransaction,
+    getOrderWaitingAndDoingByStore,
+  } = useStore();
 
-	return (
-		<div>
-			{/* <OrderNavbar /> */}
-			{orderItems?.length > 0 ? (
-				<div>
-					<div
-						style={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							display: "flex",
-							paddingTop: 15,
-							paddingLeft: 15,
-							paddingRight: 15,
-						}}
-					>
-						<div
-							style={{
-								alignItems: "end",
-								flexDirection: "column",
-								display: "flex",
-								justifyContent: "center",
-							}}
-						>
-							{/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} /> */}
-						</div>
-						{/* <div>
-            <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
-          </div> */}
-					</div>
-					{/* <div>
-            <button
-              style={{
-                backgroundColor: "#FB6E3B",
-                color: "#fff",
-                border: "1px solid #FB6E3B",
-                height: "40px",
-                margin: "10px",
-              }}
-              onClick={() => onPrintForCher()}
-            >
-              ພິມບິນໄປຄົວ
-            </button>
-          </div> */}
-					<Container
-						style={{
-							overflowX: "auto",
-						}}
-						fluid
-						className="mt-3"
-					>
-						<TableCustom
-							responsive
-							className="staff-table-list borderless table-hover"
-						>
-							<thead>
-								<tr>
-									<th>
-										<FormControlLabel
-											control={
-												<Checkbox
-													name="checkedC"
-													onChange={(e) => checkAllOrders(e)}
-													style={{ marginLeft: 10 }}
-												/>
-											}
-										/>
-									</th>
+  return (
+    <div  className="p-2.5">
+      {orderItems?.length > 0 ? (
+        <div>
+          <div className="flex flex-row justify-between px-4 ">
+            <div className="flex flex-col items-end justify-center"></div>
+          </div>
 
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("no")}
-									</th>
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("menu_name")}
-									</th>
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("amount")}
-									</th>
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("from_table")}
-									</th>
-									{/* <th>ລະຫັດໂຕະ</th> */}
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("status")}
-									</th>
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("time")}
-									</th>
-									<th
-										style={{
-											textWrap: "nowrap",
-										}}
-									>
-										{t("commend")}
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								{orderItems?.map((order, index) => (
-									<tr key={index}>
-										<td>
-											<Checkbox
-												checked={order?.isChecked ? true : false}
-												onChange={(e) => handleCheckbox(order)}
-												color="primary"
-												inputProps={{ "aria-label": "secondary checkbox" }}
-											/>
-										</td>
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>{index + 1}</p>
-										</td>
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>{order?.name ?? "-"}</p>
-										</td>
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>{order?.quantity ?? "-"}</p>
-										</td>
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>{order?.tableId?.name ?? "-"}</p>
-										</td>
-										{/* <td>
-                        <p style={{ margin: 0 }}>{order?.code ?? "-"}</p>
-                      </td> */}
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>
-												{order?.status ? orderStatus(order?.status) : "-"}
-											</p>
-										</td>
-
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>
-												{order?.createdAt
-													? moment(order?.createdAt).format("HH:mm a")
-													: "-"}
-											</p>
-										</td>
-										<td
-											style={{
-												textWrap: "nowrap",
-											}}
-										>
-											<p style={{ margin: 0 }}>{order?.note ?? "-"}</p>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</TableCustom>
-					</Container>
-				</div>
-			) : (
-				<Image src={empty} alt="" width="100%" />
-			)}
-		</div>
-	);
+          <div className=" overflow-x-auto">
+            <table className="w-full text-lg ">
+              <thead className="  border-b-2 ">
+                <tr>
+                  <th className="w-10 max-w-[40px] p-0">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name="checkedC"
+                          onChange={(e) => checkAllOrders(e)}
+                        />
+                      }
+                      className="ml-0.5"
+                    />
+                  </th>
+                  <th className="p-0 whitespace-nowrap">{t("no")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("menu_name")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("amount")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("from_table")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("table_code")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap">{t("commend")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderItems?.map((order, index) => (
+                  <tr key={index} className=" border-b">
+					<td className="p-0 whitespace-nowrap" >
+                      <Checkbox
+                        checked={order?.isChecked ? true : false}
+                        onChange={(e) => handleCheckbox(order)}
+                        color="primary"
+                        inputProps={{ "aria-label": "secondary checkbox" }}
+                      />
+                    </td>
+                    <td className="p-0 ">
+					  {index + 1}
+                    </td>
+                    <td className="p-0 whitespace-nowrap">
+                      <p >{order?.name ?? "-"}</p>
+                    </td>
+                    <td className="whitespace-nowrap p-0">
+                      <p >{order?.quantity ?? "-"}</p>
+                    </td>
+                    <td className="whitespace-nowrap p-0">
+                      <p >{order?.tableId?.name ?? "-"}</p>
+                    </td>
+                    <td className="whitespace-nowrap p-0">
+                      <p >
+                        {order?.status ? orderStatus(order?.status) : "-"}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap p-0">
+                      <p >
+                        {order?.createdAt
+                          ? moment(order?.createdAt).format("HH:mm a")
+                          : "-"}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap p-0">
+                      <p >{order?.note ?? "-"}</p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <img src={empty} alt="" className="w-full" />
+      )}
+    </div>
+  );
 };
 
 export default DoingOrderTab;
-
-const TableCustom = styled("table")({
-	width: "100%",
-	fontSize: 18,
-	["th,td"]: {
-		padding: 0,
-	},
-	["th:first-child"]: {
-		maxWidth: 40,
-		width: 40,
-	},
-	["td:first-child"]: {
-		maxWidth: 40,
-		width: 40,
-	},
-	["tr:nth-child(2n+0)"]: {
-		backgroundColor: "#ffe9d8",
-	},
-	thead: {
-		backgroundColor: "#ffd6b8",
-	},
-});
