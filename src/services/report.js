@@ -49,6 +49,7 @@ export const getUserReport = async (storeId, findBy, tableIds) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v4/user-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
+    console.log("USER:", res);
     return res.data;
   } catch (error) {
     return error;
