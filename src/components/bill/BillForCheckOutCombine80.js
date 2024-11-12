@@ -33,9 +33,9 @@ export default function BillForCheckOutCombine80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  // console.log("storeDetail", storeDetail);
-  // console.log("dataBill", dataBill?.items);
-  // console.log("selectedBill 80", selectedBill);
+  // console.log("storeDetail combine", storeDetail);
+  console.log("dataBill combine", dataBill?.orderId);
+  console.log("selectedBill 80 combine", selectedBill);
 
   // useEffect
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function BillForCheckOutCombine80({
     // }
 
     const totalBillDefualt = _.sumBy(
-      dataBill?.items?.filter((e) => e?.status === "SERVED"),
+      dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
       (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
     );
     if (dataBill?.discount > 0) {
@@ -135,7 +135,7 @@ export default function BillForCheckOutCombine80({
           ) : (
             ""
           )}
-          <span
+          {/* <span
             style={{
               fontSize: "24px",
               fontWeight: "bold",
@@ -143,13 +143,12 @@ export default function BillForCheckOutCombine80({
             }}
           >
             # {dataBill?.queue}
-          </span>
+          </span> */}
         </div>
       </div>
       <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
       <div style={{ textAlign: "center" }}>
-        {" "}
-        {`${selectedBill?.mergedTableNames}`}
+        {`${t("tableNumber")} ${dataBill?.tableId?.name}`}
       </div>
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
@@ -188,7 +187,7 @@ export default function BillForCheckOutCombine80({
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
       <Order>
-        {dataBill?.items
+        {dataBill?.orderId
           ?.filter((e) => e?.status === "SERVED")
           ?.map((item, index) => {
             const optionsNames =

@@ -436,7 +436,7 @@ export default function BillSplit() {
   };
 
   const [widthBill80, setWidthBill80] = useState(0);
-  const [widthBillCombine80, setWidthBillCombine80] = useState(0);
+  // const [widthBillCombine80, setWidthBillCombine80] = useState(0);
   const [widthBill58, setWidthBill58] = useState(0);
   // const [widthBillCombine50, setWidthBillCombine50] = useState(0);
 
@@ -444,14 +444,14 @@ export default function BillSplit() {
 
   let bill80Ref = useRef(null);
   let bill58Ref = useRef(null);
-  let billcombine80Ref = useRef(null);
+  // let billcombine80Ref = useRef(null);
   // let billcombine50Ref = useRef(null);
   useLayoutEffect(() => {
     setWidthBill80(bill80Ref.current.offsetWidth);
-    setWidthBillCombine80(billcombine80Ref.current.offsetWidth);
+    // setWidthBillCombine80(billcombine80Ref.current.offsetWidth);
     setWidthBill58(bill58Ref.current.offsetWidth);
     // setWidthBillCombine50(billcombine80Ref.current.offsetWidth);
-  }, [bill80Ref, bill58Ref, billcombine80Ref]);
+  }, [bill80Ref, bill58Ref]);
 
   // console.log("bill80Ref", bill80Ref);
 
@@ -1843,7 +1843,7 @@ export default function BillSplit() {
           </Box>
         </Box>
       </div>
-      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+      {/* <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
           storeDetail={storeDetail}
           selectedBill={billOrderItems[0]}
@@ -1851,12 +1851,12 @@ export default function BillSplit() {
           taxPercent={taxPercent}
           profile={profile}
         />
-      </div>
-      <div style={{ width: "80mm", padding: 10 }} ref={billcombine80Ref}>
+      </div> */}
+      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCombine80
           storeDetail={storeDetail}
-          selectedBill={combine}
-          dataBill={combine}
+          selectedBill={billOrderItems[0]}
+          dataBill={billOrderItems[0]}
           taxPercent={taxPercent}
           profile={profile}
         />
