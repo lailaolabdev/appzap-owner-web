@@ -53,6 +53,8 @@ const OrderCheckOut = ({
     setIsServiceChargeEnabled(false);
   }, []);
 
+  console.log("isServiceChargeEnabled", isServiceChargeEnabled);
+
   const calculateDiscountedTotal = (
     total,
     serviceAmount,

@@ -167,6 +167,7 @@ export default function DashboardPage() {
       findBy,
       selectedTableIds
     );
+    console.log("CURRENCY: ", data);
     setCurrencyList(data);
   };
   const getBankBillName = async () => {
@@ -175,6 +176,8 @@ export default function DashboardPage() {
     console.log("DATA BANK", data);
     setBankList(data);
   };
+
+  console.log("BANK", bankList);
   const downloadCsv = async () => {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
@@ -533,18 +536,20 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("bank_Name")}</th>
                   <th style={{ textAlign: "right" }}>{t("amount")}</th>
                 </tr>
-                {bankList?.data?.map((e, index) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{index + 1}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {e?.bankDetails.bankName}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.bankTotalAmount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
+                {bankList?.data?.map((data, index) => {
+                  return (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{index + 1}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {data?.bankDetails?.bankName}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(data?.bankTotalAmount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  );
+                })}
               </table>
             </Card.Body>
           </Card>
