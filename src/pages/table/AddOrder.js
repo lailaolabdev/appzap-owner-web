@@ -385,7 +385,6 @@ function AddOrder() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
-
     orderSelect.forEach((data, index) => {
       if (data) {
         const canvas = document.createElement("canvas");
@@ -394,8 +393,7 @@ function AddOrder() {
         // Define canvas dimensions based on the image layout you want to replicate
         const baseHeight = 350;
         const extraHeightPerOption = 30;
-        const dynamicHeight =
-          baseHeight + data.menuOptions.length * extraHeightPerOption;
+        const dynamicHeight = baseHeight + index * extraHeightPerOption;
         const width = 510;
         canvas.width = width;
         canvas.height = dynamicHeight;
@@ -460,7 +458,7 @@ function AddOrder() {
         ); // Item note with wrapping
 
         // Draw Options from the menuOptions array, including prices
-        if (data.menuOptions && data.menuOptions.length > 0) {
+        if (data.options && data.options.length > 0) {
           context.fillStyle = "#000"; // Black text
           context.font = "24px NotoSansLao";
           data.options.forEach((option, idx) => {
@@ -477,12 +475,19 @@ function AddOrder() {
             );
           });
 
-          const dottedLineYPosition = 200 + data.menuOptions.length * 35; // Adjust position based on number of options
+          const dottedLineYPosition = 200 + data.options.length * 35; // Adjust position based on number of options
           context.strokeStyle = "#000"; // Black dotted line
           context.setLineDash([4, 2]); // Dotted line style
           context.beginPath();
           context.moveTo(0, dottedLineYPosition); // Start at (0, dynamic position)
           context.lineTo(width, dottedLineYPosition); // End at (width, dynamic position)
+          context.stroke();
+        } else {
+          context.strokeStyle = "#000"; // Black dotted line
+          context.setLineDash([4, 2]); // Dotted line style
+          context.beginPath();
+          context.moveTo(0, 240); // Start at (0, dynamic position)
+          context.lineTo(width, 240); // End at (width, dynamic position)
           context.stroke();
         }
 
@@ -509,8 +514,6 @@ function AddOrder() {
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
-
-        console.log("dataUrl", dataUrl);
 
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
