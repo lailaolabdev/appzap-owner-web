@@ -354,7 +354,9 @@ export default function BillForCheckOut80({
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency((total + taxAmount) / item?.sell)}
+                {moneyCurrency(
+                  (total + taxAmount + serviceChargeAmount) / item?.sell
+                )}
               </div>
             </Col>
           </Row>

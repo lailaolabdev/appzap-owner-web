@@ -102,10 +102,22 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
     setPopup({ ReportExport: false });
     try {
       let findBy = "?";
-      findBy += `startDate=${storeDetail?.startDayFilter}&`;
-      findBy += `endDate=${storeDetail?.endDayFilter}&`;
-      findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-      findBy += `endTime=${storeDetail?.endTimeFilter}`;
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+      } else {
+        findBy += `startDate=${storeDetail?.startDateReportExport}&`;
+        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
+        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
+        findBy += `endTime=${storeDetail?.endTimeReportExport}`;
+      }
 
       const url =
         END_POINT_EXPORT +
@@ -139,11 +151,22 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
     setPopup({ ReportExport: false });
     try {
       let findBy = "?";
-      findBy += `startDate=${storeDetail?.startDayFilter}&`;
-      findBy += `endDate=${storeDetail?.endDayFilter}&`;
-      findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-      findBy += `endTime=${storeDetail?.endTimeFilter}`;
-
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+      } else {
+        findBy += `startDate=${storeDetail?.startDateReportExport}&`;
+        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
+        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
+        findBy += `endTime=${storeDetail?.endTimeReportExport}`;
+      }
       const url =
         END_POINT_EXPORT +
         `/export/report-currency${findBy}&storeId=${storeDetail?._id}`;

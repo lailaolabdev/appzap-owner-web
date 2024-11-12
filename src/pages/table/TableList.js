@@ -768,6 +768,11 @@ export default function TableList() {
         timer: 1800,
       });
       setMenuItemDetailModal(false);
+      setStoreDetail({
+        ...storeDetail,
+        serviceChargePer: 0,
+        isServiceCharge: false,
+      });
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       // callPayBeforePrintBillOnly(selectedTable?._id);

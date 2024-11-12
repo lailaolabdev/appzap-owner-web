@@ -125,7 +125,11 @@ export default function Dashboard() {
   const DeleteBranch = async () => {
     try {
       const { TOKEN } = await getLocalData();
-      await DeleteBranchRelation(TOKEN, branchData?._id, branchData?.storeId);
+      await DeleteBranchRelation(
+        TOKEN,
+        branchData?._id,
+        branchData?.storeId?._id
+      );
       setShowPopupDelete(false);
       await GetAllBranchData();
     } catch (error) {
