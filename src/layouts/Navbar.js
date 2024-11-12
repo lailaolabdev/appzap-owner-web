@@ -92,11 +92,11 @@ export default function NavBar() {
     <div>
       <Navbar
         style={{
-          backgroundColor: "transparent",
+          // backgroundColor: "transparent",
           color: "#CC0000",
           width: "100%",
           height: 50,
-          position: "fixed",
+          // position: "fixed",
           top: 0,
           left: 0,
           zIndex: 1,

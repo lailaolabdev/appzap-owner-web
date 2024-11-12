@@ -1467,11 +1467,9 @@ export default function TableList() {
       <p
         style={{
           fontSize: "25px",
-          fontWeight: "400",
-          padding: " 0 10px",
           fontWeight: "700",
-          paddingTop: "20px",
-          paddingLeft: "20px",
+          marginTop: "45px",
+          paddingLeft: "24px",
         }}
       >
         Home
@@ -1510,7 +1508,7 @@ export default function TableList() {
                   sm: "1fr 1fr 1fr",
                   xs: "1fr 1fr",
                 },
-                padding: "40px",
+                padding: "18px",
                 color: "gray",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -1544,7 +1542,7 @@ export default function TableList() {
                     style={{
                       display: "flex",
                       backgroundColor: "white",
-                      padding: "0 45px",
+                      padding: "0 35px",
                       justifyContent: "center",
                       alignItems: "center",
                       height: "70px",
@@ -1579,9 +1577,10 @@ export default function TableList() {
             {zoneData?.length > 0 ? (
               <div
                 style={{
-                  padding: "5px 50px",
+                  padding: "5px 15px",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "start",
                   width: "100%",
                 }}
               >

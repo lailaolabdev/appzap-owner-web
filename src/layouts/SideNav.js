@@ -160,14 +160,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "menuManagement",
     // },
 
-    {
-      title: "ລາຍງານ (ໃໝ່)",
-      key: "reports/sales-report",
-      typeStore: "",
-      icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: "ລາຍງານ (ໃໝ່)",
+    //   key: "reports/sales-report",
+    //   typeStore: "",
+    //   icon: faChartLine,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
 
     // {
     //   title: "ລາຍງານສະຕ໋ອກ",
@@ -389,9 +389,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
             alignItems: "center",
             justifyContent: "center",
             height: 50,
+            padding: "50px 0",
           }}
         >
-          <p style={{ fontWeight: "700", fontSize: "20px" }}>OrderMouy</p>
+          <p style={{ fontWeight: "700", fontSize: "35px" }}>OrderMouy</p>
         </div>
       )}
       <SideNav.Nav value={location.pathname.split("/")[1]}>
