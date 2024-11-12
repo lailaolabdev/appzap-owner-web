@@ -1816,7 +1816,7 @@ export default function TableList() {
                                   : "#616161",
                               }}
                             >
-                              <div
+                              {/* <div
                                 style={{
                                   fontWeight: "bold",
                                   position: "absolute",
@@ -1826,7 +1826,7 @@ export default function TableList() {
                               >
                                 {table?.tableChildren?.length > 0 &&
                                   table?.tableChildren?.length}
-                              </div>
+                              </div> */}
                               <div>{table?.tableName}</div>
                               <div>{table?.code}</div>
                               <div>
@@ -2126,10 +2126,7 @@ export default function TableList() {
                           {t("closeTable")}
                         </ButtonCustom>
                         <ButtonCustom
-                          disabled={
-                            tableOrderItems?.length === 0 ||
-                            selectedTable?.tableChildren?.length > 0
-                          }
+                          disabled={tableOrderItems?.length === 0}
                           onClick={handleShow}
                         >
                           {t("combine_table")}
@@ -2174,7 +2171,7 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
-                        {selectedTable?.tableChildren?.length > 0 ||
+                        {/* {selectedTable?.tableChildren?.length > 0 ||
                         showBtnCombine ? (
                           <ButtonCustom
                             onClick={() =>
@@ -2185,7 +2182,7 @@ export default function TableList() {
                           </ButtonCustom>
                         ) : (
                           ""
-                        )}
+                        )} */}
                       </div>
                       <div
                         style={{
