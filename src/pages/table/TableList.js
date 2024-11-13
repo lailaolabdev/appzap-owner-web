@@ -64,11 +64,8 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
-import { repeat } from "lodash";
-import { FaCheck } from "react-icons/fa";
-import { FaTimes } from "react-icons/fa";
-import { PiSpinnerLight } from "react-icons/pi";
-import { MdOutlineTableRestaurant } from "react-icons/md";
+import { Check, HandPlatter, Loader, X } from "lucide-react";
+import { TitleComponent } from "../../components";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -1447,13 +1444,16 @@ export default function TableList() {
         },
         headers: headers,
       });
-      if (data?.status == 200) {
+      if (data?.status === 200) {
         setZoneData(data?.data?.data);
       }
     } catch (err) {
       console.log("err:", err);
     }
   };
+
+  console.log("storeDetail", tableList);
+  console.log("storeDetail", dataBill);
 
   return (
     <div
@@ -1467,14 +1467,14 @@ export default function TableList() {
       <p
         style={{
           fontSize: "25px",
-          fontWeight: "400",
           padding: " 0 10px",
           fontWeight: "700",
           paddingTop: "20px",
           paddingLeft: "20px",
+          fontFamily: "Inter",
         }}
       >
-        Home
+        <TitleComponent title={t("Home")} textColor={"#000000"} />
       </p>
       {/* popup */}
       <PopUpQRToken
@@ -1499,18 +1499,19 @@ export default function TableList() {
               height: "100%",
               display: "flex",
               flexDirection: "column",
+              paddingRight: 20,
             }}
           >
             <Box
               sx={{
                 display: "grid",
-                gap: 8,
+                gap: 12,
                 gridTemplateColumns: {
                   md: "1fr 1fr 1fr 1fr  ",
                   sm: "1fr 1fr 1fr",
                   xs: "1fr 1fr",
                 },
-                padding: "40px",
+                // padding: "40px",
                 color: "gray",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -1521,55 +1522,77 @@ export default function TableList() {
                 {
                   label: t("total_table"),
                   value: tableList?.length,
-                  icon: <MdOutlineTableRestaurant />,
+                  icon: <HandPlatter />,
                 },
                 {
                   label: t("total_available_table"),
                   value: _checkStatusCodeA(tableList),
-                  icon: <FaCheck />,
+                  icon: <Check />,
                 },
                 {
                   label: t("total_unavailable_table"),
                   value: _checkStatusCode(tableList),
-                  icon: <FaTimes />,
+                  icon: <X />,
                 },
                 {
                   label: t("total_bill_check"),
                   value: _checkStatusCodeB(tableList),
-                  icon: <PiSpinnerLight style={{ fontSize: "50px" }} />,
+                  icon: <Loader />,
                 },
               ].map((item, index) => {
                 return (
                   <div
                     style={{
+                      height: "90px",
                       display: "flex",
+                      gap: 16,
                       backgroundColor: "white",
-                      padding: "0 45px",
-                      justifyContent: "center",
+                      padding: "0 20px",
+                      justifyContent: "start",
                       alignItems: "center",
-                      height: "70px",
-                      borderRadius: 3,
-                      boxShadow: "7px 7px 7px  rgba(0,0,0,0.1)",
+                      borderRadius: 8,
+                      boxShadow:
+                        "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
                     }}
                   >
                     <div
                       style={{
-                        backgroundColor: "tomato",
+                        backgroundColor: "#FB6F3B",
                         height: "40px",
                         width: "40px",
-                        marginRight: "10px",
+                        minWidth: "40px",
+                        minHeight: "40px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        borderRadius: "5px",
+                        borderRadius: "6px",
                         color: "white",
                       }}
                     >
                       {item.icon}
                     </div>
                     <div>
-                      <div>{item.label}</div>
-                      <div style={{ fontWeight: "700" }}>{item.value}</div>
+                      <div
+                        style={{
+                          color: "#6B7280",
+                          fontSize: 14,
+                          fontWeight: 500,
+                          fontFamily: "Inter",
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                      <div
+                        style={{
+                          fontWeight: "600",
+                          fontSize: 24,
+                          color: "#111827",
+                          lineHeight: "1.2",
+                          fontFamily: "Inter",
+                        }}
+                      >
+                        {item.value}
+                      </div>
                     </div>
                   </div>
                 );
@@ -1579,10 +1602,11 @@ export default function TableList() {
             {zoneData?.length > 0 ? (
               <div
                 style={{
-                  padding: "5px 50px",
+                  padding: "30px 0 10px 0",
                   display: "flex",
                   alignItems: "center",
                   width: "100%",
+                  fontFamily: "Inter",
                 }}
               >
                 <Form.Label>{t("show_by_zone")}</Form.Label>
@@ -1590,7 +1614,7 @@ export default function TableList() {
                   as="select"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
-                  style={{ width: "150px", marginLeft: "5px" }}
+                  style={{ width: "150px", marginLeft: "10px" }}
                 >
                   <option value="">{t("show_all_zone")}</option>
                   {zoneData?.map((item, index) => (
@@ -1604,7 +1628,7 @@ export default function TableList() {
               ""
             )}
 
-            <Container
+            <div
               style={{
                 overflowY: "scroll",
                 flexGrow: 1,
@@ -1615,7 +1639,7 @@ export default function TableList() {
               <Box
                 sx={{
                   display: "grid",
-                  gap: 8,
+                  gap: 12,
                   gridTemplateColumns: {
                     md: "1fr 1fr 1fr 1fr",
                     sm: "1fr 1fr 1fr",
@@ -1627,10 +1651,11 @@ export default function TableList() {
                   tableList?.map((table, index) => (
                     <div
                       style={{
-                        borderRadius: 4,
+                        borderRadius: 8,
                         overflow: "hidden",
                         cursor: "pointer",
-                        boxShadow: "2px 2px 7px  rgba(0,0,0,0.1)",
+                        boxShadow:
+                          "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
                       }}
                       key={"table" + index}
                     >
@@ -1642,14 +1667,11 @@ export default function TableList() {
                         <div
                           style={{
                             width: "100%",
-                            height: "100%",
+                            height: "90px",
                             borderRadius: 4,
                             background: "white",
                             display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
                             textAlign: "center",
-                            padding: 8,
                           }}
                           className={
                             table?.isOpened && !table?.isStaffConfirm
@@ -1674,9 +1696,10 @@ export default function TableList() {
                           <div
                             style={{
                               display: "flex",
+                              gap: 16,
                               alignItems: "center",
                               justifyContent: "center",
-                              padding: "5px 0px",
+                              padding: "0 20px",
                               height: "100%",
                             }}
                           >
@@ -1684,22 +1707,27 @@ export default function TableList() {
                               style={{
                                 height: "40px",
                                 width: "40px",
-                                marginRight: "10px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderRadius: "5px",
-                                color: "white",
-                                background: table?.isStaffConfirm
-                                  ? "rgb(251,110,59)"
-                                  : "gray",
+                                borderRadius: "6px",
+                                fontSize: "24px",
+                                fontWeight: "700",
+                                fontFamily: "Inter",
+                                color: table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "#22C55E"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "#EAB308"
+                                    : "#EF4444"
+                                  : "#71717A",
                                 background: table?.isStaffConfirm
                                   ? table?.editBill
-                                    ? "#39DB5F"
+                                    ? "#86EFAC"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
                                     ? "#FFE17B"
-                                    : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                                  : "gray",
+                                    : "#FCA5A5" //unavailable
+                                  : "#D4D4D8", //available
                               }}
                             >
                               {index + 1}
@@ -1714,24 +1742,30 @@ export default function TableList() {
                               <div
                                 style={{
                                   fontSize: 20,
-                                  color: table?.isStaffConfirm
-                                    ? "rgb(251,110,59)"
-                                    : "gray",
+                                  fontWeight: 600,
+                                  fontFamily: "Inter",
                                   color: table?.isStaffConfirm
                                     ? table?.editBill
                                       ? "#39DB5F"
                                       : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "#FFE17B"
-                                      : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                                    : "gray",
+                                      ? "#EAB308"
+                                      : "#EF4444"
+                                    : "#71717A",
                                 }}
                               >
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
                                   : `${t("avaliable")}`}
                               </div>
-                              <div style={{ color: "gray", fontSize: "15px" }}>
-                                Zone: Nomal
+                              <div
+                                style={{
+                                  color: "#6B7280",
+                                  fontSize: "14px",
+                                  fontWeight: 500,
+                                  fontFamily: "Inter",
+                                }}
+                              >
+                                Zone: Normal
                               </div>
                             </span>
                           </div>
@@ -1745,14 +1779,10 @@ export default function TableList() {
                         <div
                           style={{
                             width: "100%",
-                            height: "100%",
                             borderRadius: 4,
                             background: "white",
                             display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
                             textAlign: "center",
-                            padding: 10,
                           }}
                           className={
                             table?.isOpened && !table?.isStaffConfirm
@@ -1776,9 +1806,10 @@ export default function TableList() {
                           <div
                             style={{
                               display: "flex",
+                              gap: 16,
                               alignItems: "center",
                               justifyContent: "center",
-                              padding: "5px 0px",
+                              padding: "24px",
                               height: "100%",
                             }}
                           >
@@ -1786,22 +1817,26 @@ export default function TableList() {
                               style={{
                                 height: "40px",
                                 width: "40px",
-                                marginRight: "10px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                borderRadius: "5px",
-                                color: "white",
-                                background: table?.isStaffConfirm
-                                  ? "rgb(251,110,59)"
-                                  : "gray",
+                                borderRadius: "6px",
+                                fontSize: "24px",
+                                fontWeight: "700",
+                                color: table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "#22C55E"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "#EAB308"
+                                    : "#EF4444"
+                                  : "#71717A",
                                 background: table?.isStaffConfirm
                                   ? table?.editBill
-                                    ? "#39DB5F"
+                                    ? "#86EFAC"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
                                     ? "#FFE17B"
-                                    : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                                  : "gray",
+                                    : "#FCA5A5" //unavailable
+                                  : "#D4D4D8", //available
                               }}
                             >
                               {index + 1}
@@ -1817,15 +1852,12 @@ export default function TableList() {
                                 style={{
                                   fontSize: 20,
                                   color: table?.isStaffConfirm
-                                    ? "rgb(251,110,59)"
-                                    : "gray",
-                                  color: table?.isStaffConfirm
                                     ? table?.editBill
-                                      ? "#39DB5F"
+                                      ? "#22C55E"
                                       : table?.statusBill === "CALL_TO_CHECKOUT"
-                                      ? "#FFE17B"
-                                      : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                                    : "gray",
+                                      ? "#EAB308"
+                                      : "#EF4444"
+                                    : "#71717A",
                                 }}
                               >
                                 {table?.isStaffConfirm
@@ -1833,7 +1865,7 @@ export default function TableList() {
                                   : `${t("avaliable")}`}
                               </div>
                               <div style={{ color: "gray", fontSize: "15px" }}>
-                                Zone: Nomal
+                                Zone: Normal
                               </div>
                             </span>
                           </div>
@@ -1843,7 +1875,7 @@ export default function TableList() {
                   ))}
               </Box>
               <div style={{ height: 20 }} />
-            </Container>
+            </div>
           </Box>
           {/* Detail Table */}
           {selectTable && (

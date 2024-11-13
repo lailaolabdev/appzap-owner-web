@@ -30,6 +30,7 @@ import Loading from "../../components/Loading";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
+import { TitleComponent } from "../../components";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -332,12 +333,17 @@ export default function OrderPage() {
         <div
           className="d-flex align-items-center"
           style={{
-            gap: "6px",
+            gap: "12px",
             flexWrap: "wrap",
           }}
         >
           <Button
-            style={{ color: "white", backgroundColor: "gray", border: "none" }}
+            style={{
+              color: "white",
+              backgroundColor: "#6B7280",
+              border: "none",
+              fontFamily: "Inter",
+            }}
             onClick={async () => {
               await onPrintForCher();
               // await handleUpdateOrderStatus("DOING");
@@ -352,8 +358,9 @@ export default function OrderPage() {
           <Button
             style={{
               color: "white",
-              backgroundColor: "#FB6E3B",
+              backgroundColor: "#FB6F3B",
               border: "none",
+              fontFamily: "Inter",
             }}
             onClick={async () => {
               await handleUpdateOrderStatus("DOING");
@@ -367,8 +374,9 @@ export default function OrderPage() {
           <Button
             style={{
               color: "white",
-              backgroundColor: "#30EB36",
+              backgroundColor: "#22C55E",
               border: "none",
+              fontFamily: "Inter",
             }}
             onClick={async () => {
               await handleUpdateOrderStatus("SERVED");
@@ -379,7 +387,12 @@ export default function OrderPage() {
             {t("served")}
           </Button>
           <Button
-            style={{ color: "white", backgroundColor: "red", border: "none" }}
+            style={{
+              color: "white",
+              backgroundColor: "#EF4444",
+              border: "none",
+              fontFamily: "Inter",
+            }}
             onClick={async () => {
               setWorkAfterPin("cancle_order");
               setPopup({ PopUpPin: true });
@@ -404,9 +417,10 @@ export default function OrderPage() {
             fontWeight: "700",
             paddingTop: "35px",
             paddingLeft: "20px",
+            fontFamily: "Inter",
           }}
         >
-          orders
+          <TitleComponent title={t("Orders")} textColor={"#000000"} />
         </p>
       </div>
       <RootStyle>
