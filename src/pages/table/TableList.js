@@ -2314,7 +2314,6 @@ export default function TableList() {
                   height: "100%",
                   borderColor: "black",
                   overflowY: "scroll",
-                  borderWidth: 1,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
