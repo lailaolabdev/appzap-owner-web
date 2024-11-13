@@ -10,6 +10,12 @@ import { base64ToBlob, orderStatusTranslate } from "../../helpers";
 import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
+import {
+  LuTable,
+  LuLoader,
+  LuGanttChartSquare,
+  LuCheckCircle,
+} from "react-icons/lu";
 
 import { SiAirtable } from "react-icons/si";
 
@@ -650,17 +656,6 @@ export default function TableList() {
         const billId = selectedTable.billId;
         const firstName = profile.data.firstname;
         const lastName = profile.data.lastname;
-
-        console.log("User_Id:", userId);
-        console.log("Bill_Id:", billId);
-        console.log("taxPercent:", taxPercent);
-        console.log("total:", total);
-        console.log("serviceChargePercent:", serviceChargePercent);
-        console.log("serviceChangeAmount:", serviceChangeAmount);
-        console.log("totalMustPay:", totalMustPay);
-        console.log("fname:", firstName);
-        console.log("lname:", lastName);
-        console.log("CreateAt:", createdAt);
 
         const response = await axios.post(
           `${END_POINT_SEVER}/saveservice`,
@@ -1679,46 +1674,44 @@ export default function TableList() {
               flexDirection: "column",
             }}
           >
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {t("totalTable")} : {tableList?.length},{" "}
-              {t("totalUnavailableTable")} : {_checkStatusCode(tableList)},{" "}
-              {t("totalAvailableTable")} : {_checkStatusCodeA(tableList)},{" "}
-              {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
-            </div> */}
-
-            <div className="grid grid-cols-1 p-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 p-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
               {[
                 {
                   title: t("totalTable"),
                   value: tableList?.length || 0,
-                  icon: "",
-                  color: "bg-blue-500",
+                  icon: <LuTable />,
+                  color: "bg-colorApp",
                 },
                 {
                   title: t("totalUnavailableTable"),
                   value: _checkStatusCode(tableList),
-                  icon: "",
-                  color: "bg-red-500",
+                  icon: <LuGanttChartSquare />,
+                  color: "bg-colorApp",
                 },
                 {
                   title: t("totalAvailableTable"),
                   value: _checkStatusCodeA(tableList),
-                  icon: "",
-                  color: "bg-green-500",
+                  icon: <LuCheckCircle />,
+                  color: "bg-colorApp",
                 },
                 {
                   title: t("totalBillCheck"),
                   value: _checkStatusCodeB(tableList),
-                  icon: "",
-                  color: "bg-yellow-500",
+                  icon: <LuLoader />,
+                  color: "bg-colorApp",
                 },
               ].map((item, index) => (
-                <div key={index} className="px-3 py-3  bg-white rounded-xl shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <div className={`${item.color} p-2 rounded-lg`}>
-                      <div className="w-5 h-5 text-white">{item.icon}</div>
+                <div
+                  key={index}
+                  className="px-[15px] h-[100px] py-3 flex items-center justify-center  bg-white rounded-md shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`${item.color}  rounded-lg`}>
+                      <div className="w-10 h-10 text-[5rem] p-2 text-white flex items-center justify-center">
+                        {item.icon}
+                      </div>
                     </div>
-                    <div className="flex    flex-col">
+                    <div className="flex flex-col">
                       <span className="text-gray-600 text-sm font-medium">
                         {item.title}
                       </span>
@@ -1731,28 +1724,12 @@ export default function TableList() {
               ))}
             </div>
 
-            {/* {zoneData?.length > 0 ? (
-              <div style={{ padding: "5px 15px" }}>
-                <Form.Label>{t("show_by_zone")}</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={zoneId}
-                  onChange={(e) => onSelectedZone(e?.target?.value)}
-                >
-                  <option value="">{t("show_all_zone")}</option>
-                  {zoneData?.map((item, index) => (
-                    <option key={index} value={item?._id}>
-                      {item?.name}
-                    </option>
-                  ))}
-                </Form.Control>
-              </div>
-            ) : (
-              ""
-            )} */}
             {zoneData?.length > 0 ? (
               <div className="px-4 py-1">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor=""
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   {t("show_by_zone")}
                 </label>
                 <select
@@ -1770,223 +1747,12 @@ export default function TableList() {
               </div>
             ) : null}
 
-            {/* <Container style={{ overflowY: "scroll", flexGrow: 1 }}>
-              <div style={{ height: 10 }} />
-              <Box
-                sx={{
-                  display: "grid",
-                  gap: 6,
-                  gridTemplateColumns: {
-                    md: "1fr 1fr 1fr 1fr 1fr",
-                    sm: "1fr 1fr 1fr",
-                    xs: "1fr 1fr",
-                  },
-                }}
-              >
-                {tableList &&
-                  tableList?.map((table, index) => (
-                    <div
-                      style={{
-                        border:
-                          selectedTable?.code === table?.code
-                            ? "1px solid #C51605"
-                            : "1px solid #FB6E3B",
-                        backgroundColor:
-                          selectedTable?.code === table?.code
-                            ? "#404258"
-                            : "#FFF",
-                        borderRadius: 8,
-                        overflow: "hidden",
-                        cursor: "pointer",
-                      }}
-                      key={"table" + index}
-                    >
-                      <Box
-                        sx={{
-                          display: { md: "block", xs: "none" },
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            border: "none",
-                            borderRadius: 8,
-                            background: table?.isStaffConfirm
-                              ? "rgb(251,110,59)"
-                              : "white",
-                            background: table?.isStaffConfirm
-                              ? table?.editBill
-                                ? "#CECE5A"
-                                : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : table?.statusBill === "CALL_TO_PAYBEFORE"
-                                ? "#F08080"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                              : "white",
-                            border:
-                              selectedTable?.code === table?.code
-                                ? "3px solid #C51605"
-                                : "3px solid  white",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            textAlign: "center",
-                            padding: 10,
-                          }}
-                          className={
-                            table?.isOpened && !table?.isStaffConfirm
-                              ? "blink_card"
-                              : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
-                          }
-                          onClick={() => {
-                            setOrderPayBefore([]);
-                            onSelectTable(table);
-                          }}
-                        >
-                          <div
-                            style={{
-                              position: "absolute",
-                              float: "right",
-                              right: 10,
-                              top: 10,
-                            }}
-                          ></div>
-                          <div>
-                            <span
-                              style={{
-                                fontSize: 16,
-                                position: "relative",
-                                // color: table?.staffConfirm
-                                //   ? "white"
-                                //   : "#616161",
-                                // fontWeight: "bold",
-                                fontWeight: table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? ""
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
-                                  : "",
-                                color: table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "#616161"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
-                                  : "#616161",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontWeight: "bold",
-                                  position: "absolute",
-                                  top: -5,
-                                  right: -35,
-                                }}
-                              >
-                                {table?.tableChildren?.length > 0 &&
-                                  table?.tableChildren?.length}
-                              </div>
-                              <div>{table?.tableName}</div>
-                              <div>{table?.code}</div>
-                              <div>
-                                {table?.isStaffConfirm
-                                  ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
-                              </div>
-                            </span>
-                          </div>
-                        </div>
-                      </Box>
-                      <Box
-                        sx={{
-                          display: { md: "none", xs: "block" },
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            border: "none",
-                            borderRadius: 8,
-                            background: table?.isStaffConfirm
-                              ? "rgb(251,110,59)"
-                              : "white",
-                            background: table?.isStaffConfirm
-                              ? table?.editBill
-                                ? "#bfff00"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
-                              : "white",
-                            border:
-                              selectedTable?.tableName === table?.tableName
-                                ? "3px solid #404258"
-                                : "3px solid  white",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            textAlign: "center",
-                            padding: 10,
-                          }}
-                          className={
-                            table?.isOpened && !table?.isStaffConfirm
-                              ? "blink_card"
-                              : // : table.statusBill === "CALL_TO_CHECKOUT"
-                                //   ? "blink_cardCallCheckOut"
-                                ""
-                          }
-                          onClick={() => {
-                            onSelectTable(table);
-                            if (table?.isOpened) {
-                              navigate(`/staff/tableDetail/${table?._id}`);
-                            } else {
-                              setPopup({ openTable: true });
-                            }
-                          }}
-                        >
-                          <div
-                            style={{
-                              position: "absolute",
-                              float: "right",
-                              right: 10,
-                              top: 10,
-                            }}
-                          />
-                          <div>
-                            <span
-                              style={{
-                                fontSize: 16,
-                                color: table?.staffConfirm
-                                  ? "white"
-                                  : "#616161",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              <div>{table?.tableName}</div>
-                              <div>{table?.code}</div>
-                              <div>
-                                {table?.isStaffConfirm
-                                  ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
-                              </div>
-                            </span>
-                          </div>
-                        </div>
-                      </Box>
-                    </div>
-                  ))}
-              </Box>
-              <div style={{ height: 20 }} />
-            </Container> */}
             <div className="flex-grow overflow-y-scroll">
-              <div className="h-10" />
-              <div className="grid gap-1 p-2 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 grid-cols-2">
+              <div className="grid gap-1 p-2 lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 grid-cols-2">
                 {tableList?.map((table, index) => (
                   <div
                     key={`table${index}`}
-                    className={` overflow-hidden  cursor-pointer rounded-xl shadow-sm   ${
+                    className={` overflow-hidden  cursor-pointer rounded-md shadow-sm   ${
                       selectedTable?.code === table?.code
                         ? "border border-[#C51605]"
                         : "border border-[#FB6E3B]"
@@ -1997,7 +1763,7 @@ export default function TableList() {
                     {/* Desktop View */}
                     <div className="hidden md:block">
                       <div
-                        className={`w-full h-full rounded-xl px-3 py-1  relative flex flex-col items-center text-center
+                        className={`w-full h-full rounded-md px-3 py-1  relative flex flex-col items-center text-center
                   ${
                     table?.isOpened && !table?.isStaffConfirm
                       ? "blink_card"
@@ -2038,11 +1804,11 @@ export default function TableList() {
                         : "text-[#616161]"
                     }`}
                           >
-                            {table?.tableChildren?.length > 0 && (
+                            {/* {table?.tableChildren?.length > 0 && (
                               <div className="font-bold absolute -top-[5px] -right-[35px]">
                                 {table?.tableChildren?.length}
                               </div>
-                            )}
+                            )} */}
                             <div>{table?.tableName}</div>
                             <div>{table?.code}</div>
                             <div>

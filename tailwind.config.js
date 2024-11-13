@@ -39,6 +39,7 @@ module.exports = {
         colorCallToCheckOut: "#FFE17B",
         colorCallToPayBefore: "#F08080",
         colorEditBill: "#BFFF00",
+        colorBerder: "#FB6E3B",
       },
     },
   },

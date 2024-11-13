@@ -347,56 +347,56 @@ export default function OrderPage() {
   const Tool = () => {
     return (
       <div className="flex items-center justify-between p-2.5">
-      <div className="flex items-center flex-wrap gap-1.5">
-        <button
-          className={`flex items-center justify-center px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-          onClick={async () => {
-            await onPrintForCher();
-            getOrderWaitingAndDoingByStore();
-          }}
-          disabled={onPrinting}
-        >
-          {onPrinting && (
-            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-          )}
-          {t("send_to_kitchen")}
-        </button>
+        <div className="flex items-center flex-wrap gap-1.5">
+          <button
+            type="button"
+            className="flex items-center justify-center px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            onClick={async () => {
+              await onPrintForCher();
+              getOrderWaitingAndDoingByStore();
+            }}
+            disabled={onPrinting}
+          >
+            {onPrinting && (
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            )}
+            {t("send_to_kitchen")}
+          </button>
 
-        <button
-          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
-          onClick={() => {
-            setWorkAfterPin("cancle_order");
-            setPopup({ PopUpPin: true });
-          }}
-        >
-          {t("cancel")}
-        </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+            onClick={() => {
+              setWorkAfterPin("cancle_order");
+              setPopup({ PopUpPin: true });
+            }}
+          >
+            {t("cancel")}
+          </button>
 
-        <button
-          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
-          onClick={async () => {
-            await handleUpdateOrderStatus("DOING");
-            getOrderWaitingAndDoingByStore();
-          }}
-        >
-          {t("cooking")}
-        </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+            onClick={async () => {
+              await handleUpdateOrderStatus("DOING");
+              getOrderWaitingAndDoingByStore();
+            }}
+          >
+            {t("cooking")}
+          </button>
 
-        <button
-          className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
-          onClick={async () => {
-            await handleUpdateOrderStatus("SERVED");
-            getOrderWaitingAndDoingByStore();
-          }}
-        >
-          {t("served")}
-        </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-[#FB6E3B] text-white rounded hover:bg-[#e85d2a] transition-colors"
+            onClick={async () => {
+              await handleUpdateOrderStatus("SERVED");
+              getOrderWaitingAndDoingByStore();
+            }}
+          >
+            {t("served")}
+          </button>
+        </div>
       </div>
-
-      <div>
-        {t("auto_print")}
-      </div>
-    </div>
     );
   };
 
@@ -415,120 +415,128 @@ export default function OrderPage() {
       {/* {orderLoading || (isLoading && <Loading />)} */}
 
       <div className="bg-white">
-      <nav className="flex gap-8 border-b border-gray-200">
-        <button
-          onClick={() => handleTabClick(WAITING_STATUS)}
-          className={`px-4 py-4 text-sm font-medium transition-colors relative
-            ${activeTab === WAITING_STATUS 
-              ? 'text-[#FB6E3B]' 
-              : 'text-gray-500 hover:text-gray-700'
+        <nav className="flex gap-8 border-b border-gray-200">
+          <button
+            type="button"
+            onClick={() => handleTabClick(WAITING_STATUS)}
+            className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${
+              activeTab === WAITING_STATUS
+                ? "text-[#FB6E3B]"
+                : "text-gray-500 hover:text-gray-700"
             }
           `}
-        >
-          {t("hasOrder")}({orderWaiting?.length || 0})
+          >
+            {t("hasOrder")}({orderWaiting?.length || 0})
+            {activeTab === WAITING_STATUS && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabClick(DOING_STATUS)}
+            className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${
+              activeTab === DOING_STATUS
+                ? "text-[#FB6E3B]"
+                : "text-gray-500 hover:text-gray-700"
+            }
+          `}
+          >
+            {t("cooking")}({orderDoing?.length || 0})
+            {activeTab === DOING_STATUS && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabClick(SERVE_STATUS)}
+            className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${
+              activeTab === SERVE_STATUS
+                ? "text-[#FB6E3B]"
+                : "text-gray-500 hover:text-gray-700"
+            }
+          `}
+          >
+            {t("served")}
+            {activeTab === SERVE_STATUS && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabClick(CANCEL_STATUS)}
+            className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${
+              activeTab === CANCEL_STATUS
+                ? "text-[#FB6E3B]"
+                : "text-gray-500 hover:text-gray-700"
+            }
+          `}
+          >
+            {t("cancel")}
+            {activeTab === CANCEL_STATUS && (
+              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            )}
+          </button>
+        </nav>
+
+        <div className="mt-4">
           {activeTab === WAITING_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            <>
+              <Tool />
+              {orderLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <WaitingOrderTab />
+            </>
           )}
-        </button>
 
-        <button
-          onClick={() => handleTabClick(DOING_STATUS)}
-          className={`px-4 py-4 text-sm font-medium transition-colors relative
-            ${activeTab === DOING_STATUS 
-              ? 'text-[#FB6E3B]' 
-              : 'text-gray-500 hover:text-gray-700'
-            }
-          `}
-        >
-          {t("cooking")}({orderDoing?.length || 0})
           {activeTab === DOING_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            <>
+              <Tool />
+              {orderLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <DoingOrderTab />
+            </>
           )}
-        </button>
 
-        <button
-          onClick={() => handleTabClick(SERVE_STATUS)}
-          className={`px-4 py-4 text-sm font-medium transition-colors relative
-            ${activeTab === SERVE_STATUS 
-              ? 'text-[#FB6E3B]' 
-              : 'text-gray-500 hover:text-gray-700'
-            }
-          `}
-        >
-          {t("served")}
           {activeTab === SERVE_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            <>
+              {orderLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <ServedOrderTab />
+            </>
           )}
-        </button>
 
-        <button
-          onClick={() => handleTabClick(CANCEL_STATUS)}
-          className={`px-4 py-4 text-sm font-medium transition-colors relative
-            ${activeTab === CANCEL_STATUS 
-              ? 'text-[#FB6E3B]' 
-              : 'text-gray-500 hover:text-gray-700'
-            }
-          `}
-        >
-          {t("cancel")}
           {activeTab === CANCEL_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
+            <>
+              {orderLoading && (
+                <div className="flex items-center gap-2">
+                  <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
+                  <span>Load new data...</span>
+                </div>
+              )}
+              <CanceledOrderTab />
+            </>
           )}
-        </button>
-      </nav>
-
-      <div className="mt-4">
-        {activeTab === WAITING_STATUS && (
-          <>
-            <Tool />
-            {orderLoading && (
-              <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
-                <span>Load new data...</span>
-              </div>
-            )}
-            <WaitingOrderTab />
-          </>
-        )}
-
-        {activeTab === DOING_STATUS && (
-          <>
-            <Tool />
-            {orderLoading && (
-              <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
-                <span>Load new data...</span>
-              </div>
-            )}
-            <DoingOrderTab />
-          </>
-        )}
-
-        {activeTab === SERVE_STATUS && (
-          <>
-            {orderLoading && (
-              <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
-                <span>Load new data...</span>
-              </div>
-            )}
-            <ServedOrderTab />
-          </>
-        )}
-
-        {activeTab === CANCEL_STATUS && (
-          <>
-            {orderLoading && (
-              <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
-                <span>Load new data...</span>
-              </div>
-            )}
-            <CanceledOrderTab />
-          </>
-        )}
+        </div>
       </div>
-    </div>
 
       <div style={{ padding: "20px" }}>
         {orderItems

@@ -1085,113 +1085,81 @@ function AddOrder() {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            flexGrow: 1,
-            height: "90vh",
-            overflowY: "scroll",
-          }}
-        >
-          <div
-            style={{
-              padding: 10,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridGap: 20,
-            }}
-          >
+      <div className="flex overflow-hidden">
+        <div className="flex-grow h-[90vh] overflow-y-scroll">
+          <div className="p-2 grid grid-cols-2 gap-5">
             <div>
-              <label>{t("chose_food_type")}</label>
+              <label htmlFor="category">{t("chose_food_type")}</label>
               <select
-                className="form-control"
+                className="border w-full border-colorGray focus:border-colorButton focus:outline-none rounded-md p-2"
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
                 <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
-                    return (
-                      <option key={"category" + index} value={data?._id}>
-                        {data?.name}
-                      </option>
-                    );
-                  })}
+                {Categorys?.map((data, index) => {
+                  return (
+                    <option key={`category${data?._id}`} value={data?._id}>
+                      {data?.name}
+                    </option>
+                  );
+                })}
               </select>
             </div>
             <div>
               <label>{t("search")}</label>
               <input
                 placeholder={t("search")}
-                className="form-control"
+                // className="form-control"
+                type="search"
+                className="border w-full border-colorGray focus:border-colorButton focus:outline-none rounded-md p-2"
+                // className="w-full p-2 rounded-md border border-colorGray hover:border-colorButton focus:border-colorButton "
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
-          <div
-            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
-          >
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mx-2">
             {isLoading ? (
               <Loading />
             ) : (
               afterSearch?.map((data, index) => {
                 if (data?.type === "MENU")
                   return (
+                    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                     <div
-                      key={"menu" + index}
-                      style={{
-                        border:
-                          data._id === selectedItem?._id
-                            ? "4px solid #FB6E3B"
-                            : "4px solid rgba(0,0,0,0)",
-                      }}
+                      className={`group animate-fade-up rounded ${
+                        data._id === selectedItem?._id
+                          ? "border border-[#FB6E3B]"
+                          : ""
+                      }`}
                       onClick={() => {
                         addToCart(data);
                       }}
                     >
-                      <img
-                        src={
-                          data?.images[0]
-                            ? URL_PHOTO_AW3 + data?.images[0]
-                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                        }
-                        style={{
-                          width: "100%",
-                          height: 200,
-                          borderRadius: 5,
-                        }}
-                      />
-                      <div
-                        style={{
-                          backgroundColor: "#000",
-                          color: "#FFF",
-                          position: "relative",
-                          opacity: 0.5,
-                          padding: 10,
-                        }}
-                      >
-                        <span>{data?.name}</span>
-                        <br />
-                        <span>
-                          {moneyCurrency(data?.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                          {/* {currency?.map(
-                            (e) =>
-                              " / " +
-                              (data?.price / e.sell).toFixed(2) +
-                              " " +
-                              e?.currencyCode
-                          )} */}
-                        </span>
-                        <br />
-                        <span>
-                          {t("amount_exist")} : {data?.quantity}
-                        </span>
+                      <div className="relative overflow-hidden bg-white shadow-md rounded-lg transition-all duration-300 hover:shadow-lg">
+                        <div className="aspect-square overflow-hidden">
+                          <img
+                            src={
+                              data?.images[0]
+                                ? URL_PHOTO_AW3 + data?.images[0]
+                                : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                            }
+                            alt=""
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="p-4 space-y-2">
+                          <h3 className="text-lg text-gray-900">
+                            {data?.name}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {moneyCurrency(data?.price)}{" "}
+                            {storeDetail?.firstCurrency}
+                          </p>
+                          <p className="text-lg font-medium">
+                            {t("amount_exist")} : {data?.quantity}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );
@@ -1210,6 +1178,7 @@ function AddOrder() {
             borderWidth: 1,
             paddingLeft: 20,
             paddingTop: 20,
+            border: "none",
           }}
         >
           <div className="container">
