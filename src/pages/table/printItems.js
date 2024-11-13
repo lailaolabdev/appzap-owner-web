@@ -127,7 +127,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.fillStyle = "#000";
       context.fillRect(0, 0, width / 2, 60);
       context.fillStyle = "#fff";
-      context.font = "bold NotoSansLao, 36px Arial, sans-serif";
+      context.font = "bold  36px NotoSansLao, Arial, sans-serif";
       context.fillText(
         selectedTable?.tableName || "Table",
         titleMarginLeft,
@@ -135,7 +135,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       );
 
       context.fillStyle = "#000";
-      context.font = "bold NotoSansLao, 30px Arial, sans-serif";
+      context.font = "bold  30px NotoSansLao, Arial, sans-serif";
       context.fillText(selectedTable?.code || "N/A", width - 160, 45);
 
       // Divider line below header
@@ -146,13 +146,13 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.stroke();
 
       // Items
-      context.font = "30px NotoSansLao, Arial, sans-serif";
+      context.font = "30px  NotoSansLao, Arial, sans-serif";
       let itemYPosition = baseHeight; // Start after header
       items.forEach((item) => {
         // Main item
-        context.font = "bold NotoSansLao, 28px Arial, sans-serif";
+        context.font = "bold  28px NotoSansLao, Arial, sans-serif";
         context.fillText(
-          `${item.name} (x${item.quantity || 1})`,
+          `- ${item.name} (x${item.quantity || 1})`,
           titleMarginLeft,
           itemYPosition
         );
@@ -160,7 +160,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
 
         // Options
         if (item.options && item.options.length > 0) {
-          context.font = "24px NotoSansLao, Arial, sans-serif";
+          context.font = "24px  NotoSansLao, Arial, sans-serif";
           item.options.forEach((option) => {
             context.fillText(
               `- ${option.name} ${option.price ? `- ${option.price}` : ""} x ${
@@ -184,7 +184,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.setLineDash([]);
 
       // Footer
-      context.font = "bold NotoSansLao, 24px Arial, sans-serif";
+      context.font = "bold  24px NotoSansLao, Arial, sans-serif";
       context.fillStyle = "#000";
       context.fillText(
         data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
@@ -193,7 +193,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       );
 
       context.fillStyle = "#6e6e6e";
-      context.font = "22px NotoSansLao, Arial, sans-serif";
+      context.font = "22px  NotoSansLao, Arial, sans-serif";
       context.fillText(
         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
           data?.createdAt
