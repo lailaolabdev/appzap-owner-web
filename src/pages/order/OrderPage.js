@@ -420,14 +420,14 @@ export default function OrderPage() {
           onClick={() => handleTabClick(WAITING_STATUS)}
           className={`px-4 py-4 text-sm font-medium transition-colors relative
             ${activeTab === WAITING_STATUS 
-              ? 'text-indigo-600' 
+              ? 'text-[#FB6E3B]' 
               : 'text-gray-500 hover:text-gray-700'
             }
           `}
         >
           {t("hasOrder")}({orderWaiting?.length || 0})
           {activeTab === WAITING_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
           )}
         </button>
 
@@ -435,14 +435,14 @@ export default function OrderPage() {
           onClick={() => handleTabClick(DOING_STATUS)}
           className={`px-4 py-4 text-sm font-medium transition-colors relative
             ${activeTab === DOING_STATUS 
-              ? 'text-indigo-600' 
+              ? 'text-[#FB6E3B]' 
               : 'text-gray-500 hover:text-gray-700'
             }
           `}
         >
           {t("cooking")}({orderDoing?.length || 0})
           {activeTab === DOING_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
           )}
         </button>
 
@@ -450,14 +450,14 @@ export default function OrderPage() {
           onClick={() => handleTabClick(SERVE_STATUS)}
           className={`px-4 py-4 text-sm font-medium transition-colors relative
             ${activeTab === SERVE_STATUS 
-              ? 'text-indigo-600' 
+              ? 'text-[#FB6E3B]' 
               : 'text-gray-500 hover:text-gray-700'
             }
           `}
         >
           {t("served")}
           {activeTab === SERVE_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
           )}
         </button>
 
@@ -465,14 +465,14 @@ export default function OrderPage() {
           onClick={() => handleTabClick(CANCEL_STATUS)}
           className={`px-4 py-4 text-sm font-medium transition-colors relative
             ${activeTab === CANCEL_STATUS 
-              ? 'text-indigo-600' 
+              ? 'text-[#FB6E3B]' 
               : 'text-gray-500 hover:text-gray-700'
             }
           `}
         >
           {t("cancel")}
           {activeTab === CANCEL_STATUS && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#FB6E3B]" />
           )}
         </button>
       </nav>
@@ -483,7 +483,7 @@ export default function OrderPage() {
             <Tool />
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
@@ -496,7 +496,7 @@ export default function OrderPage() {
             <Tool />
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
@@ -508,7 +508,7 @@ export default function OrderPage() {
           <>
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
@@ -520,7 +520,7 @@ export default function OrderPage() {
           <>
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-[#FB6E3B] border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
