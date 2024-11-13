@@ -1713,7 +1713,7 @@ export default function TableList() {
                   color: "bg-yellow-500",
                 },
               ].map((item, index) => (
-                <div key={index} className="px-3 py-3  bg-white rounded-xl shadow-sm">
+                <div key={index} className="px-3 py-3  bg-white rounded-lg shadow-sm">
                   <div className="flex items-center gap-2">
                     <div className={`${item.color} p-2 rounded-lg`}>
                       <div className="w-5 h-5 text-white">{item.icon}</div>
@@ -1986,7 +1986,7 @@ export default function TableList() {
                 {tableList?.map((table, index) => (
                   <div
                     key={`table${index}`}
-                    className={` overflow-hidden  cursor-pointer rounded-xl shadow-sm   ${
+                    className={` overflow-hidden  cursor-pointer rounded-lg shadow-sm   ${
                       selectedTable?.code === table?.code
                         ? "border border-[#C51605]"
                         : "border border-[#FB6E3B]"
@@ -1997,7 +1997,7 @@ export default function TableList() {
                     {/* Desktop View */}
                     <div className="hidden md:block">
                       <div
-                        className={`w-full h-full rounded-xl px-3 py-1  relative flex flex-col items-center text-center
+                        className={`w-full h-full rounded-lg px-3 py-3  relative flex flex-col items-center text-center
                   ${
                     table?.isOpened && !table?.isStaffConfirm
                       ? "blink_card"
@@ -2548,7 +2548,6 @@ export default function TableList() {
                   height: "100%",
                   borderColor: "black",
                   overflowY: "scroll",
-                  borderWidth: 1,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
