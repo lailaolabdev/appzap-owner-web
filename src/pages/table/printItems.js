@@ -90,44 +90,44 @@ const runPrint = async (dataUrl, printer) => {
 const convertHtmlToBase64 = (items, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
 
-  items.forEach((data, index) => {
+  items.forEach((data) => {
     if (data) {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
       // Constants for layout
       const width = 510;
-      const baseHeight = 350;
-      const extraHeightPerItem = 40; // Height for each main item line
-      const extraHeightPerOption = 30; // Height for each option under an item
-      const footerHeight = 60;
-      const titleMarginLeft = 20; // Margin for main item titles
-      const optionMarginLeft = 40; // Increased indentation for options
-      const spaceAfterDottedLine = 30; // Extra space after the dotted line
+      const baseHeight = 100; // Header height
+      const extraHeightPerItem = 40; // Height for each item
+      const extraHeightPerOption = 30; // Height for each option
+      const footerHeight = 60; // Footer height
+      const marginTop = 20; // Space between sections
+      const titleMarginLeft = 20;
+      const optionMarginLeft = 40;
 
-      // Calculate dynamic canvas height based on items and options
+      // Calculate total height dynamically
       let contentHeight = baseHeight;
-
       items.forEach((item) => {
-        contentHeight += extraHeightPerItem; // Add height for each main item line
+        contentHeight += extraHeightPerItem;
         if (item.options && item.options.length > 0) {
-          contentHeight += item.options.length * extraHeightPerOption; // Add height for each option under the item
+          contentHeight += item.options.length * extraHeightPerOption;
         }
       });
+      contentHeight += footerHeight + marginTop;
 
-      contentHeight += footerHeight + spaceAfterDottedLine; // Add height for the footer and extra space after dotted line
+      // Set canvas dimensions
       canvas.width = width;
       canvas.height = contentHeight;
 
-      // Set white background
+      // Background
       context.fillStyle = "#fff";
       context.fillRect(0, 0, width, contentHeight);
 
-      // Draw Title Block
+      // Header
       context.fillStyle = "#000";
       context.fillRect(0, 0, width / 2, 60);
       context.fillStyle = "#fff";
-      context.font = "bold 36px NotoSansLao";
+      context.font = "bold NotoSansLao, 36px Arial, sans-serif";
       context.fillText(
         selectedTable?.tableName || "Table",
         titleMarginLeft,
@@ -135,29 +135,35 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       );
 
       context.fillStyle = "#000";
-      context.font = "bold 30px NotoSansLao";
-      context.fillText(selectedTable?.code || "N/A", width - 160, 44);
+      context.font = "bold NotoSansLao, 30px Arial, sans-serif";
+      context.fillText(selectedTable?.code || "N/A", width - 160, 45);
 
-      // Draw Items List with increased margins
-      context.font = "30px NotoSansLao";
-      let itemYPosition = 100; // Starting position below the title block
+      // Divider line below header
+      context.strokeStyle = "#ccc";
+      context.beginPath();
+      context.moveTo(0, 65);
+      context.lineTo(width, 65);
+      context.stroke();
 
+      // Items
+      context.font = "30px NotoSansLao, Arial, sans-serif";
+      let itemYPosition = baseHeight; // Start after header
       items.forEach((item) => {
-        // Main item text with title margin
-        context.font = "bold 30px NotoSansLao";
+        // Main item
+        context.font = "bold NotoSansLao, 28px Arial, sans-serif";
         context.fillText(
-          `- ${item.name} (x ${item.quantity || 1})`,
+          `${item.name} (x${item.quantity || 1})`,
           titleMarginLeft,
           itemYPosition
         );
         itemYPosition += extraHeightPerItem;
 
-        // Draw options with increased left margin
+        // Options
         if (item.options && item.options.length > 0) {
-          context.font = "24px NotoSansLao"; // Smaller font for options
+          context.font = "24px NotoSansLao, Arial, sans-serif";
           item.options.forEach((option) => {
             context.fillText(
-              `- ${option.name} - ${option.price || ""} x ${
+              `- ${option.name} ${option.price ? `- ${option.price}` : ""} x ${
                 option.quantity || 1
               }`,
               optionMarginLeft,
@@ -168,34 +174,35 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
         }
       });
 
-      // Draw the dotted line after the last item, with extra spacing
+      // Dotted line
       context.strokeStyle = "#000";
       context.setLineDash([4, 2]);
       context.beginPath();
-      context.moveTo(0, itemYPosition + 10);
-      context.lineTo(width, itemYPosition + 10);
+      context.moveTo(0, itemYPosition + marginTop);
+      context.lineTo(width, itemYPosition + marginTop);
       context.stroke();
-      context.setLineDash([]); // Reset line dash
+      context.setLineDash([]);
 
-      // Footer with Created By and Date, positioned with extra margin
-      context.font = "bold 24px NotoSansLao";
+      // Footer
+      context.font = "bold NotoSansLao, 24px Arial, sans-serif";
+      context.fillStyle = "#000";
       context.fillText(
         data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
-        20,
-        contentHeight - 30
+        titleMarginLeft,
+        contentHeight - footerHeight / 2
       );
 
-      context.fillStyle = "#6e6e6e"; // Gray text for date
-      context.font = "22px NotoSansLao";
+      context.fillStyle = "#6e6e6e";
+      context.font = "22px NotoSansLao, Arial, sans-serif";
       context.fillText(
         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
           data?.createdAt
         ).format("LT")}`,
-        width - 180,
-        contentHeight - 30
+        width - 200,
+        contentHeight - footerHeight / 2
       );
 
-      // Convert canvas to base64
+      // Convert to base64
       const dataUrl = canvas.toDataURL("image/png");
       base64ArrayAndPrinter.push({ dataUrl, printer });
     }
@@ -203,134 +210,3 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
 
   return base64ArrayAndPrinter;
 };
-
-// const runPrint = async (dataUrl, index, printer) => {
-//   try {
-//     const printFile = base64ToBlob(dataUrl);
-//     var bodyFormData = new FormData();
-
-//     bodyFormData.append("ip", printer?.ip);
-//     if (index === 0) {
-//       bodyFormData.append("beep1", 1);
-//       bodyFormData.append("beep2", 9);
-//     }
-//     bodyFormData.append("isdrawer", false);
-//     bodyFormData.append("port", "9100");
-//     bodyFormData.append("image", printFile);
-//     bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
-
-//     let urlForPrinter = "";
-//     if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
-//     if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
-//     if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
-
-//     await printFlutter(
-//       {
-//         imageBuffer: dataUrl,
-//         ip: printer?.ip,
-//         type: printer?.type,
-//         port: "9100",
-//         width: printer?.width === "58mm" ? 400 : 580,
-//       },
-//       async () => {
-//         await axios({
-//           method: "post",
-//           url: urlForPrinter,
-//           data: bodyFormData,
-//           headers: { "Content-Type": "multipart/form-data" },
-//         });
-//       }
-//     );
-//     return true;
-//   } catch {
-//     return false;
-//   }
-// };
-
-// const convertHtmlToBase64 = (orderSelect) => {
-//   const base64ArrayAndPrinter = [];
-
-//   orderSelect.forEach((data, index) => {
-//     if (data) {
-//       const canvas = document.createElement("canvas");
-//       const context = canvas.getContext("2d");
-
-//       // Define canvas dimensions based on the image layout you want to replicate
-//       const width = 510;
-//       const height = 290;
-//       canvas.width = width;
-//       canvas.height = height;
-
-//       // Set white background
-//       context.fillStyle = "#fff";
-//       context.fillRect(0, 0, width, height);
-
-//       // Draw the Table ID (left black block)
-//       context.fillStyle = "#000"; // Black background
-//       context.fillRect(0, 0, width / 2, 60); // Black block width / 2
-//       context.fillStyle = "#fff"; // White text
-//       context.font = "bold 36px NotoSansLao";
-//       context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45); // Table ID text
-
-//       // Draw the Table Code (right side)
-//       context.fillStyle = "#000"; // Black text
-//       context.font = "bold 30px NotoSansLao";
-//       context.fillText(data?.code || selectedTable?.code, width - 220, 44); // Code text on the right
-
-//       // Draw Item Name and Quantity
-//       context.fillStyle = "#000"; // Black text
-//       context.font = "bold 40px NotoSansLao";
-//       context.fillText(`${data?.name} (${data?.quantity})`, 10, 110); // Item name
-
-//       // Draw Item Name and Quantity
-//       context.fillStyle = "#000"; // Black text
-//       context.font = "24px NotoSansLao";
-//       context.fillText(`${data?.note}`, 10, 150); // Item name
-
-//       // Draw Price and Quantity
-//       context.font = "28px NotoSansLao";
-//       context.fillText(
-//         `${moneyCurrency(data?.price + (data?.totalOptionPrice ?? 0))} x ${
-//           data?.quantity
-//         }`,
-//         20,
-//         210
-//       ); // Price and quantity
-
-//       // Draw the dotted line
-//       context.strokeStyle = "#000"; // Black dotted line
-//       context.setLineDash([4, 2]); // Dotted line style
-//       context.beginPath();
-//       context.moveTo(0, 230); // Start at (20, 150)
-//       context.lineTo(width, 230); // End at (width - 20, 150)
-//       context.stroke();
-
-//       // Draw Footer (Created By and Date)
-//       context.setLineDash([]); // Reset line style
-//       context.font = "bold 24px NotoSansLao";
-//       context.fillText(
-//         data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
-//         20,
-//         260
-//       ); // Created by name
-
-//       context.fillStyle = "#6e6e6e"; // Black text
-//       context.font = "22px NotoSansLao";
-//       context.fillText(
-//         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
-//           data?.createdAt
-//         ).format("LT")}`,
-//         width - 180,
-//         260
-//       ); // Date and time
-
-//       // Convert canvas to base64
-//       const dataUrl = canvas.toDataURL("image/png");
-
-//       const printer = printers.find((e) => e?._id === data?.printer);
-//       if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
-//     }
-//   });
-
-//   return base64ArrayAndPrinter;
-// };
