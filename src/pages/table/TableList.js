@@ -1686,7 +1686,7 @@ export default function TableList() {
               {t("totalBillCheck")} : {_checkStatusCodeB(tableList)}
             </div> */}
 
-            <div className="grid grid-cols-1 p-3 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 p-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 {
                   title: t("totalTable"),
@@ -1713,7 +1713,7 @@ export default function TableList() {
                   color: "bg-yellow-500",
                 },
               ].map((item, index) => (
-                <div key={index} className="px-3 py-1  bg-white rounded-lg shadow-sm">
+                <div key={index} className="px-3 py-3  bg-white rounded-xl shadow-sm">
                   <div className="flex items-center gap-2">
                     <div className={`${item.color} p-2 rounded-lg`}>
                       <div className="w-5 h-5 text-white">{item.icon}</div>
