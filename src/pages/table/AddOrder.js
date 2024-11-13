@@ -390,11 +390,16 @@ function AddOrder() {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        // Define canvas dimensions based on the image layout you want to replicate
-        const baseHeight = 350;
+        // Define base dimensions
+        const baseHeight = 250;
         const extraHeightPerOption = 30;
-        const dynamicHeight = baseHeight + index * extraHeightPerOption;
+        const extraHeightForNote = data?.note ? 40 : 0;
+        const dynamicHeight =
+          baseHeight +
+          (data.options?.length || 0) * extraHeightPerOption +
+          extraHeightForNote;
         const width = 510;
+
         canvas.width = width;
         canvas.height = dynamicHeight;
 
@@ -419,8 +424,10 @@ function AddOrder() {
             }
           }
           context.fillText(line, x, y);
+          return y + lineHeight;
         }
 
+        // Header: Table Name and Code
         // Draw the Table ID (left black block)
         context.fillStyle = "#000"; // Black background
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
@@ -433,88 +440,116 @@ function AddOrder() {
         context.font = "bold 30px NotoSansLao";
         context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
 
-        // Draw Item Name and Quantity
-        context.fillStyle = "#000"; // Black text
-        context.font = "bold 35px NotoSansLao, Arial, sans-serif";
-        wrapText(
+        // Divider line below header
+        context.strokeStyle = "#ccc";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(0, 65);
+        context.lineTo(width, 65);
+        context.stroke();
+
+        // Content: Item Name and Quantity
+        context.fillStyle = "#000";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        let yPosition = 100;
+        yPosition = wrapText(
           context,
           `${data?.name} (${data?.quantity})`,
           10,
-          110,
+          yPosition,
           width - 20,
-          40
-        ); // Item name with wrapping
+          36
+        );
 
-        // Draw Item Note
-        context.fillStyle = "#000"; // Black text
-        context.font = "24px NotoSansLao, Arial, sans-serif";
-        wrapText(
-          context,
-          `${data?.note === undefined ? "" : data?.note}`,
-          10,
-          150,
-          width - 20,
-          30
-        ); // Item note with wrapping
+        // Content: Item Note
+        if (data?.note) {
+          const noteLabel = "Note: ";
+          const noteText = data.note;
 
-        // Draw Options from the menuOptions array, including prices
+          // Draw "Note:" label in bold
+          context.fillStyle = "#666";
+          context.font = "italic bold 22px Arial, sans-serif";
+          context.fillText(noteLabel, 10, yPosition);
+
+          // Measure width of the "Note:" label
+          const noteLabelWidth = context.measureText(noteLabel).width;
+
+          // Wrap the note text, starting after the "Note:" label
+          context.font = "italic 22px Arial, sans-serif";
+          yPosition = wrapText(
+            context,
+            noteText,
+            10 + noteLabelWidth, // Start after the label width
+            yPosition,
+            width - 20 - noteLabelWidth, // Adjust wrapping width
+            30
+          );
+
+          // Add spacing after the note
+          yPosition += 10;
+        }
+
+        // Options
         if (data.options && data.options.length > 0) {
-          context.fillStyle = "#000"; // Black text
-          context.font = "24px NotoSansLao";
+          context.fillStyle = "#000";
+          context.font = "24px NotoSansLao, Arial, sans-serif";
           data.options.forEach((option, idx) => {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const yPosition = 180 + idx * 35;
-
-            // Draw each option with price
-            context.fillText(
-              `- ${option?.name}${optionPriceText} x ${option?.quantity}`,
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity}`;
+            yPosition = wrapText(
+              context,
+              optionText,
               10,
-              yPosition
+              yPosition,
+              width - 20,
+              30
             );
           });
 
-          const dottedLineYPosition = 200 + data.options.length * 35; // Adjust position based on number of options
-          context.strokeStyle = "#000"; // Black dotted line
-          context.setLineDash([4, 2]); // Dotted line style
+          // Divider below options
+          context.strokeStyle = "#ccc";
+          context.setLineDash([4, 2]);
           context.beginPath();
-          context.moveTo(0, dottedLineYPosition); // Start at (0, dynamic position)
-          context.lineTo(width, dottedLineYPosition); // End at (width, dynamic position)
+          context.moveTo(0, yPosition);
+          context.lineTo(width, yPosition);
           context.stroke();
-        } else {
-          context.strokeStyle = "#000"; // Black dotted line
-          context.setLineDash([4, 2]); // Dotted line style
-          context.beginPath();
-          context.moveTo(0, 240); // Start at (0, dynamic position)
-          context.lineTo(width, 240); // End at (width, dynamic position)
-          context.stroke();
+          context.setLineDash([]);
+          yPosition += 20;
         }
 
-        // Draw Footer (Created By and Date)
-        context.setLineDash([]); // Reset line style
-        context.font = "bold 24px NotoSansLao";
+        // Add a dotted line before footer
+        context.strokeStyle = "#000"; // Black dotted line
+        context.setLineDash([4, 2]); // Dotted line style
+        context.beginPath();
+        context.moveTo(0, dynamicHeight - 70); // Position 70px above footer
+        context.lineTo(width, dynamicHeight - 70); // Full-width dotted line
+        context.stroke();
+        context.setLineDash([]); // Reset line dash style
+
+        // Footer: Created By and Date
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.fillStyle = "#000";
         context.fillText(
           data?.createdBy?.firstname ||
             data?.updatedBy?.firstname ||
             "lailaolab",
-          20,
-          dynamicHeight - 30
+          10,
+          dynamicHeight - 40
         );
-
-        context.fillStyle = "#6e6e6e"; // Gray text for date
-        context.font = "22px NotoSansLao";
+        context.fillStyle = "#6e6e6e";
+        context.font = "22px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
           ).format("LT")}`,
-          width - 180,
-          dynamicHeight - 30
+          width - 220,
+          dynamicHeight - 40
         );
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
-
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
