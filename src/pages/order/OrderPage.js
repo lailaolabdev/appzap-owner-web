@@ -399,75 +399,136 @@ export default function OrderPage() {
     </div>
     );
   };
+
+  const [activeTab, setActiveTab] = useState(WAITING_STATUS);
+
+  const handleTabClick = (tabKey) => {
+    setActiveTab(tabKey);
+    setorderItemForPrintBillSelect([]);
+    getOrderItemsStore(tabKey);
+    setSelectOrderStatus(tabKey);
+    getOrderWaitingAndDoingByStore();
+  };
+
   return (
     <RootStyle>
       {/* {orderLoading || (isLoading && <Loading />)} */}
 
       <div className="bg-white">
-        <Tabs
-          defaultActiveKey={WAITING_STATUS}
-          id="OrderTabs"
-          onSelect={(select) => {
-            setorderItemForPrintBillSelect([]);
-            getOrderItemsStore(select);
-            setSelectOrderStatus(select);
-            getOrderWaitingAndDoingByStore();
-          }}
-          className="[&>ul>li>a]:bg-white [&>ul>li>a]:text-red-500 
-                   [&>ul>li>a:hover]:bg-pink-200
-                   [&>ul>li.active>a]:bg-red-500 [&>ul>li.active>a]:text-white 
-                   [&>ul>li.active>a:hover]:bg-red-500 [&>ul>li.active>a:focus]:bg-red-500
-                   [&>ul>li.disabled>a]:bg-gray-200 [&>ul>li.disabled>a]:text-gray-600"
+      <nav className="flex gap-8 border-b border-gray-200">
+        <button
+          onClick={() => handleTabClick(WAITING_STATUS)}
+          className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${activeTab === WAITING_STATUS 
+              ? 'text-indigo-600' 
+              : 'text-gray-500 hover:text-gray-700'
+            }
+          `}
         >
-          <div
-            eventKey={WAITING_STATUS}
-            title={`${t("hasOrder")}(${orderWaiting?.length})`}
-          >
+          {t("hasOrder")}({orderWaiting?.length || 0})
+          {activeTab === WAITING_STATUS && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+          )}
+        </button>
+
+        <button
+          onClick={() => handleTabClick(DOING_STATUS)}
+          className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${activeTab === DOING_STATUS 
+              ? 'text-indigo-600' 
+              : 'text-gray-500 hover:text-gray-700'
+            }
+          `}
+        >
+          {t("cooking")}({orderDoing?.length || 0})
+          {activeTab === DOING_STATUS && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+          )}
+        </button>
+
+        <button
+          onClick={() => handleTabClick(SERVE_STATUS)}
+          className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${activeTab === SERVE_STATUS 
+              ? 'text-indigo-600' 
+              : 'text-gray-500 hover:text-gray-700'
+            }
+          `}
+        >
+          {t("served")}
+          {activeTab === SERVE_STATUS && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+          )}
+        </button>
+
+        <button
+          onClick={() => handleTabClick(CANCEL_STATUS)}
+          className={`px-4 py-4 text-sm font-medium transition-colors relative
+            ${activeTab === CANCEL_STATUS 
+              ? 'text-indigo-600' 
+              : 'text-gray-500 hover:text-gray-700'
+            }
+          `}
+        >
+          {t("cancel")}
+          {activeTab === CANCEL_STATUS && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600" />
+          )}
+        </button>
+      </nav>
+
+      <div className="mt-4">
+        {activeTab === WAITING_STATUS && (
+          <>
             <Tool />
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <Spinner animation="border" className="ml-5" size="sm" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
             <WaitingOrderTab />
-          </div>
+          </>
+        )}
 
-          <div
-            eventKey={DOING_STATUS}
-            title={`${t("cooking")}(${orderDoing?.length})`}
-          >
+        {activeTab === DOING_STATUS && (
+          <>
             <Tool />
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <Spinner animation="border" className="ml-5" size="sm" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
             <DoingOrderTab />
-          </div>
+          </>
+        )}
 
-          <div eventKey={SERVE_STATUS} title={`${t("served")}`}>
+        {activeTab === SERVE_STATUS && (
+          <>
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <Spinner animation="border" className="ml-5" size="sm" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
             <ServedOrderTab />
-          </div>
+          </>
+        )}
 
-          <div eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
+        {activeTab === CANCEL_STATUS && (
+          <>
             {orderLoading && (
               <div className="flex items-center gap-2">
-                <Spinner animation="border" className="ml-5" size="sm" />
+                <div className="ml-5 h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
                 <span>Load new data...</span>
               </div>
             )}
             <CanceledOrderTab />
-          </div>
-        </Tabs>
+          </>
+        )}
       </div>
+    </div>
 
       <div style={{ padding: "20px" }}>
         {orderItems
