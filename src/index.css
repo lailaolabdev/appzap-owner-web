@@ -1,4 +1,5 @@
 /** @format */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @font-face {
   font-family: "NotoSansLao";
@@ -127,7 +128,6 @@ tr:hover {
 td {
   color: #5a5a5a;
   text-align: left;
-
 }
 
 .customTab {
@@ -139,25 +139,25 @@ td {
 }
 
 /* Inactive tab */
-.myClass ul>li>a {
+.myClass ul > li > a {
   background-color: white;
   color: red;
 }
 
-.myClass ul>li>a:hover {
+.myClass ul > li > a:hover {
   background-color: pink;
 }
 
 /* Active tab */
-.myClass ul>li.active>a,
-.myClass ul>li.active>a:hover,
-.myClass ul>li.active>a:focus {
+.myClass ul > li.active > a,
+.myClass ul > li.active > a:hover,
+.myClass ul > li.active > a:focus {
   background-color: red;
   color: white;
 }
 
 /* Disabled tab */
-.myClass ul>li.disabled>a {
+.myClass ul > li.disabled > a {
   background-color: lightgray;
   color: darkgray;
 }
@@ -165,7 +165,6 @@ td {
 .nav-link {
   color: #fb6e3b;
 }
-
 
 .card-report-header {
   width: 100%;
@@ -208,7 +207,7 @@ td {
       align-items: center;
 
       & span {
-        font-size: .85em;
+        font-size: 0.85em;
         font-weight: 400;
         color: #777;
       }
@@ -242,7 +241,7 @@ td {
   box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
 }
 
-@media screen and (max-width : 768px) {
+@media screen and (max-width: 768px) {
   .table-cart-cafe {
     width: 400px;
   }

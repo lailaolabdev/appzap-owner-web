@@ -389,10 +389,28 @@ export default function Sidenav({ location, navigate, onToggle }) {
             alignItems: "center",
             justifyContent: "center",
             height: 50,
-            padding: "50px 0",
+            marginTop: 16,
+            marginBottom: 16,
           }}
         >
-          <p style={{ fontWeight: "700", fontSize: "35px" }}>OrderMouy</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 50,
+              width: 150,
+            }}
+          >
+            <img
+              src="/images/logo-001.png"
+              alt="Logo"
+              style={{
+                width: "100%",
+                height: "auto",
+              }}
+            />
+          </div>
         </div>
       )}
       <SideNav.Nav value={location.pathname.split("/")[1]}>
@@ -423,6 +441,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 <b
                   style={{
                     color: UN_SELECTED_TAB_TEXT,
+                    fontWeight: 600,
                   }}
                 >
                   {" "}
@@ -482,6 +501,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               <b
                 style={{
                   color: UN_SELECTED_TAB_TEXT,
+                  fontWeight: 600,
                 }}
               >
                 {t("report")}

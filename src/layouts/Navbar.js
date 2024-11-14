@@ -96,7 +96,7 @@ export default function NavBar() {
           color: "#CC0000",
           width: "100%",
           height: 50,
-          // position: "fixed",
+          position: "fixed",
           top: 0,
           left: 0,
           zIndex: 1,
@@ -179,17 +179,7 @@ export default function NavBar() {
             )}
           </Box> */}
 
-          <MdAccountCircle
-            style={{
-              color: "gray",
-              fontSize: "30px",
-              margin: "0 10px 0 -10px",
-            }}
-          />
-
-          <div style={{ width: 10 }} />
-
-          {/* <Form inline>
+          <Form inline>
             <Dropdown>
               <Dropdown.Toggle
                 style={{
@@ -199,15 +189,13 @@ export default function NavBar() {
                 }}
                 variant=""
               >
-                <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                  {userData
-                    ? (userData?.data?.firstname
-                        ? userData?.data?.firstname
-                        : "") +
-                      " " +
-                      (userData?.data?.lastname ? userData?.data?.lastname : "")
-                    : ""}
-                </Box>
+                <MdAccountCircle
+                  style={{
+                    color: "gray",
+                    fontSize: "30px",
+                    margin: "0 10px 0 -10px",
+                  }}
+                />
               </Dropdown.Toggle>
               <Dropdown.Menu className="dropdown-menu-right">
                 <Dropdown.Item
@@ -218,7 +206,7 @@ export default function NavBar() {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-          </Form> */}
+          </Form>
         </Navbar.Collapse>
       </Navbar>
     </div>

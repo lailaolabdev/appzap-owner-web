@@ -313,7 +313,7 @@ export default function ExpendList() {
   }
 
   return (
-    <div style={{ padding: 20 ,backgroundColor:"#F9F9F9"}}>
+    <div style={{ padding: 20, backgroundColor: "#F9F9F9" }}>
       <div
         class="account-payment"
         style={{
@@ -322,12 +322,9 @@ export default function ExpendList() {
           justifyContent: "space-between",
           alignItems: "center",
           gap: 5,
-          
         }}
       >
-        <TitleComponent
-         title={t("paid_account")}
-          />
+        <TitleComponent title={t("paid_account")} textColor={"#000000"} />
         <div
           className="account"
           // style={{
@@ -447,17 +444,20 @@ export default function ExpendList() {
             </div>
           </div>
         </div> */}
-         <div
+        <div
           className="p-2 hover-me"
           style={{
             backgroundColor: "white",
-            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
-            width: 230,
+            boxShadow:
+              "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
+            // width: 230,
+            flex: 1,
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
+            // justifyContent: "space-around",
+            gap: 20,
             alignItems: "center",
             margin: 10,
           }}
@@ -467,12 +467,13 @@ export default function ExpendList() {
             style={{
               backgroundColor: "#fb6e3b",
               padding: 12,
-              borderRadius: 100,
-              width: 50,
-              height: 50,
+              borderRadius: 6,
+              width: 48,
+              height: 48,
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
+              marginLeft: 10,
             }}
           >
             <FontAwesomeIcon
@@ -481,11 +482,20 @@ export default function ExpendList() {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "gray" }}>
+            <div
+              style={{ fontWeight: 500, color: "#6B7280", fontFamily: "Inter" }}
+            >
               {" "}
               {t("total_in_lak")}
             </div>
-            <div style={{ fontSize: 24, color: "black" }}>
+            <div
+              style={{
+                fontSize: 24,
+                color: "#111827",
+                fontFamily: "Inter",
+                fontWeight: 600,
+              }}
+            >
               {moneyCurrency(totalReport?.totalSumInLAK)}
             </div>
           </div>
@@ -494,13 +504,16 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "white",
-            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
-            width: 230,
+            boxShadow:
+              "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
+            // width: 230,
+            flex: 1,
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
+            // justifyContent: "space-around",
+            gap: 20,
             alignItems: "center",
             margin: 10,
           }}
@@ -509,20 +522,35 @@ export default function ExpendList() {
             style={{
               backgroundColor: "#fb6e3b",
               padding: 12,
-              borderRadius: 100,
+              borderRadius: 6,
+              width: 48,
+              height: 48,
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+              marginLeft: 10,
             }}
           >
             <FontAwesomeIcon
-              style={{ fontSize: "1.2rem", color: "white" }}
+              style={{ fontSize: "1.2rem", color: "white", marginTop: 3 }}
               icon={faMoneyBillWave}
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "gray" }}>
+            <div
+              style={{ fontWeight: 500, color: "#6B7280", fontFamily: "Inter" }}
+            >
               {" "}
               {t("paid_lak")}
             </div>
-            <div style={{ fontSize: 24, color: "black" }}>
+            <div
+              style={{
+                fontSize: 24,
+                color: "#111827",
+                fontFamily: "Inter",
+                fontWeight: 600,
+              }}
+            >
               {moneyCurrency(totalReport?.priceLAK)}
             </div>
           </div>
@@ -531,13 +559,16 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "white",
-            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
-            width: 230,
+            boxShadow:
+              "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
+            // width: 230,
+            flex: 1,
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
+            // justifyContent: "space-around",
+            gap: 20,
             alignItems: "center",
             margin: 10,
           }}
@@ -546,12 +577,13 @@ export default function ExpendList() {
             style={{
               backgroundColor: "#fb6e3b",
               padding: 12,
-              borderRadius: 100,
-              width: 50,
-              height: 50,
+              borderRadius: 6,
+              width: 48,
+              height: 48,
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
+              marginLeft: 10,
             }}
           >
             <FontAwesomeIcon
@@ -560,11 +592,20 @@ export default function ExpendList() {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "gray" }}>
+            <div
+              style={{ fontWeight: 500, color: "#6B7280", fontFamily: "Inter" }}
+            >
               {" "}
               {t("paid_thb")}
             </div>
-            <div style={{ fontSize: 24, color: "black" }}>
+            <div
+              style={{
+                fontSize: 24,
+                color: "#111827",
+                fontFamily: "Inter",
+                fontWeight: 600,
+              }}
+            >
               {moneyCurrency(totalReport?.priceTHB)}
             </div>
           </div>
@@ -573,13 +614,16 @@ export default function ExpendList() {
           className="p-2 hover-me"
           style={{
             backgroundColor: "white",
-            boxShadow: '7px 7px 7px  rgba(0,0,0,0.1)',
-            width: 230,
+            boxShadow:
+              "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
+            // width: 230,
+            flex: 1,
             height: 80,
             borderRadius: 8,
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-around",
+            // justifyContent: "space-around",
+            gap: 20,
             alignItems: "center",
             margin: 10,
           }}
@@ -588,12 +632,13 @@ export default function ExpendList() {
             style={{
               backgroundColor: "#fb6e3b",
               padding: 12,
-              borderRadius: 100,
-              width: 50,
-              height: 50,
+              borderRadius: 6,
+              width: 48,
+              height: 48,
               display: "flex",
               justifyContent: "center",
               alignContent: "center",
+              marginLeft: 10,
             }}
           >
             <FontAwesomeIcon
@@ -602,11 +647,20 @@ export default function ExpendList() {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <div style={{ fontWeight: "bold", color: "gray" }}>
+            <div
+              style={{ fontWeight: 500, color: "#6B7280", fontFamily: "Inter" }}
+            >
               {" "}
               {t("paid_usd")}
             </div>
-            <div style={{ fontSize: 24, color: "black" }}>
+            <div
+              style={{
+                fontSize: 24,
+                color: "#111827",
+                fontFamily: "Inter",
+                fontWeight: 600,
+              }}
+            >
               {moneyCurrency(totalReport?.priceUSD)}
             </div>
           </div>
@@ -704,7 +758,11 @@ export default function ExpendList() {
           </center>
         </div>
       ) : (
-        <Table responsive="xl" className="mt-3 table-hover table-bordered" style={{backgroundColor:'white'}}>
+        <Table
+          responsive="xl"
+          className="mt-3 table-hover table-bordered"
+          style={{ backgroundColor: "white" }}
+        >
           <thead>
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
