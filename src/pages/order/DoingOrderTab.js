@@ -60,16 +60,19 @@ const DoingOrderTab = () => {
   } = useStore();
 
   return (
-    <div  className="p-2.5">
+    <div className="p-2.5">
       {orderItems?.length > 0 ? (
         <div>
           <div className="flex flex-row justify-between px-4 ">
             <div className="flex flex-col items-end justify-center"></div>
           </div>
 
-          <div className=" overflow-x-auto">
-            <table className="w-full text-lg ">
-              <thead className="  border-b-2 ">
+          <Container fluid className="p-0">
+            <Table
+              responsive
+              className="staff-table-list borderless table-hover"
+            >
+              <thead style={{ backgroundColor: "#F1F1F1" }}>
                 <tr>
                   <th className="w-10 max-w-[40px] p-0">
                     <FormControlLabel
@@ -82,20 +85,26 @@ const DoingOrderTab = () => {
                       className="ml-0.5"
                     />
                   </th>
-                  <th className="p-0 whitespace-nowrap">{t("no")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("menu_name")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("amount")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("from_table")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("table_code")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("commend")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("no")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("menu_name")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("amount")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("from_table")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("table_code")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("commend")}</th>
                 </tr>
               </thead>
               <tbody>
                 {orderItems?.map((order, index) => (
                   <tr key={index} className=" border-b">
-					<td className="p-0 whitespace-nowrap" >
+                    <td className="w-10 max-w-[40px] p-0">
                       <Checkbox
                         checked={order?.isChecked ? true : false}
                         onChange={(e) => handleCheckbox(order)}
@@ -103,38 +112,34 @@ const DoingOrderTab = () => {
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
                     </td>
-                    <td className="p-0 ">
-					  {index + 1}
-                    </td>
+                    <td className="p-0 ">{index + 1}</td>
                     <td className="p-0 whitespace-nowrap">
-                      <p >{order?.name ?? "-"}</p>
+                      <p>{order?.name ?? "-"}</p>
                     </td>
                     <td className="whitespace-nowrap p-0">
-                      <p >{order?.quantity ?? "-"}</p>
+                      <p>{order?.quantity ?? "-"}</p>
                     </td>
                     <td className="whitespace-nowrap p-0">
-                      <p >{order?.tableId?.name ?? "-"}</p>
+                      <p>{order?.tableId?.name ?? "-"}</p>
                     </td>
                     <td className="whitespace-nowrap p-0">
-                      <p >
-                        {order?.status ? orderStatus(order?.status) : "-"}
-                      </p>
+                      <p>{order?.status ? orderStatus(order?.status) : "-"}</p>
                     </td>
                     <td className="whitespace-nowrap p-0">
-                      <p >
+                      <p>
                         {order?.createdAt
                           ? moment(order?.createdAt).format("HH:mm a")
                           : "-"}
                       </p>
                     </td>
                     <td className="whitespace-nowrap p-0">
-                      <p >{order?.note ?? "-"}</p>
+                      <p>{order?.note ?? "-"}</p>
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </Container>
         </div>
       ) : (
         <img src={empty} alt="" className="w-full" />

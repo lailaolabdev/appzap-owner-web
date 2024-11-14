@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
-import { Image } from "react-bootstrap";
+import { Container, Image, Table } from "react-bootstrap";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
 import html2canvas from "html2canvas";
@@ -53,9 +53,12 @@ export default function WaitingOrderTab() {
           <div>
             <ReactAudioPlayer src={Notification} ref={soundPlayer} />
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-lg">
-              <thead className="  border-b-2 ">
+          <Container fluid className="p-0">
+            <Table
+              className="staff-table-list borderless table-hover"
+              responsive
+            >
+              <thead style={{ backgroundColor: "#f1f1f1" }}>
                 <tr>
                   <th className="w-10 max-w-[40px] p-0">
                     <FormControlLabel
@@ -68,14 +71,20 @@ export default function WaitingOrderTab() {
                       className="ml-0.5"
                     />
                   </th>
-                  <th className="p-0 whitespace-nowrap">{t("no")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("menu_name")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("amount")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("from_table")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("table_code")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("status")}</th>
-                  <th className="p-0 whitespace-nowrap">{t("commend")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("no")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("menu_name")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("amount")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("from_table")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">
+                    {t("table_code")}
+                  </th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("status")}</th>
+                  <th className="p-0 whitespace-nowrap py-3">{t("commend")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -116,8 +125,8 @@ export default function WaitingOrderTab() {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </Container>
         </div>
       </div>
     </RootStyle>
@@ -142,5 +151,4 @@ const TableCustom = styled("table")({
     maxWidth: 40,
     width: 40,
   },
-
 });

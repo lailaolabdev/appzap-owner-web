@@ -1118,12 +1118,12 @@ function AddOrder() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mx-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mx-2 my-2">
             {isLoading ? (
               <Loading />
             ) : (
-              afterSearch?.map((data, index) => {
-                if (data?.type === "MENU")
+              afterSearch?.map((data) => {
+                if (data?.type === "MENU") {
                   return (
                     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                     <div
@@ -1148,21 +1148,23 @@ function AddOrder() {
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                           />
                         </div>
-                        <div className="p-4 space-y-2">
-                          <h3 className="text-lg text-gray-900">
+                        <div className="p-3 space-y-1">
+                          <h3 className="text-base text-gray-900">
                             {data?.name}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-lg text-colorApp font-medium">
                             {moneyCurrency(data?.price)}{" "}
                             {storeDetail?.firstCurrency}
                           </p>
-                          <p className="text-lg font-medium">
-                            {t("amount_exist")} : {data?.quantity}
+                          <p className="text-sm font-medium">
+                            {t("amount_exist")} : {data?.quantity || 0}
                           </p>
                         </div>
                       </div>
                     </div>
                   );
+                }
+                return null;
               })
             )}
           </div>

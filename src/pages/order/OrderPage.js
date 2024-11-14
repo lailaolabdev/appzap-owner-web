@@ -415,7 +415,7 @@ export default function OrderPage() {
       {/* {orderLoading || (isLoading && <Loading />)} */}
 
       <div className="bg-white">
-        <nav className="flex gap-8 border-b border-gray-200">
+        <nav className="flex gap-2 border-b border-gray-200 h-[60px]">
           <button
             type="button"
             onClick={() => handleTabClick(WAITING_STATUS)}

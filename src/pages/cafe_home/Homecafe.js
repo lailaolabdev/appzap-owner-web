@@ -1067,77 +1067,62 @@ function Homecafe() {
               />
             </div>
           </div>
-          <SubCafeMenu>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mx-2 my-2">
             {isLoading ? (
               <Loading />
             ) : afterSearch.length === 0 ? (
               <div className="container">
-                <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+                <p>No items found</p>
               </div>
             ) : (
               afterSearch?.map((data, index) => {
-                if (data?.type === "MENU")
+                if (data?.type === "MENU") {
                   return (
                     <div
                       key={"menu" + index}
-                      style={{
-                        border:
-                          data._id === selectedItem?._id
-                            ? "4px solid #FB6E3B"
-                            : "4px solid rgba(0,0,0,0)",
-                      }}
+                      className={`group animate-fade-up rounded ${
+                        data._id === selectedItem?._id
+                          ? "border border-[#FB6E3B]"
+                          : ""
+                      }`}
                       onClick={() => {
                         addToCart(data);
                       }}
                     >
-                      <img
-                        src={
-                          data?.images[0]
-                            ? URL_PHOTO_AW3 + data?.images[0]
-                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                        }
-                        style={{
-                          width: "100%",
-                          // height: 200,
-                          objectFit: "cover",
-                          borderRadius: 5,
-                        }}
-                        alt="images-menu"
-                        className="images-menu-cafe"
-                      />
+                      <div className="relative overflow-hidden bg-white shadow-md rounded-lg transition-all duration-300 group-hover:shadow-lg cursor-pointer">
+                        <div className="aspect-square overflow-hidden">
+                          <img
+                            src={
+                              data?.images[0]
+                                ? URL_PHOTO_AW3 + data?.images[0]
+                                : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                            }
+                            alt="images-menu"
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </div>
 
-                      <div
-                        style={{
-                          backgroundColor: "#000",
-                          color: "#FFF",
-                          position: "relative",
-                          opacity: 0.5,
-                          padding: 10,
-                        }}
-                      >
-                        <span>{data?.name}</span>
-                        <br />
-                        <span>
-                          {moneyCurrency(data?.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                          {/* {currency?.map(
-                            (e) =>
-                              " / " +
-                            (data?.price / e.sell).toFixed(2) +
-                            " " +
-                            e?.currencyCode
-                            )} */}
-                        </span>
-                        <br />
-                        <span>
-                          {t("amount_exist")} : {data?.quantity}
-                        </span>
+                        <div className="p-3 space-y-1 flex flex-col">
+                          <h3 className="text-base text-gray-900">
+                            {data?.name}
+                          </h3>
+                          <span className="text-lg text-colorApp font-medium">
+                            {moneyCurrency(data?.price)}{" "}
+                            {storeDetail?.firstCurrency}
+                          </span>
+                          <span className="text-sm font-medium">
+                            {t("amount_exist")} : {data?.quantity}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
+                }
+                return null; // Ensure a value is returned at the end of the arrow function
               })
             )}
-          </SubCafeMenu>
+          </div>
         </CafeMenu>
 
         {!isMobile ? (

@@ -1703,7 +1703,7 @@ export default function TableList() {
               ].map((item, index) => (
                 <div
                   key={index}
-                  className="px-[15px] h-[100px] py-3 flex items-center justify-center  bg-white rounded-md shadow-sm"
+                  className="px-4 h-[100px] py-3 flex items-center justify-start  bg-white rounded-md shadow-sm"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`${item.color}  rounded-lg`}>
@@ -1728,7 +1728,7 @@ export default function TableList() {
               <div className="px-4 py-1">
                 <label
                   htmlFor=""
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 mb-2"
                 >
                   {t("show_by_zone")}
                 </label>
