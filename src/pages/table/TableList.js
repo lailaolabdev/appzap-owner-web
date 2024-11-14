@@ -159,6 +159,7 @@ export default function TableList() {
     isWaitingCheckout,
     setOrderPayBefore,
     orderPayBefore,
+    setPrintBackground,
     isWaitingPress,
     dataQR,
   } = useStore();
@@ -984,7 +985,7 @@ export default function TableList() {
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers);
+      printItems(groupedItems, combinedBillRefs, printers, selectedTable);
     } else {
       // Print with cut
       onPrintForCher();
@@ -992,101 +993,363 @@ export default function TableList() {
     setOrderPayBefore([]);
   };
 
+  // const onPrintForCher = async () => {
+  //   setOnPrinting(true);
+
+  //   let _dataBill = {
+  //     ...dataBill,
+  //     typePrint: "PRINT_BILL_FORCHER",
+  //   };
+  //   await _createHistoriesPrinter(_dataBill);
+
+  //   const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+  //   let _index = 0;
+  //   const printDate = [...billForCher80.current];
+  //   let dataUrls = [];
+  //   for (const _ref of printDate) {
+  //     const dataUrl = await html2canvas(_ref, {
+  //       useCORS: true,
+  //       scrollX: 10,
+  //       scrollY: 0,
+  //       scale: 530 / widthBill80,
+  //     });
+  //     dataUrls.push(dataUrl);
+  //   }
+  //   for (const _ref of printDate) {
+  //     const _printer = printers.find((e) => {
+  //       return e?._id === orderSelect?.[_index]?.printer;
+  //     });
+
+  //     try {
+  //       let urlForPrinter = "";
+  //       let dataUrl = dataUrls[_index];
+
+  //       if (_printer?.type === "ETHERNET") {
+  //         urlForPrinter = ETHERNET_PRINTER_PORT;
+  //       }
+  //       if (_printer?.type === "BLUETOOTH") {
+  //         urlForPrinter = BLUETOOTH_PRINTER_PORT;
+  //       }
+  //       if (_printer?.type === "USB") {
+  //         urlForPrinter = USB_PRINTER_PORT;
+  //       }
+  //       // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+  //       const _file = await base64ToBlob(dataUrl.toDataURL());
+  //       var bodyFormData = new FormData();
+  //       bodyFormData.append("ip", _printer?.ip);
+  //       bodyFormData.append("isdrawer", false);
+  //       bodyFormData.append("port", "9100");
+  //       bodyFormData.append("image", _file);
+  //       bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+  //       if (_index === 0) {
+  //         bodyFormData.append("beep1", 1);
+  //         bodyFormData.append("beep2", 9);
+  //       }
+  //       await printFlutter(
+  //         {
+  //           drawer: false,
+  //           paper: _printer?.width === "58mm" ? 400 : 500,
+  //           imageBuffer: dataUrl.toDataURL(),
+  //           ip: _printer?.ip,
+  //           type: _printer?.type,
+  //           port: "9100",
+  //           width: _printer?.width === "58mm" ? 400 : 580,
+  //         },
+  //         async () => {
+  //           await axios({
+  //             method: "post",
+  //             url: urlForPrinter,
+  //             data: bodyFormData,
+  //             headers: { "Content-Type": "multipart/form-data" },
+  //           });
+  //         }
+  //       );
+
+  //       if (_index === 0) {
+  //         await Swal.fire({
+  //           icon: "success",
+  //           title: `${t("print_success")}`,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       if (_index === 0) {
+  //         await Swal.fire({
+  //           icon: "error",
+  //           title: `${t("print_fial")}`,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //       }
+  //     }
+  //     _index++;
+  //   }
+  //   setOnPrinting(false);
+  // };
+
   const onPrintForCher = async () => {
-    setOnPrinting(true);
+    try {
+      setOnPrinting(true);
+      // setCountError("");
 
-    let _dataBill = {
-      ...dataBill,
-      typePrint: "PRINT_BILL_FORCHER",
-    };
-    await _createHistoriesPrinter(_dataBill);
+      const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
 
-    const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-    let _index = 0;
-    const printDate = [...billForCher80.current];
-    let dataUrls = [];
-    for (const _ref of printDate) {
-      const dataUrl = await html2canvas(_ref, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-        scale: 530 / widthBill80,
-      });
-      dataUrls.push(dataUrl);
+      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
+      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
+
+      let arrayPrint = [];
+      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+        arrayPrint.push(
+          runPrint(
+            base64ArrayAndPrinter[index].dataUrl,
+            index,
+            base64ArrayAndPrinter[index].printer
+          )
+        );
+      }
+      // if (countError == "ERR") {
+      //   setIsLoading(false);
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "ປິ້ນບໍ່ສຳເລັດ",
+      //     showConfirmButton: false,
+      //     timer: 1500,
+      //   });
+      // } else {
+      //   await Swal.fire({
+      //     icon: "success",
+      //     title: "ປິ້ນສຳເລັດ",
+      //     showConfirmButton: false,
+      //     timer: 1500,
+      //   });
+      // }
+      setOnPrinting(false);
+      setPrintBackground((prev) => [...prev, ...arrayPrint]);
+    } catch (error) {
+      // setIsLoading(false);
+      setOnPrinting(false);
     }
-    for (const _ref of printDate) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
+  };
 
-      try {
-        let urlForPrinter = "";
-        let dataUrl = dataUrls[_index];
+  const runPrint = async (dataUrl, index, printer) => {
+    try {
+      const printFile = base64ToBlob(dataUrl);
+      var bodyFormData = new FormData();
 
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = ETHERNET_PRINTER_PORT;
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = USB_PRINTER_PORT;
-        }
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+      bodyFormData.append("ip", printer?.ip);
+      if (index === 0) {
+        bodyFormData.append("beep1", 1);
+        bodyFormData.append("beep2", 9);
+      }
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", printFile);
+      bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
 
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("isdrawer", false);
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
+      let urlForPrinter = "";
+      if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
+      if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
+
+      await printFlutter(
+        {
+          imageBuffer: dataUrl,
+          ip: printer?.ip,
+          type: printer?.type,
+          port: "9100",
+          width: printer?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         }
-        await printFlutter(
-          {
-            drawer: false,
-            paper: _printer?.width === "58mm" ? 400 : 500,
-            imageBuffer: dataUrl.toDataURL(),
-            ip: _printer?.ip,
-            type: _printer?.type,
-            port: "9100",
-            width: _printer?.width === "58mm" ? 400 : 580,
-          },
-          async () => {
-            await axios({
-              method: "post",
-              url: urlForPrinter,
-              data: bodyFormData,
-              headers: { "Content-Type": "multipart/form-data" },
-            });
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const convertHtmlToBase64 = (orderSelect) => {
+    const base64ArrayAndPrinter = [];
+    orderSelect.forEach((data, index) => {
+      if (data) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // Define base dimensions
+        const baseHeight = 250;
+        const extraHeightPerOption = 30;
+        const extraHeightForNote = data?.note ? 40 : 0;
+        const dynamicHeight =
+          baseHeight +
+          (data.options?.length || 0) * extraHeightPerOption +
+          extraHeightForNote;
+        const width = 510;
+
+        canvas.width = width;
+        canvas.height = dynamicHeight;
+
+        // Set white background
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, width, dynamicHeight);
+
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
           }
+          context.fillText(line, x, y);
+          return y + lineHeight;
+        }
+
+        // Header: Table Name and Code
+        // Draw the Table ID (left black block)
+        context.fillStyle = "#000"; // Black background
+        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
+        context.fillStyle = "#fff"; // White text
+        context.font = "bold 36px NotoSansLao";
+        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
+
+        // Draw the Table Code (right side)
+        context.fillStyle = "#000"; // Black text
+        context.font = "bold 30px NotoSansLao";
+        context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
+
+        // Divider line below header
+        context.strokeStyle = "#ccc";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.moveTo(0, 65);
+        context.lineTo(width, 65);
+        context.stroke();
+
+        // Content: Item Name and Quantity
+        context.fillStyle = "#000";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        let yPosition = 100;
+        yPosition = wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          yPosition,
+          width - 20,
+          36
         );
 
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "success",
-            title: `${t("print_success")}`,
-            showConfirmButton: false,
-            timer: 1500,
-          });
+        // Content: Item Note
+        if (data?.note) {
+          const noteLabel = "Note: ";
+          const noteText = data.note;
+
+          // Draw "Note:" label in bold
+          context.fillStyle = "#666";
+          context.font = "italic bold 22px Arial, sans-serif";
+          context.fillText(noteLabel, 10, yPosition);
+
+          // Measure width of the "Note:" label
+          const noteLabelWidth = context.measureText(noteLabel).width;
+
+          // Wrap the note text, starting after the "Note:" label
+          context.font = "italic 22px Arial, sans-serif";
+          yPosition = wrapText(
+            context,
+            noteText,
+            10 + noteLabelWidth, // Start after the label width
+            yPosition,
+            width - 20 - noteLabelWidth, // Adjust wrapping width
+            30
+          );
+
+          // Add spacing after the note
+          yPosition += 10;
         }
-      } catch (err) {
-        console.log(err);
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "error",
-            title: `${t("print_fial")}`,
-            showConfirmButton: false,
-            timer: 1500,
+
+        // Options
+        if (data.options && data.options.length > 0) {
+          context.fillStyle = "#000";
+          context.font = "24px NotoSansLao, Arial, sans-serif";
+          data.options.forEach((option, idx) => {
+            const optionPriceText = option?.price
+              ? ` - ${moneyCurrency(option?.price)}`
+              : "";
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity}`;
+            yPosition = wrapText(
+              context,
+              optionText,
+              10,
+              yPosition,
+              width - 20,
+              30
+            );
           });
+
+          // Divider below options
+          context.strokeStyle = "#ccc";
+          context.setLineDash([4, 2]);
+          context.beginPath();
+          context.moveTo(0, yPosition);
+          context.lineTo(width, yPosition);
+          context.stroke();
+          context.setLineDash([]);
+          yPosition += 20;
         }
+
+        // Add a dotted line before footer
+        context.strokeStyle = "#000"; // Black dotted line
+        context.setLineDash([4, 2]); // Dotted line style
+        context.beginPath();
+        context.moveTo(0, dynamicHeight - 70); // Position 70px above footer
+        context.lineTo(width, dynamicHeight - 70); // Full-width dotted line
+        context.stroke();
+        context.setLineDash([]); // Reset line dash style
+
+        // Footer: Created By and Date
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.fillStyle = "#000";
+        context.fillText(
+          data?.createdBy?.firstname ||
+            data?.updatedBy?.firstname ||
+            "lailaolab",
+          10,
+          dynamicHeight - 40
+        );
+        context.fillStyle = "#6e6e6e";
+        context.font = "22px NotoSansLao, Arial, sans-serif";
+        context.fillText(
+          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+            data?.createdAt
+          ).format("LT")}`,
+          width - 220,
+          dynamicHeight - 40
+        );
+
+        // Convert canvas to base64
+        const dataUrl = canvas.toDataURL("image/png");
+        const printer = printers.find((e) => e?._id === data?.printer);
+        if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
-      _index++;
-    }
-    setOnPrinting(false);
+    });
+
+    return base64ArrayAndPrinter;
   };
 
   const onPrintForCherCancel = async () => {

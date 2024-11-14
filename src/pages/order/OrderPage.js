@@ -30,6 +30,7 @@ import Loading from "../../components/Loading";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
+import { printItems } from "../table/printItems";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -42,6 +43,8 @@ export default function OrderPage() {
   const [popup, setPopup] = useState();
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
+  const [combinedBillRefs, setCombinedBillRefs] = useState({});
+  const [groupedItems, setGroupedItems] = useState({});
 
   const {
     orderItems,
@@ -93,6 +96,31 @@ export default function OrderPage() {
       setCountOrderWaiting(count || 0);
       return;
     } catch (err) {}
+  };
+
+  useEffect(() => {
+    const orderSelect = orderItems?.filter((e) => e?.isChecked);
+    const refs = {};
+
+    const grouped = groupItemsByPrinter(orderSelect);
+
+    Object.keys(grouped).forEach((printerIp) => {
+      refs[printerIp] = React.createRef();
+    });
+    setCombinedBillRefs(refs);
+    setGroupedItems(grouped);
+  }, [orderItems]);
+
+  const groupItemsByPrinter = (items) => {
+    return items?.reduce((groups, item) => {
+      const printer = printers.find((e) => e?._id === item.printer);
+      const printerIp = printer?.ip || "unknown";
+      if (!groups[printerIp]) {
+        groups[printerIp] = [];
+      }
+      groups[printerIp].push(item);
+      return groups;
+    }, {});
   };
 
   const [onPrinting, setOnPrinting] = useState(false);
@@ -424,7 +452,17 @@ export default function OrderPage() {
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
-              await onPrintForCher();
+              const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
+              if (hasNoCut) {
+                printItems(
+                  groupedItems,
+                  combinedBillRefs,
+                  printers,
+                  selectedTable
+                );
+              } else {
+                onPrintForCher();
+              }
               // await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
             }}
