@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import moment from "moment";
@@ -10,12 +10,14 @@ export default function PopUpPermissonCounter({
   dateEnd,
   setDateStart,
   setDateEnd,
+  days ,
 }) {
-  // Function to handle the preset date buttons like "Today", "Yesterday", etc.
+  const [tempDateStart, setTempDateStart] = useState(dateStart);
+  const [tempDateEnd, setTempDateEnd] = useState(dateEnd);
+
   const handlePresetDate = (type) => {
     let start, end;
 
-    // Set start and end date based on the button clicked
     switch (type) {
       case "today":
         start = moment().startOf("day");
@@ -23,44 +25,60 @@ export default function PopUpPermissonCounter({
         break;
       case "yesterday":
         start = moment().subtract(1, "days").startOf("day");
-        end = moment().subtract(1, "days").endOf("day");
+        end = moment().endOf("day");
         break;
       case "3days":
-        start = moment().subtract(3, "days").startOf("day");
+        start = moment().subtract(2, "days").startOf("day");
         end = moment().endOf("day");
         break;
       case "5days":
-        start = moment().subtract(5, "days").startOf("day");
+        start = moment().subtract(4, "days").startOf("day");
         end = moment().endOf("day");
         break;
       case "7days":
-        start = moment().subtract(7, "days").startOf("day");
+        start = moment().subtract(6, "days").startOf("day");
         end = moment().endOf("day");
         break;
       default:
         break;
     }
 
-    setDateStart(start.toDate()); // Set the start date
-    setDateEnd(end.toDate()); // Set the end date
+    setTempDateStart(start.toDate());
+    setTempDateEnd(end.toDate());
   };
 
-  // Handle date range changes
   const handleDateChange = (type, value) => {
     if (type === "start") {
-      setDateStart(value);
+      setTempDateStart(value);
     } else {
-      setDateEnd(value);
+      setTempDateEnd(value);
     }
   };
 
   useEffect(() => {
-    // Automatically set dates when the modal is opened (optional)
     if (open && !dateStart && !dateEnd) {
-      setDateStart(moment().startOf("day").toDate());
-      setDateEnd(moment().endOf("day").toDate());
+      setTempDateStart(moment().startOf("day").toDate());
+      setTempDateEnd(moment().endOf("day").toDate());
     }
-  }, [open, dateStart, dateEnd, setDateStart, setDateEnd]);
+  }, [open, dateStart, dateEnd]);
+
+  const handleConfirm = () => {
+    setDateStart(tempDateStart);
+    setDateEnd(tempDateEnd);
+    onClose();
+  };
+
+  const buttons = [
+    { label: "ມື້ນີ້", type: "today", condition: 0 },
+    { label: "ມື້ວານ", type: "yesterday", condition: 1 },
+    { label: "3ມື້", type: "3days", condition: 3 },
+    { label: "5ມື້", type: "5days", condition: 5 },
+    { label: "7ມື້", type: "7days", condition: 7 },
+  ];
+
+  // คำนวณช่วงวันที่อนุญาตให้เลือก
+  const minDate = moment().subtract(days, "days").format("YYYY-MM-DD");
+  const maxDate = moment().format("YYYY-MM-DD");
 
   return (
     <Modal show={open} onHide={onClose} size="lg" centered>
@@ -81,11 +99,17 @@ export default function PopUpPermissonCounter({
             marginBottom: 10,
           }}
         >
-          <Button variant="outline-primary" onClick={() => handlePresetDate("today")}>ມື້ນີ້</Button>
-          <Button variant="outline-primary" onClick={() => handlePresetDate("yesterday")}>ມື້ວານ</Button>
-          <Button variant="outline-primary" onClick={() => handlePresetDate("3days")}>3ມື້</Button>
-          <Button variant="outline-primary" onClick={() => handlePresetDate("5days")}>5ມື້</Button>
-          <Button variant="outline-primary" onClick={() => handlePresetDate("7days")}>7ມື້</Button>
+          {buttons
+            .filter((button) => days >= button.condition)
+            .map((button) => (
+              <Button
+                key={button.type}
+                variant="outline-primary"
+                onClick={() => handlePresetDate(button.type)}
+              >
+                {button.label}
+              </Button>
+            ))}
         </Box>
 
         <Box
@@ -96,34 +120,52 @@ export default function PopUpPermissonCounter({
             flexDirection: { md: "row", xs: "column" },
           }}
         >
-          {/* Date range start */}
           <InputGroup>
             <Form.Control
               type="date"
-              value={moment(dateStart).format("YYYY-MM-DD")}
+              min={minDate} // กำหนดวันต่ำสุด
+              max={maxDate} // กำหนดวันสูงสุด
+              value={moment(tempDateStart).format("YYYY-MM-DD")}
               onChange={(e) => handleDateChange("start", moment(e.target.value).toDate())}
               className="custom-input"
             />
             <Form.Control
               type="time"
-              value={moment(dateStart).format("HH:mm")}
-              onChange={(e) => handleDateChange("start", moment(dateStart).set("hour", e.target.value.split(":")[0]).set("minute", e.target.value.split(":")[1]).toDate())}
+              value={moment(tempDateStart).format("HH:mm")}
+              onChange={(e) =>
+                handleDateChange(
+                  "start",
+                  moment(tempDateStart)
+                    .set("hour", e.target.value.split(":")[0])
+                    .set("minute", e.target.value.split(":")[1])
+                    .toDate()
+                )
+              }
               className="custom-input"
             />
           </InputGroup>
           <div style={{ textAlign: "center" }}> ຫາ </div>
-          {/* Date range end */}
           <InputGroup>
             <Form.Control
               type="date"
-              value={moment(dateEnd).format("YYYY-MM-DD")}
+              min={minDate} // กำหนดวันต่ำสุด
+              max={maxDate} // กำหนดวันสูงสุด
+              value={moment(tempDateEnd).format("YYYY-MM-DD")}
               onChange={(e) => handleDateChange("end", moment(e.target.value).toDate())}
               className="custom-input"
             />
             <Form.Control
               type="time"
-              value={moment(dateEnd).format("HH:mm")}
-              onChange={(e) => handleDateChange("end", moment(dateEnd).set("hour", e.target.value.split(":")[0]).set("minute", e.target.value.split(":")[1]).toDate())}
+              value={moment(tempDateEnd).format("HH:mm")}
+              onChange={(e) =>
+                handleDateChange(
+                  "end",
+                  moment(tempDateEnd)
+                    .set("hour", e.target.value.split(":")[0])
+                    .set("minute", e.target.value.split(":")[1])
+                    .toDate()
+                )
+              }
               className="custom-input"
             />
           </InputGroup>
@@ -134,7 +176,7 @@ export default function PopUpPermissonCounter({
         <Button variant="outline-secondary" onClick={onClose}>
           ຍົກເລີກ
         </Button>
-        <Button onClick={onClose}>ຍືນຢັນ</Button>
+        <Button onClick={handleConfirm}>ຍືນຢັນ</Button>
       </Modal.Footer>
     </Modal>
   );

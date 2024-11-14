@@ -44,6 +44,8 @@ export default function IncomeExpendExport() {
   const [dateStart, setDateStart] = useState(new Date(year, month, 1));
   const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
 
+  
+
   // console.log("dateStart::", dateStart, "dateEnd::", dateEnd);
 
   const { width, height } = useWindowDimensions2();
@@ -67,14 +69,18 @@ export default function IncomeExpendExport() {
   const storeId = storeDetail?._id;
   const user_role = profile.data?.role;
   const [days , setDays] = useState(null)
+  const today = new Date();
 
   //console.log("profile:", profile);
   console.log("user_role:", user_role);
 
   const User_store = "APPZAP_ADMIN";
   console.log("days: ", days)
+  console.log("datestart: ", dateStart)
+  console.log("dateEnd: ", dateEnd)
 
   // console.log("incomeExpendData::", incomeExpendData);
+  
 
   useEffect(() => {
     const fetchInitialSwitchState = async () => {
@@ -199,52 +205,67 @@ export default function IncomeExpendExport() {
     // modifyData()
   }, [series, options]);
 
+  
+
   const getIncomeExpendData = async () => {
     try {
       const _localData = await getLocalData();
+      const today = moment().format("YYYY-MM-DD");
+  
+      // ตรวจสอบเงื่อนไข User_store และ user_role
+      if (User_store === user_role) {
+        setDateStart(new Date());
+        setDateEnd(new Date());
+      } else {
+        setDateStart(new Date(year, month, 1));
+        setDateEnd(new Date(year, month + 1, 0));
+      }
+  
       let findby = `accountId=${
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      // if (filterByYear) findby += `&year=${filterByYear}`
-      // if (filterByMonth) findby += `&month=${filterByMonth}`
-      if (dateStart && dateEnd)
+  
+      if (dateStart && dateEnd) {
         findby += `&date_gte=${moment(dateStart).format(
           "YYYY/MM/DD"
         )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
-      // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
-
+      }
+  
       const header = await getHeadersAccount();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+  
+      // ดึงข้อมูลค่าใช้จ่าย (Expenditure)
       await axios({
         method: "get",
         url: `${END_POINT_SERVER_BUNSI}/api/v1/expend-report?${findby}`,
         headers: headers,
       })
         .then((res) => {
-          // console.log(res);
           setExpendGraphData(res?.data?.data?.chartExpend);
           console.log("ExpendGraphData", res?.data);
         })
         .finally(() => {
           setIsLoading(false);
         });
-
+  
+      // ดึงข้อมูลรายรับ (Income)
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      if (dateStart && dateEnd)
+      if (dateStart && dateEnd) {
         findIncomeby += `startDate=${moment(dateStart).format(
           "YYYY-MM-DD"
         )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
-      findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
+      }
+      
+      findIncomeby += `&endTime=23:59:59&startTime=00:00:00`;
       await axios({
         method: "post",
         url: `${END_POINT_SEVER}/v4/report-daily/${findIncomeby}`,
         headers: headers,
       })
         .then((res) => {
-          // console.log("IncomeGraphData", res?.data);
           setIncomeGraphData(res?.data);
           setIsLoading(false);
         })
@@ -255,14 +276,15 @@ export default function IncomeExpendExport() {
       console.log("err:::", err);
     }
   };
-
+  
+  
   const modifyData = () => {
     if (!incomeGraphData) return;
-
+  
     setSeries([]);
     setOptions(null);
     setGraphData(null);
-
+  
     const _createdAtGraph = expendGraphData?.createdAt;
     const _xAxisData = [];
     const bbb = [..._createdAtGraph];
@@ -270,7 +292,7 @@ export default function IncomeExpendExport() {
     bbb.map((x) => _xAxisData.push(`${moment(x).format("YYYY-MM-DD")}`));
     const _options = OPTION;
     _options.xaxis.categories = _xAxisData;
-
+  
     const _dataAtGraph = expendGraphData?.totalExpendLAK;
     const _lakData = [];
     const ccc = [..._dataAtGraph];
@@ -283,23 +305,23 @@ export default function IncomeExpendExport() {
         _incomeData.push(_isMatchDate[0]?.billAmount);
       else _incomeData.push(0);
     });
-
+  
     const _series = [...series];
     _series[0] = {
       name: `${t("recieve_lak")}`,
       data: [..._incomeData],
     };
-
+  
     _series[1] = {
       name: `${t("paid_lak")}`,
       data: [..._lakData],
     };
-
+  
     const _graphData = {};
     _graphData.options = _options;
     _graphData.series = _series;
     setGraphData(_graphData);
-
+  
     const _incomeExpendData = [];
     _xAxisData.map((t, index) => {
       _incomeExpendData.push({
@@ -310,6 +332,7 @@ export default function IncomeExpendExport() {
     });
     setIncomeExpendData(_incomeExpendData);
   };
+  
 
   const calculateSummaryIncome = (type) => {
     let _summaryAmount = 0;
@@ -341,6 +364,8 @@ export default function IncomeExpendExport() {
         return "";
     }
   };
+
+  
 
   return (
     <div>
@@ -386,13 +411,13 @@ export default function IncomeExpendExport() {
               </Button>
             </Form.Group>
           ) : (
-            <div>
+            <div style={{display:"flex", alignItems:'center'}}>
               <Form.Label>{t("date")}</Form.Label>
               <Form.Control
                 type="date"
                 value={dateStart}
                 onChange={(e) => setDateStart(e?.target?.value)}
-                style={{ width: 150 }}
+                style={{ width: 150,marginLeft:"3px" }}
               />
               <span>~</span>
               <Form.Control
@@ -611,6 +636,8 @@ export default function IncomeExpendExport() {
         dateEnd={dateEnd}
         setDateStart={setDateStart}
         setDateEnd={setDateEnd}
+        days={days}
+        handlePresetDate
       />
     </div>
   );
