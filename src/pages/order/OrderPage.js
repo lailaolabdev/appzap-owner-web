@@ -228,16 +228,16 @@ export default function OrderPage() {
 
         // Header: Table Name and Code
         // Draw the Table ID (left black block)
-        context.fillStyle = "#000"; // Black background
-        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
-        context.fillStyle = "#fff"; // White text
-        context.font = "bold 36px NotoSansLao";
-        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, width / 2, 60);
+        context.fillStyle = "#fff";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
 
-        // Draw the Table Code (right side)
-        context.fillStyle = "#000"; // Black text
-        context.font = "bold 30px NotoSansLao";
-        context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
+        // Table Code on the right
+        context.fillStyle = "#000";
+        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.code || selectedTable?.code, width - 150, 44); // Adjusted position for better alignment
 
         // Divider line below header
         context.strokeStyle = "#ccc";
