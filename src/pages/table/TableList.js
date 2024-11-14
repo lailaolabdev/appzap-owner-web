@@ -1452,9 +1452,6 @@ export default function TableList() {
     }
   };
 
-  console.log("storeDetail", tableList);
-  console.log("storeDetail", dataBill);
-
   return (
     <div
       style={{
@@ -1754,8 +1751,16 @@ export default function TableList() {
                                     : "#71717A",
                                 }}
                               >
+                                {/* {table?.isStaffConfirm
+                                  ? `${t("unavailable")}` :
+                                  ? table?.statusBill === "CALL_TO_CHECKOUT" ? "Check Out" : "Check In"
+                                  : `${t("avaliable")}`} */}
                                 {table?.isStaffConfirm
-                                  ? `${t("unavailable")}`
+                                  ? table?.editBill
+                                    ? `${t("avaliable")}`
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? `${t("printed_bill")}`
+                                    : `${t("unavailable")}`
                                   : `${t("avaliable")}`}
                               </div>
                               <div
@@ -1766,7 +1771,10 @@ export default function TableList() {
                                   fontFamily: "Inter",
                                 }}
                               >
-                                Zone: Normal
+                                Zone:{" "}
+                                {table?.zone?.name
+                                  ? table?.zone?.name
+                                  : "Normal"}
                               </div>
                             </span>
                           </div>
@@ -1861,12 +1869,22 @@ export default function TableList() {
                                     : "#71717A",
                                 }}
                               >
-                                {table?.isStaffConfirm
+                                {/* {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
+                                  : `${t("avaliable")}`} */}
+                                {table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? `${t("avaliable")}`
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? `${t("printed_bill")}`
+                                    : `${t("unavailable")}`
                                   : `${t("avaliable")}`}
                               </div>
                               <div style={{ color: "gray", fontSize: "15px" }}>
-                                Zone: Normal
+                                Zone:{" "}
+                                {table?.zone?.name
+                                  ? table?.zone?.name
+                                  : "Normal"}
                               </div>
                             </span>
                           </div>

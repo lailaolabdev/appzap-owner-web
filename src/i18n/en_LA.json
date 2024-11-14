@@ -551,6 +551,7 @@
   "price_has_to_pay": "ຈຳນວນເງິນທີ່ຕ້ອງຈ່າຍ ",
   "primary_profit": "ກຳໄລຂັ້ນຕົ້ນ (ຍອດຂາຍ - ລາຍຈ່າຍກີບ)",
   "print_bill": "ພິມບິນ",
+  "printed_bill": "ພິມບິນແລ້ວ",
   "print_bill_history": "ພິມບິນໜ້າປະຫວັດ",
   "print_bill_to_kitchen": "ພິມບິນສົ່ງໄປຄົວ",
   "print_checkbill": "ພິມບິນ ແລະ ໄລ່ເງິນ",

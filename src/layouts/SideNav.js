@@ -186,7 +186,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   system: "stockManagement",
     // },
     {
-      title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
+      title: `${t("shop_setting")}`,
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
