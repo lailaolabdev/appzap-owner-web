@@ -3,19 +3,22 @@ import axios from "axios";
 import moment from "moment";
 
 import { TitleComponent } from "../../components";
-import { Form } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import IncomeExpendatureChart from "./IncomeExpendatureChart";
 import { COLOR_APP } from "../../constants";
 import {
   END_POINT_SERVER_BUNSI,
   getLocalData,
   END_POINT_SEVER,
+  PERMISSIONS_COUNTER
 } from "../../constants/api";
+import { useStore } from "../../store";
 import PaginationComponent from "../../components/PaginationComponent";
 import { getHeadersAccount } from "../../services/auth";
 import { useLocation, useParams } from "react-router-dom";
 import { moneyCurrency } from "../../helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
 import {
   faBalanceScaleRight,
   faDollarSign,
@@ -26,6 +29,7 @@ import Filter from "../expend/component/filter";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
+import PopUpPermissonCounter from "../../components/popup/PopUpPermissionCounter";
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -58,8 +62,40 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
+  const { profile, storeDetail } = useStore();
+  const [openGetDate, setOpenGetDate] = useState(false);
+  const storeId = storeDetail?._id;
+  const user_role = profile.data?.role;
+  const [days , setDays] = useState(null)
+
+  //console.log("profile:", profile);
+  console.log("user_role:", user_role);
+
+  const User_store = "APPZAP_ADMIN";
+  console.log("days: ", days)
 
   // console.log("incomeExpendData::", incomeExpendData);
+
+  useEffect(() => {
+    const fetchInitialSwitchState = async () => {
+      try {
+        const response = await axios.get(`${PERMISSIONS_COUNTER}/${storeId}`);
+        if (response.data) {
+          const currentCounter = response.data.permissionsCounter;
+          if (currentCounter) {
+            setDays(currentCounter);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching initial switch state:', error);
+      }
+    };
+
+    if (storeId) {
+      fetchInitialSwitchState();
+    }
+  }, [storeId , days]);
+
 
   const OPTION = {
     chart: {
@@ -307,7 +343,7 @@ export default function IncomeExpendExport() {
   };
 
   return (
-    <>
+    <div>
       <div
         style={{
           display: "flex",
@@ -329,20 +365,44 @@ export default function IncomeExpendExport() {
             gap: 5,
           }}
         >
-          <Form.Label>{t("date")}</Form.Label>
-          <Form.Control
-            type="date"
-            value={dateStart}
-            onChange={(e) => setDateStart(e?.target?.value)}
-            style={{ width: 150 }}
-          />{" "}
-          ~
-          <Form.Control
-            type="date"
-            value={dateEnd}
-            onChange={(e) => setDateEnd(e?.target?.value)}
-            style={{ width: 150 }}
-          />
+          {user_role === User_store ? (
+            <Form.Group style={{ width: "100%"}}>
+              <Form.Label>{t("date_time")}</Form.Label>
+              <Button
+                variant="outline-primary"
+                size="small"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  width: "100%",
+                }}
+                onClick={() => setOpenGetDate({ popupfiltter: true })}
+              >
+                <BsFillCalendarWeekFill />
+                <div>{moment(dateStart).format("YYYY-MM-DD")}</div>
+                {" ~ "}
+                <div>{moment(dateEnd).format("YYYY-MM-DD")}</div>
+              </Button>
+            </Form.Group>
+          ) : (
+            <div>
+              <Form.Label>{t("date")}</Form.Label>
+              <Form.Control
+                type="date"
+                value={dateStart}
+                onChange={(e) => setDateStart(e?.target?.value)}
+                style={{ width: 150 }}
+              />
+              <span>~</span>
+              <Form.Control
+                type="date"
+                value={dateEnd}
+                onChange={(e) => setDateEnd(e?.target?.value)}
+                style={{ width: 150 }}
+              />
+            </div>
+          )}
           {/* <Form.Control
             as="select"
             name="payment"
@@ -543,6 +603,15 @@ export default function IncomeExpendExport() {
           ))}
         </table>
       </div>
-    </>
+
+      <PopUpPermissonCounter
+        open={openGetDate?.popupfiltter}
+        onClose={() => setOpenGetDate()}
+        dateStart={dateStart}
+        dateEnd={dateEnd}
+        setDateStart={setDateStart}
+        setDateEnd={setDateEnd}
+      />
+    </div>
   );
 }

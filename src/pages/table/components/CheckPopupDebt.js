@@ -38,14 +38,13 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
-import { getMembersAll } from "./../../../services/member.service";
 
 export default function CheckPopupDebt({
   onPrintDrawer,
   onPrintBill,
   open,
   onClose,
-  onSubmit = () => {},
+  // onSubmit,
   dataBill,
   tableData,
   setDataBill,
@@ -71,9 +70,6 @@ export default function CheckPopupDebt({
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
-  const [amountBefore, setAmountBefore] = useState(); //update
-  const [remainingAmount, setRemainingAmount] = useState(); //update
-  const [remainingShow, setRemainingShow] = useState(); //ipdate
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
@@ -157,8 +153,6 @@ export default function CheckPopupDebt({
       const { DATA, TOKEN } = await getLocalData();
       const _body = {
         amount: totalBill,
-        amountBefore: amountBefore,
-        remainingAmount: remainingAmount,
         customerName: customerName,
         customerPhone: customerPhone,
         billId: tableData._id,
@@ -168,7 +162,7 @@ export default function CheckPopupDebt({
         storeId: DATA?.storeId,
       };
 
-      console.log("Frontend body =======>\n", _body);
+      console.log(_body);
       // return;
 
       const data = await createBilldebt(_body, TOKEN);
@@ -177,8 +171,8 @@ export default function CheckPopupDebt({
         return;
       }
       setPrintCode(data.code);
+      // await onPrintBillFark();
       navigate("/debt");
-      handleSubmit();
       successAdd(`${t("debt_success")}`);
     } catch (err) {
       console.log(err);
@@ -186,20 +180,17 @@ export default function CheckPopupDebt({
   };
 
   const getMembersData = async () => {
-    setIsLoading(true);
     try {
       const { TOKEN, DATA } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${DATA?.storeId}&`;
-      // findby += `skip=${(pagination - 1) * limitData}&`;
-      // findby += `limit=${limitData}&`;
-      const _data = await getMembersAll(findby, TOKEN);
+      let findby = "";
+      findby += `${DATA?.storeId}&`;
+      const _data = await getMemberAllCount(findby, TOKEN);
+      console.log("data api", _data);
       if (_data.error) throw new Error("error");
-      setMembersData(_data.data);
-      setIsLoading(false);
+      setMembersData(_data?.data?.data);
+      console.log(_data);
     } catch (err) {
-      setIsLoading(false);
-      console.log("err", err);
+      console.error("Error fetching members data", err);
     }
   };
 
@@ -219,7 +210,6 @@ export default function CheckPopupDebt({
     if (!open) return;
     let moneyReceived = "";
     let remainingAmount = "";
-    let amountBefore = "";
     const discountedTotalBill =
       dataBill?.discountType === "LAK"
         ? Math.max(totalBill - dataBill?.discount, 0)
@@ -243,7 +233,7 @@ export default function CheckPopupDebt({
     setDataBill((prev) => ({
       ...prev,
       moneyReceived: moneyReceived,
-      remainingAmount: remainingAmountValue,
+      remainingAmount: remainingAmount,
       dataStaffConfirm: staffConfirm,
     }));
   }, [cash, transfer, selectCurrency]);
@@ -300,12 +290,6 @@ export default function CheckPopupDebt({
   };
   const _checkBill = async () => {
     let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-    const validPayAmount = cash && !isNaN(cash) ? cash : amountBefore;
-    const validTransferAmount =
-      transfer && !isNaN(transfer) ? transfer : remainingAmount;
-
-    console.log("Before Checkbill amountBefore =======> ", validPayAmount);
-    console.log("Before Checkbill remainingAmount ====> ", validTransferAmount);
     await axios
       .put(
         END_POINT + `/v3/bill-checkout`,
@@ -314,8 +298,8 @@ export default function CheckPopupDebt({
           data: {
             isCheckout: "true",
             status: "CHECKOUT",
-            payAmount: validPayAmount,
-            transferAmount: validTransferAmount,
+            payAmount: cash,
+            transferAmount: transfer,
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
@@ -364,13 +348,12 @@ export default function CheckPopupDebt({
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
-
-  console.log("transfer", transfer);
-  const handleSubmit = () => {
-    _checkBill();
-    onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
-  };
+  // console.log("transfer", transfer);
+  // const handleSubmit = () => {
+  //   _checkBill();
+  //   // onSubmit();
+  //   // console.log("valueConfirm:------>", valueConfirm)
+  // };
 
   // const options = membersData?.map((data) => {
   //   return {
@@ -515,38 +498,6 @@ export default function CheckPopupDebt({
     });
   };
 
-  const onChangeAmountBeforeInput = (inputData) => {
-    // Ton update
-    console.log({ inputData });
-    convertNumberReverse(inputData, (value) => {
-      setAmountBefore(value);
-      if (selectCurrency != "LAK") {
-        if (!value) {
-          setCashCurrency();
-        } else {
-          const amount = value / rateCurrency;
-          setCashCurrency(amount.toFixed(2));
-        }
-      }
-    });
-  };
-
-  const onChangeRemainingAmountInput = (inputData) => {
-    // Ton update
-    console.log({ inputData });
-    convertNumberReverse(inputData, (value) => {
-      setRemainingAmount(value);
-      if (selectCurrency != "LAK") {
-        if (!value) {
-          setCashCurrency();
-        } else {
-          const amount = value / rateCurrency;
-          setCashCurrency(amount.toFixed(2));
-        }
-      }
-    });
-  };
-
   console.log(cash - transfer);
 
   const onChangeTransferInput = (inputData) => {
@@ -565,27 +516,29 @@ export default function CheckPopupDebt({
   //   };
   // });
 
-  const optionsData = membersData.map((data) => {
-    return {
-      id: data?._id,
-      value: data?.name,
-      label: data?.phone,
-      tel: data?.phone,
-    };
-  });
+  const optionsData = Array.isArray(membersData)
+    ? membersData.map((item) => {
+        return {
+          value: item.phone,
+          label: `${item.name} `, //(${item.phone})
+          phoneNumber: item.phone,
+        };
+      })
+    : [];
 
-  useEffect(() => {
-    //update
-    const remainingCalculate = totalBill - (amountBefore || 0);
-    setRemainingShow(remainingCalculate);
-    setRemainingAmount(remainingCalculate);
-  }, [totalBill, amountBefore]);
+  // console.log("optionsData", optionsData);
 
+  // const handleSearchInput = (option) => {
+  //   setTextSearchMember(option.value);
+  // };
+
+  // console.log("textSearchMember", textSearchMember);
+
+  //Head of title
   return (
     <Modal
       show={open}
       onHide={() => {
-        setAmountBefore(0);
         setCash();
         setTransfer();
         onClose();
@@ -688,34 +641,36 @@ export default function CheckPopupDebt({
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
-                  placeholder={"0"}
-                  value={convertNumber(amountBefore)}
+                  //
+                  // placeholder={t("money_amount")}
+                  // value={amount}
+                  // onChange={(e) => setAmount(e?.target.value)}
+                  //
+                  placeholder="0"
+                  value={convertNumber(cash)}
                   onClick={() => {
-                    setSelectInput("inputAmountBefore");
+                    setSelectInput("inputCash");
                   }}
                   onChange={(e) => {
-                    onChangeAmountBeforeInput(e.target.value);
+                    onChangeCashInput(e.target.value);
                   }}
                   size="lg"
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
+
               <InputGroup>
                 <InputGroup.Text>{t("debt_notpay")}</InputGroup.Text>
                 <Form.Control
-                  disabled
+                  disabled={tab !== "cash_transfer"}
                   type="text"
-                  placeholder={
-                    tab !== "cash"
-                      ? convertNumber(totalBill)
-                      : convertNumber(remainingAmount)
-                  }
-                  value={convertNumber(remainingAmount)}
+                  placeholder="0"
+                  value={convertNumber(transfer)}
                   onClick={() => {
-                    setSelectInput("inputRemainingAmount");
+                    setSelectInput("inputTransfer");
                   }}
                   onChange={(e) => {
-                    onChangeRemainingAmountInput(e.target.value);
+                    onChangeTransferInput(e.target.value);
                   }}
                   size="lg"
                 />
@@ -755,7 +710,7 @@ export default function CheckPopupDebt({
                 <div className="debt-input">
                   <Select
                     options={optionsData}
-                    placeholder={t("ctm_tel")}
+                    placeholder={t("XXXX")}
                     onChange={(e) => {
                       setCustomerPhone(e.tel);
                       setCustomerName(e.value);
@@ -764,12 +719,11 @@ export default function CheckPopupDebt({
                 </div>
                 <div className="debt-btn-group">
                   <button
-                    style={{ color: "white" }} ////////////////////////////////////////////////////////////////////////////////////
                     className="btn btn-primary"
                     onClick={() => getMembersData()}
                   >
                     {/* {isLoading ? (
-                    <Spinner animation="border" size="sm" />
+                      <Spinner animation="border" size="sm" />
                     ) : ( */}
                     <MdRefresh />
                     {/* )} */}
@@ -793,8 +747,7 @@ export default function CheckPopupDebt({
                 <span style={{ color: "red" }}>*</span>
               </Form.Label>
               <Form.Control
-                placeholder={t("customer_phone")}
-                maxLength={10}
+                placeholder={t("20 XXXX-XXXX")}
                 value={customerName}
                 onChange={(e) => setCustomerPhone(e?.target.value)}
               />
@@ -861,15 +814,27 @@ export default function CheckPopupDebt({
                   setCash();
                   setTransfer();
                   setTab("cash");
-                  setSelectInput("inputAmount");
+                  setSelectInput("inputCash");
                   setForcus("CASH");
-                  setAmountBefore(0);
-                  setRemainingAmount(remainingAmount);
                 }}
               >
                 {t("debt_total")}
               </Button>
+              {/* <Button
+                variant={tab === "transfer" ? "primary" : "outline-primary"}
+                onClick={() => {
+                  setCash();
+                  setSelectCurrency("LAK");
+                  setRateCurrency(1);
+                  setTransfer(transferCal);
+                  setTab("transfer");
+                  setForcus("TRANSFER");
+                }}
+              >
+                {t("transfer")}
+              </Button> */}
 
+              {/* ຈ່າຍ + ຕິດ */}
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
@@ -882,7 +847,6 @@ export default function CheckPopupDebt({
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
-                  setAmountBefore("");
                 }}
               >
                 {t("debt_and_pay")}
@@ -920,12 +884,6 @@ export default function CheckPopupDebt({
                 if (selectInput === "inputCurrency") {
                   return cashCurrency;
                 }
-                if (selectInput === "inputAmountBefore") {
-                  return amountBefore;
-                }
-                if (selectInput === "inputRemainingAmount") {
-                  return remainingAmount;
-                }
               })()}
               setSelectInput={(e) => {
                 if (selectInput === "inputCash") {
@@ -934,10 +892,6 @@ export default function CheckPopupDebt({
                   onChangeTransferInput(e);
                 } else if (selectInput === "inputCurrency") {
                   onChangeCurrencyInput(e);
-                } else if (selectInput === "inputAmountBefore") {
-                  onChangeAmountBeforeInput(e);
-                } else if (selectInput === "inputRemainingAmount") {
-                  onChangeRemainingAmountInput(e);
                 }
               }}
             />

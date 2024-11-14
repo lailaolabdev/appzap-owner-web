@@ -69,7 +69,6 @@ import BannerList from "../pages/banner/BannerList";
 import DepositBeer from "../pages/depositBeer/index";
 import FarkRoutes from "./Fark.routes";
 import DebtRoutes from "./Debt.routes";
-import BranchRoutes from "./Branch.routes";
 import UserRoutes from "./User.routes";
 import PinRoutes from "./Pin.routes";
 import PolicyRoutes from "./Policy.routes";
@@ -78,6 +77,7 @@ import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
+import PermissionsForCounters from "../pages/PermissionsForCounter/PermissonForCounter";
 
 function Router() {
   return useRoutes([
@@ -134,6 +134,10 @@ function Router() {
         {
           path: "/settingStore/banner",
           element: <BannerList />,
+        },
+        {
+          path: "/settingStore/permissionsForCounters",
+          element: <PermissionsForCounters />,
         },
         {
           path: "/tables",
@@ -314,7 +318,6 @@ function Router() {
         SelfOrderingOrderRoutes,
         FarkRoutes,
         DebtRoutes,
-        BranchRoutes,
         UserRoutes,
         PinRoutes,
       ],

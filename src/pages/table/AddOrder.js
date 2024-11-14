@@ -973,8 +973,6 @@ function AddOrder() {
     }
   };
 
-  console.log("selectedMenu: ", selectedMenu);
-
   const onSubmit = async (isPrinted) => {
     try {
       setIsLoading(true);

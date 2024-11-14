@@ -18,7 +18,6 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     useState(false);
   const [checkoutTable, setCheckoutTable] = useState(false);
   const [countOrderWaiting, setCountOrderWaiting] = useState(0);
-  const [newNotify, setNewNotify] = useState(null);
 
   useMemo(() => {
     socket.on("connect", (e) => {
@@ -45,10 +44,6 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
       console.log("data: ", data);
       setRunSound({ orderSound: true });
       setCheckoutTable(true);
-    });
-    socket.on(`APP_NOTIFY_CREATED:${storeDetail._id}`, (data) => {
-      console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
-      setNewNotify(data);
     });
     socket.on("disconnect", () => {
       setSocketConneted(socket.connected);
@@ -108,7 +103,5 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     setCountOrderWaiting,
     checkoutTable,
     setCheckoutTable,
-    newNotify,
-    setNewNotify,
   };
 };

@@ -27,7 +27,6 @@ import {
   faBoxes,
   faLayerGroup,
   faStoreAlt,
-  faBuilding,
   faMoneyBill,
   faMoneyCheck,
 } from "@fortawesome/free-solid-svg-icons";
@@ -222,14 +221,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const settingNavItem = [
     {
-      title: `${t("branch")}`,
-      key: "branch",
-      typeStore: "",
-      icon: faBuilding,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
-    {
       title: `${t("shop_setting")}`,
       key: "settingStore",
       typeStore: "",
@@ -237,7 +228,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "settingManagement",
     },
-
     {
       title: `${t("deposit_goods")}`,
       key: "fark",
@@ -246,14 +236,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "farkManagement",
     },
-    {
-      title: `${t("debt")}`,
-      key: "debt",
-      typeStore: "",
-      icon: faMoneyBill,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: `${t("debt")}`,
+    //   key: "debt",
+    //   typeStore: "",
+    //   icon: faMoneyBill,
+    //   hidden: !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);

@@ -2566,7 +2566,7 @@ export default function TableList() {
         ))}
       </div>
 
-      <CheckPopupDebt
+      {/* <CheckPopupDebt
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
@@ -2576,7 +2576,7 @@ export default function TableList() {
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         // editMode={select}
-      />
+      /> */}
       <CheckOutPopup
         saveServiceChargeDetails={saveServiceChargeDetails}
         onPrintBill={onPrintBill}
@@ -2592,9 +2592,6 @@ export default function TableList() {
             Name: "",
             Point: "",
           }));
-        }}
-        onSubmit={() => {
-          setPopup({ CheckOutType: false, CheckPopUpDebt: true });
         }}
         setDataBill={setDataBill}
         taxPercent={taxPercent}

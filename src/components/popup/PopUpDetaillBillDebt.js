@@ -11,54 +11,66 @@ import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 import { useTranslation } from "react-i18next";
-import { moneyCurrency } from "../../helpers";
-
-export default function PopUpDetailBillDebt({
+export default function PopUpDetaillBillDebt({
   open,
   onClose,
   callback,
   billDebtData,
 }) {
   const { t } = useTranslation();
-
-  // State variables
+  // state
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
-  const [menusData, setMenusData] = useState([]);
-  const [totalPayment, setTotalPayment] = useState(""); //update
-  const [amountIncrease, setAmountIncreease] = useState(""); // update
-  const [selectInput, setSelectInput] = useState();
-  const [remainingAmount, setRemainingAmount] = useState(
-    billDebtData?.remainingAmount
-  ); //update
-  // const [amountBefore, setAmountBefore] = useState(billDebtData?.amountBefore || 0);
-
-  useEffect(() => {
-    //update
-    if (open) {
-      setTotalPayment("");
-      setAmountIncreease("");
-    }
-  }, [open]);
-
-  // Store
+  const [menusData, setMenusData] = useState();
+  const [orderDebtData, setOrderDebtData] = useState([]);
+  // store
   const { storeDetail } = useStore();
+
+  // console.log("billDebtData", billDebtData?.billId?.orderId);
+
+  // useEffect
+  // useEffect(() => {
+  //   // getMenuData();
+  //   getOrderFarkDate();
+  // }, [open]);
+  // // functions
+  // const getMenuData = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     let findby = "?";
+  //     findby += `storeId=${storeDetail?._id}`;
+  //     const data = await getMenus(findby);
+  //     setMenusData(data);
+  //     setIsLoading(false);
+  //   } catch (err) {
+  //     setIsLoading(false);
+  //   }
+  // };
+  // const getOrderFarkDate = async (menuId) => {
+  //   try {
+  //     setOrderDebtData();
+  //     if (billDebtData) {
+  //       const { TOKEN, DATA } = await getLocalData();
+  //       const url =
+  //         END_POINT_SEVER + "/v4/order-farks?billFarkId=" + billDebtData?._id;
+  //       const data = await Axios.get(url, { headers: TOKEN });
+  //       console.log("data", data);
+  //       setOrderDebtData(data.data);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const handleClickConfirmDebt = async () => {
     try {
-      const { TOKEN } = await getLocalData();
-
-      const newStatus = remainingAmount <= 0 ? "PAY_DEBT" : "PARTIAL_PAYMENT";
-
+      const { DATA, TOKEN } = await getLocalData();
       await Axios.put(
         END_POINT_SEVER + "/v4/bill-debt/update",
         {
           id: billDebtData?._id,
           data: {
-            status: newStatus,
-            payAmount: totalPayment,
-            remainingAmount: remainingAmount,
-            amountIncrease: amountIncrease,
+            status: "PAY_DEBT",
           },
         },
         {
@@ -101,35 +113,6 @@ export default function PopUpDetailBillDebt({
           <div>
             ວັນໝົດກຳນົດ: {moment(billDebtData?.endDate).format("DD/MM/YYYY")}
           </div>
-          {/* update by ton.......................................................................................... */}
-          <div style={{ marginTop: "0.5rem" }}>
-            ຈຳນວນໜີ້ທັງໝົດ: {moneyCurrency(billDebtData?.amount)}
-          </div>
-          <div style={{ marginBottom: "2px" }}>
-            ຍັງຄ້າງຊຳລະ: {moneyCurrency(billDebtData?.remainingAmount)}
-          </div>
-          <Form.Group>
-            <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
-              (+) ເພີ່ມໜີ້ຄ້າງຊຳລະ
-            </Form.Label>
-            <Form.Control
-              value={amountIncrease}
-              onChange={(e) => setAmountIncreease(Number(e.target.value))}
-              placeholder={t("ເພີ່ມຈຳນວນຕິດໜີ້")}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
-              (-) ປ້ອນຈຳນວນທີ່ຕ້ອງການຊຳລະ
-            </Form.Label>
-            <Form.Control
-              style={{ marginBottom: "0.5rem" }}
-              value={totalPayment}
-              onChange={(e) => setTotalPayment(Number(e.target.value))}
-              placeholder={t("ຈຳນວນທີ່ຕ້ອງການຊຳລະ")}
-            ></Form.Control>
-          </Form.Group>
-          {/* update by ton.......................................................................................... */}
           <div>
             ວັນມາເອົາ:{" "}
             {billDebtData?.outStockDate
@@ -158,21 +141,15 @@ export default function PopUpDetailBillDebt({
       </Modal.Body>
       <Modal.Footer>
         <div>
-          <Form.Check
+          <Form.Check // prettier-ignore
             type="checkbox"
-            label={"ຍືນຍັນລູກຄ້າມາຊຳລະ"}
-            disabled={
-              billDebtData?.status !== "DEBT" &&
-              billDebtData?.status !== "PARTIAL_PAYMENT"
-            }
+            label={`ຍືນຍັນລູກຄ້າມາຊຳລະ`}
+            disabled={billDebtData?.status !== "DEBT"}
           />
         </div>
         <Button
           onClick={() => handleClickConfirmDebt()}
-          disabled={
-            billDebtData?.status !== "DEBT" &&
-            billDebtData?.status !== "PARTIAL_PAYMENT"
-          }
+          disabled={billDebtData?.status !== "DEBT"}
         >
           ຍືນຍັນ
         </Button>

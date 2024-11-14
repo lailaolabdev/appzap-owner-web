@@ -62,22 +62,9 @@ export const getBilldebts = async (findby, token) => {
   }
 };
 
-export const getdebtHistory = async (findby, token) => {
-  try {
-    // console.log("token", token);
-    const url = `${END_POINT_APP}/v4/debt-history${findby}`;
-    const res = await axios.get(url, {
-      headers: token,
-    });
-    return res.data;
-  } catch (error) {
-    return { error: true };
-  }
-};
-
 export const getMenuDebt = async (findby, token) => {
   try {
-    console.log("token", token);
+    // console.log("token", token);
     const url = `${END_POINT_APP}/v4/bill-debt-order${findby}`;
     const res = await axios.get(url, {
       headers: token,

@@ -23,7 +23,7 @@ import PopUpCreateServiceCharge from "../../components/popup/PopUpCreateServiceC
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
-import { getStore, updateStore } from "../../services/store";
+import { getStore } from "../../services/store";
 export default function ConfigPage() {
   const { t } = useTranslation();
   // state
@@ -114,13 +114,6 @@ export default function ConfigPage() {
     const isCafe = e.target.checked;
     const _type = isCafe ? "CAFE" : "GENERAL";
     await updateSettingCafe(profile?.data.storeId, { data: _type });
-    const dataStore = await getStore(storeDetail?._id);
-    setStoreDetail(dataStore);
-  };
-
-  const BankPayment = async (e) => {
-    const isChecked = e.target.checked;
-    await updateStore({ isBankPaymentAvailable: isChecked }, storeDetail?._id);
     const dataStore = await getStore(storeDetail?._id);
     setStoreDetail(dataStore);
   };
@@ -469,60 +462,6 @@ export default function ConfigPage() {
                       checked={storeDetail?.isRestuarant == "CAFE"}
                       id={"switch-cafe-" + item?.key}
                       onChange={changeCafe}
-                    />
-                  </div>
-                </div>
-              ))}
-            </Card.Body>
-          </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("bank_payment_available")}
-            </Card.Header>
-            <Card.Body>
-              {[
-                {
-                  title: t("enable_bank_payment"),
-                  key: "fer",
-                },
-              ].map((item, index) => (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
-                    gap: 10,
-                    padding: "10px 0",
-                    borderBottom: `1px dotted ${COLOR_APP}`,
-                  }}
-                  key={index}
-                >
-                  <div>{item?.title}</div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Form.Label htmlFor={"transfer-payment-" + item?.key}>
-                      {storeDetail?.isBankPaymentAvailable
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
-                    </Form.Label>
-                    <Form.Check
-                      disabled={true}
-                      type="switch"
-                      checked={storeDetail?.isBankPaymentAvailable}
-                      id={"transfer-payment-" + item?.key}
-                      onChange={BankPayment}
                     />
                   </div>
                 </div>

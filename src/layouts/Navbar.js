@@ -8,15 +8,14 @@ import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
-import { FaBell } from "react-icons/fa";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
-import { NotifyButton } from "../components/NotifyButton";
 
 // sound
 import messageSound from "../sound/message.mp3";
+import { use } from "i18next";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -27,7 +26,6 @@ export default function NavBar() {
   const { isConnectPrinter, profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState("LA"); // ເພີ່ມ state ນີ້້ສຳລັບພາສາ
-  const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
   // provider
   const { setStoreDetail, setProfile } = useStore();
@@ -113,11 +111,6 @@ export default function NavBar() {
           </p>
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
           <div style={{ flexGrow: 1 }} />
-
-          <NotifyButton
-            notifyFilterToggle={notifyFilterToggle}
-            setNotifyFilterToggle={setNotifyFilterToggle}
-          />
 
           <div
             style={{
