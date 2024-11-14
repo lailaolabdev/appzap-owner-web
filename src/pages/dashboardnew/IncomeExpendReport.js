@@ -214,11 +214,8 @@ export default function IncomeExpendExport() {
   
       // ตรวจสอบเงื่อนไข User_store และ user_role
       if (User_store === user_role) {
-        setDateStart(new Date());
-        setDateEnd(new Date());
-      } else {
-        setDateStart(new Date(year, month, 1));
-        setDateEnd(new Date(year, month + 1, 0));
+        setDateStart(today);
+        setDateEnd(today);
       }
   
       let findby = `accountId=${
@@ -276,6 +273,7 @@ export default function IncomeExpendExport() {
       console.log("err:::", err);
     }
   };
+  
   
   
   const modifyData = () => {
