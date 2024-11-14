@@ -10,16 +10,22 @@ export default function BillQRShortSmartOrdering80({
     <Container>
       <h2>{tableName}</h2>
       <div>QR ສຳຫຼັບສັ່ງອາຫານ</div>
-      <div>v2: {`HTTPS://APZ.PW/${CodeShortLink}`.toLowerCase()}</div>
+      <div>
+        v2:{" "}
+        {CodeShortLink
+          ? `https://apz.pw/${CodeShortLink}`.toLowerCase()
+          : "URL not available"}
+      </div>
       <Img>
-        {/* <QRCode
-          value={`https://client.appzap.la/store/${storeId}?token=${TokenOfBill}`}
-        /> */}
-        <img
-          src={`https://app-api.appzap.la/qr-gennerate/qr?data=HTTPS://APZ.PW/${CodeShortLink}`.toLowerCase()}
-          style={{ wifth: "100%", height: "100%" }}
-          alt=""
-        />
+        {CodeShortLink ? (
+          <img
+            src={`https://app-api.appzap.la/qr-gennerate/qr?data=https://apz.pw/${CodeShortLink}`.toLowerCase()}
+            style={{ width: "180px", height: "180px" }}
+            alt="QR Code"
+          />
+        ) : (
+          <p>QR Code not available</p>
+        )}
       </Img>
     </Container>
   );
@@ -34,6 +40,9 @@ const Container = styled.div`
   align-items: center;
 `;
 const Img = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 200px;
   height: 200px;
   font-size: 14px;

@@ -160,6 +160,7 @@ export default function TableList() {
     setOrderPayBefore,
     orderPayBefore,
     isWaitingPress,
+    dataQR,
   } = useStore();
 
   const reLoadData = () => {
@@ -1615,7 +1616,10 @@ export default function TableList() {
   };
 
   const getQrTokenForSelfOrdering = async () => {
-    const data = await tokenSelfOrderingPost(selectedTable?.billId);
+    // const data = await tokenSelfOrderingPost(selectedTable?.billId);
+    const data = await tokenSelfOrderingPost(
+      dataQR ? dataQR : selectedTable?.billId
+    );
     if (data?.token) {
       setQrToken(data?.token);
       setPopup({ qrToken: true });

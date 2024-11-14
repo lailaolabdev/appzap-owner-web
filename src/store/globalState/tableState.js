@@ -31,6 +31,9 @@ export const useTableState = (storeDetail) => {
   const [orderItemForPrintBill, setorderItemForPrintBill] = useState([]);
   const [isWaitingCheckout, setIsWaitingCheckout] = useState(false);
   const [isWaitingPress, setIsWaitingPress] = useState(false);
+  const [dataQR, setDataQR] = useState();
+
+  console.log("dataQR", dataQR);
 
   /**
    * Modify Order
@@ -133,6 +136,7 @@ export const useTableState = (storeDetail) => {
    */
 
   const onSelectTable = async (table) => {
+    console.log("table", table);
     if (table && !isWaitingCheckout) {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
@@ -213,6 +217,7 @@ export const useTableState = (storeDetail) => {
           headers: await getHeaders(),
         }
       );
+      setDataQR(resData?.data?.billId);
       if (resData.status < 300) {
         const data = await axios.post(
           `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
@@ -263,6 +268,8 @@ export const useTableState = (storeDetail) => {
           headers: await getHeaders(),
         }
       );
+      setDataQR(resData?.data?.billId);
+
       if (resData.status < 300) {
         const data = await axios.post(
           `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
@@ -415,5 +422,6 @@ export const useTableState = (storeDetail) => {
     openTableAndReturnCodeShortLink,
     isWaitingCheckout,
     isWaitingPress,
+    dataQR,
   };
 };
