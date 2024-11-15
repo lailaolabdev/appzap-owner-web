@@ -452,17 +452,18 @@ export default function OrderPage() {
           <Button
             style={{ color: "white", backgroundColor: "#FB6E3B" }}
             onClick={async () => {
-              const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
-              if (hasNoCut) {
-                printItems(
-                  groupedItems,
-                  combinedBillRefs,
-                  printers,
-                  selectedTable
-                );
-              } else {
-                onPrintForCher();
-              }
+              // const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
+              // if (hasNoCut) {
+              //   printItems(
+              //     groupedItems,
+              //     combinedBillRefs,
+              //     printers,
+              //     selectedTable
+              //   );
+              // } else {
+
+              // }
+              onPrintForCher();
               // await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
             }}
