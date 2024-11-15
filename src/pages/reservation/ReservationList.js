@@ -205,7 +205,7 @@ export default function ReservationList() {
               <Form.Label>{t("search")}</Form.Label>
               <InputGroup>
                 <Form.Control
-                  placeholder={t('ex_phone')}
+                  placeholder={t("ex_phone")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
@@ -246,7 +246,7 @@ export default function ReservationList() {
               />
             </FormGroup>
             <FormGroup>
-              <Form.Label></Form.Label>
+              <Form.Label className="mb-[26px]" />
               <Form.Control
                 type="button"
                 style={{ maxWidth: 100 }}

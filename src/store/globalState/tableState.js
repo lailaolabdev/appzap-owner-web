@@ -46,27 +46,61 @@ export const useTableState = (storeDetail) => {
     }
   }, [tableOrders]);
 
+  // const getTableDataStore = useMemo(
+  //   () => async () => {
+  //     let _userData = await getLocalData();
+  //     const url = `${END_POINT}/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
+  //     await fetch(url)
+  //       .then((response) => response.json())
+  //       .then((response) => {
+  //         if (response.message === "server error") return;
+  //         setTableList(response);
+  //         let _openTable = response.filter((table) => {
+  //           return table.isOpened && !table.isStaffConfirm;
+  //         });
+  //         setOpenTableData(_openTable);
+  //       })
+  //       .catch((err) => {});
+  //   },
+  //   []
+  // );
+
+  useEffect(() => {
+    getTableDataStore();
+  }, []);
+
   const getTableDataStore = useMemo(
-    () => async () => {
-      let _userData = await getLocalData();
-      const url = `${END_POINT}/v3/codes?status=true&isCheckout=false&&storeId=${_userData?.DATA?.storeId}`;
-      await fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.message === "server error") return;
-          setTableList(response);
-          let _openTable = response.filter((table) => {
-            return table.isOpened && !table.isStaffConfirm;
+    () => async (query) => {
+      try {
+        let _userData = await getLocalData();
+        let params = {
+          status: true,
+          isCheckout: false,
+          storeId: _userData?.DATA?.storeId,
+        };
+        if (query) {
+          params = { ...params, ...query };
+        }
+
+        await axios
+          .get(`${END_POINT}/v3/codes`, {
+            params: params,
+          })
+          .then((response) => {
+            if (response?.status !== 200) return;
+            setTableList(response?.data);
+            let _openTable = response?.data?.filter((table) => {
+              return table.isOpened && !table.isStaffConfirm;
+            });
+
+            setOpenTableData(_openTable);
           });
-          setOpenTableData(_openTable);
-        })
-        .catch((err) => {});
+      } catch (error) {
+        console.log("error", error);
+      }
     },
     []
   );
-  // useEffect(() => {
-  //   getTableDataStore();
-  // }, []);
   const getTableDataStoreList = useMemo(
     () => async () => {
       let _userData = await getLocalData();

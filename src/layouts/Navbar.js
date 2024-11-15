@@ -8,6 +8,7 @@ import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
+import { FaGlobe } from "react-icons/fa";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
@@ -79,26 +80,16 @@ export default function NavBar() {
   return (
     <div>
       <Navbar
-        style={{
-          backgroundColor: "#fff",
-          boxShadow: "3px 0px 3px rgba(0, 0, 0, 0.16)",
-          color: "#CC0000",
-          width: "100%",
-          height: 64,
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          paddingLeft: 52,
-        }}
+        className="bg-white shadow-[3px_0px_3px_rgba(0,0,0,0.16)] w-full h-[64px] fixed top-0 left-0 z-[1] pl-[52px]"
         variant="dark"
       >
-        <Navbar.Brand style={{ color: "#909090" }} href="#"></Navbar.Brand>
+        <Navbar.Brand className="text-[#909090]" href="#"></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse id="basic-navbar-nav" className="visible">
           <Nav className="mr-auto" />
+          <div></div>
           <p
-            style={{ marginTop: 20, color: "#bfbfbf" }}
+            className="mt-[20px] text-[#bfbfbf] cursor-pointer"
             onClick={() => {
               setSwitchToDev((prev) => prev + 1);
               if (switchToDev >= 5) {
@@ -110,38 +101,26 @@ export default function NavBar() {
             v{packageJson?.version}
           </p>
           <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
-          <div style={{ flexGrow: 1 }} />
+          <div className="flex-grow" />
 
-          <div
-            style={{
-              marginRight: "30px",
-              backgroundColor: "orange",
-              boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
-            }}
-          >
-            {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
-            <select
-              value={selectedLanguage}
-              onChange={(e) => switchLanguage(e.target.value)}
-            >
-              <option value="la">LA</option>
-              <option value="en">EN</option>
-              <option value="km">KM</option>
-            </select>
-          </div>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {isConnectPrinter ? (
-              <div
-                style={{
-                  border: "1px solid #68B984",
-                  padding: 4,
-                  color: "#68B984",
-                  backgroundColor: "#CFFDE1",
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
+          <div className="mr-[25px]">
+            <div className="flex items-center gap-2">
+              <FaGlobe className="text-2xl" />
+              <select
+                value={selectedLanguage}
+                onChange={(e) => switchLanguage(e.target.value)}
+                className="p-1 border rounded-lg outline-none"
               >
-                <MdPrint /> <span>{t("connect_pinter")}</span>
+                <option value="la">LA</option>
+                <option value="en">EN</option>
+                <option value="km">KM</option>
+              </select>
+            </div>
+          </div>
+          <Box className="hidden sm:block">
+            {isConnectPrinter ? (
+              <div className="border border-[#68B984] p-1 text-[#68B984] bg-[#CFFDE1] rounded font-medium text-sm flex items-center">
+                <MdPrint /> <span className="ml-1">{t("connect_pinter")}</span>
               </div>
             ) : (
               <a
@@ -149,23 +128,16 @@ export default function NavBar() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <div
-                  style={{
-                    border: "1px solid #E97777",
-                    padding: 4,
-                    color: "#E97777",
-                    backgroundColor: "#ffd8d8",
-                    borderRadius: 4,
-                    fontSize: 12,
-                  }}
-                >
-                  <MdPrintDisabled /> {t("unconnect_pinter")} !
+                <div className="border border-[#E97777] p-1 text-[#E97777] bg-[#ffd8d8] rounded font-medium text-sm flex items-center">
+                  <MdPrintDisabled />
+                  <span className="ml-1">{t("unconnect_pinter")} !</span>
                 </div>
               </a>
             )}
           </Box>
 
-          <div style={{ width: 10 }} />
+          <div className="w-[8px]" />
+
           <Form inline>
             <Dropdown>
               <Dropdown.Toggle
@@ -201,23 +173,3 @@ export default function NavBar() {
     </div>
   );
 }
-
-// const Language = () => {
-//   let _l = ["LA", "EN", "中文"];
-//   return (
-//     <Box sx={{ display: "flex" }}>
-//       {_l.map((e, i) => (
-//         <Box
-//           sx={{
-//             padding: 10,
-//             borderLeft: i > 0 ? "1px solid #ccc" : "",
-//             color: COLOR_APP,
-//           }}
-//           key={i}
-//         >
-//           {e}
-//         </Box>
-//       ))}
-//     </Box>
-//   );
-// };
