@@ -122,6 +122,7 @@ export default function PermissionsForCounters() {
                         <Switch
                           checked={switchStates[index]}
                           onChange={() => toggleSwitch(index)}
+                          onColor = {COLOR_APP} 
                         />
                       </td>
                     </tr>
