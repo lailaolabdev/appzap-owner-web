@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
 import { END_POINT_APP, getLocalData } from "../../constants/api";
 import { MdPassword } from "react-icons/md";
+import { IoIosSwitch } from "react-icons/io";
 import Axios from "axios";
 import Swal from "sweetalert2";
 
@@ -161,9 +162,9 @@ export default function SettingList() {
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7102",
-      title: t("ກຳນົດສິດໄຫ້ເຄົ້າເຕີ"),
-      subTitle: t("pin_desc"),
-      icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
+      title: t("setpermission_for_counter"),
+      subTitle: t("permission_dec"),
+      icon: <IoIosSwitch style={{ fontSize: "1.7rem" }} />,
       path: `/settingStore/permissionsForCounters`,
     },
 

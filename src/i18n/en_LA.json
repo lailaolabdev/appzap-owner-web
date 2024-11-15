@@ -92,6 +92,14 @@
   "waitstaffReport": "ລາຍງານພະນັກງານ",
   "theLastList": "1ວັນລ່າສຸດ",
   "last7days": "7ວັນລ່າສຸດ",
+  "7days": "7 ມື້ຜ່ານມາ",
+  "5days": "5 ມື້ຜ່ານມາ",
+  "3days": "3 ມື້ຜ່ານມາ",
+  
+  "day": "ມື້",
+  "setpermission_for_counter": "ກຳນົດສິດໄຫ້ເຄົ້າເຕີ",
+  "setpermission": "ກຳນົດສິດ",
+
   "last30days": "30ວັນລ່າສຸດ",
   "totalCirculation": "ຍອດທັງໝົດ",
   "totalBalance": "ຍອດທັງໝົດ",
@@ -124,6 +132,7 @@
   "approveButton": "ອະນຸມັດ",
   "cancelButton": "ບໍ່ອະນຸມັດ",
   "comment": "ຄຳ​ຄິດ​ເຫັນ",
+  "permission_dec": "ຕັ້ງຄ່າ ແລະ ກຳນົດສິດໄຫ້ກັບເຄົ້າເຕີ",
   "bookedBy": "ຈອງໂດຍ",
   "tableStatus2": "ສະຖານະໂຕະ ",
   "totalAmount": "ຈຳນວນເງິນທັງໝົດ",

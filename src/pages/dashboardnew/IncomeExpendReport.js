@@ -80,10 +80,10 @@ export default function IncomeExpendExport() {
   
 
   //console.log("profile:", profile);
-  console.log("user_role:", user_role);
+  //console.log("user_role:", user_role);
 
   const User_store = "APPZAP_COUNTER";
-  console.log("days: ", days)
+ // console.log("days: ", days)
 
 
   useEffect(() => {

@@ -84,7 +84,7 @@ export default function PermissionsForCounters() {
     <Box sx={{ padding: { md: 20, xs: 10 } }}>
       <Breadcrumb>
         <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-        <Breadcrumb.Item active>ກຳນົດສິດໄຫ້ເຄົ້າເຕີ</Breadcrumb.Item>
+        <Breadcrumb.Item active>{t("setpermission_for_counter")}</Breadcrumb.Item>
       </Breadcrumb>
       <Tabs defaultActiveKey="currency-list">
         <Tab eventKey="currency-list" style={{ paddingTop: 20 }}>
@@ -102,7 +102,7 @@ export default function PermissionsForCounters() {
               }}
             >
               <span>
-                <BsCurrencyExchange /> {"ກຳນົດສິດ"}
+                <BsCurrencyExchange /> {t("setpermission")}
               </span>
             </Card.Header>
             <Card.Body style={{ overflowX: "auto" }}>
@@ -117,7 +117,7 @@ export default function PermissionsForCounters() {
                   {dayLabels.map((label, index) => (
                     <tr key={index}>
                       <td className="text-left">{index + 1}</td>
-                      <td className="text-left">{label} day</td>
+                      <td className="text-left">{label} {t("day")}</td>
                       <td className="text-left">
                         <Switch
                           checked={switchStates[index]}

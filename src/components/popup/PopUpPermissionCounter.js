@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpPermissonCounter({
   open,
@@ -14,6 +15,7 @@ export default function PopUpPermissonCounter({
 }) {
   const [tempDateStart, setTempDateStart] = useState(dateStart);
   const [tempDateEnd, setTempDateEnd] = useState(dateEnd);
+  const { t } = useTranslation();
 
   const handlePresetDate = (type) => {
     let start, end;
@@ -69,11 +71,11 @@ export default function PopUpPermissonCounter({
   };
 
   const buttons = [
-    { label: "ມື້ນີ້", type: "today", condition: 0 },
-    { label: "ມື້ວານ", type: "yesterday", condition: 1 },
-    { label: "3ມື້", type: "3days", condition: 3 },
-    { label: "5ມື້", type: "5days", condition: 5 },
-    { label: "7ມື້", type: "7days", condition: 7 },
+    { label: `${t("today")}`, type: "today", condition: 0 },
+    { label: `${t("yester_day")}`, type: "yesterday", condition: 1 },
+    { label: `${t("3days")}`, type: "3days", condition: 3 },
+    { label: `${t("5days")}`, type: "5days", condition: 5 },
+    { label: `${t("7days")}`, type: "7days", condition: 7 },
   ];
 
   // คำนวณช่วงวันที่อนุญาตให้เลือก
@@ -174,9 +176,9 @@ export default function PopUpPermissonCounter({
 
       <Modal.Footer>
         <Button variant="outline-secondary" onClick={onClose}>
-          ຍົກເລີກ
+          {t("cancel")}
         </Button>
-        <Button onClick={handleConfirm}>ຍືນຢັນ</Button>
+        <Button onClick={handleConfirm}>{t("confirm")}</Button>
       </Modal.Footer>
     </Modal>
   );
