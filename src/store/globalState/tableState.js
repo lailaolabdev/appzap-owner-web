@@ -33,8 +33,6 @@ export const useTableState = (storeDetail) => {
   const [isWaitingPress, setIsWaitingPress] = useState(false);
   const [dataQR, setDataQR] = useState();
 
-  console.log("dataQR", dataQR);
-
   /**
    * Modify Order
    *

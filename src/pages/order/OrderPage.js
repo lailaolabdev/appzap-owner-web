@@ -31,6 +31,8 @@ import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
 import { printItems } from "../table/printItems";
+import { easing } from "@mui/material";
+import { printOrderItems } from "./printOrderItem";
 
 export default function OrderPage() {
   const { t } = useTranslation(); // translate
@@ -111,15 +113,36 @@ export default function OrderPage() {
     setGroupedItems(grouped);
   }, [orderItems]);
 
+  // console.log("printers", printers);
+  // console.log("orderItems", orderItems);
+
   const groupItemsByPrinter = (items) => {
-    return items?.reduce((groups, item) => {
+    return items?.reduce((printerGroups, item) => {
+      // Find the printer by its ID
       const printer = printers.find((e) => e?._id === item.printer);
-      const printerIp = printer?.ip || "unknown";
-      if (!groups[printerIp]) {
-        groups[printerIp] = [];
+      const printerIp = printer?.ip || "unknown"; // Get the printer IP, default to "unknown"
+
+      // Initialize the group for this printerIp if not already present
+      if (!printerGroups[printerIp]) {
+        printerGroups[printerIp] = {};
       }
-      groups[printerIp].push(item);
-      return groups;
+
+      // Group by tableId within the printer
+      const tableId = item?.tableId;
+      if (!printerGroups[printerIp][tableId]) {
+        printerGroups[printerIp][tableId] = {};
+      }
+
+      // Group by code within the tableId and printerIp
+      const code = item?.code;
+      if (!printerGroups[printerIp][tableId][code]) {
+        printerGroups[printerIp][tableId][code] = [];
+      }
+
+      // Push the item to the grouped array
+      printerGroups[printerIp][tableId][code].push(item);
+      console.log("printerGroups", printerGroups);
+      return printerGroups;
     }, {});
   };
 
@@ -211,11 +234,13 @@ export default function OrderPage() {
   };
 
   const convertHtmlToBase64 = (orderSelect) => {
+    console.log("object", orderSelect);
     const base64ArrayAndPrinter = [];
     orderSelect.forEach((data, index) => {
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
+        const fullPrice = data?.totalPrice + data?.totalOptionPrice || 0;
 
         // Define base dimensions
         const baseHeight = 250;
@@ -259,12 +284,12 @@ export default function OrderPage() {
         context.fillStyle = "#000";
         context.fillRect(0, 0, width / 2, 60);
         context.fillStyle = "#fff";
-        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 40px NotoSansLao, Arial, sans-serif";
         context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
 
         // Table Code on the right
         context.fillStyle = "#000";
-        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 40px NotoSansLao, Arial, sans-serif";
         context.fillText(data?.code || selectedTable?.code, width - 150, 44); // Adjusted position for better alignment
 
         // Divider line below header
@@ -277,11 +302,11 @@ export default function OrderPage() {
 
         // Content: Item Name and Quantity
         context.fillStyle = "#000";
-        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 32px NotoSansLao, Arial, sans-serif";
         let yPosition = 100;
         yPosition = wrapText(
           context,
-          `${data?.name} (${data?.quantity})`,
+          `${data?.name} x (${data?.quantity})`,
           10,
           yPosition,
           width - 20,
@@ -295,14 +320,14 @@ export default function OrderPage() {
 
           // Draw "Note:" label in bold
           context.fillStyle = "#666";
-          context.font = "italic bold 22px Arial, sans-serif";
+          context.font = "italic bold 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
           // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
           // Wrap the note text, starting after the "Note:" label
-          context.font = "italic 22px Arial, sans-serif";
+          context.font = "italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
@@ -346,6 +371,20 @@ export default function OrderPage() {
           yPosition += 20;
         }
 
+        context.fillStyle = "#000";
+        context.font = " 32px NotoSansLao, Arial, sans-serif";
+        // let yPosition = 100;
+        yPosition = wrapText(
+          context,
+          `${t("total")} ${moneyCurrency(fullPrice)} ${t(
+            storeDetail?.firstCurrency
+          )}`,
+          10,
+          yPosition,
+          width - 20,
+          46
+        );
+
         // Add a dotted line before footer
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
@@ -356,7 +395,7 @@ export default function OrderPage() {
         context.setLineDash([]); // Reset line dash style
 
         // Footer: Created By and Date
-        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
         context.fillText(
           data?.createdBy?.firstname ||
@@ -366,7 +405,7 @@ export default function OrderPage() {
           dynamicHeight - 40
         );
         context.fillStyle = "#6e6e6e";
-        context.font = "22px NotoSansLao, Arial, sans-serif";
+        context.font = "28px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
@@ -432,6 +471,8 @@ export default function OrderPage() {
     }
   }
 
+  console.log("Item: ", groupedItems);
+
   const Tool = () => {
     return (
       <div
@@ -454,7 +495,7 @@ export default function OrderPage() {
             onClick={async () => {
               const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
               if (hasNoCut) {
-                printItems(
+                printOrderItems(
                   groupedItems,
                   combinedBillRefs,
                   printers,

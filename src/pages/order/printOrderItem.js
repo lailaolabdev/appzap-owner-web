@@ -9,12 +9,13 @@ import {
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
 
-export const printItems = async (
+export const printOrderItems = async (
   groupedItems,
   combinedBillRefs,
   printers,
   selectedTable
 ) => {
+  console.log("groupedItems", groupedItems);
   for (const [printerIp, items] of Object.entries(groupedItems)) {
     const _printer = printers.find((e) => e?.ip === printerIp);
 
@@ -23,13 +24,14 @@ export const printItems = async (
       continue;
     }
 
-    try {
-      const base64ArrayAndPrinter = convertHtmlToBase64(
-        items,
-        _printer,
-        selectedTable
-      );
+    console.log("items", items);
+    const base64ArrayAndPrinter = convertHtmlToBase64(
+      items,
+      _printer,
+      selectedTable
+    );
 
+    try {
       if (base64ArrayAndPrinter.length > 0) {
         const { dataUrl, printer } = base64ArrayAndPrinter[0]; // Use the first (and only) base64 image
 
@@ -87,26 +89,27 @@ const runPrint = async (dataUrl, printer) => {
 };
 
 // Convert HTML element to base64 for printing
-const convertHtmlToBase64 = (items, printer, selectedTable) => {
+const convertHtmlToBase64 = (itemsByTable, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
-  let totalPrice = 0; // Variable to hold the total price
+  let totalPrice = 0;
 
-  items.forEach((data) => {
-    if (data) {
+  console.log("itemsByTable", itemsByTable);
+
+  // Process each tableId group separately
+  Object.entries(itemsByTable).forEach(([code, items]) => {
+    console.log("DATA code: ", items);
+
+    if (items && Array.isArray(items)) {
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
-      // Constants for layout
       const width = 510;
-      const baseHeight = 100; // Header height
-      const extraHeightPerItem = 40; // Height for each item
-      const extraHeightPerOption = 30; // Height for each option
-      const footerHeight = 60; // Footer height
-      const marginTop = 20; // Space between sections
-      const titleMarginLeft = 20;
-      const optionMarginLeft = 40;
+      const baseHeight = 100;
+      const extraHeightPerItem = 40;
+      const extraHeightPerOption = 30;
+      const footerHeight = 60;
+      const marginTop = 20;
 
-      // Calculate total height dynamically
       let contentHeight = baseHeight;
       items.forEach((item) => {
         contentHeight += extraHeightPerItem;
@@ -116,111 +119,54 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       });
       contentHeight += footerHeight + marginTop;
 
-      // Set canvas dimensions
       canvas.width = width;
       canvas.height = contentHeight;
 
-      // Background
       context.fillStyle = "#fff";
       context.fillRect(0, 0, width, contentHeight);
 
-      // Header
       context.fillStyle = "#000";
-      context.fillRect(0, 0, width / 2, 60);
-      context.fillStyle = "#fff";
-      context.font = "bold  36px NotoSansLao, Arial, sans-serif";
-      context.fillText(
-        selectedTable?.tableName || "Table",
-        titleMarginLeft,
-        45
-      );
+      context.font = "bold 36px Arial, sans-serif";
+      context.fillText(`Table: ${selectedTable?.tableName || "Table"}`, 20, 45);
 
-      context.fillStyle = "#000";
-      context.font = "bold  30px NotoSansLao, Arial, sans-serif";
-      context.fillText(selectedTable?.code || "N/A", width - 160, 45);
-
-      // Divider line below header
-      context.strokeStyle = "#ccc";
-      context.beginPath();
-      context.moveTo(0, 65);
-      context.lineTo(width, 65);
-      context.stroke();
-
-      // Items
-      context.font = "30px  NotoSansLao, Arial, sans-serif";
-      let itemYPosition = baseHeight; // Start after header
+      let itemYPosition = baseHeight;
       items.forEach((item) => {
-        // Main item
-        context.font = "bold  28px NotoSansLao, Arial, sans-serif";
+        context.font = "28px Arial, sans-serif";
         context.fillText(
-          `- ${item.name} (x${item.quantity || 1})`,
-          titleMarginLeft,
+          `- ${item.name} x${item.quantity || 1}`,
+          20,
           itemYPosition
         );
         itemYPosition += extraHeightPerItem;
 
-        // Calculate price for the item (assuming there's a 'price' property on the item)
         totalPrice += (item.price || 0) * (item.quantity || 1);
 
-        // Options
-        if (item.options && item.options.length > 0) {
-          context.font = "24px  NotoSansLao, Arial, sans-serif";
+        if (item.options) {
+          context.font = "24px Arial, sans-serif";
           item.options.forEach((option) => {
             context.fillText(
-              `- ${option.name} ${option.price ? `- ${option.price}` : ""} x ${
-                option.quantity || 1
-              }`,
-              optionMarginLeft,
+              `  - ${option.name} x${option.quantity || 1}`,
+              40,
               itemYPosition
             );
             itemYPosition += extraHeightPerOption;
 
-            // Add the option price to the total
             totalPrice += (option.price || 0) * (option.quantity || 1);
           });
         }
       });
 
-      // Total Price Text
-      context.font = " 30px NotoSansLao, Arial, sans-serif";
-      context.fillStyle = "#000";
+      context.font = "30px Arial, sans-serif";
       context.fillText(
-        `ລວມ: ${moneyCurrency(totalPrice)} LAK`,
-        titleMarginLeft,
-        itemYPosition + marginTop - 15
+        `Total: ${totalPrice} LAK`,
+        20,
+        itemYPosition + marginTop
       );
 
-      // Dotted line
-      context.strokeStyle = "#000";
-      context.setLineDash([4, 2]);
-      context.beginPath();
-      context.moveTo(0, itemYPosition + marginTop);
-      context.lineTo(width, itemYPosition + marginTop);
-      context.stroke();
-      context.setLineDash([]);
-
-      // Footer
-      context.font = "bold  24px NotoSansLao, Arial, sans-serif";
-      context.fillStyle = "#000";
-      context.fillText(
-        data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
-        titleMarginLeft,
-        contentHeight - footerHeight / 2
-      );
-
-      context.fillStyle = "#6e6e6e";
-      context.font = "22px  NotoSansLao, Arial, sans-serif";
-      context.fillText(
-        `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
-          data?.createdAt
-        ).format("LT")}`,
-        width - 200,
-        contentHeight - footerHeight / 2
-      );
-
-      // Convert to base64
       const dataUrl = canvas.toDataURL("image/png");
       base64ArrayAndPrinter.push({ dataUrl, printer });
+    } else {
+      console.error(`Expected items to be an array, but got:`, items);
     }
   });
 
