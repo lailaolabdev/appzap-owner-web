@@ -30,6 +30,11 @@ import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
 import PopUpPermissonCounter from "../../components/popup/PopUpPermissionCounter";
+import { 
+  fetchPermissionsCounter, 
+  createPermissionsCounter, 
+  updatePermissionsCounter 
+} from "../../services/fetchPermissionsCounter";
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -41,8 +46,9 @@ export default function IncomeExpendExport() {
   const parsed = queryString?.parse(location?.state);
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const [dateStart, setDateStart] = useState(new Date(year, month, 1));
-  const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
+  const today = new Date();
+  const [dateStart, setDateStart] = useState(null);
+  const [dateEnd, setDateEnd] = useState(null);
 
   
 
@@ -69,15 +75,34 @@ export default function IncomeExpendExport() {
   const storeId = storeDetail?._id;
   const user_role = profile.data?.role;
   const [days , setDays] = useState(null)
-  const today = new Date();
+
+  
+  
 
   //console.log("profile:", profile);
   console.log("user_role:", user_role);
 
-  const User_store = "APPZAP_ADMIN";
+  const User_store = "APPZAP_COUNTER";
   console.log("days: ", days)
-  console.log("datestart: ", dateStart)
-  console.log("dateEnd: ", dateEnd)
+
+
+  useEffect(() => {
+    if (user_role === User_store) {
+      // If user is store admin, set to current day only
+      const startOfDay = moment(today).startOf('day').toDate();
+      const endOfDay = moment(today).endOf('day').toDate();
+      setDateStart(startOfDay);
+      setDateEnd(endOfDay);
+    } else {
+      // For other users, set to current month
+      const time = new Date();
+      const month = time.getMonth();
+      const year = time.getFullYear();
+      setDateStart(new Date(year, month, 1));
+      setDateEnd(new Date(year, month + 1, 0));
+    }
+  }, [user_role]);
+
 
   // console.log("incomeExpendData::", incomeExpendData);
   
@@ -85,9 +110,11 @@ export default function IncomeExpendExport() {
   useEffect(() => {
     const fetchInitialSwitchState = async () => {
       try {
-        const response = await axios.get(`${PERMISSIONS_COUNTER}/${storeId}`);
-        if (response.data) {
-          const currentCounter = response.data.permissionsCounter;
+        const data = await fetchPermissionsCounter(storeId);
+        console.log("data: ", data)
+        if (data) {
+          const currentCounter = data.permissionsCounter;
+          console.log("currentCounter:",currentCounter)
           if (currentCounter) {
             setDays(currentCounter);
           }
@@ -96,11 +123,19 @@ export default function IncomeExpendExport() {
         console.error('Error fetching initial switch state:', error);
       }
     };
-
     if (storeId) {
       fetchInitialSwitchState();
     }
-  }, [storeId , days]);
+  }, [storeId, days]);
+
+
+  
+  useEffect(() => {
+    if (dateStart && dateEnd) {
+      getIncomeExpendData();
+    }
+  }, [dateStart, dateEnd]);
+
 
 
   const OPTION = {
@@ -208,18 +243,18 @@ export default function IncomeExpendExport() {
   
 
   const getIncomeExpendData = async () => {
+    if (!dateStart || !dateEnd) return;
+    
     try {
       const _localData = await getLocalData();
       let findby = `accountId=${
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      // if (filterByYear) findby += `&year=${filterByYear}`
-      // if (filterByMonth) findby += `&month=${filterByMonth}`
+
       if (dateStart && dateEnd)
         findby += `&date_gte=${moment(dateStart).format(
           "YYYY/MM/DD"
         )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
-      // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
       const header = await getHeadersAccount();
       const headers = {
@@ -392,9 +427,9 @@ export default function IncomeExpendExport() {
                 onClick={() => setOpenGetDate({ popupfiltter: true })}
               >
                 <BsFillCalendarWeekFill />
-                <div>{moment(dateStart).format("YYYY-MM-DD")}</div>
+                <div>{dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}</div>
                 {" ~ "}
-                <div>{moment(dateEnd).format("YYYY-MM-DD")}</div>
+                <div>{dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}</div>
               </Button>
             </Form.Group>
           ) : (
@@ -402,15 +437,15 @@ export default function IncomeExpendExport() {
               <Form.Label>{t("date")}</Form.Label>
               <Form.Control
                 type="date"
-                value={dateStart}
-                onChange={(e) => setDateStart(e?.target?.value)}
+                value={dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}
+                onChange={(e) => setDateStart(new Date(e.target.value))}
                 style={{ width: 150,marginLeft:"3px" }}
               />
               <span>~</span>
               <Form.Control
                 type="date"
-                value={dateEnd}
-                onChange={(e) => setDateEnd(e?.target?.value)}
+                value={dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}
+                onChange={(e) => setDateEnd(new Date(e.target.value))}
                 style={{ width: 150 }}
               />
             </div>
