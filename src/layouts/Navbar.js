@@ -8,6 +8,7 @@ import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
+import { FaGlobe } from "react-icons/fa";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
@@ -103,15 +104,18 @@ export default function NavBar() {
           <div className="flex-grow" />
 
           <div className="mr-[25px]">
-            <select
-              value={selectedLanguage}
-              onChange={(e) => switchLanguage(e.target.value)}
-              className="p-1 border rounded-lg outline-none"
-            >
-              <option value="la">LA</option>
-              <option value="en">EN</option>
-              <option value="km">KM</option>
-            </select>
+            <div className="flex items-center gap-2">
+              <FaGlobe className="text-2xl" />
+              <select
+                value={selectedLanguage}
+                onChange={(e) => switchLanguage(e.target.value)}
+                className="p-1 border rounded-lg outline-none"
+              >
+                <option value="la">LA</option>
+                <option value="en">EN</option>
+                <option value="km">KM</option>
+              </select>
+            </div>
           </div>
           <Box className="hidden sm:block">
             {isConnectPrinter ? (
