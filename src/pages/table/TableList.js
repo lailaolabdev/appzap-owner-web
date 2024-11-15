@@ -1733,7 +1733,7 @@ export default function TableList() {
                   {t("show_by_zone")}
                 </label>
                 <select
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 pr-3 text-sm"
+                  className="block w-full outline-none rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-2 pr-3 text-sm"
                   value={zoneId}
                   onChange={(e) => onSelectedZone(e?.target?.value)}
                 >
@@ -2131,7 +2131,7 @@ export default function TableList() {
                         >
                           {t("move_order")}
                         </ButtonCustom>
-                        {selectedTable?.tableChildren?.length > 0 ||
+                        {/* {selectedTable?.tableChildren?.length > 0 ||
                         showBtnCombine ? (
                           <ButtonCustom
                             onClick={() =>
@@ -2142,7 +2142,7 @@ export default function TableList() {
                           </ButtonCustom>
                         ) : (
                           ""
-                        )}
+                        )} */}
                       </div>
                       <div
                         style={{

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Box from "../components/Box";
-import Navbar from "./Navbar";
+import NavBar from "./Navbar";
 import Sidenav from "./SideNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -40,18 +40,8 @@ export default function MainLayout({ children }) {
           onToggle={(exp) => _onToggle(exp)}
         />
       </Box>
-      <Navbar />
-      <div
-        style={{
-          marginTop: 65,
-          minHeight: "calc( 100dvh - 65px )",
-          height: "calc( 100dvh - 65px )",
-          maxHeight: "calc( 100dvh - 65px )",
-          overflow: "auto",
-          overflowY: "scroll",
-          position: "relative",
-        }}
-      >
+      <NavBar />
+      <div className="min-h-[calc(100vh-65px)] h-[calc(100vh-65px)] max-h-[calc(100vh-65px)] overflow-y-scroll relative">
         <Outlet />
       </div>
     </Box>
