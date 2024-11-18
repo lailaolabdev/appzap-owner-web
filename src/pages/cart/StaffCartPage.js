@@ -58,7 +58,6 @@ function StaffCartPage() {
       storeId: codeData?.storeId,
     };
     const url = `${END_POINT_APP}/v3/staff/bill/create`;
-    console.log("BODY:", dataBody);
     await axios
       .post(url, dataBody, {
         headers: await getHeaders(),
