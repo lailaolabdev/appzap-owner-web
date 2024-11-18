@@ -33,8 +33,6 @@ export const useTableState = (storeDetail) => {
   const [isWaitingPress, setIsWaitingPress] = useState(false);
   const [dataQR, setDataQR] = useState();
 
-  console.log("dataQR", dataQR);
-
   /**
    * Modify Order
    *
@@ -255,15 +253,15 @@ export const useTableState = (storeDetail) => {
   };
   const openTableAndReturnCodeShortLink = async () => {
     try {
-      const findby = `?storeId=${selectedTable?.storeId}&code=${selectedTable?.code}&tableId=${selectedTable?.tableId}`;
+      // Construct the query string
+      const findBy = `?storeId=${selectedTable?.storeId}&code=${selectedTable?.code}&tableId=${selectedTable?.tableId}`;
 
-      console.log("=====>", findby);
       // Fetch codes
-      const codesData = await getCodes(findby);
+      const codesData = await getCodes(findBy);
       const code = codesData[0];
       if (!code) throw new Error("Code not found");
 
-      // Update code status
+      // Prepare payload for updating code status
       const updatePayload = {
         id: code._id,
         data: {
@@ -272,6 +270,8 @@ export const useTableState = (storeDetail) => {
           createdAt: new Date(),
         },
       };
+
+      // Update code status
       const updateResponse = await axios.put(
         `${END_POINT_SEVER_TABLE_MENU}/v3/code/update`,
         updatePayload,
@@ -282,19 +282,29 @@ export const useTableState = (storeDetail) => {
         throw new Error("Failed to update code status");
       }
 
-      // Generate short link
-      const billId = updateResponse?.data?.billId;
+      const billId = updateResponse.data?.billId;
+      if (!billId) throw new Error("Bill ID is missing in the response");
+
       setDataQR(billId);
 
+      // Fetch token for the bill
       const tokenResponse = await axios.post(
         `${END_POINT_SEVER}/v4/staff/token-bill/${billId}`
       );
+
+      const token = tokenResponse.data?.token;
+      if (!token) throw new Error("Token is missing in the response");
+
+      // Generate short link
       const shortLinkResponse = await axios.post(
         `https://e7d1e6zvrl.execute-api.ap-southeast-1.amazonaws.com/create-short-link`,
         {
-          url: `https://client.appzap.la/store/${selectedTable?.storeId}?token=${tokenResponse?.data?.token}`,
+          url: `https://client.appzap.la/store/${selectedTable?.storeId}?token=${token}`,
         }
       );
+
+      const shortLinkCode = shortLinkResponse.data?.code;
+      if (!shortLinkCode) throw new Error("Failed to generate short link");
 
       // Refresh data and update table state
       await getTableDataStore();
@@ -305,7 +315,7 @@ export const useTableState = (storeDetail) => {
         billId: billId,
       });
 
-      // Show success alert
+      // Display success alert
       Swal.fire({
         icon: "success",
         title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
@@ -313,7 +323,7 @@ export const useTableState = (storeDetail) => {
         timer: 1800,
       });
 
-      return shortLinkResponse?.data?.code;
+      return shortLinkCode;
     } catch (error) {
       console.error("Error:", error.message || error);
     }
