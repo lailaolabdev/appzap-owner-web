@@ -141,7 +141,6 @@ export default function OrderPage() {
 
       // Push the item to the grouped array
       printerGroups[printerIp][tableId][code].push(item);
-      console.log("printerGroups", printerGroups);
       return printerGroups;
     }, {});
   };
@@ -152,7 +151,6 @@ export default function OrderPage() {
       setOnPrinting(true);
       setCountError("");
       const orderSelect = orderItems?.filter((e) => e?.isChecked);
-      console.log("orderSelect", orderSelect);
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
       // console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
@@ -234,13 +232,11 @@ export default function OrderPage() {
   };
 
   const convertHtmlToBase64 = (orderSelect) => {
-    console.log("object", orderSelect);
     const base64ArrayAndPrinter = [];
     orderSelect.forEach((data, index) => {
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
-        const fullPrice = data?.totalPrice + data?.totalOptionPrice || 0;
 
         // Define base dimensions
         const baseHeight = 250;
@@ -284,13 +280,13 @@ export default function OrderPage() {
         context.fillStyle = "#000";
         context.fillRect(0, 0, width / 2, 60);
         context.fillStyle = "#fff";
-        context.font = "bold 40px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
         context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
 
         // Table Code on the right
         context.fillStyle = "#000";
-        context.font = "bold 40px NotoSansLao, Arial, sans-serif";
-        context.fillText(data?.code || selectedTable?.code, width - 150, 44); // Adjusted position for better alignment
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.code || selectedTable?.code, width - 200, 45); // Adjusted position for better alignment
 
         // Divider line below header
         context.strokeStyle = "#ccc";
@@ -302,7 +298,7 @@ export default function OrderPage() {
 
         // Content: Item Name and Quantity
         context.fillStyle = "#000";
-        context.font = "bold 32px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 34px NotoSansLao, Arial, sans-serif";
         let yPosition = 100;
         yPosition = wrapText(
           context,
@@ -315,19 +311,19 @@ export default function OrderPage() {
 
         // Content: Item Note
         if (data?.note) {
-          const noteLabel = "Note: ";
+          const noteLabel = "note: ";
           const noteText = data.note;
 
           // Draw "Note:" label in bold
           context.fillStyle = "#666";
-          context.font = "italic bold 24px Arial, sans-serif";
+          context.font = "bold italic bold 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
           // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
           // Wrap the note text, starting after the "Note:" label
-          context.font = "italic 24px Arial, sans-serif";
+          context.font = " bold italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
@@ -349,7 +345,9 @@ export default function OrderPage() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity}`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -372,13 +370,13 @@ export default function OrderPage() {
         }
 
         context.fillStyle = "#000";
-        context.font = " 32px NotoSansLao, Arial, sans-serif";
+        context.font = " 24px NotoSansLao, Arial, sans-serif";
         // let yPosition = 100;
         yPosition = wrapText(
           context,
-          `${t("total")} ${moneyCurrency(fullPrice)} ${t(
-            storeDetail?.firstCurrency
-          )}`,
+          `${t("total")} ${moneyCurrency(
+            data?.price + (data?.totalOptionPrice ?? 0)
+          )} ${t(storeDetail?.firstCurrency)}`,
           10,
           yPosition,
           width - 20,
@@ -471,8 +469,6 @@ export default function OrderPage() {
     }
   }
 
-  console.log("Item: ", groupedItems);
-
   const Tool = () => {
     return (
       <div
@@ -502,7 +498,7 @@ export default function OrderPage() {
               //     selectedTable
               //   );
               // } else {
-                onPrintForCher();
+              onPrintForCher();
               // }
               // await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();

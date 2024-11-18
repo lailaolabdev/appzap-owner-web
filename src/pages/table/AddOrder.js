@@ -208,7 +208,6 @@ function AddOrder() {
       setCountError("");
 
       const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
-      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -432,13 +431,13 @@ function AddOrder() {
         context.fillStyle = "#000"; // Black background
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
-        context.font = "bold 36px NotoSansLao";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
         context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
-        context.font = "bold 30px NotoSansLao";
-        context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
+        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
+        context.fillText(selectedTable?.code, width - 220, 45); // Code text on the right
 
         // Divider line below header
         context.strokeStyle = "#ccc";
@@ -450,7 +449,7 @@ function AddOrder() {
 
         // Content: Item Name and Quantity
         context.fillStyle = "#000";
-        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 34px NotoSansLao, Arial, sans-serif";
         let yPosition = 100;
         yPosition = wrapText(
           context,
@@ -463,19 +462,19 @@ function AddOrder() {
 
         // Content: Item Note
         if (data?.note) {
-          const noteLabel = "Note: ";
+          const noteLabel = "note: ";
           const noteText = data.note;
 
           // Draw "Note:" label in bold
           context.fillStyle = "#666";
-          context.font = "italic bold 22px Arial, sans-serif";
+          context.font = " bold italic bold 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
           // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
           // Wrap the note text, starting after the "Note:" label
-          context.font = "italic 22px Arial, sans-serif";
+          context.font = "bold italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
@@ -497,7 +496,9 @@ function AddOrder() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity}`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -518,6 +519,20 @@ function AddOrder() {
           context.setLineDash([]);
           yPosition += 20;
         }
+
+        context.fillStyle = "#000";
+        context.font = " 24px NotoSansLao, Arial, sans-serif";
+        // let yPosition = 100;
+        yPosition = wrapText(
+          context,
+          `${t("total")} ${moneyCurrency(
+            data?.price + (data?.totalOptionPrice ?? 0)
+          )} ${t(storeDetail?.firstCurrency)}`,
+          10,
+          yPosition,
+          width - 20,
+          46
+        );
 
         // Add a dotted line before footer
         context.strokeStyle = "#000"; // Black dotted line
@@ -621,7 +636,6 @@ function AddOrder() {
   }, []);
 
   const handleAddOption = (menuId, option) => {
-    console.log({ option });
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
       const existingOption = menuOptions.find((opt) => opt._id === option._id);
@@ -953,8 +967,6 @@ function AddOrder() {
               const hasNoCut = pickedUpPrinters.some(
                 (printer) => printer.cutPaper === "not_cut"
               );
-
-              console.log("CUT :", hasNoCut);
 
               if (hasNoCut) {
                 // Print with no cut

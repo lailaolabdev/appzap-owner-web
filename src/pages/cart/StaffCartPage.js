@@ -27,8 +27,10 @@ function StaffCartPage() {
     FetchCodeData();
   }, [codeId]);
   // function
+
   const FetchCodeData = async () => {
     setCodeData();
+
     setIsLoading(true);
     let _code = await getCode(codeId);
     if (_code?.error) {
