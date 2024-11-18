@@ -451,22 +451,22 @@ export default function DashboardPage() {
                     qty: moneyReport?.taxAmount?.count,
                     amount: Math.floor(moneyReport?.taxAmount?.totalTax),
                   },
-                  {
-                    method: (
-                      <div>
-                        {t("tsf_cash")}
-                        <br />
-                        {t("cash")}{" "}
-                        {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                        {t("transfer")}{" "}
-                        {moneyCurrency(
-                          moneyReport?.transferCash?.transfer || 0
-                        )}
-                      </div>
-                    ),
-                    qty: moneyReport?.transferCash?.count,
-                    amount: moneyReport?.transferCash?.totalBill,
-                  },
+                  // {
+                  //   method: (
+                  //     <div>
+                  //       {t("tsf_cash")}
+                  //       <br />
+                  //       {t("cash")}{" "}
+                  //       {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
+                  //       {t("transfer")}{" "}
+                  //       {moneyCurrency(
+                  //         moneyReport?.transferCash?.transfer || 0
+                  //       )}
+                  //     </div>
+                  //   ),
+                  //   qty: moneyReport?.transferCash?.count,
+                  //   amount: moneyReport?.transferCash?.totalBill,
+                  // },
                   {
                     method: (
                       <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
@@ -488,6 +488,15 @@ export default function DashboardPage() {
                     amount:
                       (moneyReport?.transferCash?.transfer || 0) +
                       (moneyReport?.transfer?.totalBill || 0),
+                  },
+                  {
+                    method: <div style={{ fontWeight: 700 }}>{t("point")}</div>,
+                    // qty:
+                    //   (moneyReport?.transferCash?.count || 0) +
+                    //   (moneyReport?.transfer?.count || 0),
+                    // amount:
+                    //   (moneyReport?.transferCash?.transfer || 0) +
+                    //   (moneyReport?.transfer?.totalBill || 0),
                   },
 
                   {

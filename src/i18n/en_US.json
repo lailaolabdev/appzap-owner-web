@@ -184,6 +184,7 @@
   "addOrder": "Add order",
   "TableHasNoOrder": "This table has no orders yet",
   "transfercash": "Transfer + Cash payment",
+  "transfercashpoint": "Transfer + Cash + point",
   "sound_manage": "Sound Management",
   "currency_manage": "Manage Currency Rates",
   "customerName": "Customer Name",

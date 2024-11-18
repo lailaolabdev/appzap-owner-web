@@ -25,7 +25,7 @@ import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
-  let billRef = useRef(null);
+  const billRef = useRef(null);
   const { t } = useTranslation();
   // state
   const [selectPrinter, setSelectPrinter] = useState();
@@ -36,8 +36,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
     ຍອດທັງໝົດ: 0,
-    ຈ່າຍເງິນສົດ: 0,
-    ຈ່າຍເງິນໂອນ: 0,
+    ເງິນສົດ: 0,
+    ເງິນໂອນ: 0,
+    ຄະແນນ: 0,
     ບິນສ່ວນຫຼຸດ: 0,
     servicechange: 0,
     ສ່ວນຫຼຸດ: 0,
@@ -62,7 +63,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
-      let dataImageForPrint = await html2canvas(billRef.current, {
+      const dataImageForPrint = await html2canvas(billRef.current, {
         useCORS: true,
         scrollX: 10,
         scrollY: 0,
@@ -84,7 +85,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      var bodyFormData = new FormData();
+      const bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("isdrawer", false);
       bodyFormData.append("port", "9100");
@@ -288,6 +289,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 type: storeDetail?.firstCurrency,
               },
               {
+                name: `${t("point")}:`,
+                value: reportBill[`${t("point")}`],
+              },
+              {
                 name: `${t("discount_bill")}:`,
                 value: reportBill[`${t("discount_bill")}`],
               },
@@ -316,7 +321,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               //   type: storeDetail?.firstCurrency,
               // },
             ].map((e) => (
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div
+                key={e?.name}
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
                 <span style={{ textAlign: "left", fontWeight: "bold" }}>
                   {e?.name}
                 </span>
@@ -325,51 +333,58 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 </span>
               </div>
             ))}
-            <hr style={{ borderBottom: "1px dotted #000" }} />
-            <div>
-              <TableComponent>
-                <tr style={{ fontWeight: "bold" }}>
-                  <td style={{ textAlign: "left" }}>{t("no")}</td>
-                  <td style={{ textAlign: "center" }}>{t("bank_Name")}</td>
-                  <td style={{ textAlign: "right" }}>{t("amount")}</td>
-                </tr>
-                {bank?.data?.map((e, index) => {
-                  console.log("object", e);
-                  return (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{index + 1}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {e?.bankDetails?.bankName}
-                      </td>
-                      <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.bankTotalAmount)}
-                      </td>
+            {bank?.data?.length > 0 && (
+              <>
+                <hr style={{ borderBottom: "1px dotted #000" }} />
+                <div>
+                  <TableComponent>
+                    <tr style={{ fontWeight: "bold" }}>
+                      <td style={{ textAlign: "left" }}>{t("no")}</td>
+                      <td style={{ textAlign: "center" }}>{t("bank_Name")}</td>
+                      <td style={{ textAlign: "right" }}>{t("amount")}</td>
                     </tr>
-                  );
-                })}
-              </TableComponent>
-            </div>
-            <hr style={{ borderBottom: "1px dotted #000" }} />
-            <div>
-              <TableComponent>
-                <tr style={{ fontWeight: "bold" }}>
-                  <td style={{ textAlign: "left" }}>{t("no")}</td>
-                  <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
-                  <td style={{ textAlign: "right" }}>{t("amount")}</td>
-                </tr>
-                {currency?.data?.map((e, index) => (
-                  <tr>
-                    <td style={{ textAlign: "left" }}>{index + 1}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {e?.currency?.currencyName}
-                    </td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(Math.floor(e?.currencyTotal))}
-                    </td>
-                  </tr>
-                ))}
-              </TableComponent>
-            </div>
+                    {bank?.data?.map((e, index) => {
+                      return (
+                        <tr key={e?._id}>
+                          <td style={{ textAlign: "left" }}>{index + 1}</td>
+                          <td style={{ textAlign: "center" }}>
+                            {e?.bankDetails?.bankName}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            {moneyCurrency(e?.bankTotalAmount)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </TableComponent>
+                </div>
+              </>
+            )}
+            {currency?.data?.length > 0 && (
+              <>
+                <hr style={{ borderBottom: "1px dotted #000" }} />
+                <div>
+                  <TableComponent>
+                    <tr style={{ fontWeight: "bold" }}>
+                      <td style={{ textAlign: "left" }}>{t("no")}</td>
+                      <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
+                      <td style={{ textAlign: "right" }}>{t("amount")}</td>
+                    </tr>
+                    {currency?.data?.map((e, index) => (
+                      <tr key={e?._id}>
+                        <td style={{ textAlign: "left" }}>{index + 1}</td>
+                        <td style={{ textAlign: "center" }}>
+                          {e?.currency?.currencyName}
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          {moneyCurrency(Math.floor(e?.currencyTotal))}
+                        </td>
+                      </tr>
+                    ))}
+                  </TableComponent>
+                </div>
+              </>
+            )}
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <div>
               <TableComponent>
@@ -381,7 +396,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
                 {bills?.map((e, i) => (
-                  <tr>
+                  <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
                     <td style={{ textAlign: "center" }}>
                       {e?.code || "%NULL%"}
@@ -391,7 +406,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     </td>
 
                     <td style={{ textAlign: "center" }}>
-                      {e?.discount != 0
+                      {e?.discount !== 0
                         ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
                         : 0}
                     </td>
@@ -413,7 +428,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
             {printers?.map((e) => (
-              <option value={JSON.stringify(e)}>{e?.name}</option>
+              <option key={e?._id} value={JSON.stringify(e)}>
+                {e?.name}
+              </option>
             ))}
           </Form.Control>
           <Button

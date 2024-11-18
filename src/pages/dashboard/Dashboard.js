@@ -296,15 +296,21 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(moneyReport?.transfer?.totalBill)}
               </div>
-              <div>
+              {/* <div>
                 {t("transfer_cash")}
+                {" : "}
+                {convertNumber(moneyReport?.transferCash?.totalBill)}
+              </div> */}
+              <div>
+                {t("point")}
                 {" : "}
                 {convertNumber(moneyReport?.transferCash?.totalBill)}
               </div>
               <div>
                 {t("cashDiscount")}
                 {" : "}
-                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
+                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}{" "}
+                <span style={{ margin: "0 5px" }}>|</span>
                 {convertNumber(promotionReport?.[0]?.count)}ບິນ
               </div>
             </Card.Body>

@@ -55,6 +55,7 @@ export default function CheckOutPopup({
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
+  const [point, setPoint] = useState();
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
@@ -142,10 +143,7 @@ export default function CheckOutPopup({
 
   const handleSearchOne = async () => {
     try {
-      let url =
-        END_POINT_SEVER_TABLE_MENU +
-        "/v4/member/search-one?phone=" +
-        textSearchMember;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v4/member/search-one?phone=${textSearchMember}`;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -209,14 +207,14 @@ export default function CheckOutPopup({
         ? totalBill - (totalBill * dataBill?.discount) / 100
         : 0;
 
-    const cashAmount = parseFloat(cash) || 0;
-    const transferAmount = parseFloat(transfer) || 0;
+    const cashAmount = Number.parseFloat(cash) || 0;
+    const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
     moneyReceived = `${
-      selectCurrency?.name == "LAK"
+      selectCurrency?.name === "LAK"
         ? moneyCurrency(totalReceived)
-        : moneyCurrency(parseFloat(cashCurrency) || 0)
+        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
     } ${selectCurrency?.name}`;
 
     const changeAmount = totalReceived - discountedTotalBill;
@@ -234,9 +232,9 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (!open) return;
-    if (selectCurrency?.name != "LAK") {
+    if (selectCurrency?.name !== "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode == selectCurrency?.name
+        (e) => e.currencyCode === selectCurrency?.name
       );
       setRateCurrency(_currencyData?.sell || 1);
     } else {
@@ -279,7 +277,7 @@ export default function CheckOutPopup({
     }
   };
   const _checkBill = async (currencyId, currencyName) => {
-    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+    const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
     const serviceChargePer = storeDetail?.serviceChargePer;
     const serviceChargeAmount = Math.floor(
@@ -299,7 +297,7 @@ export default function CheckOutPopup({
     const checkStatusBill =
       orderPayBefore && orderPayBefore.length > 0 ? "PAID" : "CHECKOUT";
 
-    let body = {
+    const body = {
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
       orderPayBefore: orderItem,
@@ -307,6 +305,7 @@ export default function CheckOutPopup({
       status: checkStatusBill,
       payAmount: cash,
       transferAmount: transfer,
+      point: point,
       paymentMethod: forcus,
       taxAmount: taxAmount,
       taxPercent: taxPercent,
@@ -323,8 +322,8 @@ export default function CheckOutPopup({
       change: moneyChange,
       tableCode: tableData?.code,
       fullnameStaffCheckOut:
-        staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
-      staffCheckOutId: staffConfirm?.id,
+        `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
+      staffCheckOutId: profile?.data?.id,
     };
 
     if (currencyId !== "LAK") {
@@ -335,7 +334,7 @@ export default function CheckOutPopup({
 
     await axios
       .put(
-        END_POINT + `/v3/bill-checkout`,
+        `${END_POINT}/v3/bill-checkout`,
         {
           id: dataBill?._id,
           data: body,
@@ -344,7 +343,7 @@ export default function CheckOutPopup({
           headers: await getHeaders(),
         }
       )
-      .then(async function (response) {
+      .then(async (response) => {
         setSelectedTable();
         getTableDataStore();
         setCashCurrency();
@@ -380,7 +379,7 @@ export default function CheckOutPopup({
           zoneCheckBill: true,
         });
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
@@ -433,7 +432,8 @@ export default function CheckOutPopup({
       }
       setCanCheckOut(true);
     } else if (forcus === "TRANSFER_CASH") {
-      const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
+      const _sum =
+        (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -456,9 +456,9 @@ export default function CheckOutPopup({
         }
       }
     }
-  }, [cash, transfer, totalBill, forcus]);
+  }, [cash, transfer, totalBill, forcus, point]);
 
-  let transferCal =
+  const transferCal =
     dataBill?.discountType === "PERCENT"
       ? totalBill - dataBill?.discount > 0
         ? totalBill - dataBill?.discount
@@ -467,19 +467,19 @@ export default function CheckOutPopup({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
-  let totalBillMoney =
+  const totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
-      ? parseFloat(
+      ? Number.parseFloat(
           totalBill - dataBill?.discount > 0
             ? totalBill - dataBill?.discount
             : 0
         )
-      : parseFloat(
+      : Number.parseFloat(
           totalBill - (totalBill * dataBill?.discount) / 100 > 0
             ? totalBill - (totalBill * dataBill?.discount) / 100
             : 0
         );
-  let _selectDataOption = (option) => {
+  const _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
       ...prev,
@@ -490,11 +490,11 @@ export default function CheckOutPopup({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency?.name != "LAK") {
+      if (selectCurrency?.name !== "LAK") {
         if (!value) {
           setCash();
         } else {
-          const amount = parseFloat(value * rateCurrency);
+          const amount = Number.parseFloat(value * rateCurrency);
           setCash(amount.toFixed(2));
         }
       }
@@ -503,7 +503,7 @@ export default function CheckOutPopup({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency?.name != "LAK") {
+      if (selectCurrency?.name !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -532,6 +532,11 @@ export default function CheckOutPopup({
   const onChangeTransferInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setTransfer(value);
+    });
+  };
+  const onChangePointInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setPoint(value);
     });
   };
 
@@ -670,7 +675,11 @@ export default function CheckOutPopup({
                 <InputGroup>
                   <InputGroup.Text>{t("cash")}</InputGroup.Text>
                   <Form.Control
-                    disabled={tab !== "cash" && tab !== "cash_transfer"}
+                    disabled={
+                      tab !== "cash" &&
+                      tab !== "cash_transfer" &&
+                      tab !== "combined"
+                    }
                     type="text"
                     placeholder="0"
                     value={convertNumber(cash)}
@@ -689,7 +698,7 @@ export default function CheckOutPopup({
                 <InputGroup>
                   <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                   <Form.Control
-                    disabled={tab !== "cash_transfer"}
+                    disabled={tab !== "cash_transfer" && tab !== "combined"}
                     type="text"
                     placeholder="0"
                     value={convertNumber(transfer)}
@@ -705,46 +714,73 @@ export default function CheckOutPopup({
                     {storeDetail?.firstCurrency}
                   </InputGroup.Text>
                 </InputGroup>
-                <BoxMember hidden={!hasCRM}>
-                  <div className="box-left">
-                    <div className="box-search">
-                      <Select
-                        placeholder={<div>{t("enter_phone_and_name")}</div>}
-                        options={optionsData}
-                        onChange={handleSearchInput}
+                {tab === "point" || tab === "combined" ? (
+                  <div style={{ marginBottom: 10 }}>
+                    <BoxMember>
+                      <div className="box-left">
+                        <div className="box-search">
+                          <Select
+                            placeholder={<div>{t("enter_phone_and_name")}</div>}
+                            options={optionsData}
+                            onChange={handleSearchInput}
+                          />
+                        </div>
+                        <Button
+                          className="primary"
+                          onClick={() => getMembersData()}
+                        >
+                          <BiRotateRight />
+                        </Button>
+                        <Button
+                          className="primary"
+                          onClick={() => {
+                            // navigate("/add/newMembers", {
+                            //   state: { key: "newMembers" },
+                            // });
+                            window.open("/add/newMembers");
+                          }}
+                        >
+                          {t("add_new")}{" "}
+                        </Button>
+                      </div>
+                      <div className="box-right">
+                        <div className="box-name">
+                          <InputGroup.Text>
+                            {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
+                          </InputGroup.Text>
+                        </div>
+                        <div className="box-name">
+                          <InputGroup.Text>
+                            {t("point")}:{" "}
+                            {/* {dataBill?.Point ? dataBill?.Point - point : "0"} */}
+                            {/* {dataBill?.Point && dataBill?.Point - point >= 0
+                              ? dataBill?.Point - point
+                              : 0} */}
+                            {dataBill?.Point ? dataBill?.Point - point : "0"}
+                          </InputGroup.Text>
+                        </div>
+                      </div>
+                    </BoxMember>
+                    <InputGroup style={{ marginTop: 10 }}>
+                      <InputGroup.Text>{t("point")}</InputGroup.Text>
+                      <Form.Control
+                        disabled={dataBill?.Point <= 0}
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(point)}
+                        onClick={() => {
+                          setSelectInput("inputPoint");
+                        }}
+                        onChange={(e) => {
+                          onChangePointInput(e.target.value);
+                        }}
+                        size="lg"
                       />
-                    </div>
-                    <Button
-                      className="primary"
-                      onClick={() => getMembersData()}
-                    >
-                      <BiRotateRight />
-                    </Button>
-                    <Button
-                      className="primary"
-                      onClick={() => {
-                        // navigate("/add/newMembers", {
-                        //   state: { key: "newMembers" },
-                        // });
-                        window.open("/add/newMembers");
-                      }}
-                    >
-                      {t("add_new")}{" "}
-                    </Button>
+                    </InputGroup>
                   </div>
-                  <div className="box-right">
-                    <div className="box-name">
-                      <InputGroup.Text>
-                        {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
-                      </InputGroup.Text>
-                    </div>
-                    <div className="box-name">
-                      <InputGroup.Text>
-                        {t("point")}: {dataBill?.Point ? dataBill?.Point : "0"}
-                      </InputGroup.Text>
-                    </div>
-                  </div>
-                </BoxMember>
+                ) : (
+                  ""
+                )}
               </div>
             )}
 
@@ -755,8 +791,8 @@ export default function CheckOutPopup({
             >
               {t("return")}:{" "}
               {moneyCurrency(
-                (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
+                (Number.parseInt(cash) || 0) +
+                  (Number.parseInt(transfer) || 0) -
                   (dataBill && dataBill?.discountType === "LAK"
                     ? totalBill - dataBill?.discount > 0
                       ? totalBill - dataBill?.discount
@@ -766,8 +802,8 @@ export default function CheckOutPopup({
                     : 0) <=
                   0
                   ? 0
-                  : (parseInt(cash) || 0) +
-                      (parseInt(transfer) || 0) -
+                  : (Number.parseInt(cash) || 0) +
+                      (Number.parseInt(transfer) || 0) -
                       (dataBill && dataBill?.discountType === "LAK"
                         ? totalBill - dataBill?.discount > 0
                           ? totalBill - dataBill?.discount
@@ -819,6 +855,19 @@ export default function CheckOutPopup({
                 {t("transfer")}
               </Button>
               <Button
+                variant={tab === "point" ? "primary" : "outline-primary"}
+                onClick={() => {
+                  setCash();
+                  setTransfer();
+                  setPoint();
+                  setTab("point");
+                  setSelectInput("inputPoint");
+                  setForcus("POINT");
+                }}
+              >
+                {t("point")}
+              </Button>
+              <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
                 }
@@ -837,6 +886,18 @@ export default function CheckOutPopup({
               >
                 {t("cash_transfer")}
               </Button>
+              <Button
+                variant={tab === "combined" ? "primary" : "outline-primary"}
+                onClick={() => {
+                  setCash();
+                  setTransfer();
+                  setPoint();
+                  setTab("combined");
+                  setForcus("COMBINED");
+                }}
+              >
+                {t("transfercashpoint")}
+              </Button>
               <div style={{ flex: 1 }} />
               <Form.Control
                 hidden={tab !== "cash"}
@@ -851,7 +912,9 @@ export default function CheckOutPopup({
                 ))}
               </Form.Control>
 
-              {(tab == "transfer" || tab === "cash_transfer") && (
+              {(tab === "transfer" ||
+                tab === "cash_transfer" ||
+                tab === "combined") && (
                 <Form.Control
                   as="select"
                   style={{ width: 140 }}
@@ -873,6 +936,7 @@ export default function CheckOutPopup({
             <NumberKeyboard
               onClickMember={() => {
                 setHasCRM((prev) => !prev);
+                setTab("point");
               }}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
@@ -928,7 +992,7 @@ export default function CheckOutPopup({
           <BiSolidPrinter />
           {t("print_checkbill")}
         </Button>
-        <div style={{ width: "20%" }}></div>
+        <div style={{ width: "20%" }} />
         <Button onClick={handleSubmit} disabled={!canCheckOut}>
           {t("calculate")}
         </Button>
