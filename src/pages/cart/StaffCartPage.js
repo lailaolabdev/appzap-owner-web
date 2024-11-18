@@ -28,7 +28,6 @@ function StaffCartPage() {
   }, [codeId]);
   // function
 
-  console.log("codeData", codeData);
   const FetchCodeData = async () => {
     setCodeData();
 
@@ -60,7 +59,6 @@ function StaffCartPage() {
     };
     const url = `${END_POINT_APP}/v3/staff/bill/create`;
     console.log("BODY:", dataBody);
-    console.log("url:", url);
     await axios
       .post(url, dataBody, {
         headers: await getHeaders(),

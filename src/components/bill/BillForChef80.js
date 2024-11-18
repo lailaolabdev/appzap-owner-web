@@ -6,7 +6,7 @@ import { moneyCurrency } from "../../helpers";
 export default function BillForChef80({ selectedTable, dataBill, val }) {
   const options =
     val?.options
-      ?.map((option) => `[${option.quantity} x ${option.name}]`)
+      ?.map((option) => `[${option.name} x ${option.quantity || 1}]`)
       .join(" ") || "";
 
   return (
