@@ -99,6 +99,8 @@ export default function DashboardFinance({
   const handleShow = (item) => {
     setShow(true);
     setDataModal(item);
+
+    console.log("item", item);
   };
 
   const getCurrency = async () => {
@@ -292,6 +294,8 @@ export default function DashboardFinance({
     return `${name} ${optionNames}`;
   };
 
+  console.log("dataModal: ", dataModal);
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -326,6 +330,13 @@ export default function DashboardFinance({
                 }}
               >
                 {t("tableDiscount")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("point")}
               </th>
               <th
                 style={{
@@ -374,10 +385,10 @@ export default function DashboardFinance({
           <tbody>
             {data?.checkOut?.map((item, index) => (
               <tr
-                key={"finance-" + index}
+                key={item?._id}
                 onClick={() => {
                   setSelectOrder(item);
-                  handleShow(item?.orderId);
+                  handleShow(item);
                 }}
                 style={{
                   backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
@@ -400,6 +411,7 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : item?.discount + "%"}
                 </td>
+                <td>{item?.point ? item?.point : 0}</td>
                 <td>
                   {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
@@ -546,57 +558,72 @@ export default function DashboardFinance({
               </tr>
             </thead>
             <tbody>
-              {dataModal
-                // ?.filter((item) => item?.status !== "PAID")
-                .map((item, index) => (
-                  <tr key={1 + index}>
-                    <td>{index + 1}</td>
-                    <td>{formatMenuName(item?.name, item?.options)}</td>
-                    <td>{item?.quantity}</td>
-                    <td
-                      style={{
-                        color:
-                          item?.status === "WAITING"
-                            ? "#2d00a8"
-                            : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                            ? "green"
-                            : item?.status === "PAID"
-                            ? COLOR_APP
-                            : item?.status === "PRINTBILL"
-                            ? "blue"
-                            : item?.status === "CART"
-                            ? "#00496e"
-                            : item?.status === "FEEDBACK"
-                            ? "#00496e"
-                            : "#bd0d00",
-                      }}
-                    >
-                      {orderStatus(item?.status)}
-                    </td>
-                    <td>
-                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
-                    </td>
-                    <td>
-                      {new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(
-                        item?.totalPrice ??
-                          (item?.price + (item?.totalOptionPrice ?? 0)) *
-                            item?.quantity
-                      )}
-                    </td>
-                    <td>
-                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
-                    </td>
-                    <td>
-                      {item?.updatedAt
-                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))}
+              {dataModal?.orderId?.map((item, index) => (
+                <tr key={1 + index}>
+                  <td>{index + 1}</td>
+                  <td>{formatMenuName(item?.name, item?.options)}</td>
+                  <td>{item?.quantity}</td>
+                  <td
+                    style={{
+                      color:
+                        item?.status === "WAITING"
+                          ? "#2d00a8"
+                          : item?.status === "DOING"
+                          ? "#c48a02"
+                          : item?.status === "SERVED"
+                          ? "green"
+                          : item?.status === "PAID"
+                          ? COLOR_APP
+                          : item?.status === "PRINTBILL"
+                          ? "blue"
+                          : item?.status === "CART"
+                          ? "#00496e"
+                          : item?.status === "FEEDBACK"
+                          ? "#00496e"
+                          : "#bd0d00",
+                    }}
+                  >
+                    {orderStatus(item?.status)}
+                  </td>
+                  <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
+                  <td>
+                    {new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(
+                      item?.totalPrice ??
+                        (item?.price + (item?.totalOptionPrice ?? 0)) *
+                          item?.quantity
+                    )}
+                  </td>
+                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+                  <td>
+                    {item?.updatedAt
+                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                      : "-"}
+                  </td>
+                </tr>
+              ))}
+              <tr
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 18,
+                }}
+              >
+                <td colSpan={4} style={{ textAlign: "right" }}>
+                  {t("total")}
+                </td>
+                <td colSpan={4} style={{ textAlign: "right" }}>
+                  {new Intl.NumberFormat("ja-JP", {
+                    currency: "JPY",
+                  }).format(
+                    dataModal?.orderId?.reduce(
+                      (a, b) => a + (b?.totalPrice ?? 0),
+                      0
+                    ) - dataModal?.discount
+                  )}{" "}
+                  {t("lak")}
+                </td>
+              </tr>
             </tbody>
           </Table>
         </Modal.Body>
