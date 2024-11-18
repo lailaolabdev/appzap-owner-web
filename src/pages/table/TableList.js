@@ -1249,16 +1249,16 @@ export default function TableList() {
 
         // Header: Table Name and Code
         // Draw the Table ID (left black block)
-        context.fillStyle = "#000"; // Black background
-        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
-        context.fillStyle = "#fff"; // White text
-        context.font = "bold 36px NotoSansLao";
-        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
+        context.fillStyle = "#000";
+        context.fillRect(0, 0, width / 2, 60);
+        context.fillStyle = "#fff";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
 
-        // Draw the Table Code (right side)
-        context.fillStyle = "#000"; // Black text
-        context.font = "bold 30px NotoSansLao";
-        context.fillText(selectedTable?.code, width - 220, 44); // Code text on the right
+        // Table Code on the right
+        context.fillStyle = "#000";
+        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+        context.fillText(data?.code || selectedTable?.code, width - 200, 45); // Adjusted position for better alignment
 
         // Divider line below header
         context.strokeStyle = "#ccc";
@@ -1270,11 +1270,11 @@ export default function TableList() {
 
         // Content: Item Name and Quantity
         context.fillStyle = "#000";
-        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 34px NotoSansLao, Arial, sans-serif";
         let yPosition = 100;
         yPosition = wrapText(
           context,
-          `${data?.name} (${data?.quantity})`,
+          `${data?.name} x (${data?.quantity})`,
           10,
           yPosition,
           width - 20,
@@ -1283,19 +1283,19 @@ export default function TableList() {
 
         // Content: Item Note
         if (data?.note) {
-          const noteLabel = "Note: ";
+          const noteLabel = "note: ";
           const noteText = data.note;
 
           // Draw "Note:" label in bold
           context.fillStyle = "#666";
-          context.font = "italic bold 22px Arial, sans-serif";
+          context.font = "bold italic bold 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
           // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
           // Wrap the note text, starting after the "Note:" label
-          context.font = "italic 22px Arial, sans-serif";
+          context.font = " bold italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
@@ -1317,7 +1317,9 @@ export default function TableList() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity}`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -1339,6 +1341,19 @@ export default function TableList() {
           yPosition += 20;
         }
 
+        context.fillStyle = "#000";
+        context.font = " 24px NotoSansLao, Arial, sans-serif";
+        // let yPosition = 100;
+        yPosition = wrapText(
+          context,
+          `${t("total")} ${moneyCurrency(
+            data?.price + (data?.totalOptionPrice ?? 0)
+          )} ${t(storeDetail?.firstCurrency)}`,
+          30,
+          dynamicHeight - 76,
+          width - 20
+        );
+
         // Add a dotted line before footer
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
@@ -1349,7 +1364,7 @@ export default function TableList() {
         context.setLineDash([]); // Reset line dash style
 
         // Footer: Created By and Date
-        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
         context.fillText(
           data?.createdBy?.firstname ||
@@ -1359,7 +1374,7 @@ export default function TableList() {
           dynamicHeight - 40
         );
         context.fillStyle = "#6e6e6e";
-        context.font = "22px NotoSansLao, Arial, sans-serif";
+        context.font = "28px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
