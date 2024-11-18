@@ -902,7 +902,7 @@ export default function TableList() {
         showConfirmButton: false,
         timer: 1500,
       });
-      // setCodeShortLink(null);
+      setCodeShortLink(null);
     } catch (err) {
       setCodeShortLink(null);
       console.log(err);

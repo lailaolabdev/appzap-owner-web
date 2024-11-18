@@ -33,6 +33,8 @@ export const useTableState = (storeDetail) => {
   const [isWaitingPress, setIsWaitingPress] = useState(false);
   const [dataQR, setDataQR] = useState();
 
+  console.log("dataQR", dataQR);
+
   /**
    * Modify Order
    *
@@ -134,7 +136,15 @@ export const useTableState = (storeDetail) => {
    */
 
   const onSelectTable = async (table) => {
-    console.log("table", table);
+    const newQRValue = table.billId;
+
+    setDataQR((prevDataQR) => {
+      if (prevDataQR !== newQRValue) {
+        return newQRValue; // Update only if the new value is different
+      }
+      return prevDataQR; // No change if the value is the same
+    });
+
     if (table && !isWaitingCheckout) {
       setTableOrderItems([]);
       // alert(JSON.stringify(table));
@@ -175,6 +185,7 @@ export const useTableState = (storeDetail) => {
           headers: await getHeaders(),
         }
       );
+
       if (resData.status < 300) {
         await getTableDataStore();
         await onSelectTable({
@@ -215,7 +226,7 @@ export const useTableState = (storeDetail) => {
           headers: await getHeaders(),
         }
       );
-      setDataQR(resData?.data?.billId);
+
       if (resData.status < 300) {
         const data = await axios.post(
           `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
@@ -244,60 +255,67 @@ export const useTableState = (storeDetail) => {
   };
   const openTableAndReturnCodeShortLink = async () => {
     try {
-      let findby = "?";
-      findby += "storeId=" + selectedTable?.storeId;
-      findby += "&code=" + selectedTable?.code;
-      findby += "&tableId=" + selectedTable?.tableId;
+      const findby = `?storeId=${selectedTable?.storeId}&code=${selectedTable?.code}&tableId=${selectedTable?.tableId}`;
 
+      console.log("=====>", findby);
+      // Fetch codes
       const codesData = await getCodes(findby);
       const code = codesData[0];
+      if (!code) throw new Error("Code not found");
 
-      let resData = await axios.put(
-        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
-        {
-          id: code?._id,
-          data: {
-            isOpened: true,
-            isStaffConfirm: true,
-            createdAt: new Date(),
-          },
-        },
-        {
-          headers: await getHeaders(),
-        }
-      );
-      setDataQR(resData?.data?.billId);
-
-      if (resData.status < 300) {
-        const data = await axios.post(
-          `${END_POINT_SEVER}/v4/staff/token-bill/${resData?.data?.billId}`
-        );
-        const dataShortLink = await axios.post(
-          `https://e7d1e6zvrl.execute-api.ap-southeast-1.amazonaws.com/create-short-link`,
-          {
-            url: `https://client.appzap.la/store/${selectedTable?.storeId}?token=${data?.data?.token}`,
-          }
-        );
-        await getTableDataStore();
-        onSelectTable({
-          ...selectedTable,
+      // Update code status
+      const updatePayload = {
+        id: code._id,
+        data: {
           isOpened: true,
           isStaffConfirm: true,
-        });
-        Swal.fire({
-          icon: "success",
-          title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        if (resData.status < 300) {
-          return dataShortLink?.data?.code;
-        } else {
-          throw new Error("can not qr token");
-        }
+          createdAt: new Date(),
+        },
+      };
+      const updateResponse = await axios.put(
+        `${END_POINT_SEVER_TABLE_MENU}/v3/code/update`,
+        updatePayload,
+        { headers: await getHeaders() }
+      );
+
+      if (updateResponse.status >= 300) {
+        throw new Error("Failed to update code status");
       }
-    } catch (err) {
-      console.log("err", err);
+
+      // Generate short link
+      const billId = updateResponse?.data?.billId;
+      setDataQR(billId);
+
+      const tokenResponse = await axios.post(
+        `${END_POINT_SEVER}/v4/staff/token-bill/${billId}`
+      );
+      const shortLinkResponse = await axios.post(
+        `https://e7d1e6zvrl.execute-api.ap-southeast-1.amazonaws.com/create-short-link`,
+        {
+          url: `https://client.appzap.la/store/${selectedTable?.storeId}?token=${tokenResponse?.data?.token}`,
+        }
+      );
+
+      // Refresh data and update table state
+      await getTableDataStore();
+      onSelectTable({
+        ...selectedTable,
+        isOpened: true,
+        isStaffConfirm: true,
+        billId: billId,
+      });
+
+      // Show success alert
+      Swal.fire({
+        icon: "success",
+        title: "ເປີດໂຕະສໍາເລັດແລ້ວ",
+        showConfirmButton: false,
+        timer: 1800,
+      });
+
+      return shortLinkResponse?.data?.code;
+    } catch (error) {
+      console.error("Error:", error.message || error);
     }
   };
 
