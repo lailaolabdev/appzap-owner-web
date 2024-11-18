@@ -27,8 +27,11 @@ function StaffCartPage() {
     FetchCodeData();
   }, [codeId]);
   // function
+
+  console.log("codeData", codeData);
   const FetchCodeData = async () => {
     setCodeData();
+
     setIsLoading(true);
     let _code = await getCode(codeId);
     if (_code?.error) {
@@ -56,6 +59,8 @@ function StaffCartPage() {
       storeId: codeData?.storeId,
     };
     const url = `${END_POINT_APP}/v3/staff/bill/create`;
+    console.log("BODY:", dataBody);
+    console.log("url:", url);
     await axios
       .post(url, dataBody, {
         headers: await getHeaders(),
