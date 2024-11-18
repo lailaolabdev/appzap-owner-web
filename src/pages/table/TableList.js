@@ -985,7 +985,16 @@ export default function TableList() {
 
     if (hasNoCut) {
       // Print with no cut
-      printItems(groupedItems, combinedBillRefs, printers, selectedTable);
+      printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(
+        () => {
+          Swal.fire({
+            icon: "success",
+            title: `${t("print_success")}`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      );
     } else {
       // Print with cut
       onPrintForCher();
@@ -1098,7 +1107,6 @@ export default function TableList() {
       const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
 
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect);
-      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -1171,9 +1179,27 @@ export default function TableList() {
           });
         }
       );
+
+      if (index === 0) {
+        await Swal.fire({
+          icon: "success",
+          title: `${t("print_success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+
       return true;
-    } catch {
-      return false;
+    } catch (err) {
+      console.log(err);
+      if (index === 0) {
+        await Swal.fire({
+          icon: "error",
+          title: `${t("print_fial")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     }
   };
 

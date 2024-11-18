@@ -123,9 +123,6 @@ const OrderCheckOut = ({
         (opt) => (opt?.price || 0) * (opt?.quantity || 1)
       );
 
-      console.log("menuOptionPrice", menuOptionPrice);
-      console.log("mainPrice", mainPrice);
-
       return mainPrice + menuOptionPrice;
     });
     setServiceAmount(serviceChargeAmount);
