@@ -577,8 +577,6 @@ export default function MenuList() {
     }
   };
 
-  console.log("PRINT: ", Menus);
-
   return (
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>

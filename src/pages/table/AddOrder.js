@@ -723,6 +723,8 @@ function AddOrder() {
       totalOptionPrice: totalOptionPrice,
     };
 
+    console.log("Add Data: ", data);
+
     setSelectedMenu((prevMenu) => {
       // Check if the menu item with the same ID and options already exists
       const existingMenuIndex = prevMenu.findIndex((item) => {
@@ -850,7 +852,7 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    // console.log("addToCart: ", menu);
+    console.log("addToCart: ", menu);
 
     const _menuOptions = _checkMenuOption(menu);
 
@@ -940,6 +942,8 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
+
+      console.log("BODY: ", _body);
 
       const localZone = localStorage.getItem("selectedZone");
 
