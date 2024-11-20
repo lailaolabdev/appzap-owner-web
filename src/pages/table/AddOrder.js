@@ -95,8 +95,6 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-  // console.log("State", state);
-
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -723,8 +721,6 @@ function AddOrder() {
       totalOptionPrice: totalOptionPrice,
     };
 
-    console.log("Add Data: ", data);
-
     setSelectedMenu((prevMenu) => {
       // Check if the menu item with the same ID and options already exists
       const existingMenuIndex = prevMenu.findIndex((item) => {
@@ -852,8 +848,6 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    console.log("addToCart: ", menu);
-
     const _menuOptions = _checkMenuOption(menu);
 
     // console.log("menuOptions: ", _menuOptions);
@@ -942,8 +936,6 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
-
-      console.log("BODY: ", _body);
 
       const localZone = localStorage.getItem("selectedZone");
 
