@@ -11,6 +11,9 @@ import { useStore } from "../../store";
 import { getCode } from "../../services/code";
 import Spinner from "react-bootstrap/Spinner";
 import PopUpSignalDisconnect from "../../components/popup/PopUpSignalDisconnect";
+import PopUpOption from "./component/PopUpOption";
+import { moneyCurrency } from "../../helpers";
+import { t } from "i18next";
 function StaffCartPage() {
   const navigate = useNavigate();
   const { codeId } = useParams();
@@ -50,6 +53,11 @@ function StaffCartPage() {
         name: item?.name,
         quantity: item?.quantity,
         note: item?.note,
+        options: item?.options,
+        menuOptions: item?.menuOptions,
+        categoryId: item?.categoryId,
+        printer: item?.printer,
+        totalOptionPrice: item?.totalOptionPrice,
       });
     }
     const dataBody = {
@@ -108,7 +116,7 @@ function StaffCartPage() {
               }}
             >
               <div>
-                {e?.name}
+                {e?.name} x {e?.price}
                 {e?.note ? (
                   <>
                     <br />({e?.note})
@@ -117,7 +125,12 @@ function StaffCartPage() {
                   ""
                 )}
                 <br />
-                {e?.price}
+                {e?.options?.map((option, optIndex) => (
+                  <li key={optIndex} style={{ marginTop: "5px" }}>
+                    {option.name} {`[${option.quantity}]`} x{" "}
+                    {moneyCurrency(option.quantity * option.price)}{" "}
+                  </li>
+                ))}
               </div>
               <div style={{ flex: 1 }} />
               <div style={{ fontWeight: "bold" }}>
@@ -189,7 +202,7 @@ function StaffCartPage() {
             ) : (
               ""
             )}
-            ຍືນຍັນ
+            {t("confirm")}
           </Button>
         </div>
       </div>

@@ -32,7 +32,7 @@ export default function StaffTableDetail() {
     getTableOrders,
     setReload,
     isTableOrderLoading,
-    setCountOrderWaiting
+    setCountOrderWaiting,
   } = useStore();
   // useEffect
 
@@ -74,9 +74,8 @@ export default function StaffTableDetail() {
       });
 
       const count = await getCountOrderWaiting(storeId);
-      setCountOrderWaiting(count || 0)
+      setCountOrderWaiting(count || 0);
     }
-
   };
   return (
     <>

@@ -95,8 +95,6 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-  // console.log("State", state);
-
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -850,8 +848,6 @@ function AddOrder() {
   // };
 
   const addToCart = async (menu) => {
-    // console.log("addToCart: ", menu);
-
     const _menuOptions = _checkMenuOption(menu);
 
     // console.log("menuOptions: ", _menuOptions);
