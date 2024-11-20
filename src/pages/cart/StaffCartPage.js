@@ -13,6 +13,7 @@ import Spinner from "react-bootstrap/Spinner";
 import PopUpSignalDisconnect from "../../components/popup/PopUpSignalDisconnect";
 import PopUpOption from "./component/PopUpOption";
 import { moneyCurrency } from "../../helpers";
+import { t } from "i18next";
 function StaffCartPage() {
   const navigate = useNavigate();
   const { codeId } = useParams();
@@ -201,7 +202,7 @@ function StaffCartPage() {
             ) : (
               ""
             )}
-            ຍືນຍັນ1
+            {t("confirm")}
           </Button>
         </div>
       </div>
