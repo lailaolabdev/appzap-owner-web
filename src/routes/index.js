@@ -79,6 +79,7 @@ import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
 import PermisionUser from "../pages/permission_user/permission_user";
+import PermissionsUserList from "../pages/permission_user_list/permission_user_list";
 
 function Router() {
   return useRoutes([
@@ -195,6 +196,10 @@ function Router() {
         {
           path: "/user/permission-user/:id",
           element: <PermisionUser />,
+        },
+        {
+          path: "/user/manage-permission-user/:id",
+          element: <PermissionsUserList />,
         },
         {
           path: "/settingStore/bank/:id",

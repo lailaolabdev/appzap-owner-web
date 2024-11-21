@@ -67,7 +67,7 @@ export default function UserPage() {
   const { storeDetail } = useStore();
   const storeId = storeDetail._id
    //console.log("storeId:", storeId)
-   console.log("permissionUsers:", permissionUsers)
+   //console.log("permissionUsers:", permissionUsers)
 
    const fetchAllPermissionUsers = async () => {
     try {
@@ -293,8 +293,11 @@ export default function UserPage() {
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>
-                        {/* <Button>ແກ້ໄຂ</Button>
-                        <Button>ລັອກ</Button> */}
+                        <Button
+                          variant="success"
+                          onClick={()=>navigate(`/user/manage-permission-user/${selectUser?._id}`)}
+                        >ຈັດການ</Button>
+                        {/* <Button>ລັອກ</Button> */}
                         <Button
                           onClick={() => {
                             setSelectUser(e);
