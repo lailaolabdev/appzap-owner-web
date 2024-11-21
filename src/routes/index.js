@@ -78,6 +78,7 @@ import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
+import PermisionUser from "../pages/permission_user/permission_user";
 
 function Router() {
   return useRoutes([
@@ -190,6 +191,10 @@ function Router() {
         {
           path: "/settingStore/currency/:id",
           element: <CurrencyList />,
+        },
+        {
+          path: "/user/permission-user/:id",
+          element: <PermisionUser />,
         },
         {
           path: "/settingStore/bank/:id",

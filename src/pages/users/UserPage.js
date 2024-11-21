@@ -36,6 +36,13 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
 
+import {
+  fetchPermissionUsers,
+  createPermissionUser,
+  updatePermissionUser,
+  deletePermissionUser,
+} from "../../services/permission_user";
+
 const limitData = 10;
 
 export default function UserPage() {
@@ -53,9 +60,28 @@ export default function UserPage() {
   const [userData, setUserData] = useState();
   const [selectUser, setSelectUser] = useState();
   const [popup, setPopup] = useState();
+  const [permissionUsers, setPermissionUsers] = useState([]);
+  
 
   // store
   const { storeDetail } = useStore();
+  const storeId = storeDetail._id
+   //console.log("storeId:", storeId)
+   console.log("permissionUsers:", permissionUsers)
+
+   const fetchAllPermissionUsers = async () => {
+    try {
+      const data = await fetchPermissionUsers(storeDetail?._id);
+      setPermissionUsers(data);
+    } catch (error) {
+      console.error("Error fetching permission Users:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllPermissionUsers();
+  }, [storeDetail?._id]);
+
 
   // useEffect
   useEffect(() => {
@@ -103,6 +129,8 @@ export default function UserPage() {
     setSelectUser();
     getData();
   };
+
+
   return (
     <>
       <div
@@ -141,15 +169,26 @@ export default function UserPage() {
             <span>
               <IoPeople /> {t("staff_report")}
             </span>
-            <Button
-              variant="dark"
-              bg="dark"
-              onClick={() => {
-                setPopup({ PopUpCreateUser: true });
-              }}
-            >
-              <MdAssignmentAdd /> {t("add_list")}
-            </Button>
+            <div>
+              <Button
+                style={{marginRight:'5px'}}
+                variant="dark"
+                bg="dark"
+                onClick={() => {
+                  navigate(`/user/permission-user/${storeId}`)
+                  
+                }}
+              >
+                <MdAssignmentAdd /> {t("ສ້າງສິດ")}
+              </Button>
+              <Button
+                variant="dark"
+                bg="dark"
+                onClick={() => setPopup({ PopUpCreateUser: true })}
+              >
+                <MdAssignmentAdd /> {t("add_list")}
+              </Button>
+            </div>
           </Card.Header>
           <Card.Body
             style={{
@@ -321,6 +360,7 @@ export default function UserPage() {
       />
       <PopUpCreateUser
         open={popup?.PopUpCreateUser}
+        permissionUsers={permissionUsers}
         onClose={() => {
           setPopup();
         }}

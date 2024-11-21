@@ -15,7 +15,7 @@ import { useStore } from "../../store";
 
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
-export default function PopUpCreateUser({ open, onClose, callback }) {
+export default function PopUpCreateUser({ open, onClose, callback,permissionUsers }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [formData, setFormData] = useState();
