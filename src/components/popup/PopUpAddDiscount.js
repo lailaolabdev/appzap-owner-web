@@ -25,7 +25,7 @@ export default function PopUpAddDiscount({
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const { storeDetail } = useStore();
+  const { storeDetail, tableOrderItems } = useStore();
   const [selectedButton, setSelectedButton] = useState("%");
   const [categorysType, setCategorysType] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -123,9 +123,18 @@ export default function PopUpAddDiscount({
       }
     };
     fetchData();
-    const data = value.filter((e) => e?.status !== "CANCEL");
+    const data = value.filter(
+      (e) => e?.status !== "CANCEL" && e?.status !== "DOING"
+    );
     const _sumTotal = _.sumBy(data, (o) => o?.price * o?.quantity);
-    setTotal(_sumTotal);
+    const _sumOptionPrice = data.reduce((sum, item) => {
+      const optionSum = _.sumBy(
+        item.options,
+        (option) => option.price * option?.quantity ?? 1
+      );
+      return sum + optionSum;
+    }, 0);
+    setTotal(_sumTotal + _sumOptionPrice);
     setDiscount(dataBill?.discount);
   }, [open]);
 
@@ -138,29 +147,47 @@ export default function PopUpAddDiscount({
         (category) => category?.categoryTypeId === selectedCategoryId
       );
 
-      const filteredOrders = value.filter((order) =>
+      const checked = value.filter(
+        (e) => e?.status !== "CANCEL" && e?.status !== "DOING"
+      );
+
+      const filteredOrders = checked.filter((order) =>
         filteredCategoriesType.some(
           (category) => category?._id === order?.categoryId
         )
       );
 
       setFilteredOrders(filteredOrders);
-
       const totalForSelectedCategory = _.sumBy(
         filteredOrders,
         (o) => o.price * o.quantity
       );
-      const totalDiscount = (totalForSelectedCategory * discountCategory) / 100;
-      setCategoryTotal(totalForSelectedCategory);
-      // setDiscountCategory(dataBill?.discount);
-      setDiscountOrder(totalDiscount);
-      console.log("OrderPrice: ", totalDiscount);
-      // if (discountCategory === "%") {
 
-      // }
+      const _sumOptionPrice = filteredOrders.reduce((sum, item) => {
+        const optionSum = _.sumBy(
+          item.options,
+          (option) => option.price * option?.quantity ?? 1
+        );
+        return sum + optionSum;
+      }, 0);
+
+      const totalDiscount =
+        ((totalForSelectedCategory + _sumOptionPrice) * discountCategory) / 100;
+      setCategoryTotal(totalForSelectedCategory + _sumOptionPrice);
+      setDiscountOrder(totalDiscount);
     } else {
-      const _sumTotal = _.sumBy(value, (o) => o.price * o.quantity);
-      setCategoryTotal(_sumTotal);
+      const data = value.filter(
+        (e) => e?.status !== "CANCEL" && e?.status !== "DOING"
+      );
+      const _sumTotal = _.sumBy(data, (o) => o.price * o.quantity);
+      const _sumOptionPrice = data.reduce((sum, item) => {
+        const optionSum = _.sumBy(
+          item.options,
+          (option) => option.price * option?.quantity ?? 1
+        );
+        return sum + optionSum;
+      }, 0);
+      setCategoryTotal(_sumTotal + _sumOptionPrice);
       setDiscountOrder(0);
     }
   };
