@@ -390,8 +390,6 @@ export default function TableList() {
     }
   }, [state?.zoneId]);
 
-  // console.log("ZONE Out :", storeDetail?.zoneCheckBill);
-
   useEffect(() => {
     if (storeDetail?.zoneCheckBill === true) {
       getTableDataStore({ zone: state?.zoneId });
@@ -435,9 +433,6 @@ export default function TableList() {
     }
   };
 
-  // console.log("New", selectNewTable?.billId);
-  // console.log("Old", selectedTable?.billId);
-
   const _changeTable = async () => {
     if (!selectNewTable) {
       handleClose();
@@ -479,7 +474,7 @@ export default function TableList() {
         },
         headers: headers,
       });
-      console.log("=======log5");
+
       if (changTable?.status === 200) {
         handleClose();
         setSelectedTable();
@@ -654,17 +649,6 @@ export default function TableList() {
         const firstName = profile.data.firstname;
         const lastName = profile.data.lastname;
 
-        console.log("User_Id:", userId);
-        console.log("Bill_Id:", billId);
-        console.log("taxPercent:", taxPercent);
-        console.log("total:", total);
-        console.log("serviceChargePercent:", serviceChargePercent);
-        console.log("serviceChangeAmount:", serviceChangeAmount);
-        console.log("totalMustPay:", totalMustPay);
-        console.log("fname:", firstName);
-        console.log("lname:", lastName);
-        console.log("CreateAt:", createdAt);
-
         const response = await axios.post(
           `${END_POINT_SEVER}/saveservice`,
           {
@@ -685,8 +669,6 @@ export default function TableList() {
             },
           }
         );
-
-        console.log("Service charge saved:", response.data);
       } catch (error) {
         console.error(
           "Error saving service charge:",
@@ -697,7 +679,6 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
-    // console.log("isPrintBill", isPrintBill);
     try {
       setPrintBillLoading(true);
       let _dataBill = {
@@ -953,7 +934,6 @@ export default function TableList() {
   };
 
   const arrLength = isCheckedOrderItem?.filter((e) => e?.isChecked).length;
-  // console.log("CHECKED ORDER: ", isCheckedOrderItem);
 
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -1506,8 +1486,6 @@ export default function TableList() {
     setOrderPayBefore(res);
     setIsCheckedOrderItem(_data);
 
-    // console.log("CHECKER5: ", _data);
-
     const _isChecked = _data.filter((e) => {
       if (e?.isChecked) {
         return true;
@@ -1564,8 +1542,6 @@ export default function TableList() {
             menuId: i?.menuId,
           };
         });
-
-      // console.log("isCheckedOrderItem", _updateItems);
 
       const _resOrderUpdate = await updateOrderItem(
         _updateItems,
@@ -1739,7 +1715,6 @@ export default function TableList() {
         };
       });
       setIsCheckedOrderItem(_newOrderItems);
-      console.log("CHECKER6:", _newOrderItems);
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
     }
@@ -1931,7 +1906,6 @@ export default function TableList() {
   };
 
   const getDataZone = async () => {
-    console.log("Params: ", storeDetail?._id);
     try {
       const header = await getHeaders();
       const headers = {
@@ -2055,7 +2029,14 @@ export default function TableList() {
                     >
                       <Box
                         sx={{
-                          display: { md: "block", xs: "none" },
+                          display: {
+                            md: `${
+                              profile?.data?.role === "APPZAP_STAFF"
+                                ? "none"
+                                : "block"
+                            }`,
+                            xs: "none",
+                          },
                         }}
                       >
                         <div
@@ -2153,7 +2134,14 @@ export default function TableList() {
                       </Box>
                       <Box
                         sx={{
-                          display: { md: "none", xs: "block" },
+                          display: {
+                            md: `${
+                              profile?.data?.role === "APPZAP_STAFF"
+                                ? "block"
+                                : "none"
+                            }`,
+                            xs: "block",
+                          },
                         }}
                       >
                         <div
@@ -2232,259 +2220,271 @@ export default function TableList() {
             </Container>
           </Box>
           {/* Detail Table */}
-          <Box
-            sx={{
-              display: { xs: "none", sm: "block" },
-              minWidth: 420,
-              width: 420,
-              maxWidth: 420,
-              boxShadow: "-1px 0px 10px rgba(0,0,0,0.1)",
-            }}
+          <div
+          // hidden={`${profile?.data?.role === "APPZAP_STAFF" ? false : true}`}
           >
-            {selectedTable != null &&
-              selectedTable?.isStaffConfirm &&
-              selectedTable?.isOpened && (
-                <div
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#FFF",
-                    maxHeight: "90vh",
-                    overflowY: "scroll",
-                  }}
-                >
-                  {
-                    <div>
-                      <Button
-                        variant="outlined"
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          color: "#909090",
-                        }}
-                        onClick={getQrTokenForSelfOrdering}
-                      >
-                        <IoQrCode style={{ fontSize: "22px" }} />
-                      </Button>
-                      <div style={{ backgroundColor: "#fff", padding: 10 }}>
-                        <div
-                          style={{
-                            fontSize: 24,
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            padding: 20,
-                          }}
-                        >
-                          <SiAirtable /> {selectedTable?.tableName}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("tableNumber2")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {selectedTable?.code}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("timeOfTableOpening")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moment(selectedTable?.createdAt).format("HH:mm A")}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: 16 }}>
-                          {t("respon")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
-                            dataBill?.orderId?.[0]?.updatedBy?.lastname
-                              ? `${dataBill?.orderId[0]?.updatedBy?.firstname} ${dataBill?.orderId[0]?.updatedBy?.lastname}`
-                              : ""}
-                          </span>
-                        </div>
-
-                        <div style={{ fontSize: 16 }}>
-                          {t("discount")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {moneyCurrency(dataBill?.discount)}{" "}
-                            {dataBill?.discountType === "PERCENT"
-                              ? "%"
-                              : storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("total")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {isWaitingPress ? moneyCurrency(total) : "0"}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                          }}
-                        >
-                          {t("aPriceHasToPay")}:{" "}
-                          <span
-                            style={{
-                              fontWeight: "bold",
-                              color: COLOR_APP,
-                            }}
-                          >
-                            {isWaitingPress
-                              ? moneyCurrency(totalAfterDiscount)
-                              : "0"}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 16,
-                            color: "red",
-                            display: isCheckedOrderItem?.filter(
-                              (e) =>
-                                e?.status !== "SERVED" &&
-                                e?.status !== "CANCELED" &&
-                                e?.status !== "FEEDBACK" &&
-                                e?.status !== "PAID"
-                            )?.length
-                              ? "block"
-                              : "none",
-                          }}
-                        >
-                          {
-                            isCheckedOrderItem?.filter(
-                              (e) =>
-                                e?.status !== "SERVED" &&
-                                e?.status !== "CANCELED" &&
-                                e?.status !== "FEEDBACK" &&
-                                e?.status !== "PAID"
-                            )?.length
-                          }{" "}
-                          {t("itemNotServed")}
-                        </div>
+            {profile?.data?.role === "APPZAP_STAFF" ? (
+              ""
+            ) : (
+              <Box
+                sx={{
+                  display: { xs: "none", sm: "block" },
+                  minWidth: 420,
+                  width: 420,
+                  maxWidth: 420,
+                  boxShadow: "-1px 0px 10px rgba(0,0,0,0.1)",
+                }}
+              >
+                {selectedTable != null &&
+                  selectedTable?.isStaffConfirm &&
+                  selectedTable?.isOpened && (
+                    <div
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#FFF",
+                        maxHeight: "90vh",
+                        overflowY: "scroll",
+                      }}
+                    >
+                      {
                         <div>
-                          <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                            {isCheckedOrderItem?.filter(
-                              (e) => e?.status === "PAID"
-                            )?.length
-                              ? ` ${
-                                  isCheckedOrderItem?.filter(
-                                    (e) => e?.status === "PAID"
-                                  )?.length
-                                } ${t("ORDER_PAID")}`
-                              : ""}
-                          </p>
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          borderBottom: "1px dashed #ccc",
-                          marginBottom: 10,
-                        }}
-                      />
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "repeat(4,1fr)",
-                          paddingLeft: 10,
-                          paddingRight: 10,
-                        }}
-                      >
-                        <ButtonCustom
-                          onClick={() => onPrintToKitchen()}
-                          disabled={onPrinting}
-                        >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("printBillToKitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => _openModalSetting(selectedTable)}
-                        >
-                          {t("closeTable")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          disabled={tableOrderItems?.length === 0}
-                          onClick={handleShow}
-                        >
-                          {t("combine_table")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            // _onAddDiscount();
-                            setWorkAfterPin("discount");
-                            setPopup({ PopUpPin: true });
-                          }}
-                        >
-                          {t("discount")}
-                        </ButtonCustom>
+                          <Button
+                            variant="outlined"
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              color: "#909090",
+                            }}
+                            onClick={getQrTokenForSelfOrdering}
+                          >
+                            <IoQrCode style={{ fontSize: "22px" }} />
+                          </Button>
+                          <div style={{ backgroundColor: "#fff", padding: 10 }}>
+                            <div
+                              style={{
+                                fontSize: 24,
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                padding: 20,
+                              }}
+                            >
+                              <SiAirtable /> {selectedTable?.tableName}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 16,
+                              }}
+                            >
+                              {t("tableNumber2")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {selectedTable?.code}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 16,
+                              }}
+                            >
+                              {t("timeOfTableOpening")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {moment(selectedTable?.createdAt).format(
+                                  "HH:mm A"
+                                )}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: 16 }}>
+                              {t("respon")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
+                                dataBill?.orderId?.[0]?.updatedBy?.lastname
+                                  ? `${dataBill?.orderId[0]?.updatedBy?.firstname} ${dataBill?.orderId[0]?.updatedBy?.lastname}`
+                                  : ""}
+                              </span>
+                            </div>
 
-                        <ButtonCustom
-                          disabled={
-                            !canCheckOut ||
-                            isWaitingCheckout ||
-                            tableOrderItems?.length === 0
-                          }
-                          onClick={() => _onCheckOut()}
-                        >
-                          {isWaitingCheckout && (
-                            <Spinner animation="border" size="sm" />
-                          )}{" "}
-                          Checkout
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() =>
-                            _goToAddOrder(
-                              selectedTable?.tableId,
-                              selectedTable?.code,
-                              selectedTable?._id
-                            )
-                          }
-                        >
-                          + {t("addOrder")}
-                        </ButtonCustom>
-                        <ButtonCustom disabled></ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => setPopup({ PopUpTranferTable: true })}
-                        >
-                          {t("move_order")}
-                        </ButtonCustom>
-                        {/* {selectedTable?.tableChildren?.length > 0 ||
+                            <div style={{ fontSize: 16 }}>
+                              {t("discount")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {moneyCurrency(dataBill?.discount)}{" "}
+                                {dataBill?.discountType === "PERCENT"
+                                  ? "%"
+                                  : storeDetail?.firstCurrency}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 16,
+                              }}
+                            >
+                              {t("total")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {isWaitingPress ? moneyCurrency(total) : "0"}{" "}
+                                {storeDetail?.firstCurrency}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 16,
+                              }}
+                            >
+                              {t("aPriceHasToPay")}:{" "}
+                              <span
+                                style={{
+                                  fontWeight: "bold",
+                                  color: COLOR_APP,
+                                }}
+                              >
+                                {isWaitingPress
+                                  ? moneyCurrency(totalAfterDiscount)
+                                  : "0"}{" "}
+                                {storeDetail?.firstCurrency}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 16,
+                                color: "red",
+                                display: isCheckedOrderItem?.filter(
+                                  (e) =>
+                                    e?.status !== "SERVED" &&
+                                    e?.status !== "CANCELED" &&
+                                    e?.status !== "FEEDBACK" &&
+                                    e?.status !== "PAID"
+                                )?.length
+                                  ? "block"
+                                  : "none",
+                              }}
+                            >
+                              {
+                                isCheckedOrderItem?.filter(
+                                  (e) =>
+                                    e?.status !== "SERVED" &&
+                                    e?.status !== "CANCELED" &&
+                                    e?.status !== "FEEDBACK" &&
+                                    e?.status !== "PAID"
+                                )?.length
+                              }{" "}
+                              {t("itemNotServed")}
+                            </div>
+                            <div>
+                              <p
+                                style={{ color: COLOR_APP, fontWeight: "bold" }}
+                              >
+                                {isCheckedOrderItem?.filter(
+                                  (e) => e?.status === "PAID"
+                                )?.length
+                                  ? ` ${
+                                      isCheckedOrderItem?.filter(
+                                        (e) => e?.status === "PAID"
+                                      )?.length
+                                    } ${t("ORDER_PAID")}`
+                                  : ""}
+                              </p>
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              borderBottom: "1px dashed #ccc",
+                              marginBottom: 10,
+                            }}
+                          />
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "repeat(4,1fr)",
+                              paddingLeft: 10,
+                              paddingRight: 10,
+                            }}
+                          >
+                            <ButtonCustom
+                              onClick={() => onPrintToKitchen()}
+                              disabled={onPrinting}
+                            >
+                              {onPrinting && (
+                                <Spinner animation="border" size="sm" />
+                              )}
+                              {t("printBillToKitchen")}
+                            </ButtonCustom>
+                            <ButtonCustom
+                              onClick={() => _openModalSetting(selectedTable)}
+                            >
+                              {t("closeTable")}
+                            </ButtonCustom>
+                            <ButtonCustom
+                              disabled={tableOrderItems?.length === 0}
+                              onClick={handleShow}
+                            >
+                              {t("combine_table")}
+                            </ButtonCustom>
+                            <ButtonCustom
+                              onClick={() => {
+                                // _onAddDiscount();
+                                setWorkAfterPin("discount");
+                                setPopup({ PopUpPin: true });
+                              }}
+                            >
+                              {t("discount")}
+                            </ButtonCustom>
+
+                            <ButtonCustom
+                              disabled={
+                                !canCheckOut ||
+                                isWaitingCheckout ||
+                                tableOrderItems?.length === 0
+                              }
+                              onClick={() => _onCheckOut()}
+                            >
+                              {isWaitingCheckout && (
+                                <Spinner animation="border" size="sm" />
+                              )}{" "}
+                              Checkout
+                            </ButtonCustom>
+                            <ButtonCustom
+                              onClick={() =>
+                                _goToAddOrder(
+                                  selectedTable?.tableId,
+                                  selectedTable?.code,
+                                  selectedTable?._id
+                                )
+                              }
+                            >
+                              + {t("addOrder")}
+                            </ButtonCustom>
+                            <ButtonCustom disabled></ButtonCustom>
+                            <ButtonCustom
+                              onClick={() =>
+                                setPopup({ PopUpTranferTable: true })
+                              }
+                            >
+                              {t("move_order")}
+                            </ButtonCustom>
+                            {/* {selectedTable?.tableChildren?.length > 0 ||
                         showBtnCombine ? (
                           <ButtonCustom
                             onClick={() =>
@@ -2496,277 +2496,293 @@ export default function TableList() {
                         ) : (
                           ""
                         )} */}
-                      </div>
-                      <div
-                        style={{
-                          borderBottom: "1px dashed #ccc",
-                          margin: "10px 0",
-                        }}
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          padding: "0 10px",
-                          marginBottom: 10,
-                        }}
-                        hidden={!checkedBox}
-                      >
-                        <ButtonCustom
-                          onClick={() => {
-                            setWorkAfterPin("cancle_order_and_print");
-                            setPopup({ PopUpPin: true });
-                          }}
-                          disabled={!checkedBox || onPrinting}
-                        >
-                          {onPrinting && (
-                            <Spinner animation="border" size="sm" />
-                          )}
-                          {t("cancel_and_send_to_kitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => {
-                            setWorkAfterPin("cancle_order");
-                            setPopup({ PopUpPin: true });
-                          }}
-                          disabled={!checkedBox}
-                        >
-                          {t("cancel")}
-                        </ButtonCustom>
-
-                        <ButtonCustom
-                          onClick={() => handleUpdateOrderStatusgo("DOING")}
-                          disabled={!checkedBox}
-                        >
-                          {t("sendToKitchen")}
-                        </ButtonCustom>
-                        <ButtonCustom
-                          onClick={() => handleUpdateOrderStatus("SERVED")}
-                          disabled={!checkedBox}
-                        >
-                          {isServedLoading && (
-                            <Spinner animation="border" size="sm" />
-                          )}{" "}
-                          {t("servedBy")}
-                        </ButtonCustom>
-                      </div>
-
-                      <TableCustom>
-                        <thead>
-                          <tr>
-                            <th>
-                              <Checkbox
-                                name="checked"
-                                checked={checkedBox}
-                                onChange={(e) => {
-                                  setOrderPayBefore(e);
-                                  checkAllOrders(e);
-                                  setCheckedBox(!checkedBox);
-                                }}
-                              />
-                            </th>
-                            <th>{t("no")}</th>
-                            <th>{t("menuname")}</th>
-                            <th>{t("quantity")}</th>
-                            <th>{t("status")}</th>
-                            <th>{t("customer")}</th>
-                            <th>{t("time")}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {isCheckedOrderItem
-                            ? isCheckedOrderItem?.map((orderItem, index) => {
-                                const options =
-                                  orderItem?.options
-                                    ?.map((option) =>
-                                      option.quantity > 1
-                                        ? `[${option.quantity} x ${option.name}]`
-                                        : `[${option.name}]`
-                                    )
-                                    .join(" ") || "";
-                                return (
-                                  <tr
-                                    key={`order${index}`}
-                                    style={{ borderBottom: "1px solid #eee" }}
-                                  >
-                                    <td onClick={(e) => e.stopPropagation()}>
-                                      <Checkbox
-                                        disabled={
-                                          orderItem?.status === "CANCELED" ||
-                                          orderItem?.status === "PAID"
-                                        }
-                                        name="checked"
-                                        checked={orderItem?.isChecked || false}
-                                        onChange={(e) => {
-                                          onSelect({
-                                            ...orderItem,
-                                            isChecked: e.target.checked,
-                                          });
-                                        }}
-                                      />
-                                    </td>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                      {orderItem?.name} {options}
-                                    </td>
-                                    <td>{orderItem?.quantity}</td>
-                                    <td
-                                      style={{
-                                        color:
-                                          orderItem?.status === "SERVED"
-                                            ? "green"
-                                            : orderItem?.status === "PAID"
-                                            ? COLOR_APP
-                                            : orderItem?.status === "DOING"
-                                            ? ""
-                                            : "red",
-                                      }}
-                                    >
-                                      {orderItem?.status
-                                        ? t(
-                                            orderStatusTranslate(
-                                              orderItem?.status
-                                            )
-                                          )
-                                        : "-"}
-                                    </td>
-                                    <td>{orderItem?.createdBy?.firstname}</td>
-                                    <td>
-                                      {orderItem?.createdAt
-                                        ? moment(orderItem?.createdAt).format(
-                                            "HH:mm A"
-                                          )
-                                        : "-"}
-                                    </td>
-                                  </tr>
-                                );
-                              })
-                            : ""}
-                        </tbody>
-                      </TableCustom>
-                      {tableOrderItems?.length === 0 && (
-                        <div className="text-center">
-                          <div style={{ marginTop: 50, fontSize: 50 }}>
-                            {" "}
-                            {t("TableHasNoOrder")}
                           </div>
+                          <div
+                            style={{
+                              borderBottom: "1px dashed #ccc",
+                              margin: "10px 0",
+                            }}
+                          />
+                          <div
+                            style={{
+                              display: "flex",
+                              padding: "0 10px",
+                              marginBottom: 10,
+                            }}
+                            hidden={!checkedBox}
+                          >
+                            <ButtonCustom
+                              onClick={() => {
+                                setWorkAfterPin("cancle_order_and_print");
+                                setPopup({ PopUpPin: true });
+                              }}
+                              disabled={!checkedBox || onPrinting}
+                            >
+                              {onPrinting && (
+                                <Spinner animation="border" size="sm" />
+                              )}
+                              {t("cancel_and_send_to_kitchen")}
+                            </ButtonCustom>
+                            <ButtonCustom
+                              onClick={() => {
+                                setWorkAfterPin("cancle_order");
+                                setPopup({ PopUpPin: true });
+                              }}
+                              disabled={!checkedBox}
+                            >
+                              {t("cancel")}
+                            </ButtonCustom>
+
+                            <ButtonCustom
+                              onClick={() => handleUpdateOrderStatusgo("DOING")}
+                              disabled={!checkedBox}
+                            >
+                              {t("sendToKitchen")}
+                            </ButtonCustom>
+                            <ButtonCustom
+                              onClick={() => handleUpdateOrderStatus("SERVED")}
+                              disabled={!checkedBox}
+                            >
+                              {isServedLoading && (
+                                <Spinner animation="border" size="sm" />
+                              )}{" "}
+                              {t("servedBy")}
+                            </ButtonCustom>
+                          </div>
+
+                          <TableCustom>
+                            <thead>
+                              <tr>
+                                <th>
+                                  <Checkbox
+                                    name="checked"
+                                    checked={checkedBox}
+                                    onChange={(e) => {
+                                      setOrderPayBefore(e);
+                                      checkAllOrders(e);
+                                      setCheckedBox(!checkedBox);
+                                    }}
+                                  />
+                                </th>
+                                <th>{t("no")}</th>
+                                <th>{t("menuname")}</th>
+                                <th>{t("quantity")}</th>
+                                <th>{t("status")}</th>
+                                <th>{t("customer")}</th>
+                                <th>{t("time")}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {isCheckedOrderItem
+                                ? isCheckedOrderItem?.map(
+                                    (orderItem, index) => {
+                                      const options =
+                                        orderItem?.options
+                                          ?.map((option) =>
+                                            option.quantity > 1
+                                              ? `[${option.quantity} x ${option.name}]`
+                                              : `[${option.name}]`
+                                          )
+                                          .join(" ") || "";
+                                      return (
+                                        <tr
+                                          key={`order${index}`}
+                                          style={{
+                                            borderBottom: "1px solid #eee",
+                                          }}
+                                        >
+                                          <td
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            <Checkbox
+                                              disabled={
+                                                orderItem?.status ===
+                                                  "CANCELED" ||
+                                                orderItem?.status === "PAID"
+                                              }
+                                              name="checked"
+                                              checked={
+                                                orderItem?.isChecked || false
+                                              }
+                                              onChange={(e) => {
+                                                onSelect({
+                                                  ...orderItem,
+                                                  isChecked: e.target.checked,
+                                                });
+                                              }}
+                                            />
+                                          </td>
+                                          <td>{index + 1}</td>
+                                          <td>
+                                            {orderItem?.name} {options}
+                                          </td>
+                                          <td>{orderItem?.quantity}</td>
+                                          <td
+                                            style={{
+                                              color:
+                                                orderItem?.status === "SERVED"
+                                                  ? "green"
+                                                  : orderItem?.status === "PAID"
+                                                  ? COLOR_APP
+                                                  : orderItem?.status ===
+                                                    "DOING"
+                                                  ? ""
+                                                  : "red",
+                                            }}
+                                          >
+                                            {orderItem?.status
+                                              ? t(
+                                                  orderStatusTranslate(
+                                                    orderItem?.status
+                                                  )
+                                                )
+                                              : "-"}
+                                          </td>
+                                          <td>
+                                            {orderItem?.createdBy?.firstname}
+                                          </td>
+                                          <td>
+                                            {orderItem?.createdAt
+                                              ? moment(
+                                                  orderItem?.createdAt
+                                                ).format("HH:mm A")
+                                              : "-"}
+                                          </td>
+                                        </tr>
+                                      );
+                                    }
+                                  )
+                                : ""}
+                            </tbody>
+                          </TableCustom>
+                          {tableOrderItems?.length === 0 && (
+                            <div className="text-center">
+                              <div style={{ marginTop: 50, fontSize: 50 }}>
+                                {" "}
+                                {t("TableHasNoOrder")}
+                              </div>
+                            </div>
+                          )}
+
+                          <div style={{ marginBottom: 100 }} />
                         </div>
-                      )}
-
-                      <div style={{ marginBottom: 100 }} />
+                      }
                     </div>
-                  }
-                </div>
-              )}
-            {selectedTable != null && !selectedTable?.isStaffConfirm && (
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#FFF",
-                  height: "100%",
-                  borderColor: "black",
-                  overflowY: "scroll",
-                  borderWidth: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: 10,
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    padding: 20,
-                  }}
-                >
-                  <SiAirtable /> {selectedTable?.tableName}
-                </div>
-                <QRCode
-                  value={
-                    END_POINT_WEB_CLIENT +
-                    selectedTable?.storeId +
-                    "?tableId=" +
-                    selectedTable?.tableId
-                  }
-                  size={150}
-                />
-                <p
-                  style={{
-                    fontSize: 18,
-                    color: "#616161",
-                    textAlign: "center",
-                  }}
-                >
-                  {t("bringThisQRCodeToCustomersOrPressOpenToStartUsing")}
-                </p>
-                <p
-                  style={{
-                    fontSize: 18,
-                    color: "#616161",
-                    textAlign: "center",
-                  }}
-                >
-                  ( Smart-Menu && Self-Ordering)
-                </p>
-                <div style={{ height: 30 }} />
-                <Button
-                  variant="light"
-                  className="hover-me"
-                  style={{
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                    fontSize: 20,
-                    padding: 20,
-                  }}
-                  onClick={() => openTable()}
-                >
-                  {!selectedTable?.isOpened ? `${t("open")}` : "ຢືນຢັນເປີດໂຕະ"}
-                </Button>
-                <br />
-                <Button
-                  variant="light"
-                  className="hover-me"
-                  style={{
-                    backgroundColor: "#FB6E3B",
-                    color: "#ffffff",
-                    fontWeight: "bold",
-                    fontSize: 20,
-                    padding: 20,
-                    display: !selectedTable?.isOpened ? "block" : "none",
-                  }}
-                  onClick={() => {
-                    openTableAndReturnCodeShortLink().then((e) => {
-                      setCodeShortLink(e);
-                    });
-                  }}
-                >
-                  {t("open_table_with_qr")}
-                </Button>
-              </div>
-            )}
+                  )}
+                {selectedTable != null && !selectedTable?.isStaffConfirm && (
+                  <div
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#FFF",
+                      height: "100%",
+                      borderColor: "black",
+                      overflowY: "scroll",
+                      borderWidth: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      padding: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        padding: 20,
+                      }}
+                    >
+                      <SiAirtable /> {selectedTable?.tableName}
+                    </div>
+                    <QRCode
+                      value={
+                        END_POINT_WEB_CLIENT +
+                        selectedTable?.storeId +
+                        "?tableId=" +
+                        selectedTable?.tableId
+                      }
+                      size={150}
+                    />
+                    <p
+                      style={{
+                        fontSize: 18,
+                        color: "#616161",
+                        textAlign: "center",
+                      }}
+                    >
+                      {t("bringThisQRCodeToCustomersOrPressOpenToStartUsing")}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 18,
+                        color: "#616161",
+                        textAlign: "center",
+                      }}
+                    >
+                      ( Smart-Menu && Self-Ordering)
+                    </p>
+                    <div style={{ height: 30 }} />
+                    <Button
+                      variant="light"
+                      className="hover-me"
+                      style={{
+                        backgroundColor: "#FB6E3B",
+                        color: "#ffffff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                        padding: 20,
+                      }}
+                      onClick={() => openTable()}
+                    >
+                      {!selectedTable?.isOpened
+                        ? `${t("open")}`
+                        : "ຢືນຢັນເປີດໂຕະ"}
+                    </Button>
+                    <br />
+                    <Button
+                      variant="light"
+                      className="hover-me"
+                      style={{
+                        backgroundColor: "#FB6E3B",
+                        color: "#ffffff",
+                        fontWeight: "bold",
+                        fontSize: 20,
+                        padding: 20,
+                        display: !selectedTable?.isOpened ? "block" : "none",
+                      }}
+                      onClick={() => {
+                        openTableAndReturnCodeShortLink().then((e) => {
+                          setCodeShortLink(e);
+                        });
+                      }}
+                    >
+                      {t("open_table_with_qr")}
+                    </Button>
+                  </div>
+                )}
 
-            {selectedTable === null && (
-              <div
-                style={{
-                  width: "100%",
-                  backgroundColor: "#FFF",
-                  maxHeight: "90vh",
-                  borderColor: "black",
-                  overflowY: "scroll",
-                  borderWidth: 1,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <p style={{ margin: 0, fontSize: 30 }}>
-                  {t("chose_table_for_order")}
-                </p>
-              </div>
+                {selectedTable === null && (
+                  <div
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#FFF",
+                      maxHeight: "90vh",
+                      borderColor: "black",
+                      overflowY: "scroll",
+                      borderWidth: 1,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <p style={{ margin: 0, fontSize: 30 }}>
+                      {t("chose_table_for_order")}
+                    </p>
+                  </div>
+                )}
+              </Box>
             )}
-          </Box>
+          </div>
         </Box>
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
