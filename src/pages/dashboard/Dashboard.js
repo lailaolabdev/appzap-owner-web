@@ -304,7 +304,7 @@ export default function Dashboard() {
               <div>
                 {t("point")}
                 {" : "}
-                {convertNumber(moneyReport?.transferCash?.totalBill)}
+                {convertNumber(moneyReport?.point?.totalBill)}
               </div>
               <div>
                 {t("cashDiscount")}

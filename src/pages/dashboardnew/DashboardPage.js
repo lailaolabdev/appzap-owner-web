@@ -480,12 +480,9 @@ export default function DashboardPage() {
                   },
                   {
                     method: <div style={{ fontWeight: 700 }}>{t("point")}</div>,
-                    // qty:
-                    //   (moneyReport?.transferCash?.count || 0) +
-                    //   (moneyReport?.transfer?.count || 0),
-                    // amount:
-                    //   (moneyReport?.transferCash?.transfer || 0) +
-                    //   (moneyReport?.transfer?.totalBill || 0),
+                    qty: moneyReport?.point?.count || 0,
+                    amount: moneyReport?.point?.totalBill || 0,
+                    unit: t("point"),
                   },
 
                   {
@@ -520,7 +517,8 @@ export default function DashboardPage() {
                     <td>{moneyCurrency(e?.qty)}</td>
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.amount)}
-                      {storeDetail?.firstCurrency}
+                      {"   "}
+                      {e?.unit ? e?.unit : storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
@@ -616,6 +614,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("date")}</th>
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point")}</th>
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
@@ -625,6 +624,7 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
+                    <td>{e?.point}</td>
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}

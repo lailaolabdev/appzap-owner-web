@@ -422,7 +422,8 @@ export default function DashboardFinance({
                       }).format(
                         item?.billAmount +
                           item?.taxAmount +
-                          item?.serviceChargeAmount
+                          item?.serviceChargeAmount -
+                          item?.point
                       )}{" "}
                   {selectedCurrency}
                 </td>
@@ -476,6 +477,10 @@ export default function DashboardFinance({
                     ? t("payBycash")
                     : item?.paymentMethod === "TRANSFER"
                     ? t("transferPayment")
+                    : item?.paymentMethod === "POINT"
+                    ? t("point")
+                    : item?.paymentMethod === "CASH_TRANSFER_POINT"
+                    ? t("transfercashpoint")
                     : t("transfercash")}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -619,7 +624,9 @@ export default function DashboardFinance({
                     dataModal?.orderId?.reduce(
                       (a, b) => a + (b?.totalPrice ?? 0),
                       0
-                    ) - dataModal?.discount
+                    ) -
+                      dataModal?.discount -
+                      dataModal?.point
                   )}{" "}
                   {t("lak")}
                 </td>
