@@ -195,7 +195,7 @@ export default function BillForCheckOut80({
             </span>
           </div>
         </div>
-        {dataBill?.Name && dataBill?.Point ? (
+        {/* {dataBill?.Name && dataBill?.Point ? (
           <div style={{ textAlign: "right", fontSize: 12, width: "100%" }}>
             <div>
               {t("customer_name")}: {""}
@@ -212,7 +212,7 @@ export default function BillForCheckOut80({
           </div>
         ) : (
           ""
-        )}
+        )} */}
 
         <div style={{ flexGrow: 1 }} />
       </Price>
@@ -275,7 +275,7 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div style={{ textAlign: "right" }}>
               {t("total")} ({storeDetail?.firstCurrency}):{" "}
             </div>
@@ -285,7 +285,7 @@ export default function BillForCheckOut80({
           </Col>
         </Row>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div style={{ textAlign: "right" }}>
               {t("discount")} (
               {dataBill?.discountType == "MONEY" ||
@@ -299,23 +299,53 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
-        {/* {dataBill?.memberName ? (
+        {dataBill?.Name ? (
           <Row>
-            <Col xs={8}>
-              <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("customer_name")}: </div>
             </Col>
             <Col>
+              <div style={{ textAlign: "right" }}>{dataBill?.Name}</div>
+            </Col>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("phoneNumber")}: </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>{dataBill?.memberPhone}</div>
+            </Col>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("point")}: </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>{dataBill?.Point}</div>
+            </Col>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>ອັດຕາແລກປ່ຽນຄະແນນ: </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>1 ຄະແນນ = 1 ກີບ</div>
+            </Col>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>ຕັດຈາກຄະແນນ: </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>50</div>
+            </Col>
+            <Col xs={7}>
               <div style={{ textAlign: "right" }}>
-                {dataBill?.memberName} ( {dataBill?.memberPhone} )
+                ໄດ້ຄະແນນຈາກການຊື້ຄັ້ງນີ້:{" "}
               </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>150</div>
             </Col>
           </Row>
         ) : (
           ""
-        )} */}
+        )}
       </div>
       <Row>
-        <Col xs={8}>
+        <Col xs={7}>
           <div style={{ textAlign: "right" }}>
             {t("service_charge")} {storeDetail?.serviceChargePer}% :
           </div>
@@ -328,7 +358,7 @@ export default function BillForCheckOut80({
       </Row>
       <div style={{ fontSize: 14, marginTop: 20 }}>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
@@ -349,7 +379,7 @@ export default function BillForCheckOut80({
 
         {currencyData?.map((item, index) => (
           <Row key={index}>
-            <Col xs={8}>
+            <Col xs={7}>
               <div style={{ textAlign: "right" }}>{item?.currencyCode}:</div>
             </Col>
             <Col>

@@ -6,12 +6,12 @@ import {
   InputGroup,
   Form,
   Modal,
-  Spinner
+  Spinner,
 } from "react-bootstrap";
 import {
   BsArrowCounterclockwise,
   BsFillCalendarWeekFill,
-  BsInfoCircle
+  BsInfoCircle,
 } from "react-icons/bs";
 import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
@@ -28,7 +28,7 @@ import DateTimeComponent from "../../components/DateTimeComponent";
 import {
   addMemberPoint,
   getAllStorePoints,
-  updatePointStore
+  updatePointStore,
 } from "../../services/member.service";
 import { useTranslation } from "react-i18next";
 
@@ -40,7 +40,7 @@ export default function SettingMemberPointPage() {
   const [formData, setFormData] = useState({
     totalAmount: "",
     points: "",
-    storeId: ""
+    storeId: "",
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -79,7 +79,7 @@ export default function SettingMemberPointPage() {
       const body = {
         money: formData.totalAmount,
         piont: formData.points,
-        storeId: formData.storeId
+        storeId: formData.storeId,
       };
       console.log("Submitting formData: ", body);
       const _data = await addMemberPoint(body);
@@ -133,7 +133,7 @@ export default function SettingMemberPointPage() {
       const dataToSend = {
         piontStoreId: pointsData[0]._id,
         money: pointsData[0].money,
-        point: pointsData[0].piont
+        point: pointsData[0].piont,
       };
       const response = await updatePointStore(dataToSend);
       if (response.error) throw new Error("Cannot update point");
@@ -152,8 +152,8 @@ export default function SettingMemberPointPage() {
     <>
       <div style={{ padding: 20 }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t('report')}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t('point_setting')}</Breadcrumb.Item>
+          <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("point_setting")}</Breadcrumb.Item>
         </Breadcrumb>
         {loading ? (
           <div>
@@ -170,10 +170,10 @@ export default function SettingMemberPointPage() {
                 backgroundColor: COLOR_APP,
                 color: "#fff",
                 fontSize: 18,
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
             >
-              {t('point_setting_form')}
+              {t("point_setting_form")}
             </Card.Header>
             <Card.Body>
               <div>
@@ -183,11 +183,11 @@ export default function SettingMemberPointPage() {
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr",
                     gap: 20,
-                    width: "100%"
+                    width: "100%",
                   }}
                 >
                   <div>
-                    <Form.Label>{t('bill_total_price')}</Form.Label>
+                    <Form.Label>{t("bill_total_price")}</Form.Label>
                     <Form.Control
                       name="money"
                       value={pointsData[0].money}
@@ -196,7 +196,7 @@ export default function SettingMemberPointPage() {
                     />
                   </div>
                   <div>
-                    <Form.Label>{t('money_will_got')}</Form.Label>
+                    <Form.Label>{t("money_will_got")}</Form.Label>
                     <Form.Control
                       name="piont"
                       value={pointsData[0].piont}
@@ -208,11 +208,11 @@ export default function SettingMemberPointPage() {
               </div>
               {editMode ? (
                 <Button variant="primary" onClick={handleUpdate}>
-                  {t('save')}
+                  {t("save")}
                 </Button>
               ) : (
                 <Button variant="secondary" onClick={() => setEditMode(true)}>
-                  {t('update')}
+                  {t("update")}
                 </Button>
               )}
             </Card.Body>
@@ -223,7 +223,7 @@ export default function SettingMemberPointPage() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "80vh"
+              height: "80vh",
             }}
           >
             <Button
@@ -234,7 +234,7 @@ export default function SettingMemberPointPage() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "8px"
+                gap: "8px",
               }}
             >
               <BsInfoCircle />
@@ -244,7 +244,7 @@ export default function SettingMemberPointPage() {
         )}
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>{t('point_setting_form')}</Modal.Title>
+            <Modal.Title>{t("point_setting_form")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -254,11 +254,11 @@ export default function SettingMemberPointPage() {
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: 20,
-                  width: "100%"
+                  width: "100%",
                 }}
               >
                 <Form.Group>
-                  <Form.Label>{t('bill_total_price')}</Form.Label>
+                  <Form.Label>{t("bill_total_price")}</Form.Label>
                   <Form.Control
                     name="totalAmount"
                     value={formData.totalAmount}
@@ -268,7 +268,7 @@ export default function SettingMemberPointPage() {
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label>{t('point_will_got')}</Form.Label>
+                  <Form.Label>{t("point_will_got")}</Form.Label>
                   <Form.Control
                     name="points"
                     value={formData.points}
@@ -282,14 +282,14 @@ export default function SettingMemberPointPage() {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
-              {t('close')}
+              {t("close")}
             </Button>
             <Button
               variant="primary"
               onClick={createMemberPoint}
               disabled={disabledButton}
             >
-              {t('set_point')}
+              {t("set_point")}
             </Button>
           </Modal.Footer>
         </Modal>

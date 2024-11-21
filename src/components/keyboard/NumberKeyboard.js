@@ -114,6 +114,7 @@ export default function NumberKeyboard({
           }}
         >
           <Button
+            disabled={payType === "point" || payType === "cash_transfer_point"}
             onClick={() => {
               onClickMember();
             }}
@@ -121,10 +122,10 @@ export default function NumberKeyboard({
             {t("member")}
           </Button>
           <Button
-            disabled={payType != "cash"}
+            disabled={payType !== "cash"}
             onClick={() => {
               // console.log(totalBill);
-              setSelectInput(totalBill + "");
+              setSelectInput(`${totalBill}`);
             }}
           >
             {t("quantity_full")}
