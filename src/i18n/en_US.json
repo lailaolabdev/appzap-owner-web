@@ -899,5 +899,12 @@
   "payment_datetime_debt": "Debt payment Date-Time ",
   "money_remaining": "Debt Remaining",
   "money_cash": "Debt Amount Paid",
-  "bank_transfer_history": "Bank Transfer"
+  "bank_transfer_history": "Bank Transfer",
+  "delivery": "Delivery Code",
+  "deliveryPlaceholder": "Enter Delivery code",
+  "chooseflatform": "Choose Flatform",
+  "is_delivery_table": "Is Delivery Table",
+  "deliveryTable": "Delivery Table",
+  "error": "Error",
+  "ensure_enter_code_platform": "Please ensure all orders have a delivery code and platform selected."
 }

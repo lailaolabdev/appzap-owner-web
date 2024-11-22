@@ -1016,5 +1016,12 @@
   "callToCheckout": "ເອີ້ນເຊັກບິນ",
   "callStaff": "ເອີ້ນພະນັກງານ",
   "bank_transfer_history": "ຊຳລະຜ່ານທະນາຄານ",
-  "PAID": "ຈ່າຍແລ້ວ"
+  "PAID": "ຈ່າຍແລ້ວ",
+  "delivery": "ລະຫັດ Delivery",
+  "deliveryPlaceholder": "ປ້ອນລະຫັດ Delivery",
+  "chooseflatform": "ເລືອກ Platform",
+  "is_delivery_table": "ເປີດໂຕະເປັນ Delivery",
+  "deliveryTable": "ໂຕະ Delivery",
+  "error": "ເກີດຂໍ້ຜິດພາດ",
+  "ensure_enter_code_platform": "ກະລຸນາກວດສອບວ່າທຸກການສັ່ງຊື້ມີລະຫັດການຈັດສົ່ງບໍ່"
 }

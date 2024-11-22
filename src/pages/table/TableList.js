@@ -1203,6 +1203,210 @@ export default function TableList() {
     }
   };
 
+  // const convertHtmlToBase64 = (orderSelect) => {
+  //   const base64ArrayAndPrinter = [];
+  //   orderSelect.forEach((data, index) => {
+  //     if (data) {
+  //       const canvas = document.createElement("canvas");
+  //       const context = canvas.getContext("2d");
+
+  //       // Define base dimensions
+  //       const baseHeight = 250;
+  //       const extraHeightPerOption = 30;
+  //       const extraHeightForNote = data?.note ? 40 : 0;
+  //       const dynamicHeight =
+  //         baseHeight +
+  //         (data.options?.length || 0) * extraHeightPerOption +
+  //         extraHeightForNote;
+  //       const width = 510;
+
+  //       canvas.width = width;
+  //       canvas.height = dynamicHeight;
+
+  //       // Set white background
+  //       context.fillStyle = "#fff";
+  //       context.fillRect(0, 0, width, dynamicHeight);
+
+  //       // Helper function for text wrapping
+  //       function wrapText(context, text, x, y, maxWidth, lineHeight) {
+  //         const words = text.split(" ");
+  //         let line = "";
+  //         for (let n = 0; n < words.length; n++) {
+  //           let testLine = line + words[n] + " ";
+  //           let metrics = context.measureText(testLine);
+  //           let testWidth = metrics.width;
+  //           if (testWidth > maxWidth && n > 0) {
+  //             context.fillText(line, x, y);
+  //             line = words[n] + " ";
+  //             y += lineHeight;
+  //           } else {
+  //             line = testLine;
+  //           }
+  //         }
+  //         context.fillText(line, x, y);
+  //         return y + lineHeight;
+  //       }
+
+  //       // Header: Table Name and Code
+  //       // Draw the Table ID (left black block)
+  //       context.fillStyle = "#000";
+  //       context.fillRect(0, 0, width / 2, 60);
+  //       context.fillStyle = "#fff";
+  //       context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+  //       context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
+
+  //       // Table Code on the right
+  //       context.fillStyle = "#000";
+  //       context.font = "bold 36px NotoSansLao, Arial, sans-serif";
+  //       context.fillText(data?.code || selectedTable?.code, width - 200, 45); // Adjusted position for better alignment
+
+  //       // Divider line below header
+  //       context.strokeStyle = "#ccc";
+  //       context.lineWidth = 1;
+  //       context.beginPath();
+  //       context.moveTo(0, 65);
+  //       context.lineTo(width, 65);
+  //       context.stroke();
+
+  //       // Content: Item Name and Quantity
+  //       context.fillStyle = "#000";
+  //       context.font = "bold 34px NotoSansLao, Arial, sans-serif";
+  //       let yPosition = 100;
+  //       yPosition = wrapText(
+  //         context,
+  //         `${data?.name} x (${data?.quantity})`,
+  //         10,
+  //         yPosition,
+  //         width - 20,
+  //         36
+  //       );
+
+  //       // Content: Item Note
+  //       if (data?.note) {
+  //         const noteLabel = "note: ";
+  //         const noteText = data.note;
+
+  //         // Draw "Note:" label in bold
+  //         context.fillStyle = "#666";
+  //         context.font = "bold italic bold 24px Arial, sans-serif";
+  //         context.fillText(noteLabel, 10, yPosition);
+
+  //         // Measure width of the "Note:" label
+  //         const noteLabelWidth = context.measureText(noteLabel).width;
+
+  //         // Wrap the note text, starting after the "Note:" label
+  //         context.font = " bold italic 24px Arial, sans-serif";
+  //         yPosition = wrapText(
+  //           context,
+  //           noteText,
+  //           10 + noteLabelWidth, // Start after the label width
+  //           yPosition,
+  //           width - 20 - noteLabelWidth, // Adjust wrapping width
+  //           30
+  //         );
+
+  //         // Add spacing after the note
+  //         yPosition += 10;
+  //       }
+
+  //       // Options
+  //       if (data.options && data.options.length > 0) {
+  //         context.fillStyle = "#000";
+  //         context.font = "24px NotoSansLao, Arial, sans-serif";
+  //         data.options.forEach((option, idx) => {
+  //           const optionPriceText = option?.price
+  //             ? ` - ${moneyCurrency(option?.price)}`
+  //             : "";
+  //           const optionText = `- ${option?.name}${optionPriceText} x ${
+  //             option?.quantity || 1
+  //           }`;
+  //           yPosition = wrapText(
+  //             context,
+  //             optionText,
+  //             10,
+  //             yPosition,
+  //             width - 20,
+  //             30
+  //           );
+  //         });
+
+  //         // Divider below options
+  //         context.strokeStyle = "#ccc";
+  //         context.setLineDash([4, 2]);
+  //         context.beginPath();
+  //         context.moveTo(0, yPosition);
+  //         context.lineTo(width, yPosition);
+  //         context.stroke();
+  //         context.setLineDash([]);
+  //         yPosition += 20;
+  //       }
+
+  //       context.fillStyle = "#000";
+  //       context.font = " 24px NotoSansLao, Arial, sans-serif";
+  //       // let yPosition = 100;
+  //       yPosition = wrapText(
+  //         context,
+  //         `${t("total")} ${moneyCurrency(
+  //           data?.price + (data?.totalOptionPrice ?? 0)
+  //         )} ${t(storeDetail?.firstCurrency)}`,
+  //         30,
+  //         dynamicHeight - 76,
+  //         width - 20
+  //       );
+
+  //       // Set text properties
+  //       context.fillStyle = "#000"; // Black text color
+  //       context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
+  //       context.textAlign = "right"; // Align text to the right
+  //       context.textBaseline = "bottom"; // Align text baseline to bottom
+
+  //       // Draw delivery code at the bottom-right
+  //       context.fillText(
+  //         `${
+  //           data?.deliveryCode ? `(delivery code : ${data?.deliveryCode})` : ""
+  //         }`, // Delivery code text
+  //         width - 10, // Position X: 10px from the right edge
+  //         dynamicHeight - 100 // Position Y: 100px above the bottom edge
+  //       );
+
+  //       // Add a dotted line before footer
+  //       context.strokeStyle = "#000"; // Black dotted line
+  //       context.setLineDash([4, 2]); // Dotted line style
+  //       context.beginPath();
+  //       context.moveTo(0, dynamicHeight - 70); // Position 70px above footer
+  //       context.lineTo(width, dynamicHeight - 70); // Full-width dotted line
+  //       context.stroke();
+  //       context.setLineDash([]); // Reset line dash style
+
+  //       // Footer: Created By and Date
+  //       context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+  //       context.fillStyle = "#000";
+  //       context.fillText(
+  //         data?.createdBy?.firstname ||
+  //           data?.updatedBy?.firstname ||
+  //           "lailaolab",
+  //         10,
+  //         dynamicHeight - 40
+  //       );
+  //       context.fillStyle = "#6e6e6e";
+  //       context.font = "28px NotoSansLao, Arial, sans-serif";
+  //       context.fillText(
+  //         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+  //           data?.createdAt
+  //         ).format("LT")}`,
+  //         width - 220,
+  //         dynamicHeight - 40
+  //       );
+
+  //       // Convert canvas to base64
+  //       const dataUrl = canvas.toDataURL("image/png");
+  //       const printer = printers.find((e) => e?._id === data?.printer);
+  //       if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
+  //     }
+  //   });
+
+  //   return base64ArrayAndPrinter;
+  // };
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
     orderSelect.forEach((data, index) => {
@@ -1249,16 +1453,16 @@ export default function TableList() {
 
         // Header: Table Name and Code
         // Draw the Table ID (left black block)
-        context.fillStyle = "#000";
-        context.fillRect(0, 0, width / 2, 60);
-        context.fillStyle = "#fff";
+        context.fillStyle = "#000"; // Black background
+        context.fillRect(0, 0, width / 2, 60); // Black block width / 2
+        context.fillStyle = "#fff"; // White text
         context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-        context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
+        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
 
-        // Table Code on the right
-        context.fillStyle = "#000";
-        context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-        context.fillText(data?.code || selectedTable?.code, width - 200, 45); // Adjusted position for better alignment
+        // Draw the Table Code (right side)
+        context.fillStyle = "#000"; // Black text
+        context.font = "bold 30px NotoSansLao, Arial, sans-serif";
+        context.fillText(selectedTable?.code, width - 220, 45); // Code text on the right
 
         // Divider line below header
         context.strokeStyle = "#ccc";
@@ -1274,7 +1478,7 @@ export default function TableList() {
         let yPosition = 100;
         yPosition = wrapText(
           context,
-          `${data?.name} x (${data?.quantity})`,
+          `${data?.name} (${data?.quantity})`,
           10,
           yPosition,
           width - 20,
@@ -1288,14 +1492,14 @@ export default function TableList() {
 
           // Draw "Note:" label in bold
           context.fillStyle = "#666";
-          context.font = "bold italic bold 24px Arial, sans-serif";
+          context.font = " bold italic bold 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
           // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
           // Wrap the note text, starting after the "Note:" label
-          context.font = " bold italic 24px Arial, sans-serif";
+          context.font = "bold italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
@@ -1349,12 +1553,26 @@ export default function TableList() {
           `${t("total")} ${moneyCurrency(
             data?.price + (data?.totalOptionPrice ?? 0)
           )} ${t(storeDetail?.firstCurrency)}`,
-          30,
-          dynamicHeight - 76,
-          width - 20
+          10,
+          yPosition,
+          width - 20,
+          46
         );
 
-        // Add a dotted line before footer
+        // Set text properties
+        context.fillStyle = "#000"; // Black text color
+        context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
+        context.textAlign = "right"; // Align text to the right
+        context.textBaseline = "bottom"; // Align text baseline to bottom
+
+        // Draw delivery code at the bottom-right
+        context.fillText(
+          `${data?.deliveryCode ? `(DC : ${data?.deliveryCode})` : ""}`, // Delivery code text
+          width - 10, // Position X: 10px from the right edge
+          dynamicHeight - 86 // Position Y: 100px above the bottom edge
+        );
+
+        // Add a dotted line above the footer
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
         context.beginPath();
@@ -1363,24 +1581,28 @@ export default function TableList() {
         context.stroke();
         context.setLineDash([]); // Reset line dash style
 
-        // Footer: Created By and Date
-        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        // Footer Section
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
+
+        // Draw "Created By" text at the bottom-left
+        context.textAlign = "left"; // Align text to the left
         context.fillText(
-          data?.createdBy?.firstname ||
-            data?.updatedBy?.firstname ||
-            "lailaolab",
-          10,
-          dynamicHeight - 40
+          data?.createdBy?.firstname || data?.updatedBy?.firstname || "", // Footer text
+          10, // 10px from the left edge
+          dynamicHeight - 20 // Position Y: 20px above the bottom
         );
-        context.fillStyle = "#6e6e6e";
-        context.font = "28px NotoSansLao, Arial, sans-serif";
+
+        // Draw date and time at the bottom-right
+        context.textAlign = "right"; // Align text to the right
+        context.fillStyle = "#6e6e6e"; // Gray color
+        context.font = "22px NotoSansLao, Arial, sans-serif"; // Smaller font size
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
-          ).format("LT")}`,
-          width - 220,
-          dynamicHeight - 40
+          ).format("LT")}`, // Date and time
+          width - 10, // 10px from the right edge
+          dynamicHeight - 20 // Position Y: 20px above the bottom
         );
 
         // Convert canvas to base64
@@ -1392,7 +1614,6 @@ export default function TableList() {
 
     return base64ArrayAndPrinter;
   };
-
   const onPrintForCherCancel = async () => {
     setOnPrinting(true);
 

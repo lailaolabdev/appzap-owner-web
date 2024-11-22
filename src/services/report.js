@@ -146,3 +146,14 @@ export const getCurrencyReport = async (storeId, findBy) => {
     return error;
   }
 };
+
+export const getDeliveryReport = async (storeId, findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/delivery-report/${storeId}${findBy}`;
+    const res = await axios.post(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

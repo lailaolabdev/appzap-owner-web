@@ -17,7 +17,7 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
         closeButton
         style={{ display: "flex", alignItems: "center", gap: 10 }}
       >
-        <BsPrinter /> {t('chose_print_product')}
+        <BsPrinter /> {t("chose_print_product")}
       </Modal.Header>
       <Modal.Body
         style={{
@@ -38,35 +38,41 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportSale: true })}
           >
-            <span>{t('bill_history')}</span>
+            <span>{t("bill_history")}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportStaffSale: true })}
           >
-            <span>{t('staff_history')}</span>
+            <span>{t("staff_history")}</span>
           </Button>
           <Button style={{ height: 100, padding: 20 }} disabled>
-            <span>{t('sales_history')}</span>
+            <span>{t("sales_history")}</span>
           </Button>
 
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuSale: true })}
           >
-            <span>{t('menu_list')}</span>
+            <span>{t("menu_list")}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuCategorySale: true })}
           >
-            <span>{t('menu_type_list')}</span>
+            <span>{t("menu_type_list")}</span>
           </Button>
           <Button
             style={{ height: 100, padding: 20 }}
             onClick={() => setPopup({ printReportMenuAndCategorySale: true })}
           >
-            <span>{t('menu_and_type_list')}</span>
+            <span>{t("menu_and_type_list")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={() => setPopup({ delivery: true })}
+          >
+            <span>Delivery</span>
           </Button>
         </div>
       </Modal.Body>
