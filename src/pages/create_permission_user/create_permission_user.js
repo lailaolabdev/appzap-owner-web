@@ -20,7 +20,7 @@ import {
   deletePermissionUser,
 } from "../../services/permission_user";
 
-export default function PermisionUser() {
+export default function CreatePermisionUser() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showAdd, setShowAdd] = useState(false);

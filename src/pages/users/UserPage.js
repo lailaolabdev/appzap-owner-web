@@ -130,6 +130,9 @@ export default function UserPage() {
     getData();
   };
 
+  console.log("userData",userData)
+
+
 
   return (
     <>
@@ -295,7 +298,7 @@ export default function UserPage() {
                       <div style={{ display: "flex", gap: 10 }}>
                         <Button
                           variant="success"
-                          onClick={()=>navigate(`/user/manage-permission-user/${selectUser?._id}`)}
+                          onClick={()=>navigate(`/user/manage-permission-user/${e?._id}`)}
                         >ຈັດການ</Button>
                         {/* <Button>ລັອກ</Button> */}
                         <Button

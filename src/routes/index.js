@@ -78,8 +78,9 @@ import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
-import PermisionUser from "../pages/permission_user/permission_user";
 import PermissionsUserList from "../pages/permission_user_list/permission_user_list";
+import CreatePermisionUser from "../pages/create_permission_user/create_permission_user";
+
 
 function Router() {
   return useRoutes([
@@ -195,7 +196,7 @@ function Router() {
         },
         {
           path: "/user/permission-user/:id",
-          element: <PermisionUser />,
+          element: <CreatePermisionUser />,
         },
         {
           path: "/user/manage-permission-user/:id",
