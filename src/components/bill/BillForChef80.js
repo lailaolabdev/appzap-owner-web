@@ -72,7 +72,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
               {val?.note}
             </td>
           </tr>
-          <tr>
+          {/* <tr>
             <td
               colSpan={2}
               style={{
@@ -83,6 +83,32 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
             >
               {moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x{" "}
               {val?.quantity}
+              {val?.deliveryCode ? val?.deliveryCode : "---"}
+            </td>
+          </tr> */}
+          <tr>
+            <td colSpan={2}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div
+                  style={{
+                    color: "#000",
+                    fontWeight: "bold",
+                    fontSize: 14,
+                  }}
+                >
+                  {moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x{" "}
+                  {val?.quantity}
+                </div>
+                <div
+                  style={{
+                    fontSize: 12,
+                  }}
+                >
+                  {val?.deliveryCode
+                    ? `(delivery Code : ${val?.deliveryCode})`
+                    : ""}
+                </div>
+              </div>
             </td>
           </tr>
           <tr>

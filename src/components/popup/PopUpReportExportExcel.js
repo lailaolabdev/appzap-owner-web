@@ -403,6 +403,39 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
       errorAdd(`${t("export_fail")}`);
     }
   };
+  const Delivery = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      let findBy = "?";
+      if (storeDetail?.startDayFilter && storeDetail?.endDayFilter) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+      }
+
+      const url = `${END_POINT_EXPORT}/export/delivery/${storeDetail?._id}${findBy}`;
+      const _res = await Axios.get(url);
+
+      if (_res?.data?.exportUrl) {
+        const response = await Axios.get(_res?.data?.exportUrl, {
+          responseType: "blob", // Important to get the response as a Blob
+        });
+
+        // Create a Blob from the response data
+        // console.log("response", response.data);
+        const fileBlob = new Blob([response.data], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Use the file-saver library to save the file with a new name
+        saveAs(
+          fileBlob,
+          `${storeDetail?.name} ${t("menu_info")}` + ".xlsx" || "export.xlsx"
+        );
+      }
+    } catch (err) {
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -487,6 +520,12 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
             onClick={currencyExport}
           >
             <span>{t("all_curency")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20, width: 200 }}
+            onClick={Delivery}
+          >
+            <span>Delivery</span>
           </Button>
         </div>
       </Modal.Body>

@@ -541,6 +541,7 @@ export default function DashboardFinance({
                 <th>{t("statusOfFood")}</th>
                 <th>{t("servedBy")}</th>
                 <th>{t("price")}</th>
+                <th>Delivery</th>
                 <th>{t("time")}</th>
                 <th>ເວລາອັບເດດ</th>
               </tr>
@@ -586,6 +587,11 @@ export default function DashboardFinance({
                           (item?.price + (item?.totalOptionPrice ?? 0)) *
                             item?.quantity
                       )}
+                    </td>
+                    <td>
+                      {item?.deliveryCode && item?.platform
+                        ? `${item?.deliveryCode} - ${item?.platform}`
+                        : ""}
                     </td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}

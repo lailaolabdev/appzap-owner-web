@@ -19,6 +19,7 @@ import {
   getReports,
   getSalesInformationReport,
   getUserReport,
+  getDeliveryReport,
 } from "../../services/report";
 import fileDownload from "js-file-download";
 import * as XLSX from "xlsx";
@@ -37,6 +38,7 @@ import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMen
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
+import PopUpPrintDelivery from "../../components/popup/PopUpPrintDelivery";
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
@@ -63,6 +65,9 @@ export default function DashboardPage() {
   const [currencyList, setCurrencyList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
+  const [deliveryReport, setDeliveryReport] = useState([]);
+
+  console.log({ deliveryReport });
 
   // provider
   const { storeDetail, setStoreDetail } = useStore();
@@ -81,6 +86,7 @@ export default function DashboardPage() {
     getCurrencyName();
     getCategoryReportData();
     getBankBillName();
+    getDeliveryReports();
   }, [endDate, startDate, endTime, startTime, selectedTableIds]);
 
   // function
@@ -167,7 +173,7 @@ export default function DashboardPage() {
       findBy,
       selectedTableIds
     );
-    console.log("CURRENCY: ", data);
+    // console.log("CURRENCY: ", data);
     setCurrencyList(data);
   };
   const getBankBillName = async () => {
@@ -177,7 +183,12 @@ export default function DashboardPage() {
     setBankList(data);
   };
 
-  console.log("BANK", bankList);
+  const getDeliveryReports = async () => {
+    const findBy = `?startDate=${startDate}&endDate=${endDate}`;
+    const data = await getDeliveryReport(storeDetail?._id, findBy);
+    setDeliveryReport(data);
+  };
+  // console.log("BANK", bankList);
   const downloadCsv = async () => {
     try {
       const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
@@ -751,6 +762,39 @@ export default function DashboardPage() {
               </table>
             </Card.Body>
           </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              Delivery
+            </Card.Header>
+            <Card.Body>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("no")}</th>
+                  <th style={{ textAlign: "center" }}>Platform</th>
+                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
+                </tr>
+                {deliveryReport?.revenueByPlatform?.map((e, index) => (
+                  <tr key={e._id}>
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "center" }}>{e?._id}</td>
+                    <td style={{ textAlign: "right" }}>{e?.totalOrders}</td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(Math.floor(e?.totalRevenue))}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </tr>
+                ))}
+              </table>
+            </Card.Body>
+          </Card>
         </Box>
       </Box>
       {/* popup */}
@@ -786,6 +830,10 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuAndCategoryHistoryComponent>
+
+      <PopUpPrintDelivery open={popup?.delivery} onClose={() => setPopup()}>
+        <BillForReport80 />
+      </PopUpPrintDelivery>
 
       <PopUpPrintReport
         open={popup?.printReport}

@@ -53,6 +53,7 @@ import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefN
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import PopUpAddDeliveryCode from "../../components/popup/PopUpAddDeliveryCode";
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
 
@@ -86,6 +87,7 @@ function AddOrder() {
   const [editComments, setEditComments] = useState();
   const inputRef = useRef(null); // Create a ref for the input element
   const [isRemoveItem, setIsRemoveItem] = useState(false);
+  const [isShowDeliveryPopup, setIsShowDeliveryPopup] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
 
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
@@ -172,6 +174,9 @@ function AddOrder() {
 
   const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
     useStore();
+
+  // console.log({ selectedTable });
+  // console.log({ onSelectTable });
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -532,7 +537,20 @@ function AddOrder() {
           46
         );
 
-        // Add a dotted line before footer
+        // Set text properties
+        context.fillStyle = "#000"; // Black text color
+        context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
+        context.textAlign = "right"; // Align text to the right
+        context.textBaseline = "bottom"; // Align text baseline to bottom
+
+        // Draw delivery code at the bottom-right
+        context.fillText(
+          `${data?.deliveryCode ? `(DC : ${data?.deliveryCode})` : ""}`, // Delivery code text
+          width - 10, // Position X: 10px from the right edge
+          dynamicHeight - 86 // Position Y: 100px above the bottom edge
+        );
+
+        // Add a dotted line above the footer
         context.strokeStyle = "#000"; // Black dotted line
         context.setLineDash([4, 2]); // Dotted line style
         context.beginPath();
@@ -541,24 +559,28 @@ function AddOrder() {
         context.stroke();
         context.setLineDash([]); // Reset line dash style
 
-        // Footer: Created By and Date
+        // Footer Section
         context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
+
+        // Draw "Created By" text at the bottom-left
+        context.textAlign = "left"; // Align text to the left
         context.fillText(
-          data?.createdBy?.firstname ||
-            data?.updatedBy?.firstname ||
-            "lailaolab",
-          10,
-          dynamicHeight - 40
+          data?.createdBy?.firstname || data?.updatedBy?.firstname || "", // Footer text
+          10, // 10px from the left edge
+          dynamicHeight - 20 // Position Y: 20px above the bottom
         );
-        context.fillStyle = "#6e6e6e";
-        context.font = "22px NotoSansLao, Arial, sans-serif";
+
+        // Draw date and time at the bottom-right
+        context.textAlign = "right"; // Align text to the right
+        context.fillStyle = "#6e6e6e"; // Gray color
+        context.font = "22px NotoSansLao, Arial, sans-serif"; // Smaller font size
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
-          ).format("LT")}`,
-          width - 220,
-          dynamicHeight - 40
+          ).format("LT")}`, // Date and time
+          width - 10, // 10px from the right edge
+          dynamicHeight - 20 // Position Y: 20px above the bottom
         );
 
         // Convert canvas to base64
@@ -863,6 +885,8 @@ function AddOrder() {
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
         note: "",
+        deliveryCode: "", // Add delivery code field
+        platform: "", // Add platform field
       };
 
       const existingMenuIndex = selectedMenu.findIndex(
@@ -879,7 +903,7 @@ function AddOrder() {
         setSelectedMenu([...selectedMenu, data]);
       }
 
-      // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+      setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
       return;
     }
 
@@ -891,6 +915,40 @@ function AddOrder() {
     });
     handleShow();
   };
+
+  // multi code and flatform
+  const handleAddDeliveryCode = (code, platform) => {
+    if (!code || !platform) {
+      Swal.fire({
+        icon: "error",
+        title: `${t("not_success")}`,
+        showConfirmButton: false,
+        timer: 1800,
+      });
+      return;
+    }
+
+    setSelectedMenu((prevMenu) =>
+      prevMenu.map((item) => ({
+        ...item,
+        deliveryCode: code,
+        platform: platform,
+      }))
+    );
+    setIsShowDeliveryPopup(false);
+  };
+
+  // add one code and flatform
+  // const handleAddDeliveryCode = (code, platform, menuId) => {
+  //   setSelectedMenu((prevMenu) =>
+  //     prevMenu.map((item) =>
+  //       item.id === menuId
+  //         ? { ...item, deliveryCode: code, platform: platform }
+  //         : item
+  //     )
+  //   );
+  //   setIsShowDeliveryPopup(false); // Close the popup
+  // };
 
   const onRemoveFromCart = (id) => {
     let selectedMenuCopied = [...selectedMenu];
@@ -1041,8 +1099,37 @@ function AddOrder() {
     }
   };
 
+  const validateBeforePrint = () => {
+    for (const order of selectedMenu) {
+      if (!order.deliveryCode || !order.platform) {
+        Swal.fire({
+          icon: "error",
+          title: t("error"),
+          text: t("ensure_enter_code_platform"),
+        });
+        return false;
+      }
+    }
+    return true;
+  };
+
   const onSubmit = async (isPrinted) => {
     try {
+      if (selectedTable?.isDeliveryTable) {
+        if (!validateBeforePrint()) {
+          return; // Stop if validation fails
+        }
+        if (selectedMenu.some((item) => !item.deliveryCode || !item.platform)) {
+          Swal.fire({
+            icon: "error",
+            title:
+              "Please ensure all orders have a delivery code and platform selected.",
+            showConfirmButton: false,
+            timer: 1800,
+          });
+          return;
+        }
+      }
       setIsLoading(true);
       if (selectedMenu.length === 0) {
         Swal.fire({
@@ -1147,6 +1234,9 @@ function AddOrder() {
   const onConfirmRemoveItem = (data) => {
     setIsRemoveItem(true);
     setItemDeleting(data);
+  };
+  const onAddDeliveryCode = () => {
+    setIsShowDeliveryPopup(true);
   };
 
   const { t } = useTranslation();
@@ -1293,6 +1383,11 @@ function AddOrder() {
                       <th style={{ border: "none", textAlign: "center" }}>
                         {t("amount")}
                       </th>
+                      {selectedTable?.isDeliveryTable && (
+                        <th style={{ border: "none", textAlign: "center" }}>
+                          {t("delivery")}
+                        </th>
+                      )}
                       <th style={{ border: "none", textAlign: "right" }}>
                         {t("order_food")}
                       </th>
@@ -1318,9 +1413,6 @@ function AddOrder() {
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
                               <p>{`${data.name} ${optionsString}`}</p>
-                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
-                                {data?.note ?? ""}
-                              </p>
                             </td>
                             <td
                               style={{
@@ -1341,7 +1433,16 @@ function AddOrder() {
                               >
                                 -
                               </button>
-                              <p style={{ minWidth: 30, maxWidth: 50 }}>
+                              <p
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  gap: 10,
+
+                                  margin: "0px 5px",
+                                }}
+                              >
                                 {data.quantity}
                               </p>
                               <button
@@ -1355,18 +1456,27 @@ function AddOrder() {
                                 +
                               </button>
                             </td>
-
+                            {selectedTable?.isDeliveryTable && (
+                              <td style={{ padding: 0, textAlign: "right" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    paddingLeft: 10,
+                                    paddingTop: 25,
+                                  }}
+                                >
+                                  <p style={{ fontSize: 12 }}>
+                                    {data && data.deliveryCode !== null
+                                      ? data.deliveryCode
+                                      : ""}
+                                  </p>
+                                </div>
+                              </td>
+                            )}
                             <td style={{ padding: 0, textAlign: "right" }}>
-                              {/* <i
-                                onClick={() => onRemoveFromCart(data.id)}
-                                className="fa fa-trash"
-                                aria-hidden="true"
-                                style={{
-                                  color: "#FB6E3B",
-                                  cursor: "pointer",
-                                }}
-                              ></i> */}
-
                               <div
                                 style={{
                                   display: "flex",
@@ -1422,6 +1532,7 @@ function AddOrder() {
                 <div className="row" style={{ margin: 0 }}>
                   <Button
                     variant="outline-warning"
+                    disabled={selectedMenu.length === 0}
                     style={{
                       marginRight: 15,
                       border: "solid 1px #FB6E3B",
@@ -1437,7 +1548,9 @@ function AddOrder() {
                     {t("cancel")}
                   </Button>
                   <Button
+                    hidden={!selectedTable?.isDeliveryTable}
                     variant="light"
+                    disabled={selectedMenu.length === 0}
                     className="hover-me"
                     style={{
                       marginRight: 15,
@@ -1446,7 +1559,21 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    disabled={disabledButton}
+                    onClick={() => onAddDeliveryCode()}
+                  >
+                    {t("delivery")}
+                  </Button>
+                  <Button
+                    variant="light"
+                    disabled={selectedMenu.length === 0}
+                    className="hover-me"
+                    style={{
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
                     onClick={() => {
                       setDisabledButton(true);
                       onSubmit(false);
@@ -1459,6 +1586,7 @@ function AddOrder() {
                 <div className="row" style={{ margin: 0 }}>
                   <Button
                     variant="light"
+                    disabled={selectedMenu.length === 0}
                     className="hover-me"
                     style={{
                       height: 60,
@@ -1468,7 +1596,6 @@ function AddOrder() {
                       fontWeight: "bold",
                       flex: 1,
                     }}
-                    disabled={disabledButton}
                     onClick={() => {
                       // onPrint();
                       setDisabledButton(true);
@@ -1732,7 +1859,14 @@ function AddOrder() {
         open={isRemoveItem}
         text={itemDeleting?.name}
         onClose={() => setIsRemoveItem(false)}
-        onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
+        onSubmit={async () => onRemoveFromCart(itemDeleting?.id)}
+      />
+      <PopUpAddDeliveryCode
+        open={isShowDeliveryPopup}
+        onClose={() => setIsShowDeliveryPopup(false)}
+        onSubmit={(code, platform) =>
+          handleAddDeliveryCode(code, platform, selectedItem?._id)
+        }
       />
     </div>
   );

@@ -43,6 +43,8 @@ export default function SettingTable() {
   const [zoneData, setZoneData] = useState();
   const [zoneId, setZoneId] = useState();
   const [selectTatle, setSelectTatle] = useState();
+  const [isDeliveryTable, setIsDeliveryTable] = useState(false); // For create
+  const [isDeliveryTableEdit, setIsDeliveryTableEdit] = useState(false); // For edit
 
   const getDataZone = async () => {
     try {
@@ -87,6 +89,7 @@ export default function SettingTable() {
           name: tableNumber,
           zone: zoneId,
           storeId: params?.id,
+          isDeliveryTable,
         },
         headers: headers,
       });
@@ -125,6 +128,7 @@ export default function SettingTable() {
             name: selectTatle?.name || "null",
             codeId: selectTatle?.codeId,
             zone: selectTatle?.zone,
+            isDeliveryTable: isDeliveryTableEdit,
           },
         },
         headers: headers,
@@ -242,8 +246,8 @@ export default function SettingTable() {
               <tr>
                 {/* <th scope="col">#</th> */}
                 <th scope="col">{t("tablecode")}</th>
-                {/* <th scope="col">ການເປີດ/ປິດ</th> */}
-                {/* <th scope="col">ມີແຂກເຂົ້າແລ້ວ</th> */}
+                <th scope="col"></th>
+                <th scope="col"></th>
                 <th scope="col" style={{ textAlign: "right" }}>
                   {t("manage")}
                 </th>
@@ -253,7 +257,6 @@ export default function SettingTable() {
               {tableListCheck?.map((table, index) => {
                 return (
                   <tr>
-                    {/* <td>{index + 1}</td> */}
                     <td>
                       {table?.tableName}
                       {/* {table?.isOpened ? (
@@ -263,23 +266,16 @@ export default function SettingTable() {
                       )} */}
                     </td>
                     <td>{table?.zone?.name ?? "-"}</td>
-                    {/* <td>
-                      <label className="switch">
-                        <input
-                          type="checkbox"
-                          checked={table?.status === true ? true : false}
-                          onClick={(e) => _changeStatusTable(table)}
-                        />
-                        <span className="slider round"></span>
-                      </label>
-                    </td> */}
-                    {/* <td
+                    <td
                       style={{
-                        color: table?.isOpened === true ? "green" : "red",
+                        color:
+                          table?.isDeliveryTable === true ? "green" : "red",
                       }}
                     >
-                      {table?.isOpened === true ? "ມີແລ້ວ" : "ຍັງບໍ່ມີ"}
-                    </td> */}
+                      {table?.isDeliveryTable === true
+                        ? t("deliveryTable")
+                        : ""}
+                    </td>
                     <td>
                       <div
                         style={{
@@ -332,7 +328,7 @@ export default function SettingTable() {
           </table>
         </div>
       </div>
-      <Modal show={show} onHide={handleClose}>
+      {/* <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>{t("add_table")}</Modal.Title>
         </Modal.Header>
@@ -382,9 +378,72 @@ export default function SettingTable() {
             {t("save")}
           </Button>
         </Modal.Footer>
+      </Modal> */}
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("add_table")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>{t("no")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              type="number"
+              placeholder={t("fill_table_no")}
+              onChange={(e) => setSortNumber(e?.target?.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>{t("tablecode")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              type="text"
+              placeholder={t("fill_code")}
+              onChange={(e) => setTableNumber(e?.target?.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("fill_zone")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              as="select"
+              onChange={(e) => setZoneId(e?.target?.value)}
+            >
+              <option value="">{t("choose_zone")}</option>
+              {zoneData?.map((item, index) => (
+                <option key={index} value={item?._id}>
+                  {item?.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("is_delivery_table")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Check
+              type="switch"
+              id="is-delivery-table"
+              // label={isDeliveryTable ? t("yes") : t("no")}
+              checked={isDeliveryTable}
+              onChange={(e) => setIsDeliveryTable(e.target.checked)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            {t("cancel")}
+          </Button>
+          <Button
+            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+            onClick={() => _createTable()}
+          >
+            {t("save")}
+          </Button>
+        </Modal.Footer>
       </Modal>
+
       {/* ===== edit ===== */}
-      <Modal show={show4} onHide={() => setShow4(false)}>
+      {/* <Modal show={show4} onHide={() => setShow4(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("edit_table")}</Modal.Title>
         </Modal.Header>
@@ -455,7 +514,104 @@ export default function SettingTable() {
             {t("save")}
           </Button>
         </Modal.Footer>
+      </Modal> */}
+      <Modal show={show4} onHide={() => setShow4(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("edit_table")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>{t()}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              type="number"
+              placeholder={t("fill_table_no")}
+              value={selectTatle?.sort || 0}
+              onChange={(e) =>
+                setSelectTatle({ ...selectTatle, sort: e.target.value || 0 })
+              }
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>{t("tablecode")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              type="text"
+              placeholder={t("fill_code")}
+              value={selectTatle?.name}
+              onChange={(e) =>
+                setSelectTatle({ ...selectTatle, name: e?.target?.value })
+              }
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("fill_zone")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Control
+              as="select"
+              value={selectTatle?.zone}
+              onChange={(e) =>
+                setSelectTatle({ ...selectTatle, zone: e?.target?.value })
+              }
+            >
+              <option value="">{t("choose_zone")}</option>
+              {zoneData?.map((item, index) => (
+                <option key={index} value={item?._id}>
+                  {item?.name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("enable")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Check
+              type="switch"
+              // id="is-delivery-table-edit"
+              checked={selectTatle?.status === true ? true : false}
+              onClick={(e) => {
+                _changeStatusTable(selectTatle);
+                setShow4(false);
+              }}
+            />
+            {/* <input
+              type="checkbox"
+              checked={selectTatle?.status === true ? true : false}
+              onClick={(e) => {
+                _changeStatusTable(selectTatle);
+                setShow4(false);
+              }}
+            /> */}
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("is_delivery_table")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Check
+              type="switch"
+              id="is-delivery-table-edit"
+              // label={isDeliveryTableEdit ? t("yes") : t("no")}
+              checked={
+                selectTatle?.isDeliveryTable
+                  ? selectTatle?.isDeliveryTable
+                  : isDeliveryTableEdit
+              }
+              onChange={(e) => setIsDeliveryTableEdit(e.target.checked)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow4(false)}>
+            {t("cancel")}
+          </Button>
+          <Button
+            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+            onClick={() => _updateTable()}
+          >
+            {t("save")}
+          </Button>
+        </Modal.Footer>
       </Modal>
+
       {/* ===== delete ===== */}
       <PopUpConfirmDeletion
         open={show3}
