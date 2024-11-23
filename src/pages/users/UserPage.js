@@ -61,15 +61,14 @@ export default function UserPage() {
   const [selectUser, setSelectUser] = useState();
   const [popup, setPopup] = useState();
   const [permissionUsers, setPermissionUsers] = useState([]);
-  
 
   // store
   const { storeDetail } = useStore();
-  const storeId = storeDetail._id
-   //console.log("storeId:", storeId)
-   //console.log("permissionUsers:", permissionUsers)
+  const storeId = storeDetail._id;
+  //console.log("storeId:", storeId)
+  //console.log("permissionUsers:", permissionUsers)
 
-   const fetchAllPermissionUsers = async () => {
+  const fetchAllPermissionUsers = async () => {
     try {
       const data = await fetchPermissionUsers(storeDetail?._id);
       setPermissionUsers(data);
@@ -81,7 +80,6 @@ export default function UserPage() {
   useEffect(() => {
     fetchAllPermissionUsers();
   }, [storeDetail?._id]);
-
 
   // useEffect
   useEffect(() => {
@@ -130,9 +128,7 @@ export default function UserPage() {
     getData();
   };
 
-  console.log("userData",userData)
-
-
+ // console.log("userData", userData);
 
   return (
     <>
@@ -148,6 +144,17 @@ export default function UserPage() {
           <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
         </Breadcrumb>
+
+       <div style={{width:"100%", marginBottom:'5px'}}>
+        <div style={{textAlign:'right'}}>
+        <Button
+          variant="success"
+          onClick={() => navigate(`/user/manage-permission-user/${storeDetail?._id}`)}
+        >
+          ຈັດການເຄົ້າເຕີ
+        </Button>
+        </div>
+       </div>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
             style={{ maxWidth: 220 }}
@@ -174,12 +181,11 @@ export default function UserPage() {
             </span>
             <div>
               <Button
-                style={{marginRight:'5px'}}
+                style={{ marginRight: "5px" }}
                 variant="dark"
                 bg="dark"
                 onClick={() => {
-                  navigate(`/user/permission-user/${storeId}`)
-                  
+                  navigate(`/user/permission-user/${storeId}`);
                 }}
               >
                 <MdAssignmentAdd /> {t("ສ້າງສິດ")}
@@ -296,10 +302,6 @@ export default function UserPage() {
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>
-                        <Button
-                          variant="success"
-                          onClick={()=>navigate(`/user/manage-permission-user/${e?._id}`)}
-                        >ຈັດການ</Button>
                         {/* <Button>ລັອກ</Button> */}
                         <Button
                           onClick={() => {

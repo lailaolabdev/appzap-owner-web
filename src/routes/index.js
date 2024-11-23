@@ -78,7 +78,7 @@ import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
-import PermissionsUserList from "../pages/permission_user_list/permission_user_list";
+import ManageCounterList from "../pages/manageCounter/manageCounter";
 import CreatePermisionUser from "../pages/create_permission_user/create_permission_user";
 
 
@@ -200,7 +200,7 @@ function Router() {
         },
         {
           path: "/user/manage-permission-user/:id",
-          element: <PermissionsUserList />,
+          element: <ManageCounterList />,
         },
         {
           path: "/settingStore/bank/:id",
