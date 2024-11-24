@@ -38,9 +38,6 @@ import { useTranslation } from "react-i18next";
 
 import {
   fetchPermissionUsers,
-  createPermissionUser,
-  updatePermissionUser,
-  deletePermissionUser,
 } from "../../services/permission_user";
 
 const limitData = 10;

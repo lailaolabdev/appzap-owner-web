@@ -51,7 +51,7 @@ export default function CreatePermisionUser() {
   const fetchAllPermissionUsers = async () => {
     try {
       const data = await fetchPermissionUsers(storeDetail?._id);
-      setPermissionUsers(data || []); // หากไม่มีข้อมูลจะตั้งค่าเป็น []
+      setPermissionUsers(data || []);
       setAlertMessage("");
     } catch (error) {
       console.error("Error fetching permission Users:", error);
@@ -64,8 +64,8 @@ export default function CreatePermisionUser() {
   }, [storeDetail?._id]);
   useEffect(() => {
     if (permissionUsers.length === 0) {
-      setShowDelete(false); // ปิด popup ลบ
-      setShowEdit(false); // ปิด popup แก้ไข (ถ้ามี)
+      setShowDelete(false); 
+      setShowEdit(false); 
     }
   }, [permissionUsers]);
   
@@ -82,7 +82,7 @@ export default function CreatePermisionUser() {
     try {
       await createPermissionUser(storeDetail?._id, values.permissionUserName);
       fetchAllPermissionUsers();
-      setShowAdd(false); // ปิด modal เพิ่มข้อมูล
+      setShowAdd(false);
       setAlertMessage("");
     } catch (error) {
       console.error("Error creating permission:", error);
@@ -103,7 +103,7 @@ export default function CreatePermisionUser() {
     try {
       await updatePermissionUser(editpermissionUsers._id, values.permissionUserName, profile.data?._id);
       fetchAllPermissionUsers();
-      setShowEdit(false); // ปิด modal แก้ไขข้อมูล
+      setShowEdit(false);
       setAlertMessage("");
     } catch (error) {
       console.error("Error updating permission:", error);
@@ -115,14 +115,13 @@ export default function CreatePermisionUser() {
     
     try {
       await deletePermissionUser(editpermissionUsers._id);
-      // ดึงข้อมูลใหม่
       const updatedUsers = await fetchPermissionUsers(storeDetail?._id);
       
-      // ตั้งค่ารายการใหม่
-      setPermissionUsers(updatedUsers || []); // หากไม่มีข้อมูลจะตั้งค่าเป็น []
       
-      setShowDelete(false); // ปิด modal
-      setAlertMessage(""); // ล้างข้อความแจ้งเตือน
+      setPermissionUsers(updatedUsers || []);
+      
+      setShowDelete(false); 
+      setAlertMessage(""); 
     } catch (error) {
       console.error("Error deleting permission:", error);
     }

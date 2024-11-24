@@ -129,8 +129,8 @@ export default function PopUpPermissonCounter({
           <InputGroup>
             <Form.Control
               type="date"
-              min={minDate} // กำหนดวันต่ำสุด
-              max={maxDate} // กำหนดวันสูงสุด
+              min={minDate} 
+              max={maxDate} 
               value={moment(tempDateStart).format("YYYY-MM-DD")}
               onChange={(e) => handleDateChange("start", moment(e.target.value).toDate())}
               className="custom-input"
@@ -154,8 +154,8 @@ export default function PopUpPermissonCounter({
           <InputGroup>
             <Form.Control
               type="date"
-              min={minDate} // กำหนดวันต่ำสุด
-              max={maxDate} // กำหนดวันสูงสุด
+              min={minDate} 
+              max={maxDate} 
               value={moment(tempDateEnd).format("YYYY-MM-DD")}
               onChange={(e) => handleDateChange("end", moment(e.target.value).toDate())}
               className="custom-input"
