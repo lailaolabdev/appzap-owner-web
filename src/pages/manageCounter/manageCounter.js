@@ -87,7 +87,7 @@ export default function ManageCounterList() {
       <Breadcrumb>
         <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
         <Breadcrumb.Item>{t("ລາຍການພະນັກງານ")}</Breadcrumb.Item>
-        <Breadcrumb.Item active>manage-counter</Breadcrumb.Item>
+        <Breadcrumb.Item active>{t("manage_counter")}</Breadcrumb.Item>
       </Breadcrumb>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -108,7 +108,7 @@ export default function ManageCounterList() {
               }}
             >
               <span>
-                <BsCurrencyExchange /> {t("ຈັດການ-counter")}
+                <BsCurrencyExchange /> {t("manage_counter")}
               </span>
             </Card.Header>
             <Card.Body style={{ overflowX: "auto" }}>
@@ -119,8 +119,8 @@ export default function ManageCounterList() {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Counter</th>
-                      <th>{t("ຈັດການ")}</th>
+                      <th>{t("list")}</th>
+                      <th>{t("_manage")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -156,7 +156,7 @@ export default function ManageCounterList() {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{count?._id ? t("แก้ไข Counter") : t("เพิ่ม Counter")}</Modal.Title>
+          <Modal.Title>{count?._id ? t("ແກ້ໄຂ ຈຳນວນມື້") : t("เพิ่ม Counter")}</Modal.Title>
         </Modal.Header>
         <Formik
           enableReinitialize
@@ -166,7 +166,7 @@ export default function ManageCounterList() {
           validate={(values) => {
             const errors = {};
             if (values.manageCounter === "") {
-              errors.manageCounter = t("กรุณากรอกจำนวน Counter");
+              errors.manageCounter = t("ກະລຸນາໃສ່ ຈຳນວນມື້");
             }
             return errors;
           }}
@@ -184,7 +184,7 @@ export default function ManageCounterList() {
               <Modal.Body>
                 <Form.Group>
                   <Form.Label style={{ fontWeight: "bold" }}>
-                    {t("จำนวน Counter")}{" "}
+                    {t("ຈຳນວນມື້")}{" "}
                     <span style={{ color: "red" }}>*</span>
                   </Form.Label>
                   <Form.Control
@@ -208,7 +208,7 @@ export default function ManageCounterList() {
                   type="submit"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? t("กำลังบันทึก...") : t("บันทึก")}
+                  {isSubmitting ? t("ກຳລັງບັນທຶກ...") : t("confirm")}
                 </Button>
               </Modal.Footer>
             </form>

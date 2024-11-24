@@ -128,8 +128,6 @@ export default function UserPage() {
     getData();
   };
 
- // console.log("userData", userData);
-
   return (
     <>
       <div
@@ -151,7 +149,7 @@ export default function UserPage() {
           variant="success"
           onClick={() => navigate(`/user/manage-permission-user/${storeDetail?._id}`)}
         >
-          ຈັດການເຄົ້າເຕີ
+          {t("manage_counter")}
         </Button>
         </div>
        </div>
