@@ -74,19 +74,19 @@ export default function PopUpCreateUser({ open, onClose, callback,permissionUser
               }
             >
 
-              <option value="">ເລື່ອກສິດ</option>
+              {/* <option value="">ເລື່ອກສິດ</option>
               {permissionUsers.map((user) => (
                 <option key={user._id} value={user.permissionUserName}>
                   {user.permissionUserName}
                 </option>
-              ))}
+              ))} */}
 
-              {/* <option value="">{t("chose_policy_type")}</option>
+              <option value="">{t("chose_policy_type")}</option>
               <option value="APPZAP_ADMIN">{t("ceo")}</option>
               <option value="APPZAP_STAFF">{t("server_staff")}</option>
               <option value="APPZAP_COUNTER">{t("counter_staff")}</option>
               <option value="APPZAP_KITCHEN">{t("chef")}</option>
-              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option> */}
+              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
             </select>
           </div>
           <div>

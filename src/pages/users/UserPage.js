@@ -175,7 +175,7 @@ export default function UserPage() {
               <IoPeople /> {t("staff_report")}
             </span>
             <div>
-              <Button
+              {/* <Button
                 style={{ marginRight: "5px" }}
                 variant="dark"
                 bg="dark"
@@ -184,7 +184,7 @@ export default function UserPage() {
                 }}
               >
                 <MdAssignmentAdd /> {t("ສ້າງສິດ")}
-              </Button>
+              </Button> */}
               <Button
                 variant="dark"
                 bg="dark"
