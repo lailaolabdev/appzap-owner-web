@@ -1023,5 +1023,10 @@
   "is_delivery_table": "ເປີດໂຕະເປັນ Delivery",
   "deliveryTable": "ໂຕະ Delivery",
   "error": "ເກີດຂໍ້ຜິດພາດ",
-  "ensure_enter_code_platform": "ກະລຸນາກວດສອບວ່າທຸກການສັ່ງຊື້ມີລະຫັດການຈັດສົ່ງບໍ່"
+  "ensure_enter_code_platform": "ກະລຸນາກວດສອບວ່າທຸກການສັ່ງຊື້ມີລະຫັດການຈັດສົ່ງບໍ່",
+  "name_delivery": "ຊື່ Delivery",
+  "list_delivery": "ລາຍການ Delivery",
+  "enter_delivery": "ປ້ອນຊື່ Delivery",
+  "edit_delivery": "ແກ້ໄຂ Delivery",
+  "setting_delivery": "ຈັດການ Delivery"
 }

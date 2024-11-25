@@ -77,6 +77,7 @@ import CategoryType from "../pages/menu/CategoryType";
 import HistorySale from "../pages/cafe_home/HistorySale";
 import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
+import Delivery from "../pages/delivery/Delivery";
 import BillSplit from "../pages/split_bill/BillSplit";
 
 function Router() {
@@ -194,6 +195,10 @@ function Router() {
         {
           path: "/settingStore/bank/:id",
           element: <BankList />,
+        },
+        {
+          path: "/settingStore/delivery/:id",
+          element: <Delivery />,
         },
         {
           path: "/settingStore/menu/category/limit/:limit/page/:page/:id",

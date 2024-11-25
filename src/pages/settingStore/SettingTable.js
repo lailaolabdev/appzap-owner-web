@@ -44,7 +44,6 @@ export default function SettingTable() {
   const [zoneId, setZoneId] = useState();
   const [selectTatle, setSelectTatle] = useState();
   const [isDeliveryTable, setIsDeliveryTable] = useState(false); // For create
-  const [isDeliveryTableEdit, setIsDeliveryTableEdit] = useState(false); // For edit
 
   const getDataZone = async () => {
     try {
@@ -93,6 +92,7 @@ export default function SettingTable() {
         },
         headers: headers,
       });
+      setIsDeliveryTable(false);
       handleClose();
       if (createTable?.data?.message === "INVALID_NAME") {
         warningAlert(`${t("table_exist")}`);
@@ -128,7 +128,7 @@ export default function SettingTable() {
             name: selectTatle?.name || "null",
             codeId: selectTatle?.codeId,
             zone: selectTatle?.zone,
-            isDeliveryTable: isDeliveryTableEdit,
+            isDeliveryTable: selectTatle?.isDeliveryTable,
           },
         },
         headers: headers,
@@ -214,6 +214,14 @@ export default function SettingTable() {
       successAdd(t("delete_success"));
     }
   };
+
+  const handleChangeIstableDelivery = async (e) => {
+    setSelectTatle({
+      ...selectTatle,
+      isDeliveryTable: e,
+    });
+  };
+
   return (
     <div
       style={{
@@ -590,12 +598,8 @@ export default function SettingTable() {
               type="switch"
               id="is-delivery-table-edit"
               // label={isDeliveryTableEdit ? t("yes") : t("no")}
-              checked={
-                selectTatle?.isDeliveryTable
-                  ? selectTatle?.isDeliveryTable
-                  : isDeliveryTableEdit
-              }
-              onChange={(e) => setIsDeliveryTableEdit(e.target.checked)}
+              checked={selectTatle?.isDeliveryTable}
+              onChange={(e) => handleChangeIstableDelivery(e.target.checked)}
             />
           </Form.Group>
         </Modal.Body>

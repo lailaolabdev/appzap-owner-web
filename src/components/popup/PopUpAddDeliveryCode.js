@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BsQuestionLg } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
+import { getAllDelivery } from "../../services/delivery";
 
 // Assuming COLOR_APP is defined elsewhere
 import { COLOR_APP } from "../../constants";
@@ -53,8 +54,17 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
   const { t } = useTranslation();
   const [deliveryCode, setDeliveryCode] = useState("");
   const [platform, setPlatform] = useState("");
+  const [platformList, setPlatformList] = useState([]);
 
-  const platforms = ["Eget", "Foodpanda"];
+  const fetchDelivery = async () => {
+    await getAllDelivery().then((res) => {
+      setPlatformList(res.data);
+    });
+  };
+
+  useEffect(() => {
+    fetchDelivery();
+  }, []);
 
   return (
     <Modal show={open} onHide={onClose} centered>
@@ -79,9 +89,9 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
             onChange={(e) => setPlatform(e.target.value)}
           >
             <option value="">{t("chooseflatform")}</option>
-            {platforms.map((p, idx) => (
-              <option key={idx} value={p}>
-                {p}
+            {platformList.map((p, idx) => (
+              <option key={p?._id} value={p?.name}>
+                {p?.name}
               </option>
             ))}
           </Form.Control>
