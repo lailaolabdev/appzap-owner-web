@@ -22,7 +22,7 @@ export default function ManageCounterList() {
   const storeId = storeDetail._id;
 
   const [data, setData] = useState([
-    { label: "ລາຍຮັບ-ລາຍຈ່າຍ" }
+    { label: `${t("inc_expe")}` }
   ]);
 
   const fetchData = async () => {
@@ -45,7 +45,7 @@ export default function ManageCounterList() {
   const handleShowPopup = (counter) => {
     setSelectedCounter({
       ...counter,
-      manageCounter: counter?.manageCounter || 0
+      manageCounter: counter?.manageCounter || 1
     });
     setShowPopup(true);
   };
@@ -62,13 +62,11 @@ export default function ManageCounterList() {
       setError(null);
 
       if (!count?._id) {
-        // Create new counter
         await manageCounterService.createManageCounter({
           manageCounter: values.manageCounter,
           storeId: storeId
         });
       } else {
-        // Update existing counter
         await manageCounterService.updateManageCounter(count._id, values);
       }
 
@@ -86,7 +84,7 @@ export default function ManageCounterList() {
     <Box sx={{ padding: { md: 20, xs: 10 } }}>
       <Breadcrumb>
         <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-        <Breadcrumb.Item>{t("ລາຍການພະນັກງານ")}</Breadcrumb.Item>
+        <Breadcrumb.Item>{t("staff_report")}</Breadcrumb.Item>
         <Breadcrumb.Item active>{t("manage_counter")}</Breadcrumb.Item>
       </Breadcrumb>
 
@@ -156,7 +154,7 @@ export default function ManageCounterList() {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{count?._id ? t("ແກ້ໄຂ ຈຳນວນມື້") : t("เพิ่ม Counter")}</Modal.Title>
+          <Modal.Title>{t("edit_number_of_day")}</Modal.Title>
         </Modal.Header>
         <Formik
           enableReinitialize
@@ -166,7 +164,7 @@ export default function ManageCounterList() {
           validate={(values) => {
             const errors = {};
             if (values.manageCounter === "") {
-              errors.manageCounter = t("ກະລຸນາໃສ່ ຈຳນວນມື້");
+              errors.manageCounter = t("please_enter_the_number_of_day");
             }
             return errors;
           }}
@@ -184,7 +182,7 @@ export default function ManageCounterList() {
               <Modal.Body>
                 <Form.Group>
                   <Form.Label style={{ fontWeight: "bold" }}>
-                    {t("ຈຳນວນມື້")}{" "}
+                    {t("number_of_day")}{" "}
                     <span style={{ color: "red" }}>*</span>
                   </Form.Label>
                   <Form.Control
@@ -208,7 +206,7 @@ export default function ManageCounterList() {
                   type="submit"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? t("ກຳລັງບັນທຶກ...") : t("confirm")}
+                  {isSubmitting ? t("recording") : t("confirm")}
                 </Button>
               </Modal.Footer>
             </form>

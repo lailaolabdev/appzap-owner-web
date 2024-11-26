@@ -36,10 +36,6 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
 
-import {
-  fetchPermissionUsers,
-} from "../../services/permission_user";
-
 const limitData = 10;
 
 export default function UserPage() {
@@ -57,26 +53,11 @@ export default function UserPage() {
   const [userData, setUserData] = useState();
   const [selectUser, setSelectUser] = useState();
   const [popup, setPopup] = useState();
-  const [permissionUsers, setPermissionUsers] = useState([]);
 
   // store
   const { storeDetail } = useStore();
   const storeId = storeDetail._id;
   //console.log("storeId:", storeId)
-  //console.log("permissionUsers:", permissionUsers)
-
-  const fetchAllPermissionUsers = async () => {
-    try {
-      const data = await fetchPermissionUsers(storeDetail?._id);
-      setPermissionUsers(data);
-    } catch (error) {
-      console.error("Error fetching permission Users:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAllPermissionUsers();
-  }, [storeDetail?._id]);
 
   // useEffect
   useEffect(() => {
@@ -140,16 +121,6 @@ export default function UserPage() {
           <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
         </Breadcrumb>
 
-       <div style={{width:"100%", marginBottom:'5px'}}>
-        <div style={{textAlign:'right'}}>
-        <Button
-          variant="success"
-          onClick={() => navigate(`/user/manage-permission-user/${storeDetail?._id}`)}
-        >
-          {t("manage_counter")}
-        </Button>
-        </div>
-       </div>
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
             style={{ maxWidth: 220 }}
@@ -175,16 +146,16 @@ export default function UserPage() {
               <IoPeople /> {t("staff_report")}
             </span>
             <div>
-              {/* <Button
-                style={{ marginRight: "5px" }}
+              <Button
                 variant="dark"
                 bg="dark"
-                onClick={() => {
-                  navigate(`/user/permission-user/${storeId}`);
-                }}
+                style={{marginRight:'5px'}}
+                onClick={() =>
+                  navigate(`/user/manage-permission-user/${storeDetail?._id}`)
+                }
               >
-                <MdAssignmentAdd /> {t("ສ້າງສິດ")}
-              </Button> */}
+                {t("manage_counter")}
+              </Button>
               <Button
                 variant="dark"
                 bg="dark"
@@ -363,7 +334,6 @@ export default function UserPage() {
       />
       <PopUpCreateUser
         open={popup?.PopUpCreateUser}
-        permissionUsers={permissionUsers}
         onClose={() => {
           setPopup();
         }}

@@ -15,7 +15,7 @@ import { useStore } from "../../store";
 
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
-export default function PopUpCreateUser({ open, onClose, callback,permissionUsers }) {
+export default function PopUpCreateUser({ open, onClose, callback }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [formData, setFormData] = useState();
@@ -73,14 +73,6 @@ export default function PopUpCreateUser({ open, onClose, callback,permissionUser
                 setFormData((prev) => ({ ...prev, role: e.target.value }))
               }
             >
-
-              {/* <option value="">ເລື່ອກສິດ</option>
-              {permissionUsers.map((user) => (
-                <option key={user._id} value={user.permissionUserName}>
-                  {user.permissionUserName}
-                </option>
-              ))} */}
-
               <option value="">{t("chose_policy_type")}</option>
               <option value="APPZAP_ADMIN">{t("ceo")}</option>
               <option value="APPZAP_STAFF">{t("server_staff")}</option>

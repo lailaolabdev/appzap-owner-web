@@ -418,17 +418,6 @@ export default function IncomeExpendExport() {
               />
             </div>
           )}
-          {/* <Form.Control
-            as="select"
-            name="payment"
-            // value={filterByPayment}
-            // onChange={(e) => setFilterByPayment(e?.target?.value)}
-            style={{ width: 150 }}
-          >
-            <option value="ALL">ສະແດງຮູບແບບ</option>
-            <option value="CASH">ເງິນສົດ</option>
-            <option value="TRANSFER">ເງິນໂອນ</option>
-          </Form.Control> */}
         </div>
       </div>
       {/* <Filter

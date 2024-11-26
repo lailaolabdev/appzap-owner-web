@@ -79,7 +79,6 @@ import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import BillSplit from "../pages/split_bill/BillSplit";
 import ManageCounterList from "../pages/manageCounter/manageCounter";
-import CreatePermisionUser from "../pages/create_permission_user/create_permission_user";
 
 
 function Router() {
@@ -193,10 +192,6 @@ function Router() {
         {
           path: "/settingStore/currency/:id",
           element: <CurrencyList />,
-        },
-        {
-          path: "/user/permission-user/:id",
-          element: <CreatePermisionUser />,
         },
         {
           path: "/user/manage-permission-user/:id",
