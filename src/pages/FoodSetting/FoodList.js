@@ -221,6 +221,7 @@ export default function FoodList() {
         type: menuType,
         sort: values?.sort,
         menuOption: dataMenuOption,
+        isWeightMenu: values?.isWeightMenu,
       };
       if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
         createData = { ...createData, menuId: connectMenuId };
@@ -550,6 +551,7 @@ export default function FoodList() {
           <Formik
             initialValues={{
               recommended: false,
+              isWeightMenu: false,
               name: "",
               name_en: "",
               name_cn: "",
@@ -611,7 +613,7 @@ export default function FoodList() {
                       }}
                     />
                   </Box>
-                  <div
+                  {/* <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
                     <label>ສະຖານະເປີດ/ປິດ</label>
@@ -641,6 +643,22 @@ export default function FoodList() {
                     />
                     <label for="recommended">
                       {values?.recommended ? "ເປີດ" : "ປິດ"}
+                    </label>
+                  </div> */}
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
+                    <label>ເມນູຂາຍເປັນນ້ຳໜັກ</label>
+                    <input
+                      type="checkbox"
+                      id="isWeightMenu"
+                      checked={values?.isWeightMenu}
+                      onChange={() =>
+                        setFieldValue("isWeightMenu", !values.isWeightMenu)
+                      }
+                    />
+                    <label for="isWeightMenu">
+                      {values?.isWeightMenu ? "ເປີດ" : "ປິດ"}
                     </label>
                   </div>
                   <Form.Group>

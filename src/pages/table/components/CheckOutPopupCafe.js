@@ -21,6 +21,7 @@ import {
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
+import matchRoundNumber from "../../../helpers/matchRound";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
 
 import { BiTransfer } from "react-icons/bi";
@@ -80,7 +81,9 @@ export default function CheckOutPopupCafe({
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER_TABLE_MENU + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU +
+        "/v4/member/search-one?phone=" +
+        textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -214,6 +217,8 @@ export default function CheckOutPopupCafe({
     }
     setTotal(_total);
     setTotalBill(_total);
+    const roundedNumber = matchRoundNumber(_total);
+    setTotal(roundedNumber);
   };
   // function
   const getDataCurrency = async () => {

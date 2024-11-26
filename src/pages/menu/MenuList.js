@@ -247,6 +247,7 @@ export default function MenuList() {
     try {
       let createData = {
         recommended: values?.recommended,
+        isWeightMenu: values?.isWeightMenu,
         name: values?.name,
         name_en: values?.name_en,
         name_cn: values?.name_cn,
@@ -352,6 +353,7 @@ export default function MenuList() {
         id: dataUpdate?._id,
         data: {
           recommended: values?.recommended,
+          isWeightMenu: values?.isWeightMenu,
           name: values?.name,
           name_en: values?.name_en,
           name_cn: values?.name_cn,
@@ -902,6 +904,7 @@ export default function MenuList() {
           <Formik
             initialValues={{
               recommended: false,
+              isWeightMenu: false,
               name: "",
               name_en: "",
               name_cn: "",
@@ -979,7 +982,7 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? `${t("open")}` : `${t("close")}`}
+                      {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div>
                   <div
@@ -995,7 +998,23 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? `${t("open")}` : `${t("close")}`}
+                      {values?.recommended ? `${t("oppen")}` : `${t("close")}`}
+                    </label>
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
+                    <label>ເມນູທີ່ຂາຍເປັນນ້ຳໜັກ</label>
+                    <input
+                      type="checkbox"
+                      id="isWeightMenu"
+                      checked={values?.isWeightMenu}
+                      onChange={() =>
+                        setFieldValue("isWeightMenu", !values.isWeightMenu)
+                      }
+                    />
+                    <label for="isWeightMenu">
+                      {values?.isWeightMenu ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div>
                   <Form.Group>
@@ -1354,6 +1373,7 @@ export default function MenuList() {
           <Formik
             initialValues={{
               recommended: dataUpdate?.recommended,
+              isWeightMenu: dataUpdate?.isWeightMenu,
               name: dataUpdate?.name,
               name_en: dataUpdate?.name_en,
               name_cn: dataUpdate?.name_cn,
@@ -1426,7 +1446,7 @@ export default function MenuList() {
                       }
                     />
                     <label for="isOpened">
-                      {values?.isOpened ? `${t("open")}` : `${t("close")}`}
+                      {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div>
                   <div
@@ -1442,7 +1462,23 @@ export default function MenuList() {
                       }
                     />
                     <label for="recommended">
-                      {values?.recommended ? `${t("open")}` : `${t("close")}`}
+                      {values?.recommended ? `${t("oppen")}` : `${t("close")}`}
+                    </label>
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: 20, alignItems: "center" }}
+                  >
+                    <label>ເມນູທີ່ຂາຍເປັນນ້ຳໜັກ</label>
+                    <input
+                      type="checkbox"
+                      id="isWeightMenu"
+                      checked={values?.isWeightMenu}
+                      onChange={() =>
+                        setFieldValue("isWeightMenu", !values.isWeightMenu)
+                      }
+                    />
+                    <label for="isWeightMenu">
+                      {values?.isWeightMenu ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div>
                   <Form.Group>
