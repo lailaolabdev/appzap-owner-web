@@ -54,6 +54,7 @@ import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
+import matchRoundNumber from "../../helpers/matchRound";
 
 function Homecafe() {
   const params = useParams();
@@ -96,8 +97,6 @@ function Homecafe() {
 
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
-
-  console.log({ selectedMenu });
 
   useEffect(() => {
     // Function to update state on window resize
@@ -241,10 +240,6 @@ function Homecafe() {
     _calculateTotal();
   }, [selectedMenu]);
 
-  const roundToNearestThousand = (num) => {
-    return Math.round(num / 1000) * 1000;
-  };
-
   const _calculateTotal = () => {
     let _total = 0;
     for (const _data of selectedMenu || []) {
@@ -254,7 +249,7 @@ function Homecafe() {
       _total += _data?.quantity * itemPrice;
     }
 
-    const roundedNumber = roundToNearestThousand(_total);
+    const roundedNumber = matchRoundNumber(_total);
     setTotal(roundedNumber);
   };
   // Helper function to sort options by ID
@@ -276,9 +271,7 @@ function Homecafe() {
   };
 
   const addToCart = async (menu) => {
-    // console.log("addToCart: ", menu);
     const _menuOptions = _checkMenuOption(menu);
-    // console.log("menuOptions: ", _menuOptions);
 
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
@@ -321,7 +314,6 @@ function Homecafe() {
     handleShow();
   };
   const handleAddOption = (menuId, option) => {
-    console.log({ option });
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
       const existingOption = menuOptions.find((opt) => opt._id === option._id);
@@ -407,6 +399,7 @@ function Homecafe() {
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,
+      isWeightMenu: selectedItem?.isWeightMenu,
     };
 
     setSelectedMenu((prevMenu) => {
@@ -707,24 +700,27 @@ function Homecafe() {
 
   const { t } = useTranslation();
 
+  // const handleQuantityChange = (e, row) => {
+  //   const updatedQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
+  //   const updatedMenu = selectedMenu.map((item) =>
+  //     item.id === row.id ? { ...item, quantity: updatedQuantity } : item
+  //   );
+  //   setSelectedMenu(updatedMenu);
+  // };
   const handleQuantityChange = (e, row) => {
-    const updatedQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
-    const updatedMenu = selectedMenu.map((item) =>
-      item.id === row.id
-        ? { ...item, quantity: Math.max(0, updatedQuantity) }
-        : item
-    );
-    setSelectedMenu(updatedMenu);
+    const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
+    const index = selectedMenu.findIndex((item) => item.id === row.id); // Find the index of the item
+
+    if (index !== -1) {
+      // Update the item at the found index
+      const updatedMenu = [...selectedMenu];
+      updatedMenu[index] = { ...updatedMenu[index], quantity: floatQuantity };
+
+      setSelectedMenu(updatedMenu);
+    }
   };
 
-  const saveQuantity = (row) => {
-    // Validate and save the new quantity
-    const updatedMenu = selectedMenu.map((item) =>
-      item.id === row.id
-        ? { ...item, quantity: Math.max(0, item.quantity) }
-        : item
-    );
-    setSelectedMenu(updatedMenu);
+  const saveQuantity = () => {
     setEditingRowId(null); // Exit editing mode
   };
 
@@ -925,15 +921,14 @@ function Homecafe() {
                                     onChange={(e) =>
                                       handleQuantityChange(e, data)
                                     }
-                                    onBlur={() => saveQuantity(data)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        saveQuantity(data);
-                                      }
-                                    }}
+                                    onBlur={() => saveQuantity()}
                                     style={{
-                                      width: "50px",
+                                      width: "60px",
                                       textAlign: "center",
+                                      border: "2px solid #fb6e3b",
+                                      borderRadius: "5px",
+                                      padding: "2px",
+                                      outline: "none",
                                     }}
                                   />
                                 ) : data?.isWeightMenu ? (
@@ -945,10 +940,11 @@ function Homecafe() {
                                       gap: 10,
                                       margin: "0px 5px",
                                       cursor: "pointer",
+                                      border: "2px solid #fb6e3b",
+                                      borderRadius: "5px",
+                                      padding: "2px",
                                     }}
-                                    onDoubleClick={() =>
-                                      setEditingRowId(data?.id)
-                                    }
+                                    onClick={() => setEditingRowId(data?.id)}
                                   >
                                     {Number.parseFloat(data?.quantity).toFixed(
                                       3
@@ -1013,7 +1009,9 @@ function Homecafe() {
                     <div className="mb-3">
                       <div>
                         <span>{t("amountTotal")} : </span>
-                        <span>{TotalAmount()} </span>
+                        <span>
+                          {Number.parseFloat(TotalAmount()).toFixed(3)}
+                        </span>
                       </div>
                       <div>
                         <span>{t("pricesTotal")} : </span>
@@ -1224,15 +1222,18 @@ function Homecafe() {
                                 value={data.quantity}
                                 autoFocus
                                 onChange={(e) => handleQuantityChange(e, data)}
-                                onBlur={() => saveQuantity(data)}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    saveQuantity(data);
-                                  }
-                                }}
+                                onBlur={() => saveQuantity()}
                                 style={{
-                                  width: "50px",
-                                  textAlign: "center",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  padding: "2px",
+                                  margin: "0px 5px",
+                                  cursor: "pointer",
+                                  border: "2px solid #fb6e3b",
+                                  borderRadius: "5px",
+                                  fontSize: 14,
                                 }}
                               />
                             ) : data?.isWeightMenu ? (
@@ -1244,8 +1245,11 @@ function Homecafe() {
                                   gap: 10,
                                   margin: "0px 5px",
                                   cursor: "pointer",
+                                  border: "2px solid #fb6e3b",
+                                  borderRadius: "5px",
+                                  fontSize: 14,
                                 }}
-                                onDoubleClick={() => setEditingRowId(data?.id)}
+                                onClick={() => setEditingRowId(data?.id)}
                               >
                                 {Number.parseFloat(data?.quantity).toFixed(3)}
                               </p>

@@ -1468,7 +1468,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t("sg_menu")}</label>
+                    <label>ເມນູທີ່ຂາຍເປັນນ້ຳໜັກ</label>
                     <input
                       type="checkbox"
                       id="isWeightMenu"

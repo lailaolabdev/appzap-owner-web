@@ -21,6 +21,7 @@ import {
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
+import matchRoundNumber from "../../../helpers/matchRound";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
 
 import { BiTransfer } from "react-icons/bi";
@@ -206,10 +207,6 @@ export default function CheckOutPopupCafe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
 
-  const roundToNearestThousand = (num) => {
-    return Math.round(num / 1000) * 1000;
-  };
-
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill || []) {
@@ -220,7 +217,7 @@ export default function CheckOutPopupCafe({
     }
     setTotal(_total);
     setTotalBill(_total);
-    const roundedNumber = roundToNearestThousand(_total);
+    const roundedNumber = matchRoundNumber(_total);
     setTotal(roundedNumber);
   };
   // function
