@@ -175,9 +175,6 @@ function AddOrder() {
   const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
     useStore();
 
-  // console.log({ selectedTable });
-  // console.log({ onSelectTable });
-
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
     allSelectedMenu,
@@ -872,8 +869,6 @@ function AddOrder() {
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
 
-    // console.log("menuOptions: ", _menuOptions);
-
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
       // Menu has no options, add to cart immediately
@@ -893,7 +888,9 @@ function AddOrder() {
         (item) => item.id === menu._id
       );
 
-      if (existingMenuIndex !== -1) {
+      if (selectedTable?.isOrderSplit) {
+        setSelectedMenu([...selectedMenu, data]);
+      } else if (existingMenuIndex !== -1) {
         // Menu is already in selectedMenu, increase the quantity
         const updatedMenu = [...selectedMenu];
         updatedMenu[existingMenuIndex].quantity += 1;
@@ -950,21 +947,29 @@ function AddOrder() {
   //   setIsShowDeliveryPopup(false); // Close the popup
   // };
 
-  const onRemoveFromCart = (id) => {
+  const onRemoveFromCart = (id, index) => {
+    // Make a copy of the selectedMenu
     let selectedMenuCopied = [...selectedMenu];
-    for (let i = 0; i < selectedMenuCopied.length; i++) {
-      var obj = selectedMenuCopied[i];
-      if (obj.id === id) {
-        selectedMenuCopied.splice(i, 1);
+
+    // Check if the item at the specific index matches the id
+    if (selectedMenuCopied[index]?.id === id) {
+      selectedMenuCopied.splice(index, 1); // Remove the item by index
+    } else {
+      // Fallback: search for the first match by id if something goes wrong
+      for (let i = 0; i < selectedMenuCopied.length; i++) {
+        var obj = selectedMenuCopied[i];
+        if (obj.id === id) {
+          selectedMenuCopied.splice(i, 1);
+        }
       }
     }
+
+    // Update the state
     setSelectedMenu([...selectedMenuCopied]);
     setIsRemoveItem(false);
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    // console.log({ data, header, isPrinted });
-
     try {
       const _storeId = userData?.data?.storeId;
       let findby = "?";
@@ -1231,9 +1236,9 @@ function AddOrder() {
     setEditComments("");
   };
 
-  const onConfirmRemoveItem = (data) => {
+  const onConfirmRemoveItem = (data, index) => {
     setIsRemoveItem(true);
-    setItemDeleting(data);
+    setItemDeleting({ data, index });
   };
   const onAddDeliveryCode = () => {
     setIsShowDeliveryPopup(true);
@@ -1423,16 +1428,20 @@ function AddOrder() {
                                 alignItems: "center",
                               }}
                             >
-                              <button
-                                style={{
-                                  color: "blue",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(-1, data)}
-                              >
-                                -
-                              </button>
+                              {selectedTable?.isOrderSplit !== false ? (
+                                ""
+                              ) : (
+                                <button
+                                  style={{
+                                    color: "blue",
+                                    border: "none",
+                                    width: 25,
+                                  }}
+                                  onClick={() => handleSetQuantity(-1, data)}
+                                >
+                                  -
+                                </button>
+                              )}
                               <p
                                 style={{
                                   display: "flex",
@@ -1445,16 +1454,20 @@ function AddOrder() {
                               >
                                 {data.quantity}
                               </p>
-                              <button
-                                style={{
-                                  color: "red",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(1, data)}
-                              >
-                                +
-                              </button>
+                              {selectedTable?.isOrderSplit !== false ? (
+                                ""
+                              ) : (
+                                <button
+                                  style={{
+                                    color: "red",
+                                    border: "none",
+                                    width: 25,
+                                  }}
+                                  onClick={() => handleSetQuantity(1, data)}
+                                >
+                                  +
+                                </button>
+                              )}
                             </td>
                             {selectedTable?.isDeliveryTable && (
                               <td style={{ padding: 0, textAlign: "right" }}>
@@ -1516,7 +1529,9 @@ function AddOrder() {
                                     fontSize: 25,
                                     color: "#FB6E3B",
                                   }}
-                                  onClick={() => onConfirmRemoveItem(data)}
+                                  onClick={() =>
+                                    onConfirmRemoveItem(data, index)
+                                  }
                                 >
                                   <MdDelete />
                                 </div>
@@ -1857,9 +1872,11 @@ function AddOrder() {
       {/* modal confirm delete item from cart */}
       <PopUpConfirmDeletion
         open={isRemoveItem}
-        text={itemDeleting?.name}
+        text={itemDeleting?.data?.name}
         onClose={() => setIsRemoveItem(false)}
-        onSubmit={async () => onRemoveFromCart(itemDeleting?.id)}
+        onSubmit={async () =>
+          onRemoveFromCart(itemDeleting?.data?.id, itemDeleting?.index)
+        }
       />
       <PopUpAddDeliveryCode
         open={isShowDeliveryPopup}
