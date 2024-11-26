@@ -73,11 +73,7 @@ function Homecafe() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
-  const [menuType, setMenuType] = useState("MENU");
-  const [connectMenues, setConnectMenues] = useState([]);
-  const [connectMenuId, setConnectMenuId] = useState("");
   const [menuOptions, setMenuOptions] = useState([]);
-  const [selectedOptions, setselectedOptions] = useState();
   const { profile } = useStore();
   const [isPopup, setIsPupup] = useState(false);
   const [noteItems, setNoteItems] = useState();
@@ -87,7 +83,6 @@ function Homecafe() {
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
   const [dataBill, setDataBill] = useState();
-  const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [taxPercent, setTaxPercent] = useState(0);
   const [popup, setPopup] = useState({
     CheckOutType: false,
@@ -100,6 +95,9 @@ function Homecafe() {
   );
 
   const [cartModal, setCartModal] = useState(false);
+  const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
+
+  console.log({ selectedMenu });
 
   useEffect(() => {
     // Function to update state on window resize
@@ -126,27 +124,6 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
-  const handleChangeMenuType = async (e) => {
-    setMenuType(e.target.value);
-
-    if (e.target.value == "MENUOPTION") {
-      await fetch(
-        MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => {
-          setConnectMenues(json);
-        });
-    }
-  };
-
-  const handleChangeConnectMenu = (e) => {
-    setConnectMenuId(e.target.value);
-  };
-
   function handleSetQuantity(int, data) {
     const dataArray = [];
     for (const i of selectedMenu) {
@@ -168,7 +145,6 @@ function Homecafe() {
     selectedTable,
     setSelectedTable,
     getTableDataStore,
-    onSelectTable,
   } = useStore();
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -193,90 +169,6 @@ function Homecafe() {
       .fill()
       .map((_, i) => billForCher58?.current[i]);
   }
-  const onPrintForCher = async () => {
-    const orderSelect = selectedMenu;
-    let _index = 0;
-    for (const _ref of billForCher80.current) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
-
-      try {
-        let urlForPrinter = "";
-        let dataUrl;
-        if (_printer?.width === "80mm") {
-          dataUrl = await html2canvas(billForCher80?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            // scale: 530 / widthBill80,
-          });
-        }
-        if (_printer?.width === "58mm") {
-          dataUrl = await html2canvas(billForCher58?.current[_index], {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            // scale: 350 / widthBill58,
-          });
-        }
-        if (_printer?.type === "ETHERNET") {
-          urlForPrinter = ETHERNET_PRINTER_PORT;
-        }
-        if (_printer?.type === "BLUETOOTH") {
-          urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        }
-        if (_printer?.type === "USB") {
-          urlForPrinter = USB_PRINTER_PORT;
-        }
-
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-
-        console.log("dataUrl=5555==========>", dataUrl);
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("_file===========>", _file);
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("port", "9100");
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-
-        console.log("bodyFormData898989898997979>>>>>>>>", bodyFormData);
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        // axios.post("http://localhost:9150/ethernet/text", {
-        //   config: {
-        //     ip: "192.168.100.236",
-        //     port: 9100,
-        //   },
-        //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
-        // });
-        // await Swal.fire({
-        //   icon: "success",
-        //   title: "ປິນສຳເລັດ",
-        //   showConfirmButton: false,
-        //   timer: 1500,
-        // });
-      } catch (err) {
-        console.log(err);
-        // await Swal.fire({
-        //   icon: "error",
-        //   title: "ປິນບໍ່ສຳເລັດ",
-        //   showConfirmButton: false,
-        //   timer: 1500,
-        // });
-      }
-      _index++;
-    }
-  };
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -309,33 +201,15 @@ function Homecafe() {
 
   const getUserData = async () => {
     // setIsLoading(true);
-    await fetch(USERS + `/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
+    await fetch(`${USERS}/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
       method: "GET",
     })
       .then((response) => response.json())
       .then((json) => setUsersData(json));
     // setIsLoading(false);
   };
-
-  // const getcurrency = async () => {
-  //   try {
-  //     let x = await axios.get(
-  //       END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
-  //       {
-  //         headers: {
-  //           Accept: "application/json",
-  //           "Content-Type": "application/json;charset=UTF-8",
-  //         },
-  //       }
-  //     );
-  //     setCurrency(x.data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
   const getData = async (id) => {
-    await fetch(CATEGORY + `?storeId=${id}`, {
+    await fetch(`${CATEGORY}?storeId=${id}`, {
       method: "GET",
     })
       .then((response) => response.json())
@@ -344,10 +218,9 @@ function Homecafe() {
   const getMenu = async (id) => {
     setIsLoading(true);
     await fetch(
-      MENUS +
-        `?storeId=${id}&${
-          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-        }`,
+      `${MENUS}?storeId=${id}&${
+        selectedCategory === "All" ? "" : `categoryId =${selectedCategory}`
+      }`,
       {
         method: "GET",
       }
@@ -364,77 +237,13 @@ function Homecafe() {
       });
   };
 
-  const _checkMenuOptions = async (menuId) => {
-    try {
-      var _menuOptions = [];
-      // await fetch(
-      //   MENUS +
-      //   `?storeId=${storeDetail?._id}&type=MENUOPTION&&menuId=${menuId}`,
-      //   {
-      //     method: "GET",
-      //   }
-      // )
-      //   .then((response) => response.json())
-      //   .then((json) => {
-      //     _menuOptions = json;
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
-      _menuOptions = _.filter(
-        allSelectedMenu,
-        (e) => e?.menuId?._id === menuId
-      );
-      return _menuOptions;
-    } catch (error) {
-      return [];
-    }
-  };
-
-  const addToCarts = async (menu) => {
-    const _menuOptions = await _checkMenuOption(menu?._id);
-    if (_menuOptions.length >= 1) {
-      setMenuOptions(_menuOptions);
-      handleShow();
-      return;
-    }
-    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-    let allowToAdd = true;
-    let itemIndexInSelectedMenu = 0;
-    const data = {
-      id: menu._id,
-      name: menu.name,
-      quantity: 1,
-      price: menu.price,
-      categoryId: menu?.categoryId,
-      printer: menu?.categoryId?.printer,
-      note: "",
-    };
-    if (selectedMenu.length === 0) {
-      setSelectedMenu([...selectedMenu, data]);
-    } else {
-      const thisSelectedMenu = [...selectedMenu];
-      for (const index in thisSelectedMenu) {
-        if (thisSelectedMenu[index]?.id === menu?._id) {
-          allowToAdd = false;
-          itemIndexInSelectedMenu = index;
-        }
-      }
-      if (allowToAdd) {
-        setSelectedMenu([...selectedMenu, data]);
-      } else {
-        const copySelectedMenu = [...selectedMenu];
-        const currentData = copySelectedMenu[itemIndexInSelectedMenu];
-        currentData.quantity += 1;
-        copySelectedMenu[itemIndexInSelectedMenu] = currentData;
-        setSelectedMenu(copySelectedMenu);
-      }
-    }
-  };
-
   useEffect(() => {
     _calculateTotal();
   }, [selectedMenu]);
+
+  const roundToNearestThousand = (num) => {
+    return Math.round(num / 1000) * 1000;
+  };
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -444,7 +253,9 @@ function Homecafe() {
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
       _total += _data?.quantity * itemPrice;
     }
-    setTotal(_total);
+
+    const roundedNumber = roundToNearestThousand(_total);
+    setTotal(roundedNumber);
   };
   // Helper function to sort options by ID
   const sortOptionsById = (options) => {
@@ -465,9 +276,9 @@ function Homecafe() {
   };
 
   const addToCart = async (menu) => {
-    console.log("addToCart: ", menu);
+    // console.log("addToCart: ", menu);
     const _menuOptions = _checkMenuOption(menu);
-    console.log("menuOptions: ", _menuOptions);
+    // console.log("menuOptions: ", _menuOptions);
 
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
@@ -480,6 +291,7 @@ function Homecafe() {
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
         note: "",
+        isWeightMenu: menu?.isWeightMenu,
       };
 
       const existingMenuIndex = selectedMenu.findIndex(
@@ -569,11 +381,6 @@ function Homecafe() {
   };
 
   const handleConfirmOptions = () => {
-    console.log("menuOptions: ", menuOptions);
-    console.log("selectedItem: ", selectedItem);
-    console.log("SelectedOptionsArray: ", selectedOptionsArray);
-    console.log("selectedMenu: ", selectedMenu);
-
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
         (option) => option.quantity >= 1
@@ -684,123 +491,6 @@ function Homecafe() {
     };
     getDataTax();
   }, []);
-
-  // const createOrder = async (data, header, isPrinted) => {
-  //   try {
-  //     const _storeId = userData?.data?.storeId;
-  //     let findby = "?";
-  //     findby += `storeId=${_storeId}`;
-  //     // findby += `&code=${code}`;
-  //     // findby += `&tableId=${tableId}`;
-  //     const _bills = await getBillCafe(findby);
-
-  //     console.log("_bills", _bills);
-
-  //     const _billId = _bills?.[0]?._id;
-  //     if (!_billId) {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: `${t("not_success")}`,
-  //         showConfirmButton: false,
-  //         timer: 1800,
-  //       });
-  //       setDisabledButton(false);
-  //       return;
-  //     }
-  //     const headers = {
-  //       "Content-Type": "application/json",
-  //       Authorization: header.authorization,
-  //     };
-  //     const _body = {
-  //       orders: data,
-  //       storeId: _storeId,
-  //       // tableId: tableId,
-  //       // code: code,
-  //       billId: _billId,
-  //     };
-  //     axios
-  //       .post(END_POINT_SEVER + "/v3/admin/bill-cafe/create", _body, {
-  //         headers: headers,
-  //       })
-  //       .then(async (response) => {
-  //         if (response?.data) {
-  //           Swal.fire({
-  //             icon: "success",
-  //             title: `${t("add_order_success")}`,
-  //             showConfirmButton: false,
-  //             timer: 1800,
-  //           });
-  //           if (isPrinted) {
-  //             //  print
-  //             onPrintForCher().then(() => {
-  //               onSelectTable(selectedTable);
-  //               navigate(`/history-cafe-sale`);
-  //             });
-  //           } else {
-  //             onSelectTable(selectedTable);
-  //             navigate(`/history-cafe-sale`);
-  //           }
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         Swal.fire({
-  //           icon: "warning",
-  //           title: `${t("food_not_enouch")}`,
-  //           showConfirmButton: false,
-  //           timer: 1800,
-  //         });
-  //         setDisabledButton(false);
-  //       });
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: `${t("not_success")}`,
-  //       showConfirmButton: false,
-  //       timer: 1800,
-  //     });
-  //     setDisabledButton(false);
-  //   }
-  // };
-
-  // const onSubmit = async (isPrinted) => {
-  //   try {
-  //     setIsLoading(true);
-  //     if (selectedMenu.length === 0) {
-  //       Swal.fire({
-  //         icon: "warning",
-  //         title: `${t("please_chose_order")}`,
-  //         showConfirmButton: false,
-  //         timer: 1800,
-  //       });
-  //       setIsLoading(false);
-  //       setDisabledButton(false);
-  //       return;
-  //     }
-  //     let header = await getHeaders();
-  //     if (selectedMenu.length != 0) {
-  //       await createOrder(selectedMenu, header, isPrinted);
-  //     }
-  //     setDisabledButton(false);
-  //     setIsLoading(false);
-  //     setSelectedMenu([]);
-  //   } catch (err) {
-  //     setDisabledButton(false);
-  //     setIsLoading(false);
-  //     console.log(err);
-  //   }
-  // };
-
-  const onAddCommentItems = (values) => {
-    setIsPupup(true);
-    setNoteItems(values);
-  };
-
-  const onEditCommentItems = (values) => {
-    setIsPupup(true);
-    setNoteItems(values);
-    setEditComments(values?.note);
-  };
 
   const handleAddCommentInCart = () => {
     const dataArray = [];
@@ -1015,18 +705,28 @@ function Homecafe() {
     }
   };
 
-  // const canCheckOut = !tableOrderItems.find(
-  //   (e) =>
-  //     e?.status === "DOING" ||
-  //     e?.status === "WAITING" ||
-  //     e?.tableOrderItems?.length === 0
-  // )?._id;
+  const { t } = useTranslation();
 
-  const _onCheckOut = async () => {
-    setMenuItemDetailModal(true);
+  const handleQuantityChange = (e, row) => {
+    const updatedQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
+    const updatedMenu = selectedMenu.map((item) =>
+      item.id === row.id
+        ? { ...item, quantity: Math.max(0, updatedQuantity) }
+        : item
+    );
+    setSelectedMenu(updatedMenu);
   };
 
-  const { t } = useTranslation();
+  const saveQuantity = (row) => {
+    // Validate and save the new quantity
+    const updatedMenu = selectedMenu.map((item) =>
+      item.id === row.id
+        ? { ...item, quantity: Math.max(0, item.quantity) }
+        : item
+    );
+    setSelectedMenu(updatedMenu);
+    setEditingRowId(null); // Exit editing mode
+  };
 
   return (
     <div>
@@ -1210,27 +910,68 @@ function Homecafe() {
                                     color: "blue",
                                     border: "none",
                                     width: 25,
-                                    marginTop: -15,
                                   }}
                                   onClick={() => handleSetQuantity(-1, data)}
                                 >
                                   -
                                 </button>
-                                <p
-                                  style={{
-                                    minWidth: 30,
-                                    maxWidth: 50,
-                                    paddingLeft: 10,
-                                  }}
-                                >
-                                  {data.quantity}
-                                </p>
+                                {editingRowId === data.id ? (
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    min="0"
+                                    value={data.quantity}
+                                    autoFocus
+                                    onChange={(e) =>
+                                      handleQuantityChange(e, data)
+                                    }
+                                    onBlur={() => saveQuantity(data)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        saveQuantity(data);
+                                      }
+                                    }}
+                                    style={{
+                                      width: "50px",
+                                      textAlign: "center",
+                                    }}
+                                  />
+                                ) : data?.isWeightMenu ? (
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      margin: "0px 5px",
+                                      cursor: "pointer",
+                                    }}
+                                    onDoubleClick={() =>
+                                      setEditingRowId(data?.id)
+                                    }
+                                  >
+                                    {Number.parseFloat(data?.quantity).toFixed(
+                                      3
+                                    )}
+                                  </p>
+                                ) : (
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      margin: "0px 5px",
+                                    }}
+                                  >
+                                    {data?.quantity}
+                                  </p>
+                                )}
                                 <button
                                   style={{
                                     color: "red",
                                     border: "none",
                                     width: 25,
-                                    marginTop: -15,
                                   }}
                                   onClick={() => handleSetQuantity(1, data)}
                                 >
@@ -1251,30 +992,6 @@ function Homecafe() {
                                     paddingTop: 5,
                                   }}
                                 >
-                                  {/* {data?.note === "" ? (
-                                  <div
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: 25,
-                                      color: "gray",
-                                    }}
-                                    onClick={() => onAddCommentItems(data)}
-                                  >
-                                    <RiChatNewFill />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: 25,
-                                      color: "green",
-                                    }}
-                                    onClick={() => onEditCommentItems(data)}
-                                  >
-                                    <MdMarkChatRead />
-                                  </div>
-                                )} */}
-
                                   <div
                                     style={{
                                       cursor: "pointer",
@@ -1372,46 +1089,6 @@ function Homecafe() {
           </CafeCart>
         ) : null}
       </CafeContent>
-      {/* <div className="mt-3">
-        {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "80mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher80.current[i] = el)}
-            >
-              <BillForChef80
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
-        {selectedMenu?.map((val, i) => {
-          return (
-            <div
-              style={{
-                width: "58mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
-              ref={(el) => (billForCher58.current[i] = el)}
-            >
-              <BillForChef58
-                storeDetail={storeDetail}
-                selectedTable={selectedTable}
-                // dataBill={dataBill}
-                val={{ ...val, tableId: { name: selectedTable?.tableName } }}
-              />
-            </div>
-          );
-        })}
-      </div> */}
 
       {isMobile ? (
         <button
@@ -1519,6 +1196,7 @@ function Homecafe() {
                               {data?.note ?? ""}
                             </p>
                           </td>
+
                           <td
                             style={{
                               display: "flex",
@@ -1533,33 +1211,69 @@ function Homecafe() {
                                 color: "blue",
                                 border: "none",
                                 width: 25,
-                                marginTop: -15,
                               }}
                               onClick={() => handleSetQuantity(-1, data)}
                             >
                               -
                             </button>
-                            <p
-                              style={{
-                                minWidth: 30,
-                                maxWidth: 50,
-                                paddingLeft: 10,
-                              }}
-                            >
-                              {data.quantity}
-                            </p>
+                            {editingRowId === data.id ? (
+                              <input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={data.quantity}
+                                autoFocus
+                                onChange={(e) => handleQuantityChange(e, data)}
+                                onBlur={() => saveQuantity(data)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    saveQuantity(data);
+                                  }
+                                }}
+                                style={{
+                                  width: "50px",
+                                  textAlign: "center",
+                                }}
+                              />
+                            ) : data?.isWeightMenu ? (
+                              <p
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  margin: "0px 5px",
+                                  cursor: "pointer",
+                                }}
+                                onDoubleClick={() => setEditingRowId(data?.id)}
+                              >
+                                {Number.parseFloat(data?.quantity).toFixed(3)}
+                              </p>
+                            ) : (
+                              <p
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  gap: 10,
+                                  margin: "0px 5px",
+                                }}
+                              >
+                                {data?.quantity}
+                              </p>
+                            )}
                             <button
                               style={{
                                 color: "red",
                                 border: "none",
                                 width: 25,
-                                marginTop: -15,
                               }}
                               onClick={() => handleSetQuantity(1, data)}
                             >
                               +
                             </button>
                           </td>
+
                           <td>
                             <p>{moneyCurrency(itemPrice)}</p>
                           </td>
@@ -1574,30 +1288,6 @@ function Homecafe() {
                                 paddingTop: 5,
                               }}
                             >
-                              {/* {data?.note === "" ? (
-                                  <div
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: 25,
-                                      color: "gray",
-                                    }}
-                                    onClick={() => onAddCommentItems(data)}
-                                  >
-                                    <RiChatNewFill />
-                                  </div>
-                                ) : (
-                                  <div
-                                    style={{
-                                      cursor: "pointer",
-                                      fontSize: 25,
-                                      color: "green",
-                                    }}
-                                    onClick={() => onEditCommentItems(data)}
-                                  >
-                                    <MdMarkChatRead />
-                                  </div>
-                                )} */}
-
                               <div
                                 style={{
                                   cursor: "pointer",
@@ -1621,7 +1311,9 @@ function Homecafe() {
                   <div className="mb-3">
                     <div>
                       <span>{t("amountTotal")} : </span>
-                      <span>{TotalAmount()} </span>
+                      <span>
+                        {Number.parseFloat(TotalAmount()).toFixed(3)}{" "}
+                      </span>
                     </div>
                     <div>
                       <span>{t("pricesTotal")} : </span>

@@ -80,7 +80,9 @@ export default function CheckOutPopupCafe({
   const handleSearchOne = async () => {
     try {
       let url =
-        END_POINT_SEVER_TABLE_MENU + "/v4/member/search-one?phone=" + textSearchMember;
+        END_POINT_SEVER_TABLE_MENU +
+        "/v4/member/search-one?phone=" +
+        textSearchMember;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -204,6 +206,10 @@ export default function CheckOutPopupCafe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
 
+  const roundToNearestThousand = (num) => {
+    return Math.round(num / 1000) * 1000;
+  };
+
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill || []) {
@@ -214,6 +220,8 @@ export default function CheckOutPopupCafe({
     }
     setTotal(_total);
     setTotalBill(_total);
+    const roundedNumber = roundToNearestThousand(_total);
+    setTotal(roundedNumber);
   };
   // function
   const getDataCurrency = async () => {
