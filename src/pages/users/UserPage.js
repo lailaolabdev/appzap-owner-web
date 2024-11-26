@@ -56,6 +56,8 @@ export default function UserPage() {
 
   // store
   const { storeDetail } = useStore();
+  const storeId = storeDetail._id;
+  //console.log("storeId:", storeId)
 
   // useEffect
   useEffect(() => {
@@ -103,6 +105,7 @@ export default function UserPage() {
     setSelectUser();
     getData();
   };
+
   return (
     <>
       <div
@@ -117,6 +120,7 @@ export default function UserPage() {
           <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
         </Breadcrumb>
+
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
           <Form.Control
             style={{ maxWidth: 220 }}
@@ -141,15 +145,25 @@ export default function UserPage() {
             <span>
               <IoPeople /> {t("staff_report")}
             </span>
-            <Button
-              variant="dark"
-              bg="dark"
-              onClick={() => {
-                setPopup({ PopUpCreateUser: true });
-              }}
-            >
-              <MdAssignmentAdd /> {t("add_list")}
-            </Button>
+            <div>
+              <Button
+                variant="dark"
+                bg="dark"
+                style={{marginRight:'5px'}}
+                onClick={() =>
+                  navigate(`/user/manage-counter/${storeDetail?._id}`)
+                }
+              >
+                {t("manage_counter")}
+              </Button>
+              <Button
+                variant="dark"
+                bg="dark"
+                onClick={() => setPopup({ PopUpCreateUser: true })}
+              >
+                <MdAssignmentAdd /> {t("add_list")}
+              </Button>
+            </div>
           </Card.Header>
           <Card.Body
             style={{
@@ -254,8 +268,7 @@ export default function UserPage() {
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>
-                        {/* <Button>ແກ້ໄຂ</Button>
-                        <Button>ລັອກ</Button> */}
+                        {/* <Button>ລັອກ</Button> */}
                         <Button
                           onClick={() => {
                             setSelectUser(e);

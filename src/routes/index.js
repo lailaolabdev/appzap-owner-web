@@ -79,6 +79,7 @@ import ZoneList from "../pages/zone/ZoneList";
 import BankList from "../pages/bank/BankList";
 import Delivery from "../pages/delivery/Delivery";
 import BillSplit from "../pages/split_bill/BillSplit";
+import ManageCounterList from "../pages/manageCounter/manageCounter";
 
 function Router() {
   return useRoutes([
@@ -93,6 +94,10 @@ function Router() {
     {
       path: "/menus/:storeId/:tableId",
       element: <MenuListMobile />,
+    },
+    {
+      path: "/user/manage-counter/:id",
+      element: <ManageCounterList />,
     },
     {
       path: "/cart/:storeId/:tableId",
