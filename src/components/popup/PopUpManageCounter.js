@@ -88,7 +88,7 @@ export default function PopUpManageCounter({
 
   return (
     <Modal show={open} onHide={onClose} size="lg" centered>
-      <Modal.Header closeButton>{t("chose_date")}</Modal.Header>
+      <Modal.Header closeButton>{t("select_date")}</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",
