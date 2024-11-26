@@ -912,5 +912,6 @@
   "add_delivery": "Add Delivery",
   "enter_delivery": "Enter Delivery Name",
   "edit_delivery": "Edit Delivery",
-  "setting_delivery": "Setting Delivery"
+  "setting_delivery": "Setting Delivery",
+  "is_order_split": "order split"
 }

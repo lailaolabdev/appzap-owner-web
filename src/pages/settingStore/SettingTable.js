@@ -44,6 +44,9 @@ export default function SettingTable() {
   const [zoneId, setZoneId] = useState();
   const [selectTatle, setSelectTatle] = useState();
   const [isDeliveryTable, setIsDeliveryTable] = useState(false); // For create
+  const [isOrderSplit, setIsOrderSplit] = useState(false);
+  const [isDeliveryTableEdit, setIsDeliveryTableEdit] = useState(false); // For edit
+  const [isOrderSplitEdit, setIsOrderSplitEdit] = useState(false); // For edit
 
   const getDataZone = async () => {
     try {
@@ -89,6 +92,7 @@ export default function SettingTable() {
           zone: zoneId,
           storeId: params?.id,
           isDeliveryTable,
+          isOrderSplit,
         },
         headers: headers,
       });
@@ -129,6 +133,8 @@ export default function SettingTable() {
             codeId: selectTatle?.codeId,
             zone: selectTatle?.zone,
             isDeliveryTable: selectTatle?.isDeliveryTable,
+            isDeliveryTable: isDeliveryTableEdit,
+            isOrderSplit: isOrderSplitEdit,
           },
         },
         headers: headers,
@@ -256,6 +262,7 @@ export default function SettingTable() {
                 <th scope="col">{t("tablecode")}</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
+                <th scope="col"></th>
                 <th scope="col" style={{ textAlign: "right" }}>
                   {t("manage")}
                 </th>
@@ -284,6 +291,7 @@ export default function SettingTable() {
                         ? t("deliveryTable")
                         : ""}
                     </td>
+                    <td>{table?.isOrderSplit ? t("is_order_split") : "-"}</td>
                     <td>
                       <div
                         style={{
@@ -434,6 +442,17 @@ export default function SettingTable() {
               // label={isDeliveryTable ? t("yes") : t("no")}
               checked={isDeliveryTable}
               onChange={(e) => setIsDeliveryTable(e.target.checked)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("is_order_split")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Check
+              type="switch"
+              id="is_order_split"
+              // label={isDeliveryTable ? t("yes") : t("no")}
+              checked={isOrderSplit}
+              onChange={(e) => setIsOrderSplit(e.target.checked)}
             />
           </Form.Group>
         </Modal.Body>
@@ -600,6 +619,19 @@ export default function SettingTable() {
               // label={isDeliveryTableEdit ? t("yes") : t("no")}
               checked={selectTatle?.isDeliveryTable}
               onChange={(e) => handleChangeIstableDelivery(e.target.checked)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>{t("is_order_split")}</Form.Label>
+            <div style={{ height: 10 }}></div>
+            <Form.Check
+              type="switch"
+              id="is_order_split_edit"
+              // label={isDeliveryTableEdit ? t("yes") : t("no")}
+              checked={isOrderSplitEdit}
+              onChange={(e) => {
+                setIsOrderSplitEdit(e.target.checked);
+              }}
             />
           </Form.Group>
         </Modal.Body>
