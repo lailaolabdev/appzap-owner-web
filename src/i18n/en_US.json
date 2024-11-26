@@ -906,5 +906,11 @@
   "is_delivery_table": "Is Delivery Table",
   "deliveryTable": "Delivery Table",
   "error": "Error",
-  "ensure_enter_code_platform": "Please ensure all orders have a delivery code and platform selected."
+  "ensure_enter_code_platform": "Please ensure all orders have a delivery code and platform selected.",
+  "name_delivery": "Delivery Name",
+  "list_delivery": "List of Delivery",
+  "add_delivery": "Add Delivery",
+  "enter_delivery": "Enter Delivery Name",
+  "edit_delivery": "Edit Delivery",
+  "setting_delivery": "Setting Delivery"
 }

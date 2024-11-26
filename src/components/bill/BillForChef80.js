@@ -9,6 +9,8 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
       ?.map((option) => `[${option.name} x ${option.quantity || 1}]`)
       .join(" ") || "";
 
+  // console.log("val: ", val);
+
   return (
     <div style={{ background: "#fff" }}>
       <Container>
@@ -104,9 +106,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                     fontSize: 12,
                   }}
                 >
-                  {val?.deliveryCode
-                    ? `(delivery Code : ${val?.deliveryCode})`
-                    : ""}
+                  {val?.deliveryCode ? `(DC : ${val?.deliveryCode})` : ""}
                 </div>
               </div>
             </td>

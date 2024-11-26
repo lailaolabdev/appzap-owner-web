@@ -17,6 +17,7 @@ import {
   faTh,
   faBuilding,
   faBuildingColumns,
+  faBox,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useNavigate, useParams } from "react-router-dom";
@@ -158,6 +159,13 @@ export default function SettingList() {
       subTitle: t("pin_desc"),
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
+    },
+    {
+      id: "f962968d-1bed-48da-9049-86351dcd7102",
+      title: t("setting_delivery"),
+      subTitle: "",
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBox} />,
+      path: `/settingStore/delivery/${params?.id}`,
     },
 
     // {
