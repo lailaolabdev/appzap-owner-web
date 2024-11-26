@@ -947,25 +947,14 @@ function AddOrder() {
   //   setIsShowDeliveryPopup(false); // Close the popup
   // };
 
-  const onRemoveFromCart = (id, index) => {
-    // Make a copy of the selectedMenu
-    let selectedMenuCopied = [...selectedMenu];
+  const onRemoveFromCart = (index) => {
+    const selectedMenuCopied = [...selectedMenu];
 
-    // Check if the item at the specific index matches the id
-    if (selectedMenuCopied[index]?.id === id) {
-      selectedMenuCopied.splice(index, 1); // Remove the item by index
-    } else {
-      // Fallback: search for the first match by id if something goes wrong
-      for (let i = 0; i < selectedMenuCopied.length; i++) {
-        var obj = selectedMenuCopied[i];
-        if (obj.id === id) {
-          selectedMenuCopied.splice(i, 1);
-        }
-      }
+    if (index >= 0 && index < selectedMenuCopied.length) {
+      selectedMenuCopied.splice(index, 1);
     }
 
-    // Update the state
-    setSelectedMenu([...selectedMenuCopied]);
+    setSelectedMenu(selectedMenuCopied);
     setIsRemoveItem(false);
   };
 
@@ -1874,9 +1863,7 @@ function AddOrder() {
         open={isRemoveItem}
         text={itemDeleting?.data?.name}
         onClose={() => setIsRemoveItem(false)}
-        onSubmit={async () =>
-          onRemoveFromCart(itemDeleting?.data?.id, itemDeleting?.index)
-        }
+        onSubmit={async () => onRemoveFromCart(itemDeleting?.index)}
       />
       <PopUpAddDeliveryCode
         open={isShowDeliveryPopup}
