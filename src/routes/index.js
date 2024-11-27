@@ -95,10 +95,7 @@ function Router() {
       path: "/menus/:storeId/:tableId",
       element: <MenuListMobile />,
     },
-    {
-      path: "/user/manage-counter/:id",
-      element: <ManageCounterList />,
-    },
+
     {
       path: "/cart/:storeId/:tableId",
       element: <CartListMobile />,
@@ -200,6 +197,10 @@ function Router() {
         {
           path: "/settingStore/bank/:id",
           element: <BankList />,
+        },
+        {
+          path: "/user/manage-counter/:id",
+          element: <ManageCounterList />,
         },
         {
           path: "/settingStore/delivery/:id",

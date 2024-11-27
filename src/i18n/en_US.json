@@ -92,6 +92,7 @@
   "select_date": "Select Date",
   "bookedBy": "Booked by",
   "phoneNumberOfBooked": "Phone number of booked",
+  "please_enter_number_of_day": " Please enter number of day",
   "tableStatus2": "Table status ",
   "numberOfPeople": "Number of people",
   "addBooking": "Add booking ",
