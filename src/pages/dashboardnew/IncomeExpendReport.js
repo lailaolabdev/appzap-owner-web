@@ -3,19 +3,22 @@ import axios from "axios";
 import moment from "moment";
 
 import { TitleComponent } from "../../components";
-import { Form } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import IncomeExpendatureChart from "./IncomeExpendatureChart";
 import { COLOR_APP } from "../../constants";
 import {
   END_POINT_SERVER_BUNSI,
   getLocalData,
   END_POINT_SEVER,
+  PERMISSIONS_COUNTER
 } from "../../constants/api";
+import { useStore } from "../../store";
 import PaginationComponent from "../../components/PaginationComponent";
 import { getHeadersAccount } from "../../services/auth";
 import { useLocation, useParams } from "react-router-dom";
 import { moneyCurrency } from "../../helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
 import {
   faBalanceScaleRight,
   faDollarSign,
@@ -26,6 +29,8 @@ import Filter from "../expend/component/filter";
 import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
+import PopUpManageCounter from "../../components/popup/PopUpManageCounter";
+import {manageCounterService} from "../../services/manageCounterService"
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -37,14 +42,11 @@ export default function IncomeExpendExport() {
   const parsed = queryString?.parse(location?.state);
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  const [dateStart, setDateStart] = useState(new Date(year, month, 1));
-  const [dateEnd, setDateEnd] = useState(new Date(year, month + 1, 0));
-
-  // console.log("dateStart::", dateStart, "dateEnd::", dateEnd);
-
+  const today = new Date();
+  const [dateStart, setDateStart] = useState(null);
+  const [dateEnd, setDateEnd] = useState(null);
   const { width, height } = useWindowDimensions2();
-
-  //filter
+ //filter
   const [filterByYear, setFilterByYear] = useState(
     !parsed?.filterByYear ? currentYear : parsed?.filterByYear
   );
@@ -58,8 +60,55 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
+  const { profile, storeDetail } = useStore();
+  const [openGetDate, setOpenGetDate] = useState(false);
+  const storeId = storeDetail?._id;
+  const user_role = profile.data?.role;
+  const [days , setDays] = useState(null)
 
-  // console.log("incomeExpendData::", incomeExpendData);
+
+  const User_store = "APPZAP_COUNTER";
+  //const User_store = "APPZAP_ADMIN";
+
+  useEffect(() => {
+    if (user_role === User_store) {
+      // If user is store admin, set to current day only
+      const startOfDay = moment(today).startOf('day').toDate();
+      const endOfDay = moment(today).endOf('day').toDate();
+      setDateStart(startOfDay);
+      setDateEnd(endOfDay);
+    } else {
+      // For other users, set to current month
+      const time = new Date();
+      const month = time.getMonth();
+      const year = time.getFullYear();
+      setDateStart(new Date(year, month, 1));
+      setDateEnd(new Date(year, month + 1, 0));
+    }
+  }, [user_role]);
+
+  const fetchData = async () => {
+    try {
+      const response = await manageCounterService.getManageCounter(storeId);
+      setDays(response?.data[0]?.manageCounter || null);
+    } catch (error) {
+      console.error('Error fetching manage counter:', error.response?.data || error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [storeId]);
+
+  //console.log("days:", days)
+  
+  useEffect(() => {
+    if (dateStart && dateEnd) {
+      getIncomeExpendData();
+    }
+  }, [dateStart, dateEnd]);
+
+
 
   const OPTION = {
     chart: {
@@ -74,13 +123,10 @@ export default function IncomeExpendExport() {
       enabled: false,
       formatter: (value) => (value ? value?.toLocaleString("en-US") : 0),
     },
-    // title: {
-    //   text: "ລາຍຮັບ ແລະ ລາຍຈ່າຍ",
-    //   align: "left",
-    // },
+
     grid: {
       row: {
-        colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
+        colors: ["#f3f3f3", "transparent"],
         opacity: 0.5,
       },
     },
@@ -163,19 +209,21 @@ export default function IncomeExpendExport() {
     // modifyData()
   }, [series, options]);
 
+  
+
   const getIncomeExpendData = async () => {
+    if (!dateStart || !dateEnd) return;
+    
     try {
       const _localData = await getLocalData();
       let findby = `accountId=${
         _localData?.DATA?.storeId
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
-      // if (filterByYear) findby += `&year=${filterByYear}`
-      // if (filterByMonth) findby += `&month=${filterByMonth}`
+
       if (dateStart && dateEnd)
         findby += `&date_gte=${moment(dateStart).format(
           "YYYY/MM/DD"
         )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
-      // if (filterByPayment !== "ALL" && filterByPayment !== undefined) findby += `&payment=${filterByPayment}`
 
       const header = await getHeadersAccount();
       const headers = {
@@ -188,9 +236,8 @@ export default function IncomeExpendExport() {
         headers: headers,
       })
         .then((res) => {
-          // console.log(res);
           setExpendGraphData(res?.data?.data?.chartExpend);
-          console.log("ExpendGraphData", res?.data);
+          //console.log("ExpendGraphData", res?.data);
         })
         .finally(() => {
           setIsLoading(false);
@@ -275,6 +322,8 @@ export default function IncomeExpendExport() {
     setIncomeExpendData(_incomeExpendData);
   };
 
+
+
   const calculateSummaryIncome = (type) => {
     let _summaryAmount = 0;
     incomeExpendData.map((x) => {
@@ -306,6 +355,8 @@ export default function IncomeExpendExport() {
     }
   };
 
+  
+
   return (
     <div>
       <div
@@ -329,31 +380,44 @@ export default function IncomeExpendExport() {
             gap: 5,
           }}
         >
-          <Form.Label>{t("date")}</Form.Label>
-          <Form.Control
-            type="date"
-            value={dateStart}
-            onChange={(e) => setDateStart(e?.target?.value)}
-            style={{ width: 150 }}
-          />{" "}
-          ~
-          <Form.Control
-            type="date"
-            value={dateEnd}
-            onChange={(e) => setDateEnd(e?.target?.value)}
-            style={{ width: 150 }}
-          />
-          {/* <Form.Control
-            as="select"
-            name="payment"
-            // value={filterByPayment}
-            // onChange={(e) => setFilterByPayment(e?.target?.value)}
-            style={{ width: 150 }}
-          >
-            <option value="ALL">ສະແດງຮູບແບບ</option>
-            <option value="CASH">ເງິນສົດ</option>
-            <option value="TRANSFER">ເງິນໂອນ</option>
-          </Form.Control> */}
+          {user_role === User_store ? (
+            <Form.Group style={{ width: "100%"}}>
+              <Form.Label>{t("date_time")}</Form.Label>
+              <Button
+                variant="outline-primary"
+                size="small"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  width: "100%",
+                }}
+                onClick={() => setOpenGetDate({ popupfiltter: true })}
+              >
+                <BsFillCalendarWeekFill />
+                <div>{dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}</div>
+                {" ~ "}
+                <div>{dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}</div>
+              </Button>
+            </Form.Group>
+          ) : (
+            <div style={{display:"flex", alignItems:'center'}}>
+              <Form.Label>{t("date")}</Form.Label>
+              <Form.Control
+                type="date"
+                value={dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}
+                onChange={(e) => setDateStart(new Date(e.target.value))}
+                style={{ width: 150,marginLeft:"3px" }}
+              />
+              <span>~</span>
+              <Form.Control
+                type="date"
+                value={dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}
+                onChange={(e) => setDateEnd(new Date(e.target.value))}
+                style={{ width: 150 }}
+              />
+            </div>
+          )}
         </div>
       </div>
       {/* <Filter
@@ -543,6 +607,17 @@ export default function IncomeExpendExport() {
           ))}
         </table>
       </div>
+
+      <PopUpManageCounter
+        open={openGetDate?.popupfiltter}
+        onClose={() => setOpenGetDate()}
+        dateStart={dateStart}
+        dateEnd={dateEnd}
+        setDateStart={setDateStart}
+        setDateEnd={setDateEnd}
+        days={days}
+        handlePresetDate
+      />
     </div>
   );
 }
