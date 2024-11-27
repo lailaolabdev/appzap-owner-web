@@ -1806,7 +1806,7 @@ export default function TableList() {
   // Handle updating SERVED order status
 const handleUpdateOrderStatusToServed = async () => {
   try {
-    // setIsServerdLoading(true); // Show loading spinner for the user
+    setIsServerdLoading(true); // Show loading spinner for the user
     const storeId = storeDetail?._id;
 
     console.log({isCheckedOrderItem})
@@ -1822,7 +1822,7 @@ const handleUpdateOrderStatusToServed = async () => {
     }));
 
     console.log({serveItemsReq});
-
+    if (serveItemsReq.length === 0) return setIsServerdLoading(false)
 
     // Only send data for items with a valid status change
     const response = await updateOrderItemV7(serveItemsReq, storeId);
@@ -1846,10 +1846,15 @@ const handleUpdateOrderStatusToServed = async () => {
 
       setIsCheckedOrderItem(updatedOrderItems); // Update state
 
+      // 2. Update total price immediately for the served items
+      await calculateTotalBillV7(updatedOrderItems);
+
+
     //   // Optionally, update other states based on your requirements
     //   // e.g., Update waiting count or trigger a re-fetch for fresh data
     //   const count = await getCountOrderWaiting(storeId);
     //   setCountOrderWaiting(count || 0);
+        setIsServerdLoading(false);
     // } else {
     //   // Handle failure in updating status
     //   setIsServerdLoading(false);
@@ -1871,6 +1876,39 @@ const handleUpdateOrderStatusToServed = async () => {
     });
   }
 };
+
+const calculateTotalBillV7 = async (updatedOrderItems) => {
+  setPrintBillCalulate(true);
+
+  // We are now using the passed updatedOrderItems to avoid querying unnecessary state
+  let _total = 0;
+
+  updatedOrderItems.forEach(item => {
+    if (item.status === "SERVED") {
+      _total += item.quantity * (item.price + (item.totalOptionPrice ?? 0));
+    }
+  });
+
+  // Apply discount if available
+  if (dataBill?.discount > 0) {
+    let discountedAmount = _total;
+
+    if (dataBill?.discountType === "LAK" || dataBill?.discountType === "MONEY") {
+      discountedAmount -= dataBill?.discount;
+    } else {
+      const discount = (_total * dataBill?.discount) / 100;
+      discountedAmount -= discount;
+    }
+
+    setTotalAfterDiscount(discountedAmount);
+  } else {
+    setTotalAfterDiscount(_total);
+  }
+
+  setTotal(_total); // Set the total without discount
+  setPrintBillCalulate(false);
+};
+
 
 
 
