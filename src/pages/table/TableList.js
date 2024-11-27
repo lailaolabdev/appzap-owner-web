@@ -1850,20 +1850,20 @@ const handleUpdateOrderStatusToServed = async () => {
       await calculateTotalBillV7(updatedOrderItems);
 
 
-    //   // Optionally, update other states based on your requirements
-    //   // e.g., Update waiting count or trigger a re-fetch for fresh data
-    //   const count = await getCountOrderWaiting(storeId);
-    //   setCountOrderWaiting(count || 0);
-        setIsServerdLoading(false);
-    // } else {
-    //   // Handle failure in updating status
-    //   setIsServerdLoading(false);
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: `${t("update_order_status_failed")}`,
-    //     showConfirmButton: false,
-    //     timer: 2000,
-    //   });
+      // Optionally, update other states based on your requirements
+      // e.g., Update waiting count or trigger a re-fetch for fresh data
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0);
+      setIsServerdLoading(false);
+    } else {
+      // Handle failure in updating status
+      setIsServerdLoading(false);
+      Swal.fire({
+        icon: "error",
+        title: `${t("update_order_status_failed")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
     }
   } catch (error) {
     console.error("Error updating order status:", error);
