@@ -1828,21 +1828,23 @@ const handleUpdateOrderStatusToServed = async () => {
     const response = await updateOrderItemV7(serveItemsReq, storeId);
     console.log({response})
 
-    // if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
+    if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
       // Success, update the UI
-      // Swal.fire({
-      //   icon: "success",
-      //   title: `${t("update_order_status_success")}`,
-      //   showConfirmButton: false,
-      //   timer: 2000,
-      // });
+      Swal.fire({
+        icon: "success",
+        title: `${t("update_order_status_success")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
 
-    //   // Optimistically update the order list in the state
-    //   const updatedOrderItems = isCheckedOrderItem.map((item) => ({
-    //     ...item,
-    //     isChecked: false, // Uncheck items after updating status
-    //   }));
-    //   setIsCheckedOrderItem(updatedOrderItems);
+      // 1. Optimistically update the order list in the state (Update the status to "SERVED")
+      const updatedOrderItems = isCheckedOrderItem.map((item) => ({
+        ...item,
+        isChecked: false, // Uncheck the item after updating status
+        status: item.isChecked ? "SERVED" : item.status, // Update status to "SERVED" if it's checked
+      }));
+
+      setIsCheckedOrderItem(updatedOrderItems); // Update state
 
     //   // Optionally, update other states based on your requirements
     //   // e.g., Update waiting count or trigger a re-fetch for fresh data
@@ -1857,7 +1859,7 @@ const handleUpdateOrderStatusToServed = async () => {
     //     showConfirmButton: false,
     //     timer: 2000,
     //   });
-    // }
+    }
   } catch (error) {
     console.error("Error updating order status:", error);
     setIsServerdLoading(false);
