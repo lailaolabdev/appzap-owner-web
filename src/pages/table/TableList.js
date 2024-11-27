@@ -1804,7 +1804,7 @@ export default function TableList() {
   // };
 
   // Handle updating SERVED order status
-const handleUpdateOrderStatus = async (status) => {
+const handleUpdateOrderStatusToServed = async () => {
   try {
     // setIsServerdLoading(true); // Show loading spinner for the user
     const storeId = storeDetail?._id;
@@ -2833,7 +2833,7 @@ const handleUpdateOrderStatus = async (status) => {
                               {t("sendToKitchen")}
                             </ButtonCustom>
                             <ButtonCustom
-                              onClick={() => handleUpdateOrderStatus("SERVED")}
+                              onClick={() => handleUpdateOrderStatusToServed()}
                               disabled={!checkedBox}
                             >
                               {isServedLoading && (
