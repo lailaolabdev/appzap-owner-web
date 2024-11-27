@@ -29,7 +29,9 @@ export default function ManageCounterList() {
 
   const storeId = storeDetail._id;
 
-  const [data, setData] = useState([{ label: `${t("inc_expe")}` }]);
+  const data = [
+    { label: `${t("inc_expe")}` }
+  ];
 
   const fetchData = async () => {
     try {
@@ -184,7 +186,7 @@ export default function ManageCounterList() {
             validate={(values) => {
               const errors = {};
               if (values.manageCounter === "" || values.manageCounter === 0) {
-                errors.manageCounter = t("please_enter_valid_number_of_day");
+                errors.manageCounter = t("please_enter_number_of_day");
               }
               return errors;
             }}
