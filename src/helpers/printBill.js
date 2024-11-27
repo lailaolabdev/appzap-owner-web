@@ -125,6 +125,10 @@ export const PrintBill = ({
     });
   }, [imageUrl2]);
 
+  const CurrentFormat = () => {
+    currencyData.map((currency) => {});
+  };
+
   const data = {
     header: {
       StoreImage: imageUrl2,
@@ -150,7 +154,13 @@ export const PrintBill = ({
       },
       { "name:": dataBill?.Name ? dataBill?.Name : "", fontSize: 26 },
       { "point:": dataBill?.Point ? dataBill?.Point : "0", fontSize: 26 },
-      { "Total (LAK):": "835,000", bold: true, fontSize: 30 },
+      {
+        "Total (LAK):": moneyCurrency(
+          Math.floor(totalAfterDiscount + taxAmount + serviceChargeAmount)
+        ),
+        bold: true,
+        fontSize: 30,
+      },
     ],
     totalLeftPrices: [{ USD: "835,000" }, { THB: "835,000" }],
     footer: [{ "Exchange Rate": "THB 650 | CNY 3,000" }],
