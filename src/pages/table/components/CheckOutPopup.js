@@ -28,6 +28,7 @@ import {
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import { callCheckOutPrintBillOnly } from "../../../services/code";
+
 import _ from "lodash";
 
 export default function CheckOutPopup({
@@ -385,8 +386,8 @@ export default function CheckOutPopup({
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
-    saveServiceChargeDetails();
-    _checkBill(selectCurrency?.id, selectCurrency?.name);
+    // saveServiceChargeDetails();
+    // _checkBill(selectCurrency?.id, selectCurrency?.name);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
   };

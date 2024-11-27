@@ -72,6 +72,7 @@ import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { padding_white } from "./../../constants/index";
+import { PrintBill } from "../../helpers/printBill";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -201,6 +202,10 @@ export default function TableList() {
     setCombinedBillRefs(refs);
     setGroupedItems(grouped);
   }, [isCheckedOrderItem]);
+
+  console.log("StoreDetail", storeDetail);
+  console.log("selectedTable", selectedTable);
+  console.log("dataBill", dataBill);
 
   const groupItemsByPrinter = (items) => {
     return items?.reduce((groups, item) => {
@@ -687,57 +692,57 @@ export default function TableList() {
       };
       saveServiceChargeDetails();
       await _createHistoriesPrinter(_dataBill);
-      let urlForPrinter = "";
+      // let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
-      let dataImageForPrint;
-      dataImageForPrint = await html2canvas(bill80Ref.current, {
-        useCORS: true,
-        scrollX: 10,
-        scrollY: 0,
-        scale: 530 / widthBill80,
-      });
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
+      // let dataImageForPrint;
+      // dataImageForPrint = await html2canvas(bill80Ref.current, {
+      //   useCORS: true,
+      //   scrollX: 10,
+      //   scrollY: 0,
+      //   scale: 530 / widthBill80,
+      // });
+      // if (printerBillData?.type === "ETHERNET") {
+      //   urlForPrinter = ETHERNET_PRINTER_PORT;
+      // }
+      // if (printerBillData?.type === "BLUETOOTH") {
+      //   urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      // }
+      // if (printerBillData?.type === "USB") {
+      //   urlForPrinter = USB_PRINTER_PORT;
+      // }
 
-      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("isdrawer", isPrintBill);
-      bodyFormData.append("image", _file);
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+      // const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      // var bodyFormData = new FormData();
+      // bodyFormData.append("ip", printerBillData?.ip);
+      // bodyFormData.append("port", "9100");
+      // bodyFormData.append("isdrawer", isPrintBill);
+      // bodyFormData.append("image", _file);
+      // bodyFormData.append("beep1", 1);
+      // bodyFormData.append("beep2", 9);
+      // bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
-      await printFlutter(
-        {
-          drawer: false,
-          paper: printerBillData?.width === "58mm" ? 400 : 500,
-          imageBuffer: dataImageForPrint.toDataURL(),
-          ip: printerBillData?.ip,
-          type: printerBillData?.type,
-          port: "9100",
-          width: printerBillData?.width === "58mm" ? 400 : 580,
-        },
-        async () => {
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
-      );
+      // await printFlutter(
+      //   {
+      //     drawer: false,
+      //     paper: printerBillData?.width === "58mm" ? 400 : 500,
+      //     imageBuffer: dataImageForPrint.toDataURL(),
+      //     ip: printerBillData?.ip,
+      //     type: printerBillData?.type,
+      //     port: "9100",
+      //     width: printerBillData?.width === "58mm" ? 400 : 580,
+      //   },
+      //   async () => {
+      //     await axios({
+      //       method: "post",
+      //       url: urlForPrinter,
+      //       data: bodyFormData,
+      //       headers: { "Content-Type": "multipart/form-data" },
+      //     });
+      //   }
+      // );
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
@@ -3017,6 +3022,15 @@ export default function TableList() {
           profile={profile}
         />
       </div>
+      <PrintBill
+        orderPayBefore={orderPayBefore}
+        storeDetail={storeDetail}
+        selectedTable={selectedTable}
+        dataBill={dataBill}
+        totalBillBillForCheckOut80={total}
+        taxPercent={taxPercent}
+        profile={profile}
+      />
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
         <BillQRShortSmartOrdering80
           tableName={selectedTable?.tableName}

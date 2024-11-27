@@ -38,6 +38,9 @@ export const ETHERNET_PRINTER_PORT = "http://localhost:9150/ethernet/image";
 export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
 
+export const END_POINT_PRINTBILL =
+  "http://192.168.1.15:9090/api/v1/ethernet-printing/receipt";
+
 // No Cut Endpoint
 export const NOCUT_ETHERNET_PRINTER_PORT =
   "http://localhost:9150/nocut/ethernet/image";
