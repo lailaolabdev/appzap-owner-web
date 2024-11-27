@@ -261,7 +261,7 @@ export default function Dashboard() {
               </div>
             </Card.Body>
           </Card>
-          <Card border="primary" style={{ margin: 0 }}>
+          {/* <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
                 backgroundColor: COLOR_APP,
@@ -300,7 +300,7 @@ export default function Dashboard() {
                 {t("transfer_cash")}
                 {" : "}
                 {convertNumber(moneyReport?.transferCash?.totalBill)}
-              </div> */}
+              </div> 
               <div>
                 {t("point")}
                 {" : "}
@@ -312,6 +312,51 @@ export default function Dashboard() {
                 {convertNumber(promotionReport?.[0]?.totalSaleAmount)}{" "}
                 <span style={{ margin: "0 5px" }}>|</span>
                 {convertNumber(promotionReport?.[0]?.count)}ບິນ
+              </div>
+            </Card.Body>
+          </Card> */}
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("success_amount")}
+            </Card.Header>
+            <Card.Body>
+              <div>
+                {t("numberOfBill")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
+              </div>
+              <div>
+                {t("totalBalance")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.totalBalance)}
+              </div>
+              <div>
+                {t("payBycash")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.payByCash)}
+              </div>
+              <div>
+                {t("transferPayment")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.transferPayment)}
+              </div>
+              <div>
+                {t("point")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.point)}
+              </div>
+              <div>
+                {t("cashDiscount")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.cashDiscount)} |{" "}
+                {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
               </div>
             </Card.Body>
           </Card>
