@@ -51,7 +51,7 @@ import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
-import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItem, updateOrderItemV7 } from "../../services/order";
 import styled from "styled-components";
 import {
   callCheckOutPrintBillOnly,
@@ -1748,59 +1748,131 @@ export default function TableList() {
 
   const [isServedLoading, setIsServerdLoading] = useState(false);
   const [isPrintedLoading, setIsPrintedLoading] = useState(false);
-  const handleUpdateOrderStatus = async (status) => {
-    try {
-      if (status === "SERVED") setIsServerdLoading(true);
-      calculateTotalBill();
-      const storeId = storeDetail?._id;
-      let menuId;
-      const _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked)
-        .map((i) => {
-          return {
-            status: status,
-            _id: i?._id,
-            menuId: i?.menuId,
-          };
-        });
 
-      const _resOrderUpdate = await updateOrderItem(
-        _updateItems,
-        storeId,
-        menuId,
-        seletedCancelOrderItem,
-        selectedTable
-      );
-      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-        reLoadData();
-        setCheckedBox(!checkedBox);
-        Swal.fire({
-          icon: "success",
-          title: `${t("update_order_status_success")}`,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-        const _newOrderItems = isCheckedOrderItem.map((item) => {
-          return {
-            ...item,
-            isChecked: false,
-          };
-        });
-        setIsCheckedOrderItem(_newOrderItems);
+  // const handleUpdateOrderStatus = async (status) => {
+  //   try {
+  //     if (status === "SERVED") setIsServerdLoading(true);
+  //     calculateTotalBill();
+  //     const storeId = storeDetail?._id;
+  //     let menuId;
+  //     const _updateItems = isCheckedOrderItem
+  //       ?.filter((e) => e?.isChecked)
+  //       .map((i) => {
+  //         return {
+  //           status: status,
+  //           _id: i?._id,
+  //           menuId: i?.menuId,
+  //         };
+  //       });
 
-        const count = await getCountOrderWaiting(storeId);
-        setCountOrderWaiting(count || 0);
-        setIsServerdLoading(false);
-      } else {
-        setIsServerdLoading(false);
-      }
-      setOrderPayBefore([]);
-      setIsServerdLoading(false);
-    } catch (error) {
-      setIsServerdLoading(false);
-      console.log(error);
-    }
-  };
+  //     const _resOrderUpdate = await updateOrderItem(
+  //       _updateItems,
+  //       storeId,
+  //       menuId,
+  //       seletedCancelOrderItem,
+  //       selectedTable
+  //     );
+  //     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+  //       reLoadData();
+  //       setCheckedBox(!checkedBox);
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: `${t("update_order_status_success")}`,
+  //         showConfirmButton: false,
+  //         timer: 2000,
+  //       });
+  //       const _newOrderItems = isCheckedOrderItem.map((item) => {
+  //         return {
+  //           ...item,
+  //           isChecked: false,
+  //         };
+  //       });
+  //       setIsCheckedOrderItem(_newOrderItems);
+
+  //       const count = await getCountOrderWaiting(storeId);
+  //       setCountOrderWaiting(count || 0);
+  //       setIsServerdLoading(false);
+  //     } else {
+  //       setIsServerdLoading(false);
+  //     }
+  //     setOrderPayBefore([]);
+  //     setIsServerdLoading(false);
+  //   } catch (error) {
+  //     setIsServerdLoading(false);
+  //     console.log(error);
+  //   }
+  // };
+
+  // Handle updating SERVED order status
+const handleUpdateOrderStatus = async (status) => {
+  try {
+    // setIsServerdLoading(true); // Show loading spinner for the user
+    const storeId = storeDetail?._id;
+
+    console.log({isCheckedOrderItem})
+
+    // Filter checked items with status "SERVED"
+    const serveItemsReq = isCheckedOrderItem
+    ?.filter((e) => e?.isChecked && e?.status !== "SERVED")  // Add condition for SERVED status
+    .map((i) => ({
+      status: i?.status,
+      _id: i?._id,
+      menuId: i?.menuId,
+      quantity: i?.quantity
+    }));
+
+    console.log({serveItemsReq});
+
+
+    // Only send data for items with a valid status change
+    const response = await updateOrderItemV7(serveItemsReq, storeId);
+    console.log({response})
+
+    // if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
+      // Success, update the UI
+      // Swal.fire({
+      //   icon: "success",
+      //   title: `${t("update_order_status_success")}`,
+      //   showConfirmButton: false,
+      //   timer: 2000,
+      // });
+
+    //   // Optimistically update the order list in the state
+    //   const updatedOrderItems = isCheckedOrderItem.map((item) => ({
+    //     ...item,
+    //     isChecked: false, // Uncheck items after updating status
+    //   }));
+    //   setIsCheckedOrderItem(updatedOrderItems);
+
+    //   // Optionally, update other states based on your requirements
+    //   // e.g., Update waiting count or trigger a re-fetch for fresh data
+    //   const count = await getCountOrderWaiting(storeId);
+    //   setCountOrderWaiting(count || 0);
+    // } else {
+    //   // Handle failure in updating status
+    //   setIsServerdLoading(false);
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: `${t("update_order_status_failed")}`,
+    //     showConfirmButton: false,
+    //     timer: 2000,
+    //   });
+    // }
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    setIsServerdLoading(false);
+    Swal.fire({
+      icon: "error",
+      title: `${t("update_order_status_error")}`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  }
+};
+
+
+
+
   const handleUpdateOrderPayBefore = async (status) => {
     try {
       if (status === "PRINTBILL") setIsPrintedLoading(true);
