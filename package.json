@@ -28,6 +28,7 @@
     "bootstrap": "^4.5.2",
     "chart.js": "^3.7.1",
     "crypto": "^1.0.1",
+    "cssnano": "^7.0.6",
     "daterangepicker": "3.1.0",
     "dayjs": "^1.11.8",
     "dom-to-image": "^2.6.0",
@@ -128,8 +129,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "postcss-preset-env": "^10.1.1",
     "tailwindcss": "^3.4.15"
   }
 }
