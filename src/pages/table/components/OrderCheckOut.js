@@ -190,7 +190,7 @@ const OrderCheckOut = ({
         aria-labelledby="contained-modal-title-vcenter"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t("order_detial")}</Modal.Title>
+          <Modal.Title>{t("order_detial")} Yoo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div style={{ fontSize: 28, fontWeight: "bold", margin: 0 }}>

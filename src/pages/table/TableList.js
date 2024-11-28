@@ -394,7 +394,7 @@ export default function TableList() {
 
   useEffect(() => {
     if (tableOrderItems?.length > 0) {
-      getData(tableOrderItems[0]?.code, false);
+      // getData(tableOrderItems[0]?.code, false);
     } else {
       setDataBill();
     }
@@ -435,25 +435,27 @@ export default function TableList() {
 
   const getData = async (code, forBill) => {
     try {
+      console.log("start getData")
+
       if (forBill) setBillDataLoading(true);
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      let findby = "?";
-      findby += `code=${code}`;
-      const _bills = await getBills(findby);
-      const _billId = _bills?.[0]?.["_id"];
+      
       const _resBill = await axios({
         method: "get",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-group/` + _billId,
+        url: END_POINT_SEVER_TABLE_MENU + `/v7/bill-group/` + code,
         headers: headers,
       });
+
+      console.log({_resBill})
+
       setDataBill(_resBill?.data);
-      setTimeout(() => {
-        setBillDataLoading(false);
-      }, 1000);
+
+      console.log("end getData")
+      setBillDataLoading(false);
     } catch (err) {
       setBillDataLoading(false);
       console.log("err: ", err);
@@ -536,13 +538,6 @@ export default function TableList() {
     }
     setSelectNewTable();
   };
-  useEffect(() => {
-    if (tableOrderItems?.length > 0) {
-      getData(tableOrderItems[0]?.code);
-    } else {
-      setDataBill();
-    }
-  }, [tableOrderItems]);
 
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
@@ -3305,7 +3300,6 @@ const calculateTotalBillV7 = async (updatedOrderItems) => {
             navigate(`/staff/tableDetail/${selectedTable?._id}`);
             setPopup();
           });
-          // getData();
         }}
       />
 
