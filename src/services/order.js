@@ -118,8 +118,6 @@ export const updateOrderItemV7 = async (updateItems, storeId) => {
       orders: updateItems,
       storeId,
     }
-    console.log({body})
-    console.log(await getHeaders())
 
     const response = await axios.put(`${END_POINT_SEVER_BILL_ORDER}/v7/orders/updateMany`,
     body,
