@@ -297,7 +297,7 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 22,
               }}
-              disabled={printBillLoading || printBillCalulate}
+              disabled={billDataLoading || printBillLoading || printBillCalulate}
               onClick={() => onPrintBill(false)}
             >
               {billDataLoading && (
@@ -373,7 +373,7 @@ const OrderCheckOut = ({
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
               <Button
                 className="ml-2 pl-4 pr-4"
-                disabled={printBillLoading || printBillCalulate}
+                disabled={billDataLoading || printBillLoading || printBillCalulate}
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",

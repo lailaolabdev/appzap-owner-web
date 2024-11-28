@@ -394,7 +394,7 @@ export default function TableList() {
 
   useEffect(() => {
     if (tableOrderItems?.length > 0) {
-      // getData(tableOrderItems[0]?.code, false);
+      getData(tableOrderItems[0]?.code, false);
     } else {
       setDataBill();
     }
@@ -443,7 +443,7 @@ export default function TableList() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      
+
       const _resBill = await axios({
         method: "get",
         url: END_POINT_SEVER_TABLE_MENU + `/v7/bill-group/` + code,
