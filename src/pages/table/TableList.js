@@ -1838,23 +1838,34 @@ const handleUpdateOrderStatusToServed = async () => {
       });
 
       // 1. Optimistically update the order list in the state (Update the status to "SERVED")
-      const updatedOrderItems = isCheckedOrderItem.map((item) => ({
-        ...item,
-        isChecked: false, // Uncheck the item after updating status
-        status: item.isChecked ? "SERVED" : item.status, // Update status to "SERVED" if it's checked
-      }));
+      const updatedOrderItems = isCheckedOrderItem.map((item) => {
+        // Check if the item is checked, and update its status
+        const updatedItem = {
+          ...item,
+          isChecked: false, // Uncheck the item after updating status
+          status: item.isChecked ? "SERVED" : item.status, // Update status to "SERVED" if it's checked
+        };
+
+        // If the order was served, update the `updatedBy` and `updatedAt` fields
+        if (item.isChecked) {
+          updatedItem.updatedBy = response.data.updatedBy;  // Add `updatedBy` from response
+          updatedItem.updatedAt = response.data.updatedAt;  // Add `updatedAt` from response
+        }
+
+        return updatedItem;
+      });
 
       setIsCheckedOrderItem(updatedOrderItems); // Update state
 
       // 2. Update total price immediately for the served items
       await calculateTotalBillV7(updatedOrderItems);
+      setIsServerdLoading(false);
 
 
       // Optionally, update other states based on your requirements
       // e.g., Update waiting count or trigger a re-fetch for fresh data
       const count = await getCountOrderWaiting(storeId);
       setCountOrderWaiting(count || 0);
-      setIsServerdLoading(false);
     } else {
       // Handle failure in updating status
       setIsServerdLoading(false);
