@@ -76,14 +76,14 @@ export default function PopUpManageCounter({
 
   const buttons = [
     { label: `${t("today")}`, type: "today", condition: 0 },
-    { label: `${t("yester_day")}`, type: "yesterday", condition: 1 },
+    { label: `${t("yester_day")}`, type: "yesterday", condition: 2 },
     { label: `${t("l_3days")}`, type: "3days", condition: 3 },
     { label: `${t("l_5days")}`, type: "5days", condition: 5 },
     { label: `${t("l_7days")}`, type: "7days", condition: 7 },
     { label: `${t("l_30days")}`, type: "30days", condition: 30},
   ];
 
-  const minDate = moment().subtract(days, "days").format("YYYY-MM-DD");
+  const minDate = moment().subtract(days - 1, "days").format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
 
   return (
