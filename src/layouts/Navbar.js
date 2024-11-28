@@ -79,132 +79,90 @@ export default function NavBar() {
   }, []);
 
   return (
-    <div>
-      <Navbar
-        style={{
-          backgroundColor: "#fff",
-          boxShadow: "3px 0px 3px rgba(0, 0, 0, 0.16)",
-          color: "#CC0000",
-          width: "100%",
-          height: 64,
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          paddingLeft: 52,
-        }}
-        variant="dark"
-      >
-        <Navbar.Brand style={{ color: "#909090" }} href="#"></Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto" />
-          <p
-            style={{ marginTop: 20, color: "#bfbfbf" }}
-            onClick={() => {
-              setSwitchToDev((prev) => prev + 1);
-              if (switchToDev >= 5) {
-                window.location.href =
-                  "http://staging.restaurant.appzap.la.s3-website-ap-southeast-1.amazonaws.com/tables";
-              }
-            }}
-          >
-            v{packageJson?.version}
-          </p>
-          <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
-          <div style={{ flexGrow: 1 }} />
+    <div className="bg-white shadow-[3px 0px 3px rgba(0, 0, 0, 0.16)] text-[#CC0000] w-full h-16 fixed top-0 left-0 z-10 pl-20 pr-3">
+      <div className="flex items-center">
+        <p
+          style={{ marginTop: 20, color: "#bfbfbf" }}
+          onClick={() => {
+            setSwitchToDev((prev) => prev + 1);
+            if (switchToDev >= 5) {
+              window.location.href =
+                "http://staging.restaurant.appzap.la.s3-website-ap-southeast-1.amazonaws.com/tables";
+            }
+          }}
+        >
+          v{packageJson?.version}
+        </p>
+        <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
+        <div style={{ flexGrow: 1 }} />
 
-          <NotifyButton
-            notifyFilterToggle={notifyFilterToggle}
-            setNotifyFilterToggle={setNotifyFilterToggle}
-          />
+        <NotifyButton
+          notifyFilterToggle={notifyFilterToggle}
+          setNotifyFilterToggle={setNotifyFilterToggle}
+        />
 
-          <div
-            style={{
-              marginRight: "30px",
-              backgroundColor: "orange",
-              boxShadow: "2px 2px 2px 4px rgba(0, 0, 0, 0.06)",
-            }}
+        <div className="mr-[30px]">
+          {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
+          <select
+            value={selectedLanguage}
+            onChange={(e) => switchLanguage(e.target.value)}
+            className="border-[1px] border-gray-700 rounded-[4px] px-2 py-1 text-sm text-gray-700"
           >
-            {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
-            <select
-              value={selectedLanguage}
-              onChange={(e) => switchLanguage(e.target.value)}
+            <option value="la">LA</option>
+            <option value="en">EN</option>
+            <option value="km">KM</option>
+          </select>
+        </div>
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          {isConnectPrinter ? (
+            <div className="flex items-center border-[1px] border-[#68B984] rounded-[4px] px-2 py-1 bg-[#CFFDE1] text-xs text-[#68B984] gap-1">
+              <MdPrint /> <span>{t("connect_pinter")}</span>
+            </div>
+          ) : (
+            <a
+              href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
+              target="_blank"
+              rel="noreferrer"
             >
-              <option value="la">LA</option>
-              <option value="en">EN</option>
-              <option value="km">KM</option>
-            </select>
-          </div>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {isConnectPrinter ? (
-              <div
-                style={{
-                  border: "1px solid #68B984",
-                  padding: 4,
-                  color: "#68B984",
-                  backgroundColor: "#CFFDE1",
-                  borderRadius: 4,
-                  fontSize: 12,
-                }}
-              >
-                <MdPrint /> <span>{t("connect_pinter")}</span>
+              <div className="flex items-center border-[1px] border-[#E97777] rounded-[4px] px-2 py-1 bg-[#ffd8d8] text-xs text-[E97777] gap-1">
+                <MdPrintDisabled /> {t("unconnect_pinter")} !
               </div>
-            ) : (
-              <a
-                href="https://drive.google.com/drive/folders/1HdiRIRMvsX8acqWGi9OjASqBCDaNEqC2?usp=sharing"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div
-                  style={{
-                    border: "1px solid #E97777",
-                    padding: 4,
-                    color: "#E97777",
-                    backgroundColor: "#ffd8d8",
-                    borderRadius: 4,
-                    fontSize: 12,
-                  }}
-                >
-                  <MdPrintDisabled /> {t("unconnect_pinter")} !
-                </div>
-              </a>
-            )}
-          </Box>
+            </a>
+          )}
+        </Box>
 
-          <div style={{ width: 10 }} />
-          <Form inline>
-            <Dropdown>
-              <Dropdown.Toggle
-                style={{
-                  color: "#909090",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                variant=""
+        <div style={{ width: 10 }} />
+        <Form inline>
+          <Dropdown>
+            <Dropdown.Toggle
+              style={{
+                color: "#909090",
+                display: "flex",
+                alignItems: "center",
+              }}
+              variant=""
+            >
+              <Box sx={{ display: { xs: "none", sm: "block" } }}>
+                {userData
+                  ? (userData?.data?.firstname
+                      ? userData?.data?.firstname
+                      : "") +
+                    " " +
+                    (userData?.data?.lastname ? userData?.data?.lastname : "")
+                  : ""}
+              </Box>
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="dropdown-menu-right">
+              <Dropdown.Item
+                style={{ color: "#909090" }}
+                onClick={() => _onLogout()}
               >
-                <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                  {userData
-                    ? (userData?.data?.firstname
-                        ? userData?.data?.firstname
-                        : "") +
-                      " " +
-                      (userData?.data?.lastname ? userData?.data?.lastname : "")
-                    : ""}
-                </Box>
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="dropdown-menu-right">
-                <Dropdown.Item
-                  style={{ color: "#909090" }}
-                  onClick={() => _onLogout()}
-                >
-                  {t("log_out")}
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Form>
-        </Navbar.Collapse>
-      </Navbar>
+                {t("log_out")}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Form>
+      </div>
     </div>
   );
 }

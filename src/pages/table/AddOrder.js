@@ -1236,28 +1236,10 @@ function AddOrder() {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            flexGrow: 1,
-            height: "90vh",
-            overflowY: "scroll",
-          }}
-        >
-          <div
-            style={{
-              padding: 10,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridGap: 20,
-            }}
-          >
+    <div className="w-full h-screen">
+      <div className="flex overflow-hidden mb-4">
+        <div className="grow h-[90vh] overflow-y-scroll relative">
+          {/* <div className="grid grid-cols-2 gap-2 p-2">
             <div>
               <label>{t("chose_food_type")}</label>
               <select
@@ -1284,52 +1266,76 @@ function AddOrder() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+          </div> */}
+          <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
+            <div className="w-full px-2 py-1">
+              <input
+                placeholder={t("search")}
+                className="form-control"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="w-full overflow-y-scroll flex flex-row whitespace-nowrap no-scrollbar p-2 gap-2">
+              <button
+                key={"category-all"}
+                className={`${
+                  selectedCategory === "All"
+                    ? "text-orange-500"
+                    : "text-gray-700"
+                } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm`}
+                onClick={() => setSelectedCategory("All")}
+              >
+                {t("all")}
+              </button>
+              {Categorys &&
+                Categorys.map((data, index) => {
+                  return (
+                    <button
+                      key={"category" + index}
+                      className={`${
+                        selectedCategory === data?._id
+                          ? "text-orange-500"
+                          : "text-gray-700"
+                      } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm`}
+                      onClick={() => setSelectedCategory(data?._id)}
+                    >
+                      {data?.name}
+                    </button>
+                  );
+                })}
+            </div>
           </div>
-          <div
-            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}
-          >
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2">
             {isLoading ? (
               <Loading />
             ) : (
               afterSearch?.map((data, index) => {
-                if (data?.type === "MENU")
+                if (data?.type === "MENU") {
                   return (
                     <div
                       key={"menu" + index}
-                      style={{
-                        border:
-                          data._id === selectedItem?._id
-                            ? "4px solid #FB6E3B"
-                            : "4px solid rgba(0,0,0,0)",
-                      }}
                       onClick={() => {
                         addToCart(data);
                       }}
+                      className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
                     >
-                      <img
-                        src={
-                          data?.images[0]
-                            ? URL_PHOTO_AW3 + data?.images[0]
-                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                        }
-                        style={{
-                          width: "100%",
-                          height: 200,
-                          borderRadius: 5,
-                        }}
-                      />
-                      <div
-                        style={{
-                          backgroundColor: "#000",
-                          color: "#FFF",
-                          position: "relative",
-                          opacity: 0.5,
-                          padding: 10,
-                        }}
-                      >
-                        <span>{data?.name}</span>
+                      <div className="relative w-full pt-[75%] overflow-hidden">
+                        <img
+                          src={
+                            data?.images[0]
+                              ? URL_PHOTO_AW3 + data?.images[0]
+                              : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                          }
+                          alt=""
+                          className="absolute top-0 left-0 w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="bg-white h-full text-gray-700 relative px-2 py-1">
+                        <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span>
+                        <span className="text-orange-600 font-medium text-base">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
                           {/* {currency?.map(
@@ -1341,29 +1347,21 @@ function AddOrder() {
                           )} */}
                         </span>
                         <br />
-                        <span>
-                          {t("amount_exist")} : {data?.quantity}
+                        <span className="text-[13px] text-gray-500">
+                          {t("amount_exist")} : {data?.quantity || 0}
                         </span>
                       </div>
                     </div>
                   );
+                } else {
+                  return null;
+                }
               })
             )}
           </div>
         </div>
         {/* Detail Table */}
-        <div
-          style={{
-            minWidth: 500,
-            backgroundColor: "#FFF",
-            maxHeight: "90vh",
-            borderColor: "black",
-            overflowY: "scroll",
-            borderWidth: 1,
-            paddingLeft: 20,
-            paddingTop: 20,
-          }}
-        >
+        <div className="w-[640px] max-w-[640px] min-w-[640px] h-[90vh] overflow-y-scroll bg-white border-gray-500 border-l pt-3 pb-6">
           <div className="container">
             <div className="row">
               <div className="col-12">
@@ -1593,7 +1591,7 @@ function AddOrder() {
                     disabled={selectedMenu.length === 0}
                     className="hover-me"
                     style={{
-                      height: 60,
+                      height: 54,
                       marginRight: 15,
                       backgroundColor: "#FB6E3B",
                       color: "#ffffff",

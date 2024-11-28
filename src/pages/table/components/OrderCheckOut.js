@@ -193,7 +193,7 @@ const OrderCheckOut = ({
           <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ fontSize: 30, fontWeight: "bold", margin: 0 }}>
+          <div style={{ fontSize: 28, fontWeight: "bold", margin: 0 }}>
             {t("table")}: {tableData?.tableName}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
@@ -222,71 +222,70 @@ const OrderCheckOut = ({
             />
           </Row>
           <div style={{ margin: 8 }} />
-          <Table responsive className="staff-table-list borderless table-hover">
-            <thead style={{ backgroundColor: "#F1F1F1" }}>
-              <tr>
-                <th>{t("no")}</th>
-                <th>{t("menu_name")}</th>
-                <th>{t("qty")}</th>
-                <th>{t("price")}</th>
-                <th>{t("total_price")}</th>
-              </tr>
-            </thead>
-            {billDataLoading ? (
-              <td colSpan={9} style={{ textAlign: "center" }}>
-                <Spinner animation="border" variant="primary" />
-              </td>
-            ) : (
+          <div className="h-fit max-h-[280px] overflow-y-auto relative">
+            <Table responsive className="staff-table-list table-hover">
+              <thead className="sticky top-0 z-10 bg-[#F1F1F1]">
+                <tr>
+                  <th>{t("no")}</th>
+                  <th>{t("menu_name")}</th>
+                  <th>{t("qty")}</th>
+                  <th>{t("price")}</th>
+                  <th>{t("total_price")}</th>
+                </tr>
+              </thead>
               <tbody>
-                {orderPayBefore && orderPayBefore.length > 0
-                  ? orderItem(orderPayBefore)
-                  : data?.orderId
-                  ? orderItem(data?.orderId)
-                  : null}
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("discount")}:
-                  </td>
-                  <td colSpan="1">
-                    {moneyCurrency(data?.discount)}{" "}
-                    {data?.discountType !== "LAK"
-                      ? "%"
-                      : storeDetail?.firstCurrency}
-                  </td>
-                </tr>
-                {storeDetail?.isServiceCharge && (
+                {billDataLoading ? (
                   <tr>
-                    <td colSpan="4" style={{ textAlign: "center" }}>
-                      {t("service_charge")}:
+                    <td colSpan={9} style={{ textAlign: "center" }}>
+                      <Spinner animation="border" variant="primary" />
                     </td>
-                    <td colSpan="1">{serviceCharge}%</td>
                   </tr>
+                ) : (
+                  <>
+                    {orderPayBefore && orderPayBefore.length > 0
+                      ? orderItem(orderPayBefore)
+                      : data?.orderId
+                      ? orderItem(data?.orderId)
+                      : null}
+                  </>
                 )}
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("total_price")}:
-                  </td>
-                  <td colSpan="1">
-                    {moneyCurrency(total)} {storeDetail?.firstCurrency}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    {t("total_price")} + {t("tax")} {taxPercent}%:
-                  </td>
-                  <td colSpan="1">
-                    {moneyCurrency(
-                      Math.floor(
-                        total * (taxPercent * 0.01 + 1) + serviceAmount
-                      )
-                    )}{" "}
-                    {storeDetail?.firstCurrency}
-                  </td>
-                </tr>
               </tbody>
+            </Table>
+          </div>
+          <div className="flex flex-col gap-1 mt-3 font-medium px-2">
+            <div className="w-full flex justify-end">
+              <div className="text-end">{t("discount")}:</div>
+              <div className="w-60 text-end">
+                {moneyCurrency(data?.discount)}{" "}
+                {data?.discountType !== "LAK"
+                  ? "%"
+                  : storeDetail?.firstCurrency}
+              </div>
+            </div>
+            {storeDetail?.isServiceCharge && (
+              <div className="w-full flex justify-end items-center">
+                <div className="text-end">{t("service_charge")}:</div>
+                <div className="w-60 text-end">{`${serviceCharge} %`}</div>
+              </div>
             )}
-          </Table>
+            <div className="w-full flex justify-end items-center">
+              <div className="text-end">{t("total_price")}:</div>
+              <div className="w-60 text-end">
+                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+              </div>
+            </div>
+            <div className="w-full flex justify-end items-center">
+              <div className="text-end">
+                {t("total_price")} + {t("tax")} {taxPercent}%:
+              </div>
+              <div className="w-60 text-end">
+                {moneyCurrency(
+                  Math.floor(total * (taxPercent * 0.01 + 1) + serviceAmount)
+                )}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
+            </div>
+          </div>
         </Modal.Body>
         <CardFooterModal>
           <Modal.Footer>
@@ -296,7 +295,7 @@ const OrderCheckOut = ({
                 backgroundColor: "#FB6E3B",
                 color: "#ffff",
                 border: "solid 1px #FB6E3B",
-                fontSize: 26,
+                fontSize: 22,
               }}
               disabled={printBillLoading || printBillCalulate}
               onClick={() => onPrintBill(false)}
@@ -310,13 +309,13 @@ const OrderCheckOut = ({
               )}
               <FontAwesomeIcon
                 icon={faCashRegister}
-                style={{ color: "#fff" }}
+                style={{ color: "#fff", marginRight: 8 }}
               />
               {t("print_bill")}
             </Button>
             <div
               className="p-2 col-example text-center"
-              style={{ fontSize: 26 }}
+              style={{ fontSize: 22 }}
             >
               {t("total_must_pay")}:
             </div>
@@ -331,7 +330,7 @@ const OrderCheckOut = ({
                 className="p-2 col-example text-center"
                 style={{
                   backgroundColor: "#F1F1F1",
-                  fontSize: 26,
+                  fontSize: 22,
                 }}
               >
                 <span style={{ justifyContent: "flex-end", display: "row" }}>
@@ -379,7 +378,7 @@ const OrderCheckOut = ({
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
-                  fontSize: 26,
+                  fontSize: 22,
                 }}
                 // disabled={billDataLoading}
                 onClick={() => onSubmit()}
@@ -393,8 +392,8 @@ const OrderCheckOut = ({
                 )}
                 <FontAwesomeIcon
                   icon={faCashRegister}
-                  style={{ color: "#fff" }}
-                />{" "}
+                  style={{ color: "#fff", marginRight: 8 }}
+                />
                 {t("check_bill")}
               </Button>
             </div>
