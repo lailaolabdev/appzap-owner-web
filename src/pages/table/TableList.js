@@ -92,7 +92,7 @@ export default function TableList() {
   const handleShow = () => setShow(true);
   const handleClose1 = () => setShow1(false);
 
-  const [ableToCheckout,setableToCheckout] = useState(false)
+  const [disableCheckoutButton,setDisableCheckoutButton] = useState(false)
 
   const handleShow1 = (e) => {
     setShow1(true);
@@ -326,7 +326,7 @@ export default function TableList() {
   const ableToCheckoutFunc = (isCheckedOrderItem) => {
   // Check if any checked order has a status of "DOING" or "WAITING"
   console.log({ isCheckedOrderItem });
-  if(isCheckedOrderItem.length === 0) return setableToCheckout(true)
+  if(isCheckedOrderItem.length === 0) return setDisableCheckoutButton(true)
 
   // If any item has status "DOING" or "WAITING", return false
   const anyOrderInvalid = isCheckedOrderItem.some(
@@ -334,7 +334,7 @@ export default function TableList() {
   );
 
   // If there is any invalid order (status "DOING" or "WAITING"), set the flag to false, otherwise true
-  setableToCheckout(anyOrderInvalid);
+  setDisableCheckoutButton(anyOrderInvalid);
 };
 
   
@@ -2828,7 +2828,7 @@ const calculateTotalBillV7 = async (updatedOrderItems) => {
                             </ButtonCustom>
 
                             <ButtonCustom
-                                disabled={ableToCheckout}
+                                disabled={disableCheckoutButton}
                                 onClick={() => _onCheckOut()}
                               >
                                 {isWaitingCheckout && (
