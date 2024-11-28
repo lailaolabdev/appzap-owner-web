@@ -92,6 +92,8 @@ export default function TableList() {
   const handleShow = () => setShow(true);
   const handleClose1 = () => setShow1(false);
 
+  const [disableCheckoutButton,setDisableCheckoutButton] = useState(false)
+
   const handleShow1 = (e) => {
     setShow1(true);
   };
@@ -250,6 +252,7 @@ export default function TableList() {
     };
     getDataTax();
 
+
     // const getDataServiceCharge = async () => {
     //   const { DATA } = await getLocalData();
     //   const _res = await axios.get(
@@ -270,6 +273,15 @@ export default function TableList() {
       zoneCheckBill: false,
     });
   }, []);
+
+  useEffect(() => {
+    ableToCheckoutFunc(isCheckedOrderItem)
+  }, [])
+
+  useEffect(() => {
+    ableToCheckoutFunc(isCheckedOrderItem)
+  }, [isCheckedOrderItem])
+
 
   const getUserData = async () => {
     // setIsLoading(true);
@@ -310,6 +322,21 @@ export default function TableList() {
       e?.status === "WAITING" ||
       e?.tableOrderItems?.length === 0
   )?._id;
+
+  const ableToCheckoutFunc = (isCheckedOrderItem) => {
+  // Check if any checked order has a status of "DOING" or "WAITING"
+  if(isCheckedOrderItem.length === 0) return setDisableCheckoutButton(true)
+
+  // If any item has status "DOING" or "WAITING", return false
+  const anyOrderInvalid = isCheckedOrderItem.some(
+    (item) => item.status === "DOING" || item.status === "WAITING"
+  );
+
+  // If there is any invalid order (status "DOING" or "WAITING"), set the flag to false, otherwise true
+  setDisableCheckoutButton(anyOrderInvalid);
+};
+
+  
 
   useEffect(() => {
     // setIsCheckedOrderItem([...tableOrderItems]);
@@ -1749,6 +1776,7 @@ export default function TableList() {
   const [isServedLoading, setIsServerdLoading] = useState(false);
   const [isPrintedLoading, setIsPrintedLoading] = useState(false);
 
+
   // Handle updating SERVED order status
 const handleUpdateOrderStatusToServed = async () => {
   try {
@@ -1771,6 +1799,7 @@ const handleUpdateOrderStatusToServed = async () => {
     const response = await updateOrderItemV7(serveItemsReq, storeId);
 
     if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
+      setCheckedBox(!checkedBox);
       // Success, update the UI
       Swal.fire({
         icon: "success",
@@ -1801,6 +1830,7 @@ const handleUpdateOrderStatusToServed = async () => {
 
       // 2. Update total price immediately for the served items
       await calculateTotalBillV7(updatedOrderItems);
+      ableToCheckoutFunc(updatedOrderItems)
       setIsServerdLoading(false);
 
 
@@ -1818,6 +1848,9 @@ const handleUpdateOrderStatusToServed = async () => {
         timer: 2000,
       });
     }
+
+    setOrderPayBefore([]);
+    setIsServerdLoading(false);
   } catch (error) {
     console.error("Error updating order status:", error);
     setIsServerdLoading(false);
@@ -2739,18 +2772,15 @@ const calculateTotalBillV7 = async (updatedOrderItems) => {
                             </ButtonCustom>
 
                             <ButtonCustom
-                              disabled={
-                                !canCheckOut ||
-                                isWaitingCheckout ||
-                                tableOrderItems?.length === 0
-                              }
-                              onClick={() => _onCheckOut()}
-                            >
-                              {isWaitingCheckout && (
-                                <Spinner animation="border" size="sm" />
-                              )}{" "}
-                              Checkout
-                            </ButtonCustom>
+                                disabled={disableCheckoutButton}
+                                onClick={() => _onCheckOut()}
+                              >
+                                {isWaitingCheckout && (
+                                  <Spinner animation="border" size="sm" />
+                                )}{" "}
+                                Checkout
+                              </ButtonCustom>
+                              
                             <ButtonCustom
                               onClick={() =>
                                 _goToAddOrder(
