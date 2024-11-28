@@ -51,7 +51,7 @@ import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
-import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItem, updateOrderItemV7 } from "../../services/order";
 import styled from "styled-components";
 import {
   callCheckOutPrintBillOnly,
@@ -1748,59 +1748,124 @@ export default function TableList() {
 
   const [isServedLoading, setIsServerdLoading] = useState(false);
   const [isPrintedLoading, setIsPrintedLoading] = useState(false);
-  const handleUpdateOrderStatus = async (status) => {
-    try {
-      if (status === "SERVED") setIsServerdLoading(true);
-      calculateTotalBill();
-      const storeId = storeDetail?._id;
-      let menuId;
-      const _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked)
-        .map((i) => {
-          return {
-            status: status,
-            _id: i?._id,
-            menuId: i?.menuId,
-          };
-        });
 
-      const _resOrderUpdate = await updateOrderItem(
-        _updateItems,
-        storeId,
-        menuId,
-        seletedCancelOrderItem,
-        selectedTable
-      );
-      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-        reLoadData();
-        setCheckedBox(!checkedBox);
-        Swal.fire({
-          icon: "success",
-          title: `${t("update_order_status_success")}`,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-        const _newOrderItems = isCheckedOrderItem.map((item) => {
-          return {
-            ...item,
-            isChecked: false,
-          };
-        });
-        setIsCheckedOrderItem(_newOrderItems);
+  // Handle updating SERVED order status
+const handleUpdateOrderStatusToServed = async () => {
+  try {
+    setIsServerdLoading(true); // Show loading spinner for the user
+    const storeId = storeDetail?._id;
 
-        const count = await getCountOrderWaiting(storeId);
-        setCountOrderWaiting(count || 0);
-        setIsServerdLoading(false);
-      } else {
-        setIsServerdLoading(false);
-      }
-      setOrderPayBefore([]);
+    // Filter checked items with status "SERVED"
+    const serveItemsReq = isCheckedOrderItem
+    ?.filter((e) => e?.isChecked && e?.status !== "SERVED")  // Add condition for SERVED status
+    .map((i) => ({
+      status: i?.status,
+      _id: i?._id,
+      menuId: i?.menuId,
+      quantity: i?.quantity
+    }));
+
+    if (serveItemsReq.length === 0) return setIsServerdLoading(false)
+
+    // Only send data for items with a valid status change
+    const response = await updateOrderItemV7(serveItemsReq, storeId);
+
+    if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
+      // Success, update the UI
+      Swal.fire({
+        icon: "success",
+        title: `${t("update_order_status_success")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      // 1. Optimistically update the order list in the state (Update the status to "SERVED")
+      const updatedOrderItems = isCheckedOrderItem.map((item) => {
+        // Check if the item is checked, and update its status
+        const updatedItem = {
+          ...item,
+          isChecked: false, // Uncheck the item after updating status
+          status: item.isChecked ? "SERVED" : item.status, // Update status to "SERVED" if it's checked
+        };
+
+        // If the order was served, update the `updatedBy` and `updatedAt` fields
+        if (item.isChecked) {
+          updatedItem.updatedBy = response.data.updatedBy;  // Add `updatedBy` from response
+          updatedItem.updatedAt = response.data.updatedAt;  // Add `updatedAt` from response
+        }
+
+        return updatedItem;
+      });
+
+      setIsCheckedOrderItem(updatedOrderItems); // Update state
+
+      // 2. Update total price immediately for the served items
+      await calculateTotalBillV7(updatedOrderItems);
       setIsServerdLoading(false);
-    } catch (error) {
+
+
+      // Optionally, update other states based on your requirements
+      // e.g., Update waiting count or trigger a re-fetch for fresh data
+      const count = await getCountOrderWaiting(storeId);
+      setCountOrderWaiting(count || 0);
+    } else {
+      // Handle failure in updating status
       setIsServerdLoading(false);
-      console.log(error);
+      Swal.fire({
+        icon: "error",
+        title: `${t("update_order_status_failed")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
     }
-  };
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    setIsServerdLoading(false);
+    Swal.fire({
+      icon: "error",
+      title: `${t("update_order_status_error")}`,
+      showConfirmButton: false,
+      timer: 2000,
+    });
+  }
+};
+
+const calculateTotalBillV7 = async (updatedOrderItems) => {
+  setPrintBillCalulate(true);
+
+  // We are now using the passed updatedOrderItems to avoid querying unnecessary state
+  let _total = 0;
+
+  updatedOrderItems.forEach(item => {
+    if (item.status === "SERVED") {
+      _total += item.quantity * (item.price + (item.totalOptionPrice ?? 0));
+    }
+  });
+
+  // Apply discount if available
+  if (dataBill?.discount > 0) {
+    let discountedAmount = _total;
+
+    if (dataBill?.discountType === "LAK" || dataBill?.discountType === "MONEY") {
+      discountedAmount -= dataBill?.discount;
+    } else {
+      const discount = (_total * dataBill?.discount) / 100;
+      discountedAmount -= discount;
+    }
+
+    setTotalAfterDiscount(discountedAmount);
+  } else {
+    setTotalAfterDiscount(_total);
+  }
+
+  setTotal(_total); // Set the total without discount
+  setPrintBillCalulate(false);
+};
+
+
+
+
+
   const handleUpdateOrderPayBefore = async (status) => {
     try {
       if (status === "PRINTBILL") setIsPrintedLoading(true);
@@ -2761,7 +2826,7 @@ export default function TableList() {
                               {t("sendToKitchen")}
                             </ButtonCustom>
                             <ButtonCustom
-                              onClick={() => handleUpdateOrderStatus("SERVED")}
+                              onClick={() => handleUpdateOrderStatusToServed()}
                               disabled={!checkedBox}
                             >
                               {isServedLoading && (
