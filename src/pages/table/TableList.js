@@ -2778,7 +2778,7 @@ const calculateTotalBillV7 = async (updatedOrderItems) => {
                                 {isWaitingCheckout && (
                                   <Spinner animation="border" size="sm" />
                                 )}{" "}
-                                Checkout Yo
+                                Checkout
                               </ButtonCustom>
                               
                             <ButtonCustom
