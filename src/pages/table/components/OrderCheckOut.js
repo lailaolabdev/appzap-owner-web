@@ -85,31 +85,36 @@ const OrderCheckOut = ({
 
   const orderItem = (orders) => {
     return orders?.map((e, index) => {
-      const options =
-        e?.options
-          ?.map((option) =>
-            option.quantity > 1
-              ? `[${option.quantity} x ${option.name}]`
-              : `[${option.name}]`
-          )
-          .join(" ") || "";
-
-      const itemPrice = e?.price + (e?.totalOptionPrice ?? 0);
-      const itemTotal = e?.price ? moneyCurrency(itemPrice * e?.quantity) : "-";
-
+      // Handle options with proper fallback and join them if needed
+      const options = e?.options
+        ?.map((option) => 
+          option?.quantity > 1
+            ? `[${option.quantity} x ${option.name}]`
+            : `[${option.name}]`
+        )
+        .join(" ") || ""; // Fallback to empty string if options is undefined
+  
+      // Ensure price and totalOptionPrice are numbers, default to 0 if undefined or null
+      const itemPrice = Number(e?.price || 0) + Number(e?.totalOptionPrice || 0); 
+      const itemTotal = itemPrice * (e?.quantity || 0);  // Ensure quantity defaults to 0 if undefined
+  
+      // Use moneyCurrency for formatting, and fall back to "-" if itemTotal is not calculable (e.g., 0)
+      const formattedItemTotal = itemTotal > 0 ? moneyCurrency(itemTotal) : "-";
+  
       return (
         <tr key={getOrderItemKey(e)}>
           <td>{index + 1}</td>
           <td>
             {e?.name ?? "-"} {options}
           </td>
-          <td>{e?.quantity}</td>
-          <td>{moneyCurrency(itemPrice)}</td>
-          <td>{itemTotal}</td>
+          <td>{e?.quantity ?? "-"}</td> {/* Fallback to "-" if quantity is undefined */}
+          <td>{moneyCurrency(itemPrice) || "-"}</td> {/* Fallback to "-" if price is not calculable */}
+          <td>{formattedItemTotal}</td>
         </tr>
       );
     });
   };
+  
 
   const _calculateTotal = () => {
     const serviceChargeAmount = isServiceChargeEnabled
