@@ -316,13 +316,6 @@ export default function TableList() {
     }
   }
 
-  const canCheckOut = !tableOrderItems.find(
-    (e) =>
-      e?.status === "DOING" ||
-      e?.status === "WAITING" ||
-      e?.tableOrderItems?.length === 0
-  )?._id;
-
   const ableToCheckoutFunc = (isCheckedOrderItem) => {
   // Check if any checked order has a status of "DOING" or "WAITING"
   if(isCheckedOrderItem.length === 0) return setDisableCheckoutButton(true)
@@ -435,25 +428,24 @@ export default function TableList() {
 
   const getData = async (code, forBill) => {
     try {
+
       if (forBill) setBillDataLoading(true);
       let header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-      let findby = "?";
-      findby += `code=${code}`;
-      const _bills = await getBills(findby);
-      const _billId = _bills?.[0]?.["_id"];
+
       const _resBill = await axios({
         method: "get",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/bill-group/` + _billId,
+        url: END_POINT_SEVER_TABLE_MENU + `/v7/bill-group/` + code,
         headers: headers,
       });
+
+
       setDataBill(_resBill?.data);
-      setTimeout(() => {
-        setBillDataLoading(false);
-      }, 1000);
+
+      setBillDataLoading(false);
     } catch (err) {
       setBillDataLoading(false);
       console.log("err: ", err);
@@ -536,13 +528,6 @@ export default function TableList() {
     }
     setSelectNewTable();
   };
-  useEffect(() => {
-    if (tableOrderItems?.length > 0) {
-      getData(tableOrderItems[0]?.code);
-    } else {
-      setDataBill();
-    }
-  }, [tableOrderItems]);
 
   const _openModalSetting = (data) => {
     setDataSettingModal(data);
@@ -3305,7 +3290,6 @@ const calculateTotalBillV7 = async (updatedOrderItems) => {
             navigate(`/staff/tableDetail/${selectedTable?._id}`);
             setPopup();
           });
-          // getData();
         }}
       />
 
