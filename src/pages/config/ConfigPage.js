@@ -223,26 +223,26 @@ export default function ConfigPage() {
                   title: `${t("oppen_smart_menu")}`,
                   key: "open",
                   tooltip: `${t("close_oppen_for_work")}`,
-                  disabled: true,
-                  default: true,
+                  disabled: false,
+                  //default: true,
                 },
                 {
                   title: `${t("oppen_table_first")}`,
                   key: "shouldOpenTableForSelfOrdering",
                   tooltip: "",
-                  disabled: true,
+                  disabled: false,
                 },
                 {
                   title: `${t("auto_oppen")}`,
                   key: "autoOpenTable",
                   tooltip: "",
-                  disabled: true,
+                  disabled: false,
                 },
                 {
                   title: `${t("table_qr")}`,
                   key: "tableQrEveryoneCanSelfOrdering",
                   tooltip: "",
-                  disabled: true,
+                  disabled: false,
                 },
               ].map((item, index) => (
                 <div
