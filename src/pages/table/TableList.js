@@ -325,7 +325,6 @@ export default function TableList() {
 
   const ableToCheckoutFunc = (isCheckedOrderItem) => {
   // Check if any checked order has a status of "DOING" or "WAITING"
-  console.log({ isCheckedOrderItem });
   if(isCheckedOrderItem.length === 0) return setDisableCheckoutButton(true)
 
   // If any item has status "DOING" or "WAITING", return false
@@ -1776,61 +1775,6 @@ export default function TableList() {
 
   const [isServedLoading, setIsServerdLoading] = useState(false);
   const [isPrintedLoading, setIsPrintedLoading] = useState(false);
-
-    // const handleUpdateOrderStatus = async (status) => {
-  //   try {
-  //     if (status === "SERVED") setIsServerdLoading(true);
-  //     calculateTotalBill();
-  //     const storeId = storeDetail?._id;
-  //     let menuId;
-  //     const _updateItems = isCheckedOrderItem
-  //       ?.filter((e) => e?.isChecked)
-  //       .map((i) => {
-  //         return {
-  //           status: status,
-  //           _id: i?._id,
-  //           menuId: i?.menuId,
-  //         };
-  //       });
-
-  //     const _resOrderUpdate = await updateOrderItem(
-  //       _updateItems,
-  //       storeId,
-  //       menuId,
-  //       seletedCancelOrderItem,
-  //       selectedTable
-  //     );
-  //     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-  //       reLoadData();
-  //       setCheckedBox(!checkedBox);
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: `${t("update_order_status_success")}`,
-  //         showConfirmButton: false,
-  //         timer: 2000,
-  //       });
-  //       const _newOrderItems = isCheckedOrderItem.map((item) => {
-  //         return {
-  //           ...item,
-  //           isChecked: false,
-  //         };
-  //       });
-  //       setIsCheckedOrderItem(_newOrderItems);
-
-  //       const count = await getCountOrderWaiting(storeId);
-  //       setCountOrderWaiting(count || 0);
-  //       setIsServerdLoading(false);
-  //     } else {
-  //       setIsServerdLoading(false);
-  //     }
-  //     setOrderPayBefore([]);
-  //     setIsServerdLoading(false);
-  //   } catch (error) {
-  //     setIsServerdLoading(false);
-  //     console.log(error);
-  //   }
-  // };
-
 
 
   // Handle updating SERVED order status
