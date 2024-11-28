@@ -1749,67 +1749,11 @@ export default function TableList() {
   const [isServedLoading, setIsServerdLoading] = useState(false);
   const [isPrintedLoading, setIsPrintedLoading] = useState(false);
 
-  // const handleUpdateOrderStatus = async (status) => {
-  //   try {
-  //     if (status === "SERVED") setIsServerdLoading(true);
-  //     calculateTotalBill();
-  //     const storeId = storeDetail?._id;
-  //     let menuId;
-  //     const _updateItems = isCheckedOrderItem
-  //       ?.filter((e) => e?.isChecked)
-  //       .map((i) => {
-  //         return {
-  //           status: status,
-  //           _id: i?._id,
-  //           menuId: i?.menuId,
-  //         };
-  //       });
-
-  //     const _resOrderUpdate = await updateOrderItem(
-  //       _updateItems,
-  //       storeId,
-  //       menuId,
-  //       seletedCancelOrderItem,
-  //       selectedTable
-  //     );
-  //     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-  //       reLoadData();
-  //       setCheckedBox(!checkedBox);
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: `${t("update_order_status_success")}`,
-  //         showConfirmButton: false,
-  //         timer: 2000,
-  //       });
-  //       const _newOrderItems = isCheckedOrderItem.map((item) => {
-  //         return {
-  //           ...item,
-  //           isChecked: false,
-  //         };
-  //       });
-  //       setIsCheckedOrderItem(_newOrderItems);
-
-  //       const count = await getCountOrderWaiting(storeId);
-  //       setCountOrderWaiting(count || 0);
-  //       setIsServerdLoading(false);
-  //     } else {
-  //       setIsServerdLoading(false);
-  //     }
-  //     setOrderPayBefore([]);
-  //     setIsServerdLoading(false);
-  //   } catch (error) {
-  //     setIsServerdLoading(false);
-  //     console.log(error);
-  //   }
-  // };
-
   // Handle updating SERVED order status
 const handleUpdateOrderStatusToServed = async () => {
   try {
     setIsServerdLoading(true); // Show loading spinner for the user
     const storeId = storeDetail?._id;
-
-    console.log({isCheckedOrderItem})
 
     // Filter checked items with status "SERVED"
     const serveItemsReq = isCheckedOrderItem
@@ -1821,12 +1765,10 @@ const handleUpdateOrderStatusToServed = async () => {
       quantity: i?.quantity
     }));
 
-    console.log({serveItemsReq});
     if (serveItemsReq.length === 0) return setIsServerdLoading(false)
 
     // Only send data for items with a valid status change
     const response = await updateOrderItemV7(serveItemsReq, storeId);
-    console.log({response})
 
     if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
       // Success, update the UI
