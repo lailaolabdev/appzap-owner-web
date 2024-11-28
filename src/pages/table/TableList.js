@@ -316,13 +316,6 @@ export default function TableList() {
     }
   }
 
-  const canCheckOut = !tableOrderItems.find(
-    (e) =>
-      e?.status === "DOING" ||
-      e?.status === "WAITING" ||
-      e?.tableOrderItems?.length === 0
-  )?._id;
-
   const ableToCheckoutFunc = (isCheckedOrderItem) => {
   // Check if any checked order has a status of "DOING" or "WAITING"
   if(isCheckedOrderItem.length === 0) return setDisableCheckoutButton(true)
@@ -435,7 +428,6 @@ export default function TableList() {
 
   const getData = async (code, forBill) => {
     try {
-      console.log("start getData")
 
       if (forBill) setBillDataLoading(true);
       let header = await getHeaders();
@@ -450,11 +442,9 @@ export default function TableList() {
         headers: headers,
       });
 
-      console.log({_resBill})
 
       setDataBill(_resBill?.data);
 
-      console.log("end getData")
       setBillDataLoading(false);
     } catch (err) {
       setBillDataLoading(false);
