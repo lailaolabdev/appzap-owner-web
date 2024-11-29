@@ -418,83 +418,52 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "right" }}>{t("total_price")}</th>
                 </tr>
                 {[
-                  {
-                    method: `${t("bill_crash")}`,
-                    qty: moneyReport?.cash?.count,
-                    amount: moneyReport?.cash?.totalBill,
-                  },
-                  {
-                    method: `${t("tsf_bill")}`,
-                    qty: moneyReport?.transfer?.count,
-                    amount: moneyReport?.transfer?.totalBill,
-                  },
-                  {
-                    method: `${t("service_charge")}`,
-                    qty: moneyReport?.serviceAmount?.count,
-                    amount: Math.floor(
-                      moneyReport?.serviceAmount?.totalServiceCharge
-                    ),
-                  },
-                  {
-                    method: `${t("tax")}`,
-                    qty: moneyReport?.taxAmount?.count,
-                    amount: Math.floor(moneyReport?.taxAmount?.totalTax),
-                  },
                   // {
-                  //   method: (
-                  //     <div>
-                  //       {t("tsf_cash")}
-                  //       <br />
-                  //       {t("cash")}{" "}
-                  //       {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                  //       {t("transfer")}{" "}
-                  //       {moneyCurrency(
-                  //         moneyReport?.transferCash?.transfer || 0
-                  //       )}
-                  //     </div>
-                  //   ),
-                  //   qty: moneyReport?.transferCash?.count,
-                  //   amount: moneyReport?.transferCash?.totalBill,
+                  //   method: `${t("bill_crash")}`,
+                  //   qty: moneyReport?.cash?.count,
+                  //   amount: moneyReport?.cash?.totalBill,
+                  // },
+                  // {
+                  //   method: `${t("tsf_bill")}`,
+                  //   qty: moneyReport?.transfer?.count,
+                  //   amount: moneyReport?.transfer?.totalBill,
                   // },
                   {
                     method: (
                       <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
                     ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.cash?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.cash || 0) +
-                      (moneyReport?.cash?.totalBill || 0),
+                    qty: moneyReport?.successAmount?.cashCount,
+
+                    amount: moneyReport?.successAmount?.payByCash,
                   },
                   {
                     method: (
                       <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
                     ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.transfer || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
+                    qty: moneyReport?.successAmount?.transferCount,
+                    amount: moneyReport?.successAmount?.transferPayment,
                   },
                   {
                     method: <div style={{ fontWeight: 700 }}>{t("point")}</div>,
-                    qty: moneyReport?.point?.count || 0,
-                    amount: moneyReport?.point?.totalBill || 0,
+                    qty: moneyReport?.successAmount?.pointCount || 0,
+                    amount: moneyReport?.successAmount?.point || 0,
                     unit: t("point"),
+                  },
+                  {
+                    method: `${t("service_charge")}`,
+                    qty: moneyReport?.serviceChargeCount,
+                    amount: Math.floor(moneyReport?.serviceAmount),
+                  },
+                  {
+                    method: `${t("tax")}`,
+                    qty: moneyReport?.taxCount,
+                    amount: Math.floor(moneyReport?.taxAmount),
                   },
 
                   {
                     method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
-                    qty:
-                      (moneyReport?.cash?.count || 0) +
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.cash?.totalBill || 0) +
-                      (moneyReport?.transferCash?.totalBill || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
+                    qty: moneyReport?.successAmount?.numberOfBills || 0,
+                    amount: moneyReport?.successAmount?.totalBalance || 0,
                   },
                   {
                     method: (
@@ -503,13 +472,11 @@ export default function DashboardPage() {
                       </div>
                     ),
                     qty:
-                      (moneyReport?.serviceAmount?.count || 0) +
-                      (moneyReport?.taxAmount?.count || 0),
+                      (moneyReport?.serviceChargeCount || 0) +
+                      (moneyReport?.taxCount || 0),
                     amount:
-                      (Math.floor(
-                        moneyReport?.serviceAmount?.totalServiceCharge
-                      ) || 0) +
-                      (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
+                      (Math.floor(moneyReport?.serviceAmount) || 0) +
+                      (Math.floor(moneyReport?.taxAmount) || 0),
                   },
                 ].map((e) => (
                   <tr>

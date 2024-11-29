@@ -261,60 +261,7 @@ export default function Dashboard() {
               </div>
             </Card.Body>
           </Card>
-          {/* <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("success_amount")}
-            </Card.Header>
-            <Card.Body>
-              <div>
-                {t("numberOfBill")}
-                {" : "}
-                {convertNumber(
-                  salesInformationReport?.noOfSalesTransactions
-                )}{" "}
-                ບິນ
-              </div>
-              <div>
-                {t("totalBalance")}
-                {" : "}
-                {convertNumber(salesInformationReport?.totalSales)}
-              </div>
-              <div>
-                {t("payBycash")}
-                {" : "}
-                {convertNumber(moneyReport?.cash?.totalBill)}
-              </div>
-              <div>
-                {t("transferPayment")}
-                {" : "}
-                {convertNumber(moneyReport?.transfer?.totalBill)}
-              </div>
-              {/* <div>
-                {t("transfer_cash")}
-                {" : "}
-                {convertNumber(moneyReport?.transferCash?.totalBill)}
-              </div> 
-              <div>
-                {t("point")}
-                {" : "}
-                {convertNumber(moneyReport?.point?.totalBill)}
-              </div>
-              <div>
-                {t("cashDiscount")}
-                {" : "}
-                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}{" "}
-                <span style={{ margin: "0 5px" }}>|</span>
-                {convertNumber(promotionReport?.[0]?.count)}ບິນ
-              </div>
-            </Card.Body>
-          </Card> */}
+
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
