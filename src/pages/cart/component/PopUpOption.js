@@ -17,10 +17,8 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
     menuOptions: [],
   };
 
-  // Use provided data or fallback to default
   const menuData = data || defaultData;
 
-  // Handle quantity changes
   const handleQuantityChange = (optionId, change) => {
     setQuantities((prev) => ({
       ...prev,
@@ -61,6 +59,8 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
     };
 
     setStaffCart((prevCart) => [...prevCart, newOrder]);
+    setQuantities({}); // Clear the quantities for all options
+    setGlobalNote(""); // Clear the global note field
     onClose();
   };
 
