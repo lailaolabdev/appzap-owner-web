@@ -302,8 +302,8 @@ export default function Dashboard() {
               <div>
                 {t("cashDiscount")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.cashDiscount)} |{" "}
-                {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
+                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
+                {convertNumber(promotionReport?.[0]?.count)}ບິນ
               </div>
             </Card.Body>
           </Card>
