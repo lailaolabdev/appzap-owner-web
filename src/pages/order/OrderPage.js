@@ -472,12 +472,12 @@ export default function OrderPage() {
         context.fillRect(0, 0, width / 2, 60); // Black block width / 2
         context.fillStyle = "#fff"; // White text
         context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-        context.fillText(selectedTable?.tableName, 10, 45); // Table ID text
+        context.fillText(data?.tableId?.name, 10, 45); // Table ID text
 
         // Draw the Table Code (right side)
         context.fillStyle = "#000"; // Black text
         context.font = "bold 30px NotoSansLao, Arial, sans-serif";
-        context.fillText(selectedTable?.code, width - 220, 45); // Code text on the right
+        context.fillText(data?.code, width - 220, 45); // Code text on the right
 
         // Divider line below header
         context.strokeStyle = "#ccc";
