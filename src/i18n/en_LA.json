@@ -63,7 +63,7 @@
   "change2": "ຈຳນວນເງິນທີ່ຕ້ອງທອນ",
   "confirm": "ຢືນຢັນ",
   "confirm...": "ກຳລັງຢືນຢັນ... ",
-  
+
   "checked": "ເຊັກບິນສຳເລັດ",
   "loding": "ກຳລັງໂຫລດຂໍ້ມູນ",
   "lists": "ລາຍການທັງໝົດ",
@@ -664,7 +664,7 @@
   "_manage": "ຈັດການ",
   "edit_number_of_day": "ແກ້ໄຂຈຳນວນມື້",
   "number_of_day": "ຈຳນວນມື້",
-"please_enter_the_number_of_day": "ກະລຸນາໄສຈຳນວນມື້",
+  "please_enter_the_number_of_day": "ກະລຸນາໄສຈຳນວນມື້",
   "all_stock": "ສະຕ໋ອກທັງໝົດ",
   "stock_type": "ປະເພດສະຕ໋ອກ",
   "stock_history": "ປະຫວັດສະຕ໋ອກ",
@@ -741,7 +741,7 @@
   "sale_cost": "ລາຄາຂາຍ",
   "rate_history": "ປະຫວັດການເລດເງິນ",
   "ccrc": "ສະກຸນເງິນ",
-  "tableNumber2": "ເລກລະຫັດໂຕະ ",
+  "tableNumber2": "ເລກລະຫັດໂຕະ",
   "timeOfTableOpening": "ເວລາທີ່ເປີດໂຕະ",
   "crc_history": "ປະຫວັດສະກຸນເງິນ",
   "short_main_crc": "ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ",

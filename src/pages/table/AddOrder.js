@@ -1238,7 +1238,7 @@ function AddOrder() {
   return (
     <div className="w-full h-screen">
       <div className="flex overflow-hidden mb-4">
-        <div className="grow h-[90vh] overflow-y-scroll relative">
+        <div className="flex-1 h-[calc(100dvh-64px)] overflow-y-scroll relative pb-4">
           {/* <div className="grid grid-cols-2 gap-2 p-2">
             <div>
               <label>{t("chose_food_type")}</label>
@@ -1307,7 +1307,7 @@ function AddOrder() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 px-2">
             {isLoading ? (
               <Loading />
             ) : (
@@ -1361,7 +1361,7 @@ function AddOrder() {
           </div>
         </div>
         {/* Detail Table */}
-        <div className="w-[640px] max-w-[640px] min-w-[640px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
+        <div className="w-[480px] lg:w-1/2 xl:w-[640px] xl:max-w-[640px] xl:min-w-[640px] h-[calc(100dvh-64px)] overflow-y-scroll bg-white border-gray-500 ">
           <div className="container">
             <div className="row">
               <div className="col-12">
