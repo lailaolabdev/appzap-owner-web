@@ -86,35 +86,38 @@ const OrderCheckOut = ({
   const orderItem = (orders) => {
     return orders?.map((e, index) => {
       // Handle options with proper fallback and join them if needed
-      const options = e?.options
-        ?.map((option) => 
-          option?.quantity > 1
-            ? `[${option.quantity} x ${option.name}]`
-            : `[${option.name}]`
-        )
-        .join(" ") || ""; // Fallback to empty string if options is undefined
-  
+      const options =
+        e?.options
+          ?.map((option) =>
+            option?.quantity > 1
+              ? `[${option.quantity} x ${option.name}]`
+              : `[${option.name}]`
+          )
+          .join(" ") || ""; // Fallback to empty string if options is undefined
+
       // Ensure price and totalOptionPrice are numbers, default to 0 if undefined or null
-      const itemPrice = Number(e?.price || 0) + Number(e?.totalOptionPrice || 0); 
-      const itemTotal = itemPrice * (e?.quantity || 0);  // Ensure quantity defaults to 0 if undefined
-  
+      const itemPrice =
+        Number(e?.price || 0) + Number(e?.totalOptionPrice || 0);
+      const itemTotal = itemPrice * (e?.quantity || 0); // Ensure quantity defaults to 0 if undefined
+
       // Use moneyCurrency for formatting, and fall back to "-" if itemTotal is not calculable (e.g., 0)
       const formattedItemTotal = itemTotal > 0 ? moneyCurrency(itemTotal) : "-";
-  
+
       return (
         <tr key={getOrderItemKey(e)}>
           <td>{index + 1}</td>
           <td>
             {e?.name ?? "-"} {options}
           </td>
-          <td>{e?.quantity ?? "-"}</td> {/* Fallback to "-" if quantity is undefined */}
-          <td>{moneyCurrency(itemPrice) || "-"}</td> {/* Fallback to "-" if price is not calculable */}
+          <td>{e?.quantity ?? "-"}</td>{" "}
+          {/* Fallback to "-" if quantity is undefined */}
+          <td>{moneyCurrency(itemPrice) || "-"}</td>{" "}
+          {/* Fallback to "-" if price is not calculable */}
           <td>{formattedItemTotal}</td>
         </tr>
       );
     });
   };
-  
 
   const _calculateTotal = () => {
     const serviceChargeAmount = isServiceChargeEnabled
@@ -193,16 +196,16 @@ const OrderCheckOut = ({
         size={"lg"}
         onHide={hide}
         aria-labelledby="contained-modal-title-vcenter"
+        style={{
+          margin: 0,
+        }}
       >
         <Modal.Header closeButton>
           <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ fontSize: 28, fontWeight: "bold", margin: 0 }}>
-            {t("table")}: {tableData?.tableName}
-          </div>
-          <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
-            {t("code")}: {tableData?.code}
+          <div style={{ fontSize: 24, fontWeight: "bold", margin: 0 }}>
+            {t("table")}: {tableData?.tableName} {`(${tableData?.code})`}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
             {t("open_at")}: {moment(createdAt).format("DD-MMMM-YYYY HH:mm:ss")}
@@ -302,7 +305,9 @@ const OrderCheckOut = ({
                 border: "solid 1px #FB6E3B",
                 fontSize: 22,
               }}
-              disabled={billDataLoading || printBillLoading || printBillCalulate}
+              disabled={
+                billDataLoading || printBillLoading || printBillCalulate
+              }
               onClick={() => onPrintBill(false)}
             >
               {billDataLoading && (
@@ -378,7 +383,9 @@ const OrderCheckOut = ({
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
               <Button
                 className="ml-2 pl-4 pr-4"
-                disabled={billDataLoading || printBillLoading || printBillCalulate}
+                disabled={
+                  billDataLoading || printBillLoading || printBillCalulate
+                }
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
