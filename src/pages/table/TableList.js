@@ -278,6 +278,7 @@ export default function TableList() {
   }, []);
 
   useEffect(() => {
+    reLoadData();
     ableToCheckoutFunc(isCheckedOrderItem);
   }, []);
 
