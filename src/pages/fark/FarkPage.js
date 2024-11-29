@@ -131,10 +131,12 @@ export default function FarkPage() {
                   padding: 10,
                 }}
               >
-                <span>
+                <span className="flex gap-[10px]  items-center">
+                  {/* <span style={{ display: "flex", gap: "10px" , alignItems:"center"}}> */}
                   <IoBeerOutline /> {t("deposit_list")}
                 </span>
                 <Button
+                  style={{ display: "flex", gap: "10px", alignItems: "center" }}
                   variant="dark"
                   bg="dark"
                   onClick={() => navigate("/fark/create")}

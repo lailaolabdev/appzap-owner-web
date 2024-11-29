@@ -873,7 +873,7 @@ function Homecafe() {
         </CafeMenu>
 
         {!isMobile ? (
-          <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 border-l pt-3 pb-6">
+          <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
             <div className="container">
               <div className="row">
                 <div className="col-lg-12 col-md-12">

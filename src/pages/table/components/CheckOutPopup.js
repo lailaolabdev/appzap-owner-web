@@ -288,6 +288,8 @@ export default function CheckOutPopup({
 
     const localZone = localStorage.getItem("selectedZone");
 
+    const moneyChange = calculateReturnAmount();
+
     const orderItem =
       orderPayBefore && orderPayBefore.length > 0
         ? orderPayBefore?.map((e) => e?._id)
@@ -318,6 +320,7 @@ export default function CheckOutPopup({
       memberPhone: memberData?.phone,
       billMode: tableData?.editBill,
       tableName: tableData?.tableName,
+      change: moneyChange,
       tableCode: tableData?.code,
       fullnameStaffCheckOut:
         staffConfirm?.firstname + " " + staffConfirm?.lastname ?? "-",
@@ -509,6 +512,21 @@ export default function CheckOutPopup({
         }
       }
     });
+  };
+
+  // cuaculate money change
+  const calculateReturnAmount = () => {
+    const parsedCash = parseInt(cash) || 0;
+    const parsedTransfer = parseInt(transfer) || 0;
+
+    const discountAmount =
+      dataBill && dataBill?.discountType === "LAK"
+        ? Math.max(totalBill - dataBill?.discount, 0)
+        : Math.max(totalBill - (totalBill * dataBill?.discount) / 100, 0);
+
+    const totalAmount = parsedCash + parsedTransfer - discountAmount;
+
+    return totalAmount <= 0 ? 0 : totalAmount;
   };
 
   const onChangeTransferInput = (inputData) => {
@@ -730,7 +748,7 @@ export default function CheckOutPopup({
               </div>
             )}
 
-            <div
+            {/* <div
               style={{
                 marginBottom: 10,
               }}
@@ -758,6 +776,10 @@ export default function CheckOutPopup({
                         ? totalBill - (totalBill * dataBill?.discount) / 100
                         : 0)
               )}{" "}
+              {storeDetail?.firstCurrency}
+            </div> */}
+            <div style={{ marginBottom: 10 }}>
+              {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
             </div>
             <div
@@ -897,6 +919,7 @@ export default function CheckOutPopup({
               handleSubmit();
             });
           }}
+          style={{ display: "flex", gap: "10px", alignItems: "center" }}
           disabled={!canCheckOut || printBillLoading}
         >
           {printBillLoading && (
