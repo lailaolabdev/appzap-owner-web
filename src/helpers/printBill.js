@@ -28,10 +28,10 @@ export const PrintBill = ({
 
   const { printerCounter, printers } = useStore();
 
-  const _printerCounters = JSON.parse(printerCounter?.prints);
-  const printerBillData = printers?.find(
-    (e) => e?._id === _printerCounters?.BILL
-  );
+  // const _printerCounters = JSON.parse(printerCounter?.prints);
+  // const printerBillData = printers?.find(
+  //   (e) => e?._id === _printerCounters?.BILL
+  // );
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -125,9 +125,19 @@ export const PrintBill = ({
     });
   }, [imageUrl2]);
 
-  const CurrentFormat = () => {
-    currencyData.map((currency) => {});
-  };
+  const CurrencyData = currencyData?.map((item) => {
+    return {
+      nameCurrency: item.currencyCode,
+      price: moneyCurrency(
+        (total + taxAmount + serviceChargeAmount) / item?.sell
+      ),
+    };
+  });
+  const CurrencyEX = currencyData?.map((item) => {
+    return {
+      nameCurrency: `${item?.currencyCode} : ${moneyCurrency(item?.sell)}`,
+    };
+  });
 
   const data = {
     header: {
@@ -162,12 +172,13 @@ export const PrintBill = ({
         fontSize: 30,
       },
     ],
-    totalLeftPrices: [{ USD: "835,000" }, { THB: "835,000" }],
-    footer: [{ "Exchange Rate": "THB 650 | CNY 3,000" }],
+    totalLeftPrices: CurrencyData,
+    footer: CurrencyEX,
     paymentQR: {
-      paymentQr: "000201010211153...",
+      paymentQr:
+        "00020101021138670016a00526628466257701082771041802030010324cchrjzrjzwudwnqvhexuhnoq53034185802la63049b5f",
     },
-    printerIP: "192.168.1.190",
+    printerIP: "printerBillData?.ip",
     openCashDrawer: true,
   };
 

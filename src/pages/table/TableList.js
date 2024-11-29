@@ -46,6 +46,7 @@ import {
   END_POINT_WEB_CLIENT,
   USERS,
   getLocalData,
+  QUERY_CURRENCIES,
 } from "../../constants/api";
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
@@ -73,6 +74,8 @@ import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefN
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { padding_white } from "./../../constants/index";
 import { PrintBill } from "../../helpers/printBill";
+import { printBill80 } from "../../helpers/printBill80";
+import PopUpWarningIp from "../../components/popup/PopUpWarningIp";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -124,6 +127,8 @@ export default function TableList() {
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
   const [createdAt, setCreatedAt] = useState();
+  const [currencyData, setCurrencyData] = useState([]);
+  const [rateCurrency, setRateCurrency] = useState();
 
   // provider
   const {
@@ -190,6 +195,7 @@ export default function TableList() {
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
+  const [popUpWarningIp, setPopUpWarningIp] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -203,9 +209,29 @@ export default function TableList() {
     setGroupedItems(grouped);
   }, [isCheckedOrderItem]);
 
-  console.log("StoreDetail", storeDetail);
-  console.log("selectedTable", selectedTable);
-  console.log("dataBill", dataBill);
+  // console.log("StoreDetail", storeDetail);
+  // console.log("selectedTable", selectedTable);
+  // console.log("dataBill", dataBill);
+
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status === 200) {
+          setCurrencyData(data?.data?.data);
+          const _currencyData = data?.data?.data?.find(
+            (e) => e.currencyCode === "THB"
+          );
+          setRateCurrency(_currencyData?.buy || 1);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
 
   const groupItemsByPrinter = (items) => {
     return items?.reduce((groups, item) => {
@@ -254,7 +280,7 @@ export default function TableList() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
-
+    getDataCurrency();
     // const getDataServiceCharge = async () => {
     //   const { DATA } = await getLocalData();
     //   const _res = await axios.get(
@@ -697,6 +723,29 @@ export default function TableList() {
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
+
+      const DataBill = await printBill80(
+        printerBillData,
+        dataBill,
+        isPrintBill,
+        storeDetail,
+        selectedTable,
+        profile,
+        currencyData,
+        orderPayBefore
+      );
+
+      if (DataBill.status) {
+        await Swal.fire({
+          icon: "success",
+          title: "Print Bill Success ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        setPopUpWarningIp(true);
+      }
+
       // let dataImageForPrint;
       // dataImageForPrint = await html2canvas(bill80Ref.current, {
       //   useCORS: true,
@@ -749,12 +798,12 @@ export default function TableList() {
       setStoreDetail({ ...storeDetail, ChangeColorTable: true });
 
       setPrintBillLoading(false);
-      await Swal.fire({
-        icon: "success",
-        title: `${t("checkbill_success")}`,
-        showConfirmButton: false,
-        timer: 1800,
-      });
+      // await Swal.fire({
+      //   icon: "success",
+      //   title: `${t("checkbill_success")}`,
+      //   showConfirmButton: false,
+      //   timer: 1800,
+      // });
       setMenuItemDetailModal(false);
       setStoreDetail({
         ...storeDetail,
@@ -3030,6 +3079,7 @@ export default function TableList() {
         totalBillBillForCheckOut80={total}
         taxPercent={taxPercent}
         profile={profile}
+        onPrintBill={onPrintBill}
       />
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
         <BillQRShortSmartOrdering80
@@ -3493,6 +3543,13 @@ export default function TableList() {
         onClose={() => setPopup({ PopUpTranferTable: false })}
         onSubmit={reLoadData}
         tableList={tableList}
+      />
+
+      <PopUpWarningIp
+        open={popUpWarningIp}
+        setPopUpWarningIp={setPopUpWarningIp}
+        onClose={() => setPopUpWarningIp(false)}
+        text={"IP printer ບໍ່ຖຶກຕ້ອງ"}
       />
     </div>
   );
