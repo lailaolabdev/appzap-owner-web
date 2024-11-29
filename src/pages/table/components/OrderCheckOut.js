@@ -199,6 +199,7 @@ const OrderCheckOut = ({
         style={{
           margin: 0,
         }}
+        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>{t("order_detial")}</Modal.Title>
@@ -230,7 +231,7 @@ const OrderCheckOut = ({
             />
           </Row>
           <div style={{ margin: 8 }} />
-          <div className="h-fit max-h-[280px] overflow-y-auto relative">
+          <div className="h-fit max-h-[260px] overflow-y-auto relative">
             <Table responsive className="staff-table-list table-hover">
               <thead className="sticky top-0 z-10 bg-[#F1F1F1]">
                 <tr>
