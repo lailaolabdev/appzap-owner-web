@@ -1704,7 +1704,6 @@ export default function TableList() {
   };
 
   const onSelect = (data) => {
-    setOrderPayBefore({ ...orderPayBefore, data });
     const _data = isCheckedOrderItem.map((e) => {
       if (data?._id === e?._id) {
         return data;
@@ -1714,7 +1713,14 @@ export default function TableList() {
     });
 
     const res = _data.filter((e) => e?.isChecked);
-    setOrderPayBefore(res);
+    const dataRes = _data.filter((e) => e?.status === "SERVED");
+
+    if (res.length !== dataRes.length) {
+      setOrderPayBefore(res);
+    } else {
+      setOrderPayBefore([]);
+    }
+
     setIsCheckedOrderItem(_data);
 
     const _isChecked = _data.filter((e) => {
@@ -1732,6 +1738,7 @@ export default function TableList() {
   };
 
   const checkAllOrders = (item) => {
+    console.log({ item });
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
