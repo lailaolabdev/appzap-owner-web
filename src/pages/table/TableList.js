@@ -1738,7 +1738,6 @@ export default function TableList() {
   };
 
   const checkAllOrders = (item) => {
-    console.log({ item });
     let _newOrderItems = [];
     if (item?.target?.checked) {
       _newOrderItems = tableOrderItems.map((item) => {
