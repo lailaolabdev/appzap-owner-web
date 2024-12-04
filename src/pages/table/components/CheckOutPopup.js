@@ -101,12 +101,21 @@ export default function CheckOutPopup({
   }, [tab, selectedBank]);
 
   useEffect(() => {
-    setCash();
-    setTransfer();
-    setTab("delivery");
-    setSelectInput("inputDelivery");
-    setForcus("DELIVERY");
-  }, [selectedTable?.isDeliveryTable === true]);
+    if (selectedTable?.isDeliveryTable) {
+      setCash();
+      setTransfer();
+      setTab("delivery");
+      setSelectInput("inputDelivery");
+      setForcus("DELIVERY");
+    } else {
+      setCash();
+      setTransfer();
+      setDelivery();
+      setTab("cash");
+      setSelectInput("inputCash");
+      setForcus("CASH");
+    }
+  }, [selectedTable?.isDeliveryTable]);
 
   const handleChange = (e) => {
     const selectedOption = banks.find((bank) => bank._id === e.target.value);
