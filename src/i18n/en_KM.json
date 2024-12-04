@@ -858,5 +858,8 @@
   "show_all_zone": "បង្ហាញតំបន់ទាំងអស់",
   "zone_setting": "ការកំណត់តំបន់",
   "Open": "បើក",
-  "Close": "បិទ"
+  "Close": "បិទ",
+  "notification": "ការជូនដំណឹង",
+  "callToCheckout": "ហៅទៅពិនិត្យចេញ",
+  "callStaff": "ហៅបុគ្គលិក"
 }

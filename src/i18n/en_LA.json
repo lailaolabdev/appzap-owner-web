@@ -1048,5 +1048,6 @@
   "enter_delivery": "ປ້ອນຊື່ Delivery",
   "edit_delivery": "ແກ້ໄຂ Delivery",
   "setting_delivery": "ຈັດການ Delivery",
-  "is_order_split": "ລວມອໍເດີ"
+  "is_order_split": "ລວມອໍເດີ",
+  "notification": "ການແຈ້ງເຕືອນ"
 }
