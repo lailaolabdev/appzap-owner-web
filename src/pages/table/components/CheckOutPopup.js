@@ -55,6 +55,7 @@ export default function CheckOutPopup({
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
+  const [delivery, setDelivery] = useState();
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
   const [canCheckOut, setCanCheckOut] = useState(false);
@@ -70,6 +71,17 @@ export default function CheckOutPopup({
   const [paid, setPaid] = useState(0);
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
+
+  const {
+    setSelectedTable,
+    getTableDataStore,
+    setOrderPayBefore,
+    orderPayBefore,
+    selectedTable,
+    storeDetail,
+    setStoreDetail,
+    profile,
+  } = useStore();
 
   //select Bank
 
@@ -87,6 +99,14 @@ export default function CheckOutPopup({
 
     fetchAllBanks();
   }, [tab, selectedBank]);
+
+  useEffect(() => {
+    setCash();
+    setTransfer();
+    setTab("delivery");
+    setSelectInput("inputDelivery");
+    setForcus("DELIVERY");
+  }, [selectedTable?.isDeliveryTable === true]);
 
   const handleChange = (e) => {
     const selectedOption = banks.find((bank) => bank._id === e.target.value);
@@ -111,17 +131,6 @@ export default function CheckOutPopup({
       name: selectedCurrencie.currencyName,
     });
   };
-
-  const {
-    setSelectedTable,
-    getTableDataStore,
-    setOrderPayBefore,
-    orderPayBefore,
-    selectedTable,
-    storeDetail,
-    setStoreDetail,
-    profile,
-  } = useStore();
 
   // console.log({ dataBill });
 
@@ -307,11 +316,13 @@ export default function CheckOutPopup({
       status: checkStatusBill,
       payAmount: cash,
       transferAmount: transfer,
+      deliveryAmount: delivery,
       paymentMethod: forcus,
       taxAmount: taxAmount,
       taxPercent: taxPercent,
       serviceChargePercent: serviceChargePer,
       serviceChargeAmount: serviceChargeAmount,
+      deliveryName: dataBill?.orderId[0]?.platform,
       customerId: selectDataOpption?._id,
       userNanme: selectDataOpption?.username,
       phone: selectDataOpption?.phone,
@@ -344,7 +355,7 @@ export default function CheckOutPopup({
           headers: await getHeaders(),
         }
       )
-      .then(async function (response) {
+      .then(async (response) => {
         setSelectedTable();
         getTableDataStore();
         setCashCurrency();
@@ -380,7 +391,7 @@ export default function CheckOutPopup({
           zoneCheckBill: true,
         });
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
       });
   };
@@ -421,6 +432,28 @@ export default function CheckOutPopup({
           setCanCheckOut(false);
         }
       }
+    } else if (forcus === "DELIVERY") {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (delivery >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (delivery >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      } else {
+        if (delivery >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
+      }
     } else if (forcus === "TRANSFER") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
@@ -456,7 +489,7 @@ export default function CheckOutPopup({
         }
       }
     }
-  }, [cash, transfer, totalBill, forcus]);
+  }, [cash, transfer, delivery, totalBill, forcus]);
 
   let transferCal =
     dataBill?.discountType === "PERCENT"
@@ -513,18 +546,33 @@ export default function CheckOutPopup({
       }
     });
   };
+  const onChangeDeliveryInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setDelivery(value);
+      if (selectCurrency?.name !== "LAK") {
+        if (!value) {
+          setCashCurrency();
+        } else {
+          const amount = value / rateCurrency;
+          setCashCurrency(amount.toFixed(2));
+        }
+      }
+    });
+  };
 
   // cuaculate money change
   const calculateReturnAmount = () => {
-    const parsedCash = parseInt(cash) || 0;
-    const parsedTransfer = parseInt(transfer) || 0;
+    const parsedCash = Number.parseInt(cash) || 0;
+    const parsedTransfer = Number.parseInt(transfer) || 0;
+    const parsedDelivery = Number.parseInt(delivery) || 0;
 
     const discountAmount =
       dataBill && dataBill?.discountType === "LAK"
         ? Math.max(totalBill - dataBill?.discount, 0)
         : Math.max(totalBill - (totalBill * dataBill?.discount) / 100, 0);
 
-    const totalAmount = parsedCash + parsedTransfer - discountAmount;
+    const totalAmount =
+      parsedCash + parsedTransfer + parsedDelivery - discountAmount;
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
@@ -555,6 +603,7 @@ export default function CheckOutPopup({
       onHide={() => {
         setCash();
         setTransfer();
+        setDelivery();
         onClose();
       }}
       keyboard={false}
@@ -667,44 +716,69 @@ export default function CheckOutPopup({
                   />
                   <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 </InputGroup>
-                <InputGroup>
-                  <InputGroup.Text>{t("cash")}</InputGroup.Text>
-                  <Form.Control
-                    disabled={tab !== "cash" && tab !== "cash_transfer"}
-                    type="text"
-                    placeholder="0"
-                    value={convertNumber(cash)}
-                    onClick={() => {
-                      setSelectInput("inputCash");
-                    }}
-                    onChange={(e) => {
-                      onChangeCashInput(e.target.value);
-                    }}
-                    size="lg"
-                  />
-                  <InputGroup.Text>
-                    {storeDetail?.firstCurrency}
-                  </InputGroup.Text>
-                </InputGroup>
-                <InputGroup>
-                  <InputGroup.Text>{t("transfer")}</InputGroup.Text>
-                  <Form.Control
-                    disabled={tab !== "cash_transfer"}
-                    type="text"
-                    placeholder="0"
-                    value={convertNumber(transfer)}
-                    onClick={() => {
-                      setSelectInput("inputTransfer");
-                    }}
-                    onChange={(e) => {
-                      onChangeTransferInput(e.target.value);
-                    }}
-                    size="lg"
-                  />
-                  <InputGroup.Text>
-                    {storeDetail?.firstCurrency}
-                  </InputGroup.Text>
-                </InputGroup>
+                {selectedTable?.isDeliveryTable ? (
+                  <>
+                    <InputGroup>
+                      <InputGroup.Text>delivery</InputGroup.Text>
+                      <Form.Control
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(delivery)}
+                        onClick={() => {
+                          setSelectInput("inputDelivery");
+                        }}
+                        onChange={(e) => {
+                          onChangeDeliveryInput(e.target.value);
+                        }}
+                        size="lg"
+                      />
+                      <InputGroup.Text>
+                        {storeDetail?.firstCurrency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </>
+                ) : (
+                  <>
+                    <InputGroup>
+                      <InputGroup.Text>{t("cash")}</InputGroup.Text>
+                      <Form.Control
+                        disabled={tab !== "cash" && tab !== "cash_transfer"}
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(cash)}
+                        onClick={() => {
+                          setSelectInput("inputCash");
+                        }}
+                        onChange={(e) => {
+                          onChangeCashInput(e.target.value);
+                        }}
+                        size="lg"
+                      />
+                      <InputGroup.Text>
+                        {storeDetail?.firstCurrency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                    <InputGroup>
+                      <InputGroup.Text>{t("transfer")}</InputGroup.Text>
+                      <Form.Control
+                        disabled={tab !== "cash_transfer"}
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(transfer)}
+                        onClick={() => {
+                          setSelectInput("inputTransfer");
+                        }}
+                        onChange={(e) => {
+                          onChangeTransferInput(e.target.value);
+                        }}
+                        size="lg"
+                      />
+                      <InputGroup.Text>
+                        {storeDetail?.firstCurrency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </>
+                )}
                 <BoxMember hidden={!hasCRM}>
                   <div className="box-left">
                     <div className="box-search">
@@ -747,37 +821,6 @@ export default function CheckOutPopup({
                 </BoxMember>
               </div>
             )}
-
-            {/* <div
-              style={{
-                marginBottom: 10,
-              }}
-            >
-              {t("return")}:{" "}
-              {moneyCurrency(
-                (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) <=
-                  0
-                  ? 0
-                  : (parseInt(cash) || 0) +
-                      (parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0)
-              )}{" "}
-              {storeDetail?.firstCurrency}
-            </div> */}
             <div style={{ marginBottom: 10 }}>
               {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
@@ -791,7 +834,14 @@ export default function CheckOutPopup({
             >
               {/* ເງິີນສົດ */}
               <Button
-                variant={tab === "cash" ? "primary" : "outline-primary"}
+                variant={
+                  selectedTable?.isDeliveryTable
+                    ? "outline-primary"
+                    : tab === "cash"
+                    ? "primary"
+                    : "outline-primary"
+                }
+                disabled={selectedTable?.isDeliveryTable}
                 onClick={() => {
                   setCash();
                   setTransfer();
@@ -804,6 +854,7 @@ export default function CheckOutPopup({
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
+                disabled={selectedTable?.isDeliveryTable}
                 onClick={() => {
                   setCash();
                   setSelectCurrency({
@@ -822,6 +873,7 @@ export default function CheckOutPopup({
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
                 }
+                disabled={selectedTable?.isDeliveryTable}
                 onClick={() => {
                   setCash();
                   setSelectCurrency({
@@ -837,6 +889,26 @@ export default function CheckOutPopup({
               >
                 {t("cash_transfer")}
               </Button>
+              {selectedTable?.isDeliveryTable && (
+                <Button
+                  variant={
+                    selectedTable?.isDeliveryTable
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  onClick={() => {
+                    setCash();
+                    setTransfer();
+                    setTab("delivery");
+                    setSelectInput("inputDelivery");
+                    setForcus("DELIVERY");
+                  }}
+                >
+                  Delivery :{" "}
+                  {dataBill?.orderId?.length > 0 &&
+                    dataBill?.orderId[0]?.platform}
+                </Button>
+              )}
               <div style={{ flex: 1 }} />
               <Form.Control
                 hidden={tab !== "cash"}
@@ -877,6 +949,7 @@ export default function CheckOutPopup({
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
+              setCanCheckOut={setCanCheckOut}
               selectInput={((e) => {
                 if (selectInput === "inputCash") {
                   return cash;
@@ -887,6 +960,9 @@ export default function CheckOutPopup({
                 if (selectInput === "inputCurrency") {
                   return cashCurrency;
                 }
+                if (selectInput === "inputDelivery") {
+                  return delivery;
+                }
               })()}
               setSelectInput={(e) => {
                 if (selectInput === "inputCash") {
@@ -895,6 +971,8 @@ export default function CheckOutPopup({
                   onChangeTransferInput(e);
                 } else if (selectInput === "inputCurrency") {
                   onChangeCurrencyInput(e);
+                } else if (selectInput === "inputDelivery") {
+                  onChangeDeliveryInput(e);
                 }
               }}
             />

@@ -9,6 +9,7 @@ export default function NumberKeyboard({
   payType,
   setSelectInput,
   onClickButtonDrawer,
+  setCanCheckOut,
   onClickMember,
 }) {
   const _num = [
@@ -66,7 +67,6 @@ export default function NumberKeyboard({
 
   // function
   async function clickButton(text) {
-    console.log("object", text);
     if (!setSelectInput) return;
 
     if (text === "Delete") {
@@ -121,17 +121,20 @@ export default function NumberKeyboard({
             {t("member")}
           </Button>
           <Button
-            disabled={payType != "cash"}
+            disabled={payType !== "cash" && payType !== "delivery"}
             onClick={() => {
               // console.log(totalBill);
-              setSelectInput(totalBill + "");
+              setSelectInput(`${totalBill}`);
             }}
           >
             {t("quantity_full")}
           </Button>
           <Button onClick={onClickButtonDrawer}>{t("Drawer")}</Button>
           <Button
-            onClick={() => setSelectInput("")}
+            onClick={() => {
+              setSelectInput("");
+              setCanCheckOut(false);
+            }}
             disabled={payType === "transfer"}
           >
             {t("delete_all")}

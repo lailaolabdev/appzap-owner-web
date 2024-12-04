@@ -172,8 +172,14 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable, selectedBill } =
-    useStore();
+  const {
+    storeDetail,
+    printers,
+    selectedTable,
+    onSelectTable,
+    selectedBill,
+    tableOrderItems,
+  } = useStore();
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
@@ -241,102 +247,6 @@ function AddOrder() {
       setIsLoading(false);
       setOnPrinting(false);
     }
-    // const orderSelect = selectedMenu;
-    // let _index = 0;
-    // for (const _ref of billForCher80.current) {
-    //   const _printer = printers.find((e) => {
-    //     return e?._id === orderSelect?.[_index]?.printer;
-    //   });
-
-    //   try {
-    //     let urlForPrinter = "";
-    //     let dataUrl;
-    //     if (_printer?.width === "80mm") {
-    //       dataUrl = await html2canvas(billForCher80?.current[_index], {
-    //         useCORS: true,
-    //         scrollX: 10,
-    //         scrollY: 0,
-    //         // scale: 530 / widthBill80,
-    //       });
-    //     }
-    //     if (_printer?.width === "58mm") {
-    //       dataUrl = await html2canvas(billForCher58?.current[_index], {
-    //         useCORS: true,
-    //         scrollX: 10,
-    //         scrollY: 0,
-    //         // scale: 350 / widthBill58,
-    //       });
-    //     }
-    //     if (_printer?.type === "ETHERNET") {
-    //       urlForPrinter = ETHERNET_PRINTER_PORT;
-    //     }
-    //     if (_printer?.type === "BLUETOOTH") {
-    //       urlForPrinter = BLUETOOTH_PRINTER_PORT;
-    //     }
-    //     if (_printer?.type === "USB") {
-    //       urlForPrinter = USB_PRINTER_PORT;
-    //     }
-
-    //     // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-    //     const _file = await base64ToBlob(dataUrl.toDataURL());
-    //     var bodyFormData = new FormData();
-    //     bodyFormData.append("isdrawer", false);
-    //     bodyFormData.append("ip", _printer?.ip);
-    //     bodyFormData.append("port", "9100");
-    //     if (_index === 0) {
-    //       bodyFormData.append("beep1", 1);
-    //       bodyFormData.append("beep2", 9);
-    //     }
-    //     bodyFormData.append("image", _file);
-    //     bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-
-    //     await printFlutter(
-    //       {
-    //         imageBuffer: dataUrl.toDataURL(),
-    //         ip: _printer?.ip,
-    //         type: _printer?.type,
-    //         port: "9100",
-    //         width: _printer?.width === "58mm" ? 400 : 580,
-    //       },
-    //       async () => {
-    //         await axios({
-    //           method: "post",
-    //           url: urlForPrinter,
-    //           data: bodyFormData,
-    //           headers: { "Content-Type": "multipart/form-data" },
-    //         });
-    //       }
-    //     );
-    //     // await axios({
-    //     //   method: "post",
-    //     //   url: urlForPrinter,
-    //     //   data: bodyFormData,
-    //     //   headers: { "Content-Type": "multipart/form-data" },
-    //     // });
-    //     // axios.post("http://localhost:9150/ethernet/text", {
-    //     //   config: {
-    //     //     ip: "192.168.100.236",
-    //     //     port: 9100,
-    //     //   },
-    //     //   text: "llsdflkldsfkdkfogowekfokdofsalwiwslkofs",
-    //     // });
-    //     // await Swal.fire({
-    //     //   icon: "success",
-    //     //   title: "ປິນສຳເລັດ",
-    //     //   showConfirmButton: false,
-    //     //   timer: 1500,
-    //     // });
-    //   } catch (err) {
-    //     console.log(err);
-    //     // await Swal.fire({
-    //     //   icon: "error",
-    //     //   title: "ປິນບໍ່ສຳເລັດ",
-    //     //   showConfirmButton: false,
-    //     //   timer: 1500,
-    //     // });
-    //   }
-    //   _index++;
-    // }
   };
 
   const runPrint = async (dataUrl, index, printer) => {
@@ -634,13 +544,6 @@ function AddOrder() {
     // getcurrency();
   }, []);
 
-  // useEffect(() => {
-  //   // TODO: check selectTable
-  //   if (!selectedTable || !selectedBill) {
-  //     navigate("/tables");
-  //   }
-  // }, [selectedTable]);
-
   useEffect(() => {
     (async () => {
       let findby = "?";
@@ -825,47 +728,6 @@ function AddOrder() {
     }
   };
 
-  // const addToCart = async (menu) => {
-  //   const _menuOptions = await _checkMenuOption(menu?._id);
-  //   if (_menuOptions.length >= 1) {
-  //     setMenuOptions(_menuOptions);
-  //     handleShow();
-  //     return;
-  //   }
-  //   setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  //   let allowToAdd = true;
-  //   let itemIndexInSelectedMenu = 0;
-  //   let data = {
-  //     id: menu._id,
-  //     name: menu.name,
-  //     quantity: 1,
-  //     price: menu.price,
-  //     categoryId: menu?.categoryId,
-  //     printer: menu?.categoryId?.printer,
-  //     note: "",
-  //   };
-  //   if (selectedMenu.length === 0) {
-  //     setSelectedMenu([...selectedMenu, data]);
-  //   } else {
-  //     let thisSelectedMenu = [...selectedMenu];
-  //     for (let index in thisSelectedMenu) {
-  //       if (thisSelectedMenu[index]?.id === menu?._id) {
-  //         allowToAdd = false;
-  //         itemIndexInSelectedMenu = index;
-  //       }
-  //     }
-  //     if (allowToAdd) {
-  //       setSelectedMenu([...selectedMenu, data]);
-  //     } else {
-  //       let copySelectedMenu = [...selectedMenu];
-  //       let currentData = copySelectedMenu[itemIndexInSelectedMenu];
-  //       currentData.quantity += 1;
-  //       copySelectedMenu[itemIndexInSelectedMenu] = currentData;
-  //       setSelectedMenu(copySelectedMenu);
-  //     }
-  //   }
-  // };
-
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
 
@@ -913,7 +775,6 @@ function AddOrder() {
     handleShow();
   };
 
-  // multi code and flatform
   const handleAddDeliveryCode = (code, platform) => {
     if (!code || !platform) {
       Swal.fire({
@@ -925,27 +786,48 @@ function AddOrder() {
       return;
     }
 
-    setSelectedMenu((prevMenu) =>
-      prevMenu.map((item) => ({
-        ...item,
-        deliveryCode: code,
-        platform: platform,
-      }))
-    );
-    setIsShowDeliveryPopup(false);
-  };
+    if (typeof platform !== "string" || !platform.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: `${t("invalid_platform")}`,
+        showConfirmButton: false,
+        timer: 1800,
+      });
+      return;
+    }
 
-  // add one code and flatform
-  // const handleAddDeliveryCode = (code, platform, menuId) => {
-  //   setSelectedMenu((prevMenu) =>
-  //     prevMenu.map((item) =>
-  //       item.id === menuId
-  //         ? { ...item, deliveryCode: code, platform: platform }
-  //         : item
-  //     )
-  //   );
-  //   setIsShowDeliveryPopup(false); // Close the popup
-  // };
+    if (tableOrderItems.length > 0) {
+      if (tableOrderItems.some((list) => list.platform === platform)) {
+        setSelectedMenu((prevMenu) =>
+          prevMenu.map((item) => ({
+            ...item,
+            deliveryCode: code,
+            platform: platform,
+          }))
+        );
+        setIsShowDeliveryPopup(false);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "ເກີດຂໍ້ຜິດພາດ",
+          text: `ໂຕະນີ້ເປັນຂອງ ${tableOrderItems[0]?.platform} platform`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+
+        return;
+      }
+    } else {
+      setSelectedMenu((prevMenu) =>
+        prevMenu.map((item) => ({
+          ...item,
+          deliveryCode: code,
+          platform: platform,
+        }))
+      );
+      setIsShowDeliveryPopup(false);
+    }
+  };
 
   const onRemoveFromCart = (index) => {
     const selectedMenuCopied = [...selectedMenu];
@@ -1100,6 +982,8 @@ function AddOrder() {
           icon: "error",
           title: t("error"),
           text: t("ensure_enter_code_platform"),
+          showConfirmButton: false,
+          timer: 1800,
         });
         return false;
       }
@@ -1235,38 +1119,12 @@ function AddOrder() {
 
   const { t } = useTranslation();
 
+  console.log({ tableOrderItems });
+
   return (
     <div className="w-full h-screen">
       <div className="flex overflow-hidden mb-4">
-        <div className="flex-1 h-[calc(100dvh-64px)] overflow-y-scroll relative pb-4">
-          {/* <div className="grid grid-cols-2 gap-2 p-2">
-            <div>
-              <label>{t("chose_food_type")}</label>
-              <select
-                className="form-control"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
-                    return (
-                      <option key={"category" + index} value={data?._id}>
-                        {data?.name}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
-            <div>
-              <label>{t("search")}</label>
-              <input
-                placeholder={t("search")}
-                className="form-control"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div> */}
+        <div className="grow h-[90vh] overflow-y-scroll relative">
           <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
             <div className="w-full px-2 py-1">
               <input
@@ -1678,29 +1536,6 @@ function AddOrder() {
           </div>
         ))}
       </div>
-
-      {/* Render the combined bill for 58mm (if needed)
-        <div>
-          {Object.entries(groupedItems).map(([printerIp, items]) => (
-            <div key={printerIp}>
-              <div
-                style={{
-                  width: "58mm",
-                  paddingRight: "20px",
-                }}
-                ref={combinedBillRefs[printerIp]}
-              >
-                <CombinedBillForChefNoCut
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  selectedMenu={items}
-                  table={{ tableId: { name: selectedTable?.tableName } }}
-                />
-              </div>
-            </div>
-          ))}
-        </div> */}
-
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>
