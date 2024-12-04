@@ -454,7 +454,7 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
               className={styles.notifyTitle}
               style={{ "--primary-color": COLOR_APP }}
             >
-              ການແຈ້ງເຕືອນ
+              {t("notification")}
             </div>
             <div
               style={{
