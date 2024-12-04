@@ -1043,5 +1043,9 @@
   "enter_delivery": "ປ້ອນຊື່ Delivery",
   "edit_delivery": "ແກ້ໄຂ Delivery",
   "setting_delivery": "ຈັດການ Delivery",
-  "is_order_split": "ລວມອໍເດີ"
+  "is_order_split": "ລວມອໍເດີ",
+  "is_crm": "CRM (Customer Relationship Management)",
+  "open_crm": "ເປີດໃຊ້ງານຟັງຊັນ CRM",
+  "error_point": "ແຈ້ງເຕືອນຄະແນນ",
+  "error_point_enough": "ຄະແນນສະສົມປັດຈຸບັນຂອງທ່ານເຫຼືອ 0 ຄະແນນ"
 }

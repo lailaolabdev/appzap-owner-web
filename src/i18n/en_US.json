@@ -926,5 +926,9 @@
   "enter_delivery": "Enter Delivery Name",
   "edit_delivery": "Edit Delivery",
   "setting_delivery": "Setting Delivery",
-  "is_order_split": "order split"
+  "is_order_split": "order split",
+  "is_crm": "CRM (Customer Relationship Management)",
+  "open_crm": "Open function CRM",
+  "error_point": "Error point",
+  "error_point_enough": "Your current accumulated score is 0 points"
 }

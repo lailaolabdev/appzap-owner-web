@@ -294,11 +294,13 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
-              <div>
-                {t("point")}
-                {" : "}
-                {convertNumber(moneyReport?.successAmount?.point)}
-              </div>
+              {storeDetail?.isCRM && (
+                <div>
+                  {t("point")}
+                  {" : "}
+                  {convertNumber(moneyReport?.successAmount?.point)}
+                </div>
+              )}
               <div>
                 {t("cashDiscount")}
                 {" : "}

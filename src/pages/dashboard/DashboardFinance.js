@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import { Table, Modal, Button, Pagination } from "react-bootstrap";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
-import { _statusCheckBill, orderStatus } from "./../../helpers";
-import AnimationLoading from "../../constants/loading";
 import { useNavigate, useParams } from "react-router-dom";
-import Box from "../../components/Box";
+import ReactPaginate from "react-paginate";
+import { Table, Modal, Button, Pagination } from "react-bootstrap";
 import * as _ from "lodash";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { _statusCheckBill, orderStatus, moneyCurrency } from "./../../helpers";
+import { useTranslation } from "react-i18next";
+import { stringify } from "query-string";
+import AnimationLoading from "../../constants/loading";
+import Box from "../../components/Box";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
-import { useTranslation } from "react-i18next";
-import { stringify } from "query-string";
 import Loading from "../../components/Loading";
-import ReactPaginate from "react-paginate";
 import { getCountBills } from "../../services/bill";
 import { COLOR_APP } from "../../constants";
 
@@ -294,7 +294,12 @@ export default function DashboardFinance({
     return `${name} ${optionNames}`;
   };
 
-  console.log("dataModal: ", dataModal);
+  const renderDiscount = (value) => {
+    const formattedValue = moneyCurrency(value);
+    const currency =
+      dataModal?.discountType !== "LAK" ? "%" : storeDetail?.firstCurrency;
+    return `${formattedValue} ${currency}`;
+  };
 
   return (
     <div style={{ padding: 0 }}>
@@ -331,13 +336,15 @@ export default function DashboardFinance({
               >
                 {t("tableDiscount")}
               </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-              >
-                {t("point")}
-              </th>
+              {storeDetail?.isCRM && (
+                <th
+                  style={{
+                    textWrap: "nowrap",
+                  }}
+                >
+                  {t("point")}
+                </th>
+              )}
               <th
                 style={{
                   textWrap: "nowrap",
@@ -411,7 +418,7 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : item?.discount + "%"}
                 </td>
-                <td>{item?.point ? item?.point : 0}</td>
+                {storeDetail?.isCRM && <td>{item?.point ? item?.point : 0}</td>}
                 <td>
                   {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
@@ -601,6 +608,9 @@ export default function DashboardFinance({
                           item?.quantity
                     )}
                   </td>
+                  <td style={{ textAlign: "center" }}>
+                    {item?.deliveryCode ? item?.deliveryCode : "-"}
+                  </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                   <td>
                     {item?.updatedAt
@@ -609,31 +619,60 @@ export default function DashboardFinance({
                   </td>
                 </tr>
               ))}
-              <tr
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 18,
-                }}
-              >
-                <td colSpan={4} style={{ textAlign: "right" }}>
-                  {t("total")}
-                </td>
-                <td colSpan={4} style={{ textAlign: "right" }}>
-                  {new Intl.NumberFormat("ja-JP", {
-                    currency: "JPY",
-                  }).format(
-                    dataModal?.orderId?.reduce(
-                      (a, b) => a + (b?.totalPrice ?? 0),
-                      0
-                    ) -
-                      dataModal?.discount -
-                      dataModal?.point
-                  )}{" "}
-                  {t("lak")}
-                </td>
-              </tr>
             </tbody>
           </Table>
+          <div className="flex flex-col gap-1 mt-3 font-medium px-2">
+            {[
+              {
+                label: t("discount"),
+                value: dataModal?.discount,
+                type: "discount",
+              },
+              storeDetail?.isCRM && {
+                label: t("point"),
+                value: dataModal?.point,
+                type: "point",
+              },
+              { label: t("cash"), value: dataModal?.payAmount, type: "cash" },
+              {
+                label: t("transferAmount"),
+                value: dataModal?.transferAmount,
+                type: "transfer",
+              },
+              {
+                label: t("totalPrice2"),
+                value:
+                  dataModal?.discount +
+                  dataModal?.point +
+                  dataModal?.transferAmount +
+                  dataModal?.payAmount,
+                type: "total",
+              },
+            ]
+              .filter(Boolean)
+              .map((item, index) => (
+                <div
+                  className={`w-full flex justify-end items-center ${
+                    item.type === "point" && !storeDetail?.isCRM
+                      ? "none"
+                      : "block"
+                  }`}
+                  key={item?.type}
+                >
+                  <div className="text-end">{item.label}:</div>
+                  <div className="w-60 text-end">
+                    {item.type === "discount"
+                      ? renderDiscount(item.value)
+                      : moneyCurrency(item.value)}
+                    {item.type === "total" ||
+                    item.type === "cash" ||
+                    item.type === "transfer"
+                      ? storeDetail?.firstCurrency
+                      : ""}
+                  </div>
+                </div>
+              ))}
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>

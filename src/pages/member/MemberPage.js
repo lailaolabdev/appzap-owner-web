@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { FaCoins } from "react-icons/fa";
+import ReactPaginate from "react-paginate";
 import {
   Card,
   Breadcrumb,
@@ -31,14 +34,14 @@ import {
   MdOutlineCloudDownload,
   MdRotateRight,
 } from "react-icons/md";
-import { AiFillPrinter } from "react-icons/ai";
 import styled from "styled-components";
+import { FaSearch, FaUser } from "react-icons/fa";
+import { AiFillPrinter } from "react-icons/ai";
+import moment from "moment";
 import Box from "../../components/Box";
 import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
-import moment from "moment";
 import { COLOR_APP } from "../../constants";
 import ButtonDropdown from "../../components/button/ButtonDropdown";
-import { FaSearch, FaUser } from "react-icons/fa";
 import {
   getMemberAllCount,
   getMemberCount,
@@ -56,10 +59,8 @@ import {
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
 import { useStore } from "../../store";
-import { useNavigate } from "react-router-dom";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
-import { FaCoins } from "react-icons/fa";
-import ReactPaginate from "react-paginate";
+
 import { moneyCurrency } from "../../helpers/index";
 import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
@@ -71,6 +72,7 @@ import { set } from "lodash";
 
 import EmptyImage from "../../image/empty-removebg.png";
 import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartAndEndDateMember";
+import { GetRedeemPoint, GetEarnPoint } from "../../services/point";
 
 let limitData = 10;
 
@@ -132,14 +134,13 @@ export default function MemberPage() {
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedMemberOrders, setSelectedMemberOrders] = useState("");
   const [changeUi, setChangeUi] = useState("LIST_MEMBER");
-
-  const [filterTopData, setFilterTopData] = useState([]);
-
   const [loading, setLoading] = useState([]);
 
   const [memberListTop, setMemberListTop] = useState();
   const [memberListBirthday, setMemberListBirthday] = useState();
   const [valueTopList, setValueTopList] = useState();
+  const [redeemList, setRedeemList] = useState([]);
+  const [redeemCount, setRedeemCount] = useState(0);
 
   const { storeDetail, setStoreDetail } = useStore();
 
@@ -456,6 +457,11 @@ export default function MemberPage() {
     setMemberTotalMoney(_data.totalMoney);
   };
 
+  const getRedeemPointUser = async () => {
+    const data = await GetRedeemPoint();
+    console.log("getRedeemPointUser", data);
+  };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -701,6 +707,32 @@ export default function MemberPage() {
               <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "}
               <div style={{ width: 8 }}></div>{" "}
               <span>{t("lists_birthday")}</span>
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/listRedeem/Point"
+              style={{
+                color: "#FB6E3B",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_REDEEMPOINT" ? "#FFDBD0" : "",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                setStoreDetail({
+                  ...storeDetail,
+                  changeUi: "LIST_REDEEMPOINT",
+                });
+                getRedeemPointUser();
+                setValueTopList("");
+              }}
+            >
+              {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
+              <div style={{ width: 8 }} /> <span>ປະຫວັດການໃຊ້ຄະແນນ</span>
             </Nav.Link>
           </Nav.Item>
         </Box>
@@ -991,6 +1023,125 @@ export default function MemberPage() {
               }}
             >
               <span>{t("lists_birthday")}</span>
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <div>ເລືອກວັນທີ :</div>
+                <Button
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setPopup({ popupfiltterBD: true })}
+                >
+                  <BsFillCalendarWeekFill />
+                  <div>
+                    {startDateBirthDay} {startTimeBirthDay}
+                  </div>{" "}
+                  ~{" "}
+                  <div>
+                    {endDateBirthDay} {endTimeBirthDay}
+                  </div>
+                </Button>
+              </div>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("member_name")}</th>
+                  <th style={{ textAlign: "center" }}>{t("phone")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  <th style={{ textAlign: "center" }}>{t("use_service")}</th>
+                  <th style={{ textAlign: "center" }}>{t("birth_day")}</th>
+                  <th style={{ textAlign: "right" }}>{t("manage")}</th>
+                </tr>
+                {loading ? (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : memberListBirthday?.length > 0 ? (
+                  memberListBirthday?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moment(e?.birthday).format("DD/MM/YYYY")}
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleEditClick(e)}
+                        >
+                          {t("edit")}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <img src={EmptyImage} alt="" width={300} height={200} />
+                  </td>
+                )}
+              </table>
+            </Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                bottom: 20,
+              }}
+            >
+              <ReactPaginate
+                previousLabel={
+                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                }
+                nextLabel={
+                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                }
+                breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+                breakClassName={"break-me"}
+                pageCount={totalPaginationMemberBirthday} // Replace with the actual number of pages
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={3}
+                onPageChange={(e) => {
+                  console.log(e);
+                  setPaginationMember(e?.selected + 1);
+                }}
+                containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                activeClassName={"active"}
+                previousClassName={"page-item"}
+                nextClassName={"page-item"}
+                previousLinkClassName={"page-link"}
+                nextLinkClassName={"page-link"}
+              />
+            </div>
+          </Card>
+        )}
+
+        {storeDetail.changeUi === "LIST_REDEEMPOINT" && (
+          <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+              }}
+            >
+              <span>ລາຍການປະຫວັດການໃຊ້ຄະແນນ</span>
             </Card.Header>
             <Card.Body>
               <div

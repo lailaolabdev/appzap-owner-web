@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import styled from "styled-components";
 import Select from "react-select";
+import Swal from "sweetalert2";
+import { BiTransfer } from "react-icons/bi";
+import { useTranslation } from "react-i18next";
+import _ from "lodash";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
-import Swal from "sweetalert2";
 import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { useStore } from "../../../store";
@@ -24,11 +27,7 @@ import {
   getMembers,
   getMemberAllCount,
 } from "../../../services/member.service";
-
-import { BiTransfer } from "react-icons/bi";
-import { useTranslation } from "react-i18next";
-import { callCheckOutPrintBillOnly } from "../../../services/code";
-import _ from "lodash";
+import { RedeemPoint } from "../../../services/point";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -384,10 +383,25 @@ export default function CheckOutPopup({
       });
   };
 
+  // new function Redeem Point Code
+  const RedeemPointUser = async () => {
+    const TotalPrices =
+      (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
+
+    const data = {
+      memberId: memberData?._id,
+      point: point,
+      storeId: storeDetail?._id,
+      moneyTotal: TotalPrices,
+    };
+    await RedeemPoint(data);
+  };
+
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
     saveServiceChargeDetails();
+    RedeemPointUser();
     _checkBill(selectCurrency?.id, selectCurrency?.name);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
@@ -456,15 +470,55 @@ export default function CheckOutPopup({
         }
       }
     } else if (forcus === "POINT") {
-      if (point <= 0) {
-        setCanCheckOut(false);
+      const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+      if (checkPoint === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: `${t("error_point")}`,
+          text: `${t("error_point_enough")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
+
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (point >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (point >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
       } else {
-        setCanCheckOut(true);
+        if (point >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
       }
     } else if (forcus === "CASH_TRANSFER_POINT") {
+      const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+      if (checkPoint === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: `${t("error_point")}`,
+          text: `${t("error_point_enough")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
       const _sum =
         (Number.parseInt(cash) || 0) +
-        (Number.parseInt(transfer) || 0 + Number.parseInt(point));
+        (Number.parseInt(transfer) || 0) +
+        (Number.parseInt(point) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -478,6 +532,12 @@ export default function CheckOutPopup({
           } else {
             setCanCheckOut(false);
           }
+        }
+      } else {
+        if (_sum >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
         }
       }
     }
@@ -761,9 +821,6 @@ export default function CheckOutPopup({
                         <Button
                           className="primary"
                           onClick={() => {
-                            // navigate("/add/newMembers", {
-                            //   state: { key: "newMembers" },
-                            // });
                             window.open("/add/newMembers");
                           }}
                         >
@@ -780,7 +837,10 @@ export default function CheckOutPopup({
                           <InputGroup.Text>
                             {t("point")}:{" "}
                             {point
-                              ? dataBill?.Point - point
+                              ? Math.max(
+                                  0,
+                                  Number.parseInt(dataBill?.Point - point)
+                                )
                               : dataBill?.Point
                               ? dataBill?.Point
                               : "0"}
@@ -797,6 +857,9 @@ export default function CheckOutPopup({
                           !dataBill?.Point
                         }
                         type="text"
+                        maxLength={
+                          Number.parseInt(dataBill?.Point).toString().length
+                        }
                         placeholder="0"
                         value={convertNumber(point)}
                         onClick={() => {
@@ -862,36 +925,6 @@ export default function CheckOutPopup({
               </div>
             )}
 
-            {/* <div
-              style={{
-                marginBottom: 10,
-              }}
-            >
-              {t("return")}:{" "}
-              {moneyCurrency(
-                (Number.parseInt(cash) || 0) +
-                  (Number.parseInt(transfer) || 0) -
-                  (dataBill && dataBill?.discountType === "LAK"
-                    ? totalBill - dataBill?.discount > 0
-                      ? totalBill - dataBill?.discount
-                      : 0
-                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) <=
-                  0
-                  ? 0
-                  : (Number.parseInt(cash) || 0) +
-                      (Number.parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0)
-              )}{" "}
-              {storeDetail?.firstCurrency}
-            </div> */}
             <div style={{ marginBottom: 10 }}>
               {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
@@ -932,20 +965,22 @@ export default function CheckOutPopup({
               >
                 {t("transfer")}
               </Button>
-              <Button
-                disabled={hasCRM}
-                variant={tab === "point" ? "primary" : "outline-primary"}
-                onClick={() => {
-                  setCash();
-                  setTransfer();
-                  setPoint();
-                  setTab("point");
-                  setSelectInput("inputPoint");
-                  setForcus("POINT");
-                }}
-              >
-                {t("point")}
-              </Button>
+              {storeDetail?.isCRM && (
+                <Button
+                  disabled={hasCRM}
+                  variant={tab === "point" ? "primary" : "outline-primary"}
+                  onClick={() => {
+                    setCash();
+                    setTransfer();
+                    setPoint();
+                    setTab("point");
+                    setSelectInput("inputPoint");
+                    setForcus("POINT");
+                  }}
+                >
+                  {t("point")}
+                </Button>
+              )}
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
@@ -965,22 +1000,26 @@ export default function CheckOutPopup({
               >
                 {t("cash_transfer")}
               </Button>
-              <Button
-                disabled={hasCRM}
-                variant={
-                  tab === "cash_transfer_point" ? "primary" : "outline-primary"
-                }
-                onClick={() => {
-                  setCash();
-                  setTransfer();
-                  setPoint();
-                  setTab("cash_transfer_point");
-                  setSelectInput("inputCash");
-                  setForcus("CASH_TRANSFER_POINT");
-                }}
-              >
-                {t("transfercashpoint")}
-              </Button>
+              {storeDetail?.isCRM && (
+                <Button
+                  disabled={hasCRM}
+                  variant={
+                    tab === "cash_transfer_point"
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  onClick={() => {
+                    setCash();
+                    setTransfer();
+                    setPoint();
+                    setTab("cash_transfer_point");
+                    setSelectInput("inputCash");
+                    setForcus("CASH_TRANSFER_POINT");
+                  }}
+                >
+                  {t("transfercashpoint")}
+                </Button>
+              )}
               <div style={{ flex: 1 }} />
               <Form.Control
                 hidden={tab !== "cash"}
@@ -1036,6 +1075,9 @@ export default function CheckOutPopup({
                 if (selectInput === "inputCurrency") {
                   return cashCurrency;
                 }
+                if (selectInput === "inputPoint") {
+                  return point;
+                }
               })()}
               setSelectInput={(e) => {
                 if (selectInput === "inputCash") {
@@ -1044,6 +1086,8 @@ export default function CheckOutPopup({
                   onChangeTransferInput(e);
                 } else if (selectInput === "inputCurrency") {
                   onChangeCurrencyInput(e);
+                } else if (selectInput === "inputPoint") {
+                  onChangePointInput(e);
                 }
               }}
             />

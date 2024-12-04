@@ -156,6 +156,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const countBill = data.length || 0;
 
       const totalBill = _.sumBy(data, (e) => e.billAmount) || 0;
+      const point = _.sumBy(data, (e) => e.point) || 0;
 
       const cashTotalBill =
         _.sumBy(
@@ -215,6 +216,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
+        ຄະແນນ: point,
         ບິນສ່ວນຫຼຸດ: discountBill.length,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
