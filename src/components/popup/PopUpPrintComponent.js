@@ -214,7 +214,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         ຍອດທັງໝົດ: totalBill,
         ຈ່າຍເງິນສົດ: cashTotalBill,
         ຈ່າຍເງິນໂອນ: transferTotalBill,
-        ບິນສ່ວນຫຼຸດ: discountBill.length,
+        ຈຳນວນບິນສ່ວນຫຼຸດ: discountBill.length,
         ສ່ວນຫຼຸດ: discountTotalBill,
         ບິນຄ້າງ: activeBill,
         ເງິນຄ້າງ: totalActiveBill,
