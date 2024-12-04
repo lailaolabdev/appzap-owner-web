@@ -123,8 +123,6 @@ export default function Dashboard() {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
 
-    console.log("getTotalBillActiveReportData: ", data);
-
     setTotalBillActiveReport(data);
   };
 
@@ -295,6 +293,13 @@ export default function Dashboard() {
                 {t("transferPayment")}
                 {" : "}
                 {convertNumber(moneyReport?.transfer?.totalBill)}
+              </div>
+              <div>
+                {"Delivery"}
+                {" : "}
+                {convertNumber(
+                  moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue
+                )}
               </div>
               <div>
                 {t("transfer_cash")}

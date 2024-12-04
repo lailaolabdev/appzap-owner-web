@@ -83,18 +83,26 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
         </Form.Group>
         <Form.Group className="mt-3">
           <Form.Label>{t("chooseflatform")}</Form.Label>
-          <Form.Control
-            as="select"
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-          >
-            <option value="">{t("chooseflatform")}</option>
+          <div>
             {platformList.map((p, idx) => (
-              <option key={p?._id} value={p?.name}>
-                {p?.name}
-              </option>
+              <Form.Check
+                key={p?._id}
+                type="checkbox"
+                id={`platform-${p?._id}`}
+                label={p?.name}
+                value={p?.name}
+                checked={platform === p?.name} // Only one platform can be selected
+                onChange={(e) => {
+                  // Handle checkbox change to ensure only one can be selected
+                  if (e.target.checked) {
+                    setPlatform(p?.name); // Set the selected platform
+                  } else {
+                    setPlatform(""); // Deselect the platform (optional)
+                  }
+                }}
+              />
             ))}
-          </Form.Control>
+          </div>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>

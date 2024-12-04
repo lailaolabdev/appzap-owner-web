@@ -14,6 +14,7 @@ import {
   getBankReport,
   getBillReport,
   getCurrencyReport,
+  getDeliveryReport,
 } from "../../services/report";
 import _ from "lodash";
 import {
@@ -33,6 +34,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [bills, setBill] = useState();
   const [bank, setBank] = useState([]);
   const [currency, setcurrency] = useState([]);
+  const [delivery, setDelivery] = useState([]);
   const [reportBill, setReportBill] = useState({
     ຈຳນວນບິນ: 0,
     ຍອດທັງໝົດ: 0,
@@ -147,6 +149,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
       const bankReport = await getBankReport(storeDetail._id, findBy);
       const currencyReport = await getCurrencyReport(storeDetail._id, findBy);
+      // const findBy = `?startDate=${startDate}&endDate=${endDate}`;
+      const Delivery = await getDeliveryReport(storeDetail?._id, findBy);
+      setDelivery(Delivery.response);
 
       setBank(bankReport);
       setcurrency(currencyReport);
@@ -200,13 +205,13 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       // Final validation: Check if calculated total matches totalBill
       const calculatedTotal =
         cashTotalBill + transferTotalBill - discountTotalBill;
-      if (calculatedTotal !== totalBill) {
-        console.error("Calculation Mismatch Detected!");
-        console.error(`Expected Total (totalBill): ${totalBill}`);
-        console.error(`Calculated Total: ${calculatedTotal}`);
-      } else {
-        console.log("Calculation validated: Total matches!");
-      }
+      // if (calculatedTotal !== totalBill) {
+      //   console.error("Calculation Mismatch Detected!");
+      //   console.error(`Expected Total (totalBill): ${totalBill}`);
+      //   console.error(`Calculated Total: ${calculatedTotal}`);
+      // } else {
+      //   console.log("Calculation validated: Total matches!");
+      // }
 
       // Update state or return result
       setReportBill({
@@ -225,6 +230,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       console.error("Error in getDataBillReport:", err);
     }
   };
+
+  const deliveryReports = delivery
+    ? delivery?.revenueByPlatform?.map((e) => {
+        return {
+          name: e?._id,
+          amount: e?.totalRevenue,
+        };
+      })
+    : [];
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -287,6 +301,18 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 value: reportBill[`${t("pay_transfer")}`],
                 type: storeDetail?.firstCurrency,
               },
+
+              ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
+                ? deliveryReports.map((e, idx) => ({
+                    name: (
+                      <div
+                        style={{ fontWeight: 700 }}
+                      >{`delivery (${e?.name})`}</div>
+                    ),
+                    value: Math.floor(e?.amount || 0),
+                    type: storeDetail?.firstCurrency,
+                  }))
+                : []),
               {
                 name: `${t("discount_bill")}:`,
                 value: reportBill[`${t("discount_bill")}`],
@@ -325,6 +351,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 </span>
               </div>
             ))}
+
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <div>
               <TableComponent>

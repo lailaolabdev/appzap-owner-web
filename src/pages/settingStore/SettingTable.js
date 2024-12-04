@@ -133,7 +133,6 @@ export default function SettingTable() {
             codeId: selectTatle?.codeId,
             zone: selectTatle?.zone,
             isDeliveryTable: selectTatle?.isDeliveryTable,
-            isDeliveryTable: isDeliveryTableEdit,
             isOrderSplit: isOrderSplitEdit,
           },
         },
@@ -260,9 +259,9 @@ export default function SettingTable() {
               <tr>
                 {/* <th scope="col">#</th> */}
                 <th scope="col">{t("tablecode")}</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                <th scope="col">{t("zone")}</th>
+                <th scope="col">{t("deliveryTable")}</th>
+                <th scope="col">{t("is_order_split")}</th>
                 <th scope="col" style={{ textAlign: "right" }}>
                   {t("manage")}
                 </th>
@@ -289,7 +288,7 @@ export default function SettingTable() {
                     >
                       {table?.isDeliveryTable === true
                         ? t("deliveryTable")
-                        : ""}
+                        : "-"}
                     </td>
                     <td>{table?.isOrderSplit ? t("is_order_split") : "-"}</td>
                     <td>
@@ -469,79 +468,6 @@ export default function SettingTable() {
         </Modal.Footer>
       </Modal>
 
-      {/* ===== edit ===== */}
-      {/* <Modal show={show4} onHide={() => setShow4(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t("edit_table")}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t()}</Form.Label>
-            <div style={{ height: 10 }}></div>
-            <Form.Control
-              type="number"
-              placeholder={t("fill_table_no")}
-              value={selectTatle?.sort || 0}
-              onChange={(e) =>
-                setSelectTatle({ ...selectTatle, sort: e.target.value || 0 })
-              }
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("tablecode")}</Form.Label>
-            <div style={{ height: 10 }}></div>
-            <Form.Control
-              type="text"
-              placeholder={t("fill_code")}
-              value={selectTatle?.name}
-              onChange={(e) =>
-                setSelectTatle({ ...selectTatle, name: e?.target?.value })
-              }
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>{t("fill_zone")}</Form.Label>
-            <div style={{ height: 10 }}></div>
-            <Form.Control
-              as="select"
-              value={selectTatle?.zone}
-              onChange={(e) =>
-                setSelectTatle({ ...selectTatle, zone: e?.target?.value })
-              }
-            >
-              <option value="">{t("choose_zone")}</option>
-              {zoneData?.map((item, index) => (
-                <option key={index} value={item?._id}>
-                  {item?.name}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-          <div>{t("enable")}</div>
-          <label className="switch">
-            <input
-              type="checkbox"
-              checked={selectTatle?.status === true ? true : false}
-              onClick={(e) => {
-                _changeStatusTable(selectTatle);
-                setShow4(false);
-              }}
-            />
-            <span className="slider round"></span>
-          </label>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow4(false)}>
-            {t("cancel")}
-          </Button>
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _updateTable()}
-          >
-            {t("save")}
-          </Button>
-        </Modal.Footer>
-      </Modal> */}
       <Modal show={show4} onHide={() => setShow4(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("edit_table")}</Modal.Title>

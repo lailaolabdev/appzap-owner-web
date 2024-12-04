@@ -332,6 +332,20 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
+                delivery
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("name")} platform
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
                 {t("price")} / {t("bill")}
               </th>
               <th
@@ -398,8 +412,19 @@ export default function DashboardFinance({
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(item?.discount) + t("lak")
-                    : item?.discount + "%"}
+                    : `${item?.discount}%`}
                 </td>
+                <td>
+                  {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                    ? new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(_countAmount(item?.orderId))
+                    : new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(item?.deliveryAmount)}{" "}
+                  {selectedCurrency}
+                </td>
+                <td>{item?.deliveryName ? item?.deliveryName : "--"}</td>
                 <td>
                   {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
@@ -464,6 +489,8 @@ export default function DashboardFinance({
                     ? t("payBycash")
                     : item?.paymentMethod === "TRANSFER"
                     ? t("transferPayment")
+                    : item?.paymentMethod === "DELIVERY"
+                    ? `${t("transferPayment")} (delivery)`
                     : t("transfercash")}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -541,7 +568,7 @@ export default function DashboardFinance({
                 <th>{t("statusOfFood")}</th>
                 <th>{t("servedBy")}</th>
                 <th>{t("price")}</th>
-                <th>Delivery</th>
+                <th>DC Code</th>
                 <th>{t("time")}</th>
                 <th>ເວລາອັບເດດ</th>
               </tr>
@@ -588,11 +615,7 @@ export default function DashboardFinance({
                             item?.quantity
                       )}
                     </td>
-                    <td>
-                      {item?.deliveryCode && item?.platform
-                        ? `${item?.deliveryCode} - ${item?.platform}`
-                        : ""}
-                    </td>
+                    <td>{item?.deliveryCode ? `${item?.deliveryCode}` : ""}</td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
                     </td>

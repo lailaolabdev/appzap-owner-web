@@ -38,7 +38,7 @@ import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMen
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
-import PopUpPrintDelivery from "../../components/popup/PopUpPrintDelivery";
+
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
@@ -66,8 +66,6 @@ export default function DashboardPage() {
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
-
-  console.log({ deliveryReport });
 
   // provider
   const { storeDetail, setStoreDetail } = useStore();
@@ -233,6 +231,17 @@ export default function DashboardPage() {
       errorAdd(`${t("export_fail")}`);
     }
   };
+
+  const deliveryReports = moneyReport?.delivery[0]?.revenueByPlatform?.map(
+    (e) => {
+      return {
+        name: e?._id,
+        qty: e?.totalOrders,
+        amount: e?.totalRevenue,
+      };
+    }
+  );
+
   return (
     <div>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -423,112 +432,120 @@ export default function DashboardPage() {
             </Card.Header>
             <Card.Body>
               <table style={{ width: "100%" }}>
-                <tr>
-                  <th>{t("bill_type")}</th>
-                  <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
-                  <th style={{ textAlign: "right" }}>{t("total_price")}</th>
-                </tr>
-                {[
-                  {
-                    method: `${t("bill_crash")}`,
-                    qty: moneyReport?.cash?.count,
-                    amount: moneyReport?.cash?.totalBill,
-                  },
-                  {
-                    method: `${t("tsf_bill")}`,
-                    qty: moneyReport?.transfer?.count,
-                    amount: moneyReport?.transfer?.totalBill,
-                  },
-                  {
-                    method: `${t("service_charge")}`,
-                    qty: moneyReport?.serviceAmount?.count,
-                    amount: Math.floor(
-                      moneyReport?.serviceAmount?.totalServiceCharge
-                    ),
-                  },
-                  {
-                    method: `${t("tax")}`,
-                    qty: moneyReport?.taxAmount?.count,
-                    amount: Math.floor(moneyReport?.taxAmount?.totalTax),
-                  },
-                  {
-                    method: (
-                      <div>
-                        {t("tsf_cash")}
-                        <br />
-                        {t("cash")}{" "}
-                        {moneyCurrency(moneyReport?.transferCash?.cash || 0)} ||
-                        {t("transfer")}{" "}
-                        {moneyCurrency(
-                          moneyReport?.transferCash?.transfer || 0
-                        )}
-                      </div>
-                    ),
-                    qty: moneyReport?.transferCash?.count,
-                    amount: moneyReport?.transferCash?.totalBill,
-                  },
-                  {
-                    method: (
-                      <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
-                    ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.cash?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.cash || 0) +
-                      (moneyReport?.cash?.totalBill || 0),
-                  },
-                  {
-                    method: (
-                      <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
-                    ),
-                    qty:
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.transferCash?.transfer || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
-                  },
-
-                  {
-                    method: <div style={{ fontWeight: 700 }}>{t("total")}</div>,
-                    qty:
-                      (moneyReport?.cash?.count || 0) +
-                      (moneyReport?.transferCash?.count || 0) +
-                      (moneyReport?.transfer?.count || 0),
-                    amount:
-                      (moneyReport?.cash?.totalBill || 0) +
-                      (moneyReport?.transferCash?.totalBill || 0) +
-                      (moneyReport?.transfer?.totalBill || 0),
-                  },
-                  {
-                    method: (
-                      <div style={{ fontWeight: 700 }}>
-                        {t("total_tax_service_charge")}
-                      </div>
-                    ),
-                    qty:
-                      (moneyReport?.serviceAmount?.count || 0) +
-                      (moneyReport?.taxAmount?.count || 0),
-                    amount:
-                      (Math.floor(
-                        moneyReport?.serviceAmount?.totalServiceCharge
-                      ) || 0) +
-                      (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
-                  },
-                ].map((e) => (
+                <thead>
                   <tr>
-                    <td style={{ textAlign: "left" }}>{e?.method}</td>
-                    <td>{moneyCurrency(e?.qty)}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.amount)}
-                      {storeDetail?.firstCurrency}
-                    </td>
+                    <th>{t("bill_type")}</th>
+                    <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                    <th style={{ textAlign: "right" }}>{t("total_price")}</th>
                   </tr>
-                ))}
+                </thead>
+                <tbody>
+                  {[
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
+                      ),
+                      qty:
+                        (moneyReport?.transferCash?.count || 0) +
+                        (moneyReport?.cash?.count || 0),
+                      amount:
+                        (moneyReport?.transferCash?.cash || 0) +
+                        (moneyReport?.cash?.totalBill || 0),
+                    },
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
+                      ),
+                      qty:
+                        (moneyReport?.transferCash?.count || 0) +
+                        (moneyReport?.transfer?.count || 0),
+                      amount:
+                        (moneyReport?.transferCash?.transfer || 0) +
+                        (moneyReport?.transfer?.totalBill || 0),
+                    },
+                    ...(Array.isArray(deliveryReports) &&
+                    deliveryReports.length > 0
+                      ? deliveryReports.map((e, idx) => ({
+                          method: (
+                            <div
+                              style={{ fontWeight: 700 }}
+                            >{`delivery (${e?.name})`}</div>
+                          ),
+                          qty: e?.qty || 0,
+                          amount: Math.floor(e?.amount || 0),
+                        }))
+                      : []),
+                    {
+                      method: `${t("service_charge")}`,
+                      qty: moneyReport?.serviceAmount?.count,
+                      amount: Math.floor(
+                        moneyReport?.serviceAmount?.totalServiceCharge
+                      ),
+                    },
+                    {
+                      method: `${t("tax")}`,
+                      qty: moneyReport?.taxAmount?.count,
+                      amount: Math.floor(moneyReport?.taxAmount?.totalTax),
+                    },
+                    {
+                      method: (
+                        <div>
+                          {t("tsf_cash")}
+                          <br />
+                          {t("cash")}{" "}
+                          {moneyCurrency(moneyReport?.transferCash?.cash || 0)}{" "}
+                          || {t("transfer")}{" "}
+                          {moneyCurrency(
+                            moneyReport?.transferCash?.transfer || 0
+                          )}
+                        </div>
+                      ),
+                      qty: moneyReport?.transferCash?.count,
+                      amount: moneyReport?.transferCash?.totalBill,
+                    },
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("total")}</div>
+                      ),
+                      qty:
+                        (moneyReport?.cash?.count || 0) +
+                        (moneyReport?.transferCash?.count || 0) +
+                        (moneyReport?.transfer?.count || 0),
+                      amount:
+                        (moneyReport?.cash?.totalBill || 0) +
+                        (moneyReport?.transferCash?.totalBill || 0) +
+                        (moneyReport?.transfer?.totalBill || 0),
+                    },
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>
+                          {t("total_tax_service_charge")}
+                        </div>
+                      ),
+                      qty:
+                        (moneyReport?.serviceAmount?.count || 0) +
+                        (moneyReport?.taxAmount?.count || 0),
+                      amount:
+                        (Math.floor(
+                          moneyReport?.serviceAmount?.totalServiceCharge
+                        ) || 0) +
+                        (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
+                    },
+                  ].map((e, idx) => (
+                    <tr key={idx}>
+                      <td style={{ textAlign: "left" }}>{e?.method}</td>
+                      <td>{moneyCurrency(e?.qty)}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.amount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </Card.Body>
           </Card>
+
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -618,6 +635,7 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("date")}</th>
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
+                  <th style={{ textAlign: "center" }}>{"Delivery"}</th>
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
@@ -627,6 +645,10 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
+                    <td>
+                      {moneyCurrency(e?.deliveryAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </td>
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}
@@ -762,39 +784,6 @@ export default function DashboardPage() {
               </table>
             </Card.Body>
           </Card>
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              Delivery
-            </Card.Header>
-            <Card.Body>
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th style={{ textAlign: "left" }}>{t("no")}</th>
-                  <th style={{ textAlign: "center" }}>Platform</th>
-                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
-                  <th style={{ textAlign: "right" }}>{t("sale_amount")}</th>
-                </tr>
-                {deliveryReport?.revenueByPlatform?.map((e, index) => (
-                  <tr key={e._id}>
-                    <td style={{ textAlign: "left" }}>{index + 1}</td>
-                    <td style={{ textAlign: "center" }}>{e?._id}</td>
-                    <td style={{ textAlign: "right" }}>{e?.totalOrders}</td>
-                    <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(Math.floor(e?.totalRevenue))}
-                      {storeDetail?.firstCurrency}
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            </Card.Body>
-          </Card>
         </Box>
       </Box>
       {/* popup */}
@@ -830,10 +819,6 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuAndCategoryHistoryComponent>
-
-      <PopUpPrintDelivery open={popup?.delivery} onClose={() => setPopup()}>
-        <BillForReport80 />
-      </PopUpPrintDelivery>
 
       <PopUpPrintReport
         open={popup?.printReport}
