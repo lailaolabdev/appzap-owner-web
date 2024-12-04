@@ -1260,7 +1260,7 @@ export default function BillSplit() {
                               {/* <div>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
+                                  : `${t("available")}`}
                               </div> */}
                             </span>
                           </div>
@@ -1336,7 +1336,7 @@ export default function BillSplit() {
                               {/* <div>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
+                                  : `${t("available")}`}
                               </div> */}
                             </span>
                           </div>
@@ -1447,7 +1447,7 @@ export default function BillSplit() {
                               {/* <div>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
+                                  : `${t("available")}`}
                               </div> */}
                             </span>
                           </div>
@@ -1524,7 +1524,7 @@ export default function BillSplit() {
                               {/* <div>
                                 {table?.isStaffConfirm
                                   ? `${t("unavailable")}`
-                                  : `${t("avaliable")}`}
+                                  : `${t("available")}`}
                               </div> */}
                             </span>
                           </div>

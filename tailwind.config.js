@@ -10,6 +10,10 @@ module.exports = {
       colors: {
         "color-app": "#FF6700",
       },
+      fontFamily: {
+        inter: ["Inter", "sans-serif"],
+        noto: ["Noto Sans Lao", "sans-serif"],
+      },
     },
   },
   plugins: [],
