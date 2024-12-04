@@ -820,6 +820,7 @@
   "3_more_day": "3 more day",
   "5_more_day": "5 more day",
   "7_more_day": "7 more day",
+  "3_l_month": "3 last month",
   "chose_top": "Choose Top",
   "report_member_updates_last": "Last updated 04:00 (The report will be updated everyday)",
   "updated": "Updated",
@@ -930,5 +931,6 @@
   "is_crm": "CRM (Customer Relationship Management)",
   "open_crm": "Open function CRM",
   "error_point": "Error point",
-  "error_point_enough": "Your current accumulated score is 0 points"
+  "error_point_enough": "Your current accumulated score is 0 points",
+  "bill_point_balance": "Bill balance"
 }

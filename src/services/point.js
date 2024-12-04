@@ -13,10 +13,9 @@ export const RedeemPoint = async (value) => {
     console.log("RedeemPoint error:", error);
   }
 };
-export const GetRedeemPoint = async () => {
+export const GetRedeemPoint = async (findBy) => {
   try {
-    const LocalData = await getLocalData();
-    const url = `${END_POINT_APP}/v4/point-redeem/history?storeId=${LocalData?.DATA?.storeId}`;
+    const url = `${END_POINT_APP}/v4/point-redeem/history${findBy}`;
     const res = await axios.get(url, {
       headers: await getHeaders(),
     });
@@ -26,10 +25,9 @@ export const GetRedeemPoint = async () => {
     console.log("RedeemPoint error:", error);
   }
 };
-export const GetEarnPoint = async () => {
+export const GetEarnPoint = async (findBy) => {
   try {
-    const LocalData = await getLocalData();
-    const url = `${END_POINT_APP}/v4/point-earn/history?storeId=${LocalData?.DATA?.storeId}`;
+    const url = `${END_POINT_APP}/v4/point-earn/history${findBy}`;
     const res = await axios.get(url, {
       headers: await getHeaders(),
     });

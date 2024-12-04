@@ -927,6 +927,7 @@
   "7_more_day": "ອີກ 7 ມື້",
   "1_more_month": "ອີກ 1 ເດືອນ",
   "3_more_month": "ອີກ 3 ເດືອນ",
+  "3_l_month": "3 ເດືອນຜ່ານມາ",
   "this_years": "ປີນີ້",
   "last_years": "ປີກ່ອນ",
   "chose_top": "ເລຶອກການຈັດ Top",
@@ -1047,5 +1048,6 @@
   "is_crm": "CRM (Customer Relationship Management)",
   "open_crm": "ເປີດໃຊ້ງານຟັງຊັນ CRM",
   "error_point": "ແຈ້ງເຕືອນຄະແນນ",
-  "error_point_enough": "ຄະແນນສະສົມປັດຈຸບັນຂອງທ່ານເຫຼືອ 0 ຄະແນນ"
+  "error_point_enough": "ຄະແນນສະສົມປັດຈຸບັນຂອງທ່ານເຫຼືອ 0 ຄະແນນ",
+  "bill_point_balance": "ມູນຄ່າບິນ"
 }

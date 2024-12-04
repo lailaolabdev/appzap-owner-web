@@ -67,6 +67,7 @@ import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
 import PopUpMemberOrderAll from "../../components/popup/PopUpMemberOrderAll";
 import { use } from "i18next";
 import PopUpSetStartAndEndDateBirthDay from "../../components/popup/PopUpSetStartAndEndDateBirthDay";
+import PopUpSetStartAndEndDateFilterPoint from "../../components/popup/PopUpSetStartAndEndDateFilterPoint";
 import PopUpSetStartAndEndDateTop from "../../components/popup/PopUpSetStartAndEndDateTop";
 import { set } from "lodash";
 
@@ -108,6 +109,14 @@ export default function MemberPage() {
   );
   const [startTimeBirthDay, setStartTimeBirthDay] = useState("00:00:00");
   const [endTimeBirthDay, setEndTimeBirthDay] = useState("23:59:59");
+  const [startDatePoint, setStartDatePoint] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDatePoint, setEndDatePoint] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [startTimePoint, setStartTimePoint] = useState("00:00:00");
+  const [endTimePoint, setEndTimePoint] = useState("23:59:59");
   const [startDateMember, setStartDateMember] = useState(
     moment().format("YYYY-MM-DD")
   );
@@ -141,6 +150,8 @@ export default function MemberPage() {
   const [valueTopList, setValueTopList] = useState();
   const [redeemList, setRedeemList] = useState([]);
   const [redeemCount, setRedeemCount] = useState(0);
+  const [EarnList, setEarnList] = useState([]);
+  const [EarnCount, setEarnCount] = useState(0);
 
   const { storeDetail, setStoreDetail } = useStore();
 
@@ -186,6 +197,8 @@ export default function MemberPage() {
     getMembersData();
     getMemberListTop();
     getMemberListBirthday();
+    getRedeemPointUser();
+    getEarnPointUser();
   }, [paginationMember]);
 
   useEffect(() => {
@@ -211,6 +224,8 @@ export default function MemberPage() {
 
   useEffect(() => {
     getMemberListBirthday();
+    getRedeemPointUser();
+    getEarnPointUser();
   }, [endDateBirthDay, startDateBirthDay, endTimeBirthDay, startTimeBirthDay]);
 
   // useEffect(() => {
@@ -458,8 +473,42 @@ export default function MemberPage() {
   };
 
   const getRedeemPointUser = async () => {
-    const data = await GetRedeemPoint();
-    console.log("getRedeemPointUser", data);
+    setLoading(true);
+    const { DATA } = await getLocalData();
+    let findby = "?";
+    findby += `storeId=${DATA?.storeId}&`;
+    findby += `skip=${(paginationMember - 1) * limitData}&`;
+    findby += `limit=${limitData}&`;
+    findby += `startDay=${startDateBirthDay}&`;
+    findby += `endDay=${endDateBirthDay}&`;
+    findby += `startTime=${startTimeBirthDay}&`;
+    findby += `endTime=${endTimeBirthDay}&`;
+    const data = await GetRedeemPoint(findby);
+    if (data) {
+      setRedeemCount(Math.ceil(data.count / limitData));
+      setRedeemList(data.data);
+      setLoading(false);
+    }
+    setLoading(false);
+  };
+  const getEarnPointUser = async () => {
+    setLoading(true);
+    const { DATA } = await getLocalData();
+    let findby = "?";
+    findby += `storeId=${DATA?.storeId}&`;
+    findby += `skip=${(paginationMember - 1) * limitData}&`;
+    findby += `limit=${limitData}&`;
+    findby += `startDate=${startDateBirthDay}&`;
+    findby += `endDate=${endDateBirthDay}&`;
+    findby += `startTime=${startTimeBirthDay}&`;
+    findby += `endTime=${endTimeBirthDay}&`;
+    const data = await GetEarnPoint(findby);
+    if (data) {
+      setEarnCount(Math.ceil(data.count / limitData));
+      setEarnList(data.data);
+      setLoading(false);
+    }
+    setLoading(false);
   };
 
   return (
@@ -733,6 +782,32 @@ export default function MemberPage() {
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
               <div style={{ width: 8 }} /> <span>ປະຫວັດການໃຊ້ຄະແນນ</span>
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/listEearn/Point"
+              style={{
+                color: "#FB6E3B",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_EARNPOINT" ? "#FFDBD0" : "",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                setStoreDetail({
+                  ...storeDetail,
+                  changeUi: "LIST_EARNPOINT",
+                });
+                getEarnPointUser();
+                setValueTopList("");
+              }}
+            >
+              {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
+              <div style={{ width: 8 }} /> <span>ປະຫວັດການຮັບຄະແນນ</span>
             </Nav.Link>
           </Nav.Item>
         </Box>
@@ -1157,7 +1232,7 @@ export default function MemberPage() {
                   variant="outline-primary"
                   size="small"
                   style={{ display: "flex", gap: 10, alignItems: "center" }}
-                  onClick={() => setPopup({ popupfiltterBD: true })}
+                  onClick={() => setPopup({ popupfiltterPoint: true })}
                 >
                   <BsFillCalendarWeekFill />
                   <div>
@@ -1174,32 +1249,38 @@ export default function MemberPage() {
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{t("point")}</th>
-                  <th style={{ textAlign: "center" }}>{t("use_service")}</th>
-                  <th style={{ textAlign: "center" }}>{t("birth_day")}</th>
-                  <th style={{ textAlign: "right" }}>{t("manage")}</th>
+                  <th style={{ textAlign: "center" }}>
+                    {t("bill_point_balance")}
+                  </th>
+                  <th style={{ textAlign: "center" }}>{t("date")}</th>
+                  {/* <th style={{ textAlign: "right" }}>{t("manage")}</th> */}
                 </tr>
                 {loading ? (
                   <td colSpan={9} style={{ textAlign: "center" }}>
                     <Spinner animation="border" variant="warning" />
                   </td>
-                ) : memberListBirthday?.length > 0 ? (
-                  memberListBirthday?.map((e) => (
+                ) : redeemList?.length > 0 ? (
+                  redeemList?.map((e) => (
                     <tr>
-                      <td style={{ textAlign: "left" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                      <td style={{ textAlign: "center" }}>{e?.point}</td>
-                      <td style={{ textAlign: "center" }}>{e?.bill}</td>
+                      <td style={{ textAlign: "left" }}>{e?.memberId?.name}</td>
                       <td style={{ textAlign: "center" }}>
-                        {moment(e?.birthday).format("DD/MM/YYYY")}
+                        {e?.memberId?.phone}
                       </td>
-                      <td style={{ textAlign: "right" }}>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.moneyTotal)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moment(e?.createdAt).format("DD/MM/YYYY")}
+                      </td>
+                      {/* <td style={{ textAlign: "right" }}>
                         <Button
                           variant="outline-primary"
                           onClick={() => handleEditClick(e)}
                         >
                           {t("edit")}
                         </Button>
-                      </td>
+                      </td> */}
                     </tr>
                   ))
                 ) : (
@@ -1226,11 +1307,134 @@ export default function MemberPage() {
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
-                pageCount={totalPaginationMemberBirthday} // Replace with the actual number of pages
+                pageCount={redeemCount} // Replace with the actual number of pages
                 marginPagesDisplayed={1}
                 pageRangeDisplayed={3}
                 onPageChange={(e) => {
-                  console.log(e);
+                  setPaginationMember(e?.selected + 1);
+                }}
+                containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+                pageClassName={"page-item"}
+                pageLinkClassName={"page-link"}
+                activeClassName={"active"}
+                previousClassName={"page-item"}
+                nextClassName={"page-item"}
+                previousLinkClassName={"page-link"}
+                nextLinkClassName={"page-link"}
+              />
+            </div>
+          </Card>
+        )}
+
+        {storeDetail.changeUi === "LIST_EARNPOINT" && (
+          <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+              }}
+            >
+              <span>ລາຍການປະຫວັດໄດ້ຮັບຄະແນນ</span>
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <div>ເລືອກວັນທີ :</div>
+                <Button
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setPopup({ popupfiltterPoint: true })}
+                >
+                  <BsFillCalendarWeekFill />
+                  <div>
+                    {startDateBirthDay} {startTimeBirthDay}
+                  </div>{" "}
+                  ~{" "}
+                  <div>
+                    {endDateBirthDay} {endTimeBirthDay}
+                  </div>
+                </Button>
+              </div>
+              <table style={{ width: "100%" }}>
+                <tr>
+                  <th style={{ textAlign: "left" }}>{t("member_name")}</th>
+                  <th style={{ textAlign: "center" }}>{t("phone")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  <th style={{ textAlign: "center" }}>
+                    {t("bill_point_balance")}
+                  </th>
+                  <th style={{ textAlign: "center" }}>{t("date")}</th>
+                  {/* <th style={{ textAlign: "right" }}>{t("manage")}</th> */}
+                </tr>
+                {loading ? (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
+                ) : EarnList?.length > 0 ? (
+                  EarnList?.map((e) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{e?.memberId?.name}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.memberId?.phone}
+                      </td>
+                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.moneyTotal)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moment(e?.createdAt).format("DD/MM/YYYY")}
+                      </td>
+                      {/* <td style={{ textAlign: "right" }}>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleEditClick(e)}
+                        >
+                          {t("edit")}
+                        </Button>
+                      </td> */}
+                    </tr>
+                  ))
+                ) : (
+                  <td colSpan={9} style={{ textAlign: "center" }}>
+                    <img src={EmptyImage} alt="" width={300} height={200} />
+                  </td>
+                )}
+              </table>
+            </Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                bottom: 20,
+              }}
+            >
+              <ReactPaginate
+                previousLabel={
+                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                }
+                nextLabel={
+                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                }
+                breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+                breakClassName={"break-me"}
+                pageCount={EarnCount} // Replace with the actual number of pages
+                marginPagesDisplayed={1}
+                pageRangeDisplayed={3}
+                onPageChange={(e) => {
                   setPaginationMember(e?.selected + 1);
                 }}
                 containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
@@ -1534,6 +1738,20 @@ export default function MemberPage() {
         endTimeTop={endTimeTop}
         endDateTop={endDateTop}
       />
+
+      <PopUpSetStartAndEndDateFilterPoint
+        open={popup?.popupfiltterPoint}
+        onClose={() => setPopup()}
+        startDatePoint={startDatePoint}
+        setStartDatePoint={setStartDatePoint}
+        setStartTimePoint={setStartTimePoint}
+        startTimePoint={startTimePoint}
+        setEndDatePoint={setEndDatePoint}
+        setEndTimePoint={setEndTimePoint}
+        endTimePoint={endTimePoint}
+        endDatePoint={endDatePoint}
+      />
+
       <PopUpSetStartAndEndDateBirthDay
         open={popup?.popupfiltterBD}
         onClose={() => setPopup()}

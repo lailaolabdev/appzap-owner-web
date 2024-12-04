@@ -393,6 +393,7 @@ export default function CheckOutPopup({
       point: point,
       storeId: storeDetail?._id,
       moneyTotal: TotalPrices,
+      billId: dataBill?._id,
     };
     await RedeemPoint(data);
   };
