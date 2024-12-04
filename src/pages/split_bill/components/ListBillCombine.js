@@ -36,7 +36,7 @@ const ListBillCombine = ({
         {combine === undefined ? (
           <div className="text-center">
             <div style={{ marginTop: 50, fontSize: 50 }}>
-              <h4>{t("avaliable")}</h4>
+              <h4>{t("available")}</h4>
               <FontAwesomeIcon
                 icon={faListAlt}
                 style={{
