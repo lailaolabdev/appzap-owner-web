@@ -628,7 +628,7 @@ export default function DashboardFinance({
               ))}
             </tbody>
           </Table>
-          <div className="flex flex-col gap-1 mt-3 font-medium px-2">
+          <div className="flex flex-col mt-3 font-medium px-2">
             {[
               {
                 label: t("discount"),
@@ -657,26 +657,32 @@ export default function DashboardFinance({
               },
             ]
               .filter(Boolean) // Remove falsy values (e.g., null for non-CRM points)
-              .map((item, index) => (
-                <div
-                  className={`w-full flex justify-end items-center ${
-                    item.type === "point" && !storeDetail?.isCRM
-                      ? "none"
-                      : "block"
-                  }`}
-                  key={item.type || index} // Use index as fallback for key
-                >
-                  <div className="text-end">{item.label}:</div>
-                  <div className="w-60 text-end">
-                    {item.type === "discount"
-                      ? renderDiscount(item.value)
-                      : moneyCurrency(item.value)}
-                    {["total", "cash", "transfer"].includes(item.type)
-                      ? storeDetail?.firstCurrency
-                      : ""}
+              .map((item, index) => {
+                const { label, value, type } = item;
+                const isPoint = type === "point";
+                const isCurrencyRow = ["total", "cash", "transfer"].includes(
+                  type
+                );
+                const displayClass =
+                  isPoint && !storeDetail?.isCRM ? "hidden" : "flex";
+                const formattedValue =
+                  type === "discount"
+                    ? renderDiscount(value)
+                    : moneyCurrency(value);
+
+                return (
+                  <div
+                    className={`w-full ${displayClass} justify-end items-center`}
+                    key={type || index}
+                  >
+                    <div className="text-end">{label}:</div>
+                    <div className="w-60 text-end">
+                      {formattedValue}
+                      {isCurrencyRow && storeDetail?.firstCurrency}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </Modal.Body>
         <Modal.Footer>

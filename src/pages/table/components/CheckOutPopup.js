@@ -1036,20 +1036,6 @@ export default function CheckOutPopup({
                 </Button>
               )} */}
               <Button
-                disabled={hasCRM}
-                variant={tab === "point" ? "primary" : "outline-primary"}
-                onClick={() => {
-                  setCash();
-                  setTransfer();
-                  setPoint();
-                  setTab("point");
-                  setSelectInput("inputPoint");
-                  setForcus("POINT");
-                }}
-              >
-                {t("point")}
-              </Button>
-              <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
                 }
