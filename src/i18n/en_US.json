@@ -932,5 +932,7 @@
   "open_crm": "Open function CRM",
   "error_point": "Error point",
   "error_point_enough": "Your current accumulated score is 0 points",
-  "bill_point_balance": "Bill balance"
+  "bill_point_balance": "Bill balance",
+  "use_point": "All points used",
+  "exchange_point": "Exchange points"
 }

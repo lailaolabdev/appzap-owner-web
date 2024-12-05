@@ -640,16 +640,16 @@ export default function DashboardFinance({
                 type: "transfer",
               },
               {
-                label: t("totalPrice2"),
+                label: <div className="font-bold">{t("totalPrice2")}</div>,
                 value:
-                  dataModal?.discount +
-                  dataModal?.point +
-                  dataModal?.transferAmount +
-                  dataModal?.payAmount,
+                  (dataModal?.point ?? 0) +
+                  (dataModal?.transferAmount ?? 0) +
+                  (dataModal?.payAmount ?? 0) -
+                  (dataModal?.discount ?? 0),
                 type: "total",
               },
             ]
-              .filter(Boolean)
+              .filter(Boolean) // Remove falsy values (e.g., null for non-CRM points)
               .map((item, index) => (
                 <div
                   className={`w-full flex justify-end items-center ${
@@ -657,16 +657,14 @@ export default function DashboardFinance({
                       ? "none"
                       : "block"
                   }`}
-                  key={item?.type}
+                  key={item.type || index} // Use index as fallback for key
                 >
                   <div className="text-end">{item.label}:</div>
                   <div className="w-60 text-end">
                     {item.type === "discount"
                       ? renderDiscount(item.value)
                       : moneyCurrency(item.value)}
-                    {item.type === "total" ||
-                    item.type === "cash" ||
-                    item.type === "transfer"
+                    {["total", "cash", "transfer"].includes(item.type)
                       ? storeDetail?.firstCurrency
                       : ""}
                   </div>

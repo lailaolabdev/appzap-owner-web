@@ -434,6 +434,13 @@ export default function DashboardPage() {
                   {[
                     {
                       method: (
+                        <div style={{ fontWeight: 700 }}>{t("total")}</div>
+                      ),
+                      qty: moneyReport?.successAmount?.numberOfBills || 0,
+                      amount: moneyReport?.successAmount?.totalBalance || 0,
+                    },
+                    {
+                      method: (
                         <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
                       ),
                       qty: moneyReport?.successAmount?.cashCount || 0,
@@ -464,13 +471,6 @@ export default function DashboardPage() {
                       method: `${t("tax")}`,
                       qty: moneyReport?.taxCount || 0,
                       amount: Math.floor(moneyReport?.taxAmount) || 0,
-                    },
-                    {
-                      method: (
-                        <div style={{ fontWeight: 700 }}>{t("total")}</div>
-                      ),
-                      qty: moneyReport?.successAmount?.numberOfBills || 0,
-                      amount: moneyReport?.successAmount?.totalBalance || 0,
                     },
                     {
                       method: (

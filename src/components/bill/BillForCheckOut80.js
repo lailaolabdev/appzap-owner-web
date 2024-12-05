@@ -194,28 +194,34 @@ export default function BillForCheckOut80({
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
-        </div>
-        {/* {dataBill?.Name && dataBill?.Point ? (
-          <div style={{ textAlign: "right", fontSize: 12, width: "100%" }}>
-            <div>
-              {t("customer_name")}: {""}
-              <span style={{ fontWeight: "bold" }}>
-                {dataBill?.Name ? dataBill?.Name : ""}
-              </span>
-            </div>
-            <div>
-              {t("point")}:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {dataBill?.Point ? dataBill?.Point : "0"}
-              </span>
-            </div>
-          </div>
-        ) : (
-          ""
-        )} */}
 
-        <div style={{ flexGrow: 1 }} />
+          {dataBill?.Name && dataBill?.Point ? (
+            <>
+              <div>
+                {t("customer_name")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {dataBill?.Name ? dataBill?.Name : ""}
+                </span>
+              </div>
+              <div>
+                {t("phoneNumber")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {dataBill?.memberPhone
+                    ? `${dataBill?.memberPhone} (${t("point")} : ${
+                        dataBill?.Point
+                      })`
+                    : ""}
+                </span>
+              </div>
+            </>
+          ) : (
+            ""
+          )}
+        </div>
       </Price>
+      <div style={{ height: 10 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
+      <div style={{ flexGrow: 1 }} />
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
         <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
@@ -299,37 +305,13 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
-        {dataBill?.Name ? (
+        {dataBill?.memberPhone ? (
           <Row>
-            <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{t("customer_name")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{dataBill?.Name}</div>
-            </Col>
-            <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{t("phoneNumber")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{dataBill?.memberPhone}</div>
-            </Col>
-            <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{t("point")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>{dataBill?.Point}</div>
-            </Col>
-            <Col xs={7}>
-              <div style={{ textAlign: "right" }}>ອັດຕາແລກປ່ຽນຄະແນນ: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>1 ຄະແນນ = 1 ກີບ</div>
-            </Col>
             <Col xs={7}>
               <div style={{ textAlign: "right" }}>ຕັດຈາກຄະແນນ: </div>
             </Col>
             <Col>
-              <div style={{ textAlign: "right" }}>50</div>
+              <div style={{ textAlign: "right" }}>{storeDetail?.point}</div>
             </Col>
             <Col xs={7}>
               <div style={{ textAlign: "right" }}>
@@ -393,8 +375,8 @@ export default function BillForCheckOut80({
         ))}
       </div>
 
+      <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div style={{ margin: "10px" }}></div>
 
       <div style={{ fontSize: 12, textAlign: "center" }}>
         <span>{t("exchangeRate")}&nbsp;</span>
@@ -408,11 +390,23 @@ export default function BillForCheckOut80({
             )}
           </span>
         ))}
+        &nbsp;
+        {dataBill?.memberPhone && (
+          <>
+            <span>{t("point")}&nbsp;</span>
+            <span>
+              1 {t("point")} = 1 {storeDetail?.firstCurrency}
+            </span>
+          </>
+        )}
       </div>
-
+      <div style={{ height: 10 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
         style={{
-          textAlign: "center",
+          display: "flex",
+          gap: 2,
+          justifyContent: "center",
           fontSize: 12,
         }}
       >

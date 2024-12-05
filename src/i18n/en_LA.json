@@ -1049,5 +1049,7 @@
   "open_crm": "ເປີດໃຊ້ງານຟັງຊັນ CRM",
   "error_point": "ແຈ້ງເຕືອນຄະແນນ",
   "error_point_enough": "ຄະແນນສະສົມປັດຈຸບັນຂອງທ່ານເຫຼືອ 0 ຄະແນນ",
-  "bill_point_balance": "ມູນຄ່າບິນ"
+  "bill_point_balance": "ມູນຄ່າບິນ",
+  "use_point": "ຄະແນນທີ່ໃຊ້ທັງໝົດ",
+  "exchange_point": "ອັດຕາແລກປ່ຽນຄະແນນ"
 }

@@ -401,8 +401,10 @@ export default function CheckOutPopup({
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
+    if (storeDetail?.isCRM) {
+      RedeemPointUser();
+    }
     saveServiceChargeDetails();
-    RedeemPointUser();
     _checkBill(selectCurrency?.id, selectCurrency?.name);
     // onSubmit();
     // console.log("valueConfirm:------>", valueConfirm)
@@ -480,6 +482,14 @@ export default function CheckOutPopup({
           showConfirmButton: false,
           timer: 1800,
         });
+        return;
+      }
+
+      if (
+        dataBill?.Point <
+        totalBill - (totalBill * dataBill?.discount) / 100
+      ) {
+        setCanCheckOut(true);
         return;
       }
 
@@ -623,9 +633,12 @@ export default function CheckOutPopup({
   const onChangePointInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setPoint(value);
+      setStoreDetail({
+        ...storeDetail,
+        point: value,
+      });
     });
   };
-
   const optionsData = membersData?.map((item) => {
     // console.log(item);
     return {
@@ -646,6 +659,7 @@ export default function CheckOutPopup({
       onHide={() => {
         setCash();
         setTransfer();
+        setPoint();
         onClose();
       }}
       keyboard={false}
@@ -758,50 +772,58 @@ export default function CheckOutPopup({
                   />
                   <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 </InputGroup>
-                <InputGroup>
-                  <InputGroup.Text>{t("cash")}</InputGroup.Text>
-                  <Form.Control
-                    disabled={
-                      tab !== "cash" &&
-                      tab !== "cash_transfer" &&
-                      tab !== "cash_transfer_point"
-                    }
-                    type="text"
-                    placeholder="0"
-                    value={convertNumber(cash)}
-                    onClick={() => {
-                      setSelectInput("inputCash");
-                    }}
-                    onChange={(e) => {
-                      onChangeCashInput(e.target.value);
-                    }}
-                    size="lg"
-                  />
-                  <InputGroup.Text>
-                    {storeDetail?.firstCurrency}
-                  </InputGroup.Text>
-                </InputGroup>
-                <InputGroup>
-                  <InputGroup.Text>{t("transfer")}</InputGroup.Text>
-                  <Form.Control
-                    disabled={
-                      tab !== "cash_transfer" && tab !== "cash_transfer_point"
-                    }
-                    type="text"
-                    placeholder="0"
-                    value={convertNumber(transfer)}
-                    onClick={() => {
-                      setSelectInput("inputTransfer");
-                    }}
-                    onChange={(e) => {
-                      onChangeTransferInput(e.target.value);
-                    }}
-                    size="lg"
-                  />
-                  <InputGroup.Text>
-                    {storeDetail?.firstCurrency}
-                  </InputGroup.Text>
-                </InputGroup>
+                <div hidden={tab === "point"} className="flxe flex-col gap-2">
+                  <div className="mb-2">
+                    <InputGroup>
+                      <InputGroup.Text>{t("cash")}</InputGroup.Text>
+                      <Form.Control
+                        disabled={
+                          tab !== "cash" &&
+                          tab !== "cash_transfer" &&
+                          tab !== "cash_transfer_point"
+                        }
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(cash)}
+                        onClick={() => {
+                          setSelectInput("inputCash");
+                        }}
+                        onChange={(e) => {
+                          onChangeCashInput(e.target.value);
+                        }}
+                        size="lg"
+                      />
+                      <InputGroup.Text>
+                        {storeDetail?.firstCurrency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </div>
+                  <div>
+                    <InputGroup>
+                      <InputGroup.Text>{t("transfer")}</InputGroup.Text>
+                      <Form.Control
+                        disabled={
+                          tab !== "cash_transfer" &&
+                          tab !== "cash_transfer_point"
+                        }
+                        type="text"
+                        placeholder="0"
+                        value={convertNumber(transfer)}
+                        onClick={() => {
+                          setSelectInput("inputTransfer");
+                        }}
+                        onChange={(e) => {
+                          onChangeTransferInput(e.target.value);
+                        }}
+                        size="lg"
+                      />
+                      <InputGroup.Text>
+                        {storeDetail?.firstCurrency}
+                      </InputGroup.Text>
+                    </InputGroup>
+                  </div>
+                </div>
+
                 {tab === "point" || tab === "cash_transfer_point" ? (
                   <div hidden={hasCRM} style={{ marginBottom: 10 }}>
                     <BoxMember>
@@ -926,7 +948,7 @@ export default function CheckOutPopup({
               </div>
             )}
 
-            <div style={{ marginBottom: 10 }}>
+            <div hidden={tab === "point"} style={{ marginBottom: 10 }}>
               {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
             </div>

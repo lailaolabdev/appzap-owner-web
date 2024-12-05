@@ -130,7 +130,8 @@ export default function MemberPage() {
   const [allPoints, setallPoints] = useState();
   const [allBills, setAllBills] = useState();
   const [allMoneys, setAllMoneys] = useState();
-  const [totalPoints, setTotalPoints] = useState();
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [totalPointsUsed, setTotalPointsUsed] = useState(0);
   const [orderMenu, setOrderMenu] = useState();
   const [filterValue, setFilterValue] = useState("");
   const [paginationMember, setPaginationMember] = useState(1);
@@ -227,6 +228,10 @@ export default function MemberPage() {
     getRedeemPointUser();
     getEarnPointUser();
   }, [endDateBirthDay, startDateBirthDay, endTimeBirthDay, startTimeBirthDay]);
+  useEffect(() => {
+    getRedeemPointUser();
+    getEarnPointUser();
+  }, [endDatePoint, startDatePoint, endTimePoint, startTimePoint]);
 
   // useEffect(() => {
   //   console.log(object)
@@ -394,10 +399,9 @@ export default function MemberPage() {
       const _data = await getTotalPoint(selectedMemberOrders, findBy, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPoints(_data?.totalPoint);
+      setTotalPointsUsed(_data?.totalAllPointUsed);
     } catch (error) {}
   };
-
-  // console.log({ startDateMenu, endDateMenu, startTimeMenu, endTimeMenu });
 
   const getMemberOrderMenus = async () => {
     try {
@@ -479,10 +483,10 @@ export default function MemberPage() {
     findby += `storeId=${DATA?.storeId}&`;
     findby += `skip=${(paginationMember - 1) * limitData}&`;
     findby += `limit=${limitData}&`;
-    findby += `startDay=${startDateBirthDay}&`;
-    findby += `endDay=${endDateBirthDay}&`;
-    findby += `startTime=${startTimeBirthDay}&`;
-    findby += `endTime=${endTimeBirthDay}&`;
+    findby += `startDay=${startDatePoint}&`;
+    findby += `endDay=${endDatePoint}&`;
+    findby += `startTime=${startTimePoint}&`;
+    findby += `endTime=${endTimePoint}&`;
     const data = await GetRedeemPoint(findby);
     if (data) {
       setRedeemCount(Math.ceil(data.count / limitData));
@@ -498,10 +502,10 @@ export default function MemberPage() {
     findby += `storeId=${DATA?.storeId}&`;
     findby += `skip=${(paginationMember - 1) * limitData}&`;
     findby += `limit=${limitData}&`;
-    findby += `startDate=${startDateBirthDay}&`;
-    findby += `endDate=${endDateBirthDay}&`;
-    findby += `startTime=${startTimeBirthDay}&`;
-    findby += `endTime=${endTimeBirthDay}&`;
+    findby += `startDate=${startDatePoint}&`;
+    findby += `endDate=${endDatePoint}&`;
+    findby += `startTime=${startTimePoint}&`;
+    findby += `endTime=${endTimePoint}&`;
     const data = await GetEarnPoint(findby);
     if (data) {
       setEarnCount(Math.ceil(data.count / limitData));
@@ -1579,6 +1583,32 @@ export default function MemberPage() {
                 }}
               >
                 {totalPoints}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("use_point")}
+            </Card.Header>
+            <Card.Body>
+              {" "}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 700,
+                }}
+              >
+                {totalPointsUsed}
               </div>
             </Card.Body>
           </Card>
