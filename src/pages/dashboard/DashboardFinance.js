@@ -350,6 +350,13 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
+                {t("point")}
+              </th>
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
                 {t("price")} / {t("bill")}
               </th>
               <th
@@ -418,7 +425,7 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : item?.discount + "%"}
                 </td>
-                {storeDetail?.isCRM && <td>{item?.point ? item?.point : 0}</td>}
+                <td>{item?.point ? item?.point : 0}</td>
                 <td>
                   {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {

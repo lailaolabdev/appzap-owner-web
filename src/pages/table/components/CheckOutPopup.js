@@ -555,6 +555,31 @@ export default function CheckOutPopup({
           setCanCheckOut(false);
         }
       }
+    } else if (forcus === "POINT") {
+      if (point <= 0) {
+        setCanCheckOut(false);
+      } else {
+        setCanCheckOut(true);
+      }
+    } else if (forcus === "CASH_TRANSFER_POINT") {
+      const _sum =
+        (Number.parseInt(cash) || 0) +
+        (Number.parseInt(transfer) || 0 + Number.parseInt(point));
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (_sum >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      }
     }
   }, [cash, transfer, totalBill, forcus, point]);
 
@@ -1010,6 +1035,20 @@ export default function CheckOutPopup({
                   {t("point")}
                 </Button>
               )} */}
+              <Button
+                disabled={hasCRM}
+                variant={tab === "point" ? "primary" : "outline-primary"}
+                onClick={() => {
+                  setCash();
+                  setTransfer();
+                  setPoint();
+                  setTab("point");
+                  setSelectInput("inputPoint");
+                  setForcus("POINT");
+                }}
+              >
+                {t("point")}
+              </Button>
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
