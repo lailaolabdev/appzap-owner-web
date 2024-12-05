@@ -777,7 +777,7 @@ function Homecafe() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div className="w-full overflow-y-scroll flex flex-row whitespace-nowrap no-scrollbar p-2 gap-2">
+            <div className="w-full overflow-y-scroll flex flex-row whitespace-nowrap p-2 gap-2">
               <button
                 key={"category-all"}
                 className={`${
