@@ -690,12 +690,12 @@ export default function OrderPage() {
         <div
           className="d-flex align-items-center"
           style={{
-            gap: "6px",
+            gap: "8px",
             flexWrap: "wrap",
           }}
         >
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            className="text-white !bg-gray-500 border-0"
             onClick={async () => {
               // const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
               // if (hasNoCut) {
@@ -718,18 +718,7 @@ export default function OrderPage() {
           </Button>
 
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
-            onClick={async () => {
-              setWorkAfterPin("cancle_order");
-              setPopup({ PopUpPin: true });
-            }}
-          >
-            {/* ຍົກເລີກ */}
-            {t("cancel")}
-          </Button>
-
-          <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            className="text-white !bg-orange-500 border-0"
             onClick={async () => {
               await handleUpdateOrderStatus("DOING");
               getOrderWaitingAndDoingByStore();
@@ -740,7 +729,7 @@ export default function OrderPage() {
           </Button>
 
           <Button
-            style={{ color: "white", backgroundColor: "#FB6E3B" }}
+            className="text-white !bg-green-500 border-0"
             onClick={async () => {
               await handleUpdateOrderStatus("SERVED");
               getOrderWaitingAndDoingByStore();
@@ -748,6 +737,17 @@ export default function OrderPage() {
           >
             {/* ເສີບແລ້ວ */}
             {t("served")}
+          </Button>
+
+          <Button
+            className="text-white !bg-red-500 border-0"
+            onClick={async () => {
+              setWorkAfterPin("cancle_order");
+              setPopup({ PopUpPin: true });
+            }}
+          >
+            {/* ຍົກເລີກ */}
+            {t("cancel")}
           </Button>
         </div>
 

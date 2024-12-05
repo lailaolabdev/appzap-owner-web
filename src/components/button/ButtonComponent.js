@@ -10,11 +10,13 @@ const CustomButton = styled.button`
   height: auto;
   border: 0;
   padding: 9px 15px;
+  border-radius: 4px;
   cursor: pointer;
   color: #fff;
-  width: ${(props) => props.width ?? 'auto'};
-  height: ${(props) => props.height ?? 'auto'};
-  background: ${(props) => props.coloractive ? props.coloractive : props.colorbg};
+  width: ${(props) => props.width ?? "auto"};
+  height: ${(props) => props.height ?? "auto"};
+  background: ${(props) =>
+    props.coloractive ? props.coloractive : props.colorbg};
 
   &:hover {
     border: none;
@@ -23,36 +25,32 @@ const CustomButton = styled.button`
   }
 `;
 
-
 export default function ButtonComponent({
-    icon,
-    title,
-    width,
-    height,
-    handleClick,
-    colorbg,
-    hoverbg,
-    coloractive,
-    type,
-    disabled
-  }) {
-    return (
-      <CustomButton
-        type={type}
-        disabled={disabled}
-        width={width}
-        height={height}
-        colorbg={colorbg}
-        hoverbg={hoverbg}
-        coloractive={coloractive}
-        onClick={handleClick}
-      >
-        {icon && (
-          <FontAwesomeIcon icon={icon} />
-        )}
-        &nbsp;
-        {title && title}
-      </CustomButton>
-    );
-  }
-  
+  icon,
+  title,
+  width,
+  height,
+  handleClick,
+  colorbg,
+  hoverbg,
+  coloractive,
+  type,
+  disabled,
+}) {
+  return (
+    <CustomButton
+      type={type}
+      disabled={disabled}
+      width={width}
+      height={height}
+      colorbg={colorbg}
+      hoverbg={hoverbg}
+      coloractive={coloractive}
+      onClick={handleClick}
+    >
+      {icon && <FontAwesomeIcon icon={icon} />}
+      &nbsp;
+      {title && title}
+    </CustomButton>
+  );
+}

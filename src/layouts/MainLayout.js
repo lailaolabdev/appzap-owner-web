@@ -48,7 +48,7 @@ export default function MainLayout({ children }) {
           height: "calc( 100dvh - 65px )",
           maxHeight: "calc( 100dvh - 65px )",
           overflow: "auto",
-          overflowY: "scroll",
+          overflowY: "auto",
           position: "relative",
         }}
       >
