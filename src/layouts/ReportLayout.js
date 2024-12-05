@@ -7,6 +7,7 @@ import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import PopUpShowSales from "../components/popup/PopUpShowSales";
 
 export default function ReportLayout() {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ export default function ReportLayout() {
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
+  const [popup, setPopup] = useState();
 
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
@@ -325,12 +327,28 @@ export default function ReportLayout() {
               <MdStore style={{ fontSize: 35 }} />
               <strong>{t("report_sub")}</strong>
             </div>
+            <div
+              onKeyDown={() => {}}
+              className="menu-report-stocks mt-1"
+              onClick={() => setPopup({ PopUpShowSales: true })}
+            >
+              <MdStore style={{ fontSize: 35 }} />
+              <strong>{t("ສະແດງການຂາຍ")}</strong>
+            </div>
           </ButtonGroup>
         </div>
       </div>
       <div>
         <Outlet />
       </div>
+
+	  <PopUpShowSales  
+	    open={popup?.PopUpShowSales}
+        onClose={() => {
+          setPopup();
+        }}
+
+	  />
     </div>
   );
 }
