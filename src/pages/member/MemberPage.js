@@ -712,58 +712,6 @@ export default function MemberPage() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey="/listTop"
-              style={{
-                color: "#FB6E3B",
-                backgroundColor:
-                  storeDetail.changeUi === "LIST_TOP" ? "#FFDBD0" : "",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => {
-                getMemberListTop();
-                setStoreDetail({
-                  ...storeDetail,
-                  changeUi: "LIST_TOP",
-                  startDay: "",
-                  endDay: "",
-                  month: "",
-                });
-              }}
-            >
-              <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div> <span>{t("lists_top")}</span>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
-              eventKey="/listeBirthday"
-              style={{
-                color: "#FB6E3B",
-                backgroundColor:
-                  storeDetail.changeUi === "LIST_BIRTHDAY" ? "#FFDBD0" : "",
-                border: "none",
-                height: 60,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onClick={() => {
-                getMemberListBirthday();
-                setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
-                setValueTopList("");
-              }}
-            >
-              <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "}
-              <div style={{ width: 8 }}></div>{" "}
-              <span>{t("lists_birthday")}</span>
-            </Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link
               eventKey="/listRedeem/Point"
               style={{
                 color: "#FB6E3B",
@@ -812,6 +760,58 @@ export default function MemberPage() {
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
               <div style={{ width: 8 }} /> <span>ປະຫວັດການຮັບຄະແນນ</span>
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/listTop"
+              style={{
+                color: "#FB6E3B",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_TOP" ? "#FFDBD0" : "",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                getMemberListTop();
+                setStoreDetail({
+                  ...storeDetail,
+                  changeUi: "LIST_TOP",
+                  startDay: "",
+                  endDay: "",
+                  month: "",
+                });
+              }}
+            >
+              <FontAwesomeIcon icon={faList}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div> <span>{t("lists_top")}</span>
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey="/listeBirthday"
+              style={{
+                color: "#FB6E3B",
+                backgroundColor:
+                  storeDetail.changeUi === "LIST_BIRTHDAY" ? "#FFDBD0" : "",
+                border: "none",
+                height: 60,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                getMemberListBirthday();
+                setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
+                setValueTopList("");
+              }}
+            >
+              <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "}
+              <div style={{ width: 8 }}></div>{" "}
+              <span>{t("lists_birthday")}</span>
             </Nav.Link>
           </Nav.Item>
         </Box>
@@ -884,7 +884,7 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point_r")}</th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -914,7 +914,7 @@ export default function MemberPage() {
                     </tr>
                   ))
                 ) : (
-                  <td colSpan={9} style={{ textAlign: "center" }}>
+                  <td colSpan={6} style={{ textAlign: "center" }}>
                     <img src={EmptyImage} alt="" width={300} height={200} />
                   </td>
                 )}
@@ -1044,7 +1044,7 @@ export default function MemberPage() {
                     </tr>
                   ))
                 ) : (
-                  <td colSpan={9} style={{ textAlign: "center" }}>
+                  <td colSpan={6} style={{ textAlign: "center" }}>
                     {" "}
                     <img src={EmptyImage} alt="" width={300} height={200} />
                   </td>
@@ -1163,7 +1163,7 @@ export default function MemberPage() {
                     </tr>
                   ))
                 ) : (
-                  <td colSpan={9} style={{ textAlign: "center" }}>
+                  <td colSpan={6} style={{ textAlign: "center" }}>
                     <img src={EmptyImage} alt="" width={300} height={200} />
                   </td>
                 )}
@@ -1252,7 +1252,7 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point_s")}</th>
                   <th style={{ textAlign: "center" }}>
                     {t("bill_point_balance")}
                   </th>
@@ -1288,7 +1288,7 @@ export default function MemberPage() {
                     </tr>
                   ))
                 ) : (
-                  <td colSpan={9} style={{ textAlign: "center" }}>
+                  <td colSpan={6} style={{ textAlign: "center" }}>
                     <img src={EmptyImage} alt="" width={300} height={200} />
                   </td>
                 )}
@@ -1376,10 +1376,10 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("point")}</th>
-                  <th style={{ textAlign: "center" }}>
+                  <th style={{ textAlign: "center" }}>{t("point_g")}</th>
+                  {/* <th style={{ textAlign: "center" }}>
                     {t("bill_point_balance")}
-                  </th>
+                  </th> */}
                   <th style={{ textAlign: "center" }}>{t("date")}</th>
                   {/* <th style={{ textAlign: "right" }}>{t("manage")}</th> */}
                 </tr>
@@ -1395,9 +1395,9 @@ export default function MemberPage() {
                         {e?.memberId?.phone}
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.point}</td>
-                      <td style={{ textAlign: "center" }}>
+                      {/* <td style={{ textAlign: "center" }}>
                         {moneyCurrency(e?.moneyTotal)}
-                      </td>
+                      </td> */}
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
                       </td>
@@ -1569,7 +1569,7 @@ export default function MemberPage() {
                 fontWeight: "bold",
               }}
             >
-              {t("point")}
+              {t("point_r")}
             </Card.Header>
             <Card.Body>
               {" "}

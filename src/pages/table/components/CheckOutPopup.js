@@ -401,7 +401,11 @@ export default function CheckOutPopup({
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
-    if (storeDetail?.isCRM) {
+    if (
+      storeDetail?.isCRM ||
+      tab === "point" ||
+      tab === "cash_transfer_point"
+    ) {
       RedeemPointUser();
     }
     saveServiceChargeDetails();
@@ -841,14 +845,16 @@ export default function CheckOutPopup({
                         >
                           <BiRotateRight />
                         </Button>
-                        <Button
-                          className="primary"
-                          onClick={() => {
-                            window.open("/add/newMembers");
-                          }}
-                        >
-                          {t("add_new")}{" "}
-                        </Button>
+                        <div hidden={tab === "point"}>
+                          <Button
+                            className="primary"
+                            onClick={() => {
+                              window.open("/add/newMembers");
+                            }}
+                          >
+                            {t("add_new")}{" "}
+                          </Button>
+                        </div>
                       </div>
                       <div className="box-right">
                         <div className="box-name">
@@ -988,7 +994,7 @@ export default function CheckOutPopup({
               >
                 {t("transfer")}
               </Button>
-              {storeDetail?.isCRM && (
+              {/* {storeDetail?.isCRM && (
                 <Button
                   disabled={hasCRM}
                   variant={tab === "point" ? "primary" : "outline-primary"}
@@ -1003,7 +1009,7 @@ export default function CheckOutPopup({
                 >
                   {t("point")}
                 </Button>
-              )}
+              )} */}
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"

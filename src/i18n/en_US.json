@@ -934,5 +934,8 @@
   "error_point_enough": "Your current accumulated score is 0 points",
   "bill_point_balance": "Bill balance",
   "use_point": "All points used",
+  "point_s": "points used",
+  "point_r": "points Received",
+  "point_g": "points Given",
   "exchange_point": "Exchange points"
 }

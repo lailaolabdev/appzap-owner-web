@@ -198,12 +198,6 @@ export default function BillForCheckOut80({
           {dataBill?.Name && dataBill?.Point ? (
             <>
               <div>
-                {t("customer_name")}: {""}
-                <span style={{ fontWeight: "bold" }}>
-                  {dataBill?.Name ? dataBill?.Name : ""}
-                </span>
-              </div>
-              <div>
                 {t("phoneNumber")}: {""}
                 <span style={{ fontWeight: "bold" }}>
                   {dataBill?.memberPhone
@@ -308,19 +302,21 @@ export default function BillForCheckOut80({
         {dataBill?.memberPhone ? (
           <Row>
             <Col xs={7}>
-              <div style={{ textAlign: "right" }}>ຕັດຈາກຄະແນນ: </div>
+              <div style={{ textAlign: "right" }}>{t("point")}: </div>
             </Col>
             <Col>
-              <div style={{ textAlign: "right" }}>{storeDetail?.point}</div>
+              <div style={{ textAlign: "right" }}>
+                {storeDetail?.point ? storeDetail?.point : 0}
+              </div>
             </Col>
-            <Col xs={7}>
+            {/* <Col xs={7}>
               <div style={{ textAlign: "right" }}>
                 ໄດ້ຄະແນນຈາກການຊື້ຄັ້ງນີ້:{" "}
               </div>
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>150</div>
-            </Col>
+            </Col> */}
           </Row>
         ) : (
           ""
@@ -390,14 +386,12 @@ export default function BillForCheckOut80({
             )}
           </span>
         ))}
+        {","}
         &nbsp;
         {dataBill?.memberPhone && (
-          <>
-            <span>{t("point")}&nbsp;</span>
-            <span>
-              1 {t("point")} = 1 {storeDetail?.firstCurrency}
-            </span>
-          </>
+          <span>
+            1 {t("point")} = 1 {storeDetail?.firstCurrency}
+          </span>
         )}
       </div>
       <div style={{ height: 10 }} />
@@ -422,6 +416,7 @@ export default function BillForCheckOut80({
         <div>
           {t("getMoney")} {dataBill?.moneyReceived || 0}
         </div>
+        {","}
         <div>
           {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
         </div>
