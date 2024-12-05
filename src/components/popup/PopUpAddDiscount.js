@@ -124,8 +124,11 @@ export default function PopUpAddDiscount({
     };
     fetchData();
     const data = value.filter(
-      (e) => e?.status !== "CANCEL" && e?.status !== "DOING"
+      (e) => e?.status === "SERVED" && e?.status !== "DOING"
     );
+
+    console.log({ data });
+
     const _sumTotal = _.sumBy(data, (o) => o?.price * o?.quantity);
     const _sumOptionPrice = data.reduce((sum, item) => {
       const optionSum = _.sumBy(
@@ -148,7 +151,7 @@ export default function PopUpAddDiscount({
       );
 
       const checked = value.filter(
-        (e) => e?.status !== "CANCEL" && e?.status !== "DOING"
+        (e) => e?.status === "SERVED" && e?.status !== "DOING"
       );
 
       const filteredOrders = checked.filter((order) =>
