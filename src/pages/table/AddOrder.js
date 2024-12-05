@@ -1134,14 +1134,18 @@ function AddOrder() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+<<<<<<< HEAD
             <div className="w-full overflow-y-scroll flex flex-row whitespace-nowrap  p-2 gap-2">
+=======
+            <div className="w-full overflow-x-scroll flex flex-row whitespace-nowrap p-2 gap-2">
+>>>>>>> ca94ed7 (fix: update scroll behavior and button styles in Homecafe and AddOrder components)
               <button
                 key={"category-all"}
                 className={`${
                   selectedCategory === "All"
                     ? "text-orange-500"
                     : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm`}
+                } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm whitespace-nowrap`}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
@@ -1155,7 +1159,7 @@ function AddOrder() {
                         selectedCategory === data?._id
                           ? "text-orange-500"
                           : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm`}
+                      } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm whitespace-nowrap`}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
