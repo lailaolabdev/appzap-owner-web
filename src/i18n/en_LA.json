@@ -1049,5 +1049,8 @@
   "edit_delivery": "ແກ້ໄຂ Delivery",
   "setting_delivery": "ຈັດການ Delivery",
   "is_order_split": "ລວມອໍເດີ",
-  "notification": "ການແຈ້ງເຕືອນ"
+  "notification": "ການແຈ້ງເຕືອນ",
+  "yesterday": "ມື້ວານ",
+  "this_year": "ປີນີ້",
+  "last_year": "ປີກ່ອນ"
 }

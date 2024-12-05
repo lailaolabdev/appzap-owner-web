@@ -932,5 +932,9 @@
   "edit_delivery": "Edit Delivery",
   "setting_delivery": "Setting Delivery",
   "is_order_split": "order split",
-  "notification": "Notification"
+  "notification": "Notification",
+  "yesterday": "Yesterday",
+  "last_month": "Last Month",
+  "this_year": "This Year",
+  "last_year": "Last Year"
 }

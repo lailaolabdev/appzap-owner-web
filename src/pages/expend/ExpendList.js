@@ -389,16 +389,7 @@ export default function ExpendList() {
         }}
       >
         <TitleComponent title={t("paid_account")} />
-        <div
-          className="account"
-          // style={{
-          //   display: "flex",
-          //   flexDirection: "row",
-          //   justifyContent: "end",
-          //   alignItems: "center",
-          //   gap: 5,
-          // }}
-        >
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="outline-primary"
             size="small"
@@ -414,7 +405,7 @@ export default function ExpendList() {
               {endDate} {endTime}
             </div>
           </Button>
-          <Form.Control
+          {/* <Form.Control
             as="select"
             name="payment"
             value={filterByPayment}
@@ -424,7 +415,7 @@ export default function ExpendList() {
             <option value="ALL">{t("show_shape")}</option>
             <option value="CASH">{t("real_money")}</option>
             <option value="TRANSFER">{t("e_money")}</option>
-          </Form.Control>
+          </Form.Control> */}
           {/* Button ລົງບັນຊີປະຈຳວັນ */}
           <ButtonComponent
             title={t("daily_account")}

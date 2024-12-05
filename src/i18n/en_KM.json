@@ -861,5 +861,10 @@
   "Close": "បិទ",
   "notification": "ការជូនដំណឹង",
   "callToCheckout": "ហៅទៅពិនិត្យចេញ",
-  "callStaff": "ហៅបុគ្គលិក"
+  "callStaff": "ហៅបុគ្គលិក",
+  "select_date": "ជ្រើសរើសកាលបរិច្ឆេទ",
+  "yesterday": "ម្សិលមិញ",
+  "this_month": "ខែនេះ",
+  "this_year": "ឆ្នាំនេះ",
+  "last_year": "ឆ្នាំមុន"
 }
