@@ -101,13 +101,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "orderManagement",
     },
-    // {
-    //   title: t("financialStatic"),
-    //   key: "report",
-    //   icon: faTachometerAlt,
-    //   typeStore: "",
-    //   system: "reportManagement",
-    // },
+    {
+      title: t("stock"),
+      key: "report",
+      // icon: BsArchive,
+      icon: faBoxes,
+      typeStore: "",
+      system: "reportManagement",
+    },
     {
       title: `${t("isCafe")}`,
       key: "cafe",
