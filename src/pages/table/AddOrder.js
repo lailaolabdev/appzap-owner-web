@@ -1134,11 +1134,7 @@ function AddOrder() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-<<<<<<< HEAD
             <div className="w-full overflow-y-scroll flex flex-row whitespace-nowrap  p-2 gap-2">
-=======
-            <div className="w-full overflow-x-scroll flex flex-row whitespace-nowrap p-2 gap-2">
->>>>>>> ca94ed7 (fix: update scroll behavior and button styles in Homecafe and AddOrder components)
               <button
                 key={"category-all"}
                 className={`${
