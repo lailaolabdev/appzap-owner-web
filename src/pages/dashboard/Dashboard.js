@@ -290,7 +290,7 @@ export default function Dashboard() {
               <div>
                 {t("transferPayment")}
                 {" : "}
-                {convertNumber(moneyReport?.transfer?.totalBill)}
+                {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
               <div>
                 {"Delivery"}
@@ -298,12 +298,6 @@ export default function Dashboard() {
                 {convertNumber(
                   moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue
                 )}
-              </div>
-              <div>
-                {t("transfer_cash")}
-                {" : "}
-                {convertNumber(moneyReport?.transferCash?.totalBill)}
-                {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
               {storeDetail?.isCRM && (
                 <div>

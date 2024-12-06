@@ -350,13 +350,6 @@ export default function DashboardFinance({
                   textWrap: "nowrap",
                 }}
               >
-                {t("point")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-              >
                 delivery
               </th>
               <th

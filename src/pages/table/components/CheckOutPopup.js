@@ -915,7 +915,10 @@ export default function CheckOutPopup({
                         <InputGroup>
                           <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                           <Form.Control
-                            disabled={tab !== "cash_transfer"}
+                            disabled={
+                              tab !== "cash_transfer" &&
+                              tab !== "cash_transfer_point"
+                            }
                             type="text"
                             placeholder="0"
                             value={convertNumber(transfer)}
