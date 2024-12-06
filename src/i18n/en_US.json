@@ -184,6 +184,7 @@
   "addOrder": "Add order",
   "TableHasNoOrder": "This table has no orders yet",
   "transfercash": "Transfer + Cash payment",
+  "transfercashpoint": "Transfer + Cash + point",
   "sound_manage": "Sound Management",
   "currency_manage": "Manage Currency Rates",
   "customerName": "Customer Name",
@@ -824,6 +825,7 @@
   "3_more_day": "3 more day",
   "5_more_day": "5 more day",
   "7_more_day": "7 more day",
+  "3_l_month": "3 last month",
   "chose_top": "Choose Top",
   "report_member_updates_last": "Last updated 04:00 (The report will be updated everyday)",
   "updated": "Updated",
@@ -936,5 +938,15 @@
   "yesterday": "Yesterday",
   "last_month": "Last Month",
   "this_year": "This Year",
-  "last_year": "Last Year"
+  "last_year": "Last Year",
+  "is_crm": "CRM (Customer Relationship Management)",
+  "open_crm": "Open function CRM",
+  "error_point": "Error point",
+  "error_point_enough": "Your current accumulated score is 0 points",
+  "bill_point_balance": "Bill balance",
+  "use_point": "All points used",
+  "point_s": "points used",
+  "point_r": "points Received",
+  "point_g": "points Given",
+  "exchange_point": "Exchange points"
 }

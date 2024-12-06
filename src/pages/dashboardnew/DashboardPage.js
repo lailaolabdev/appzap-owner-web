@@ -439,29 +439,29 @@ export default function DashboardPage() {
                     <th style={{ textAlign: "right" }}>{t("total_price")}</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {[
                     {
                       method: (
+                        <div style={{ fontWeight: 700 }}>{t("total")}</div>
+                      ),
+                      qty: moneyReport?.successAmount?.numberOfBills || 0,
+                      amount: moneyReport?.successAmount?.totalBalance || 0,
+                    },
+                    {
+                      method: (
                         <div style={{ fontWeight: 700 }}>{t("total_cash")}</div>
                       ),
-                      qty:
-                        (moneyReport?.transferCash?.count || 0) +
-                        (moneyReport?.cash?.count || 0),
-                      amount:
-                        (moneyReport?.transferCash?.cash || 0) +
-                        (moneyReport?.cash?.totalBill || 0),
+                      qty: moneyReport?.successAmount?.cashCount || 0,
+                      amount: moneyReport?.successAmount?.payByCash || 0,
                     },
                     {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
                       ),
-                      qty:
-                        (moneyReport?.transferCash?.count || 0) +
-                        (moneyReport?.transfer?.count || 0),
-                      amount:
-                        (moneyReport?.transferCash?.transfer || 0) +
-                        (moneyReport?.transfer?.totalBill || 0),
+                      qty: moneyReport?.successAmount?.transferCount || 0,
+                      amount: moneyReport?.successAmount?.transferPayment || 0,
                     },
                     ...(Array.isArray(deliveryReports) &&
                     deliveryReports.length > 0
@@ -475,46 +475,24 @@ export default function DashboardPage() {
                           amount: Math.floor(e?.amount || 0),
                         }))
                       : []),
+                    // Insert the point section after the "total_tsf"
+                    storeDetail?.isCRM && {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("point")}</div>
+                      ),
+                      qty: moneyReport?.successAmount?.pointCount || 0,
+                      amount: moneyReport?.successAmount?.point || 0,
+                      unit: t("point"),
+                    },
                     {
                       method: `${t("service_charge")}`,
-                      qty: moneyReport?.serviceAmount?.count,
-                      amount: Math.floor(
-                        moneyReport?.serviceAmount?.totalServiceCharge
-                      ),
+                      qty: moneyReport?.serviceChargeCount || 0,
+                      amount: Math.floor(moneyReport?.serviceAmount) || 0,
                     },
                     {
                       method: `${t("tax")}`,
-                      qty: moneyReport?.taxAmount?.count,
-                      amount: Math.floor(moneyReport?.taxAmount?.totalTax),
-                    },
-                    {
-                      method: (
-                        <div>
-                          {t("tsf_cash")}
-                          <br />
-                          {t("cash")}{" "}
-                          {moneyCurrency(moneyReport?.transferCash?.cash || 0)}{" "}
-                          || {t("transfer")}{" "}
-                          {moneyCurrency(
-                            moneyReport?.transferCash?.transfer || 0
-                          )}
-                        </div>
-                      ),
-                      qty: moneyReport?.transferCash?.count,
-                      amount: moneyReport?.transferCash?.totalBill,
-                    },
-                    {
-                      method: (
-                        <div style={{ fontWeight: 700 }}>{t("total")}</div>
-                      ),
-                      qty:
-                        (moneyReport?.cash?.count || 0) +
-                        (moneyReport?.transferCash?.count || 0) +
-                        (moneyReport?.transfer?.count || 0),
-                      amount:
-                        (moneyReport?.cash?.totalBill || 0) +
-                        (moneyReport?.transferCash?.totalBill || 0) +
-                        (moneyReport?.transfer?.totalBill || 0),
+                      qty: moneyReport?.taxCount || 0,
+                      amount: Math.floor(moneyReport?.taxAmount) || 0,
                     },
                     {
                       method: (
@@ -523,24 +501,24 @@ export default function DashboardPage() {
                         </div>
                       ),
                       qty:
-                        (moneyReport?.serviceAmount?.count || 0) +
-                        (moneyReport?.taxAmount?.count || 0),
+                        (moneyReport?.serviceChargeCount || 0) +
+                        (moneyReport?.taxCount || 0),
                       amount:
-                        (Math.floor(
-                          moneyReport?.serviceAmount?.totalServiceCharge
-                        ) || 0) +
-                        (Math.floor(moneyReport?.taxAmount?.totalTax) || 0),
+                        (Math.floor(moneyReport?.serviceAmount) || 0) +
+                        (Math.floor(moneyReport?.taxAmount) || 0),
                     },
-                  ].map((e, idx) => (
-                    <tr key={idx}>
-                      <td style={{ textAlign: "left" }}>{e?.method}</td>
-                      <td>{moneyCurrency(e?.qty)}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.amount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))}
+                  ]
+                    .filter(Boolean) // Filter out undefined or null values
+                    .map((e, idx) => (
+                      <tr key={idx}>
+                        <td style={{ textAlign: "left" }}>{e?.method}</td>
+                        <td>{moneyCurrency(e?.qty)}</td>
+                        <td style={{ textAlign: "right" }}>
+                          {moneyCurrency(e?.amount)}{" "}
+                          {e?.unit || storeDetail?.firstCurrency}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </Card.Body>
@@ -636,6 +614,9 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
                   <th style={{ textAlign: "center" }}>{"Delivery"}</th>
+                  {storeDetail?.isCRM && (
+                    <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
@@ -645,6 +626,7 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
+                    {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
                     <td>
                       {moneyCurrency(e?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}

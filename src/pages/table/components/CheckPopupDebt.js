@@ -99,23 +99,23 @@ export default function CheckPopupDebt({
     getMembersData();
   }, []);
 
-  useEffect(() => {
-    getData();
-  }, [billId]);
+  // useEffect(() => {
+  //   getData();
+  // }, [billId]);
 
   // function
-  const getData = async () => {
-    try {
-      const { DATA, TOKEN } = await getLocalData();
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}&`;
-      findby += `billDebtId=${billId}`;
-      const data = await getMenuDebt(findby, TOKEN);
-      setMenuDebtData(data);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
+  // const getData = async () => {
+  //   try {
+  //     const { DATA, TOKEN } = await getLocalData();
+  //     let findby = "?";
+  //     findby += `storeId=${storeDetail?._id}&`;
+  //     findby += `billDebtId=${billId}`;
+  //     const data = await getMenuDebt(findby, TOKEN);
+  //     setMenuDebtData(data);
+  //   } catch (err) {
+  //     console.log("err", err);
+  //   }
+  // };
 
   // const handleSearchOne = async () => {
   //   try {

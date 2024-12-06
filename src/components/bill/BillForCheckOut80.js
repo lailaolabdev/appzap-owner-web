@@ -194,28 +194,28 @@ export default function BillForCheckOut80({
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
-        </div>
-        {dataBill?.Name && dataBill?.Point ? (
-          <div style={{ textAlign: "right", fontSize: 12, width: "100%" }}>
-            <div>
-              {t("customer_name")}: {""}
-              <span style={{ fontWeight: "bold" }}>
-                {dataBill?.Name ? dataBill?.Name : ""}
-              </span>
-            </div>
-            <div>
-              {t("point")}:{" "}
-              <span style={{ fontWeight: "bold" }}>
-                {dataBill?.Point ? dataBill?.Point : "0"}
-              </span>
-            </div>
-          </div>
-        ) : (
-          ""
-        )}
 
-        <div style={{ flexGrow: 1 }} />
+          {dataBill?.Name && dataBill?.Point ? (
+            <>
+              <div>
+                {t("phoneNumber")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {dataBill?.memberPhone
+                    ? `${dataBill?.memberPhone} (${t("point")} : ${
+                        dataBill?.Point
+                      })`
+                    : ""}
+                </span>
+              </div>
+            </>
+          ) : (
+            ""
+          )}
+        </div>
       </Price>
+      <div style={{ height: 10 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
+      <div style={{ flexGrow: 1 }} />
       <Name style={{ marginBottom: 10, fontSize: 12 }}>
         <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
@@ -275,7 +275,7 @@ export default function BillForCheckOut80({
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ fontSize: 14 }}>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div style={{ textAlign: "right" }}>
               {t("total")} ({storeDetail?.firstCurrency}):{" "}
             </div>
@@ -285,7 +285,7 @@ export default function BillForCheckOut80({
           </Col>
         </Row>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div style={{ textAlign: "right" }}>
               {t("discount")} (
               {dataBill?.discountType == "MONEY" ||
@@ -299,23 +299,31 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
-        {/* {dataBill?.memberName ? (
+        {dataBill?.memberPhone ? (
           <Row>
-            <Col xs={8}>
-              <div style={{ textAlign: "right" }}>{t("customerName")}: </div>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("point")}: </div>
             </Col>
             <Col>
               <div style={{ textAlign: "right" }}>
-                {dataBill?.memberName} ( {dataBill?.memberPhone} )
+                {storeDetail?.point ? storeDetail?.point : 0}
               </div>
             </Col>
+            {/* <Col xs={7}>
+              <div style={{ textAlign: "right" }}>
+                ໄດ້ຄະແນນຈາກການຊື້ຄັ້ງນີ້:{" "}
+              </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>150</div>
+            </Col> */}
           </Row>
         ) : (
           ""
-        )} */}
+        )}
       </div>
       <Row>
-        <Col xs={8}>
+        <Col xs={7}>
           <div style={{ textAlign: "right" }}>
             {t("service_charge")} {storeDetail?.serviceChargePer}% :
           </div>
@@ -328,7 +336,7 @@ export default function BillForCheckOut80({
       </Row>
       <div style={{ fontSize: 14, marginTop: 20 }}>
         <Row>
-          <Col xs={8}>
+          <Col xs={7}>
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
@@ -349,7 +357,7 @@ export default function BillForCheckOut80({
 
         {currencyData?.map((item, index) => (
           <Row key={index}>
-            <Col xs={8}>
+            <Col xs={7}>
               <div style={{ textAlign: "right" }}>{item?.currencyCode}:</div>
             </Col>
             <Col>
@@ -363,8 +371,8 @@ export default function BillForCheckOut80({
         ))}
       </div>
 
+      <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div style={{ margin: "10px" }}></div>
 
       <div style={{ fontSize: 12, textAlign: "center" }}>
         <span>{t("exchangeRate")}&nbsp;</span>
@@ -378,11 +386,21 @@ export default function BillForCheckOut80({
             )}
           </span>
         ))}
+        {","}
+        &nbsp;
+        {dataBill?.memberPhone && (
+          <span>
+            1 {t("point")} = 1 {storeDetail?.firstCurrency}
+          </span>
+        )}
       </div>
-
+      <div style={{ height: 10 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
         style={{
-          textAlign: "center",
+          display: "flex",
+          gap: 2,
+          justifyContent: "center",
           fontSize: 12,
         }}
       >
@@ -398,6 +416,7 @@ export default function BillForCheckOut80({
         <div>
           {t("getMoney")} {dataBill?.moneyReceived || 0}
         </div>
+        {","}
         <div>
           {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
         </div>
