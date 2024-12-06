@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import { Table, Modal, Button, Pagination } from "react-bootstrap";
-import { END_POINT_SEVER, getLocalData } from "../../constants/api";
-import { _statusCheckBill, orderStatus } from "./../../helpers";
-import AnimationLoading from "../../constants/loading";
 import { useNavigate, useParams } from "react-router-dom";
-import Box from "../../components/Box";
+import ReactPaginate from "react-paginate";
+import { Table, Modal, Button, Pagination } from "react-bootstrap";
 import * as _ from "lodash";
+import { END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { _statusCheckBill, orderStatus, moneyCurrency } from "./../../helpers";
+import { useTranslation } from "react-i18next";
+import { stringify } from "query-string";
+import AnimationLoading from "../../constants/loading";
+import Box from "../../components/Box";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
-import { useTranslation } from "react-i18next";
-import { stringify } from "query-string";
 import Loading from "../../components/Loading";
-import ReactPaginate from "react-paginate";
 import { getCountBills } from "../../services/bill";
 import { COLOR_APP } from "../../constants";
 
@@ -99,6 +99,8 @@ export default function DashboardFinance({
   const handleShow = (item) => {
     setShow(true);
     setDataModal(item);
+
+    console.log("item", item);
   };
 
   const getCurrency = async () => {
@@ -292,6 +294,13 @@ export default function DashboardFinance({
     return `${name} ${optionNames}`;
   };
 
+  const renderDiscount = (value) => {
+    const formattedValue = moneyCurrency(value);
+    const currency =
+      dataModal?.discountType !== "LAK" ? "%" : storeDetail?.firstCurrency;
+    return `${formattedValue} ${currency}`;
+  };
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -326,6 +335,22 @@ export default function DashboardFinance({
                 }}
               >
                 {t("tableDiscount")}
+              </th>
+              {storeDetail?.isCRM && (
+                <th
+                  style={{
+                    textWrap: "nowrap",
+                  }}
+                >
+                  {t("point")}
+                </th>
+              )}
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("point")}
               </th>
               <th
                 style={{
@@ -388,10 +413,10 @@ export default function DashboardFinance({
           <tbody>
             {data?.checkOut?.map((item, index) => (
               <tr
-                key={"finance-" + index}
+                key={item?._id}
                 onClick={() => {
                   setSelectOrder(item);
-                  handleShow(item?.orderId);
+                  handleShow(item);
                 }}
                 style={{
                   backgroundColor: ["CALLTOCHECKOUT", "ACTIVE"].includes(
@@ -414,6 +439,7 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : `${item?.discount}%`}
                 </td>
+                <td>{item?.point ? item?.point : 0}</td>
                 <td>
                   {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
@@ -435,7 +461,8 @@ export default function DashboardFinance({
                       }).format(
                         item?.billAmount +
                           item?.taxAmount +
-                          item?.serviceChargeAmount
+                          item?.serviceChargeAmount -
+                          item?.point
                       )}{" "}
                   {selectedCurrency}
                 </td>
@@ -491,6 +518,10 @@ export default function DashboardFinance({
                     ? t("transferPayment")
                     : item?.paymentMethod === "DELIVERY"
                     ? `${t("transferPayment")} (delivery)`
+                    : item?.paymentMethod === "POINT"
+                    ? t("point")
+                    : item?.paymentMethod === "CASH_TRANSFER_POINT"
+                    ? t("transfercashpoint")
                     : t("transfercash")}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -574,60 +605,112 @@ export default function DashboardFinance({
               </tr>
             </thead>
             <tbody>
-              {dataModal
-                // ?.filter((item) => item?.status !== "PAID")
-                .map((item, index) => (
-                  <tr key={1 + index}>
-                    <td>{index + 1}</td>
-                    <td>{formatMenuName(item?.name, item?.options)}</td>
-                    <td>{item?.quantity}</td>
-                    <td
-                      style={{
-                        color:
-                          item?.status === "WAITING"
-                            ? "#2d00a8"
-                            : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                            ? "green"
-                            : item?.status === "PAID"
-                            ? COLOR_APP
-                            : item?.status === "PRINTBILL"
-                            ? "blue"
-                            : item?.status === "CART"
-                            ? "#00496e"
-                            : item?.status === "FEEDBACK"
-                            ? "#00496e"
-                            : "#bd0d00",
-                      }}
-                    >
-                      {orderStatus(item?.status)}
-                    </td>
-                    <td>
-                      {item?.createdBy ? item?.createdBy?.firstname : "-"}
-                    </td>
-                    <td>
-                      {new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(
-                        item?.totalPrice ??
-                          (item?.price + (item?.totalOptionPrice ?? 0)) *
-                            item?.quantity
-                      )}
-                    </td>
-                    <td>{item?.deliveryCode ? `${item?.deliveryCode}` : ""}</td>
-                    <td>
-                      {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
-                    </td>
-                    <td>
-                      {item?.updatedAt
-                        ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))}
+              {dataModal?.orderId?.map((item, index) => (
+                <tr key={1 + index}>
+                  <td>{index + 1}</td>
+                  <td>{formatMenuName(item?.name, item?.options)}</td>
+                  <td>{item?.quantity}</td>
+                  <td
+                    style={{
+                      color:
+                        item?.status === "WAITING"
+                          ? "#2d00a8"
+                          : item?.status === "DOING"
+                          ? "#c48a02"
+                          : item?.status === "SERVED"
+                          ? "green"
+                          : item?.status === "PAID"
+                          ? COLOR_APP
+                          : item?.status === "PRINTBILL"
+                          ? "blue"
+                          : item?.status === "CART"
+                          ? "#00496e"
+                          : item?.status === "FEEDBACK"
+                          ? "#00496e"
+                          : "#bd0d00",
+                    }}
+                  >
+                    {orderStatus(item?.status)}
+                  </td>
+                  <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
+                  <td>
+                    {new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(
+                      item?.totalPrice ??
+                        (item?.price + (item?.totalOptionPrice ?? 0)) *
+                          item?.quantity
+                    )}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {item?.deliveryCode ? item?.deliveryCode : "-"}
+                  </td>
+                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
+                  <td>
+                    {item?.updatedAt
+                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
+                      : "-"}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
+          <div className="flex flex-col mt-3 font-medium px-2">
+            {[
+              {
+                label: t("discount"),
+                value: dataModal?.discount,
+                type: "discount",
+              },
+              storeDetail?.isCRM && {
+                label: t("point"),
+                value: dataModal?.point,
+                type: "point",
+              },
+              { label: t("cash"), value: dataModal?.payAmount, type: "cash" },
+              {
+                label: t("transferAmount"),
+                value: dataModal?.transferAmount,
+                type: "transfer",
+              },
+              {
+                label: <div className="font-bold">{t("totalPrice2")}</div>,
+                value:
+                  (dataModal?.point ?? 0) +
+                  (dataModal?.transferAmount ?? 0) +
+                  (dataModal?.payAmount ?? 0) -
+                  (dataModal?.discount ?? 0),
+                type: "total",
+              },
+            ]
+              .filter(Boolean) // Remove falsy values (e.g., null for non-CRM points)
+              .map((item, index) => {
+                const { label, value, type } = item;
+                const isPoint = type === "point";
+                const isCurrencyRow = ["total", "cash", "transfer"].includes(
+                  type
+                );
+                const displayClass =
+                  isPoint && !storeDetail?.isCRM ? "hidden" : "flex";
+                const formattedValue =
+                  type === "discount"
+                    ? renderDiscount(value)
+                    : moneyCurrency(value);
+
+                return (
+                  <div
+                    className={`w-full ${displayClass} justify-end items-center`}
+                    key={type || index}
+                  >
+                    <div className="text-end">{label}:</div>
+                    <div className="w-60 text-end">
+                      {formattedValue}
+                      {isCurrencyRow && storeDetail?.firstCurrency}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>

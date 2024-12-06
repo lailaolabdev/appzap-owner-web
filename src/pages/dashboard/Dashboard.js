@@ -259,6 +259,7 @@ export default function Dashboard() {
               </div>
             </Card.Body>
           </Card>
+
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -274,20 +275,17 @@ export default function Dashboard() {
               <div>
                 {t("numberOfBill")}
                 {" : "}
-                {convertNumber(
-                  salesInformationReport?.noOfSalesTransactions
-                )}{" "}
-                ບິນ
+                {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
               </div>
               <div>
                 {t("totalBalance")}
                 {" : "}
-                {convertNumber(salesInformationReport?.totalSales)}
+                {convertNumber(moneyReport?.successAmount?.totalBalance)}
               </div>
               <div>
                 {t("payBycash")}
                 {" : "}
-                {convertNumber(moneyReport?.cash?.totalBill)}
+                {convertNumber(moneyReport?.successAmount?.payByCash)}
               </div>
               <div>
                 {t("transferPayment")}
@@ -305,7 +303,15 @@ export default function Dashboard() {
                 {t("transfer_cash")}
                 {" : "}
                 {convertNumber(moneyReport?.transferCash?.totalBill)}
+                {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
+              {storeDetail?.isCRM && (
+                <div>
+                  {t("point")}
+                  {" : "}
+                  {convertNumber(moneyReport?.successAmount?.point)}
+                </div>
+              )}
               <div>
                 {t("cashDiscount")}
                 {" : "}

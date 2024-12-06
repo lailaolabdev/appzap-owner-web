@@ -15,6 +15,7 @@ import {
   getSetting,
   updateSetting,
   updateSettingCafe,
+  updateSettingCRM,
   getSettingCafe,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
@@ -117,6 +118,20 @@ export default function ConfigPage() {
     const dataStore = await getStore(storeDetail?._id);
     setStoreDetail(dataStore);
   };
+  const changeCRM = async (e) => {
+    const isType = e.target.checked;
+
+    console.log({ isType });
+
+    await updateSettingCRM(profile?.data.storeId, { data: isType });
+    const dataStore = await getStore(storeDetail?._id);
+
+    console.log({ dataStore });
+
+    setStoreDetail(dataStore);
+  };
+
+  console.log("storeDetail?.isCRM", storeDetail?.isCRM);
 
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
@@ -531,6 +546,57 @@ export default function ConfigPage() {
                       checked={storeDetail?.isBankPaymentAvailable}
                       id={"transfer-payment-" + item?.key}
                       onChange={BankPayment}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("is_crm")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_crm"),
+                  key: "crm",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`switch-crm-${item?.key}`}>
+                      {storeDetail?.isCRM ? `${t("oppen")}` : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isCRM}
+                      id={`switch-crm-${item?.key}`}
+                      onChange={changeCRM}
                     />
                   </div>
                 </div>

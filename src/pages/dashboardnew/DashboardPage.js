@@ -635,7 +635,9 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "left" }}>{t("date")}</th>
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("bill_amount")}</th>
-                  <th style={{ textAlign: "center" }}>{"Delivery"}</th>
+                  {storeDetail?.isCRM && (
+                    <th style={{ textAlign: "center" }}>{t("point")}</th>
+                  )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
@@ -645,6 +647,7 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
+                    {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
                     <td>
                       {moneyCurrency(e?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}
