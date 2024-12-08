@@ -1141,7 +1141,7 @@ function AddOrder() {
                   selectedCategory === "All"
                     ? "text-orange-500"
                     : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
+                } rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap truncate`}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
@@ -1155,7 +1155,7 @@ function AddOrder() {
                         selectedCategory === data?._id
                           ? "text-orange-500"
                           : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
+                      } rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap truncate`}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
