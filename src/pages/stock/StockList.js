@@ -40,12 +40,14 @@ import { useStore } from "../../store";
 import { saveAs } from "file-saver";
 import { END_POINT_EXPORT } from "../../constants/api";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // ------------------------------------------------------------------------------- //
 
 export default function MenuList() {
   const { t } = useTranslation();
   // state
+  const navigate = useNavigate();
   const [popup, setPopup] = useState();
   const [popAddStock, setPopAddStock] = useState(false);
   const [popMinusStock, setPopMinusStock] = useState(false);
@@ -324,6 +326,7 @@ export default function MenuList() {
 
         <div className="d-flex align-items-center" style={{ gap: 10 }}>
           <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
+            {/* navigate("/settingStore/stock/add") */}
             {t("create_stock")}
           </Button>
           <Button

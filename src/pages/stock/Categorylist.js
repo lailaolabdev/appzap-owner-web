@@ -12,6 +12,7 @@ import PopUpEditCategory from "./components/popup/PopUpEditCategory";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Categorylist() {
   // state
@@ -23,6 +24,7 @@ export default function Categorylist() {
   const [loadStatus, setLoadStatus] = useState("");
   const { t } = useTranslation();
   const [Categorys, setCategorys] = useState([]);
+  const navigate = useNavigate();
   // functions
   const _confirmeDelete = async () => {
     try {
@@ -84,7 +86,7 @@ export default function Categorylist() {
           <Button
             className="col-sm-2"
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => setPopAddCategory(true)}
+            onClick={() => navigate("/settingStore/stock/addCategory")}
           >
             {t("add_stock_type")}
           </Button>
