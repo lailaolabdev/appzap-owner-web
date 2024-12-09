@@ -434,18 +434,28 @@ export default function DashboardFinance({
                 </td>
                 <td>{item?.point ? item?.point : 0}</td>
                 <td>
-                  {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                    ? new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(_countAmount(item?.orderId))
-                    : new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(item?.deliveryAmount)}{" "}
+                  {item?.orderId[0]?.deliveryCode
+                    ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                      ? new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(_countAmount(item?.orderId))
+                      : new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(item?.deliveryAmount)
+                    : 0}{" "}
                   {selectedCurrency}
                 </td>
-                <td>{item?.deliveryName ? item?.deliveryName : "--"}</td>
                 <td>
-                  {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                  {item?.deliveryName
+                    ? item?.deliveryName
+                    : item?.orderId[0]?.platform
+                    ? item?.orderId[0]?.platform
+                    : "-"}
+                </td>
+                <td>
+                  {item?.orderId[0]?.deliveryCode
+                    ? 0
+                    : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(_countAmount(item?.orderId))

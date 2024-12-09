@@ -748,6 +748,7 @@ export default function CheckOutPopup({
         setDelivery();
         setPoint();
         onClose();
+        setCanCheckOut(false);
       }}
       keyboard={false}
       size="lg"
