@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BsQuestionLg } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
-import { getAllDelivery } from "../../services/delivery";
 
-// Assuming COLOR_APP is defined elsewhere
+import { getAllDelivery } from "../../services/delivery";
 import { COLOR_APP } from "../../constants";
+import { useStore } from "../../store";
 
 const boxIcon = {
   position: "absolute",
@@ -55,6 +55,7 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
   const [deliveryCode, setDeliveryCode] = useState("");
   const [platform, setPlatform] = useState("");
   const [platformList, setPlatformList] = useState([]);
+  const { selectedTable } = useStore();
 
   const fetchDelivery = async () => {
     await getAllDelivery().then((res) => {
@@ -69,7 +70,9 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
   return (
     <Modal show={open} onHide={onClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>{t("delivery")}</Modal.Title>
+        <Modal.Title>{`${t("delivery")} (${
+          selectedTable?.tableName
+        })`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group>
