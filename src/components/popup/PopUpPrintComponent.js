@@ -29,7 +29,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   let billRef = useRef(null);
   const { t } = useTranslation();
   // state
-  const [selectPrinter, setSelectPrinter] = useState();
+  const [selectPrinter, setSelectPrinter] = useState("select");
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [bills, setBill] = useState();
   const [bank, setBank] = useState([]);
@@ -439,6 +439,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             name="width"
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
+            <option value={"select"}>{t("all")}</option>
             {printers?.map((e) => (
               <option value={JSON.stringify(e)}>{e?.name}</option>
             ))}
