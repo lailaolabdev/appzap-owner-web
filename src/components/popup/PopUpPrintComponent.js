@@ -439,7 +439,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             name="width"
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
-            <option value={"select"}>{t("all")}</option>
+            <option value={"select"}>{"-- ເລືອກປີ້ນເຕີ --"}</option>
             {printers?.map((e) => (
               <option value={JSON.stringify(e)}>{e?.name}</option>
             ))}
