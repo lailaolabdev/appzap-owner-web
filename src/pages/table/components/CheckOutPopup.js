@@ -1001,7 +1001,7 @@ export default function CheckOutPopup({
                           Number.parseInt(dataBill?.Point).toString().length
                         }
                         placeholder="0"
-                        value={convertNumber(point)}
+                        value={point}
                         onClick={() => {
                           setSelectInput("inputPoint");
                         }}

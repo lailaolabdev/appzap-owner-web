@@ -447,7 +447,11 @@ export default function DashboardPage() {
                         <div style={{ fontWeight: 700 }}>{t("total")}</div>
                       ),
                       qty: moneyReport?.successAmount?.numberOfBills || 0,
-                      amount: moneyReport?.successAmount?.totalBalance || 0,
+                      amount:
+                        (moneyReport?.successAmount?.payByCash || 0) +
+                        (moneyReport?.successAmount?.transferPayment || 0) +
+                        (moneyReport?.successAmount?.point || 0),
+                      // amount: moneyReport?.successAmount?.totalBalance || 0,
                     },
                     {
                       method: (
