@@ -943,11 +943,11 @@ function AddOrder() {
                 navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
                 return;
               } else {
-                navigate();
-                // `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                // navigate();
+                // `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`;
               }
               navigate(
-                // `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
+                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
                 { state: { zoneId: localZone } }
               );
             }
