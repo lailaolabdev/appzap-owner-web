@@ -1065,7 +1065,7 @@ export default function CheckOutPopup({
               </div>
             )}
           </div>
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ padding: 20, marginBottom: 10 }}>
             <div hidden={tab === "point"} style={{ marginBottom: 10 }}>
               {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
