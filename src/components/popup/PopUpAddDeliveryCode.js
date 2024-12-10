@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BsQuestionLg } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
-import { getAllDelivery } from "../../services/delivery";
 
-// Assuming COLOR_APP is defined elsewhere
+import { getAllDelivery } from "../../services/delivery";
 import { COLOR_APP } from "../../constants";
+import { useStore } from "../../store";
 
 const boxIcon = {
   position: "absolute",
@@ -55,7 +55,8 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
   const [deliveryCode, setDeliveryCode] = useState("");
   const [platform, setPlatform] = useState("");
   const [platformList, setPlatformList] = useState([]);
-
+  const { selectedTable } = useStore();
+  const deliveryCodeInputRef = useRef(null);
   const fetchDelivery = async () => {
     await getAllDelivery().then((res) => {
       setPlatformList(res.data);
@@ -64,12 +65,18 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
 
   useEffect(() => {
     fetchDelivery();
-  }, []);
+    // Focus the input when the modal opens
+    if (open && deliveryCodeInputRef.current) {
+      deliveryCodeInputRef.current.focus();
+    }
+  }, [open]); // Run when modal opens or changes
 
   return (
     <Modal show={open} onHide={onClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>{t("delivery")}</Modal.Title>
+        <Modal.Title>{`${t("delivery")} (${
+          selectedTable?.tableName
+        })`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group>
@@ -79,6 +86,7 @@ export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
             value={deliveryCode}
             onChange={(e) => setDeliveryCode(e.target.value)}
             placeholder={t("deliveryPlaceholder")}
+            ref={deliveryCodeInputRef}
           />
         </Form.Group>
         <Form.Group className="mt-3">

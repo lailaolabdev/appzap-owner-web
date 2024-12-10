@@ -748,6 +748,7 @@ export default function CheckOutPopup({
         setDelivery();
         setPoint();
         onClose();
+        setCanCheckOut(false);
       }}
       keyboard={false}
       size="lg"
@@ -1065,8 +1066,11 @@ export default function CheckOutPopup({
               </div>
             )}
           </div>
-          <div style={{ padding: 20, marginBottom: 10 }}>
-            <div hidden={tab === "point"} style={{ marginBottom: 10 }}>
+          <div style={{ marginBottom: 10, padding: 20 }}>
+            <div
+              hidden={tab === "point" || selectedTable?.isDeliveryTable}
+              style={{ marginBottom: 10 }}
+            >
               {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -1078,99 +1082,8 @@ export default function CheckOutPopup({
               }}
             >
               {/* ເງິີນສົດ */}
-              <Button
-                variant={
-                  selectedTable?.isDeliveryTable
-                    ? "outline-primary"
-                    : tab === "cash"
-                    ? "primary"
-                    : "outline-primary"
-                }
-                disabled={selectedTable?.isDeliveryTable}
-                onClick={() => {
-                  setCash();
-                  setTransfer();
-                  setTab("cash");
-                  setSelectInput("inputCash");
-                  setForcus("CASH");
-                }}
-              >
-                {t("cash")}
-              </Button>
-              <Button
-                variant={tab === "transfer" ? "primary" : "outline-primary"}
-                disabled={selectedTable?.isDeliveryTable}
-                onClick={() => {
-                  setCash();
-                  setSelectCurrency({
-                    id: "LAK",
-                    name: "LAK",
-                  });
-                  setRateCurrency(1);
-                  setTransfer(transferCal);
-                  setTab("transfer");
-                  setForcus("TRANSFER");
-                }}
-              >
-                {t("transfer")}
-              </Button>
-              {/* {storeDetail?.isCRM && (
-                <Button
-                  disabled={hasCRM}
-                  variant={tab === "point" ? "primary" : "outline-primary"}
-                  onClick={() => {
-                    setCash();
-                    setTransfer();
-                    setPoint();
-                    setTab("point");
-                    setSelectInput("inputPoint");
-                    setForcus("POINT");
-                  }}
-                >
-                  {t("point")}
-                </Button>
-              )} */}
-              <Button
-                variant={
-                  tab === "cash_transfer" ? "primary" : "outline-primary"
-                }
-                disabled={selectedTable?.isDeliveryTable}
-                onClick={() => {
-                  setCash();
-                  setSelectCurrency({
-                    id: "LAK",
-                    name: "LAK",
-                  });
-                  setRateCurrency(1);
-                  setTransfer();
-                  setTab("cash_transfer");
-                  setSelectInput("inputCash");
-                  setForcus("TRANSFER_CASH");
-                }}
-              >
-                {t("cash_transfer")}
-              </Button>
-              {storeDetail?.isCRM && (
-                <Button
-                  disabled={hasCRM}
-                  variant={
-                    tab === "cash_transfer_point"
-                      ? "primary"
-                      : "outline-primary"
-                  }
-                  onClick={() => {
-                    setCash();
-                    setTransfer();
-                    setPoint();
-                    setTab("cash_transfer_point");
-                    setSelectInput("inputCash");
-                    setForcus("CASH_TRANSFER_POINT");
-                  }}
-                >
-                  {t("transfercashpoint")}
-                </Button>
-              )}
-              {selectedTable?.isDeliveryTable && (
+
+              {selectedTable?.isDeliveryTable ? (
                 <Button
                   variant={
                     selectedTable?.isDeliveryTable
@@ -1189,6 +1102,103 @@ export default function CheckOutPopup({
                   {dataBill?.orderId?.length > 0 &&
                     dataBill?.orderId[0]?.platform}
                 </Button>
+              ) : (
+                <>
+                  <Button
+                    variant={
+                      selectedTable?.isDeliveryTable
+                        ? "outline-primary"
+                        : tab === "cash"
+                        ? "primary"
+                        : "outline-primary"
+                    }
+                    disabled={selectedTable?.isDeliveryTable}
+                    onClick={() => {
+                      setCash();
+                      setTransfer();
+                      setTab("cash");
+                      setSelectInput("inputCash");
+                      setForcus("CASH");
+                    }}
+                  >
+                    {t("cash")}
+                  </Button>
+                  <Button
+                    variant={tab === "transfer" ? "primary" : "outline-primary"}
+                    disabled={selectedTable?.isDeliveryTable}
+                    onClick={() => {
+                      setCash();
+                      setSelectCurrency({
+                        id: "LAK",
+                        name: "LAK",
+                      });
+                      setRateCurrency(1);
+                      setTransfer(transferCal);
+                      setTab("transfer");
+                      setForcus("TRANSFER");
+                    }}
+                  >
+                    {t("transfer")}
+                  </Button>
+                  {/* {storeDetail?.isCRM && (
+                <Button
+                  disabled={hasCRM}
+                  variant={tab === "point" ? "primary" : "outline-primary"}
+                  onClick={() => {
+                    setCash();
+                    setTransfer();
+                    setPoint();
+                    setTab("point");
+                    setSelectInput("inputPoint");
+                    setForcus("POINT");
+                  }}
+                >
+                  {t("point")}
+                </Button>
+              )} */}
+                  <Button
+                    variant={
+                      tab === "cash_transfer" ? "primary" : "outline-primary"
+                    }
+                    disabled={selectedTable?.isDeliveryTable}
+                    onClick={() => {
+                      setCash();
+                      setSelectCurrency({
+                        id: "LAK",
+                        name: "LAK",
+                      });
+                      setRateCurrency(1);
+                      setTransfer();
+                      setTab("cash_transfer");
+                      setSelectInput("inputCash");
+                      setForcus("TRANSFER_CASH");
+                    }}
+                  >
+                    {t("cash_transfer")}
+                  </Button>
+                  {storeDetail?.isCRM && (
+                    <Button
+                      disabled={hasCRM || selectedTable?.isDeliveryTable}
+                      variant={
+                        selectedTable?.isDeliveryTable
+                          ? "outline-primary"
+                          : tab === "cash_transfer_point"
+                          ? "primary"
+                          : "outline-primary"
+                      }
+                      onClick={() => {
+                        setCash();
+                        setTransfer();
+                        setPoint();
+                        setTab("cash_transfer_point");
+                        setSelectInput("inputCash");
+                        setForcus("CASH_TRANSFER_POINT");
+                      }}
+                    >
+                      {t("transfercashpoint")}
+                    </Button>
+                  )}
+                </>
               )}
               <div style={{ flex: 1 }} />
               <Form.Control
