@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Breadcrumb, Card, Form, Button, Table, Alert } from "react-bootstrap";
 import { t } from "i18next";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa"; // Importing the success icon from react-icons
+import Swal from "sweetalert2";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 export default function StockCreateCategory() {
   const [stockTypeName, setStockTypeName] = useState("");
   const [note, setNote] = useState("");
   const [stockList, setStockList] = useState([]);
-  const [isCreated, setIsCreated] = useState(false); // State to track if stock is created
-  const [showAlert, setShowAlert] = useState(false); // State to control the visibility of the alert
+  const [isCreated, setIsCreated] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Create a new stock object and add to the stock list
+
     const newStock = {
       id: stockList.length + 1,
       name: stockTypeName,
@@ -20,26 +21,34 @@ export default function StockCreateCategory() {
     };
     localStorage.setItem("stockAdd", JSON.stringify([...stockList, newStock]));
 
-    // Update stock list and show "Create Complete" message
     setStockList([...stockList, newStock]);
     setIsCreated(true);
-    setShowAlert(true); // Show the alert when stock is created
+    setShowAlert(true);
 
-    // Reset form after submit
     setStockTypeName("");
     setNote("");
 
-    // Auto close the alert after 3 seconds
-    // setTimeout(() => {
-    //   setShowAlert(false); // Hide the alert after 3 seconds
-    // }, 3000);
+    // await Swal.fire({
+    //   icon: "success",
+    //   title: "ປິນສຳເລັດ",
+    //   showConfirmButton: false,
+    //   timer: 1500,
+    // });
+    // setShowAlert(false);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 1500);
   };
 
   const handleRemove = (id) => {
-    // Remove stock from the list and update localStorage
     const updatedStockList = stockList.filter((stock) => stock.id !== id);
     setStockList(updatedStockList);
-    localStorage.setItem("stockAdd", JSON.stringify(updatedStockList));
+    console.log({ updatedStockList });
+    if (updatedStockList.length === 0) {
+      localStorage.removeItem("stockAdd");
+    } else {
+      localStorage.setItem("stockAdd", JSON.stringify(updatedStockList));
+    }
   };
 
   useEffect(() => {
@@ -57,30 +66,26 @@ export default function StockCreateCategory() {
 
       {/* Display "Create Complete" success alert */}
       {showAlert && (
-        <div
-          className="mt-3 flex items-center justify-between px-4, py-2 leading-normal text-green-600 bg-green-100 rounded-lg"
-          role="alert"
+        <Alert
+          variant="success"
+          className=" mt-3 d-flex align-items-center"
+          onClose={() => setShowAlert(false)}
+          dismissible
         >
-          <div className="flex items-center ">
-            <FaCheckCircle className="mr-3" /> {/* Success Icon */}
-            <p>{t("add_complete")}</p>
-          </div>
-          <svg
-            onClick={() => setShowAlert(false)}
-            className="w-4 h-4 fill-current text-green-600 ml-4 cursor-pointer hover:opacity-80"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-          >
-            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 464c-114.7 0-208-93.31-208-208S141.3 48 256 48s208 93.31 208 208S370.7 464 256 464zM359.5 133.7c-10.11-8.578-25.28-7.297-33.83 2.828L256 218.8L186.3 136.5C177.8 126.4 162.6 125.1 152.5 133.7C142.4 142.2 141.1 157.4 149.7 167.5L224.6 256l-74.88 88.5c-8.562 10.11-7.297 25.27 2.828 33.83C157 382.1 162.5 384 167.1 384c6.812 0 13.59-2.891 18.34-8.5L256 293.2l69.67 82.34C330.4 381.1 337.2 384 344 384c5.469 0 10.98-1.859 15.48-5.672c10.12-8.562 11.39-23.72 2.828-33.83L287.4 256l74.88-88.5C370.9 157.4 369.6 142.2 359.5 133.7z" />
-          </svg>
-        </div>
+          <FaCheckCircle style={{ marginRight: "10px" }} /> {/* Success Icon */}
+          {t("add_complete")}
+        </Alert>
       )}
 
       {/* Card for the form content */}
       <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="border-b pb-4 mb-6">
+        <div className=" pb-2 mb-2 flex justify-between items-center">
           <h5 className="text-xl font-semibold">{t("add_stock_type")}</h5>
+          <button className="bg-color-app p-2 text-white font-semibold rounded-md mb-2 hover:bg-orange-400 focus:ring-2 focus:ring-orange-200 focus:outline-none">
+            {t("save")}
+          </button>
         </div>
+        <hr></hr>
 
         {/* Form for stock type */}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -98,7 +103,7 @@ export default function StockCreateCategory() {
               value={stockTypeName}
               onChange={(e) => setStockTypeName(e.target.value)}
               required
-              className="px-2 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
@@ -115,55 +120,56 @@ export default function StockCreateCategory() {
               placeholder={t("note")}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="px-2 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
           <button
             type="submit"
-            className="min-w-0 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="min-w-0 py-2 px-4 bg-color-app text-white rounded-md hover:bg-orange-400 focus:ring-2 focus:ring-orange-200 focus:outline-none"
           >
             {t("add_stock_type")}
           </button>
         </form>
       </div>
 
-      {/* Card for the table content */}
-      <Card className="mt-4">
-        <Card.Header>
-          <h5>{t("stock_type")}</h5>
-        </Card.Header>
-        <Card.Body>
+      <div className="mt-4 border border-gray-200 rounded-lg shadow-md">
+        <div className="px-4 py-2 bg-gray-100 border-b">
+          <h5 className="text-xl font-semibold">{t("stock_type")}</h5>
+        </div>
+        <div className="px-4 py-4">
           {/* Table to display stock types */}
-          <Table striped bordered hover responsive>
+          <table className="min-w-full table-auto">
             <thead>
-              <tr>
-                <th>#</th>
-                <th style={{ textAlign: "center" }}>{t("stock_type_name")}</th>
-                <th style={{ textAlign: "center" }}>{t("note")}</th>
-                <th style={{ textAlign: "center" }}>{t("manage")}</th>
+              <tr className="border-b bg-gray-50">
+                <th className="px-4 py-2 text-left">#</th>
+                <th className="px-4 py-2 text-center">
+                  {t("stock_type_name")}
+                </th>
+                <th className="px-4 py-2 text-center">{t("note")}</th>
+                <th className="px-4 py-2 text-center">{t("manage")}</th>
               </tr>
             </thead>
             <tbody>
               {stockList.map((stock) => (
-                <tr key={stock.id}>
-                  <td>{stock.id}</td>
-                  <td style={{ textAlign: "center" }}>{stock.name}</td>
-                  <td style={{ textAlign: "center" }}>{stock.note}</td>
-                  <td style={{ textAlign: "center" }}>
-                    <Button
-                      variant="danger"
-                      size="sm"
+                <tr key={stock.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{stock.id}</td>
+                  <td className="px-4 py-2 text-center">{stock.name}</td>
+                  <td className="px-4 py-2 text-center">{stock.note}</td>
+                  <td className="px-4 py-2 text-center">
+                    <button
                       onClick={() => handleRemove(stock.id)}
+                      className="text-red-500 hover:text-red-700"
+                      aria-label={`Remove stock type ${stock.name}`}
                     >
-                      <FaTimesCircle />
-                    </Button>
+                      <FaTimesCircle className="w-5 h-5" aria-hidden="true" />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
