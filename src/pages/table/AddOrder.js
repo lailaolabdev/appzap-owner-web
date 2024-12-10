@@ -1141,10 +1141,11 @@ function AddOrder() {
                   selectedCategory === "All"
                     ? "text-orange-500"
                     : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm whitespace-nowrap`}
+                } rounded-full px-3 py-2 shadow-button font-semibold text-sm inline-block whitespace-nowrap w-fit relative`}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
+                <div className="ml-12"></div>
               </button>
               {Categorys &&
                 Categorys.map((data, index) => {
@@ -1155,10 +1156,11 @@ function AddOrder() {
                         selectedCategory === data?._id
                           ? "text-orange-500"
                           : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button min-w-20 w-fit font-semibold text-sm whitespace-nowrap`}
+                      } rounded-full px-3 py-2 shadow-button font-semibold text-sm inline-block whitespace-nowrap w-fit relative`}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
+                      <div className="ml-12"></div>
                     </button>
                   );
                 })}

@@ -74,7 +74,7 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
-import { Check, HandPlatter, Loader, X } from "lucide-react";
+import { Check, HandPlatter, Loader, ReceiptText, X } from "lucide-react";
 import { cn } from "../../utils/cn";
 
 export default function TableList() {
@@ -2142,6 +2142,14 @@ export default function TableList() {
     calculateTotalBill();
   }, [dataBill]);
 
+  useEffect(() => {
+    if (selectedTable) {
+      setSelectTable(selectedTable);
+    } else {
+      setSelectTable(false);
+    }
+  }, [selectedTable]);
+
   // useEffect(() => {
   //   getStatusItem();
   // }, [isCheckedOrderItem]);
@@ -2344,11 +2352,11 @@ export default function TableList() {
               {
                 label: t("total_bill_check"),
                 value: _checkStatusCodeB(tableList),
-                icon: <Loader />,
+                icon: <ReceiptText />,
               },
             ].map((item, index) => {
               return (
-                <div className="h-[90px] flex gap-3 bg-white p-3 justify-start items-center rounded-lg shadow-sm">
+                <div className="h-[90px] flex gap-2.5 bg-white p-3 justify-start items-center rounded-[8px] shadow-sm">
                   <div className="bg-[#FB6F3B] h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px] text-white">
                     {item.icon}
                   </div>
@@ -2361,7 +2369,7 @@ export default function TableList() {
                     >
                       {item.label}
                     </div>
-                    <div className="text-[#111827] font-bold text-2xl font-inter leading-6">
+                    <div className="text-[#111827] font-semibold text-[22px] font-inter leading-6">
                       {item.value}
                     </div>
                   </div>
@@ -2396,8 +2404,8 @@ export default function TableList() {
             <div
               className={cn(
                 selectTable
-                  ? "grid gap-3 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                  ? "grid gap-2 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
               )}
             >
               {tableList &&
@@ -2405,14 +2413,15 @@ export default function TableList() {
                   <div
                     key={"table" + index}
                     className={cn(
-                      "rounded-lg overflow-hidden shadow-sm bg-white cursor-pointer",
+                      "rounded-[6px] overflow-hidden shadow-sm bg-white cursor-pointer",
                       language === "la" ? "!font-noto" : "!font-inter"
                     )}
                   >
                     <div className="md:block hidden">
                       <div
                         className={cn(
-                          "w-full h-[90px] rounded-[4px] bg-white flex text-center",
+                          "w-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
+                          selectTable._id === table._id && "border-color-app",
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : // : table.statusBill === "CALL_TO_CHECKOUT"
@@ -2422,27 +2431,27 @@ export default function TableList() {
                         onClick={() => {
                           setOrderPayBefore([]);
                           onSelectTable(table);
+                          setSelectedTable(table);
                           setSelectTable(true);
                         }}
                       >
-                        <div className="flex gap-3 items-center justify-center h-full p-3">
-                          <div
-                            className={cn(
-                              "w-10 h-10 min-w-10 min-h-10 flex items-center justify-center rounded-[6px] text-2xl font-bold",
-                              table?.isStaffConfirm
-                                ? table?.editBill
-                                  ? "bg-green-300 text-green-500"
-                                  : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "bg-yellow-300 text-yellow-500"
-                                  : "bg-red-300 text-red-500"
-                                : "bg-gray-300 text-gray-500"
-                            )}
-                          >
-                            {index + 1}
-                          </div>
-                          <span className="text-left">
-                            {/* <div>{table?.tableName}</div>
-                              <div>{table?.code}</div> */}
+                        <div className="flex flex-col items-center justify-center h-full px-3 py-2">
+                          <div className="w-full">
+                            <div
+                              className={cn(
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
+                                table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "text-green-500"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                  : "text-gray-500"
+                              )}
+                            >
+                              <span>{table?.tableName}</span>
+                              <span>{`(${table?.code})`}</span>
+                            </div>
                             <div
                               className={cn(
                                 "text-lg font-semibold",
@@ -2467,14 +2476,14 @@ export default function TableList() {
                               Zone:{" "}
                               {table?.zone?.name ? table?.zone?.name : "Normal"}
                             </div>
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div className="block md:hidden">
                       <div
                         className={cn(
-                          "w-full h-[90px] rounded-[4px] bg-white flex text-center",
+                          "w-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : // : table.statusBill === "CALL_TO_CHECKOUT"
@@ -2491,23 +2500,22 @@ export default function TableList() {
                         }}
                       >
                         <div className="flex gap-4 items-center justify-center h-full p-3">
-                          <div
-                            className={cn(
-                              "w-10 h-10 min-w-10 min-h-10 flex items-center justify-center rounded-[6px] text-2xl font-bold",
-                              table?.isStaffConfirm
-                                ? table?.editBill
-                                  ? "bg-green-300 text-green-500"
-                                  : table?.statusBill === "CALL_TO_CHECKOUT"
-                                  ? "bg-yellow-300 text-yellow-500"
-                                  : "bg-red-300 text-red-500"
-                                : "bg-gray-300 text-gray-500"
-                            )}
-                          >
-                            {index + 1}
-                          </div>
-                          <span className="text-left">
-                            {/* <div>{table?.tableName}</div>
-                              <div>{table?.code}</div> */}
+                          <div className="w-full">
+                            <div
+                              className={cn(
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
+                                table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "text-green-500"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "text-yellow-500"
+                                    : "text-red-500"
+                                  : "text-gray-500"
+                              )}
+                            >
+                              <span>{table?.tableName}</span>
+                              <span>{`(${table?.code})`}</span>
+                            </div>
                             <div
                               className={cn(
                                 "text-lg font-semibold",
@@ -2532,7 +2540,7 @@ export default function TableList() {
                               Zone:{" "}
                               {table?.zone?.name ? table?.zone?.name : "Normal"}
                             </div>
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
