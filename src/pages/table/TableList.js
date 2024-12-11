@@ -640,7 +640,7 @@ export default function TableList() {
       });
 
       if (updateTable?.status < 300) {
-        console.log("success create printer bil...");
+        console.log("success create printer bill...");
       }
     } catch (err) {
       console.log({ err });

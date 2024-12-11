@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import moment from "moment";
 import axios from "axios";
-import { Table, Modal, Button, Pagination } from "react-bootstrap";
+import { Table, Modal, Button, Spinner, Pagination } from "react-bootstrap";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
-import { _statusCheckBill, orderStatus } from "./../../helpers";
+import { _statusCheckBill, base64ToBlob, orderStatus } from "./../../helpers";
 import AnimationLoading from "../../constants/loading";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
@@ -18,7 +18,16 @@ import { stringify } from "query-string";
 import Loading from "../../components/Loading";
 import ReactPaginate from "react-paginate";
 import { getCountBills } from "../../services/bill";
-import { COLOR_APP } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  COLOR_APP,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants";
+import BillOnDashboardPage from "../../components/bill/BillOnDashboardPage";
+import Swal from "sweetalert2";
+import html2canvas from "html2canvas";
+import printFlutter from "../../helpers/printFlutter";
 
 const limitData = 50;
 
@@ -34,6 +43,7 @@ export default function DashboardFinance({
   const { accessToken } = useQuery();
   const params = useParams();
   const [data, setData] = useState();
+  const [dataPrint, setDataPrint] = useState();
   const [disCountDataKib, setDisCountDataKib] = useState(0);
   const [disCountDataPercent, setDisCountDataPercent] = useState(0);
   const [dataNotCheckBill, setDataNotCheckBill] = useState({});
@@ -45,14 +55,20 @@ export default function DashboardFinance({
   const [dataModal, setDataModal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [disabledEditBill, setDisabledEditBill] = useState(false);
+  const [printBillLoading, setPrintBillLoading] = useState(false);
 
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
 
   const handleClose = () => setShow(false);
-  const { storeDetail, profile } = useStore();
-
-  // console.log("data", data);
+  const {
+    storeDetail,
+    profile,
+    dataBill,
+    selectedTable,
+    printers,
+    printerCounter,
+  } = useStore();
 
   const getPaginationCountData = async () => {
     try {
@@ -73,6 +89,104 @@ export default function DashboardFinance({
       setTotalPagination(Math.ceil(_data?.count / limitData));
     } catch (err) {
       console.log(err);
+    }
+  };
+  const [widthBill80, setWidthBill80] = useState(80);
+  let bill80Ref = useRef(null);
+
+  console.log({ bill80Ref });
+  console.log({ widthBill80 });
+
+  useLayoutEffect(() => {
+    if (!bill80Ref.current) return;
+    setWidthBill80(bill80Ref.current.offsetWidth);
+  }, [bill80Ref]);
+
+  const onPrintBill = async (isPrintBill) => {
+    try {
+      setPrintBillLoading(true);
+      // let _dataBill = {
+      //   ...dataBill,
+      //   typePrint: "PRINT_BILL_CHECKOUT",
+      // };
+      // saveServiceChargeDetails();
+      // await _createHistoriesPrinter(_dataBill);
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+
+      console.log({ printerBillData });
+      let dataImageForPrint;
+      dataImageForPrint = await html2canvas(bill80Ref.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+
+      console.log({ dataImageForPrint });
+
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", isPrintBill);
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      console.log({ bodyFormData });
+
+      await printFlutter(
+        {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+
+      setPrintBillLoading(false);
+      await Swal.fire({
+        icon: "success",
+        title: `${t("checkbill_success")}`,
+        showConfirmButton: false,
+        timer: 1800,
+      });
+      // setMenuItemDetailModal(false);
+    } catch (err) {
+      console.log("err printer", err);
+      setPrintBillLoading(false);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("print_fial")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return err;
     }
   };
 
@@ -186,6 +300,7 @@ export default function DashboardFinance({
       amount: totalPrice,
     };
     setData(_formatJson);
+    setDataPrint(_checkOut);
     setIsLoading(false);
   };
 
@@ -517,8 +632,24 @@ export default function DashboardFinance({
               display: "flex",
               justifyContent: "flex-end",
               marginBottom: 10,
+              gap: "10px",
             }}
           >
+            <Button
+              // disabled={
+              //   billDataLoading || printBillLoading || printBillCalulate
+              // }
+              onClick={() => onPrintBill()}
+            >
+              {/* {billDataLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )} */}
+              {t("printBill")}
+            </Button>
             <Button
               disabled={
                 disabledEditBill ||
@@ -605,6 +736,17 @@ export default function DashboardFinance({
                 ))}
             </tbody>
           </Table>
+          <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+            <BillOnDashboardPage
+              // orderPayBefore={orderPayBefore}
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              dataBill={dataPrint ? dataPrint[0] : []}
+              // totalBillBillOnDashboardPage={total}
+              // taxPercent={taxPercent}
+              profile={profile}
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>

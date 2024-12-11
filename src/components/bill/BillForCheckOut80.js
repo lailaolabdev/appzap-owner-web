@@ -185,7 +185,8 @@ export default function BillForCheckOut80({
           <div>
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
+              {moment(dataBill?.createdAt).format("DD-MM-YYYY")} (
+              {moment(dataBill?.createdAt).format("hh:mm A")})
             </span>
           </div>
           <div>
@@ -443,7 +444,7 @@ const Price = styled.div`
 const Container = styled.div`
   margin: 10px;
   width: 100%;
-  margin-left: -8px;
+  margin: auto;
 `;
 const Img = styled.div`
   width: 200px;
