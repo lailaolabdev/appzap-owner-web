@@ -948,5 +948,6 @@
   "point_s": "points used",
   "point_r": "points Received",
   "point_g": "points Given",
-  "exchange_point": "Exchange points"
+  "exchange_point": "Exchange points",
+  "copy-ip-text": "Copy IP address success"
 }

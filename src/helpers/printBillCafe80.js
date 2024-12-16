@@ -4,24 +4,15 @@ import { convertImageToBase64 } from "./index"; // Assuming you have this helper
 import { URL_PHOTO_AW3 } from "../constants";
 import { prinBill80 } from "../services/prinBill80";
 
-export const printBill80 = async (
-  printerBillData,
+export const printBillCafe80 = async (
   dataBill,
-  isPrintBill,
+  printerBillData,
   storeDetail,
-  selectedTable,
-  profile,
-  currencyData,
-  orderPayBefore
+  profile
 ) => {
-  const ListOrders =
-    orderPayBefore && orderPayBefore.length > 0
-      ? orderPayBefore
-      : dataBill?.orderId;
-
   // Make sure to calculate the missing values here or pass them as parameters
   const taxPercent = 0;
-  const total = calculateTotal(ListOrders);
+  const total = calculateTotal(dataBill);
   const taxAmount = calculateTaxAmount(total, taxPercent);
   const serviceChargeAmount = calculateServiceCharge(total, storeDetail);
   const totalAfterDiscount = calculateTotalAfterDiscount(
@@ -39,12 +30,11 @@ export const printBill80 = async (
   const CurrencyData = formatCurrencyData(
     total,
     taxAmount,
-    serviceChargeAmount,
-    currencyData
+    serviceChargeAmount
   );
-  const CurrencyEX = formatCurrencyExchange(currencyData);
+  // const CurrencyEX = formatCurrencyExchange(currencyData);
 
-  const formatOrderList = formatOrderLists(ListOrders);
+  const formatOrderList = formatOrderLists(dataBill);
 
   // Prepare the data for printing
   const data = {
@@ -56,51 +46,24 @@ export const printBill80 = async (
     subheader: [
       { tel: storeDetail?.phone },
       { whatsapp: storeDetail?.whatsapp },
-      { code: dataBill?.code },
+
       { date: moment(dataBill?.createdAt).format("DD-MM-YYYY HH:mm") },
       {
         cashier: `${profile?.data?.firstname ?? "-"} ${
           profile?.data?.lastname ?? "-"
         }`,
       },
-
-      {
-        "tel of customer": `${
-          dataBill?.memberPhone ? dataBill?.memberPhone : "- ,"
-        }  (point : ${dataBill?.Point ? moneyCurrency(dataBill?.Point) : "0"})`,
-      },
     ],
     body: formatOrderList, // Or you could map the items for a more detailed printout
-    totalRightPrices: [
-      { "total:": moneyCurrency(total), fontSize: 26 },
-      {
-        "discount:": `${dataBill?.discount} ${
-          dataBill?.discountType === "MONEY" || dataBill?.discountType === "LAK"
-            ? storeDetail?.firstCurrency
-            : "%"
-        }`,
-        fontSize: 26,
-      },
-      {
-        "point redeem:": storeDetail?.point
-          ? moneyCurrency(storeDetail?.point)
-          : "0",
-        fontSize: 26,
-      },
-      {
-        "Total (LAK):": moneyCurrency(totalAfterDiscount),
-        bold: true,
-        fontSize: 30,
-      },
-    ],
-    totalLeftPrices: CurrencyData,
-    footer: CurrencyEX,
+    totalRightPrices: [{ "total:": moneyCurrency(totalAfterDiscount) }],
+    totalLeftPrices: [],
+    footer: [],
     paymentQR: {
       paymentQr:
         "00020101021138670016a00526628466257701082771041802030010324cchrjzrjzwudwnqvhexuhnoq53034185802la63049b5f",
     },
     printerIP: printerBillData?.ip, // Use stored IP if available
-    openCashDrawer: isPrintBill,
+    openCashDrawer: false,
   };
 
   // Send the data to the printer
@@ -112,10 +75,8 @@ export const printBill80 = async (
 const calculateTotal = (orders) => {
   let total = 0;
   for (const order of orders || []) {
-    if (order?.status === "SERVED" || order?.status === "PRINTBILL") {
-      const itemPrice = order?.price + (order?.totalOptionPrice || 0);
-      total += order?.quantity * itemPrice;
-    }
+    const itemPrice = order?.price + (order?.totalOptionPrice || 0);
+    total += order?.quantity * itemPrice;
   }
   return total;
 };

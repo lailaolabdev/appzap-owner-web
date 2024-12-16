@@ -55,6 +55,8 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
 import matchRoundNumber from "../../helpers/matchRound";
+// import { printBillCafe80 } from "../../helpers/printBillCafe80";
+import { printBillCafe80 } from "./../../helpers/printBillCafe80";
 
 function Homecafe() {
   const params = useParams();
@@ -620,67 +622,75 @@ function Homecafe() {
         (e) => e?._id === _printerCounters?.BILL
       );
       let dataImageForPrint;
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(bill80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-      }
 
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(bill58Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 350 / widthBill58,
-        });
-      }
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
-
-      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", _file);
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-
-      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
-      await printFlutter(
-        {
-          imageBuffer: dataImageForPrint.toDataURL(),
-          ip: printerBillData?.ip,
-          type: printerBillData?.type,
-          port: "9100",
-          width: printerBillData?.width === "58mm" ? 400 : 580,
-        },
-        async () => {
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
+      const SuccessPrintResult = await printBillCafe80(
+        selectedMenu,
+        printerBillData,
+        storeDetail,
+        profile
       );
 
-      await Swal.fire({
-        icon: "success",
-        title: "ປິນສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      // if (printerBillData?.width === "80mm") {
+      //   dataImageForPrint = await html2canvas(bill80Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 530 / widthBill80,
+      //   });
+      // }
+
+      // if (printerBillData?.width === "58mm") {
+      //   dataImageForPrint = await html2canvas(bill58Ref.current, {
+      //     useCORS: true,
+      //     scrollX: 10,
+      //     scrollY: 0,
+      //     scale: 350 / widthBill58,
+      //   });
+      // }
+      // if (printerBillData?.type === "ETHERNET") {
+      //   urlForPrinter = ETHERNET_PRINTER_PORT;
+      // }
+      // if (printerBillData?.type === "BLUETOOTH") {
+      //   urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      // }
+      // if (printerBillData?.type === "USB") {
+      //   urlForPrinter = USB_PRINTER_PORT;
+      // }
+
+      // const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      // var bodyFormData = new FormData();
+      // bodyFormData.append("ip", printerBillData?.ip);
+      // bodyFormData.append("port", "9100");
+      // bodyFormData.append("image", _file);
+      // bodyFormData.append("beep1", 1);
+      // bodyFormData.append("beep2", 9);
+      // bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      // // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+      // await printFlutter(
+      //   {
+      //     imageBuffer: dataImageForPrint.toDataURL(),
+      //     ip: printerBillData?.ip,
+      //     type: printerBillData?.type,
+      //     port: "9100",
+      //     width: printerBillData?.width === "58mm" ? 400 : 580,
+      //   },
+      //   async () => {
+      //     await axios({
+      //       method: "post",
+      //       url: urlForPrinter,
+      //       data: bodyFormData,
+      //       headers: { "Content-Type": "multipart/form-data" },
+      //     });
+      //   }
+      // );
+
+      // await Swal.fire({
+      //   icon: "success",
+      //   title: "ປິນສຳເລັດ",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      // });
 
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);

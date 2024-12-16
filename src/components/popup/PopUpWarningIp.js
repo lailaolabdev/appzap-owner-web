@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { BsQuestionLg } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { printBillDiscoverIp } from "../../services/prinBill80";
 import { addPrinter } from "../../services/printer";
 import { useStore } from "../../store";
+import { BsClipboard } from "react-icons/bs";
 // Assuming COLOR_APP is defined elsewhere
 import { COLOR_APP } from "../../constants";
 
@@ -53,6 +54,59 @@ const modalFooterStyle = {
   border: "none",
 };
 
+const CopyableInput = ({ textToCopy }) => {
+  const [copied, setCopied] = useState(false); // Track copy status
+  const inputRef = useRef(null); // Reference to input element
+  const { t } = useTranslation();
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(inputRef.current.value); // Copy text to clipboard
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      Swal.fire({
+        title: "success",
+        text: t("copy-ip-text"),
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      // Reset copied state after 2 seconds
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to copy text!",
+        icon: "error",
+      });
+    }
+  };
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <input
+        ref={inputRef}
+        type="text"
+        value={textToCopy}
+        placeholder={"ກະລຸນາປ້ອນ IP"}
+        className="form-control relative"
+        readOnly={true}
+      />
+      <Button
+        className="absolute right-24 h-[38px] w-[38px] flex gap-1 items-center p-2"
+        variant="light"
+        onClick={handleCopy}
+        style={{
+          backgroundColor: copied ? "#28a745" : `${COLOR_APP}`, // Change color based on copy state
+          color: "#fff",
+          border: "none",
+        }}
+      >
+        <BsClipboard size={20} />
+        {/* {copied ? "Copied!" : "Copy"} */}
+      </Button>
+    </div>
+  );
+};
 export default function PopUpWarningIp({
   open,
   text,
@@ -66,10 +120,6 @@ export default function PopUpWarningIp({
   const navigate = useNavigate();
   const { storeDetail } = useStore();
 
-  const handleIpChange = (e) => {
-    setData(e.target.value);
-  };
-
   const handleSearchIp = async () => {
     setIsLoading(true);
     const res = await printBillDiscoverIp();
@@ -77,36 +127,10 @@ export default function PopUpWarningIp({
     setIsLoading(false);
   };
 
-  //   const handleConfirmClick = async () => {
-  //     if (!data) {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error",
-  //         text: "Please enter Ip printer",
-  //         showConfirmButton: false,
-  //         timer: 1800,
-  //       });
-  //       return;
-  //     }
-  //     const value = {
-  //       cutPaper: "cut",
-  //       ip: data[0],
-  //       name: `PrinterEthernet ${Date.now()}`,
-  //       storeId: storeDetail?._id,
-  //       type: "ETHERNET",
-  //       width: "80mm",
-  //     };
-  //     await addPrinter(value);
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "ສຳເລັດ",
-  //       text: "ສ້າງ IP Address ໃໝ່ສຳເລັດ",
-  //       showConfirmButton: false,
-  //       timer: 1800,
-  //     });
-  //     navigate("/printer");
-  //     setPopUpWarningIp(false);
-  //   };
+  const handleConfirmClick = async () => {
+    navigate("/printer");
+    setPopUpWarningIp(false);
+  };
 
   return (
     <Modal show={open} centered>
@@ -120,25 +144,26 @@ export default function PopUpWarningIp({
           <h3 style={{ fontSize: 30, fontWeight: 600 }}>
             <b>{t("noti")}!</b>
           </h3>
-          {isLoading && <p>ກຳລັງຄົ້ນຫາ......</p>}
-          {data?.data?.message && <p>{data?.data?.message}</p>}
+
+          {data?.message && (
+            <p>
+              {data?.message} {data?.printerIPs.length} IP
+            </p>
+          )}
           {data ? (
-            data?.map((item) => {
-              <div key={item?._id}>
-                <input
-                  type="text"
-                  value={item?.printerIPs}
-                  onChange={handleIpChange}
-                  placeholder={"ກະລຸນາປ້ອນ IP"}
-                  className="form-control"
-                  readOnly={true}
-                />
-              </div>;
+            data?.printerIPs?.map((item) => {
+              return (
+                <div key={item}>
+                  <CopyableInput textToCopy={item} />
+                </div>
+              );
             })
           ) : (
             <div>
               {data?.status ? (
                 <span style={{ color: "red" }}>{text}</span>
+              ) : isLoading ? (
+                <p>ກຳລັງຄົ້ນຫາ......</p>
               ) : (
                 <span style={{ color: "red" }}>ຫາ IP printer ບໍ່ເຫັນ</span>
               )}
@@ -148,7 +173,7 @@ export default function PopUpWarningIp({
       </Modal.Body>
       <Modal.Footer style={modalFooterStyle}>
         <Button variant="secondary" onClick={onClose}>
-          {t("cancel")}
+          {t("Close")}
         </Button>
         <Button
           style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
@@ -156,14 +181,16 @@ export default function PopUpWarningIp({
         >
           {t("search")}
         </Button>
-        {/* <Button
-          disabled={!data[0]}
-          style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-          onClick={handleConfirmClick}
-        >
-          {t("ok")}
-        </Button> */}
       </Modal.Footer>
+      {data?.printerIPs?.length > 0 && (
+        <div className="flex justify-center cursor-pointer">
+          <p onClick={handleConfirmClick}>
+            <span style={{ color: `${COLOR_APP}` }}>
+              Copy IP ໄປທີ່ໜ້າຕັ້ງຄ່າ Printer ໂດຍກົດບ່ອນນີ້
+            </span>{" "}
+          </p>
+        </div>
+      )}
     </Modal>
   );
 }
