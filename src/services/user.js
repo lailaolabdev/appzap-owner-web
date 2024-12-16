@@ -9,17 +9,7 @@ import { errorAdd, successAdd } from "../helpers/sweetalert";
  * @param {*} token
  * @returns
  */
-export const getUserById = async (billFarkId, token) => {
-  try {
-    const url = `${END_POINT_APP}/v4/bill-fark/id/${billFarkId}`;
-    const res = await axios.get(url, {
-      headers: token,
-    });
-    return res.data;
-  } catch (error) {
-    return error;
-  }
-};
+
 
 export const updateUser = async (billFarkId, data, token) => {
   try {
@@ -112,3 +102,4 @@ export const getCount = async (findby, token) => {
     return { error: true };
   }
 };
+

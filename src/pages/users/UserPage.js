@@ -35,6 +35,7 @@ import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
+import PopUpUpdateUser from "../../components/popup/PopUpUpdateUer";
 
 const limitData = 10;
 
@@ -57,9 +58,9 @@ export default function UserPage() {
   // store
   const { storeDetail } = useStore();
   const storeId = storeDetail._id;
-  //console.log("storeId:", storeId)
-
-  // useEffect
+  // console.log("userData: ",userData)
+  // console.log("selectUser: ",selectUser)
+  
   useEffect(() => {
     getCountData();
   }, []);
@@ -142,10 +143,10 @@ export default function UserPage() {
               padding: 10,
             }}
           >
-            <span>
-              <IoPeople /> {t("staff_report")}
+            <span style={{display:'flex', alignItems:'center'}}>
+              <IoPeople  style={{marginRight:'5px'}}/> {t("staff_report")}
             </span>
-            <div>
+            <div style={{display:'flex'}}>
               <Button
                 variant="dark"
                 bg="dark"
@@ -160,8 +161,9 @@ export default function UserPage() {
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpCreateUser: true })}
+                style={{display:'flex', alignItems:'center'}}
               >
-                <MdAssignmentAdd /> {t("add_list")}
+                <MdAssignmentAdd style={{marginRight:'5px'}} /> <div>{t("add_list")}</div>
               </Button>
             </div>
           </Card.Header>
@@ -272,6 +274,16 @@ export default function UserPage() {
                         <Button
                           onClick={() => {
                             setSelectUser(e);
+                            setPopup({ PopUpUpdateUser: true });
+                          }}
+                          variant= 'success'
+                          bg= "success"
+                        >
+                          {t("edit")}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setSelectUser(e);
                             setPopup({ PopUpConfirmDeletion: true });
                           }}
                         >
@@ -340,6 +352,16 @@ export default function UserPage() {
         callback={() => {
           getData();
         }}
+      />
+      <PopUpUpdateUser 
+        open={popup?.PopUpUpdateUser}
+        onClose={() => {
+          setPopup();
+        }}
+        callback={() => {
+          getData();
+        }}
+        selectUser = {selectUser}
       />
     </>
   );

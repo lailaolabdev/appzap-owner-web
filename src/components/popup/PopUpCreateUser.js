@@ -22,7 +22,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
 
   // store
   const { storeDetail } = useStore();
-  //console.log("formData?.role:", formData?.role)
+  console.log("formData:", formData)
 
   // useEffect
   useEffect(() => {
