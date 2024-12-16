@@ -4,6 +4,7 @@ import useWindowDimension2 from "../../helpers/useWindowDimension2";
 import { MdCallMissedOutgoing, MdSearch } from "react-icons/md";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import axios from "axios";
+import NavList from "../../pages/stock/components/NavList";
 import StockGroups from "./StockGroups";
 import { thousandSeparator } from "../../helpers/thousandSeparator";
 import { COLOR_APP } from "../../constants";
@@ -168,6 +169,7 @@ export default function ReportStocks() {
 
   return (
     <div className="p-3">
+      <NavList ActiveKey="/settingStore/reportStock" />
       {/* <div className="card-report-header">
         <div className="box">
           <div className="elm-title">
@@ -233,7 +235,12 @@ export default function ReportStocks() {
       >
         <div style={{ width: "100%", position: "relative" }}>
           <div
-            style={{ position: "absolute", top: "2.33em", left: 7, zIndex: 10 }}
+            style={{
+              position: "absolute",
+              top: "2.33em",
+              center: 7,
+              zIndex: 10,
+            }}
           >
             <MdSearch style={{ fontSize: 27, color: COLOR_APP }} />
           </div>
@@ -291,7 +298,7 @@ export default function ReportStocks() {
               fontWeight: "bold",
             }}
           >
-            {t("current_stoke")}
+            {t("current_stock")}
           </Card.Header>
           {isLoading ? (
             <LoadingAppzap />
@@ -301,32 +308,36 @@ export default function ReportStocks() {
                 <Card.Body className="w-100">
                   <table style={{ width: "100%" }}>
                     <tr>
-                      <th style={{ textAlign: "left", width: 50 }}>
+                      <th style={{ textAlign: "center", width: 50 }}>
                         {t("no")}
                       </th>
-                      <th style={{ textAlign: "left" }}>{t("date")}</th>
-                      <th style={{ textAlign: "left" }}>{t("type")}</th>
-                      <th style={{ textAlign: "left" }}>{t("prod_name")}</th>
-                      <th style={{ textAlign: "left" }}>{t("amount")}</th>
+                      <th style={{ textAlign: "center" }}>{t("date")}</th>
+                      <th style={{ textAlign: "center" }}>{t("buy_price")}</th>
+                      <th style={{ textAlign: "center" }}>{t("type")}</th>
+                      <th style={{ textAlign: "center" }}>{t("prod_name")}</th>
+                      <th style={{ textAlign: "center" }}>{t("amount")}</th>
                       <th style={{ textAlign: "right", width: 40 }}>
                         {t("unit")}
                       </th>
                     </tr>
                     {stocks?.map((item, index) => (
                       <tr key={index}>
-                        <td style={{ textAlign: "left" }}>
+                        <td style={{ textAlign: "center" }}>
                           <div className="pl-2">
                             {page * rowsPerPage + index + 1}
                           </div>
                         </td>
-                        <td style={{ textAlign: "left" }}>
+                        <td style={{ textAlign: "center" }}>
                           {formatDateNow(item?.createdAt)}
                         </td>
-                        <td style={{ textAlign: "left" }}>
+                        <td style={{ textAlign: "center" }}>
+                          {item?.buyPrice ?? "-"}
+                        </td>
+                        <td style={{ textAlign: "center" }}>
                           {item?.stockCategoryId?.name ?? "-"}
                         </td>
-                        <td style={{ textAlign: "left" }}>{item?.name}</td>
-                        <td style={{ textAlign: "left", minWidth: "10em" }}>
+                        <td style={{ textAlign: "center" }}>{item?.name}</td>
+                        <td style={{ textAlign: "center", minWidth: "10em" }}>
                           <ProgressBar
                             maxCompleted={200}
                             width="100%"

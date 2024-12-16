@@ -3,8 +3,13 @@ import { Breadcrumb, Card, Form, Button, Table, Alert } from "react-bootstrap";
 import { t } from "i18next";
 import Swal from "sweetalert2";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { createStockeCategoryAll } from "../../services/stocks";
+import { useStore } from "../../store";
+import { useNavigate } from "react-router-dom";
 
 export default function StockCreateCategory() {
+  const navigate = useNavigate();
+  const { profile } = useStore();
   const [stockTypeName, setStockTypeName] = useState("");
   const [note, setNote] = useState("");
   const [stockList, setStockList] = useState([]);
@@ -15,9 +20,10 @@ export default function StockCreateCategory() {
     e.preventDefault();
 
     const newStock = {
-      id: stockList.length + 1,
       name: stockTypeName,
       note: note,
+      storeId: profile.data.storeId,
+      createdBy: profile.data._id,
     };
     localStorage.setItem("stockAdd", JSON.stringify([...stockList, newStock]));
 
@@ -28,20 +34,32 @@ export default function StockCreateCategory() {
     setStockTypeName("");
     setNote("");
 
-    // await Swal.fire({
-    //   icon: "success",
-    //   title: "ປິນສຳເລັດ",
-    //   showConfirmButton: false,
-    //   timer: 1500,
-    // });
     // setShowAlert(false);
     setTimeout(() => {
       setShowAlert(false);
     }, 1500);
   };
 
-  const handleRemove = (id) => {
-    const updatedStockList = stockList.filter((stock) => stock.id !== id);
+  const createCategory = async () => {
+    try {
+      const res = await createStockeCategoryAll(stockList);
+      if (res.status === 200) {
+        await Swal.fire({
+          icon: "success",
+          title: "ປິນສຳເລັດ",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        localStorage.removeItem("stockAdd");
+        navigate("/stockCategory");
+      }
+    } catch (error) {
+      console.log("err:", error);
+    }
+  };
+
+  const handleRemove = (index) => {
+    const updatedStockList = stockList.filter((_, i) => i !== index);
     setStockList(updatedStockList);
     console.log({ updatedStockList });
     if (updatedStockList.length === 0) {
@@ -81,7 +99,10 @@ export default function StockCreateCategory() {
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className=" pb-2 mb-2 flex justify-between items-center">
           <h5 className="text-xl font-semibold">{t("add_stock_type")}</h5>
-          <button className="bg-color-app p-2 text-white font-semibold rounded-md mb-2 hover:bg-orange-400 focus:ring-2 focus:ring-orange-200 focus:outline-none">
+          <button
+            onClick={createCategory}
+            className="bg-color-app p-2 text-white font-semibold rounded-md mb-2 hover:bg-orange-400 focus:ring-2 focus:ring-orange-200 focus:outline-none"
+          >
             {t("save")}
           </button>
         </div>
@@ -150,14 +171,14 @@ export default function StockCreateCategory() {
               </tr>
             </thead>
             <tbody>
-              {stockList.map((stock) => (
+              {stockList.map((stock, index) => (
                 <tr key={stock.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{stock.id}</td>
+                  <td className="px-4 py-2">{index + 1}</td>
                   <td className="px-4 py-2 text-center">{stock.name}</td>
                   <td className="px-4 py-2 text-center">{stock.note}</td>
                   <td className="px-4 py-2 text-center">
                     <button
-                      onClick={() => handleRemove(stock.id)}
+                      onClick={() => handleRemove(index)}
                       className="text-red-500 hover:text-red-700"
                       aria-label={`Remove stock type ${stock.name}`}
                     >

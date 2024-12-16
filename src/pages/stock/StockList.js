@@ -325,8 +325,8 @@ export default function MenuList() {
         </div>
 
         <div className="d-flex align-items-center" style={{ gap: 10 }}>
-          <Button onClick={() => setPopup({ PopUpCreateStock: true })}>
-            {/* navigate("/settingStore/stock/add") */}
+          <Button onClick={() => navigate("/settingStore/stock/add")}>
+            {/* setPopup({ PopUpCreateStock: true }) */}
             {t("create_stock")}
           </Button>
           <Button

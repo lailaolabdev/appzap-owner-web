@@ -33,10 +33,35 @@ export const getStocksHistories = async (storeId, findBy) => {
   }
 };
 
-export const createStockeCategoryAll = async (storeId, findBy) => {
+export const getStocksCategory = async (storeId) => {
   try {
-    const url = `${END_POINT_APP}/v3/stock-history-groups?storeId=${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v3/stock-categories?storeId=${storeId}&isDeleted=false`;
     const res = await axios.get(url);
+
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const createStockeCategoryAll = async (data) => {
+  try {
+    const url = `${END_POINT_APP}/v3/stock-category/create`;
+    const res = await axios.post(url, data, {
+      headers: await getHeaders(),
+    });
+
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+export const createStockeAll = async (data) => {
+  try {
+    const url = `${END_POINT_APP}/v3/stock/create`;
+    const res = await axios.post(url, data, {
+      headers: await getHeaders(),
+    });
 
     return res;
   } catch (error) {
