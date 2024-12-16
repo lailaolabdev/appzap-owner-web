@@ -1220,7 +1220,7 @@ function AddOrder() {
           </div>
         </div>
         {/* Detail Table */}
-        <div className="w-[480px] lg:w-1/2 xl:w-[640px] xl:max-w-[640px] xl:min-w-[640px] h-[calc(100dvh-64px)] overflow-y-scroll bg-white border-gray-500 ">
+        <div className="w-[420px] min-w-[420px] lg:min-w-[50%] lg:w-1/2 xl:w-[640px] xl:max-w-[640px] xl:min-w-[640px] h-[calc(100dvh-64px)] overflow-y-scroll bg-white border-gray-500 ">
           <div className="container">
             <div className="row">
               <div className="col-12">

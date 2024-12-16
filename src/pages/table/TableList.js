@@ -2327,9 +2327,9 @@ export default function TableList() {
         <div className="flex-1 h-full flex flex-col">
           <div
             className={cn(
-              "items-center justify-between p-3 grid gap-3",
+              "items-center justify-between px-3 py-2 grid gap-2",
               selectTable
-                ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-4"
+                ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-4"
                 : "grid-cols-2 sm:grid-cols-2 md:grid-cols-4"
             )}
           >
@@ -2356,7 +2356,7 @@ export default function TableList() {
               },
             ].map((item, index) => {
               return (
-                <div className="h-[90px] flex gap-2.5 bg-white p-3 justify-start items-center rounded-[8px] shadow-sm">
+                <div className="min-h-[80px] flex gap-2.5 bg-white p-3 justify-start items-center rounded-[8px] shadow-sm">
                   <div className="bg-[#FB6F3B] h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px] text-white">
                     {item.icon}
                   </div>
@@ -2369,7 +2369,7 @@ export default function TableList() {
                     >
                       {item.label}
                     </div>
-                    <div className="text-[#111827] font-semibold text-[22px] font-inter leading-6">
+                    <div className="text-[#111827] font-semibold text-lg font-inter leading-6">
                       {item.value}
                     </div>
                   </div>
@@ -2404,8 +2404,8 @@ export default function TableList() {
             <div
               className={cn(
                 selectTable
-                  ? "grid gap-2 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                  ? "grid gap-2 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                  : "grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
               )}
             >
               {tableList &&
@@ -2413,20 +2413,31 @@ export default function TableList() {
                   <div
                     key={"table" + index}
                     className={cn(
-                      "rounded-[6px] overflow-hidden shadow-sm bg-white cursor-pointer",
+                      "rounded-[8px] overflow-hidden bg-white cursor-pointer border-[.085rem] border-color-app box-border",
                       language === "la" ? "!font-noto" : "!font-inter"
                     )}
                   >
-                    <div className="md:block hidden">
+                    <div
+                      className={cn(
+                        "md:block hidden h-full rounded-[7px] border-[.196rem] border-white box-border overflow-hidden",
+                        selectTable._id === table._id && "border-red-600"
+                      )}
+                    >
                       <div
                         className={cn(
-                          "w-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
-                          selectTable._id === table._id && "border-color-app",
+                          "w-full h-full flex-1 flex text-center justify-center rounded-[4px]",
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : // : table.statusBill === "CALL_TO_CHECKOUT"
                               //   ? "blink_cardCallCheckOut"
-                              ""
+                              "",
+                          table?.isStaffConfirm
+                            ? table?.editBill
+                              ? "bg-[#CECE5A] text-gray-500"
+                              : table?.statusBill === "CALL_TO_CHECKOUT"
+                              ? "bg-[#FFE17B] text-gray-500"
+                              : "bg-primary-gradient text-white"
+                            : "text-gray-500"
                         )}
                         onClick={() => {
                           setOrderPayBefore([]);
@@ -2439,31 +2450,13 @@ export default function TableList() {
                           <div className="w-full">
                             <div
                               className={cn(
-                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
-                                table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "text-green-500"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-gray-500"
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center"
                               )}
                             >
                               <span>{table?.tableName}</span>
                               <span>{`(${table?.code})`}</span>
                             </div>
-                            <div
-                              className={cn(
-                                "text-lg font-semibold",
-                                table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "text-green-500"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-gray-500"
-                              )}
-                            >
+                            <div className={cn("text-base font-semibold")}>
                               {table?.isStaffConfirm
                                 ? table?.editBill
                                   ? `${t("available")}`
@@ -2472,7 +2465,18 @@ export default function TableList() {
                                   : `${t("unavailable")}`
                                 : `${t("available")}`}
                             </div>
-                            <div className="text-gray-500 text-[13px] font-medium font-inter">
+                            <div
+                              className={cn(
+                                "text-[13px] font-medium font-inter",
+                                table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "text-gray-500"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "text-gray-500"
+                                    : "text-white"
+                                  : "text-gray-500"
+                              )}
+                            >
                               Zone:{" "}
                               {table?.zone?.name ? table?.zone?.name : "Normal"}
                             </div>
@@ -2488,7 +2492,14 @@ export default function TableList() {
                             ? "blink_card"
                             : // : table.statusBill === "CALL_TO_CHECKOUT"
                               //   ? "blink_cardCallCheckOut"
-                              ""
+                              "",
+                          table?.isStaffConfirm
+                            ? table?.editBill
+                              ? "bg-[#CECE5A] text-gray-500"
+                              : table?.statusBill === "CALL_TO_CHECKOUT"
+                              ? "bg-[#FFE17B] text-gray-500"
+                              : "bg-primary-gradient text-white"
+                            : "text-gray-500"
                         )}
                         onClick={() => {
                           onSelectTable(table);
@@ -2503,31 +2514,13 @@ export default function TableList() {
                           <div className="w-full">
                             <div
                               className={cn(
-                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
-                                table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "text-green-500"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-gray-500"
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center"
                               )}
                             >
                               <span>{table?.tableName}</span>
                               <span>{`(${table?.code})`}</span>
                             </div>
-                            <div
-                              className={cn(
-                                "text-lg font-semibold",
-                                table?.isStaffConfirm
-                                  ? table?.editBill
-                                    ? "text-green-500"
-                                    : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "text-yellow-500"
-                                    : "text-red-500"
-                                  : "text-gray-500"
-                              )}
-                            >
+                            <div className={cn("text-lg font-semibold")}>
                               {table?.isStaffConfirm
                                 ? table?.editBill
                                   ? `${t("available")}`
@@ -2536,7 +2529,18 @@ export default function TableList() {
                                   : `${t("unavailable")}`
                                 : `${t("available")}`}
                             </div>
-                            <div className="text-gray-500 text-[13px] font-medium font-inter">
+                            <div
+                              className={cn(
+                                "text-[13px] font-medium font-inter",
+                                table?.isStaffConfirm
+                                  ? table?.editBill
+                                    ? "text-gray-500"
+                                    : table?.statusBill === "CALL_TO_CHECKOUT"
+                                    ? "text-gray-500"
+                                    : "text-white"
+                                  : "text-gray-500"
+                              )}
+                            >
                               Zone:{" "}
                               {table?.zone?.name ? table?.zone?.name : "Normal"}
                             </div>
@@ -2552,7 +2556,7 @@ export default function TableList() {
         </div>
         {/* Detail Table */}
         {selectTable && (
-          <div className="hidden md:block min-w-[480px] w-[480px] max-w-[480px] shadow-md">
+          <div className="hidden md:block min-w-[460px] w-[460px] max-w-[460px] shadow-md">
             {selectedTable != null &&
               selectedTable?.isStaffConfirm &&
               selectedTable?.isOpened && (
