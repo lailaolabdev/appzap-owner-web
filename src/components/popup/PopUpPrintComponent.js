@@ -36,15 +36,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [currency, setcurrency] = useState([]);
   const [delivery, setDelivery] = useState([]);
   const [reportBill, setReportBill] = useState({
-    ຈຳນວນບິນ: 0,
-    ຍອດທັງໝົດ: 0,
-    ຈ່າຍເງິນສົດ: 0,
-    ຈ່າຍເງິນໂອນ: 0,
-    ບິນສ່ວນຫຼຸດ: 0,
+    totalAmount: 0,
+    billCount: 0,
+    cashAmount: 0,
+    transferAmount: 0,
+    discountBills: 0,
     servicechange: 0,
-    ສ່ວນຫຼຸດ: 0,
-    ບິນຄ້າງ: 0,
-    ເງິນຄ້າງ: 0,
+    discounts: 0,
+    pendingBills: 0,
+    pendingAmount: 0,
   });
 
   // provider
@@ -215,14 +215,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       // Update state or return result
       setReportBill({
-        ຈຳນວນບິນ: countBill,
-        ຍອດທັງໝົດ: totalBill,
-        ຈ່າຍເງິນສົດ: cashTotalBill,
-        ຈ່າຍເງິນໂອນ: transferTotalBill,
-        ຈຳນວນບິນສ່ວນຫຼຸດ: discountBill.length,
-        ສ່ວນຫຼຸດ: discountTotalBill,
-        ບິນຄ້າງ: activeBill,
-        ເງິນຄ້າງ: totalActiveBill,
+        totalAmount: totalBill,
+        billCount: countBill,
+        cashAmount: cashTotalBill,
+        transferAmount: transferTotalBill,
+        discountBills: discountBill.length,
+        servicechange: 0,
+        discounts: discountTotalBill,
+        pendingBills: activeBill,
+        pendingAmount: totalActiveBill,
       });
 
       setBill(data); // Set bill data for rendering
@@ -284,21 +285,21 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             {[
               {
                 name: `${t("bill_amount")}:`,
-                value: reportBill[`${t("bill_amount")}`],
+                value: reportBill?.billCount,
               },
               {
                 name: `${t("total_amount")}:`,
-                value: reportBill[`${t("total_amount")}`],
+                value: reportBill?.totalAmount,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("pay_cash")}:`,
-                value: reportBill[`${t("pay_cash")}`],
+                value: reportBill?.cashAmount,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("pay_transfer")}:`,
-                value: reportBill[`${t("pay_transfer")}`],
+                value: reportBill?.transferAmount,
                 type: storeDetail?.firstCurrency,
               },
 
@@ -315,7 +316,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 : []),
               {
                 name: `${t("discount_bill")}:`,
-                value: reportBill[`${t("discount_bill")}`],
+                value: reportBill?.discountBills,
               },
               {
                 name: `${t("service_charge")}:`,
@@ -329,12 +330,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               },
               {
                 name: `${t("discount")}:`,
-                value: reportBill[`${t("discount")}`],
+                value: reportBill?.discounts,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("active_bill")}:`,
-                value: reportBill[`${t("active_bill")}`],
+                value: reportBill?.pendingBills,
               },
               // {
               //   name: "ເງິນຄ້າງ:",
@@ -361,7 +362,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "right" }}>{t("amount")}</td>
                 </tr>
                 {bank?.data?.map((e, index) => {
-                  console.log("object", e);
                   return (
                     <tr>
                       <td style={{ textAlign: "left" }}>{index + 1}</td>
