@@ -100,23 +100,6 @@ export default function CheckOutPopup({
     fetchAllBanks();
   }, [tab, selectedBank]);
 
-  useEffect(() => {
-    if (selectedTable?.isDeliveryTable) {
-      setCash();
-      setTransfer();
-      setTab("delivery");
-      setSelectInput("inputDelivery");
-      setForcus("DELIVERY");
-    } else {
-      setCash();
-      setTransfer();
-      setDelivery();
-      setTab("cash");
-      setSelectInput("inputCash");
-      setForcus("CASH");
-    }
-  }, [selectedTable?.isDeliveryTable]);
-
   const handleChange = (e) => {
     const selectedOption = banks.find((bank) => bank._id === e.target.value);
     setSelectedBank({
@@ -149,14 +132,6 @@ export default function CheckOutPopup({
       handleSearchOne();
     }
   }, [textSearchMember]);
-
-  useEffect(() => {
-    getMembersData();
-    setSelectCurrency({
-      id: "LAK",
-      name: "LAK",
-    });
-  }, []);
 
   const handleSearchOne = async () => {
     try {
@@ -436,7 +411,13 @@ export default function CheckOutPopup({
   // useEffect
   useEffect(() => {
     getDataCurrency();
+    getMembersData();
+    setSelectCurrency({
+      id: "LAK",
+      name: "LAK",
+    });
   }, []);
+
   useEffect(() => {
     if (!open) return;
     if (forcus === "CASH") {
@@ -634,18 +615,53 @@ export default function CheckOutPopup({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
+  // const totalBillMoney =
+  //   dataBill && dataBill?.discountType === "LAK"
+  //     ? Number.parseFloat(
+  //         totalBill - dataBill?.discount > 0
+  //           ? totalBill - dataBill?.discount
+  //           : 0
+  //       )
+  //     : Number.parseFloat(
+  //         totalBill - (totalBill * dataBill?.discount) / 100 > 0
+  //           ? totalBill - (totalBill * dataBill?.discount) / 100
+  //           : 0
+  //       );
+
   const totalBillMoney =
-    dataBill && dataBill?.discountType === "LAK"
-      ? Number.parseFloat(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
+    dataBill?.discountType === "LAK"
+      ? moneyCurrency(
+          Math.floor(
+            totalBill - dataBill?.discount > 0
+              ? totalBill - dataBill?.discount
+              : 0
+          )
         )
-      : Number.parseFloat(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
+      : moneyCurrency(
+          Math.floor(
+            totalBill - (totalBill * dataBill?.discount) / 100 > 0
+              ? totalBill - (totalBill * dataBill?.discount) / 100
+              : 0
+          )
         );
+
+  useEffect(() => {
+    if (selectedTable?.isDeliveryTable) {
+      setCash();
+      setTransfer();
+      setTab("delivery");
+      setSelectInput("inputDelivery");
+      setForcus("DELIVERY");
+    } else {
+      setCash();
+      setTransfer();
+      setDelivery();
+      setTab("cash");
+      setSelectInput("inputCash");
+      setForcus("CASH");
+    }
+  }, [selectedTable?.isDeliveryTable]);
+
   const _selectDataOption = (option) => {
     setSelectDataOpption(option);
     setDataBill((prev) => ({
@@ -739,6 +755,22 @@ export default function CheckOutPopup({
     setTextSearchMember(option.value);
   };
 
+  useEffect(() => {
+    if (selectedTable?.isDeliveryTable) {
+      setCash();
+      setTransfer();
+      setTab("delivery");
+      setSelectInput("inputDelivery");
+      setForcus("DELIVERY");
+      setDelivery(totalBillMoney);
+    }
+    if (delivery >= totalBillMoney) {
+      setCanCheckOut(true);
+    } else {
+      setCanCheckOut(false);
+    }
+  }, [open, delivery, totalBillMoney]);
+
   return (
     <Modal
       show={open}
@@ -776,22 +808,7 @@ export default function CheckOutPopup({
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {dataBill && dataBill?.discountType === "LAK"
-                  ? moneyCurrency(
-                      Math.floor(
-                        totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                      )
-                    )
-                  : moneyCurrency(
-                      Math.floor(
-                        totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                          ? totalBill - (totalBill * dataBill?.discount) / 100
-                          : 0
-                      )
-                    )}{" "}
-                {storeDetail?.firstCurrency}
+                {totalBillMoney} {storeDetail?.firstCurrency}
               </span>
               <span
                 hidden={
@@ -875,6 +892,7 @@ export default function CheckOutPopup({
                           onChangeDeliveryInput(e.target.value);
                         }}
                         size="lg"
+                        readOnly
                       />
                       <InputGroup.Text>
                         {storeDetail?.firstCurrency}
@@ -1095,6 +1113,7 @@ export default function CheckOutPopup({
                     setTransfer();
                     setTab("delivery");
                     setSelectInput("inputDelivery");
+                    setDelivery(totalBillMoney);
                     setForcus("DELIVERY");
                   }}
                 >
@@ -1245,6 +1264,7 @@ export default function CheckOutPopup({
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
+              selectedTable={selectedTable?.isDeliveryTable}
               setCanCheckOut={setCanCheckOut}
               selectInput={((e) => {
                 if (selectInput === "inputCash") {

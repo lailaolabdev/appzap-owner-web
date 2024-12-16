@@ -2,16 +2,20 @@ import React from "react";
 import { COLOR_APP } from "../../constants";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { useStore } from "../../store";
 
 export default function NumberKeyboard({
   totalBill,
   selectInput,
   payType,
   setSelectInput,
+  selectedTable,
   onClickButtonDrawer,
   setCanCheckOut,
   onClickMember,
 }) {
+  const { storeDetail } = useStore();
+
   const _num = [
     {
       key: "1",
@@ -122,7 +126,12 @@ export default function NumberKeyboard({
             {t("member")}
           </Button>
           <Button
-            disabled={payType !== "cash" && payType !== "delivery"}
+            disabled={
+              selectedTable !== "undefined"
+                ? selectedTable ||
+                  (payType !== "cash" && payType !== "delivery")
+                : payType !== "cash" && payType !== "delivery"
+            }
             onClick={() => {
               // console.log(totalBill);
               setSelectInput(`${totalBill}`);
@@ -136,7 +145,11 @@ export default function NumberKeyboard({
               setSelectInput("");
               setCanCheckOut(false);
             }}
-            disabled={payType === "transfer"}
+            disabled={
+              selectedTable !== "undefined"
+                ? selectedTable || payType === "transfer"
+                : payType === "transfer"
+            }
           >
             {t("delete_all")}
           </Button>
@@ -157,7 +170,11 @@ export default function NumberKeyboard({
                 onClick={() => {
                   clickButton(e.key);
                 }}
-                disabled={payType === "transfer"}
+                disabled={
+                  selectedTable !== "undefined"
+                    ? selectedTable || payType === "transfer"
+                    : payType === "transfer"
+                }
               >
                 {e.name}
               </Button>
