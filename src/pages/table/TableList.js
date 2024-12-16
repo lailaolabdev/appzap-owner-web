@@ -2338,26 +2338,31 @@ export default function TableList() {
                 label: t("total_table"),
                 value: tableList?.length,
                 icon: <HandPlatter />,
+                bgColor: "#FB6F3B"
               },
               {
                 label: t("total_available_table"),
                 value: _checkStatusCodeA(tableList),
                 icon: <Check />,
+                bgColor: "#000000"
               },
               {
                 label: t("total_unavailable_table"),
                 value: _checkStatusCode(tableList),
                 icon: <X />,
+                bgColor: "#FB6F3B"
               },
               {
                 label: t("total_bill_check"),
                 value: _checkStatusCodeB(tableList),
                 icon: <ReceiptText />,
+                bgColor: "#FFE17B"
+                
               },
             ].map((item, index) => {
               return (
                 <div className="min-h-[80px] flex gap-2.5 bg-white p-3 justify-start items-center rounded-[8px] shadow-sm">
-                  <div className="bg-[#FB6F3B] h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px] text-white">
+                  <div style={{ backgroundColor: item.bgColor }} className="h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px] text-white">
                     {item.icon}
                   </div>
                   <div>
