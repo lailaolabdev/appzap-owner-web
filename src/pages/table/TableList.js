@@ -74,7 +74,14 @@ import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
-import { Check, HandPlatter, Loader, ReceiptText, X } from "lucide-react";
+import {
+  Check,
+  Edit2Icon,
+  HandPlatter,
+  Loader,
+  ReceiptText,
+  X,
+} from "lucide-react";
 import { cn } from "../../utils/cn";
 
 export default function TableList() {
@@ -617,6 +624,20 @@ export default function TableList() {
         _checkBill += 1;
     }
     return _checkBill;
+  };
+
+  const _checkStatusCodeC = (code) => {
+    let _editBill = 0;
+    for (let i = 0; i < code?.length; i++) {
+      if (
+        code[i]?.isOpened &&
+        code[i]?.status &&
+        code[i]?.isStaffConfirm &&
+        code[i]?.editBill
+      )
+        _editBill += 1;
+    }
+    return _editBill;
   };
 
   const [widthBill80, setWidthBill80] = useState(0);
@@ -2327,10 +2348,10 @@ export default function TableList() {
         <div className="flex-1 h-full flex flex-col">
           <div
             className={cn(
-              "items-center justify-between px-3 py-2 grid gap-2",
+              "items-center justify-between p-2 grid gap-1.5",
               selectTable
-                ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-4"
-                : "grid-cols-2 sm:grid-cols-2 md:grid-cols-4"
+                ? "grid-cols-5 sm:grid-cols-5 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5"
+                : "grid-cols-5 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5"
             )}
           >
             {[
@@ -2338,43 +2359,72 @@ export default function TableList() {
                 label: t("total_table"),
                 value: tableList?.length,
                 icon: <HandPlatter />,
-                bgColor: "#FB6F3B"
+                bgColor: "#FB6F3B",
               },
               {
                 label: t("total_available_table"),
                 value: _checkStatusCodeA(tableList),
                 icon: <Check />,
-                bgColor: "#000000"
+                bgColor: "#FFFFFF",
               },
               {
                 label: t("total_unavailable_table"),
                 value: _checkStatusCode(tableList),
                 icon: <X />,
-                bgColor: "#FB6F3B"
+                bgColor: "#FB6F3B",
               },
               {
                 label: t("total_bill_check"),
                 value: _checkStatusCodeB(tableList),
                 icon: <ReceiptText />,
-                bgColor: "#FFE17B"
-                
+                bgColor: "#FFE17B",
+              },
+              {
+                label: t("edit_bill"),
+                value: _checkStatusCodeC(tableList),
+                icon: <Edit2Icon />,
+                bgColor: "#CECE5A",
               },
             ].map((item, index) => {
               return (
-                <div className="min-h-[80px] flex gap-2.5 bg-white p-3 justify-start items-center rounded-[8px] shadow-sm">
-                  <div style={{ backgroundColor: item.bgColor }} className="h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px] text-white">
+                <div
+                  className={cn(
+                    "min-h-[80px] h-full flex xl:gap-2.5 xl:flex-row bg-white py-2 xl:justify-start items-center rounded-[8px] shadow-sm",
+                    selectTable
+                      ? "flex-col justify-start items-center lg:items-center gap-1 px-2.5 xl:px-3"
+                      : "lg:flex-row gap-1 sm:gap-2 flex-col md:flex-row px-3"
+                  )}
+                >
+                  <div
+                    style={{
+                      backgroundColor: item.bgColor,
+                      borderColor: COLOR_APP,
+                      borderWidth: index === 1 ? 1 : 0,
+                    }}
+                    className={cn(
+                      "h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px]",
+                      index === 1 ? "text-gray-500" : "text-white"
+                    )}
+                  >
                     {item.icon}
                   </div>
                   <div>
                     <div
                       className={cn(
-                        "text-[#6B7280] font-semibold text-base",
+                        "text-[#6B7280] font-semibold text-[14px] md:text-[15px] flex-1 text-center md:whitespace-nowrap md:text-left",
                         language === "la" ? "font-noto" : "font-inter"
                       )}
                     >
                       {item.label}
                     </div>
-                    <div className="text-[#111827] font-semibold text-lg font-inter leading-6">
+                    <div
+                      className={cn(
+                        "text-[#111827] font-semibold text-lg font-inter leading-6flex-1 flex",
+                        selectTable
+                          ? "justify-center xl:justify-start"
+                          : "justify-center md:justify-start"
+                      )}
+                    >
                       {item.value}
                     </div>
                   </div>
@@ -2464,7 +2514,7 @@ export default function TableList() {
                             <div className={cn("text-base font-semibold")}>
                               {table?.isStaffConfirm
                                 ? table?.editBill
-                                  ? `${t("available")}`
+                                  ? `${t("edit_bill")}`
                                   : table?.statusBill === "CALL_TO_CHECKOUT"
                                   ? `${t("printed_bill")}`
                                   : `${t("unavailable")}`
@@ -2489,10 +2539,10 @@ export default function TableList() {
                         </div>
                       </div>
                     </div>
-                    <div className="block md:hidden">
+                    <div className="block md:hidden h-full">
                       <div
                         className={cn(
-                          "w-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
+                          "w-full h-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
                           table?.isOpened && !table?.isStaffConfirm
                             ? "blink_card"
                             : // : table.statusBill === "CALL_TO_CHECKOUT"
