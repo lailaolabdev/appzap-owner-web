@@ -171,13 +171,11 @@ export default function DashboardPage() {
       findBy,
       selectedTableIds
     );
-    // console.log("CURRENCY: ", data);
     setCurrencyList(data);
   };
   const getBankBillName = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getBankReport(storeDetail?._id, findBy);
-    console.log("DATA BANK", data);
     setBankList(data);
   };
 

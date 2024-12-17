@@ -784,7 +784,7 @@ function Homecafe() {
                   selectedCategory === "All"
                     ? "text-orange-500"
                     : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button font-semibold text-sm inline-block whitespace-nowrap w-fit relative`}
+                } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
@@ -799,7 +799,7 @@ function Homecafe() {
                         selectedCategory === data?._id
                           ? "text-orange-500"
                           : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button font-semibold text-sm inline-block whitespace-nowrap w-fit relative`}
+                      } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
