@@ -64,6 +64,12 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
     getMenuReportData(startDate);
   }, [startDate]);
 
+  useEffect(() => {
+    if (open && printers?.length > 0) {
+      setSelectPrinter(JSON.stringify(printers[0]));
+    }
+  }, [open, printers]);
+
   // function
   const onPrintBill = async () => {
     try {

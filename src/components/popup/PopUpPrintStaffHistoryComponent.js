@@ -41,6 +41,12 @@ export default function PopUpPrintStaffHistoryComponent({
     getUserReportData(startDate);
   }, [startDate]);
 
+  useEffect(() => {
+    if (open && printers?.length > 0) {
+      setSelectPrinter(JSON.stringify(printers[0]));
+    }
+  }, [open, printers]);
+
   // function
   const onPrintBill = async () => {
     try {
@@ -105,7 +111,7 @@ export default function PopUpPrintStaffHistoryComponent({
       );
       await Swal.fire({
         icon: "success",
-        title: `${t("print_sucess")}`,
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
