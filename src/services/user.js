@@ -91,6 +91,8 @@ export const getUsersV5 = async (findby, token) => {
   }
 };
 
+
+
 export const getCount = async (findby, token) => {
   try {
     const url = `${END_POINT_APP}/v4/bill-farks${findby}`;
@@ -99,6 +101,22 @@ export const getCount = async (findby, token) => {
     });
     return res.data;
   } catch (error) {
+    return { error: true };
+  }
+};
+
+
+export const updateUserV5 = async (userId, data, token) => {
+  try {
+    // แก้ไข URL endpoint ให้ถูกต้อง
+    const url = `${END_POINT_APP}/v3/user/update?userId=${userId}`;
+    const res = await axios.put(url, data, {
+      headers: token,
+    });
+    successAdd("แก้ไขสำเร็จ");
+    return res.data;
+  } catch (error) {
+    errorAdd("ไม่สำเร็จ");
     return { error: true };
   }
 };
