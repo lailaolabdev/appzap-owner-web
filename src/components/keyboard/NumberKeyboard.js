@@ -82,7 +82,7 @@ export default function NumberKeyboard({
   }
 
   return (
-    <div>
+    <div className="flex-1">
       {/* <div
         style={{
           display: "grid",
@@ -102,7 +102,13 @@ export default function NumberKeyboard({
         <Button>100K</Button>
       </div> */}
       <div
-        style={{ display: "grid", gridTemplateColumns: "150px 1fr", gap: 10 }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "150px 1fr",
+          gap: 10,
+          width: "100%",
+          maxWidth: "100%",
+        }}
       >
         <div
           style={{
@@ -110,7 +116,7 @@ export default function NumberKeyboard({
             gridTemplateColumns: "repeat(1,1fr)",
             gap: 10,
             gridAutoRows: "1fr",
-            height: 250,
+            height: 240,
           }}
         >
           <Button
@@ -147,7 +153,7 @@ export default function NumberKeyboard({
             gridTemplateColumns: "repeat(3,1fr)",
             gap: 10,
             gridAutoRows: "1fr",
-            height: 250,
+            height: 240,
           }}
         >
           {_num?.map((e, i) => {

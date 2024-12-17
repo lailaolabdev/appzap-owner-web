@@ -205,7 +205,7 @@ const OrderCheckOut = ({
           <Modal.Title>{t("order_detial")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ fontSize: 24, fontWeight: "bold", margin: 0 }}>
+          <div style={{ fontSize: 22, fontWeight: "bold", margin: 0 }}>
             {t("table")}: {tableData?.tableName} {`(${tableData?.code})`}
           </div>
           <div style={{ fontSize: 16, fontWeight: "bold", margin: 0 }}>
@@ -297,14 +297,14 @@ const OrderCheckOut = ({
           </div>
         </Modal.Body>
         <CardFooterModal>
-          <Modal.Footer>
+          <Modal.Footer className="flex flex-col dmd:flex-row">
             <Button
               className="ml-2 pl-4 pr-4"
               style={{
                 backgroundColor: "#FB6E3B",
                 color: "#ffff",
                 border: "solid 1px #FB6E3B",
-                fontSize: 22,
+                fontSize: 20,
               }}
               disabled={
                 billDataLoading || printBillLoading || printBillCalulate
@@ -324,63 +324,65 @@ const OrderCheckOut = ({
               />
               {t("print_bill")}
             </Button>
-            <div
-              className="p-2 col-example text-center"
-              style={{ fontSize: 22 }}
-            >
-              {t("total_must_pay")}:
-            </div>
-            {billDataLoading ? (
-              <Spinner
-                animation="border"
-                size="sm"
-                style={{ marginRight: 8 }}
-              />
-            ) : (
+            <div className="flex items-center">
               <div
                 className="p-2 col-example text-center"
-                style={{
-                  backgroundColor: "#F1F1F1",
-                  fontSize: 22,
-                }}
+                style={{ fontSize: 20 }}
               >
-                <span style={{ justifyContent: "flex-end", display: "row" }}>
-                  <b>
-                    {data && data?.discountType === "LAK"
-                      ? moneyCurrency(
-                          Math.floor(
-                            total * (taxPercent * 0.01 + 1) +
-                              serviceAmount -
-                              data?.discount >
-                              0
-                              ? (total + serviceAmount) *
-                                  (taxPercent * 0.01 + 1) -
-                                  data?.discount
-                              : 0
-                          )
-                        )
-                      : moneyCurrency(
-                          Math.floor(
-                            total * (taxPercent * 0.01 + 1) +
-                              serviceAmount -
-                              ((total + serviceAmount) *
-                                (taxPercent * 0.01 + 1) *
-                                data?.discount) /
-                                100 >
-                              0
-                              ? total * (taxPercent * 0.01 + 1) +
-                                  serviceAmount -
-                                  ((total + serviceAmount) *
-                                    (taxPercent * 0.01 + 1) *
-                                    data?.discount) /
-                                    100
-                              : 0
-                          )
-                        )}
-                  </b>
-                </span>
+                {t("total_must_pay")}:
               </div>
-            )}
+              {billDataLoading ? (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              ) : (
+                <div
+                  className="p-2 col-example text-center"
+                  style={{
+                    backgroundColor: "#F1F1F1",
+                    fontSize: 20,
+                  }}
+                >
+                  <span style={{ justifyContent: "flex-end", display: "row" }}>
+                    <b>
+                      {data && data?.discountType === "LAK"
+                        ? moneyCurrency(
+                            Math.floor(
+                              total * (taxPercent * 0.01 + 1) +
+                                serviceAmount -
+                                data?.discount >
+                                0
+                                ? (total + serviceAmount) *
+                                    (taxPercent * 0.01 + 1) -
+                                    data?.discount
+                                : 0
+                            )
+                          )
+                        : moneyCurrency(
+                            Math.floor(
+                              total * (taxPercent * 0.01 + 1) +
+                                serviceAmount -
+                                ((total + serviceAmount) *
+                                  (taxPercent * 0.01 + 1) *
+                                  data?.discount) /
+                                  100 >
+                                0
+                                ? total * (taxPercent * 0.01 + 1) +
+                                    serviceAmount -
+                                    ((total + serviceAmount) *
+                                      (taxPercent * 0.01 + 1) *
+                                      data?.discount) /
+                                      100
+                                : 0
+                            )
+                          )}
+                    </b>
+                  </span>
+                </div>
+              )}
+            </div>
             <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
               <Button
                 className="ml-2 pl-4 pr-4"
@@ -391,7 +393,7 @@ const OrderCheckOut = ({
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
-                  fontSize: 22,
+                  fontSize: 20,
                 }}
                 // disabled={billDataLoading}
                 onClick={() => onSubmit()}
