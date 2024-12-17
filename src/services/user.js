@@ -11,22 +11,22 @@ import { errorAdd, successAdd } from "../helpers/sweetalert";
  */
 
 
-export const updateUser = async (billFarkId, data, token) => {
-  try {
-    const url = `${END_POINT_APP}/v4/bill-fark/update`;
-    const res = await axios.put(
-      url,
-      { id: billFarkId, data: data },
-      {
-        headers: token,
-      }
-    );
+// export const updateUser = async (billFarkId, data, token) => {
+//   try {
+//     const url = `${END_POINT_APP}/v4/bill-fark/update`;
+//     const res = await axios.put(
+//       url,
+//       { id: billFarkId, data: data },
+//       {
+//         headers: token,
+//       }
+//     );
 
-    return res.data;
-  } catch (error) {
-    return error;
-  }
-};
+//     return res.data;
+//   } catch (error) {
+//     return error;
+//   }
+// };
 export const createUser = async (body, token) => {
   try {
     const url = `${END_POINT_APP}/v3/user/create`;
@@ -108,16 +108,32 @@ export const getCount = async (findby, token) => {
 
 export const updateUserV5 = async (userId, data, token) => {
   try {
-    // แก้ไข URL endpoint ให้ถูกต้อง
-    const url = `${END_POINT_APP}/v3/user/update?userId=${userId}`;
-    const res = await axios.put(url, data, {
-      headers: token,
+    const url = `${END_POINT_APP}/v3/user/update`;
+    const res = await axios.put(url, {
+      ...data,
+      id: userId  
+    }, {
+      headers: {
+        ...token,
+        'Content-Type': 'application/json'
+      }
     });
-    successAdd("แก้ไขสำเร็จ");
+   
+    successAdd("update_success");
     return res.data;
   } catch (error) {
-    errorAdd("ไม่สำเร็จ");
-    return { error: true };
+    console.error("Update User Error:", error.response?.data);
+   
+    const errorMessage = error.response?.data?.message ||
+                         error.response?.data?.error ||
+                         "ไม่สามารถอัปเดตข้อมูลได้";
+   
+    errorAdd(errorMessage);
+   
+    return {
+      error: true,
+      message: errorMessage
+    };
   }
 };
 

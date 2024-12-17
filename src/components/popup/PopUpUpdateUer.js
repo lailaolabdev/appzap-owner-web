@@ -39,15 +39,10 @@ export default function PopUpUpdateUser({
       setConfirmPassword("");
       setShowPassword(false);
     }
-  }, [open, selectUser]);
+  }, [open]);
 
   const handleSubmit = async () => {
     try {
-      if (!formData.firstname || !formData.lastname || !formData.role || !formData.phone || !formData.userId) {
-        setError("กรุณากรอกข้อมูลให้ครบถ้วน");
-        return;
-      }
-
       // ตรวจสอบรหัสผ่าน ถ้ามีการเปิดฟิลด์รหัสผ่าน
       if (showPassword) {
         if (!password || !confirmPassword) {
@@ -59,25 +54,33 @@ export default function PopUpUpdateUser({
           return;
         }
       }
-
+  
       setButtonDisabled(true);
+      setError(""); // รีเซ็ตข้อความ error
+  
       const { TOKEN } = await getLocalData();
-
+      console.log("token:", TOKEN)
+  
       const updateData = {
         ...formData,
         storeId: storeDetail._id,
-        ...(showPassword && { password: password }) // เพิ่มรหัสผ่านถ้ามีการเปิดฟิลด์
+        ...(showPassword && { password: password })
       };
-
+  
       const result = await updateUserV5(selectUser._id, updateData, TOKEN);
+      
       if (result.error) {
-        throw new Error("Update failed");
+        // แสดง error message จาก backend
+        setError(result.message || "การอัปเดตล้มเหลว");
+        setButtonDisabled(false);
+        return;
       }
       
       callback();
       onClose();
     } catch (err) {
       console.error("Update failed:", err);
+      setError("เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ");
       setButtonDisabled(false);
     }
   };
