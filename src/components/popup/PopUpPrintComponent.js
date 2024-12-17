@@ -56,6 +56,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     getDataBillReport(startDate);
   }, [startDate]);
 
+  useEffect(() => {
+    if (open && printers?.length > 0) {
+      setSelectPrinter(JSON.stringify(printers[0]));
+    }
+  }, [open, printers]);
+
   // function
   const onPrintBill = async () => {
     try {
@@ -123,7 +129,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -131,7 +137,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       console.log(err);
       await Swal.fire({
         icon: "error",
-        title: "ປິນບໍ່ສຳເລັດ",
+        title: `${t("print_fail")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -454,6 +460,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           <Form.Control
             as="select"
             name="width"
+            value={selectPrinter}
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
             {printers?.map((e) => (

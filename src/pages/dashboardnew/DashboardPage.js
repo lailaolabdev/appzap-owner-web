@@ -793,12 +793,14 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintMenuHistoryComponent>
+
       <PopUpPrintMenuCategoryHistoryComponent
         open={popup?.printReportMenuCategorySale}
         onClose={() => setPopup()}
       >
         <BillForReport80 />
       </PopUpPrintMenuCategoryHistoryComponent>
+
       <PopUpPrintMenuAndCategoryHistoryComponent
         open={popup?.printReportMenuAndCategorySale}
         onClose={() => setPopup()}
