@@ -2,6 +2,14 @@
 module.exports = {
   content: ["./src/**/*.{html,js}"],
   theme: {
+    screens: {
+      sm: "640px",
+      md: "768px",
+      dmd: "992px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     extend: {
       boxShadow: {
         button:
@@ -14,6 +22,10 @@ module.exports = {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
         noto: ["Noto Sans Lao", "sans-serif"],
+      },
+      backgroundImage: {
+        "primary-gradient":
+          "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)",
       },
     },
   },

@@ -799,11 +799,11 @@ export default function CheckOutPopup({
           }}
         >
           {/* news---------------------------------------------------------------------------------------------------------------------- */}
-          <div style={{ padding: 20 }}>
+          <div style={{ padding: "20px 20px 0 20px" }}>
             <div
               style={{
                 marginBottom: 10,
-                fontSize: 22,
+                fontSize: 20,
               }}
             >
               <span>{t("bill_total")}: </span>
@@ -960,9 +960,9 @@ export default function CheckOutPopup({
 
                 {tab === "point" || tab === "cash_transfer_point" ? (
                   <div hidden={hasCRM} style={{ marginBottom: 10 }}>
-                    <BoxMember>
-                      <div className="box-left">
-                        <div className="box-search">
+                    <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
+                      <div className="whitespace-nowrap flex-1 flex gap-1.5">
+                        <div className="flex-1">
                           <Select
                             placeholder={<div>{t("enter_phone_and_name")}</div>}
                             options={optionsData}
@@ -986,7 +986,8 @@ export default function CheckOutPopup({
                           </Button>
                         </div>
                       </div>
-                      <div className="box-right">
+
+                      <div className="flex flex-1 justify-start dmd:justify-end">
                         <div className="box-name">
                           <InputGroup.Text>
                             {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
@@ -1006,7 +1007,7 @@ export default function CheckOutPopup({
                           </InputGroup.Text>
                         </div>
                       </div>
-                    </BoxMember>
+                    </div>
                     <InputGroup style={{ marginTop: 10 }}>
                       <InputGroup.Text>{t("point")}</InputGroup.Text>
                       <Form.Control
@@ -1084,19 +1085,60 @@ export default function CheckOutPopup({
               </div>
             )}
           </div>
-          <div style={{ marginBottom: 10, padding: 20 }}>
-            <div
-              hidden={tab === "point" || selectedTable?.isDeliveryTable}
-              style={{ marginBottom: 10 }}
-            >
-              {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
-              {storeDetail?.firstCurrency}
+          <div style={{ marginBottom: 10, padding: "10px 20px" }}>
+            <div className="flex flex-row flex-1 justify-between items-center mb-2">
+              <div
+                hidden={tab === "point" || selectedTable?.isDeliveryTable}
+                style={{ marginBottom: 10 }}
+              >
+                {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
+
+              <Form.Control
+                hidden={tab !== "cash"}
+                as="select"
+                style={{ width: 80 }}
+                value={selectCurrency?.id}
+                onChange={handleChangeCurrencie}
+              >
+                <option value="LAK">{storeDetail?.firstCurrency}</option>
+                {currencyList?.map((e) => (
+                  <option key={e?._id} value={e?._id}>
+                    {e?.currencyCode}
+                  </option>
+                ))}
+              </Form.Control>
+
+              {(tab === "transfer" ||
+                tab === "cash_transfer" ||
+                tab === "cash_transfer_point") && (
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
+                  </option>
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
+              )}
             </div>
             <div
               style={{
                 display: "flex",
-                gap: 10,
-                marginBottom: 30,
+                gap: 6,
+                marginBottom: 20,
+                width: "100%",
+                whiteSpace: "nowrap",
+                flexWrap: "wrap",
               }}
             >
               {/* ເງິີນສົດ */}
@@ -1132,6 +1174,9 @@ export default function CheckOutPopup({
                         : "outline-primary"
                     }
                     disabled={selectedTable?.isDeliveryTable}
+                    style={{
+                      fontSize: 15,
+                    }}
                     onClick={() => {
                       setCash();
                       setTransfer();
@@ -1145,6 +1190,9 @@ export default function CheckOutPopup({
                   <Button
                     variant={tab === "transfer" ? "primary" : "outline-primary"}
                     disabled={selectedTable?.isDeliveryTable}
+                    style={{
+                      fontSize: 15,
+                    }}
                     onClick={() => {
                       setCash();
                       setSelectCurrency({
@@ -1180,6 +1228,9 @@ export default function CheckOutPopup({
                       tab === "cash_transfer" ? "primary" : "outline-primary"
                     }
                     disabled={selectedTable?.isDeliveryTable}
+                    style={{
+                      fontSize: 15,
+                    }}
                     onClick={() => {
                       setCash();
                       setSelectCurrency({
@@ -1198,6 +1249,9 @@ export default function CheckOutPopup({
                   {storeDetail?.isCRM && (
                     <Button
                       disabled={hasCRM || selectedTable?.isDeliveryTable}
+                      style={{
+                        fontSize: 15,
+                      }}
                       variant={
                         selectedTable?.isDeliveryTable
                           ? "outline-primary"
@@ -1218,42 +1272,6 @@ export default function CheckOutPopup({
                     </Button>
                   )}
                 </>
-              )}
-              <div style={{ flex: 1 }} />
-              <Form.Control
-                hidden={tab !== "cash"}
-                as="select"
-                style={{ width: 80 }}
-                value={selectCurrency?.id}
-                onChange={handleChangeCurrencie}
-              >
-                <option value="LAK">{storeDetail?.firstCurrency}</option>
-                {currencyList?.map((e) => (
-                  <option key={e?._id} value={e?._id}>
-                    {e?.currencyCode}
-                  </option>
-                ))}
-              </Form.Control>
-
-              {(tab === "transfer" ||
-                tab === "cash_transfer" ||
-                tab === "cash_transfer_point") && (
-                <Form.Control
-                  as="select"
-                  style={{ width: 140 }}
-                  value={selectedBank?.id || ""}
-                  onChange={handleChange}
-                >
-                  <option value="" disabled>
-                    ເລືອກທະນາຄານ
-                  </option>
-                  {Array.isArray(banks) &&
-                    banks.map((bank) => (
-                      <option key={bank._id} value={bank._id}>
-                        {bank.bankName}
-                      </option>
-                    ))}
-                </Form.Control>
               )}
             </div>
             <NumberKeyboard
@@ -1301,36 +1319,45 @@ export default function CheckOutPopup({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <div style={{ flex: 1 }}>
-          <p>
+        <div className="flex flex-wrap items-start w-full justify-center">
+          <div className="flex flex-1 h-full whitespace-nowrap mb-2">
             {t("cashier")}:{" "}
             <b>
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </b>
-          </p>
+          </div>
+          <div className="flex flex-col dmd:flex-row gap-2 items-end">
+            <Button
+              onClick={() => {
+                setPrintBillLoading(true);
+                saveServiceChargeDetails();
+                onPrintBill().then(() => {
+                  setPrintBillLoading(false);
+                  handleSubmit();
+                });
+              }}
+              style={{ display: "flex", gap: "10px", alignItems: "center" }}
+              disabled={!canCheckOut || printBillLoading}
+            >
+              {printBillLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
+              <BiSolidPrinter />
+              {t("print_checkbill")}
+            </Button>
+            <Button
+              className="dmd:w-fit w-full"
+              onClick={handleSubmit}
+              disabled={!canCheckOut}
+            >
+              {t("calculate")}
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={() => {
-            setPrintBillLoading(true);
-            saveServiceChargeDetails();
-            onPrintBill().then(() => {
-              setPrintBillLoading(false);
-              handleSubmit();
-            });
-          }}
-          style={{ display: "flex", gap: "10px", alignItems: "center" }}
-          disabled={!canCheckOut || printBillLoading}
-        >
-          {printBillLoading && (
-            <Spinner animation="border" size="sm" style={{ marginRight: 8 }} />
-          )}
-          <BiSolidPrinter />
-          {t("print_checkbill")}
-        </Button>
-        <div style={{ width: "20%" }} />
-        <Button onClick={handleSubmit} disabled={!canCheckOut}>
-          {t("calculate")}
-        </Button>
         {/* <Button onClick={() => onSubmit()}>{t("debt")}</Button> */}
       </Modal.Footer>
     </Modal>
