@@ -42,6 +42,7 @@ export default function WaitingOrderTab() {
     newOrderUpdateStatusTransaction,
     getOrderWaitingAndDoingByStore,
   } = useStore();
+
   /**
    * Initial Component
    */
