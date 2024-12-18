@@ -29,13 +29,17 @@ import CanceledOrderTab from "./CanceledOrderTab";
 import Loading from "../../components/Loading";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
-import moment from "moment";
+import moment, { lang } from "moment";
 import { printItems } from "../table/printItems";
 import { easing } from "@mui/material";
 import { printOrderItems } from "./printOrderItem";
+import { fontMap } from "../../utils/font-map";
 
 export default function OrderPage() {
-  const { t } = useTranslation(); // translate
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation(); // translate
   const { storeDetail } = useStore();
   const { printers, selectedTable } = useStore();
   const [countError, setCountError] = useState("");
@@ -714,7 +718,7 @@ export default function OrderPage() {
             disabled={onPrinting}
           >
             {onPrinting && <Spinner animation="border" size="sm" />}
-            {t("send_to_kitchen")}
+            <span className={fontMap[language]}>{t("send_to_kitchen")}</span>
           </Button>
 
           <Button
@@ -725,7 +729,7 @@ export default function OrderPage() {
             }}
           >
             {/* ສົ່ງໄປຄົວ */}
-            {t("cooking")}
+            <span className={fontMap[language]}>{t("cooking")}</span>
           </Button>
 
           <Button
@@ -736,7 +740,7 @@ export default function OrderPage() {
             }}
           >
             {/* ເສີບແລ້ວ */}
-            {t("served")}
+            <span className={fontMap[language]}>{t("served")}</span>
           </Button>
 
           <Button
@@ -747,11 +751,11 @@ export default function OrderPage() {
             }}
           >
             {/* ຍົກເລີກ */}
-            {t("cancel")}
+            <span className={fontMap[language]}>{t("cancel")}</span>
           </Button>
         </div>
 
-        <div>{t("auto_print")}</div>
+        <div className={fontMap[language]}>{t("auto_print")}</div>
       </div>
     );
   };
@@ -772,7 +776,11 @@ export default function OrderPage() {
         >
           <Tab
             eventKey={WAITING_STATUS}
-            title={`${t("hasOrder")}(${orderWaiting?.length})`}
+            title={
+              <span className={fontMap[language]}>{`${t("hasOrder")}(${
+                orderWaiting?.length
+              })`}</span>
+            }
           >
             <Tool />
             {orderLoading && (
@@ -789,7 +797,11 @@ export default function OrderPage() {
           </Tab>
           <Tab
             eventKey={DOING_STATUS}
-            title={`${t("cooking")}(${orderDoing?.length})`}
+            title={
+              <span className={fontMap[language]}>{`${t("cooking")}(${
+                orderDoing?.length
+              })`}</span>
+            }
           >
             <Tool />
             {orderLoading && (
@@ -804,7 +816,12 @@ export default function OrderPage() {
             )}
             <DoingOrderTab />
           </Tab>
-          <Tab eventKey={SERVE_STATUS} title={`${t("served")}`}>
+          <Tab
+            eventKey={SERVE_STATUS}
+            title={
+              <span className={fontMap[language]}>{`${t("served")}`}</span>
+            }
+          >
             {/* <Tool /> */}
             {orderLoading && (
               <div>
@@ -818,7 +835,12 @@ export default function OrderPage() {
             )}
             <ServedOrderTab />
           </Tab>
-          <Tab eventKey={CANCEL_STATUS} title={`${t("cancel")}`}>
+          <Tab
+            eventKey={CANCEL_STATUS}
+            title={
+              <span className={fontMap[language]}>{`${t("cancel")}`}</span>
+            }
+          >
             {/* <Tool /> */}
             {orderLoading && (
               <div>

@@ -37,10 +37,14 @@ import {
 import { getCountBills } from "../../services/bill";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import convertNumber from "../../helpers/convertNumber";
+import { fontMap } from "../../utils/font-map";
 
 export default function Dashboard() {
   const { accessToken } = useQuery();
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const newDate = new Date();
 
   // state
@@ -162,7 +166,8 @@ export default function Dashboard() {
             onClick={() => setChangeUi("CHECKBILL")}
           >
             <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("tableStatus")}
+            <div style={{ width: 8 }}></div>
+            <span className={fontMap[language]}>{t("tableStatus")}</span>
           </Nav.Link>
         </Nav.Item>
         {/* <Nav.Item>
@@ -230,16 +235,17 @@ export default function Dashboard() {
                 fontSize: 18,
                 fontWeight: "bold",
               }}
+              className={fontMap[language]}
             >
               {t("all_amount")}
             </Card.Header>
             <Card.Body>
-              <div>
+              <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
                 {countAllBillReport?.count} ບິນ
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
@@ -247,12 +253,12 @@ export default function Dashboard() {
                     salesInformationReport?.totalSales
                 )}
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("outstandingDebt")}
                 {" : "}
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("money_crash")}
                 {" : "}
                 {convertNumber(totalBillActiveReport?.total)}
@@ -268,16 +274,17 @@ export default function Dashboard() {
                 fontSize: 18,
                 fontWeight: "bold",
               }}
+              className={fontMap[language]}
             >
               {t("success_amount")}
             </Card.Header>
             <Card.Body>
-              <div>
+              <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("totalBalance")}
                 {" : "}
                 {convertNumber(
@@ -287,17 +294,17 @@ export default function Dashboard() {
                 )}
                 {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("payBycash")}
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.payByCash)}
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("transferPayment")}
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {"Delivery"}
                 {" : "}
                 {convertNumber(
@@ -305,13 +312,13 @@ export default function Dashboard() {
                 )}
               </div>
               {storeDetail?.isCRM && (
-                <div>
+                <div className={fontMap[language]}>
                   {t("point")}
                   {" : "}
                   {convertNumber(moneyReport?.successAmount?.point)}
                 </div>
               )}
-              <div>
+              <div className={fontMap[language]}>
                 {t("cashDiscount")}
                 {" : "}
                 {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
@@ -327,16 +334,17 @@ export default function Dashboard() {
                 fontSize: 18,
                 fontWeight: "bold",
               }}
+              className={fontMap[language]}
             >
               {t("bill_crash")}
             </Card.Header>
             <Card.Body>
-              <div>
+              <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
                 {convertNumber(countBillActiveReport?.count)} ບິນ
               </div>
-              <div>
+              <div className={fontMap[language]}>
                 {t("money_crash")}
                 {" : "}
                 {convertNumber(totalBillActiveReport?.total)}

@@ -13,6 +13,7 @@ const CustomButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   color: #fff;
+  white-space: nowrap;
   width: ${(props) => props.width ?? "auto"};
   height: ${(props) => props.height ?? "auto"};
   background: ${(props) =>

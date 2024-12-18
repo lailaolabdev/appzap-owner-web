@@ -39,6 +39,7 @@ import role from "../helpers/role";
 import { getLocalData, getToken } from "../constants/api";
 import { getCountOrderWaiting } from "../services/order";
 import _ from "lodash";
+import { fontMap } from "../utils/font-map";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const {
@@ -76,7 +77,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
   }, [selected]);
 
   const UN_SELECTED_TAB_TEXT = "#606060";
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const { profile } = useStore();
   const { user } = useStore();
 
@@ -393,6 +397,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                     color:
                       selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
                   }}
+                  className={fontMap[language]}
                 >
                   {" "}
                   {e?.title}
@@ -414,6 +419,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                             ? COLOR_APP
                             : UN_SELECTED_TAB_TEXT,
                       }}
+                      className={fontMap[language]}
                     >
                       {element?.title}
                     </NavText>
@@ -452,6 +458,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 style={{
                   color: UN_SELECTED_TAB_TEXT,
                 }}
+                className={fontMap[language]}
               >
                 {t("report")}
               </b>
@@ -488,6 +495,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                         fontSize: 15,
                         color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
                       }}
+                      className={fontMap[language]}
                     >
                       {elm?.title}
                     </p>
@@ -515,6 +523,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 style={{
                   color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
                 }}
+                className={fontMap[language]}
               >
                 {e?.title}
               </b>
@@ -561,6 +570,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               style={{
                 color: UN_SELECTED_TAB_TEXT,
               }}
+              className={fontMap[language]}
             >
               {t("require_music")}
             </b>
@@ -586,6 +596,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               style={{
                 color: COLOR_GRAY,
               }}
+              className={fontMap[language]}
             >
               {t("market")}
             </b>

@@ -15,6 +15,9 @@ i18n.use(initReactI18next).init({
     la: {
       translation: require("./i18n/en_LA.json"),
     },
+    th: {
+      translation: require("./i18n/en_TH.json"),
+    },
     km: {
       translation: require("./i18n/en_KM.json"),
     },

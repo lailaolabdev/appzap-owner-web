@@ -7,7 +7,7 @@ export default function ButtonTab({ style, children, active, ...other }) {
     <div
       style={{
         color: active ? COLOR_APP : "#000000",
-        fontWeight: active ? "bold":"lighter",
+        fontWeight: active ? "bold" : "normal",
         position: "relative",
       }}
     >

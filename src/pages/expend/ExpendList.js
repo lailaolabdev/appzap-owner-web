@@ -53,6 +53,7 @@ import ExpendatureChart from "./ExpendatureChart";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import { cn } from "../../utils/cn";
+import { fontMap } from "../../utils/font-map";
 
 export default function ExpendList() {
   const {
@@ -388,7 +389,9 @@ export default function ExpendList() {
           gap: 5,
         }}
       >
-        <TitleComponent title={t("paid_account")} />
+        <TitleComponent
+          title={<span className={fontMap[language]}>{t("paid_account")}</span>}
+        />
         <div className="flex flex-wrap gap-3">
           <Button
             variant="outline-primary"
@@ -418,7 +421,11 @@ export default function ExpendList() {
           </Form.Control> */}
           {/* Button ລົງບັນຊີປະຈຳວັນ */}
           <ButtonComponent
-            title={t("daily_account")}
+            title={
+              <span className={cn(fontMap[language])}>
+                {t("daily_account")}
+              </span>
+            }
             icon={faPlusCircle}
             colorbg={"#f97316"}
             // hoverbg={"orange"}
@@ -443,7 +450,8 @@ export default function ExpendList() {
               <div
                 className={cn(
                   "text-sm md:text-base text-gray-500 font-medium",
-                  language === "la" ? "font-noto" : "font-inter"
+                  language === "la" ? "font-noto" : "font-inter",
+                  fontMap[language]
                 )}
               >
                 {t(item.title)}
@@ -468,19 +476,39 @@ export default function ExpendList() {
           <thead>
             <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
               <th>#</th>
-              <th>{t("date")}</th>
-              <th style={{ textWrap: "nowrap" }} width="30%">
+              <th className={fontMap[language]}>{t("date")}</th>
+              <th
+                style={{ textWrap: "nowrap" }}
+                width="30%"
+                className={fontMap[language]}
+              >
                 {t("detial")}
               </th>
-              <th>{t("paid_type")}</th>
-              <th style={{ textWrap: "nowrap" }}>{t("paid_mode")}</th>
-              <th style={{ textWrap: "nowrap" }}>{t("jam")}</th>
-              <th style={{ textWrap: "nowrap" }}>{t("payer")}</th>
-              <th style={{ textAlign: "right" }}>{t("lak")}</th>
-              <th style={{ textAlign: "right" }}>{t("thb")}</th>
-              <th style={{ textAlign: "right" }}>{t("cny")}</th>
-              <th style={{ textAlign: "right" }}>{t("usd")}</th>
-              <th style={{ textWrap: "nowrap" }}>{t("manage")}</th>
+              <th className={fontMap[language]}>{t("paid_type")}</th>
+              <th style={{ textWrap: "nowrap" }} className={fontMap[language]}>
+                {t("paid_mode")}
+              </th>
+              <th style={{ textWrap: "nowrap" }} className={fontMap[language]}>
+                {t("jam")}
+              </th>
+              <th style={{ textWrap: "nowrap" }} className={fontMap[language]}>
+                {t("payer")}
+              </th>
+              <th style={{ textAlign: "right" }} className={fontMap[language]}>
+                {t("lak")}
+              </th>
+              <th style={{ textAlign: "right" }} className={fontMap[language]}>
+                {t("thb")}
+              </th>
+              <th style={{ textAlign: "right" }} className={fontMap[language]}>
+                {t("cny")}
+              </th>
+              <th style={{ textAlign: "right" }} className={fontMap[language]}>
+                {t("usd")}
+              </th>
+              <th style={{ textWrap: "nowrap" }} className={fontMap[language]}>
+                {t("manage")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -576,7 +604,11 @@ export default function ExpendList() {
       )}
 
       {expendData?.data.length == 0 && (
-        <EmptyState text={`${t("still_not_paid")}`} />
+        <EmptyState
+          text={
+            <span className={fontMap[language]}>{t("still_not_paid")}</span>
+          }
+        />
       )}
       {Pagination_component(
         expendData?.total,

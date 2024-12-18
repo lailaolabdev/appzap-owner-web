@@ -297,34 +297,8 @@ const OrderCheckOut = ({
           </div>
         </Modal.Body>
         <CardFooterModal>
-          <Modal.Footer className="flex flex-col dmd:flex-row">
-            <Button
-              className="ml-2 pl-4 pr-4"
-              style={{
-                backgroundColor: "#FB6E3B",
-                color: "#ffff",
-                border: "solid 1px #FB6E3B",
-                fontSize: 20,
-              }}
-              disabled={
-                billDataLoading || printBillLoading || printBillCalulate
-              }
-              onClick={() => onPrintBill(false)}
-            >
-              {billDataLoading && (
-                <Spinner
-                  animation="border"
-                  size="sm"
-                  style={{ marginRight: 8 }}
-                />
-              )}
-              <FontAwesomeIcon
-                icon={faCashRegister}
-                style={{ color: "#fff", marginRight: 8 }}
-              />
-              {t("print_bill")}
-            </Button>
-            <div className="flex items-center">
+          <Modal.Footer className="flex flex-wrap w-full flex-row">
+            <div className="flex flex-1 whitespace-nowrap">
               <div
                 className="p-2 col-example text-center"
                 style={{ fontSize: 20 }}
@@ -383,20 +357,20 @@ const OrderCheckOut = ({
                 </div>
               )}
             </div>
-            <div style={{ display: "flex", gap: 20, flexDirection: "column" }}>
+            <div className="flex flex-col dmd:flex-row gap-1.5 dmd:gap-1">
               <Button
                 className="ml-2 pl-4 pr-4"
-                disabled={
-                  billDataLoading || printBillLoading || printBillCalulate
-                }
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
                   border: "solid 1px #FB6E3B",
-                  fontSize: 20,
+                  fontSize: 18,
+                  height: 40,
                 }}
-                // disabled={billDataLoading}
-                onClick={() => onSubmit()}
+                disabled={
+                  billDataLoading || printBillLoading || printBillCalulate
+                }
+                onClick={() => onPrintBill(false)}
               >
                 {billDataLoading && (
                   <Spinner
@@ -409,8 +383,41 @@ const OrderCheckOut = ({
                   icon={faCashRegister}
                   style={{ color: "#fff", marginRight: 8 }}
                 />
-                {t("check_bill")}
+                {t("print_bill")}
               </Button>
+
+              <div
+                style={{ display: "flex", gap: 20, flexDirection: "column" }}
+              >
+                <Button
+                  className="ml-2 pl-4 pr-4"
+                  disabled={
+                    billDataLoading || printBillLoading || printBillCalulate
+                  }
+                  style={{
+                    backgroundColor: "#FB6E3B",
+                    color: "#ffff",
+                    border: "solid 1px #FB6E3B",
+                    fontSize: 18,
+                    height: 40,
+                  }}
+                  // disabled={billDataLoading}
+                  onClick={() => onSubmit()}
+                >
+                  {billDataLoading && (
+                    <Spinner
+                      animation="border"
+                      size="sm"
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+                  <FontAwesomeIcon
+                    icon={faCashRegister}
+                    style={{ color: "#fff", marginRight: 8 }}
+                  />
+                  {t("check_bill")}
+                </Button>
+              </div>
             </div>
           </Modal.Footer>
         </CardFooterModal>

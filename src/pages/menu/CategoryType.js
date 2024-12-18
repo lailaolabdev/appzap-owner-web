@@ -15,9 +15,14 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd } from "./../../helpers/sweetalert";
+import { fontMap } from "../../utils/font-map";
+import { cn } from "../../utils/cn";
 
 export default function CategoryType() {
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const [popup, setPopup] = useState();
   const [storeId, setStoreId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -164,13 +169,17 @@ export default function CategoryType() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("menu")}</Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <span className={fontMap[language]}>{t("restaurant_setting")}</span>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item active>
+            <span className={fontMap[language]}>{t("menu")}</span>
+          </Breadcrumb.Item>
         </Breadcrumb>
         <Nav variant="tabs" defaultActiveKey="/settingStore/category-type">
           <Nav.Item>
             <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              {t("menu")}
+              <span className={fontMap[language]}>{t("menu")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -178,7 +187,7 @@ export default function CategoryType() {
               eventKey="/settingStore/menu-option"
               onClick={() => _menuOptionList()}
             >
-              {t("option_menu")}
+              <span className={fontMap[language]}>{t("option_menu")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -186,7 +195,7 @@ export default function CategoryType() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t("foodType")}
+              <span className={fontMap[language]}>{t("foodType")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -194,13 +203,13 @@ export default function CategoryType() {
               eventKey="/settingStore/category-type"
               onClick={() => _categoryType()}
             >
-              {t("categoryType")}
+              <span className={fontMap[language]}>{t("categoryType")}</span>
             </Nav.Link>
           </Nav.Item>
         </Nav>
         <div className="col-sm-12 text-right">
           <Button
-            className="col-sm-2"
+            className={cn("col-sm-2", fontMap[language])}
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => setPopup({ popUpAddCategoryType: true })}
           >
@@ -213,9 +222,22 @@ export default function CategoryType() {
             <table className="table table-hover">
               <thead>
                 <tr>
-                  <th scope="col">{t("no")}</th>
-                  <th scope="col">{t("food_category")}</th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("no")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("food_category")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("manage")}
                   </th>
                 </tr>

@@ -26,6 +26,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
+import { fontMap } from "../../utils/font-map";
 
 const OPTION_PRICE_CURRENCY = {
   LAK: "LAK",
@@ -34,7 +35,10 @@ const OPTION_PRICE_CURRENCY = {
 };
 
 export default function MenuListOption() {
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -266,8 +270,12 @@ export default function MenuListOption() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("option_menu")}</Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <span className={fontMap[language]}>{t("restaurant_setting")}</span>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item active>
+            <span className={fontMap[language]}>{t("option_menu")}</span>
+          </Breadcrumb.Item>
         </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey="/settingStore/menu-option">
@@ -276,7 +284,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                {t("menu")}
+                <span className={fontMap[language]}>{t("menu")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -284,7 +292,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t("option_menu")}
+                <span className={fontMap[language]}>{t("option_menu")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -292,7 +300,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t("food_type")}
+                <span className={fontMap[language]}>{t("food_type")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -300,7 +308,7 @@ export default function MenuListOption() {
                 eventKey="/settingStore/category-type"
                 onClick={() => _categoryType()}
               >
-                {t("categoryType")}
+                <span className={fontMap[language]}>{t("categoryType")}</span>
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -322,6 +330,7 @@ export default function MenuListOption() {
                   display: "flex",
                   justifyContent: "end",
                 }}
+                className={fontMap[language]}
               >
                 {t("example")}
               </Col>
@@ -341,6 +350,7 @@ export default function MenuListOption() {
                     border: 0,
                   }}
                   onClick={handleShow}
+                  className={fontMap[language]}
                 >
                   + {t("add_new_options")}
                 </Button>
@@ -352,10 +362,18 @@ export default function MenuListOption() {
             <table className="table table-hover" style={{ minWidth: 700 }}>
               <thead className="thead-light">
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">{t("options_name")}</th>
-                  <th scope="col">{t("price_addjust")}</th>
-                  <th scope="col">{t("manage_options")}</th>
+                  <th scope="col" className={fontMap[language]}>
+                    #
+                  </th>
+                  <th scope="col" className={fontMap[language]}>
+                    {t("options_name")}
+                  </th>
+                  <th scope="col" className={fontMap[language]}>
+                    {t("price_addjust")}
+                  </th>
+                  <th scope="col" className={fontMap[language]}>
+                    {t("manage_options")}
+                  </th>
                 </tr>
               </thead>
               <tbody>

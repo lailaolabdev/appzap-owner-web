@@ -22,6 +22,7 @@ module.exports = {
       fontFamily: {
         inter: ["Inter", "sans-serif"],
         noto: ["Noto Sans Lao", "sans-serif"],
+        thai: ["Noto Sans Thai", "sans-serif"],
       },
       backgroundImage: {
         "primary-gradient":

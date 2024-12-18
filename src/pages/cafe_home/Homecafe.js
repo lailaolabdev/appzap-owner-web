@@ -55,6 +55,8 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
 import matchRoundNumber from "../../helpers/matchRound";
+import { cn } from "../../utils/cn";
+import { fontMap } from "../../utils/font-map";
 
 function Homecafe() {
   const params = useParams();
@@ -97,6 +99,53 @@ function Homecafe() {
 
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
+
+  const sliderRef = useRef();
+
+  // Make the Category draggable
+  useEffect(() => {
+    const slider = sliderRef.current;
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    const handleMouseDown = (e) => {
+      isDown = true;
+      slider.classList.add("active");
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      slider.classList.remove("active");
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      slider.classList.remove("active");
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 3; //scroll-fast
+      slider.scrollLeft = scrollLeft - walk;
+    };
+
+    slider.addEventListener("mousedown", handleMouseDown);
+    slider.addEventListener("mouseleave", handleMouseLeave);
+    slider.addEventListener("mouseup", handleMouseUp);
+    slider.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      slider.removeEventListener("mousedown", handleMouseDown);
+      slider.removeEventListener("mouseleave", handleMouseLeave);
+      slider.removeEventListener("mouseup", handleMouseUp);
+      slider.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [sliderRef]);
 
   useEffect(() => {
     // Function to update state on window resize
@@ -698,7 +747,10 @@ function Homecafe() {
     }
   };
 
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   // const handleQuantityChange = (e, row) => {
   //   const updatedQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
@@ -772,19 +824,24 @@ function Homecafe() {
             <div className="w-full px-2 py-1">
               <input
                 placeholder={t("search")}
-                className="form-control"
+                className={cn("form-control", fontMap[language])}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div className="w-full overflow-x-scroll flex flex-row whitespace-nowrap p-2 gap-2">
+            <div
+              ref={sliderRef}
+              className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
+            >
               <button
                 key={"category-all"}
-                className={`${
+                className={cn(
+                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                   selectedCategory === "All"
                     ? "text-orange-500"
-                    : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
+                    : "text-gray-700",
+                  fontMap[language]
+                )}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
@@ -795,11 +852,13 @@ function Homecafe() {
                   return (
                     <button
                       key={"category" + index}
-                      className={`${
+                      className={cn(
+                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                         selectedCategory === data?._id
                           ? "text-orange-500"
-                          : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button min-w-20 font-semibold text-sm whitespace-nowrap`}
+                          : "text-gray-700",
+                        fontMap[language]
+                      )}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
@@ -848,7 +907,7 @@ function Homecafe() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-orange-600 font-medium text-base">
+                        <span className="text-orange-600 font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
                           {/* {currency?.map(
@@ -860,7 +919,12 @@ function Homecafe() {
                           )} */}
                         </span>
                         <br />
-                        <span className="text-[13px] text-gray-500">
+                        <span
+                          className={cn(
+                            "text-[13px] text-gray-500",
+                            fontMap[language]
+                          )}
+                        >
                           {t("amount_exist")} : {data?.quantity || 0}
                         </span>
                       </div>
@@ -883,16 +947,28 @@ function Homecafe() {
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr style={{ fontSize: "bold", border: "none" }}>
                         <th style={{ border: "none" }}>#</th>
-                        <th style={{ border: "none", textAlign: "left" }}>
+                        <th
+                          style={{ border: "none", textAlign: "left" }}
+                          className={fontMap[language]}
+                        >
                           {t("menu_name")}
                         </th>
-                        <th style={{ border: "none", textAlign: "center" }}>
+                        <th
+                          style={{ border: "none", textAlign: "center" }}
+                          className={fontMap[language]}
+                        >
                           {t("amount")}
                         </th>
-                        <th style={{ border: "none", textAlign: "center" }}>
+                        <th
+                          style={{ border: "none", textAlign: "center" }}
+                          className={fontMap[language]}
+                        >
                           {t("price")}
                         </th>
-                        <th style={{ border: "none", textAlign: "right" }}>
+                        <th
+                          style={{ border: "none", textAlign: "right" }}
+                          className={fontMap[language]}
+                        >
                           {t("manage")}
                         </th>
                       </tr>
@@ -1042,14 +1118,18 @@ function Homecafe() {
                   {selectedMenu.length > 0 ? (
                     <div className="mb-3">
                       <div>
-                        <span>{t("amountTotal")} : </span>
+                        <span className={fontMap[language]}>
+                          {t("amountTotal")} :{" "}
+                        </span>
                         <span>
                           {Number.parseFloat(TotalAmount()).toFixed(3)}
                         </span>
                       </div>
                       <div>
-                        <span>{t("pricesTotal")} : </span>
-                        <span>
+                        <span className={fontMap[language]}>
+                          {t("pricesTotal")} :{" "}
+                        </span>
+                        <span className={fontMap[language]}>
                           {moneyCurrency(total)} {t("nameCurrency")}
                         </span>
                       </div>
@@ -1064,7 +1144,7 @@ function Homecafe() {
                       <>
                         <Button
                           variant="outline-warning"
-                          className="hover-me"
+                          className={cn("hover-me", fontMap[language])}
                           style={{
                             marginRight: 15,
                             border: "solid 1px #FB6E3B",
@@ -1078,7 +1158,7 @@ function Homecafe() {
                         </Button>
                         <Button
                           variant="light"
-                          className="hover-me"
+                          className={cn("hover-me", fontMap[language])}
                           style={{
                             marginRight: 15,
                             backgroundColor: "#FB6E3B",
@@ -1101,7 +1181,7 @@ function Homecafe() {
                     )}
                     <Button
                       variant="light"
-                      className="hover-me"
+                      className={cn("hover-me", fontMap[language])}
                       style={{
                         marginRight: 15,
                         backgroundColor: "#FB6E3B",
@@ -1140,8 +1220,7 @@ function Homecafe() {
           }}
           onClick={() => setCartModal(true)}
         >
-          <RiListOrdered2 />
-          ກະຕ່າລາຍການ
+          <RiListOrdered2 /> ກະຕ່າລາຍການ
           <span style={{ marginLeft: "5px" }}>({selectedMenu.length})</span>
         </button>
       ) : null}

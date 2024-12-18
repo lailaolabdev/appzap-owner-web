@@ -29,9 +29,13 @@ import { END_POINT_APP, getLocalData } from "../../constants/api";
 import { MdPassword } from "react-icons/md";
 import Axios from "axios";
 import Swal from "sweetalert2";
+import { fontMap } from "../../utils/font-map";
 
 export default function SettingList() {
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
   const [clickCount, setClickCount] = useState(0);
@@ -241,8 +245,16 @@ export default function SettingList() {
               }}
             >
               <div>{e.icon}</div>
-              <div style={{ fontWeight: "bold" }}>{e.title}</div>
-              <div style={{ fontSize: 10, textAlign: "center" }}>
+              <div
+                style={{ fontWeight: "bold", textAlign: "center" }}
+                className={fontMap[language]}
+              >
+                {e.title}
+              </div>
+              <div
+                style={{ fontSize: 10, textAlign: "center" }}
+                className={fontMap[language]}
+              >
                 {e?.subTitle}
               </div>
             </div>
@@ -250,7 +262,9 @@ export default function SettingList() {
         ))}
         <ItemBox onClick={clickDeleteHistoryStore}>
           <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
-          {t("clear_restaurant_data")}
+          <span className={fontMap[language]}>
+            {t("clear_restaurant_data")}
+          </span>
         </ItemBox>
       </Box>
       <PopUpConfirm

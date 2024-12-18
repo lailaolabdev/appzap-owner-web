@@ -111,6 +111,7 @@ export default function NavBar() {
             <option value="la">LA</option>
             <option value="en">EN</option>
             <option value="km">KM</option>
+            <option value="th">TH</option>
           </select>
         </div>
         <Box sx={{ display: { xs: "none", sm: "block" } }}>

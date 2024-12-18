@@ -15,9 +15,14 @@ import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Box from "../../components/Box";
+import { fontMap } from "../../utils/font-map";
+import { cn } from "../../utils/cn";
 
 export default function Categorylist() {
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const [getTokken, setgetTokken] = useState();
@@ -240,14 +245,18 @@ export default function Categorylist() {
   return (
     <div style={BODY}>
       <Breadcrumb>
-        <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
-        <Breadcrumb.Item active>{t("food_type")}</Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <span className={fontMap[language]}>{t("restaurant_setting")}</span>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item active>
+          <span className={fontMap[language]}>{t("food_type")}</span>
+        </Breadcrumb.Item>
       </Breadcrumb>
       <div>
         <Nav variant="tabs" defaultActiveKey="/settingStore/category">
           <Nav.Item>
             <Nav.Link eventKey="/settingStore/menu" onClick={() => _menuList()}>
-              {t("menu")}
+              <span className={fontMap[language]}>{t("menu")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -255,7 +264,7 @@ export default function Categorylist() {
               eventKey="/settingStore/menu-option"
               onClick={() => _menuOptionList()}
             >
-              {t("option_menu")}
+              <span className={fontMap[language]}>{t("option_menu")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -263,7 +272,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category"
               onClick={() => _category()}
             >
-              {t("food_type")}
+              <span className={fontMap[language]}>{t("food_type")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -271,7 +280,7 @@ export default function Categorylist() {
               eventKey="/settingStore/category-type"
               onClick={() => _categoryType()}
             >
-              {t("categoryType")}
+              <span className={fontMap[language]}>{t("categoryType")}</span>
             </Nav.Link>
           </Nav.Item>
         </Nav>
@@ -280,7 +289,7 @@ export default function Categorylist() {
       <div>
         <div className="col-sm-12 text-right">
           <Button
-            className="col-sm-2"
+            className={cn("col-sm-2", fontMap[language])}
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
           >
@@ -298,26 +307,47 @@ export default function Categorylist() {
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("no")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("foodTypeName")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("foodTypeName")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("foodTypeName")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("foodTypeName")}
                   </th>
                   {/* <th scope="col">{t('note')}</th> */}
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("manage")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("status")}
                   </th>
                 </tr>

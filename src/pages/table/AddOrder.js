@@ -56,6 +56,8 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import PopUpAddDeliveryCode from "../../components/popup/PopUpAddDeliveryCode";
 import printFlutter from "../../helpers/printFlutter";
 import moment from "moment";
+import { cn } from "../../utils/cn";
+import { fontMap } from "../../utils/font-map";
 
 function AddOrder() {
   const { state } = useLocation();
@@ -96,6 +98,53 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  const sliderRef = useRef();
+
+  // Make the Category draggable
+  useEffect(() => {
+    const slider = sliderRef.current;
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    const handleMouseDown = (e) => {
+      isDown = true;
+      slider.classList.add("active");
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    };
+
+    const handleMouseLeave = () => {
+      isDown = false;
+      slider.classList.remove("active");
+    };
+
+    const handleMouseUp = () => {
+      isDown = false;
+      slider.classList.remove("active");
+    };
+
+    const handleMouseMove = (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 3; //scroll-fast
+      slider.scrollLeft = scrollLeft - walk;
+    };
+
+    slider.addEventListener("mousedown", handleMouseDown);
+    slider.addEventListener("mouseleave", handleMouseLeave);
+    slider.addEventListener("mouseup", handleMouseUp);
+    slider.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      slider.removeEventListener("mousedown", handleMouseDown);
+      slider.removeEventListener("mouseleave", handleMouseLeave);
+      slider.removeEventListener("mouseup", handleMouseUp);
+      slider.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [sliderRef]);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -1116,7 +1165,10 @@ function AddOrder() {
     setIsShowDeliveryPopup(true);
   };
 
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
 
   console.log({ tableOrderItems });
 
@@ -1133,14 +1185,19 @@ function AddOrder() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div className="w-full overflow-x-scroll flex flex-row whitespace-nowrap p-2 gap-2">
+            <div
+              ref={sliderRef}
+              className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
+            >
               <button
                 key={"category-all"}
-                className={`${
+                className={cn(
+                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                   selectedCategory === "All"
                     ? "text-orange-500"
-                    : "text-gray-700"
-                } rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap truncate`}
+                    : "text-gray-700",
+                  fontMap[language]
+                )}
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
@@ -1151,11 +1208,13 @@ function AddOrder() {
                   return (
                     <button
                       key={"category" + index}
-                      className={`${
+                      className={cn(
+                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                         selectedCategory === data?._id
                           ? "text-orange-500"
-                          : "text-gray-700"
-                      } rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap truncate`}
+                          : "text-gray-700",
+                        fontMap[language]
+                      )}
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
@@ -1194,7 +1253,7 @@ function AddOrder() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-orange-600 font-medium text-base">
+                        <span className="text-orange-600 font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
                           {/* {currency?.map(
@@ -1206,7 +1265,12 @@ function AddOrder() {
                           )} */}
                         </span>
                         <br />
-                        <span className="text-[13px] text-gray-500">
+                        <span
+                          className={cn(
+                            "text-[13px] text-gray-500",
+                            fontMap[language]
+                          )}
+                        >
                           {t("amount_exist")} : {data?.quantity || 0}
                         </span>
                       </div>
@@ -1228,18 +1292,30 @@ function AddOrder() {
                   <thead style={{ backgroundColor: "#F1F1F1" }}>
                     <tr style={{ fontSize: "bold", border: "none" }}>
                       <th style={{ border: "none" }}>#</th>
-                      <th style={{ border: "none", textAlign: "left" }}>
+                      <th
+                        style={{ border: "none", textAlign: "left" }}
+                        className={fontMap[language]}
+                      >
                         {t("menu_name")}
                       </th>
-                      <th style={{ border: "none", textAlign: "center" }}>
+                      <th
+                        style={{ border: "none", textAlign: "center" }}
+                        className={fontMap[language]}
+                      >
                         {t("amount")}
                       </th>
                       {selectedTable?.isDeliveryTable && (
-                        <th style={{ border: "none", textAlign: "center" }}>
+                        <th
+                          style={{ border: "none", textAlign: "center" }}
+                          className={fontMap[language]}
+                        >
                           {t("delivery")}
                         </th>
                       )}
-                      <th style={{ border: "none", textAlign: "right" }}>
+                      <th
+                        style={{ border: "none", textAlign: "right" }}
+                        className={fontMap[language]}
+                      >
                         {t("order_food")}
                       </th>
                     </tr>
@@ -1400,6 +1476,7 @@ function AddOrder() {
                       color: "#FB6E3B",
                       fontWeight: "bold",
                     }}
+                    className={fontMap[language]}
                     onClick={() =>
                       navigate(
                         `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
@@ -1412,7 +1489,7 @@ function AddOrder() {
                     hidden={!selectedTable?.isDeliveryTable}
                     variant="light"
                     disabled={selectedMenu.length === 0}
-                    className="hover-me"
+                    className={cn("hover-me", fontMap[language])}
                     style={{
                       marginRight: 15,
                       backgroundColor: "#FB6E3B",
@@ -1427,7 +1504,7 @@ function AddOrder() {
                   <Button
                     variant="light"
                     disabled={selectedMenu.length === 0}
-                    className="hover-me"
+                    className={cn("hover-me", fontMap[language])}
                     style={{
                       marginRight: 15,
                       backgroundColor: "#FB6E3B",
@@ -1448,7 +1525,7 @@ function AddOrder() {
                   <Button
                     variant="light"
                     disabled={selectedMenu.length === 0}
-                    className="hover-me"
+                    className={cn("hover-me", fontMap[language])}
                     style={{
                       height: 54,
                       marginRight: 15,

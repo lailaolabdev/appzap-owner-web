@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useLocation } from "react-router-dom";
-import moment from "moment";
+import moment, { lang } from "moment";
 import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
 import html2canvas from "html2canvas";
@@ -83,6 +83,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "../../utils/cn";
+import { fontMap } from "../../utils/font-map";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -2362,19 +2363,19 @@ export default function TableList() {
                 bgColor: "#FB6F3B",
               },
               {
-                label: t("total_available_table"),
+                label: t("available"),
                 value: _checkStatusCodeA(tableList),
                 icon: <Check />,
                 bgColor: "#FFFFFF",
               },
               {
-                label: t("total_unavailable_table"),
+                label: t("unavailable"),
                 value: _checkStatusCode(tableList),
                 icon: <X />,
                 bgColor: "#FB6F3B",
               },
               {
-                label: t("total_bill_check"),
+                label: t("printed_bill"),
                 value: _checkStatusCodeB(tableList),
                 icon: <ReceiptText />,
                 bgColor: "#FFE17B",
@@ -2412,7 +2413,7 @@ export default function TableList() {
                     <div
                       className={cn(
                         "text-[#6B7280] font-semibold text-[14px] md:text-[15px] flex-1 text-center md:whitespace-nowrap md:text-left",
-                        language === "la" ? "font-noto" : "font-inter"
+                        fontMap[language]
                       )}
                     >
                       {item.label}
@@ -2434,8 +2435,17 @@ export default function TableList() {
           </div>
 
           {zoneData?.length > 0 ? (
-            <div className="flex items-center justify-start w-full py-2 font-inter px-3">
-              <Form.Label>{t("show_by_zone")}</Form.Label>
+            <div
+              className={cn(
+                "flex items-center justify-start w-full py-2 px-3",
+                fontMap[language]
+              )}
+            >
+              <Form.Label>
+                <span className={cn(fontMap[language])}>
+                  {t("show_by_zone")}
+                </span>
+              </Form.Label>
               <Form.Control
                 as="select"
                 value={zoneId}
@@ -2469,7 +2479,7 @@ export default function TableList() {
                     key={"table" + index}
                     className={cn(
                       "rounded-[8px] overflow-hidden bg-white cursor-pointer border-[.085rem] border-color-app box-border",
-                      language === "la" ? "!font-noto" : "!font-inter"
+                      fontMap[language]
                     )}
                   >
                     <div
@@ -2505,13 +2515,19 @@ export default function TableList() {
                           <div className="w-full">
                             <div
                               className={cn(
-                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center"
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
+                                fontMap[language]
                               )}
                             >
                               <span>{table?.tableName}</span>
                               <span>{`(${table?.code})`}</span>
                             </div>
-                            <div className={cn("text-base font-semibold")}>
+                            <div
+                              className={cn(
+                                "text-base font-semibold",
+                                fontMap[language]
+                              )}
+                            >
                               {table?.isStaffConfirm
                                 ? table?.editBill
                                   ? `${t("edit_bill")}`
@@ -2522,7 +2538,8 @@ export default function TableList() {
                             </div>
                             <div
                               className={cn(
-                                "text-[13px] font-medium font-inter",
+                                "text-[13px] font-medium",
+                                fontMap[language],
                                 table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "text-gray-500"
@@ -2569,13 +2586,19 @@ export default function TableList() {
                           <div className="w-full">
                             <div
                               className={cn(
-                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center"
+                                "flex items-center gap-1 text-base font-semibold flex-wrap text-center justify-center",
+                                fontMap[language]
                               )}
                             >
                               <span>{table?.tableName}</span>
                               <span>{`(${table?.code})`}</span>
                             </div>
-                            <div className={cn("text-lg font-semibold")}>
+                            <div
+                              className={cn(
+                                "text-lg font-semibold",
+                                fontMap[language]
+                              )}
+                            >
                               {table?.isStaffConfirm
                                 ? table?.editBill
                                   ? `${t("available")}`
@@ -2587,6 +2610,7 @@ export default function TableList() {
                             <div
                               className={cn(
                                 "text-[13px] font-medium font-inter",
+                                fontMap[language],
                                 table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "text-gray-500"
@@ -2611,7 +2635,11 @@ export default function TableList() {
         </div>
         {/* Detail Table */}
         {selectTable && (
-          <div className="hidden md:block min-w-[460px] w-[460px] max-w-[460px] shadow-md">
+          <div
+            className={cn(
+              "hidden md:block min-w-[460px] w-[460px] max-w-[460px] shadow-md"
+            )}
+          >
             {selectedTable != null &&
               selectedTable?.isStaffConfirm &&
               selectedTable?.isOpened && (
@@ -2625,22 +2653,26 @@ export default function TableList() {
                       <IoQrCode style={{ fontSize: "22px" }} />
                     </Button>
                     <div className="bg-white p-2.5 pb-0">
-                      <div className="font-bold text-2xl w-full flex justify-center flex-col items-center p-2.5">
+                      <div
+                        className={cn(
+                          "font-bold text-2xl w-full flex justify-center flex-col items-center p-2.5"
+                        )}
+                      >
                         {selectedTable?.tableName}
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("tableNumber2")}:{" "}
                         <span className="font-bold text-color-app">
                           {selectedTable?.code}
                         </span>
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("timeOfTableOpening")}:{" "}
                         <span className="font-bold text-color-app">
                           {moment(selectedTable?.createdAt).format("HH:mm A")}
                         </span>
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("respon")}:{" "}
                         <span className="font-bold text-color-app">
                           {dataBill?.orderId?.[0]?.updatedBy?.firstname &&
@@ -2649,7 +2681,7 @@ export default function TableList() {
                             : ""}
                         </span>
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("discount")}:{" "}
                         <span className="font-bold text-color-app">
                           {moneyCurrency(dataBill?.discount)}{" "}
@@ -2658,14 +2690,14 @@ export default function TableList() {
                             : storeDetail?.firstCurrency}
                         </span>
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("total")}:{" "}
                         <span className="font-bold text-color-app">
                           {isWaitingPress ? moneyCurrency(total) : "0"}{" "}
                           {storeDetail?.firstCurrency}
                         </span>
                       </div>
-                      <div className="text-base">
+                      <div className={cn("text-base", fontMap[language])}>
                         {t("aPriceHasToPay")}:{" "}
                         <span className="font-bold text-color-app">
                           {isWaitingPress
@@ -2675,6 +2707,7 @@ export default function TableList() {
                         </span>
                       </div>
                       <div
+                        className={cn("text-base", fontMap[language])}
                         style={{
                           fontSize: 16,
                           color: "red",
@@ -2701,7 +2734,12 @@ export default function TableList() {
                         {t("itemNotServed")}
                       </div>
                       <div>
-                        <p className="font-bold text-color-app">
+                        <p
+                          className={cn(
+                            "font-bold text-color-app",
+                            fontMap[language]
+                          )}
+                        >
                           {isCheckedOrderItem?.filter(
                             (e) => e?.status === "PAID"
                           )?.length
@@ -2715,7 +2753,12 @@ export default function TableList() {
                       </div>
                     </div>
                     <div className="border-b border-dashed border-[#ccc] mb-2.5" />
-                    <div className="grid grid-cols-4 px-2.5">
+                    <div
+                      className={cn(
+                        "grid grid-cols-4 px-2.5",
+                        fontMap[language]
+                      )}
+                    >
                       <ButtonCustom
                         onClick={() => onPrintToKitchen()}
                         disabled={onPrinting}
@@ -2797,6 +2840,7 @@ export default function TableList() {
                         marginBottom: 10,
                       }}
                       hidden={!checkedBox}
+                      className={cn(fontMap[language])}
                     >
                       <ButtonCustom
                         onClick={() => {
@@ -2849,12 +2893,12 @@ export default function TableList() {
                               }}
                             />
                           </th>
-                          <th>{t("no")}</th>
-                          <th>{t("menuname")}</th>
-                          <th>{t("quantity")}</th>
-                          <th>{t("status")}</th>
-                          <th>{t("customer")}</th>
-                          <th>{t("time")}</th>
+                          <th className={fontMap[language]}>{t("no")}</th>
+                          <th className={fontMap[language]}>{t("menuname")}</th>
+                          <th className={fontMap[language]}>{t("quantity")}</th>
+                          <th className={fontMap[language]}>{t("status")}</th>
+                          <th className={fontMap[language]}>{t("customer")}</th>
+                          <th className={fontMap[language]}>{t("time")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2932,7 +2976,10 @@ export default function TableList() {
                     </TableCustom>
                     {tableOrderItems?.length === 0 && (
                       <div className="text-center">
-                        <div style={{ marginTop: 50, fontSize: 50 }}>
+                        <div
+                          style={{ marginTop: 50, fontSize: 50 }}
+                          className={fontMap[language]}
+                        >
                           {" "}
                           {t("TableHasNoOrder")}
                         </div>
@@ -2963,7 +3010,9 @@ export default function TableList() {
               >
                 <div className="flex flex-col justify-center items-center pt-4 text-2xl font-bold">
                   <SiAirtable />
-                  <span>{selectedTable?.tableName}</span>
+                  <span className={fontMap[language]}>
+                    {selectedTable?.tableName}
+                  </span>
                 </div>
                 <div className="p-2">
                   <QRCode
@@ -2982,6 +3031,7 @@ export default function TableList() {
                     color: "#616161",
                     textAlign: "center",
                   }}
+                  className={fontMap[language]}
                 >
                   {t("bringThisQRCodeToCustomersOrPressOpenToStartUsing")}
                 </p>
@@ -2991,6 +3041,7 @@ export default function TableList() {
                     color: "#616161",
                     textAlign: "center",
                   }}
+                  className={fontMap[language]}
                 >
                   ( Smart-Menu && Self-Ordering)
                 </p>
@@ -3007,7 +3058,11 @@ export default function TableList() {
                   }}
                   onClick={() => openTable()}
                 >
-                  {!selectedTable?.isOpened ? `${t("open")}` : "ຢືນຢັນເປີດໂຕະ"}
+                  <span className={fontMap[language]}>
+                    {!selectedTable?.isOpened
+                      ? `${t("open")}`
+                      : "ຢືນຢັນເປີດໂຕະ"}
+                  </span>
                 </Button>
                 <br />
                 <Button
@@ -3027,7 +3082,9 @@ export default function TableList() {
                     });
                   }}
                 >
-                  {t("open_table_with_qr")}
+                  <span className={fontMap[language]}>
+                    {t("open_table_with_qr")}
+                  </span>
                 </Button>
               </div>
             )}
@@ -3046,7 +3103,10 @@ export default function TableList() {
                   alignItems: "center",
                 }}
               >
-                <p style={{ margin: 0, fontSize: 30 }}>
+                <p
+                  style={{ margin: 0, fontSize: 30 }}
+                  className={fontMap[language]}
+                >
                   {t("chose_table_for_order")}
                 </p>
               </div>
@@ -3275,16 +3335,22 @@ export default function TableList() {
       />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("combine_table")}</Modal.Title>
+          <Modal.Title>
+            <span className={fontMap[language]}>{t("combine_table")}</span>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
             <Form.Label>
-              {t("move_from")} : {selectedTable?.tableName}
+              <span className={fontMap[language]}>
+                {t("move_from")} : {selectedTable?.tableName}
+              </span>
             </Form.Label>
             <div style={{ height: 10 }}></div>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>{t("to_table")} : </Form.Label>
+              <Form.Label className={fontMap[language]}>
+                {t("to_table")} :{" "}
+              </Form.Label>
               <div style={{ height: 10 }}></div>
               <select
                 className="form-select form-control"
@@ -3323,7 +3389,7 @@ export default function TableList() {
             </Form.Group>
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => handleClose()}>
             {t("cancel")}
           </Button>
@@ -3335,9 +3401,11 @@ export default function TableList() {
 
       <Modal show={show1} onHide={handleClose1}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("cause_cancel_order")}</Modal.Title>
+          <Modal.Title className={fontMap[language]}>
+            {t("cause_cancel_order")}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={fontMap[language]}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <select
               size="8"
@@ -3388,7 +3456,7 @@ export default function TableList() {
             </select>
           </Form.Group>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => handleClose1()}>
             {t("cancel")}
           </Button>
@@ -3416,12 +3484,14 @@ export default function TableList() {
 
       <Modal show={quantity} onHide={handleCloseQuantity}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("edit_amount")}</Modal.Title>
+          <Modal.Title className={fontMap[language]}>
+            {t("edit_amount")}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <TableCustom>
-              <thead>
+              <thead className={fontMap[language]}>
                 <tr>
                   <th>{t("table")}</th>
                   <th>{t("menuname")}</th>
@@ -3431,7 +3501,7 @@ export default function TableList() {
                   <th>{t("time")}</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={fontMap[language]}>
                 <tr>
                   <td>{seletedOrderItem?.tableId?.name}</td>
                   <td>
@@ -3486,7 +3556,7 @@ export default function TableList() {
             </TableCustom>
           </Form.Group>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => handleCloseQuantity()}>
             {t("cancel")}
           </Button>
@@ -3504,14 +3574,16 @@ export default function TableList() {
 
       <Modal show={openModalSetting} onHide={() => setOpenModalSetting(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("setting_table")}</Modal.Title>
+          <Modal.Title className={fontMap[language]}>
+            {t("setting_table")}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className={fontMap[language]}>
           <div style={{ textAlign: "center" }}>
             {t("would_you_like_to_close")} {dataSettingModal?.tableName} ?
           </div>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => setOpenModalSetting(false)}>
             {t("cancel")}
           </Button>

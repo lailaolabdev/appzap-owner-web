@@ -34,9 +34,14 @@ import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
 import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
+import { fontMap } from "../../utils/font-map";
+import { cn } from "../../utils/cn";
 
 export default function MenuList() {
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
 
@@ -583,8 +588,12 @@ export default function MenuList() {
     <div style={BODY}>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
-          <Breadcrumb.Item>{t("restaurant_setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("menu")}</Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <span className={fontMap[language]}>{t("restaurant_setting")}</span>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item active>
+            <span className={fontMap[language]}>{t("menu")}</span>
+          </Breadcrumb.Item>
         </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey={defaultActiveKey}>
@@ -593,7 +602,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                {t("menu")}
+                <span className={fontMap[language]}>{t("menu")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -601,7 +610,7 @@ export default function MenuList() {
                 eventKey="/settingStore/menu-option"
                 onClick={() => _menuOptionList()}
               >
-                {t("option_menu")}
+                <span className={fontMap[language]}> {t("option_menu")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -609,7 +618,7 @@ export default function MenuList() {
                 eventKey="/settingStore/category"
                 onClick={() => _category()}
               >
-                {t("food_type")}
+                <span className={fontMap[language]}>{t("food_type")}</span>
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -617,7 +626,7 @@ export default function MenuList() {
                 eventKey="/settingStore/category"
                 onClick={() => _categoryType()}
               >
-                {t("categoryType")}
+                <span className={fontMap[language]}>{t("categoryType")}</span>
               </Nav.Link>
             </Nav.Item>
           </Nav>
@@ -627,9 +636,9 @@ export default function MenuList() {
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
               <Col md="4">
-                <label>{t("chose_type")}</label>
+                <label className={fontMap[language]}>{t("chose_type")}</label>
                 <select
-                  className="form-control"
+                  className={cn(fontMap[language], "form-control")}
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
                 >
@@ -645,7 +654,7 @@ export default function MenuList() {
                 </select>
               </Col>
               <Col md="4">
-                <label>{t("search")}</label>
+                <label className={fontMap[language]}>{t("search")}</label>
                 <Form.Control
                   type="text"
                   placeholder={t("search_food_name")}
@@ -653,6 +662,7 @@ export default function MenuList() {
                   onChange={(e) => {
                     setFilterName(e.target.value);
                   }}
+                  className={fontMap[language]}
                 />
               </Col>
               <Col
@@ -689,6 +699,7 @@ export default function MenuList() {
                     border: 0,
                   }}
                   onClick={handleShow}
+                  className={fontMap[language]}
                 >
                   + {t("add_menu")}
                 </Button>
@@ -711,25 +722,70 @@ export default function MenuList() {
             >
               <thead className="thead-light">
                 <tr>
-                  <th scope="col">#</th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    #
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("no_show")}
                   </th>
-                  <th scope="col">{t("picture")}</th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("picture")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("type_name")}
                   </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("menu_type")}
                   </th>
-                  <th scope="col">{t("food_name")}</th>
-                  <th scope="col">{t("price")}</th>
-                  <th scope="col">{t("ປິດເປີດສະຖານະ")}</th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("food_name")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("price")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("status")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("setting_show")}
                   </th>
-                  <th scope="col">{t("options")}</th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("options")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("manage_data")}
                   </th>
                 </tr>
@@ -806,7 +862,7 @@ export default function MenuList() {
                         <td>
                           <button
                             type="button"
-                            className="menuSetting"
+                            className={cn("menuSetting", fontMap[language])}
                             onClick={() => {
                               setShowSetting(true);
                               setDetailMenu({ data, index });
@@ -819,13 +875,16 @@ export default function MenuList() {
                         <td>
                           <button
                             type="button"
-                            className="menuSetting"
+                            className={cn(
+                              "menuSetting whitespace-nowrap !w-fit px-2",
+                              fontMap[language]
+                            )}
                             onClick={() => {
                               setShowOptionSetting(true);
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            +ອ໋ອບຊັນເສີມ (
+                            + ອ໋ອບຊັນເສີມ (
                             {menuOptionsCount[data._id] ||
                               data?.menuOptions?.length ||
                               0}
