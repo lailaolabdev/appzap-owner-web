@@ -1,54 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { BsQuestionLg } from "react-icons/bs";
+
 import { useTranslation } from "react-i18next";
 
 import { getAllDelivery } from "../../services/delivery";
-import { COLOR_APP } from "../../constants";
 import { useStore } from "../../store";
-
-const boxIcon = {
-  position: "absolute",
-  left: 0,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  top: 0,
-  width: "100%",
-};
-
-const iconStyle = {
-  fontSize: "6em",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "#FB6E3B",
-  marginTop: "-.7em",
-  width: 120,
-  height: 120,
-  borderRadius: "30em",
-  boxShadow:
-    "rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px",
-  color: "#ffff",
-  border: "10px solid #ffff",
-};
-
-const modalBodyStyle = {
-  textAlign: "center",
-  minHeight: "23vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  flexDirection: "column",
-  gap: 35,
-  paddingTop: 15,
-};
-
-const modalFooterStyle = {
-  display: "flex",
-  justifyContent: "center",
-  border: "none",
-};
 
 export default function PopUpAddDeliveryCode({ open, onClose, onSubmit }) {
   const { t } = useTranslation();

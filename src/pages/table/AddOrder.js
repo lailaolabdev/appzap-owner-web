@@ -93,8 +93,7 @@ function AddOrder() {
   const [itemDeleting, setItemDeleting] = useState();
 
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
-  const [totalPriceOfMenuWithOption, setTotalPriceOfMenuWithOption] =
-    useState(0);
+  const [disableNotDeliveryCode, setDisableNotDeliveryCode] = useState(true);
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
@@ -832,6 +831,7 @@ function AddOrder() {
         showConfirmButton: false,
         timer: 1800,
       });
+      setDisableNotDeliveryCode(false);
       return;
     }
 
@@ -842,6 +842,7 @@ function AddOrder() {
         showConfirmButton: false,
         timer: 1800,
       });
+      setDisableNotDeliveryCode(false);
       return;
     }
 
@@ -855,6 +856,7 @@ function AddOrder() {
           }))
         );
         setIsShowDeliveryPopup(false);
+        setDisableNotDeliveryCode(false);
       } else {
         Swal.fire({
           icon: "error",
@@ -863,7 +865,7 @@ function AddOrder() {
           showConfirmButton: false,
           timer: 1800,
         });
-
+        setDisableNotDeliveryCode(false);
         return;
       }
     } else {
@@ -874,6 +876,7 @@ function AddOrder() {
           platform: platform,
         }))
       );
+      setDisableNotDeliveryCode(false);
       setIsShowDeliveryPopup(false);
     }
   };
@@ -1033,6 +1036,7 @@ function AddOrder() {
           showConfirmButton: false,
           timer: 1800,
         });
+        setDisableNotDeliveryCode(true);
         return false;
       }
     }
@@ -1406,7 +1410,7 @@ function AddOrder() {
                                   <p style={{ fontSize: 12 }}>
                                     {data && data.deliveryCode !== null
                                       ? data.deliveryCode
-                                      : ""}
+                                      : "--"}
                                   </p>
                                 </div>
                               </td>
@@ -1503,6 +1507,28 @@ function AddOrder() {
                   </Button>
                   <Button
                     variant="light"
+                    hidden={!selectedTable?.isDeliveryTable}
+                    disabled={
+                      selectedMenu.length === 0 || disableNotDeliveryCode
+                    }
+                    className="hover-me"
+                    style={{
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => {
+                      setDisabledButton(true);
+                      onSubmit(false);
+                    }}
+                  >
+                    {t("order_food")}
+                  </Button>
+                  <Button
+                    hidden={selectedTable?.isDeliveryTable}
+                    variant="light"
                     disabled={selectedMenu.length === 0}
                     className={cn("hover-me", fontMap[language])}
                     style={{
@@ -1523,6 +1549,34 @@ function AddOrder() {
                 <div style={{ height: 10 }} />
                 <div className="row" style={{ margin: 0 }}>
                   <Button
+                    hidden={!selectedTable?.isDeliveryTable}
+                    variant="light"
+                    disabled={
+                      selectedMenu.length === 0 || disableNotDeliveryCode
+                    }
+                    className="hover-me"
+                    style={{
+                      height: 54,
+                      marginRight: 15,
+                      backgroundColor: "#FB6E3B",
+                      color: "#ffffff",
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                    onClick={() => {
+                      // onPrint();
+                      setDisabledButton(true);
+                      onSubmit(true);
+                    }}
+                  >
+                    {t("order_and_send_to_kitchen")} +{" "}
+                    <FontAwesomeIcon
+                      icon={faCashRegister}
+                      style={{ color: "#fff" }}
+                    />{" "}
+                  </Button>
+                  <Button
+                    hidden={selectedTable?.isDeliveryTable}
                     variant="light"
                     disabled={selectedMenu.length === 0}
                     className={cn("hover-me", fontMap[language])}

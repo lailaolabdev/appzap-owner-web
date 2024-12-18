@@ -465,13 +465,13 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.transferCount || 0,
                       amount: moneyReport?.successAmount?.transferPayment || 0,
                     },
-                    ...(Array.isArray(deliveryReports) &&
-                    deliveryReports.length > 0
+
+                    ...(storeDetail?.isDelivery && deliveryReports?.length > 0
                       ? deliveryReports.map((e, idx) => ({
                           method: (
-                            <div
-                              style={{ fontWeight: 700 }}
-                            >{`delivery (${e?.name})`}</div>
+                            <div style={{ fontWeight: 700 }}>
+                              {`delivery (${e?.name || "Unknown"})`}
+                            </div>
                           ),
                           qty: e?.qty || 0,
                           amount: Math.floor(e?.amount || 0),
@@ -629,10 +629,12 @@ export default function DashboardPage() {
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
                     {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
-                    <td>
-                      {moneyCurrency(e?.deliveryAmount)}{" "}
-                      {storeDetail?.firstCurrency}
-                    </td>
+                    {storeDetail?.isDelivery && (
+                      <td>
+                        {moneyCurrency(e?.deliveryAmount)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    )}
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}

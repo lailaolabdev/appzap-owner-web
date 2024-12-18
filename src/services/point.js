@@ -13,6 +13,18 @@ export const RedeemPoint = async (value) => {
     console.log("RedeemPoint error:", error);
   }
 };
+export const PointUser = async (value) => {
+  try {
+    const url = `${END_POINT_APP}/v6/piontStore`;
+    const res = await axios.get(url, value, {
+      headers: await getHeaders(),
+    });
+    const data = res.data;
+    return data;
+  } catch (error) {
+    console.log("RedeemPoint error:", error);
+  }
+};
 export const GetRedeemPoint = async (findBy) => {
   try {
     const url = `${END_POINT_APP}/v4/point-redeem/history${findBy}`;

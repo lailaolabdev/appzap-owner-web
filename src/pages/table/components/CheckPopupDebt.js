@@ -291,11 +291,9 @@ export default function CheckPopupDebt({
     const validTransferAmount =
       transfer && !Number.isNaN(transfer) ? transfer : remainingAmount;
 
-    console.log("Before Checkbill amountBefore =======> ", validPayAmount);
-    console.log("Before Checkbill remainingAmount ====> ", validTransferAmount);
     await axios
       .put(
-        `${END_POINT}/v3/bill-checkout`,
+        `${END_POINT}/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: {

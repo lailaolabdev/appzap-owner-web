@@ -315,7 +315,7 @@ export default function Dashboard() {
                 <div className={fontMap[language]}>
                   {t("point")}
                   {" : "}
-                  {convertNumber(moneyReport?.successAmount?.point)}
+                  {convertNumber(moneyReport?.successAmount?.point || 0)}
                 </div>
               )}
               <div className={fontMap[language]}>

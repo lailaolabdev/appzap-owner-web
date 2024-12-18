@@ -137,7 +137,7 @@ export default function CheckOutType({
   const _checkBill = async () => {
     await axios
       .put(
-        END_POINT + `/v3/bill-checkout`,
+        END_POINT + `/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: {

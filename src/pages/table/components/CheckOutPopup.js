@@ -27,7 +27,7 @@ import {
   getMembers,
   getMemberAllCount,
 } from "../../../services/member.service";
-import { RedeemPoint } from "../../../services/point";
+import { RedeemPoint, PointUser } from "../../../services/point";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -328,7 +328,7 @@ export default function CheckOutPopup({
 
     await axios
       .put(
-        `${END_POINT}/v3/bill-checkout`,
+        `${END_POINT}/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: body,
@@ -392,17 +392,26 @@ export default function CheckOutPopup({
     };
     await RedeemPoint(data);
   };
+  const PointUsers = async () => {
+    const data = {
+      memberId: memberData?._id,
+      storeId: storeDetail?._id,
+      billId: dataBill?._id,
+    };
+    await PointUser(data);
+  };
 
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = () => {
-    if (
-      storeDetail?.isCRM ||
-      tab === "point" ||
-      tab === "cash_transfer_point"
-    ) {
+    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
       RedeemPointUser();
     }
+
+    if (storeDetail?.isCRM && hasCRM) {
+      PointUsers();
+    }
+
     saveServiceChargeDetails();
     _checkBill(selectCurrency?.id, selectCurrency?.name);
     // onSubmit();
@@ -547,10 +556,11 @@ export default function CheckOutPopup({
         Swal.fire({
           icon: "warning",
           title: `${t("error_point")}`,
-          text: `${t("error_point_enough")}`,
+          text: `${t("error_point_enough")} ${dataBill?.Point} ${t("point")}`,
           showConfirmButton: false,
           timer: 1800,
         });
+        setPoint("");
         return;
       }
       const _sum =
@@ -583,25 +593,6 @@ export default function CheckOutPopup({
         setCanCheckOut(false);
       } else {
         setCanCheckOut(true);
-      }
-    } else if (forcus === "CASH_TRANSFER_POINT") {
-      const _sum =
-        (Number.parseInt(cash) || 0) +
-        (Number.parseInt(transfer) || 0 + Number.parseInt(point));
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        }
       }
     }
   }, [cash, transfer, totalBill, delivery, forcus, point]);
@@ -715,6 +706,7 @@ export default function CheckOutPopup({
     const parsedCash = Number.parseInt(cash) || 0;
     const parsedTransfer = Number.parseInt(transfer) || 0;
     const parsedDelivery = Number.parseInt(delivery) || 0;
+    const parsedPoint = Number.parseInt(point) || 0;
 
     const discountAmount =
       dataBill && dataBill?.discountType === "LAK"
@@ -722,7 +714,11 @@ export default function CheckOutPopup({
         : Math.max(totalBill - (totalBill * dataBill?.discount) / 100, 0);
 
     const totalAmount =
-      parsedCash + parsedTransfer + parsedDelivery - discountAmount;
+      parsedCash +
+      parsedTransfer +
+      parsedDelivery +
+      parsedPoint -
+      discountAmount;
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
@@ -1014,12 +1010,11 @@ export default function CheckOutPopup({
                         disabled={
                           dataBill?.Point <= 0 ||
                           !dataBill?.Name ||
-                          !dataBill?.Point
+                          !dataBill?.Point ||
+                          dataBill?.Point <= point
                         }
-                        type="text"
-                        maxLength={
-                          Number.parseInt(dataBill?.Point).toString().length
-                        }
+                        type="number"
+                        max={dataBill?.Point}
                         placeholder="0"
                         value={point}
                         onClick={() => {
