@@ -94,6 +94,14 @@
   "phoneNumberOfBooked": "Phone number of booked",
   "please_enter_number_of_day": " Please enter number of day",
   "tableStatus2": "Table status ",
+
+  "change_password": "Change password",
+  "cancel_password_change": "Cancel",
+  "new_password": "New password",
+  "enter_new_password": "Enter new password",
+  "enter_confirm_password": "Enter confirm password",
+  "confirm_password": "Confirm password",
+
   "numberOfPeople": "Number of people",
   "addBooking": "Add booking ",
   "historyService": "History services ",

@@ -46,7 +46,7 @@ export default function PopUpUpdateUser({
       // ตรวจสอบรหัสผ่าน ถ้ามีการเปิดฟิลด์รหัสผ่าน
       if (showPassword) {
         if (!password || !confirmPassword) {
-          setError("กรุณากรอกรหัสผ่านให้ครบถ้วน");
+          setError(t("p_fill_code"));
           return;
         }
         if (password !== confirmPassword) {
