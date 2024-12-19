@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import socketio from "socket.io-client";
 import { END_POINT_SOCKET } from "../../constants/api";
+const { sendToKitchenPrinter } = require('../../helpers/printerHelper');
 
 const socket = socketio.connect(END_POINT_SOCKET, {
   reconnection: true,
@@ -27,8 +28,12 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     const handleConnect = () => setSocketConneted(true);
     const handleDisconnect = () => setSocketConneted(false);
     const handleTableUpdate = () => setNewTableTransaction(true);
-    const handleOrderUpdate = (data) => {
+    const handleOrderUpdate = async (data) => {
+      // TODO: Create Kitchen Printer Function and pass data here
       console.log("ORDER_DATA: ", data); // This will now run only once
+      // Use the kitchen printer function
+      await sendToKitchenPrinter(data);
+
       setRunSound({ orderSound: true });
       setNewOrderTransaction(true);
     };
