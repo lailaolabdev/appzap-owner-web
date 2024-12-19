@@ -24,9 +24,10 @@ export const getCountStocksAll = async (storeId, findBy) => {
 
 export const getStocksHistories = async (storeId, findBy) => {
   try {
-    const url = `${END_POINT_APP}/v3/stock-history-groups?storeId=${storeId}${findBy}`;
+    console.log({ findBy });
+    const url = `${END_POINT_APP}/v6/stock-history-groups?storeId=${storeId}${findBy}`;
     const res = await axios.get(url);
-
+    console.log({ res });
     return res;
   } catch (error) {
     return error;

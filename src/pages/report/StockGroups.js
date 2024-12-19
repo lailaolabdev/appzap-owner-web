@@ -23,9 +23,9 @@ function StockGroups({
   if (isLoadingTotal) return <LoadingAppzap />;
 
   // ຂໍ້ມູນທີ່ສະແດງຕາມການຄົ້ນຫາຊື່ສິນຄ້າ
-  datas.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  // datas.sort(
+  //   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // );
 
   console.log("checkdatas44:-===>", datas);
 
@@ -58,6 +58,12 @@ function StockGroups({
               </th>
               <th style={{ textAlign: "center", textWrap: "nowrap" }}>
                 {t("in_amount")}
+              </th>
+              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+                {t("opening_stock")}
+              </th>
+              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+                {t("closing_stock")}
               </th>
               <th style={{ textAlign: "center", textWrap: "nowrap" }}>
                 {t("return_amount")}
@@ -103,8 +109,25 @@ function StockGroups({
                     textWrap: "nowrap",
                   }}
                 >
+                  {numberFormat(item?.totalQtyOpening)}
+                </td>
+                <td
+                  style={{
+                    textAlign: "center",
+                    textWrap: "nowrap",
+                  }}
+                >
+                  {numberFormat(item?.stockDetails?.quantity)}
+                </td>
+                <td
+                  style={{
+                    textAlign: "center",
+                    textWrap: "nowrap",
+                  }}
+                >
                   {numberFormat(item?.totalQtyReturn)}
                 </td>
+
                 <td style={{ textAlign: "center", textWrap: "nowrap" }}>
                   {item?.stockDetails?.unit}
                 </td>

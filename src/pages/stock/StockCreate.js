@@ -45,7 +45,7 @@ export default function StockCreate() {
       name: data.stockName,
       buyPrice: data.buyPrice,
       wastes: data.wastes,
-      stockQuality: data.stockQuality,
+      quantity: data.stockQuality,
       detail: data.detail,
       stockCategoryId: data.stockCategory,
       otherUnit: data.units,
@@ -315,9 +315,7 @@ export default function StockCreate() {
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2 text-center">{stock.name}</td>
                     <td className="px-4 py-2 text-center">{stock.buyPrice}</td>
-                    <td className="px-4 py-2 text-center">
-                      {stock.stockQuality}
-                    </td>
+                    <td className="px-4 py-2 text-center">{stock.quantity}</td>
                     <td className="px-4 py-2 text-center">{stock.wastes}</td>
                     <td className="px-4 py-2 text-center">
                       {stock.stockCategoryId}

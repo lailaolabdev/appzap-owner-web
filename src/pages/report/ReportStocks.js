@@ -316,6 +316,7 @@ export default function ReportStocks() {
                       <th style={{ textAlign: "center" }}>{t("type")}</th>
                       <th style={{ textAlign: "center" }}>{t("prod_name")}</th>
                       <th style={{ textAlign: "center" }}>{t("amount")}</th>
+                      <th style={{ textAlign: "center" }}>{t("wastes")}</th>
                       <th style={{ textAlign: "right", width: 40 }}>
                         {t("unit")}
                       </th>
@@ -354,6 +355,7 @@ export default function ReportStocks() {
                             )}`}
                           />
                         </td>
+                        <td style={{ textAlign: "right" }}>{item?.wastes}</td>
                         <td style={{ textAlign: "right" }}>{item?.unit}</td>
                       </tr>
                     ))}
@@ -416,6 +418,21 @@ export default function ReportStocks() {
             onPageChange={handleChangePageTotal}
           />
         )}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: isLoading ? 300 : "auto",
+          maxWidth: "95vw",
+          overflowX: "auto",
+          flexDirection: "column",
+          gap: 10,
+        }}
+      >
+        
       </div>
 
       {/* <StockGroups
