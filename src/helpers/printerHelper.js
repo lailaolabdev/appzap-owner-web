@@ -5,13 +5,15 @@ const PRINTER_URL = "http://localhost:9090/api/v1/ethernet-printing/kitchen";
 
 /**
  * Sends an order to the kitchen printer.
- * @param {string} tableName - The table name for the order.
- * @param {Array} orders - The orders to print.
+ * @param {Object} data - The data for the order.
+ * @param {string} data.tableName - The table name for the order.
+ * @param {string} data.code - The order code.
+ * @param {Array} data.orders - The orders to print.
  * @param {string} printerIP - The IP address of the kitchen printer.
  */
 const sendToKitchenPrinter = async (data, printerIP = "192.168.110.210") => {
   try {
-    const { tableName, orders } = data;
+    const { tableName, code, orders } = data;
     // Map the orders to the required format for printing
     const mappedOrders = orders.map((order) => {
       const subBody = order.options.map((option) => ({
@@ -20,12 +22,32 @@ const sendToKitchenPrinter = async (data, printerIP = "192.168.110.210") => {
         fontSize: 24,
       }));
 
+      if (order.note) {
+        subBody.push({
+          text: `Note: ${order.note}`,
+          bold: false,
+          fontSize: 24,
+        });
+      }
+
       return {
         text: `${order.name} (${order.quantity} x ${order.price.toLocaleString()})`,
         bold: true,
         fontSize: 30,
         subBody: subBody,
-        footerRight: new Date(order.createdAt).toLocaleString("en-US", {
+      };
+    });
+
+    // Prepare the print payload
+    const printPayload = {
+      header: {
+        text: `ໂຕະ: ${tableName} (${code})`,
+        fontSize: 40,
+      },
+      body: mappedOrders,
+      footer: {
+        left: "ຜະລິດ",
+        right: new Date().toLocaleString("en-US", {
           day: "2-digit",
           month: "2-digit",
           year: "2-digit",
@@ -33,19 +55,6 @@ const sendToKitchenPrinter = async (data, printerIP = "192.168.110.210") => {
           minute: "2-digit",
           hour12: true,
         }),
-      };
-    });
-
-    // Prepare the print payload
-    const printPayload = {
-      header: {
-        text: `ໂຕະ: ${tableName}`,
-        fontSize: 60,
-      },
-      body: mappedOrders,
-      footer: {
-        left: "ຜະລິດ",
-        right: "",
       },
       printerIP: printerIP,
       shouldCutEachItem: true,
