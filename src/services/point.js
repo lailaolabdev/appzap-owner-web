@@ -15,8 +15,8 @@ export const RedeemPoint = async (value) => {
 };
 export const PointUser = async (value) => {
   try {
-    const url = `${END_POINT_APP}/v6/piontStore`;
-    const res = await axios.get(url, value, {
+    const url = `${END_POINT_APP}/v6/piontStore/user`;
+    const res = await axios.post(url, value, {
       headers: await getHeaders(),
     });
     const data = res.data;

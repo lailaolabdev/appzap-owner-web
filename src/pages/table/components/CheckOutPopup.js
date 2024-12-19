@@ -394,29 +394,28 @@ export default function CheckOutPopup({
   };
   const PointUsers = async () => {
     const data = {
-      memberId: memberData?._id,
-      storeId: storeDetail?._id,
       billId: dataBill?._id,
+      storeId: storeDetail?._id,
+      memberId: memberData?._id,
     };
     await PointUser(data);
   };
 
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    saveServiceChargeDetails();
+    await _checkBill(selectCurrency?.id, selectCurrency?.name);
+
     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-      RedeemPointUser();
+      await RedeemPointUser();
     }
 
     if (storeDetail?.isCRM && hasCRM) {
-      PointUsers();
+      await PointUsers();
     }
-
-    saveServiceChargeDetails();
-    _checkBill(selectCurrency?.id, selectCurrency?.name);
-    // onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
   };
+
   // useEffect
   useEffect(() => {
     getDataCurrency();
@@ -1016,7 +1015,7 @@ export default function CheckOutPopup({
                         type="number"
                         max={dataBill?.Point}
                         placeholder="0"
-                        value={point}
+                        value={moneyCurrency(point)}
                         onClick={() => {
                           setSelectInput("inputPoint");
                         }}
