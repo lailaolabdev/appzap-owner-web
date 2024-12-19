@@ -1,4 +1,3 @@
-// kitchenPrinter.js
 const axios = require('axios');
 
 const PRINTER_URL = "http://localhost:9090/api/v1/ethernet-printing/kitchen";
@@ -14,26 +13,34 @@ const PRINTER_URL = "http://localhost:9090/api/v1/ethernet-printing/kitchen";
 const sendToKitchenPrinter = async (data, printerIP = "192.168.110.210") => {
   try {
     const { tableName, code, orders } = data;
+
+    if (!orders || orders.length === 0) {
+      throw new Error("No orders to print");
+    }
+
+    // Get the createdAt value from the first order
+    const createdAt = orders[0]?.createdAt || new Date().toISOString();
+
     // Map the orders to the required format for printing
     const mappedOrders = orders.map((order) => {
       const subBody = order.options.map((option) => ({
-        text: `- ${option.name}`,
+        text: `  - ${option.name} (${option.price.toLocaleString()})`,
         bold: false,
-        fontSize: 24,
+        fontSize: 26,
       }));
 
       if (order.note) {
         subBody.push({
-          text: `Note: ${order.note}`,
+          text: `  Note: ${order.note}`,
           bold: false,
-          fontSize: 24,
+          fontSize: 28,
         });
       }
 
       return {
         text: `${order.name} (${order.quantity} x ${order.price.toLocaleString()})`,
         bold: true,
-        fontSize: 30,
+        fontSize: 35,
         subBody: subBody,
       };
     });
@@ -46,8 +53,8 @@ const sendToKitchenPrinter = async (data, printerIP = "192.168.110.210") => {
       },
       body: mappedOrders,
       footer: {
-        left: "ຜະລິດ",
-        right: new Date().toLocaleString("en-US", {
+        left: "APPZAP",
+        right: new Date(createdAt).toLocaleString("en-US", {
           day: "2-digit",
           month: "2-digit",
           year: "2-digit",
