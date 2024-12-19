@@ -8,15 +8,55 @@ import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
+import { END_POINT_SEVER, getLocalData } from "../constants/api";
+import axios from "axios";
+import { useStore } from "../store";
 
 export default function ReportLayout() {
+  const { profile, storeDetail } = useStore();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
-  const [popup, setPopup] = useState();
+  const [popup, setPopup] = useState({ PopUpShowSales: true });
+  const [salesData, setSalesData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  const storeId = storeDetail._id;
+
+  //get store
+  useEffect(() => {
+    const fetchSalesData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`${END_POINT_SEVER}/v3/show-sales`);
+        setSalesData(response.data[0].selectedStores[0]);
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSalesData();
+  }, [storeId]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      // เช็คว่าโหลดเสร็จแล้ว
+      if (salesData === null) {
+        setPopup({ PopUpShowSales: true });
+      } else if (salesData.includes(storeId)) {
+        setPopup({ PopUpShowSales: true });
+      } else {
+        setPopup({ PopUpShowSales: false });
+      }
+    }
+  }, [salesData, storeId, isLoading]);
+
+  console.log("storeId: ", storeId);
+  console.log("salesData: ", salesData);
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
   };
@@ -327,14 +367,14 @@ export default function ReportLayout() {
               <MdStore style={{ fontSize: 35 }} />
               <strong>{t("report_sub")}</strong>
             </div>
-            <div
+            {/* <div
               onKeyDown={() => {}}
               className="menu-report-stocks mt-1"
               onClick={() => setPopup({ PopUpShowSales: true })}
             >
               <MdStore style={{ fontSize: 35 }} />
               <strong>{t("ສະແດງການຂາຍ")}</strong>
-            </div>
+            </div> */}
           </ButtonGroup>
         </div>
       </div>
@@ -342,13 +382,16 @@ export default function ReportLayout() {
         <Outlet />
       </div>
 
-	  <PopUpShowSales  
-	    open={popup?.PopUpShowSales}
-        onClose={() => {
-          setPopup();
-        }}
-
-	  />
+      {
+        !isLoading && (
+          <PopUpShowSales
+            open={popup?.PopUpShowSales}
+            onClose={() => {
+              setPopup();
+            }}
+          />
+        )
+      }
     </div>
   );
 }
