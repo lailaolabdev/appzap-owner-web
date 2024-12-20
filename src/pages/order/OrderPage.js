@@ -755,7 +755,7 @@ export default function OrderPage() {
           </Button>
         </div>
 
-        <div className={fontMap[language]}>{t("auto_print")}</div>
+        <div className={fontMap[language]}>{t("auto_print")}YO</div>
       </div>
     );
   };
