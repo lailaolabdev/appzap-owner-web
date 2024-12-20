@@ -7,60 +7,16 @@ import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import PopUpShowSales from "../components/popup/PopUpShowSales";
-import { END_POINT_SEVER, getLocalData } from "../constants/api";
-import axios from "axios";
-import { useStore } from "../store";
+
 
 export default function ReportLayout() {
-  const { profile, storeDetail } = useStore();
+ 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
-  const [popup, setPopup] = useState({ PopUpShowSales: true });
-  const [salesId, setSalesId] = useState(null);
-  const [salesData, setSalesData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   
-
-  const storeId = storeDetail._id;
-
-  //get store
-  useEffect(() => {
-    const fetchSalesData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get(`${END_POINT_SEVER}/v3/show-sales`);
-        setSalesId(response.data[0].selectedStores[0]);
-        setSalesData(response.data[0]);
-      } catch (error) {
-        console.error("Error fetching sales data:", error);
-        throw error;
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchSalesData();
-  }, [storeId]);
-
-  useEffect(() => {
-    if (!isLoading) {
-      // เช็คว่าโหลดเสร็จแล้ว
-      if (salesId === null) {
-        setPopup({ PopUpShowSales: true });
-      } else if (salesId.includes(storeId)) {
-        setPopup({ PopUpShowSales: true });
-      } else {
-        setPopup({ PopUpShowSales: false });
-      }
-    }
-  }, [salesId, storeId, isLoading]);
-
-  console.log("storeId: ", storeId);
-  console.log("salesId: ", salesId);
-  console.log("salesData: ", salesData);
 
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
@@ -83,16 +39,6 @@ export default function ReportLayout() {
         paddingBottom: "80px",
       }}
     >
-      {!isLoading && (
-        <PopUpShowSales
-          open={popup?.PopUpShowSales}
-          onClose={() => {
-            setPopup();
-          }}
-          salesData={salesData}
-          END_POINT_SEVER={END_POINT_SEVER}
-        />
-      )}
 
       {/* {width > 900 ? (
 				<div

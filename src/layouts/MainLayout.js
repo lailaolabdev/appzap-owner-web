@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "../components/Box";
 import Navbar from "./Navbar";
 import Sidenav from "./SideNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import PopUpShowSales from "../components/popup/PopUpShowSales";
+import { END_POINT_SEVER, getLocalData } from "../constants/api";
+import axios from "axios";
+import { useStore } from "../store";
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -11,6 +15,71 @@ export default function MainLayout({ children }) {
   const _onToggle = (exp) => {
     setExpanded(exp);
   };
+
+  const [popup, setPopup] = useState({ PopUpShowSales: true });
+  const [salesId, setSalesId] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { profile, storeDetail } = useStore();
+
+  const storeId = storeDetail._id;
+
+  const fetchSalesData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${END_POINT_SEVER}/v3/show-sales`);
+      setSalesId(response.data[0].selectedStores[0]);
+      setSalesData(response.data[0]);
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ฟังก์ชันอัพเดต availability
+  const updateAvailability = async (id, isAvailable) => {
+    try {
+      await axios.put(`${END_POINT_SEVER}/v3/show-sales/${id}`, {
+        isAvailable: isAvailable,
+      });
+      await fetchSalesData(); // รีโหลดข้อมูลหลังอัพเดต
+    } catch (error) {
+      console.error("Error updating availability:", error);
+    }
+  };
+
+  // ฟังก์ชันอัพเดตจำนวนคลิก
+  const updateSales = async (id, currentClicks) => {
+    try {
+      const updatedClicks = (currentClicks || 0) + 1;
+      await axios.put(`${END_POINT_SEVER}/v3/show-sales/${id}`, {
+        clicks: updatedClicks,
+      });
+      await fetchSalesData(); // รีโหลดข้อมูลหลังอัพเดต
+    } catch (error) {
+      console.error("Error updating clicks:", error);
+    }
+  };
+
+  // Initial fetch และ interval
+  useEffect(() => {
+    fetchSalesData();
+    const intervalId = setInterval(fetchSalesData, 60000);
+    return () => clearInterval(intervalId);
+  }, [storeId]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (salesId === null) {
+        setPopup({ PopUpShowSales: true });
+      } else if (salesId.includes(storeId)) {
+        setPopup({ PopUpShowSales: true });
+      } else {
+        setPopup({ PopUpShowSales: false });
+      }
+    }
+  }, [salesId, storeId, isLoading]);
 
   return (
     <Box
@@ -52,6 +121,18 @@ export default function MainLayout({ children }) {
           position: "relative",
         }}
       >
+        {!isLoading && (
+          <PopUpShowSales
+            open={popup?.PopUpShowSales}
+            onClose={() => {
+              setPopup();
+            }}
+            salesData={salesData}
+            END_POINT_SEVER={END_POINT_SEVER}
+            updateAvailability={updateAvailability}
+            updateSales={updateSales}
+          />
+        )}
         <Outlet />
       </div>
     </Box>

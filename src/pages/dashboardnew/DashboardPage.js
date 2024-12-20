@@ -240,7 +240,7 @@ export default function DashboardPage() {
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
         </Breadcrumb> */}
-        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+        <div style={{ marginBottom: 20, display: "flex", gap: 10  }}>
           <div style={{ display: "flex", gap: 10 }}>
             <Button
               variant="outline-primary"
