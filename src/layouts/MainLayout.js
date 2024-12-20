@@ -21,6 +21,7 @@ export default function MainLayout({ children }) {
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { profile, storeDetail } = useStore();
+  const [selectId, setSelectId] = useState(null);
 
   const storeId = storeDetail._id;
 
@@ -36,12 +37,15 @@ export default function MainLayout({ children }) {
       setIsLoading(false);
     }
   };
+  console.log("salesData._id:",salesData._id)
 
-  // ฟังก์ชันอัพเดต availability
-  const updateAvailability = async (id, isAvailable) => {
+
+
+  const updateAvailableStoreId = async ( id, isAvailable) => {
     try {
-      await axios.put(`${END_POINT_SEVER}/v3/show-sales/${id}`, {
-        isAvailable: isAvailable,
+      await axios.put(`${END_POINT_SEVER}/v3/show-sales//v3/show-sales/updateAvailableStoreId/${id}`, {
+        isAvailable,
+        salesId:salesData._id
       });
       await fetchSalesData(); // รีโหลดข้อมูลหลังอัพเดต
     } catch (error) {
@@ -73,13 +77,21 @@ export default function MainLayout({ children }) {
     if (!isLoading) {
       if (salesId === null) {
         setPopup({ PopUpShowSales: true });
-      } else if (salesId.includes(storeId)) {
-        setPopup({ PopUpShowSales: true });
       } else {
-        setPopup({ PopUpShowSales: false });
+        const matchedStore = salesData.selectedStores.find(
+          (store) => store.storeId === storeId
+        );
+  
+        if (matchedStore) {
+          setSelectId(matchedStore._id); // Log `_id` ของ store ที่ตรง
+          setPopup({ PopUpShowSales: true });
+        } else {
+          setPopup({ PopUpShowSales: false });
+        }
       }
     }
   }, [salesId, storeId, isLoading]);
+  
 
   return (
     <Box
@@ -128,8 +140,9 @@ export default function MainLayout({ children }) {
               setPopup();
             }}
             salesData={salesData}
+            selectId={selectId}
             END_POINT_SEVER={END_POINT_SEVER}
-            updateAvailability={updateAvailability}
+            updateAvailableStoreId={updateAvailableStoreId}
             updateSales={updateSales}
           />
         )}

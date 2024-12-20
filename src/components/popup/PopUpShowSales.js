@@ -6,13 +6,14 @@ export default function PopUpShowSales({
   open,
   onClose,
   salesData,
-  updateAvailability,
+  updateAvailableStoreId,
   updateSales,
+  selectId,
 }) {
   const [isWithinTimeRange, setIsWithinTimeRange] = useState(false);
 
   const checkTimeRange = () => {
-    if (!salesData || !salesData.isAvailable) return false;
+    if (!salesData || !salesData.isAvailables) return false;
 
     const now = new Date();
     const eventDate = new Date(salesData.eventDate);
@@ -70,7 +71,7 @@ export default function PopUpShowSales({
       const currentTimeFormatted = `${hours}:${minutes}`;
 
       console.log("Time check result:", {
-        isAvailable: salesData?.isAvailable,
+        isAvailables: salesData?.isAvailables,
         repeatFrequency: salesData?.repeatFrequency,
         isAllDay: salesData?.isAllDay,
         currentTime: currentTimeFormatted,
@@ -79,6 +80,8 @@ export default function PopUpShowSales({
         shouldShow: shouldShow,
       });
     };
+
+    console.log("salesData:",salesData)
 
     timeCheck();
     const interval = setInterval(timeCheck, 60000);
@@ -92,7 +95,7 @@ export default function PopUpShowSales({
       size="md"
       show={open}
       onHide={() => {
-        updateAvailability(salesData._id, false);
+        updateAvailableStoreId(selectId, false);
         onClose();
       }}
       centered
@@ -156,7 +159,7 @@ export default function PopUpShowSales({
           }}
           onClick={() => {
             updateSales(salesData._id, salesData.clicks);
-            updateAvailability(salesData._id, false);
+            updateAvailableStoreId(salesData._id, false);
             onClose();
             if (salesData?.link) {
               window.open(salesData.link, "_blank");
