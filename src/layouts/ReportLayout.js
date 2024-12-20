@@ -20,8 +20,10 @@ export default function ReportLayout() {
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
   const [popup, setPopup] = useState({ PopUpShowSales: true });
-  const [salesData, setSalesData] = useState(null);
+  const [salesId, setSalesId] = useState(null);
+  const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
 
   const storeId = storeDetail._id;
 
@@ -31,7 +33,8 @@ export default function ReportLayout() {
       setIsLoading(true);
       try {
         const response = await axios.get(`${END_POINT_SEVER}/v3/show-sales`);
-        setSalesData(response.data[0].selectedStores[0]);
+        setSalesId(response.data[0].selectedStores[0]);
+        setSalesData(response.data[0]);
       } catch (error) {
         console.error("Error fetching sales data:", error);
         throw error;
@@ -45,18 +48,20 @@ export default function ReportLayout() {
   useEffect(() => {
     if (!isLoading) {
       // เช็คว่าโหลดเสร็จแล้ว
-      if (salesData === null) {
+      if (salesId === null) {
         setPopup({ PopUpShowSales: true });
-      } else if (salesData.includes(storeId)) {
+      } else if (salesId.includes(storeId)) {
         setPopup({ PopUpShowSales: true });
       } else {
         setPopup({ PopUpShowSales: false });
       }
     }
-  }, [salesData, storeId, isLoading]);
+  }, [salesId, storeId, isLoading]);
 
   console.log("storeId: ", storeId);
+  console.log("salesId: ", salesId);
   console.log("salesData: ", salesData);
+
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
   };
@@ -78,6 +83,17 @@ export default function ReportLayout() {
         paddingBottom: "80px",
       }}
     >
+      {!isLoading && (
+        <PopUpShowSales
+          open={popup?.PopUpShowSales}
+          onClose={() => {
+            setPopup();
+          }}
+          salesData={salesData}
+          END_POINT_SEVER={END_POINT_SEVER}
+        />
+      )}
+
       {/* {width > 900 ? (
 				<div
 					style={{
@@ -381,17 +397,6 @@ export default function ReportLayout() {
       <div>
         <Outlet />
       </div>
-
-      {
-        !isLoading && (
-          <PopUpShowSales
-            open={popup?.PopUpShowSales}
-            onClose={() => {
-              setPopup();
-            }}
-          />
-        )
-      }
     </div>
   );
 }
