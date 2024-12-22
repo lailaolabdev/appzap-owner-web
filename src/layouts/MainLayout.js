@@ -37,21 +37,23 @@ export default function MainLayout({ children }) {
       setIsLoading(false);
     }
   };
-  console.log("salesData._id:",salesData._id)
-
-
 
   const updateAvailableStoreId = async (id, isAvailable) => {
     try {
-      await axios.put(`${END_POINT_SEVER}/v3/show-sales/updateAvailableStoreId/${id}`, {
+      const response = await axios.put(`${END_POINT_SEVER}/v3/show-sales/updateAvailableStoreId/${id}`, {
         isAvailable,
-        salesId: salesData._id
+        salesId: salesData._id,
+        storeId: storeDetail._id
       });
-      await fetchSalesData(); // รีโหลดข้อมูลหลังอัพเดต
+      
+      // อัพเดต salesData ด้วยข้อมูลล่าสุดจาก response
+      setSalesData(response.data);
+  
     } catch (error) {
       console.error("Error updating availability:", error);
     }
   };
+  
 
   // ฟังก์ชันอัพเดตจำนวนคลิก
   const updateSales = async (id, currentClicks) => {
@@ -73,25 +75,42 @@ export default function MainLayout({ children }) {
     return () => clearInterval(intervalId);
   }, [storeId]);
 
+
+
   useEffect(() => {
-    if (!isLoading) {
-      if (salesId === null) {
-        setPopup({ PopUpShowSales: true });
-      } else {
-        const matchedStore = salesData.selectedStores.find(
-          (store) => store.storeId === storeId
-        );
+    if (!isLoading && salesData) {
+      const hasNullStore = salesData.selectedStores.some(store => store.storeId === null);
+      const currentStore = salesData.selectedStores.find(
+        store => store.storeId === storeDetail._id || store.storeId === null
+      );
   
-        if (matchedStore) {
-          setSelectId(matchedStore._id); // Log `_id` ของ store ที่ตรง
-          setPopup({ PopUpShowSales: true });
+      if (hasNullStore) {
+        // กรณี store ทั้งหมด (storeId = null)
+        const specificStore = salesData.selectedStores.find(
+          store => store.storeId === storeDetail._id
+        );
+        
+        if (specificStore) {
+          // ถ้ามี store เฉพาะแล้ว ใช้ค่า isAvailable ของ store นั้น
+          setSelectId(specificStore._id);
+          setPopup({ PopUpShowSales: specificStore.isAvailable });
+        } else {
+          // ถ้ายังไม่มี store เฉพาะ ใช้ค่าจาก store ที่เป็น null
+          const nullStore = salesData.selectedStores.find(store => store.storeId === null);
+          setSelectId(nullStore._id);
+          setPopup({ PopUpShowSales: nullStore.isAvailable });
+        }
+      } else {
+        // กรณีปกติ
+        if (currentStore) {
+          setSelectId(currentStore._id);
+          setPopup({ PopUpShowSales: currentStore.isAvailable });
         } else {
           setPopup({ PopUpShowSales: false });
         }
       }
     }
-  }, [salesId, storeId, isLoading]);
-  
+  }, [salesData, storeDetail._id, isLoading]);
 
   return (
     <Box
