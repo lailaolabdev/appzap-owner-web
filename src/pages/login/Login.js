@@ -56,8 +56,8 @@ function Login() {
         setProfile(user?.data);
         // zustand store
         const data = await fetchStoreDetail(user?.data?.data?.storeId)
-        setStoreDetail(data);
-        
+        // setStoreDetail(data);
+
         // const data = await getStore(user?.data?.data?.storeId);
         
         

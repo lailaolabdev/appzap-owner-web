@@ -175,8 +175,7 @@ export default function PinPage() {
                       const _run = async () => {
                         await updateStorePin(e.target.checked);
                         //zustand store
-                        const data = await fetchStoreDetail(storeDetail?._id)
-                        setStoreDetail(data);
+                        await fetchStoreDetail(storeDetail?._id)
                         // const data = await getStore(storeDetail?._id);
                         
                       };

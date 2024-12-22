@@ -30,7 +30,7 @@ import {useStoreStore} from "../../zustand/storeStore"
 
 export default function CurrencyList() {
   const { t } = useTranslation();
-  const { setStoreDetail } = useStore();
+  // const { setStoreDetail } = useStore();
   // zustand state store
   const {
     storeDetail, 
@@ -170,8 +170,7 @@ export default function CurrencyList() {
       }
 
       // Zustand store
-      const dataStore = await fetchStoreDetail(storeDetail?._id);
-      setStoreDetail(dataStore)
+      await fetchStoreDetail(storeDetail?._id);
       // const dataStore = await getStore(storeDetail?._id);
       // setStoreDetail(dataStore);
       setShowEditMainCurrency(false);

@@ -21,8 +21,7 @@ function PrivateRoute({ component: Component, headerTitle, ...rest }) {
     (async () => {
       // const data = await getStore(userData?.data?.storeId);
       // setStoreDetail(data?.data);
-      const data = await fetchStoreDetail(userData?.data?.storeId);
-      setStoreDetail(data?.data);
+      await fetchStoreDetail(userData?.data?.storeId);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

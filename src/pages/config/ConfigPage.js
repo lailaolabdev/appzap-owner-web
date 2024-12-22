@@ -45,7 +45,7 @@ export default function ConfigPage() {
   const {
     audioSetting,
     setAudioSetting,
-    setStoreDetail,
+    // setStoreDetail,
     // storeDetail,
     profile,
   } = useStore();
@@ -122,8 +122,7 @@ export default function ConfigPage() {
     const _type = isCafe ? "CAFE" : "GENERAL";
     await updateSettingCafe(profile?.data.storeId, { data: _type });
     // zustand store
-    const dataStore = await fetchStoreDetail(storeDetail?._id);
-    setStoreDetail(dataStore)
+    await fetchStoreDetail(storeDetail?._id);
     
     // const dataStore = await getStore(storeDetail?._id);
     // setStoreDetail(dataStore);
@@ -136,8 +135,7 @@ export default function ConfigPage() {
     await updateSettingCRM(profile?.data.storeId, { data: isType });
 
     // zustand store
-    const dataStore = await fetchStoreDetail(storeDetail?._id);
-    setStoreDetail(dataStore)
+    await fetchStoreDetail(storeDetail?._id);
 
     // const dataStore = await getStore(storeDetail?._id);
     // console.log({ dataStore });
@@ -151,8 +149,7 @@ export default function ConfigPage() {
 
     // zustand store
     await updateStoreDetail({ isBankPaymentAvailable: isChecked }, storeDetail?._id)
-    const dataStore = await fetchStoreDetail(storeDetail?._id);
-    setStoreDetail(dataStore)
+    await fetchStoreDetail(storeDetail?._id);
 
     // await updateStore({ isBankPaymentAvailable: isChecked }, storeDetail?._id);
     // const dataStore = await getStore(storeDetail?._id);
