@@ -22,6 +22,7 @@ export default function MainLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const { profile, storeDetail } = useStore();
   const [selectId, setSelectId] = useState(null);
+  const [viewTracked, setViewTracked] = useState(false);
 
   const storeId = storeDetail._id;
 
@@ -68,12 +69,34 @@ export default function MainLayout({ children }) {
     }
   };
 
+
   // Initial fetch และ interval
   useEffect(() => {
     fetchSalesData();
     const intervalId = setInterval(fetchSalesData, 60000);
     return () => clearInterval(intervalId);
   }, [storeId]);
+
+
+  const updateViews = async (id) => {
+    try {
+      await axios.put(`${END_POINT_SEVER}/v3/show-sales/updateViews/${id}`);
+    } catch (error) {
+      console.error("Error updating views:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isLoading && salesData && popup?.PopUpShowSales && !viewTracked) {
+      updateViews(salesData._id);
+      setViewTracked(true);
+    }
+  }, [isLoading, salesData, popup?.PopUpShowSales, viewTracked]);
+
+  // รีเซ็ต viewTracked เมื่อ salesData เปลี่ยน
+  useEffect(() => {
+    setViewTracked(false);
+  }, [salesData._id]);
 
 
 
