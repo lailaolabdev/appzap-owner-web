@@ -40,6 +40,7 @@ import { getLocalData, getToken } from "../constants/api";
 import { getCountOrderWaiting } from "../services/order";
 import _ from "lodash";
 import { fontMap } from "../utils/font-map";
+import { useStoreStore } from "../zustand/storeStore";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const {
@@ -47,8 +48,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
     setCountOrderWaiting,
     openTableData,
     getTableDataStore,
-    storeDetail,
+    // storeDetail,
   } = useStore();
+
+  const { storeDetail } = useStoreStore()
 
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);

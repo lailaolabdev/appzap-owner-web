@@ -1,18 +1,3 @@
-// import React, { useState, useMemo } from "react";
-// import { Form, Button, Carousel, Spinner } from "react-bootstrap";
-// import packetJson from "../../../package.json";
-// import ReactGA from "react-ga4";
-
-// import { Formik } from "formik";
-// import * as Yup from "yup";
-// import * as axios from "axios";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-// import { useNavigate } from "react-router-dom";
-// import { useStore } from "../../store";
-// import { getStore } from "../../services/store";
-// import Box from "../../components/Box";
-// import { toast } from "react-toastify";  ////////// Original Import //////////////
 
 import React, { useState, useMemo } from "react";                   ///// Ton fix errors ////////
 import { Form, Button, Carousel, Spinner } from "react-bootstrap";
@@ -28,6 +13,7 @@ import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
 import { toast } from "react-toastify";   ///// Ton fix errors ////////
+import {useStoreStore} from "../../zustand/storeStore"
 
 
 // style
@@ -47,6 +33,12 @@ function Login() {
   const { setStoreDetail, setProfile } = useStore();
   const { t } = useTranslation();
 
+  // zustand state store
+  const {
+    storeDetail, 
+    fetchStoreDetail,
+    updateStoreDetail} = useStoreStore()
+
   useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED");
     const TRACKING_ID = "G-LLZP539QT0";
@@ -62,8 +54,13 @@ function Login() {
       if (defaultPath) {
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
-        const data = await getStore(user?.data?.data?.storeId);
+        // zustand store
+        const data = await fetchStoreDetail(user?.data?.data?.storeId)
         setStoreDetail(data);
+        
+        // const data = await getStore(user?.data?.data?.storeId);
+        
+        
         document.title = data?.name;
 
         ReactGA.send({ hitType: "pageview", title: `${data?.name}` });

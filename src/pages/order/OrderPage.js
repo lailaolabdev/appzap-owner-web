@@ -53,7 +53,7 @@ export default function OrderPage() {
   const [groupedItems, setGroupedItems] = useState({});
 
   const {
-    storeDetail,
+    // storeDetail,
     orderItems,
     setOrderItems,
     orderLoading,
@@ -71,12 +71,14 @@ export default function OrderPage() {
     setPrintBackground,
   } = useStore();
 
-  console.log({storeDetail})
+  
 
   // zustand state store
   const {
-    // storeDetail, 
+    storeDetail, 
     updateStoreDetail} = useStoreStore()
+
+    console.log({storeDetail})
 
   const handleUpdateOrderStatus = async (status) => {
     try {

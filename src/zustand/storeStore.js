@@ -22,6 +22,7 @@ export const useStoreStore = create(
         const data = await getStore(storeId);
         console.log("storeDetail zustand: ", data)
         set({ storeDetail: data, loading: false });
+        return data
       } catch (error) {
         set({ error: error.message, loading: false });
       }
