@@ -32,7 +32,9 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
       // TODO: Create Kitchen Printer Function and pass data here
       console.log("ORDER_DATA: ", data); // This will now run only once
       // Use the kitchen printer function
-      await sendToKitchenPrinter(data);
+      if(storeDetail?.isStaffAutoPrint) {
+        await sendToKitchenPrinter(data);
+      }
 
       setRunSound({ orderSound: true });
       setNewOrderTransaction(true);
