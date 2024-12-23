@@ -24,6 +24,7 @@ import ReactAudioPlayer from "react-audio-player";
 import Notification from "../../vioceNotification/ding.mp3";
 import { fontMap } from "../../utils/font-map";
 // import { socket } from "../../services/socket";
+import { useOrderStore } from "../../zustand/orderStore"
 
 export default function WaitingOrderTab() {
   const {
@@ -32,7 +33,7 @@ export default function WaitingOrderTab() {
   } = useTranslation();
   const {
     soundPlayer,
-    orderItems,
+    // orderItems,
     getOrderItemsStore,
     handleCheckbox,
     checkAllOrders,
@@ -42,6 +43,9 @@ export default function WaitingOrderTab() {
     newOrderUpdateStatusTransaction,
     getOrderWaitingAndDoingByStore,
   } = useStore();
+
+  // zustand
+  const {orderItems, handleNewOrderItems} = useOrderStore()
 
   /**
    * Initial Component

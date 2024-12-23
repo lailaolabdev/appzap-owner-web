@@ -13,18 +13,23 @@ import { UserState } from "./globalState/userState";
 import { useThemeState } from "./globalState/themeState";
 import { useBillState } from "./globalState/billSplitState";
 
+import { useStoreStore } from "../zustand/storeStore";
+
 export const StateProvider = ({ children }) => {
-  const storeDetail = useStoreDetailState();
+  // const storeDetail = useStoreDetailState();
+  const {storeDetail} = useStoreStore();
+  // console.log({storeDetail})
+  
   const splitBill = useBillState();
   const order = useOrderState();
-  const table = useTableState(storeDetail);
-  const menuCategory = useMenuCategoryState(storeDetail);
+  const table = useTableState(storeDetail || {});
+  const menuCategory = useMenuCategoryState(storeDetail || {});
   const reservation = useReservationState();
-  const printer = usePrintersState(storeDetail);
+  const printer = usePrintersState(storeDetail || {});
   const sound = useSoundState();
-  const socket = useSocketState({ ...storeDetail, ...sound });
+  const socket = useSocketState({...sound });
   const user = UserState();
-  const menu = useMenuState(storeDetail);
+  const menu = useMenuState(storeDetail || {});
   const themeState = useThemeState();
   let store = Object.assign(
     order,

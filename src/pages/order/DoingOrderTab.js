@@ -47,8 +47,9 @@ const DoingOrderTab = () => {
   //     .fill()
   //     .map((_, i) => billForCher58?.current[i]);
   // }
-  const { storeDetail } = useStore();
-  const storeId = storeDetail._id;
+  
+  // const { storeDetail } = useStore();
+  // const storeId = storeDetail._id;
   /**
    * routes
    */

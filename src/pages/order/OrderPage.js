@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Tabs, Tab, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useStore } from "../../store";
-import { useStoreStore } from "../../zustand/storeStore"
+
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
 import html2canvas from "html2canvas";
 import { base64ToBlob, moneyCurrency } from "../../helpers";
@@ -36,6 +36,10 @@ import { easing } from "@mui/material";
 import { printOrderItems } from "./printOrderItem";
 import { fontMap } from "../../utils/font-map";
 
+// zustand
+import { useStoreStore } from "../../zustand/storeStore"
+import { useOrderStore } from "../../zustand/orderStore"
+
 export default function OrderPage() {
   const {
     t,
@@ -54,7 +58,7 @@ export default function OrderPage() {
 
   const {
     // storeDetail,
-    orderItems,
+    // orderItems,
     setOrderItems,
     orderLoading,
     getOrderItemsStore,
@@ -73,12 +77,16 @@ export default function OrderPage() {
 
   
 
+  
+
   // zustand state store
   const {
     storeDetail, 
     updateStoreDetail} = useStoreStore()
+  const {orderItems, handleNewOrderItems} = useOrderStore()
 
-    console.log({storeDetail})
+  console.log({storeDetail})
+  console.log({orderItems})
 
   const handleUpdateOrderStatus = async (status) => {
     try {

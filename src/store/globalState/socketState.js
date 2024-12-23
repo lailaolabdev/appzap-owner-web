@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import socketio from "socket.io-client";
 import { END_POINT_SOCKET } from "../../constants/api";
+import { useStoreStore } from "../../zustand/storeStore";
+import { useOrderStore } from "../../zustand/orderStore";
 const { sendToKitchenPrinter } = require('../../helpers/printerHelper');
+
+
 
 const socket = socketio.connect(END_POINT_SOCKET, {
   reconnection: true,
@@ -9,7 +13,8 @@ const socket = socketio.connect(END_POINT_SOCKET, {
   reconnectionDelayMax: 10000,
 });
 
-export const useSocketState = ({ storeDetail, setRunSound }) => {
+// export const useSocketState = ({ storeDetail, setRunSound }) => {
+export const useSocketState = ({ setRunSound }) => {
   const [socketConneted, setSocketConneted] = useState(false);
   const [newTableTransaction, setNewTableTransaction] = useState(false);
   const [newOrderTransaction, setNewOrderTransaction] = useState(false);
@@ -19,8 +24,16 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
   const [countOrderWaiting, setCountOrderWaiting] = useState(0);
   const [newNotify, setNewNotify] = useState(null);
 
+  
+
   // Track new transactions when disconnected
   const [runNT, setRunNT] = useState(false);
+
+  const {storeDetail} = useStoreStore();
+  const {handleNewOrderItems} = useOrderStore()
+
+  console.log("useSocketState")
+  console.log({ storeDetail, setRunSound })
 
   useEffect(() => {
     if (!storeDetail?._id) return;
@@ -29,16 +42,32 @@ export const useSocketState = ({ storeDetail, setRunSound }) => {
     const handleDisconnect = () => setSocketConneted(false);
     const handleTableUpdate = () => setNewTableTransaction(true);
     const handleOrderUpdate = async (data) => {
-      // TODO: Create Kitchen Printer Function and pass data here
-      console.log("ORDER_DATA: ", data); // This will now run only once
-      // Use the kitchen printer function
-      if(storeDetail?.isStaffAutoPrint) {
-        await sendToKitchenPrinter(data);
-      }
+      try {
+        // Ensure data and orders are properly defined
+        if (data && Array.isArray(data.orders)) {
+          console.log("ORDER_DATA: ", data);
 
-      setRunSound({ orderSound: true });
-      setNewOrderTransaction(true);
+          // Call handleNewOrderItems with the orders data
+          handleNewOrderItems(data.orders);
+          // Trigger sound or any other actions as needed
+          setRunSound({ orderSound: true });
+
+          // Use the kitchen printer function if necessary
+          if (storeDetail?.isStaffAutoPrint) {
+            await sendToKitchenPrinter(data);
+          }
+    
+          // You can uncomment this line if you need to set new order transaction state
+          // setNewOrderTransaction(true);
+        } else {
+          console.error("Invalid order data received:", data);
+        }
+      } catch (error) {
+        console.error("Error handling order update:", error);
+        // Optionally, set error state or notify the user
+      }
     };
+    
     const handleOrderStatusUpdate = () => {
       setRunSound({ orderSound: true });
       setNewOrderUpdateStatusTransaction(true);
