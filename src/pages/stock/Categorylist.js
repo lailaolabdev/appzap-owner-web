@@ -111,7 +111,7 @@ export default function Categorylist() {
                     <th>{t("no")}</th>
                     <th>{t("stock_type_name")}</th>
                     <th>{t("note")}</th>
-                    <th style={{ textAlign: "right" }}>{t("action")}</th>
+                    <th style={{ textAlign: "right" }}>{t("manage_data")}</th>
                   </tr>
                 </thead>
                 <tbody>
