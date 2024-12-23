@@ -151,7 +151,7 @@ export default function MenuList() {
         findby += `stockCategoryId=${selectCategories}&`;
         const res = await getStocksAll(findby);
         if (res.status === 200) {
-          setStocks(res?.data);
+          setStocks(res?.data.stockData);
           setIsLoading(true);
         }
         setIsLoading(false);
@@ -271,8 +271,6 @@ export default function MenuList() {
     getStock();
     getCountStocks();
   }, [page, filterName, selectCategories]);
-
-  console.log("selectCategories:---->", selectCategories);
 
   // ------------------------------------------------------------ //
 

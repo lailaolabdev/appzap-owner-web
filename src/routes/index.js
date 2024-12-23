@@ -251,7 +251,7 @@ function Router() {
         },
         {
           path: "/stock",
-          element: <StockList />,
+          element: <ReportStocks />,
         },
         {
           path: "/stockCategory",

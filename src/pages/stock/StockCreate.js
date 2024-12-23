@@ -29,7 +29,7 @@ export default function StockCreate() {
     stockQuality: 0,
     note: "",
     stockCategory: "",
-    units: "",
+    unit: "",
   });
 
   console.log({ data });
@@ -41,6 +41,19 @@ export default function StockCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    //TODO: Validate name already exists
+    const nameExists = stock.some((item) => item.name === data.stockName);
+
+    if (nameExists) {
+      await Swal.fire({
+        icon: "warning",
+        title: "ຊື້ສິນຄ້າມີຢູ່ແລ້ວ",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      return; // Stop further execution
+    }
+
     const newStock = {
       name: data.stockName,
       buyPrice: data.buyPrice,
@@ -48,7 +61,7 @@ export default function StockCreate() {
       quantity: data.stockQuality,
       detail: data.detail,
       stockCategoryId: data.stockCategory,
-      otherUnit: data.units,
+      unit: data.unit,
       storeId: profile.data.storeId,
       createdBy: profile.data._id,
     };
@@ -58,19 +71,15 @@ export default function StockCreate() {
     // setIsCreated(true);
     // setShowAlert(true);
 
-    setStockName("");
-    setBuyPrice("");
-    setWastes("");
-    setStockQuality("");
-    setNote("");
-    setStockCategory("");
-    setUnits("");
-    // setNote("");
-
-    // setShowAlert(false);
-    // setTimeout(() => {
-    //   setShowAlert(false);
-    // }, 1500);
+    setData({
+      stockName: "",
+      buyPrice: "",
+      wastes: "",
+      stockQuality: "",
+      detail: "",
+      stockCategory: "",
+      unit: "",
+    });
   };
 
   const createStock = async () => {
@@ -235,15 +244,22 @@ export default function StockCreate() {
             {/* Dropdown for Brazil (again, for example) */}
             <div className="relative col-span-3">
               <select
-                name="units"
-                value={data.units}
+                name="unit"
+                value={data.unit}
                 onChange={handleChange}
                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
-                <option value="select">-- {t("chose_unit")} --</option>
+                <option selected={true} disabled={true} value="">
+                  -- {t("chose_unit")} --
+                </option>
                 <option value="ກຣາມ">{t("g")}</option>
+                <option value="ກິໂລກຣາມ">{t("kilogram")}</option>
                 <option value="ໝັດ">{t("bundle")}</option>
                 <option value="ແກ້ວ">{t("bottle")}</option>
+                <option value="ລິດ">{t("litre")}</option>
+                <option value="ມິລລິລິດ">{t("millilitre")}</option>
+                <option value="ລັງເເກັດ">{t("box")}</option>
+                <option value="ແພັກ">{t("pack")}</option>
               </select>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -310,29 +326,45 @@ export default function StockCreate() {
                 </tr>
               </thead>
               <tbody>
-                {stock.map((stock, index) => (
-                  <tr key={stock.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2 text-center">{stock.name}</td>
-                    <td className="px-4 py-2 text-center">{stock.buyPrice}</td>
-                    <td className="px-4 py-2 text-center">{stock.quantity}</td>
-                    <td className="px-4 py-2 text-center">{stock.wastes}</td>
-                    <td className="px-4 py-2 text-center">
-                      {stock.stockCategoryId}
-                    </td>
-                    <td className="px-4 py-2 text-center">{stock.otherUnit}</td>
-                    <td className="px-4 py-2 text-center">{stock.detail}</td>
-                    <td className="px-4 py-2 text-center">
-                      <button
-                        onClick={() => handleRemove(index)}
-                        className="text-red-500 hover:text-red-700"
-                        aria-label={`Remove stock type ${stock.name}`}
-                      >
-                        <FaTimesCircle className="w-5 h-5" aria-hidden="true" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {stock.map((stock, index) => {
+                  // Find the category name from categoryStock array
+                  const categoryName =
+                    categoryStock.find(
+                      (cat) => cat._id === stock.stockCategoryId
+                    )?.name || t("unknown_category");
+
+                  return (
+                    <tr key={stock.id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2 text-center">{stock.name}</td>
+                      <td className="px-4 py-2 text-center">
+                        {stock.buyPrice}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {stock.quantity}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {stock.wastes} %
+                      </td>
+                      {/* Display category name instead of ID */}
+                      <td className="px-4 py-2 text-center">{categoryName}</td>
+                      <td className="px-4 py-2 text-center">{stock.unit}</td>
+                      <td className="px-4 py-2 text-center">{stock.detail}</td>
+                      <td className="px-4 py-2 text-center">
+                        <button
+                          onClick={() => handleRemove(index)}
+                          className="text-red-500 hover:text-red-700"
+                          aria-label={`Remove stock type ${stock.name}`}
+                        >
+                          <FaTimesCircle
+                            className="w-5 h-5"
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

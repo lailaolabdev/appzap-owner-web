@@ -2,9 +2,10 @@ import { END_POINT_APP } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 
-export const getStocksAll = async (storeId, findBy) => {
+export const getStocksAll = async (findBy) => {
   try {
-    const url = `${END_POINT_APP}/v3/stocks/${storeId}${findBy}`;
+    console.log({ object: findBy });
+    const url = `${END_POINT_APP}/v6/stocks/${findBy}`;
     const res = await axios.get(url);
     return res;
   } catch (error) {
@@ -24,10 +25,8 @@ export const getCountStocksAll = async (storeId, findBy) => {
 
 export const getStocksHistories = async (storeId, findBy) => {
   try {
-    console.log({ findBy });
     const url = `${END_POINT_APP}/v6/stock-history-groups?storeId=${storeId}${findBy}`;
     const res = await axios.get(url);
-    console.log({ res });
     return res;
   } catch (error) {
     return error;
@@ -59,8 +58,21 @@ export const createStockeCategoryAll = async (data) => {
 };
 export const createStockeAll = async (data) => {
   try {
-    const url = `${END_POINT_APP}/v3/stock/create`;
+    const url = `${END_POINT_APP}/v6/stock/create`;
     const res = await axios.post(url, data, {
+      headers: await getHeaders(),
+    });
+
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteStock = async (id) => {
+  try {
+    const url = `${END_POINT_APP}/v3/stock/delete/${id}`;
+    const res = await axios.delete(url, {
       headers: await getHeaders(),
     });
 

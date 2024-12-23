@@ -19,6 +19,20 @@ export default function StockCreateCategory() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    //TODO: Check if stock name already exists
+    const isNameExists = stockList.some(
+      (stock) => stock.name === stockTypeName
+    );
+    if (isNameExists) {
+      await Swal.fire({
+        icon: "warning",
+        title: "ຊື້ສະຕອກມີຢູ່ແລ້ວ",
+        showConfirmButton: false,
+        timer: 1000,
+      });
+      return;
+    }
+
     const newStock = {
       name: stockTypeName,
       note: note,

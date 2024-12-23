@@ -35,11 +35,11 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             {t("current_stock")}
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
+        {/* <Nav.Item>
           <Nav.Link eventKey="/settingStore/stock" onClick={() => _menuList()}>
             {t("all_stock")}
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
         <Nav.Item>
           <Nav.Link
             eventKey="/settingStore/stock/category"

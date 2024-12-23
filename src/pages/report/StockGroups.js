@@ -19,13 +19,13 @@ function StockGroups({
   rowsPerPageTotal,
 }) {
   const { t } = useTranslation();
-  if (datas?.length < 1) return <EmptyState text={`${t("no_stoke_data")}`} />;
+  // if (datas?.length < 1) return <EmptyState text={`${t("no_stoke_data")}`} />;
   if (isLoadingTotal) return <LoadingAppzap />;
 
   // ຂໍ້ມູນທີ່ສະແດງຕາມການຄົ້ນຫາຊື່ສິນຄ້າ
-  // datas.sort(
-  //   (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  // );
+  datas.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   console.log("checkdatas44:-===>", datas);
 
@@ -46,47 +46,48 @@ function StockGroups({
 
       <Card.Body>
         <Table responsive className="w-full">
-          <thead className="thead-primary">
-            <tr>
-              <th>#</th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("date_day")}
-              </th>
-              <th style={{ textWrap: "nowrap" }}>{t("prod_name")}</th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("out_amount")}
-              </th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("in_amount")}
-              </th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+          <tr>
+            <th>#</th>
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              {t("date_day")}
+            </th>
+            <th style={{ textWrap: "nowrap" }}>{t("prod_name")}</th>
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              {t("out_amount")}
+            </th>
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              {t("in_amount")}
+            </th>
+            {/* <th style={{ textAlign: "center", textWrap: "nowrap" }}>
                 {t("opening_stock")}
-              </th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              </th> */}
+            {/* <th style={{ textAlign: "center", textWrap: "nowrap" }}>
                 {t("closing_stock")}
-              </th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("return_amount")}
-              </th>
-              <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("unit")}
-              </th>
-            </tr>
-          </thead>
+              </th> */}
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              {t("return_amount")}
+            </th>
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+              {t("unit")}
+            </th>
+            {/* <th style={{ textAlign: "center" }}>{t("wastes")}</th> */}
+          </tr>
+          {/* <thead className="thead-primary">
+            
+          </thead> */}
           <tbody>
             {datas.map((item, index) => (
               <tr key={index}>
                 <td style={{ textAlign: "left", textWrap: "nowrap" }}>
                   {pageTotal * rowsPerPageTotal + index + 1}
                 </td>
-                <td style={{ textWrap: "nowrap" }}>
+                <td style={{ textWrap: "nowrap", textAlign: "center" }}>
                   {" "}
                   {formatDateNow(item?.createdAt)}
                 </td>
                 <td style={{ textAlign: "left", textWrap: "nowrap" }}>
-                  {item?.stockDetails?.name}
+                  {item?.stockDetails?.name ?? "-"}
                 </td>
-
                 <td
                   style={{
                     textAlign: "center",
@@ -103,22 +104,22 @@ function StockGroups({
                 >
                   {numberFormat(item?.totalQtyImport)}
                 </td>
-                <td
+                {/* <td
                   style={{
                     textAlign: "center",
                     textWrap: "nowrap",
                   }}
                 >
                   {numberFormat(item?.totalQtyOpening)}
-                </td>
-                <td
+                </td> */}
+                {/* <td
                   style={{
                     textAlign: "center",
                     textWrap: "nowrap",
                   }}
                 >
                   {numberFormat(item?.stockDetails?.quantity)}
-                </td>
+                </td> */}
                 <td
                   style={{
                     textAlign: "center",
@@ -127,10 +128,12 @@ function StockGroups({
                 >
                   {numberFormat(item?.totalQtyReturn)}
                 </td>
-
                 <td style={{ textAlign: "center", textWrap: "nowrap" }}>
                   {item?.stockDetails?.unit}
                 </td>
+                {/* <td style={{ textAlign: "center", textWrap: "nowrap" }}>
+                  {item?.stockDetails?.wastes}
+                </td> */}
                 {/* <td>{formatDateNow(item?.stockDetails?.createdAt)}</td> */}
               </tr>
             ))}
