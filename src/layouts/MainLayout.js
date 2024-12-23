@@ -47,7 +47,7 @@ export default function MainLayout({ children }) {
         storeId: storeDetail._id
       });
       
-      // อัพเดต salesData ด้วยข้อมูลล่าสุดจาก response
+      // ອັບເດດ salesData ດ້ວຍຂໍ້ມຼນຈາກ respons
       setSalesData(response.data);
   
     } catch (error) {
@@ -56,21 +56,20 @@ export default function MainLayout({ children }) {
   };
   
 
-  // ฟังก์ชันอัพเดตจำนวนคลิก
   const updateSales = async (id, currentClicks) => {
     try {
       const updatedClicks = (currentClicks || 0) + 1;
       await axios.put(`${END_POINT_SEVER}/v3/show-sales/${id}`, {
         clicks: updatedClicks,
       });
-      await fetchSalesData(); // รีโหลดข้อมูลหลังอัพเดต
+      await fetchSalesData(); 
     } catch (error) {
       console.error("Error updating clicks:", error);
     }
   };
 
 
-  // Initial fetch และ interval
+  // Initial fetch and interval
   useEffect(() => {
     fetchSalesData();
     const intervalId = setInterval(fetchSalesData, 60000);
@@ -93,7 +92,7 @@ export default function MainLayout({ children }) {
     }
   }, [isLoading, salesData, popup?.PopUpShowSales, viewTracked]);
 
-  // รีเซ็ต viewTracked เมื่อ salesData เปลี่ยน
+  // reset viewTracked ເມື່ອ salesData ປ່ຽນ
   useEffect(() => {
     setViewTracked(false);
   }, [salesData._id]);

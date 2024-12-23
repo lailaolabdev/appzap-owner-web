@@ -63,24 +63,24 @@ export default function PopUpShowSales({
 
   useEffect(() => {
     const checkAvailability = () => {
-      // เช็คเงื่อนไขหลัก isAvailables
+      // ເຊັກເງືຶອນ isAvailables
       if (!salesData?.isAvailables) {
         setShouldShow(false);
         return;
       }
 
-      // ค้นหา store ที่ตรงกับ selectId
+      // ຄົນຫາ store ທີ່ຕົງ selectId
       const selectedStore = salesData?.selectedStores?.find(
         (store) => store._id === selectId
       );
 
-      // เช็ค isAvailable ของ store นั้นๆ
+      // ກວດ isAvailable ຂອງ store ນັ້ນໆ
       if (!selectedStore?.isAvailable) {
         setShouldShow(false);
         return;
       }
 
-      // เช็คเงื่อนไขเวลา
+      // ກວດເງືອນໄໍຊເວລາ
       const timeRangeResult = checkTimeRange();
       setIsWithinTimeRange(timeRangeResult);
       setShouldShow(timeRangeResult);
@@ -93,7 +93,6 @@ export default function PopUpShowSales({
     }
   }, [salesData, selectId]);
 
-  // ถ้าไม่ผ่านเงื่อนไขใดๆ ให้ไม่แสดง Modal
   if (!shouldShow) return null;
 
   return (
