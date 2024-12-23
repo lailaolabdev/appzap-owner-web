@@ -7,7 +7,7 @@ export default function PopUpShowSales({
   onClose,
   salesData,
   updateAvailableStoreId,
-  updateSales,
+  updateSalesClick,
   selectId,
 }) {
   const [isWithinTimeRange, setIsWithinTimeRange] = useState(false);
@@ -163,8 +163,8 @@ export default function PopUpShowSales({
             border: 0,
           }}
           onClick={() => {
-            updateSales(salesData._id, salesData.clicks);
-            updateAvailableStoreId(salesData._id, false);
+            updateSalesClick(salesData._id, salesData.clicks);
+            updateAvailableStoreId(selectId, false);
             onClose();
             if (salesData?.link) {
               window.open(salesData.link, "_blank");

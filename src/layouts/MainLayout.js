@@ -1,12 +1,13 @@
+// MainLayout.js
 import React, { useState, useEffect } from "react";
 import Box from "../components/Box";
 import Navbar from "./Navbar";
 import Sidenav from "./SideNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
-import { END_POINT_SEVER, getLocalData } from "../constants/api";
-import axios from "axios";
+import { END_POINT_SEVER } from "../constants/api";
 import { useStore } from "../store";
+import { showSalesService } from "../services/showSales";
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -24,106 +25,104 @@ export default function MainLayout({ children }) {
   const [selectId, setSelectId] = useState(null);
   const [viewTracked, setViewTracked] = useState(false);
 
-  const storeId = storeDetail._id;
+  const storeId = storeDetail?._id;
 
   const fetchSalesData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${END_POINT_SEVER}/v3/show-sales`);
-      setSalesId(response.data[0].selectedStores[0]);
-      setSalesData(response.data[0]);
+      const data = await showSalesService.fetchSalesData();
+      if (data) {
+        setSalesId(data.selectedStores?.[0] || null);
+        setSalesData(data);
+      } else {
+        setSalesId(null);
+        setSalesData(null);
+        setPopup({ PopUpShowSales: false });
+      }
     } catch (error) {
       console.error("Error fetching sales data:", error);
+      setPopup({ PopUpShowSales: false });
     } finally {
       setIsLoading(false);
     }
   };
 
   const updateAvailableStoreId = async (id, isAvailable) => {
+    if (!storeDetail) return;
     try {
-      const response = await axios.put(`${END_POINT_SEVER}/v3/show-sales/updateAvailableStoreId/${id}`, {
-        isAvailable,
-        salesId: salesData._id,
-        storeId: storeDetail._id
-      });
-      
-      // ອັບເດດ salesData ດ້ວຍຂໍ້ມຼນຈາກ respons
-      setSalesData(response.data);
-  
+      const updatedData = await showSalesService.updateAvailableStoreId(
+        id, 
+        isAvailable, 
+        salesData?._id, 
+        storeDetail._id
+      );
+      if (updatedData) {
+        setSalesData(updatedData);
+      }
     } catch (error) {
       console.error("Error updating availability:", error);
     }
   };
-  
 
-  const updateSales = async (id, currentClicks) => {
+  const updateSalesClick = async (id, currentClicks) => {
+    if (!storeDetail) return;
     try {
-      const updatedClicks = (currentClicks || 0) + 1;
-      await axios.put(`${END_POINT_SEVER}/v3/show-sales/${id}`, {
-        clicks: updatedClicks,
-      });
-      await fetchSalesData(); 
+      const success = await showSalesService.updateSalesClick(id, currentClicks);
+      if (success) {
+        await fetchSalesData();
+      }
     } catch (error) {
       console.error("Error updating clicks:", error);
     }
   };
 
-
-  // Initial fetch and interval
   useEffect(() => {
-    fetchSalesData();
-    const intervalId = setInterval(fetchSalesData, 60000);
-    return () => clearInterval(intervalId);
-  }, [storeId]);
-
-
-  const updateViews = async (id) => {
-    try {
-      await axios.put(`${END_POINT_SEVER}/v3/show-sales/updateViews/${id}`);
-    } catch (error) {
-      console.error("Error updating views:", error);
+    if (storeDetail) {
+      fetchSalesData();
+      const intervalId = setInterval(fetchSalesData, 60000);
+      return () => clearInterval(intervalId);
+    } else {
+      setIsLoading(false);
+      setPopup({ PopUpShowSales: false });
     }
-  };
+  }, [storeDetail?._id]);
 
   useEffect(() => {
     if (!isLoading && salesData && popup?.PopUpShowSales && !viewTracked) {
-      updateViews(salesData._id);
+      showSalesService.updateViews(salesData._id);
       setViewTracked(true);
     }
   }, [isLoading, salesData, popup?.PopUpShowSales, viewTracked]);
 
-  // reset viewTracked ເມື່ອ salesData ປ່ຽນ
   useEffect(() => {
     setViewTracked(false);
-  }, [salesData._id]);
-
-
+  }, [salesData?._id]);
 
   useEffect(() => {
-    if (!isLoading && salesData) {
-      const hasNullStore = salesData.selectedStores.some(store => store.storeId === null);
-      const currentStore = salesData.selectedStores.find(
+    if (!isLoading && salesData && storeDetail) {
+      const hasNullStore = salesData.selectedStores?.some(store => store.storeId === null) || false;
+      const currentStore = salesData.selectedStores?.find(
         store => store.storeId === storeDetail._id || store.storeId === null
       );
   
       if (hasNullStore) {
-        // กรณี store ทั้งหมด (storeId = null)
-        const specificStore = salesData.selectedStores.find(
+        const specificStore = salesData.selectedStores?.find(
           store => store.storeId === storeDetail._id
         );
         
         if (specificStore) {
-          // ถ้ามี store เฉพาะแล้ว ใช้ค่า isAvailable ของ store นั้น
           setSelectId(specificStore._id);
           setPopup({ PopUpShowSales: specificStore.isAvailable });
         } else {
-          // ถ้ายังไม่มี store เฉพาะ ใช้ค่าจาก store ที่เป็น null
-          const nullStore = salesData.selectedStores.find(store => store.storeId === null);
-          setSelectId(nullStore._id);
-          setPopup({ PopUpShowSales: nullStore.isAvailable });
+          const nullStore = salesData.selectedStores?.find(store => store.storeId === null);
+          if (nullStore) {
+            setSelectId(nullStore._id);
+            setPopup({ PopUpShowSales: nullStore.isAvailable });
+          } else {
+            setPopup({ PopUpShowSales: false });
+          }
         }
       } else {
-        // กรณีปกติ
         if (currentStore) {
           setSelectId(currentStore._id);
           setPopup({ PopUpShowSales: currentStore.isAvailable });
@@ -132,9 +131,9 @@ export default function MainLayout({ children }) {
         }
       }
     }
-  }, [salesData, storeDetail._id, isLoading]);
+  }, [salesData, storeDetail, isLoading]);
 
-  return (
+  const renderLayout = () => (
     <Box
       sx={{
         paddingLeft: { md: 65 },
@@ -174,7 +173,7 @@ export default function MainLayout({ children }) {
           position: "relative",
         }}
       >
-        {!isLoading && (
+        {!isLoading && storeDetail && (
           <PopUpShowSales
             open={popup?.PopUpShowSales}
             onClose={() => {
@@ -184,11 +183,14 @@ export default function MainLayout({ children }) {
             selectId={selectId}
             END_POINT_SEVER={END_POINT_SEVER}
             updateAvailableStoreId={updateAvailableStoreId}
-            updateSales={updateSales}
+            updateSalesClick={updateSalesClick}
           />
         )}
         <Outlet />
       </div>
     </Box>
   );
+
+  // ถ้าไม่มี storeDetail ก็ยังแสดง layout พื้นฐาน
+  return renderLayout();
 }
