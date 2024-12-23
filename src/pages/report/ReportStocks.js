@@ -214,7 +214,7 @@ export default function ReportStocks() {
         findby += `stockCategoryId=${selectCategories}&`;
         const res = await getStocksAll(findby);
         if (res.status === 200) {
-          console.log("res--->", res);
+          // console.log("res--->", res);
           // setTotalStock(res?.data?.total);
           setStocks(res?.data?.stockData);
           setTotalStockValue(res?.data?.totalStockValue);

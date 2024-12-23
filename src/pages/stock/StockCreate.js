@@ -73,10 +73,10 @@ export default function StockCreate() {
 
     setData({
       stockName: "",
-      buyPrice: "",
-      wastes: "",
-      stockQuality: "",
-      detail: "",
+      buyPrice: 0,
+      wastes: 0,
+      stockQuality: 0,
+      note: "",
       stockCategory: "",
       unit: "",
     });
@@ -331,7 +331,7 @@ export default function StockCreate() {
                   const categoryName =
                     categoryStock.find(
                       (cat) => cat._id === stock.stockCategoryId
-                    )?.name || t("unknown_category");
+                    )?.name || "";
 
                   return (
                     <tr key={stock.id} className="border-b hover:bg-gray-50">
