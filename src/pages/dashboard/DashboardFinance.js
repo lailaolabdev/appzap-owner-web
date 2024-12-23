@@ -52,8 +52,6 @@ export default function DashboardFinance({
   const handleClose = () => setShow(false);
   const { storeDetail, profile } = useStore();
 
-  // console.log("data", data);
-
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -422,7 +420,7 @@ export default function DashboardFinance({
                     : new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(item?.deliveryAmount)}{" "}
-                  {selectedCurrency}
+                  {storeDetail?.firstCurrency}
                 </td>
                 <td>{item?.deliveryName ? item?.deliveryName : "--"}</td>
                 <td>
@@ -437,7 +435,7 @@ export default function DashboardFinance({
                           item?.taxAmount +
                           item?.serviceChargeAmount
                       )}{" "}
-                  {selectedCurrency}
+                  {storeDetail?.firstCurrency}
                 </td>
                 <td>
                   <div
