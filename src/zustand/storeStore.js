@@ -22,11 +22,20 @@ export const useStoreStore = create(
           set({ loading: true, error: null });
           try {
             const data = await getStore(storeId);
-            console.log("storeDetail zustand: ", data);
+
+            if (!data || data.error) {
+              throw new Error(data.error || "Failed to fetch store details");
+            }
+
             set({ storeDetail: data, loading: false });
             return data;
           } catch (error) {
-            set({ error: error.message, loading: false });
+            console.error("Fetch store detail error:", error.message);
+            set((state) => ({
+                ...state, // Preserve the previous state
+                error: error.message || "An error occurred while fetching store details.",
+                loading: false,
+              }));
           }
         },
 
@@ -37,10 +46,26 @@ export const useStoreStore = create(
             if (!storeId) {
               throw new Error("Store ID is required to update the store");
             }
+
             const updatedStore = await updateStore(data, storeId);
+
+            if (!updatedStore || updatedStore.error) {
+              throw new Error(
+                updatedStore.error || "Failed to update store details"
+              );
+            }
+
+            console.log("updatedStoreError: ", updatedStore)
+
             set({ storeDetail: updatedStore.data, loading: false });
+            return updatedStore.data;
           } catch (error) {
-            set({ error: error.message, loading: false });
+            console.error("Update store detail error:", error.message);
+            set((state) => ({
+                ...state, // Preserve the previous state
+                error: error.message || "An error occurred while fetching store details.",
+                loading: false,
+            }));
           }
         },
 
