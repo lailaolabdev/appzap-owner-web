@@ -487,13 +487,17 @@ export default function MemberPage() {
     findby += `endDay=${endDatePoint}&`;
     findby += `startTime=${startTimePoint}&`;
     findby += `endTime=${endTimePoint}&`;
-    const data = await GetRedeemPoint(findby);
-    if (data) {
-      setRedeemCount(Math.ceil(data.count / limitData));
-      setRedeemList(data.data);
-      setLoading(false);
-    }
-    setLoading(false);
+    const data = await GetRedeemPoint(findby)
+      .then((res) => {
+        setRedeemCount(Math.ceil(res?.data?.count / limitData));
+        setRedeemList(res?.data?.data);
+        setLoading(false);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Error: ", err);
+      });
   };
   const getEarnPointUser = async () => {
     setLoading(true);
@@ -506,13 +510,16 @@ export default function MemberPage() {
     findby += `endDate=${endDatePoint}&`;
     findby += `startTime=${startTimePoint}&`;
     findby += `endTime=${endTimePoint}&`;
-    const data = await GetEarnPoint(findby);
-    if (data) {
-      setEarnCount(Math.ceil(data.count / limitData));
-      setEarnList(data.data);
-      setLoading(false);
-    }
-    setLoading(false);
+    const data = await GetEarnPoint(findby)
+      .then((res) => {
+        setEarnCount(Math.ceil(res?.data?.count / limitData));
+        setEarnList(res?.data?.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Error: ", err);
+      });
   };
 
   return (
@@ -884,7 +891,10 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("point_r")}</th>
+                  <th style={{ textAlign: "center" }}>{"ຄະແນນທັງໝົດ"}</th>
+                  <th style={{ textAlign: "center" }}>
+                    {"ຄະແນນທີ່ສາມາດໃຊ້ໄດ້"}
+                  </th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -898,7 +908,12 @@ export default function MemberPage() {
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.pointId?.totalPoint ?? 0)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.pointId?.availablePoint ?? 0)}
+                      </td>
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
@@ -1270,7 +1285,9 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         {e?.memberId?.phone}
                       </td>
-                      <td style={{ textAlign: "center" }}>{e?.point}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.point)}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         {moneyCurrency(e?.moneyTotal)}
                       </td>
@@ -1377,9 +1394,9 @@ export default function MemberPage() {
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{t("point_g")}</th>
-                  {/* <th style={{ textAlign: "center" }}>
+                  <th style={{ textAlign: "center" }}>
                     {t("bill_point_balance")}
-                  </th> */}
+                  </th>
                   <th style={{ textAlign: "center" }}>{t("date")}</th>
                   {/* <th style={{ textAlign: "right" }}>{t("manage")}</th> */}
                 </tr>
@@ -1394,10 +1411,12 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         {e?.memberId?.phone}
                       </td>
-                      <td style={{ textAlign: "center" }}>{e?.point}</td>
-                      {/* <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.moneyTotal)}
-                      </td> */}
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.point)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.totalAmount)}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
                       </td>

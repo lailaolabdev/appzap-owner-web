@@ -152,6 +152,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
       // Fetch bill data and active bill data
       const data = await getBillReport(storeDetail._id, findBy);
+
+      console.log("data", data);
+
       const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
       const bankReport = await getBankReport(storeDetail._id, findBy);
       const currencyReport = await getCurrencyReport(storeDetail._id, findBy);

@@ -466,7 +466,7 @@ export default function DashboardPage() {
                       amount: moneyReport?.successAmount?.transferPayment || 0,
                     },
 
-                    ...(storeDetail?.isDelivery && deliveryReports?.length > 0
+                    ...(deliveryReports?.length > 0
                       ? deliveryReports.map((e, idx) => ({
                           method: (
                             <div style={{ fontWeight: 700 }}>
@@ -478,7 +478,8 @@ export default function DashboardPage() {
                         }))
                       : []),
                     // Insert the point section after the "total_tsf"
-                    storeDetail?.isCRM && {
+
+                    {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("point")}</div>
                       ),
@@ -628,13 +629,13 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
-                    {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
-                    {storeDetail?.isDelivery && (
-                      <td>
-                        {moneyCurrency(e?.deliveryAmount)}{" "}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    )}
+                    <td>{moneyCurrency(e?.point)}</td>
+
+                    <td>
+                      {moneyCurrency(e?.deliveryAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </td>
+
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}

@@ -135,7 +135,7 @@ export default function CheckOutPopup({
 
   const handleSearchOne = async () => {
     try {
-      const url = `${END_POINT_SEVER_TABLE_MENU}/v4/member/search-one?phone=${textSearchMember}`;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v6/members/search-one?phone=${textSearchMember}`;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -146,7 +146,7 @@ export default function CheckOutPopup({
         memberPhone: _res.data?.phone,
         memberName: _res.data?.name,
         Name: _res.data?.name,
-        Point: _res.data?.point,
+        Point: _res.data?.pointId?.availablePoint,
       }));
     } catch (err) {
       console.log(err);
@@ -371,6 +371,7 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
           zoneCheckBill: true,
+          point: 0,
         });
       })
       .catch((error) => {
@@ -388,9 +389,10 @@ export default function CheckOutPopup({
       point: point,
       storeId: storeDetail?._id,
       moneyTotal: TotalPrices,
+      money: totalBill,
       billId: dataBill?._id,
     };
-    await RedeemPoint(data);
+    return await RedeemPoint(data);
   };
   const PointUsers = async () => {
     const data = {
@@ -398,21 +400,62 @@ export default function CheckOutPopup({
       storeId: storeDetail?._id,
       memberId: memberData?._id,
     };
-    await PointUser(data);
+    return await PointUser(data);
   };
 
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
   const handleSubmit = async () => {
     saveServiceChargeDetails();
-    await _checkBill(selectCurrency?.id, selectCurrency?.name);
 
     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-      await RedeemPointUser();
+      await RedeemPointUser()
+        .then((res) => {
+          // if (res) {
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "ການຊຳລະດ້ວຍຄະແນນສຳເລັດ",
+          //     showConfirmButton: false,
+          //     timer: 1800,
+          //   });
+          // }
+        })
+        .catch((err) => {
+          if (err) {
+            Swal.fire({
+              icon: "error",
+              title: "ການຊຳລະດ້ວຍຄະແນນບໍ່ສຳເລັດ",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+            return;
+          }
+        });
     }
+    await _checkBill(selectCurrency?.id, selectCurrency?.name);
 
     if (storeDetail?.isCRM && hasCRM) {
-      await PointUsers();
+      await PointUsers()
+        .then((res) => {
+          // if (res) {
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "success",
+          //     showConfirmButton: false,
+          //     timer: 1800,
+          //   });
+          // }
+        })
+        .catch((err) => {
+          if (err) {
+            Swal.fire({
+              icon: "error",
+              title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+          }
+        });
     }
   };
 
@@ -1012,10 +1055,10 @@ export default function CheckOutPopup({
                           !dataBill?.Point ||
                           dataBill?.Point <= point
                         }
-                        type="number"
+                        type="text"
                         max={dataBill?.Point}
                         placeholder="0"
-                        value={moneyCurrency(point)}
+                        value={point}
                         onClick={() => {
                           setSelectInput("inputPoint");
                         }}

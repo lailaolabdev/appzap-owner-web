@@ -365,33 +365,32 @@ export default function DashboardFinance({
               >
                 {t("tableDiscount")}
               </th>
-              {storeDetail?.isCRM && (
+
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("point")}
+              </th>
+
+              <>
                 <th
                   style={{
                     textWrap: "nowrap",
                   }}
                 >
-                  {t("point")}
+                  delivery
                 </th>
-              )}
-              {storeDetail?.isDelivery && (
-                <>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    delivery
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("name")} platform
-                  </th>
-                </>
-              )}
+                <th
+                  style={{
+                    textWrap: "nowrap",
+                  }}
+                >
+                  {t("name")} platform
+                </th>
+              </>
+
               <th
                 style={{
                   textWrap: "nowrap",
@@ -465,30 +464,30 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : `${item?.discount}%`}
                 </td>
-                {storeDetail?.isCRM && <td>{item?.point ? item?.point : 0}</td>}
-                {storeDetail?.isDelivery && (
-                  <>
-                    <td>
-                      {item?.orderId[0]?.deliveryCode
-                        ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                          ? new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(_countAmount(item?.orderId))
-                          : new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(item?.deliveryAmount)
-                        : 0}{" "}
-                      {selectedCurrency}
-                    </td>
-                    <td>
-                      {item?.deliveryName
-                        ? item?.deliveryName
-                        : item?.orderId[0]?.platform
-                        ? item?.orderId[0]?.platform
-                        : "-"}
-                    </td>
-                  </>
-                )}
+                <td>{item?.point ? item?.point : 0}</td>
+
+                <>
+                  <td>
+                    {item?.orderId[0]?.deliveryCode
+                      ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                        ? new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
+                        : new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(item?.deliveryAmount)
+                      : 0}{" "}
+                    {selectedCurrency}
+                  </td>
+                  <td>
+                    {item?.deliveryName
+                      ? item?.deliveryName
+                      : item?.orderId[0]?.platform
+                      ? item?.orderId[0]?.platform
+                      : "-"}
+                  </td>
+                </>
+
                 <td>
                   {item?.orderId[0]?.deliveryCode
                     ? 0
@@ -728,11 +727,11 @@ export default function DashboardFinance({
                           item?.quantity
                     )}
                   </td>
-                  {storeDetail?.isDelivery && (
-                    <td style={{ textAlign: "center" }}>
-                      {item?.deliveryCode ? item?.deliveryCode : "-"}
-                    </td>
-                  )}
+
+                  <td style={{ textAlign: "center" }}>
+                    {item?.deliveryCode ? item?.deliveryCode : "-"}
+                  </td>
+
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                   <td>
                     {item?.updatedAt
@@ -752,7 +751,7 @@ export default function DashboardFinance({
                     <span>{t("vat")} : </span>
                     <span>{t("cash")} :</span>
                     <span>{t("transferAmount")} :</span>
-                    {storeDetail?.isCRM && <span>{t("point")}</span>}
+                    <span>{t("point")}</span>
                     <span>{t("totalPrice2")} :</span>
                     <span>{t("change")} :</span>
                     <span>{t("total_Amount_of_Money")} :</span>
@@ -779,17 +778,15 @@ export default function DashboardFinance({
                       )}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
-                    {storeDetail?.isCRM && (
-                      <span>
-                        {dataModal?.point > 0
-                          ? moneyCurrency(
-                              dataModal?.point - dataModal?.taxAmount
-                            )
-                          : 0}
-                        {""}
-                        {t("point")}
-                      </span>
-                    )}
+
+                    <span>
+                      {dataModal?.point > 0
+                        ? moneyCurrency(dataModal?.point - dataModal?.taxAmount)
+                        : 0}
+                      {""}
+                      {t("point")}
+                    </span>
+
                     <span>
                       {moneyCurrency(TotalAmount)} {storeDetail?.firstCurrency}
                     </span>

@@ -202,7 +202,8 @@ export default function BillForCheckOut80({
                 <span style={{ fontWeight: "bold" }}>
                   {dataBill?.memberPhone
                     ? `${dataBill?.memberPhone} (${t("point")} : ${
-                        dataBill?.Point
+                        Number(dataBill?.Point || 0) -
+                        Number(storeDetail?.point || 0)
                       })`
                     : ""}
                 </span>
@@ -299,17 +300,18 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
-        {dataBill?.memberPhone ? (
-          <Row>
-            <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{t("point")}: </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>
-                {storeDetail?.point ? storeDetail?.point : 0}
-              </div>
-            </Col>
-            {/* <Col xs={7}>
+        {dataBill?.memberPhone
+          ? storeDetail?.point > 0 && (
+              <Row>
+                <Col xs={7}>
+                  <div style={{ textAlign: "right" }}>{t("point")}: </div>
+                </Col>
+                <Col>
+                  <div style={{ textAlign: "right" }}>
+                    {storeDetail?.point ? storeDetail?.point : 0}
+                  </div>
+                </Col>
+                {/* <Col xs={7}>
               <div style={{ textAlign: "right" }}>
                 ໄດ້ຄະແນນຈາກການຊື້ຄັ້ງນີ້:{" "}
               </div>
@@ -317,10 +319,9 @@ export default function BillForCheckOut80({
             <Col>
               <div style={{ textAlign: "right" }}>150</div>
             </Col> */}
-          </Row>
-        ) : (
-          ""
-        )}
+              </Row>
+            )
+          : ""}
       </div>
       <Row>
         <Col xs={7}>
@@ -388,7 +389,7 @@ export default function BillForCheckOut80({
         ))}
         {","}
         &nbsp;
-        {dataBill?.memberPhone && (
+        {storeDetail?.isCRM && dataBill?.memberPhone && (
           <span>
             1 {t("point")} = 1 {storeDetail?.firstCurrency}
           </span>
