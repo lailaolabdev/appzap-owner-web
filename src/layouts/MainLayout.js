@@ -1,4 +1,3 @@
-// MainLayout.js
 import React, { useState, useEffect } from "react";
 import Box from "../components/Box";
 import Navbar from "./Navbar";
@@ -23,7 +22,6 @@ export default function MainLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const { profile, storeDetail } = useStore();
   const [selectId, setSelectId] = useState(null);
-  const [viewTracked, setViewTracked] = useState(false);
 
   const storeId = storeDetail?._id;
 
@@ -87,16 +85,12 @@ export default function MainLayout({ children }) {
     }
   }, [storeDetail?._id]);
 
+  
   useEffect(() => {
-    if (!isLoading && salesData && popup?.PopUpShowSales && !viewTracked) {
+    if (!isLoading && salesData && popup?.PopUpShowSales) {
       showSalesService.updateViews(salesData._id);
-      setViewTracked(true);
     }
-  }, [isLoading, salesData, popup?.PopUpShowSales, viewTracked]);
-
-  useEffect(() => {
-    setViewTracked(false);
-  }, [salesData?._id]);
+  }, [isLoading, salesData, popup?.PopUpShowSales]);
 
   useEffect(() => {
     if (!isLoading && salesData && storeDetail) {
@@ -191,6 +185,5 @@ export default function MainLayout({ children }) {
     </Box>
   );
 
-  // ถ้าไม่มี storeDetail ก็ยังแสดง layout พื้นฐาน
   return renderLayout();
 }
