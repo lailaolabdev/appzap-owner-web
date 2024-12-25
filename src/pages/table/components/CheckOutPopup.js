@@ -414,7 +414,7 @@ export default function CheckOutPopup({
           // if (res) {
           //   Swal.fire({
           //     icon: "success",
-          //     title: "ການຊຳລະດ້ວຍຄະແນນສຳເລັດ",
+          //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
           //     showConfirmButton: false,
           //     timer: 1800,
           //   });
@@ -424,7 +424,7 @@ export default function CheckOutPopup({
           if (err) {
             Swal.fire({
               icon: "error",
-              title: "ການຊຳລະດ້ວຍຄະແນນບໍ່ສຳເລັດ",
+              title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
               showConfirmButton: false,
               timer: 1800,
             });

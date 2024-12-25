@@ -382,7 +382,7 @@ export default function CheckOutType({
               <div>
                 <div>ຊື່ສະມາຊິກ: ຈອນ</div>
                 <div>ເບີໂທ: 020 9701 5341</div>
-                <div>ຄະແນນ: 89,000</div>
+                <div>ພ໋ອຍ: 89,000</div>
               </div>
               {/* <div style={{ justifyContent: "space-around", display: "flex" }}>
                 {!selectDataOpption?._id ? (

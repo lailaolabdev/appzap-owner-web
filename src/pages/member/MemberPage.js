@@ -740,7 +740,7 @@ export default function MemberPage() {
               }}
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
-              <div style={{ width: 8 }} /> <span>ປະຫວັດການໃຊ້ຄະແນນ</span>
+              <div style={{ width: 8 }} /> <span>ປະຫວັດການໃຊ້ພ໋ອຍ</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -766,7 +766,7 @@ export default function MemberPage() {
               }}
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
-              <div style={{ width: 8 }} /> <span>ປະຫວັດການຮັບຄະແນນ</span>
+              <div style={{ width: 8 }} /> <span>ປະຫວັດການຮັບພ໋ອຍ</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -891,9 +891,9 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{"ຄະແນນທັງໝົດ"}</th>
+                  <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
                   <th style={{ textAlign: "center" }}>
-                    {"ຄະແນນທີ່ສາມາດໃຊ້ໄດ້"}
+                    {"ພ໋ອຍທີ່ສາມາດໃຊ້ໄດ້"}
                   </th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
@@ -1235,7 +1235,7 @@ export default function MemberPage() {
                 padding: 10,
               }}
             >
-              <span>ລາຍການປະຫວັດການໃຊ້ຄະແນນ</span>
+              <span>ລາຍການປະຫວັດການໃຊ້ພ໋ອຍ</span>
             </Card.Header>
             <Card.Body>
               <div
@@ -1361,7 +1361,7 @@ export default function MemberPage() {
                 padding: 10,
               }}
             >
-              <span>ລາຍການປະຫວັດໄດ້ຮັບຄະແນນ</span>
+              <span>ລາຍການປະຫວັດໄດ້ຮັບພ໋ອຍ</span>
             </Card.Header>
             <Card.Body>
               <div

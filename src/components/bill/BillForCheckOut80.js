@@ -313,7 +313,7 @@ export default function BillForCheckOut80({
                 </Col>
                 {/* <Col xs={7}>
               <div style={{ textAlign: "right" }}>
-                ໄດ້ຄະແນນຈາກການຊື້ຄັ້ງນີ້:{" "}
+                ໄດ້ພ໋ອຍຈາກການຊື້ຄັ້ງນີ້:{" "}
               </div>
             </Col>
             <Col>

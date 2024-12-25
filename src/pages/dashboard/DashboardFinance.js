@@ -303,11 +303,21 @@ export default function DashboardFinance({
     return `${formattedValue} ${currency}`;
   };
 
-  const TotalAmount =
-    (dataModal?.point ?? 0) +
-    (dataModal?.transferAmount ?? 0) +
-    (dataModal?.payAmount ?? 0) -
-    (dataModal?.discount ?? 0);
+  let TotalAmount = 0;
+  if (dataModal?.paymentMethod === "CASH") {
+    TotalAmount =
+      (dataModal?.point ?? 0) +
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) +
+      (dataModal?.change ?? 0) -
+      (dataModal?.discount ?? 0);
+  } else {
+    TotalAmount =
+      (dataModal?.point ?? 0) +
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) -
+      (dataModal?.discount ?? 0);
+  }
 
   const TotalBefore =
     (dataModal?.billAmount ?? 0) +
@@ -328,7 +338,26 @@ export default function DashboardFinance({
       ? baseTotal +
         (dataModal?.taxAmount ?? 0) +
         (dataModal?.serviceChargeAmount ?? 0)
-      : baseTotal;
+      : baseTotal - dataModal?.change;
+
+  let TotalCalculate = 0;
+
+  if (dataModal?.paymentMethod === "CASH") {
+    TotalCalculate =
+      baseTotal +
+      (dataModal?.taxAmount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0) +
+      dataModal?.change;
+  } else if (dataModal?.paymentMethod === "TRANSFER") {
+    TotalCalculate =
+      baseTotal +
+      (dataModal?.taxAmount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0);
+  } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
+    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+  } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
+    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+  }
 
   return (
     <div style={{ padding: 0 }}>
@@ -612,32 +641,34 @@ export default function DashboardFinance({
           <div className="flex justify-between my-4">
             <div>
               {totalAfter && TotalBefore > 0 ? (
-                totalAfter === TotalBefore ? (
-                  <span className="flex items-center text-green-500 gap-2">
-                    <FaCircleCheck className="text-green-500 text-5xl" />{" "}
-                    ບິນຖຶກຕ້ອງ{" "}
-                    {`${new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(TotalBefore)} ${
-                      storeDetail?.firstCurrency
-                    } = ${new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(totalAfter)} ${storeDetail?.firstCurrency}`}
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2 text-red-500">
-                    <BsFillExclamationTriangleFill className="text-red-500 text-5xl" />{" "}
-                    ບິນບໍ່ຖຶກຕ້ອງ{" "}
-                    {`${new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(TotalBefore)} ${
-                      storeDetail?.firstCurrency
-                    } = ${new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(totalAfter)} ${storeDetail?.firstCurrency}`}{" "}
-                    (ປ້ອນເງິນໂອນ ຫຼື ເງິນສົດເກີນ)
-                  </span>
-                )
+                <div className="flex flex-row items-center text-green-500 gap-2">
+                  <FaCircleCheck className="text-green-500 text-5xl" />{" "}
+                  <div className="flex flex-col gap-1">
+                    <span>
+                      ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
+                      {`${new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(TotalBefore)} ${storeDetail?.firstCurrency}`}
+                    </span>
+                    <span>
+                      ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ (
+                      {dataModal?.paymentMethod === "CASH" ? "ເງິນສົດ " : ""}{" "}
+                      {dataModal?.paymentMethod === "TRANSFER" ? "ເງິນໂອນ" : ""}{" "}
+                      {dataModal?.paymentMethod === "TRANSFER_CASH"
+                        ? "ເງິນສົດ + ເງິນໂອນ"
+                        : ""}{" "}
+                      {dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
+                        ? "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ"
+                        : ""}
+                      ) ={" "}
+                      {`${new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(TotalCalculate)} ${
+                        storeDetail?.firstCurrency
+                      }`}{" "}
+                    </span>
+                  </div>
+                </div>
               ) : dataModal?.deliveryAmount ? (
                 dataModal?.deliveryAmount > 0 ? (
                   <span className="flex items-center text-green-500 gap-2">
@@ -765,7 +796,11 @@ export default function DashboardFinance({
                     <span>
                       {moneyCurrency(
                         dataModal?.payAmount > 0
-                          ? dataModal?.payAmount - dataModal?.taxAmount
+                          ? dataModal?.paymentMethod === "CASH"
+                            ? dataModal?.payAmount -
+                              dataModal?.taxAmount +
+                              dataModal?.change
+                            : dataModal?.payAmount - dataModal?.taxAmount
                           : 0
                       )}{" "}
                       {storeDetail?.firstCurrency}
@@ -782,8 +817,7 @@ export default function DashboardFinance({
                     <span>
                       {dataModal?.point > 0
                         ? moneyCurrency(dataModal?.point - dataModal?.taxAmount)
-                        : 0}
-                      {""}
+                        : 0}{" "}
                       {t("point")}
                     </span>
 
