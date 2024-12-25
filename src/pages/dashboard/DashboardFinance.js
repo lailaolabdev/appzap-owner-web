@@ -506,7 +506,7 @@ export default function DashboardFinance({
                             currency: "JPY",
                           }).format(item?.deliveryAmount)
                       : 0}{" "}
-                    {selectedCurrency}
+                    {storeDetail?.firstCurrency}
                   </td>
                   <td>
                     {item?.deliveryName
@@ -532,7 +532,7 @@ export default function DashboardFinance({
                           item?.serviceChargeAmount -
                           item?.point
                       )}{" "}
-                  {selectedCurrency}
+                  {storeDetail?.firstCurrency}
                 </td>
                 <td>
                   <div

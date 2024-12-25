@@ -32,6 +32,7 @@ const OPTION_PRICE_CURRENCY = {
   LAK: "LAK",
   THB: "THB",
   USD: "USD",
+  CNY: "CNY",
 };
 
 export default function MenuListOption() {
@@ -503,6 +504,7 @@ export default function MenuListOption() {
                       <option value={OPTION_PRICE_CURRENCY.LAK}>LAK</option>
                       <option value={OPTION_PRICE_CURRENCY.THB}>THB</option>
                       <option value={OPTION_PRICE_CURRENCY.USD}>USD</option>
+                      <option value={OPTION_PRICE_CURRENCY.CNY}>CNY</option>
                     </Form.Control>
                   </Form.Group>
                 </Modal.Body>
@@ -607,6 +609,7 @@ export default function MenuListOption() {
                       <option value={OPTION_PRICE_CURRENCY.LAK}>LAK</option>
                       <option value={OPTION_PRICE_CURRENCY.THB}>THB</option>
                       <option value={OPTION_PRICE_CURRENCY.USD}>USD</option>
+                      <option value={OPTION_PRICE_CURRENCY.CNY}>CNY</option>
                     </Form.Control>
                   </Form.Group>
                 </Modal.Body>
