@@ -62,7 +62,7 @@ export const callPayBeforePrintBillOnly = async (id) => {
 export const callToUpdatePrintBillBefore = async (id, body) => {
   try {
     console.log("BODY: ", body);
-    const url = `${END_POINT_APP}/v3/bill-checkout`;
+    const url = `${END_POINT_APP}/v6/bill-checkout`;
     const token = await getHeaders();
     const reservation = await axios.put(
       url,

@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import { Table, Modal, Button, Pagination } from "react-bootstrap";
 import * as _ from "lodash";
+import { FaCheckDouble, FaCircleCheck } from "react-icons/fa6";
+import { BsFillExclamationTriangleFill } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { _statusCheckBill, orderStatus, moneyCurrency } from "./../../helpers";
 import { useTranslation } from "react-i18next";
@@ -301,6 +303,62 @@ export default function DashboardFinance({
     return `${formattedValue} ${currency}`;
   };
 
+  let TotalAmount = 0;
+  if (dataModal?.paymentMethod === "CASH") {
+    TotalAmount =
+      (dataModal?.point ?? 0) +
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) +
+      (dataModal?.change ?? 0) -
+      (dataModal?.discount ?? 0);
+  } else {
+    TotalAmount =
+      (dataModal?.point ?? 0) +
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) -
+      (dataModal?.discount ?? 0);
+  }
+
+  const TotalBefore =
+    (dataModal?.billAmount ?? 0) +
+    (dataModal?.taxAmount ?? 0) +
+    (dataModal?.serviceChargeAmount ?? 0);
+
+  const baseTotal =
+    (dataModal?.point ?? 0) +
+    (dataModal?.transferAmount ?? 0) +
+    (dataModal?.change ?? 0) +
+    (dataModal?.payAmount ?? 0) -
+    (dataModal?.discount ?? 0) -
+    (dataModal?.change ?? 0);
+
+  const totalAfter =
+    dataModal?.paymentMethod === "CASH" ||
+    dataModal?.paymentMethod === "TRANSFER"
+      ? baseTotal +
+        (dataModal?.taxAmount ?? 0) +
+        (dataModal?.serviceChargeAmount ?? 0)
+      : baseTotal - dataModal?.change;
+
+  let TotalCalculate = 0;
+
+  if (dataModal?.paymentMethod === "CASH") {
+    TotalCalculate =
+      baseTotal +
+      (dataModal?.taxAmount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0) +
+      dataModal?.change;
+  } else if (dataModal?.paymentMethod === "TRANSFER") {
+    TotalCalculate =
+      baseTotal +
+      (dataModal?.taxAmount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0);
+  } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
+    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+  } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
+    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+  }
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -336,29 +394,32 @@ export default function DashboardFinance({
               >
                 {t("tableDiscount")}
               </th>
-              {storeDetail?.isCRM && (
+
+              <th
+                style={{
+                  textWrap: "nowrap",
+                }}
+              >
+                {t("point")}
+              </th>
+
+              <>
                 <th
                   style={{
                     textWrap: "nowrap",
                   }}
                 >
-                  {t("point")}
+                  delivery
                 </th>
-              )}
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-              >
-                delivery
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-              >
-                {t("name")} platform
-              </th>
+                <th
+                  style={{
+                    textWrap: "nowrap",
+                  }}
+                >
+                  {t("name")} platform
+                </th>
+              </>
+
               <th
                 style={{
                   textWrap: "nowrap",
@@ -433,25 +494,29 @@ export default function DashboardFinance({
                     : `${item?.discount}%`}
                 </td>
                 <td>{item?.point ? item?.point : 0}</td>
-                <td>
-                  {item?.orderId[0]?.deliveryCode
-                    ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                      ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(_countAmount(item?.orderId))
-                      : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.deliveryAmount)
-                    : 0}{" "}
-                  {selectedCurrency}
-                </td>
-                <td>
-                  {item?.deliveryName
-                    ? item?.deliveryName
-                    : item?.orderId[0]?.platform
-                    ? item?.orderId[0]?.platform
-                    : "-"}
-                </td>
+
+                <>
+                  <td>
+                    {item?.orderId[0]?.deliveryCode
+                      ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                        ? new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
+                        : new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(item?.deliveryAmount)
+                      : 0}{" "}
+                    {selectedCurrency}
+                  </td>
+                  <td>
+                    {item?.deliveryName
+                      ? item?.deliveryName
+                      : item?.orderId[0]?.platform
+                      ? item?.orderId[0]?.platform
+                      : "-"}
+                  </td>
+                </>
+
                 <td>
                   {item?.orderId[0]?.deliveryCode
                     ? 0
@@ -573,13 +638,61 @@ export default function DashboardFinance({
           <Modal.Title>{t("menuModal")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              marginBottom: 10,
-            }}
-          >
+          <div className="flex justify-between my-4">
+            <div>
+              {totalAfter && TotalBefore > 0 ? (
+                <div className="flex flex-row items-center text-green-500 gap-2">
+                  <FaCircleCheck className="text-green-500 text-5xl" />{" "}
+                  <div className="flex flex-col gap-1">
+                    <span>
+                      ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
+                      {`${new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(TotalBefore)} ${storeDetail?.firstCurrency}`}
+                    </span>
+                    <span>
+                      ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ (
+                      {dataModal?.paymentMethod === "CASH" ? "ເງິນສົດ " : ""}{" "}
+                      {dataModal?.paymentMethod === "TRANSFER" ? "ເງິນໂອນ" : ""}{" "}
+                      {dataModal?.paymentMethod === "TRANSFER_CASH"
+                        ? "ເງິນສົດ + ເງິນໂອນ"
+                        : ""}{" "}
+                      {dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
+                        ? "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ"
+                        : ""}
+                      ) ={" "}
+                      {`${new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(TotalCalculate)} ${
+                        storeDetail?.firstCurrency
+                      }`}{" "}
+                    </span>
+                  </div>
+                </div>
+              ) : dataModal?.deliveryAmount ? (
+                dataModal?.deliveryAmount > 0 ? (
+                  <span className="flex items-center text-green-500 gap-2">
+                    <FaCircleCheck className="text-green-500 text-5xl" />{" "}
+                    ບິນຖຶກຕ້ອງ{" "}
+                    {`${new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(dataModal?.deliveryAmount)}`}{" "}
+                    {storeDetail?.firstCurrency}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2 text-red-500">
+                    <BsFillExclamationTriangleFill className="text-red-500 text-5xl" />{" "}
+                    ບິນບໍ່ຖຶກຕ້ອງ{" "}
+                    {`${new Intl.NumberFormat("ja-JP", {
+                      currency: "JPY",
+                    }).format(dataModal?.deliveryAmount)}`}{" "}
+                    {storeDetail?.firstCurrency}
+                  </span>
+                )
+              ) : (
+                ""
+              )}
+            </div>
             <Button
               disabled={
                 disabledEditBill ||
@@ -602,7 +715,7 @@ export default function DashboardFinance({
                 <th>{t("statusOfFood")}</th>
                 <th>{t("servedBy")}</th>
                 <th>{t("price")}</th>
-                <th>DC Code</th>
+                {storeDetail?.isDelivery && <th>DC Code</th>}
                 <th>{t("time")}</th>
                 <th>ເວລາອັບເດດ</th>
               </tr>
@@ -645,9 +758,11 @@ export default function DashboardFinance({
                           item?.quantity
                     )}
                   </td>
+
                   <td style={{ textAlign: "center" }}>
                     {item?.deliveryCode ? item?.deliveryCode : "-"}
                   </td>
+
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                   <td>
                     {item?.updatedAt
@@ -658,62 +773,91 @@ export default function DashboardFinance({
               ))}
             </tbody>
           </Table>
-          <div className="flex flex-col mt-3 font-medium px-2">
-            {[
-              {
-                label: t("discount"),
-                value: dataModal?.discount,
-                type: "discount",
-              },
-              storeDetail?.isCRM && {
-                label: t("point"),
-                value: dataModal?.point,
-                type: "point",
-              },
-              { label: t("cash"), value: dataModal?.payAmount, type: "cash" },
-              {
-                label: t("transferAmount"),
-                value: dataModal?.transferAmount,
-                type: "transfer",
-              },
-              {
-                label: <div className="font-bold">{t("totalPrice2")}</div>,
-                value:
-                  (dataModal?.point ?? 0) +
-                  (dataModal?.transferAmount ?? 0) +
-                  (dataModal?.payAmount ?? 0) -
-                  (dataModal?.discount ?? 0),
-                type: "total",
-              },
-            ]
-              .filter(Boolean) // Remove falsy values (e.g., null for non-CRM points)
-              .map((item, index) => {
-                const { label, value, type } = item;
-                const isPoint = type === "point";
-                const isCurrencyRow = ["total", "cash", "transfer"].includes(
-                  type
-                );
-                const displayClass =
-                  isPoint && !storeDetail?.isCRM ? "hidden" : "flex";
-                const formattedValue =
-                  type === "discount"
-                    ? renderDiscount(value)
-                    : moneyCurrency(value);
-
-                return (
-                  <div
-                    className={`w-full ${displayClass} justify-end items-center`}
-                    key={type || index}
-                  >
-                    <div className="text-end">{label}:</div>
-                    <div className="w-60 text-end">
-                      {formattedValue}
-                      {isCurrencyRow && storeDetail?.firstCurrency}
-                    </div>
+          {!dataModal?.deliveryAmount ? (
+            <div className="flex justify-end items-center mt-3">
+              <div className="w-[260px]">
+                <div className="flex justify-between ">
+                  <div className="flex flex-col">
+                    <span>{t("discount")} : </span>
+                    <span>{t("vat")} : </span>
+                    <span>{t("cash")} :</span>
+                    <span>{t("transferAmount")} :</span>
+                    <span>{t("point")}</span>
+                    <span>{t("totalPrice2")} :</span>
+                    <span>{t("change")} :</span>
+                    <span>{t("total_Amount_of_Money")} :</span>
                   </div>
-                );
-              })}
-          </div>
+                  <div className="flex flex-col">
+                    <span>{renderDiscount(dataModal?.discount)}</span>
+                    <span>
+                      {moneyCurrency(dataModal?.taxAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                    <span>
+                      {moneyCurrency(
+                        dataModal?.payAmount > 0
+                          ? dataModal?.paymentMethod === "CASH"
+                            ? dataModal?.payAmount -
+                              dataModal?.taxAmount +
+                              dataModal?.change
+                            : dataModal?.payAmount - dataModal?.taxAmount
+                          : 0
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                    <span>
+                      {moneyCurrency(
+                        dataModal?.transferAmount > 0
+                          ? dataModal?.transferAmount - dataModal?.taxAmount
+                          : 0
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+
+                    <span>
+                      {dataModal?.point > 0
+                        ? moneyCurrency(dataModal?.point - dataModal?.taxAmount)
+                        : 0}{" "}
+                      {t("point")}
+                    </span>
+
+                    <span>
+                      {moneyCurrency(TotalAmount)} {storeDetail?.firstCurrency}
+                    </span>
+                    <span>
+                      {moneyCurrency(dataModal?.change)}{" "}
+                      {storeDetail?.firstCurrency}{" "}
+                    </span>
+                    <span>
+                      {moneyCurrency(totalAfter)} {storeDetail?.firstCurrency}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-end items-center mt-3">
+              <div className="w-[260px]">
+                <div className="flex justify-between ">
+                  <div className="flex flex-col">
+                    <span>{t("total_Amount_of_Money")} :</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      className={`${
+                        dataModal?.deliveryAmount <= 0
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {moneyCurrency(dataModal?.deliveryAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>

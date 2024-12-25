@@ -465,20 +465,21 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.transferCount || 0,
                       amount: moneyReport?.successAmount?.transferPayment || 0,
                     },
-                    ...(Array.isArray(deliveryReports) &&
-                    deliveryReports.length > 0
+
+                    ...(deliveryReports?.length > 0
                       ? deliveryReports.map((e, idx) => ({
                           method: (
-                            <div
-                              style={{ fontWeight: 700 }}
-                            >{`delivery (${e?.name})`}</div>
+                            <div style={{ fontWeight: 700 }}>
+                              {`delivery (${e?.name || "Unknown"})`}
+                            </div>
                           ),
                           qty: e?.qty || 0,
                           amount: Math.floor(e?.amount || 0),
                         }))
                       : []),
                     // Insert the point section after the "total_tsf"
-                    storeDetail?.isCRM && {
+
+                    {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("point")}</div>
                       ),
@@ -628,11 +629,13 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
-                    {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
+                    <td>{moneyCurrency(e?.point)}</td>
+
                     <td>
                       {moneyCurrency(e?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
+
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}

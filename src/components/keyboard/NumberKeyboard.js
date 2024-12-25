@@ -124,7 +124,11 @@ export default function NumberKeyboard({
           }}
         >
           <Button
-            disabled={payType === "point" || payType === "cash_transfer_point"}
+            disabled={
+              payType === "point" ||
+              payType === "cash_transfer_point" ||
+              !storeDetail?.isCRM
+            }
             onClick={() => {
               onClickMember();
             }}

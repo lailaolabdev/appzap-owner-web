@@ -104,9 +104,9 @@ export default function PopUpMemberEdit({
           </InputGroup>
         </div>
         <div className="mb-3">
-          <Form.Label>ຄະແນນສະສົມ</Form.Label>
+          <Form.Label>ພ໋ອຍສະສົມ</Form.Label>
           <Form.Control
-            placeholder="ຄະແນນສະສົມ"
+            placeholder="ພ໋ອຍສະສົມ"
             value={formData?.point}
             onChange={handleChange}
             name="point"

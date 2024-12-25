@@ -260,7 +260,9 @@ export default function SettingTable() {
                 {/* <th scope="col">#</th> */}
                 <th scope="col">{t("tablecode")}</th>
                 <th scope="col">{t("zone")}</th>
-                <th scope="col">{t("deliveryTable")}</th>
+                {storeDetail?.isDelivery && (
+                  <th scope="col">{t("deliveryTable")}</th>
+                )}
                 <th scope="col">{t("is_order_split")}</th>
                 <th scope="col" style={{ textAlign: "right" }}>
                   {t("manage")}
@@ -280,16 +282,18 @@ export default function SettingTable() {
                       )} */}
                     </td>
                     <td>{table?.zone?.name ?? "-"}</td>
-                    <td
-                      style={{
-                        color:
-                          table?.isDeliveryTable === true ? "green" : "red",
-                      }}
-                    >
-                      {table?.isDeliveryTable === true
-                        ? t("deliveryTable")
-                        : "-"}
-                    </td>
+                    {storeDetail?.isDelivery && (
+                      <td
+                        style={{
+                          color:
+                            table?.isDeliveryTable === true ? "green" : "red",
+                        }}
+                      >
+                        {table?.isDeliveryTable === true
+                          ? t("deliveryTable")
+                          : "-"}
+                      </td>
+                    )}
                     <td>{table?.isOrderSplit ? t("is_order_split") : "-"}</td>
                     <td>
                       <div
@@ -432,17 +436,19 @@ export default function SettingTable() {
               ))}
             </Form.Control>
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>{t("is_delivery_table")}</Form.Label>
-            <div style={{ height: 10 }}></div>
-            <Form.Check
-              type="switch"
-              id="is-delivery-table"
-              // label={isDeliveryTable ? t("yes") : t("no")}
-              checked={isDeliveryTable}
-              onChange={(e) => setIsDeliveryTable(e.target.checked)}
-            />
-          </Form.Group>
+          {storeDetail?.isDelivery && (
+            <Form.Group className="mb-3">
+              <Form.Label>{t("is_delivery_table")}</Form.Label>
+              <div style={{ height: 10 }} />
+              <Form.Check
+                type="switch"
+                id="is-delivery-table"
+                // label={isDeliveryTable ? t("yes") : t("no")}
+                checked={isDeliveryTable}
+                onChange={(e) => setIsDeliveryTable(e.target.checked)}
+              />
+            </Form.Group>
+          )}
           <Form.Group className="mb-3">
             <Form.Label>{t("is_order_split")}</Form.Label>
             <div style={{ height: 10 }}></div>

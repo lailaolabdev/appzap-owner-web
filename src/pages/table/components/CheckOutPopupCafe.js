@@ -582,7 +582,7 @@ export default function CheckOutPopupCafe({
                 </Button>
                 <div style={{ width: 30 }} />
                 <InputGroup.Text>ຊື່: {memberData?.name}</InputGroup.Text>
-                <InputGroup.Text>ຄະແນນ: {memberData?.point}</InputGroup.Text>
+                <InputGroup.Text>ພ໋ອຍ: {memberData?.point}</InputGroup.Text>
               </InputGroup>
             </div>
             <div

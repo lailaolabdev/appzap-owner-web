@@ -304,21 +304,21 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
-              <div className={fontMap[language]}>
+
+              <div>
                 {"Delivery"}
                 {" : "}
                 {convertNumber(
-                  moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue
+                  moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue || 0
                 )}
               </div>
-              {storeDetail?.isCRM && (
-                <div className={fontMap[language]}>
-                  {t("point")}
-                  {" : "}
-                  {convertNumber(moneyReport?.successAmount?.point)}
-                </div>
-              )}
-              <div className={fontMap[language]}>
+              <div>
+                {t("point")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.point || 0)}
+              </div>
+
+              <div>
                 {t("cashDiscount")}
                 {" : "}
                 {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|

@@ -17,6 +17,7 @@ import {
   updateSettingCafe,
   updateSettingCRM,
   getSettingCafe,
+  updateSettingDelivery,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -120,18 +121,19 @@ export default function ConfigPage() {
   };
   const changeCRM = async (e) => {
     const isType = e.target.checked;
-
-    console.log({ isType });
-
     await updateSettingCRM(profile?.data.storeId, { data: isType });
     const dataStore = await getStore(storeDetail?._id);
 
-    console.log({ dataStore });
+    setStoreDetail(dataStore);
+  };
+  const changeDelivery = async (e) => {
+    const isType = e.target.checked;
+
+    await updateSettingDelivery(profile?.data.storeId, { data: isType });
+    const dataStore = await getStore(storeDetail?._id);
 
     setStoreDetail(dataStore);
   };
-
-  console.log("storeDetail?.isCRM", storeDetail?.isCRM);
 
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
@@ -145,6 +147,8 @@ export default function ConfigPage() {
       <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
     </OverlayTrigger>
   );
+
+  console.log("isDelivery", storeDetail?.isDelivery);
 
   return (
     <>
@@ -597,6 +601,59 @@ export default function ConfigPage() {
                       checked={storeDetail?.isCRM}
                       id={`switch-crm-${item?.key}`}
                       onChange={changeCRM}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {"Delivery Function"}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_delivery"),
+                  key: "delivery",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`switch-crm-${item?.key}`}>
+                      {storeDetail?.isDelivery
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isDelivery}
+                      id={`switch-delivery-${item?.key}`}
+                      onChange={changeDelivery}
                     />
                   </div>
                 </div>

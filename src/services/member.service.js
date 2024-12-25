@@ -3,8 +3,11 @@ import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getMembers = async (findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
+    const url = `${END_POINT_SEVER}/v6/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
+
+    console.log(res?.data);
+
     return res?.data;
   } catch (error) {
     return error;
@@ -124,7 +127,7 @@ export const updatePointStore = async (data) => {
 
 export const getAllPoints = async (TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/member/all-point`;
+    const url = `${END_POINT_SEVER}/v6/member/all-point`;
     const response = await axios.get(url, { headers: TOKEN });
     return response?.data;
   } catch (error) {

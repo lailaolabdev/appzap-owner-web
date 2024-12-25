@@ -27,7 +27,7 @@ import {
   getMembers,
   getMemberAllCount,
 } from "../../../services/member.service";
-import { RedeemPoint } from "../../../services/point";
+import { RedeemPoint, PointUser } from "../../../services/point";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -135,7 +135,7 @@ export default function CheckOutPopup({
 
   const handleSearchOne = async () => {
     try {
-      const url = `${END_POINT_SEVER_TABLE_MENU}/v4/member/search-one?phone=${textSearchMember}`;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v6/members/search-one?phone=${textSearchMember}`;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -146,7 +146,7 @@ export default function CheckOutPopup({
         memberPhone: _res.data?.phone,
         memberName: _res.data?.name,
         Name: _res.data?.name,
-        Point: _res.data?.point,
+        Point: _res.data?.pointId?.availablePoint,
       }));
     } catch (err) {
       console.log(err);
@@ -328,7 +328,7 @@ export default function CheckOutPopup({
 
     await axios
       .put(
-        `${END_POINT}/v3/bill-checkout`,
+        `${END_POINT}/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: body,
@@ -371,6 +371,7 @@ export default function CheckOutPopup({
           serviceChargePer: 0,
           isServiceCharge: false,
           zoneCheckBill: true,
+          point: 0,
         });
       })
       .catch((error) => {
@@ -388,26 +389,76 @@ export default function CheckOutPopup({
       point: point,
       storeId: storeDetail?._id,
       moneyTotal: TotalPrices,
+      money: totalBill,
       billId: dataBill?._id,
     };
-    await RedeemPoint(data);
+    return await RedeemPoint(data);
+  };
+  const PointUsers = async () => {
+    const data = {
+      billId: dataBill?._id,
+      storeId: storeDetail?._id,
+      memberId: memberData?._id,
+    };
+    return await PointUser(data);
   };
 
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
-  const handleSubmit = () => {
-    if (
-      storeDetail?.isCRM ||
-      tab === "point" ||
-      tab === "cash_transfer_point"
-    ) {
-      RedeemPointUser();
-    }
+  const handleSubmit = async () => {
     saveServiceChargeDetails();
-    _checkBill(selectCurrency?.id, selectCurrency?.name);
-    // onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
+
+    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+      await RedeemPointUser()
+        .then((res) => {
+          // if (res) {
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
+          //     showConfirmButton: false,
+          //     timer: 1800,
+          //   });
+          // }
+        })
+        .catch((err) => {
+          if (err) {
+            Swal.fire({
+              icon: "error",
+              title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+            return;
+          }
+        });
+    }
+    await _checkBill(selectCurrency?.id, selectCurrency?.name);
+
+    if (storeDetail?.isCRM && hasCRM) {
+      await PointUsers()
+        .then((res) => {
+          // if (res) {
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "success",
+          //     showConfirmButton: false,
+          //     timer: 1800,
+          //   });
+          // }
+        })
+        .catch((err) => {
+          if (err) {
+            Swal.fire({
+              icon: "error",
+              title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+          }
+        });
+    }
   };
+
   // useEffect
   useEffect(() => {
     getDataCurrency();
@@ -547,10 +598,11 @@ export default function CheckOutPopup({
         Swal.fire({
           icon: "warning",
           title: `${t("error_point")}`,
-          text: `${t("error_point_enough")}`,
+          text: `${t("error_point_enough")} ${dataBill?.Point} ${t("point")}`,
           showConfirmButton: false,
           timer: 1800,
         });
+        setPoint("");
         return;
       }
       const _sum =
@@ -583,25 +635,6 @@ export default function CheckOutPopup({
         setCanCheckOut(false);
       } else {
         setCanCheckOut(true);
-      }
-    } else if (forcus === "CASH_TRANSFER_POINT") {
-      const _sum =
-        (Number.parseInt(cash) || 0) +
-        (Number.parseInt(transfer) || 0 + Number.parseInt(point));
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        }
       }
     }
   }, [cash, transfer, totalBill, delivery, forcus, point]);
@@ -715,6 +748,7 @@ export default function CheckOutPopup({
     const parsedCash = Number.parseInt(cash) || 0;
     const parsedTransfer = Number.parseInt(transfer) || 0;
     const parsedDelivery = Number.parseInt(delivery) || 0;
+    const parsedPoint = Number.parseInt(point) || 0;
 
     const discountAmount =
       dataBill && dataBill?.discountType === "LAK"
@@ -722,7 +756,11 @@ export default function CheckOutPopup({
         : Math.max(totalBill - (totalBill * dataBill?.discount) / 100, 0);
 
     const totalAmount =
-      parsedCash + parsedTransfer + parsedDelivery - discountAmount;
+      parsedCash +
+      parsedTransfer +
+      parsedDelivery +
+      parsedPoint -
+      discountAmount;
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
@@ -1014,12 +1052,11 @@ export default function CheckOutPopup({
                         disabled={
                           dataBill?.Point <= 0 ||
                           !dataBill?.Name ||
-                          !dataBill?.Point
+                          !dataBill?.Point ||
+                          dataBill?.Point <= point
                         }
                         type="text"
-                        maxLength={
-                          Number.parseInt(dataBill?.Point).toString().length
-                        }
+                        max={dataBill?.Point}
                         placeholder="0"
                         value={point}
                         onClick={() => {
