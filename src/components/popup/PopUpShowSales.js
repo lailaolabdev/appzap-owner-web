@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 export default function PopUpShowSales({
   open,
@@ -12,6 +13,7 @@ export default function PopUpShowSales({
 }) {
   const [isWithinTimeRange, setIsWithinTimeRange] = useState(false);
   const [shouldShow, setShouldShow] = useState(false);
+  const { t } = useTranslation();
 
   const checkTimeRange = () => {
     if (!salesData || !salesData.isAvailables) return false;
@@ -171,7 +173,7 @@ export default function PopUpShowSales({
             }
           }}
         >
-          ສັ່ງຊື້
+          {t("order_")}
         </Button>
       </Modal.Footer>
     </Modal>
