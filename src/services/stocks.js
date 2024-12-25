@@ -4,7 +4,6 @@ import { getHeaders } from "./auth";
 
 export const getStocksAll = async (findBy) => {
   try {
-    console.log({ object: findBy });
     const url = `${END_POINT_APP}/v6/stocks/${findBy}`;
     const res = await axios.get(url);
     return res;

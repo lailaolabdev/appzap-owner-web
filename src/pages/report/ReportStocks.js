@@ -7,6 +7,7 @@ import axios from "axios";
 import NavList from "../../pages/stock/components/NavList";
 import StockGroups from "./StockGroups";
 import PopUpPreViewsPage from "../../components/popup/PopUpPreViewsPage";
+import PopupSelectStock from "../../components/popup/report/PopupSelectStock";
 import { thousandSeparator } from "../../helpers/thousandSeparator";
 import { COLOR_APP } from "../../constants";
 import PaginationAppzap from "../../constants/PaginationAppzap";
@@ -44,6 +45,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { useNavigate } from "react-router-dom";
 import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
+import { getCategories } from "../../services/menuCategory";
 
 export default function ReportStocks() {
   const navigate = useNavigate();
@@ -69,7 +71,7 @@ export default function ReportStocks() {
   const [bestStockImport, setBestStockImport] = useState();
   const [bestStockExport, setBestStockExport] = useState();
   const [bestStockReturn, setBestStockReturn] = useState();
-
+  const [categoryMenu, setCategoryMenu] = useState([]);
   const [openGetDate, setOpenGetDate] = useState(false);
   const [startDate, setStartDate] = useState(_stDate);
   const [endDate, setEndDate] = useState(_edDate);
@@ -108,6 +110,7 @@ export default function ReportStocks() {
     getStocks();
     getCountStocks();
     getCategorys(storeDetail?._id);
+    getCategoryMenuStock(storeDetail?._id);
   }, [page, startDate, endDate, selectCategories]);
 
   // ດຶງຂໍ້ມູນຂອງປະຫວັດສະຕ໋ອກທັງໝົດ
@@ -162,6 +165,15 @@ export default function ReportStocks() {
       setIsSelectAll(true);
     }
     return;
+  };
+
+  const getCategoryMenuStock = async (id) => {
+    try {
+      const resData = await getCategories(id);
+      setCategoryMenu(resData);
+    } catch (error) {
+      console.error("error:-->", error);
+    }
   };
 
   const onSelectSigleStoks = (selectedProduct) => {
@@ -391,7 +403,7 @@ export default function ReportStocks() {
           </button>
           <button
             class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
-            onClick={() => navigate("/settingStore/stock/add")}
+            onClick={() => setPopup({ PopupSelectStock: true })}
           >
             {t("create_stock")}
           </button>
@@ -710,6 +722,12 @@ export default function ReportStocks() {
         open={popup?.PopUpPreViewsPage}
         datas={prepaDatas}
         storeData={storeDetail}
+      />
+
+      <PopupSelectStock
+        open={popup?.PopupSelectStock}
+        onClose={() => setPopup()}
+        categoryMenu={categoryMenu}
       />
 
       <PopUpConfirmDeletion

@@ -8,9 +8,7 @@ export const useMenuCategoryState = ({ storeDetail }) => {
   // function
   const getMenuCategorysState = async () => {
     setMenuCategoryLoadings(true);
-    let findby = "?";
-    findby += `storeId=${storeDetail?._id}`;
-    const data = await getCategories(findby);
+    const data = await getCategories(storeDetail?._id);
     setMenuCategorys(data);
     setMenuCategoryLoadings(false);
   };
