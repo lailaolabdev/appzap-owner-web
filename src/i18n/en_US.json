@@ -950,5 +950,6 @@
   "point_r": "points Received",
   "point_g": "points Given",
   "exchange_point": "Exchange points",
-  "wastes":"Wastes"
+  "wastes":"Wastes",
+  "order_": "Order"
 }

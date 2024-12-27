@@ -902,5 +902,6 @@
   "payment_datetime_debt": "วันที่และเวลาชำระหนี้",
   "money_remaining": "หนี้คงเหลือ",
   "money_cash": "จำนวนเงินที่ชำระ",
-  "bank_transfer_history": "การโอนเงินผ่านธนาคาร"
+  "bank_transfer_history": "การโอนเงินผ่านธนาคาร",
+  "order_": "สั่งชื้อ"
 }

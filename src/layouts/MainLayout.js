@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "../components/Box";
 import Navbar from "./Navbar";
 import Sidenav from "./SideNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import PopUpShowSales from "../components/popup/PopUpShowSales";
+import { END_POINT_SEVER } from "../constants/api";
+import { useStore } from "../store";
+import { showSalesService } from "../services/showSales";
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -12,7 +16,118 @@ export default function MainLayout({ children }) {
     setExpanded(exp);
   };
 
-  return (
+  const [popup, setPopup] = useState({ PopUpShowSales: true });
+  const [salesId, setSalesId] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { profile, storeDetail } = useStore();
+  const [selectId, setSelectId] = useState(null);
+
+  const storeId = storeDetail?._id;
+
+  const fetchSalesData = async () => {
+    setIsLoading(true);
+    try {
+      const data = await showSalesService.fetchSalesData();
+      if (data) {
+        setSalesId(data.selectedStores?.[0] || null);
+        setSalesData(data);
+      } else {
+        setSalesId(null);
+        setSalesData(null);
+        setPopup({ PopUpShowSales: false });
+      }
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+      setPopup({ PopUpShowSales: false });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateAvailableStoreId = async (id, isAvailable) => {
+    if (!storeDetail) return;
+    try {
+      const updatedData = await showSalesService.updateAvailableStoreId(
+        id, 
+        isAvailable, 
+        salesData?._id, 
+        storeDetail._id
+      );
+      if (updatedData) {
+        setSalesData(updatedData);
+      }
+    } catch (error) {
+      console.error("Error updating availability:", error);
+    }
+  };
+
+  const updateSalesClick = async (id, currentClicks) => {
+    if (!storeDetail) return;
+    try {
+      const success = await showSalesService.updateSalesClick(id, currentClicks);
+      if (success) {
+        await fetchSalesData();
+      }
+    } catch (error) {
+      console.error("Error updating clicks:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (storeDetail) {
+      fetchSalesData();
+      const intervalId = setInterval(fetchSalesData, 60000);
+      return () => clearInterval(intervalId);
+    } else {
+      setIsLoading(false);
+      setPopup({ PopUpShowSales: false });
+    }
+  }, [storeDetail?._id]);
+
+  
+  useEffect(() => {
+    if (!isLoading && salesData && popup?.PopUpShowSales) {
+      showSalesService.updateViews(salesData._id);
+    }
+  }, [isLoading, salesData, popup?.PopUpShowSales]);
+
+  useEffect(() => {
+    if (!isLoading && salesData && storeDetail) {
+      const hasNullStore = salesData.selectedStores?.some(store => store.storeId === null) || false;
+      const currentStore = salesData.selectedStores?.find(
+        store => store.storeId === storeDetail._id || store.storeId === null
+      );
+  
+      if (hasNullStore) {
+        const specificStore = salesData.selectedStores?.find(
+          store => store.storeId === storeDetail._id
+        );
+        
+        if (specificStore) {
+          setSelectId(specificStore._id);
+          setPopup({ PopUpShowSales: specificStore.isAvailable });
+        } else {
+          const nullStore = salesData.selectedStores?.find(store => store.storeId === null);
+          if (nullStore) {
+            setSelectId(nullStore._id);
+            setPopup({ PopUpShowSales: nullStore.isAvailable });
+          } else {
+            setPopup({ PopUpShowSales: false });
+          }
+        }
+      } else {
+        if (currentStore) {
+          setSelectId(currentStore._id);
+          setPopup({ PopUpShowSales: currentStore.isAvailable });
+        } else {
+          setPopup({ PopUpShowSales: false });
+        }
+      }
+    }
+  }, [salesData, storeDetail, isLoading]);
+
+  const renderLayout = () => (
     <Box
       sx={{
         paddingLeft: { md: 65 },
@@ -48,12 +163,27 @@ export default function MainLayout({ children }) {
           height: "calc( 100dvh - 65px )",
           maxHeight: "calc( 100dvh - 65px )",
           overflow: "auto",
-          overflowY: "auto",
+          overflowY: "scroll",
           position: "relative",
         }}
       >
+        {!isLoading && storeDetail && (
+          <PopUpShowSales
+            open={popup?.PopUpShowSales}
+            onClose={() => {
+              setPopup();
+            }}
+            salesData={salesData}
+            selectId={selectId}
+            END_POINT_SEVER={END_POINT_SEVER}
+            updateAvailableStoreId={updateAvailableStoreId}
+            updateSalesClick={updateSalesClick}
+          />
+        )}
         <Outlet />
       </div>
     </Box>
   );
+
+  return renderLayout();
 }
