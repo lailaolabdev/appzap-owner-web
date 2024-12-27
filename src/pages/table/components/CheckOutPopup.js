@@ -384,6 +384,13 @@ export default function CheckOutPopup({
     const TotalPrices =
       (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
 
+    const statusTable =
+      storeDetail?.tableEdit === undefined
+        ? false
+        : !storeDetail?.tableEdit
+        ? false
+        : true;
+
     const data = {
       memberId: memberData?._id,
       point: point,
@@ -391,6 +398,7 @@ export default function CheckOutPopup({
       moneyTotal: TotalPrices,
       money: totalBill,
       billId: dataBill?._id,
+      statusTable: statusTable,
     };
     return await RedeemPoint(data);
   };
@@ -1035,12 +1043,9 @@ export default function CheckOutPopup({
                           <InputGroup.Text>
                             {t("point")}:{" "}
                             {point
-                              ? Math.max(
-                                  0,
-                                  Number.parseInt(dataBill?.Point - point)
-                                )
-                              : dataBill?.Point
-                              ? dataBill?.Point
+                              ? convertNumber(dataBill?.Point - point)
+                              : convertNumber(dataBill?.Point)
+                              ? convertNumber(dataBill?.Point)
                               : "0"}
                           </InputGroup.Text>
                         </div>
@@ -1056,9 +1061,8 @@ export default function CheckOutPopup({
                           dataBill?.Point <= point
                         }
                         type="text"
-                        max={dataBill?.Point}
                         placeholder="0"
-                        value={point}
+                        value={convertNumber(point)}
                         onClick={() => {
                           setSelectInput("inputPoint");
                         }}
