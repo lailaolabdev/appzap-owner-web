@@ -2509,6 +2509,10 @@ export default function TableList() {
                           onSelectTable(table);
                           setSelectedTable(table);
                           setSelectTable(true);
+                          setStoreDetail({
+                            ...storeDetail,
+                            tableEdit: table?.editBill,
+                          });
                         }}
                       >
                         <div className="flex flex-col items-center justify-center h-full px-3 py-2">
@@ -2575,6 +2579,10 @@ export default function TableList() {
                         )}
                         onClick={() => {
                           onSelectTable(table);
+                          setStoreDetail({
+                            ...storeDetail,
+                            tableEdit: table?.editBill,
+                          });
                           if (table?.isOpened) {
                             navigate(`/staff/tableDetail/${table?._id}`);
                           } else {

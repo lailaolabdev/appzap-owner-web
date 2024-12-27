@@ -493,7 +493,7 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : `${item?.discount}%`}
                 </td>
-                <td>{item?.point ? item?.point : 0}</td>
+                <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
 
                 <>
                   <td>

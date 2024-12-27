@@ -94,18 +94,15 @@ export default function BillForCheckOutCafe80({
     }
   };
 
-  // const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
-  // const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
-  // const myUrl = " https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/8cdca155-d983-415e-86a4-99b9d0be7ef6.jpeg";
+  const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
+  const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
-  // console.log("check storeDetail--->", storeDetail);
-
-  // useEffect(() => {
-  //   convertImageToBase64(imageUrl2).then((base64) => {
-  //     // console.log("base64:==>", { base64 });
-  //     setBase64Image(base64);
-  //   });
-  // }, [imageUrl2]);
+  useEffect(() => {
+    convertImageToBase64(imageUrl2).then((base64) => {
+      // console.log("base64:==>", { base64 });
+      setBase64Image(base64);
+    });
+  }, [imageUrl2]);
 
   return (
     <Container>

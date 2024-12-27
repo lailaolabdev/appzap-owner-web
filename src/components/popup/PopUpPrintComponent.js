@@ -15,6 +15,7 @@ import {
   getBillReport,
   getCurrencyReport,
   getDeliveryReport,
+  getMoneyReport,
 } from "../../services/report";
 import _ from "lodash";
 import {
@@ -35,6 +36,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [bank, setBank] = useState([]);
   const [currency, setcurrency] = useState([]);
   const [delivery, setDelivery] = useState([]);
+  const [moneyReport, setMoneyReport] = useState([]);
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -53,6 +55,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   useEffect(() => {
     // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
+    getMoneyReportData(startDate);
   }, [startDate]);
 
   useEffect(() => {
@@ -141,6 +144,16 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         timer: 1500,
       });
     }
+  };
+
+  const getMoneyReportData = async (startDate) => {
+    const endDate = startDate; // Same date range for a single day
+    const startTime = "00:00:00";
+    const endTime = "23:59:59";
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+
+    const data = await getMoneyReport(storeDetail?._id, findBy);
+    setMoneyReport(data);
   };
 
   const getDataBillReport = async (startDate) => {
@@ -295,21 +308,21 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             {[
               {
                 name: `${t("bill_amount")}:`,
-                value: reportBill?.billCount,
+                value: moneyReport?.successAmount?.numberOfBills || 0,
               },
               {
                 name: `${t("total_amount")}:`,
-                value: reportBill?.totalAmount,
+                value: moneyReport?.successAmount?.totalBalance || 0,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("pay_cash")}:`,
-                value: reportBill?.cashAmount,
+                value: moneyReport?.successAmount?.payByCash || 0,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("pay_transfer")}:`,
-                value: reportBill?.transferAmount,
+                value: moneyReport?.successAmount?.transferPayment || 0,
                 type: storeDetail?.firstCurrency,
               },
 
@@ -326,7 +339,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 : []),
               {
                 name: `${t("point")}:`,
-                value: reportBill[`${t("point")}`],
+                value: moneyReport?.successAmount?.point || 0,
               },
               {
                 name: `${t("discount_bill")}:`,

@@ -483,7 +483,8 @@ export default function DashboardPage() {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("point")}</div>
                       ),
-                      qty: moneyReport?.successAmount?.pointCount || 0,
+                      qty:
+                        moneyReport?.successAmount?.transferCashPointCount || 0,
                       amount: moneyReport?.successAmount?.point || 0,
                       unit: t("point"),
                     },
