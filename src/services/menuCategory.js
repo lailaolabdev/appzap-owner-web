@@ -2,9 +2,9 @@ import { END_POINT_SEVER_TABLE_MENU } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 
-export const getCategories = async (findby) => {
+export const getCategories = async (storeId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/categories${findby}`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/categories?storeId=${storeId}`;
     const res = await axios.get(url);
     return res.data;
   } catch (error) {

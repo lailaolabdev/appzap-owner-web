@@ -101,13 +101,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "orderManagement",
     },
-    // {
-    //   title: t("financialStatic"),
-    //   key: "report",
-    //   icon: faTachometerAlt,
-    //   typeStore: "",
-    //   system: "reportManagement",
-    // },
+    {
+      title: t("stock_manage"),
+      key: "stock",
+      // icon: BsArchive,
+      icon: faBoxes,
+      typeStore: "",
+      hidden: !storeDetail?.hasPOS,
+      system: "stockManagement",
+    },
     {
       title: `${t("isCafe")}`,
       key: "cafe",
@@ -171,7 +173,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     //   key: "reportStocks",
     //   typeStore: "",
     //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasPOS,
+    // hidden: !storeDetail?.hasPOS,
     //   system: "settingManagement",
     // },
     // {
@@ -330,6 +332,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
           selected = selected + `/${storeDetail?._id}`;
         }
         if (selected === "cafe") {
+          selected = selected;
+        }
+        if (selected === "stock") {
           selected = selected;
         }
         if (selected === "songlist") {

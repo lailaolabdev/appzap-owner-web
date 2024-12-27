@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Spinner } from "react-bootstrap";
+import { Button, Spinner, Card } from "react-bootstrap";
 import { BODY, COLOR_APP } from "../../constants";
 import { getLocalData, END_POINT_SEVER } from "../../constants/api";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
@@ -12,6 +12,7 @@ import PopUpEditCategory from "./components/popup/PopUpEditCategory";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export default function Categorylist() {
   // state
@@ -23,6 +24,7 @@ export default function Categorylist() {
   const [loadStatus, setLoadStatus] = useState("");
   const { t } = useTranslation();
   const [Categorys, setCategorys] = useState([]);
+  const navigate = useNavigate();
   // functions
   const _confirmeDelete = async () => {
     try {
@@ -84,58 +86,81 @@ export default function Categorylist() {
           <Button
             className="col-sm-2"
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => setPopAddCategory(true)}
+            onClick={() => navigate("/settingStore/stock/addCategory")}
           >
             {t("add_stock_type")}
           </Button>
         </div>
         <div style={{ height: 20 }}></div>
         <div>
-          <div className="col-sm-12">
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">{t("stock_type_name")}</th>
-                  <th scope="col">{t("note")}</th>
-                  <th scope="col">{t("manage")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Categorys &&
-                  Categorys.map((data, index) => {
-                    return (
-                      <tr>
+          <Card>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              <h5>{t("stock_type")}</h5>
+            </Card.Header>
+            <Card.Body>
+              <table className="table table-hover">
+                <thead>
+                  <tr>
+                    <th>{t("no")}</th>
+                    <th>{t("stock_type_name")}</th>
+                    <th>{t("note")}</th>
+                    <th style={{ textAlign: "right" }}>{t("manage_data")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan="4" className="text-center">
+                        <Spinner animation="border" variant="primary" />
+                      </td>
+                    </tr>
+                  ) : loadStatus === "ERROR!!" ? (
+                    <tr>
+                      <td colSpan="4" className="text-center">
+                        <h1>{t("error")}</h1>
+                      </td>
+                    </tr>
+                  ) : (
+                    Categorys?.map((item, index) => (
+                      <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{data?.name}</td>
-                        <td>{data?.note}</td>
-                        <td>
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            style={{ color: COLOR_APP }}
+                        <td>{item.name}</td>
+                        <td>{item.note}</td>
+                        <td style={{ textAlign: "right" }}>
+                          <Button
+                            variant="outline-primary"
                             onClick={() => {
-                              setSelect(data);
+                              setSelect(item);
                               setPopEditCategory(true);
                             }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{ marginLeft: 20, color: "red" }}
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </Button>
+                          <span> </span>
+                          <Button
+                            variant="outline-danger"
                             onClick={() => {
-                              setSelect(data);
+                              setSelect(item);
                               setPopConfirmDeletion(true);
                             }}
-                          />
+                          >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                          </Button>
                         </td>
                       </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              {isLoading ? <Spinner animation="border" /> : ""}
-            </div>
-          </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </Card.Body>
+          </Card>
         </div>
       </div>
       {/* >>>>>>>>>>> popup >>>>>>>>>>>>>>>> */}

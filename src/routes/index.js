@@ -80,6 +80,9 @@ import BankList from "../pages/bank/BankList";
 import Delivery from "../pages/delivery/Delivery";
 import BillSplit from "../pages/split_bill/BillSplit";
 import ManageCounterList from "../pages/manageCounter/manageCounter";
+import StockCreate from "../pages/stock/StockCreate";
+import StockCreateCategory from "../pages/stock/StockCreateCategory";
+import ReportStocks from "../pages/report/ReportStocks";
 
 function Router() {
   return useRoutes([
@@ -245,6 +248,26 @@ function Router() {
         {
           path: "/settingStore/stock/limit/:limit/page/:page/:id",
           element: <StockList />,
+        },
+        {
+          path: "/stock",
+          element: <ReportStocks />,
+        },
+        {
+          path: "/stockCategory",
+          element: <StockCategory />,
+        },
+        {
+          path: "/settingStore/stock/add",
+          element: <StockCreate />,
+        },
+        {
+          path: "/settingStore/reportStock",
+          element: <ReportStocks />,
+        },
+        {
+          path: "/settingStore/stock/addCategory",
+          element: <StockCreateCategory />,
         },
         {
           path: "/settingStore/settingPromotion/:id",
