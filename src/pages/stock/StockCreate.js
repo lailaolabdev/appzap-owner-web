@@ -8,11 +8,14 @@ import { useStore } from "../../store";
 import { FaTimesCircle } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import clsx from "clsx";
+import { get } from "lodash";
 
 export default function StockCreate() {
   const navigate = useNavigate();
   const { profile } = useStore();
   const [categoryStock, setCategorysStock] = useState([]);
+  const [stockIndex, setStockIndex] = useState(0);
   const [stock, setStock] = useState([]);
   const [stockName, setStockName] = useState("");
   const [buyPrice, setBuyPrice] = useState(0);
@@ -22,17 +25,24 @@ export default function StockCreate() {
   const [units, setUnits] = useState("");
   const [stockCategory, setStockCategory] = useState("");
 
-  const [data, setData] = useState({
-    stockName: "",
-    buyPrice: 0,
-    wastes: 0,
-    stockQuality: 0,
-    note: "",
-    stockCategory: "",
-    unit: "",
-  });
+  // const [data, setData] = useState({
+  //   stockName: "",
+  //   buyPrice: 0,
+  //   wastes: 0,
+  //   stockQuality: 0,
+  //   note: "",
+  //   stockCategory: "",
+  //   unit: "",
+  // });
 
-  console.log({ data });
+  const [data, setData] = useState([]);
+
+  console.log("data", data);
+
+  const getIndex = () => {
+    const indexData = stock.length;
+    setStockIndex(indexData);
+  };
 
   const getCategoryStock = async () => {
     const res = await getStocksCategory(profile.data.storeId);
@@ -41,8 +51,8 @@ export default function StockCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //TODO: Validate name already exists
-    const nameExists = stock.some((item) => item.name === data.stockName);
+    // Validate name already exists
+    const nameExists = stock.some((item) => item.name === data[0]?.stockName);
 
     if (nameExists) {
       await Swal.fire({
@@ -54,32 +64,37 @@ export default function StockCreate() {
       return; // Stop further execution
     }
 
+    console.log("data[0]", data[0]);
+
     const newStock = {
-      name: data.stockName,
-      buyPrice: data.buyPrice,
-      wastes: data.wastes,
-      quantity: data.stockQuality,
-      detail: data.detail,
-      stockCategoryId: data.stockCategory,
-      unit: data.unit,
+      name: data[0]?.stockName,
+      buyPrice: data[0]?.buyPrice,
+      wastes: data[0]?.wastes,
+      quantity: data[0]?.stockQuality,
+      detail: data[0]?.detail,
+      stockCategoryId: data[0]?.stockCategory,
+      unit: data[0]?.unit,
       storeId: profile.data.storeId,
       createdBy: profile.data._id,
     };
 
-    localStorage.setItem("Stock", JSON.stringify([...stock, newStock]));
-    setStock([...stock, newStock]);
-    // setIsCreated(true);
-    // setShowAlert(true);
+    console.log("newStock", newStock);
 
-    setData({
-      stockName: "",
-      buyPrice: 0,
-      wastes: 0,
-      stockQuality: 0,
-      note: "",
-      stockCategory: "",
-      unit: "",
-    });
+    localStorage.setItem("StockName", JSON.stringify([...stock, newStock]));
+    setStock([...stock, newStock]);
+
+    // Reset form data
+    // setData([
+    //   {
+    //     stockName: "",
+    //     buyPrice: 0,
+    //     wastes: 0,
+    //     stockQuality: 0,
+    //     note: "",
+    //     stockCategory: "",
+    //     unit: "",
+    //   },
+    // ]);
   };
 
   const createStock = async () => {
@@ -100,13 +115,32 @@ export default function StockCreate() {
     }
   };
 
-  const handleChange = (e) => {
-    e.preventDefault();
+  const handleChange = (index, event) => {
+    const { name, value } = event.target;
+    console.log("index", index);
+    console.log("name", name);
+    console.log("value", value);
+    const updatedData = [...data];
+    updatedData[index] = {
+      ...updatedData[index],
+      [name]: value,
+    };
 
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
+    console.log("data1234", updatedData);
+
+    const createStock = stock.map((stockItem, index) => ({
+      name: stockItem.name,
+      buyPrice: data[index]?.buyPrice,
+      wastes: data[index]?.wastes,
+      quantity: data[index]?.quantity,
+      detail: stockItem.detail,
+      stockCategoryId: stockItem.categoryId,
+      unit: data[index]?.unit,
+      storeId: profile.data.storeId,
+      createdBy: profile.data._id,
+    }));
+
+    setData(createStock);
   };
 
   const handleRemove = (index) => {
@@ -114,15 +148,16 @@ export default function StockCreate() {
     setStock(updatedStockList);
     console.log({ updatedStockList });
     if (updatedStockList.length === 0) {
-      localStorage.removeItem("Stock");
+      localStorage.removeItem("StockName");
     } else {
-      localStorage.setItem("Stock", JSON.stringify(updatedStockList));
+      localStorage.setItem("StockName", JSON.stringify(updatedStockList));
     }
   };
 
   useEffect(() => {
     getCategoryStock();
-    const storedStock = JSON.parse(localStorage.getItem("Stock")) || [];
+    getIndex();
+    const storedStock = JSON.parse(localStorage.getItem("StockName")) || [];
     setStock(storedStock);
   }, []);
 
@@ -152,7 +187,7 @@ export default function StockCreate() {
                   type="text"
                   required
                   value={data.stockName}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(stockIndex + 1, e)}
                   autoComplete="given-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
                 />
@@ -167,7 +202,7 @@ export default function StockCreate() {
                   name="buyPrice"
                   placeholder={t("buy_price")}
                   value={data.buyPrice}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(stockIndex + 1, e)}
                   type="number"
                   autoComplete="family-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -185,7 +220,7 @@ export default function StockCreate() {
                   name="stockQuality"
                   type="number"
                   value={data.stockQuality}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(stockIndex + 1, e)}
                   placeholder={t("stock_amount")}
                   autoComplete="given-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -201,7 +236,7 @@ export default function StockCreate() {
                   name="wastes"
                   value={data.wastes}
                   setWastes
-                  onChange={handleChange}
+                  onChange={(e) => handleChange(stockIndex + 1, e)}
                   placeholder={`${t("wastes")} %`}
                   type="number"
                   autoComplete="family-name"
@@ -215,7 +250,7 @@ export default function StockCreate() {
               <select
                 name="stockCategory"
                 value={data.stockCategory}
-                onChange={handleChange}
+                onChange={(e) => handleChange(stockIndex + 1, e)}
                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
                 <option selected={true} disabled={true} value="">
@@ -246,7 +281,7 @@ export default function StockCreate() {
               <select
                 name="unit"
                 value={data.unit}
-                onChange={handleChange}
+                onChange={(e) => handleChange(stockIndex + 1, e)}
                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
                 <option selected={true} disabled={true} value="">
@@ -285,7 +320,7 @@ export default function StockCreate() {
               <textarea
                 name="detail"
                 value={data.detail}
-                onChange={handleChange}
+                onChange={(e) => handleChange(stockIndex + 1, e)}
                 placeholder={t("note")}
                 rows={3}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -328,27 +363,91 @@ export default function StockCreate() {
               <tbody>
                 {stock.map((stock, index) => {
                   // Find the category name from categoryStock array
-                  const categoryName =
-                    categoryStock.find(
-                      (cat) => cat._id === stock.stockCategoryId
-                    )?.name || "";
-
                   return (
                     <tr key={stock.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2">{index + 1}</td>
                       <td className="px-4 py-2 text-center">{stock.name}</td>
                       <td className="px-4 py-2 text-center">
-                        {stock.buyPrice}
+                        <div className="mt-2 justify-center">
+                          <input
+                            name="buyPrice"
+                            type="number"
+                            value={data.stockQuality}
+                            onChange={(e) => handleChange(index, e)}
+                            placeholder={t("buy_price")}
+                            autoComplete="given-name"
+                            className="text-center block w-20 rounded-md bg-white  py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6 justify-center"
+                          />
+                        </div>
                       </td>
                       <td className="px-4 py-2 text-center">
-                        {stock.quantity}
+                        <div className="mt-2 flex justify-center">
+                          <input
+                            name="quantity"
+                            type="number"
+                            value={data?.quantity}
+                            onChange={(e) => handleChange(index, e)}
+                            placeholder={t("stock_amount")}
+                            autoComplete="given-name"
+                            className="text-center block w-20 rounded-md bg-white py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
+                          />
+                        </div>
                       </td>
                       <td className="px-4 py-2 text-center">
-                        {stock.wastes} %
+                        <div className="mt-2 justify-center flex">
+                          <input
+                            name="wastes"
+                            type="number"
+                            value={data?.wastes}
+                            onChange={(e) => handleChange(index, e)}
+                            placeholder={t("wastes")}
+                            autoComplete="given-name"
+                            className="text-center block w-20 rounded-md bg-white  py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6 justify-center"
+                          />
+                          <span className="text-center px-2 py-1"> %</span>
+                        </div>
                       </td>
                       {/* Display category name instead of ID */}
-                      <td className="px-4 py-2 text-center">{categoryName}</td>
-                      <td className="px-4 py-2 text-center">{stock.unit}</td>
+                      <td className="px-4 py-2 text-center">
+                        {stock.categoryName}
+                      </td>
+                      <td>
+                        <div className="relative col-span-3">
+                          <select
+                            name="unit"
+                            value={data.unit}
+                            onChange={(e) => handleChange(index, e)}
+                            className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer justify-center"
+                          >
+                            <option selected={true} disabled={true} value="">
+                              -- {t("chose_unit")} --
+                            </option>
+                            <option value="ກຣາມ">{t("g")}</option>
+                            <option value="ກິໂລກຣາມ">{t("kilogram")}</option>
+                            <option value="ໝັດ">{t("bundle")}</option>
+                            <option value="ແກ້ວ">{t("bottle")}</option>
+                            <option value="ລິດ">{t("litre")}</option>
+                            <option value="ມິລລິລິດ">{t("millilitre")}</option>
+                            <option value="ລັງເເກັດ">{t("box")}</option>
+                            <option value="ແພັກ">{t("pack")}</option>
+                          </select>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.2"
+                            stroke="currentColor"
+                            className="h-5 w-5 ml-1 absolute top-2.5 right-2.5 text-slate-700"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                            />
+                          </svg>
+                        </div>
+                      </td>
+                      {/* <td className="px-4 py-2 text-center">{stock.unit}</td> */}
                       <td className="px-4 py-2 text-center">{stock.detail}</td>
                       <td className="px-4 py-2 text-center">
                         <button
