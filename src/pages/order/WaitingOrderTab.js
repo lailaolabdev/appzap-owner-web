@@ -139,9 +139,15 @@ export default function WaitingOrderTab() {
                       />
                     </td>
                     <td>{index + 1} </td>
-                    <td style={{ fontWeight: "bold", textWrap: "nowrap" }}>
-                      {order?.name ?? "-"}{" "}
-                    </td>
+                    <td style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+						{order?.name ?? "-"} 
+						{order?.options && order.options.length > 0
+							? order.options.map((option, index) => (
+								<span key={index}>[{option.name}]</span>
+							))
+							: ""}
+					</td>
+
                     <td
                       style={{
                         textWrap: "nowrap",
