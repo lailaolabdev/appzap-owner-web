@@ -11,7 +11,7 @@ import styled from "styled-components";
 
 export default function WaitingOrderTab() {
   const { t, i18n: { language } } = useTranslation();
-  const { orderItems, handleCheckbox } = useOrderStore();
+  const { orderItems, handleCheckbox, handleCheckAll } = useOrderStore();
 
   // Function to render options
   const renderOptions = (options) => {
@@ -21,6 +21,9 @@ export default function WaitingOrderTab() {
         ))
       : null;
   };
+
+  // Check if all items are checked
+  const allChecked = orderItems?.every((order) => order.isChecked);
 
   return (
     <RootStyle>
@@ -33,7 +36,12 @@ export default function WaitingOrderTab() {
             <tr>
               <th>
                 <FormControlLabel
-                  control={<Checkbox name="checkedC" />}
+                  control={
+                    <Checkbox
+                      checked={allChecked} // Check if all items are checked
+                      onChange={(e) => handleCheckAll(e.target.checked)} // Handle "check all" toggle
+                    />
+                  }
                   style={{ marginLeft: 2 }}
                 />
               </th>

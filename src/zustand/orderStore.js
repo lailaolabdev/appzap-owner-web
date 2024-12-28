@@ -35,15 +35,26 @@ export const useOrderStore = create(
           return { orderItems: updatedOrders };
         }),
 
-      // Handle checkbox toggle (isChecked)
+      // Handle checkbox toggle for individual order
       handleCheckbox: (order) =>
         set((state) => {
-          console.log("handleCheckbox22")
-          const updatedOrders = state.orderItems.map((item) =>
-            item._id === order._id
-              ? { ...item, isChecked: !item.isChecked }
-              : item
-          );
+          const updatedOrders = [...state.orderItems];
+          for (let i = 0; i < updatedOrders.length; i++) {
+            if (updatedOrders[i]._id === order._id) {
+              updatedOrders[i].isChecked = !updatedOrders[i].isChecked;
+              break;
+            }
+          }
+          return { orderItems: updatedOrders };
+        }),
+
+      // Handle toggle check all orders
+      handleCheckAll: (checked) =>
+        set((state) => {
+          const updatedOrders = state.orderItems.map((item) => ({
+            ...item,
+            isChecked: checked,
+          }));
           return { orderItems: updatedOrders };
         }),
 
