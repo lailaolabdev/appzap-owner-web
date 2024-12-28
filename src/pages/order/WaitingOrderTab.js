@@ -1,210 +1,90 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
-import { Image } from "react-bootstrap";
+import React from "react";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
-import html2canvas from "html2canvas";
-import { base64ToBlob } from "../../helpers";
-import Swal from "sweetalert2";
-import axios from "axios";
-import styled from "styled-components";
-import { useTranslation } from "react-i18next";
-
-/**
- * import components
- */
-// import OrderNavbar from "./component/OrderNavbar";
-import BillForChef58 from "../../components/bill/BillForChef58";
-import BillForChef80 from "../../components/bill/BillForChef80";
-
-import { orderStatus } from "../../helpers";
-import { WAITING_STATUS } from "../../constants";
-import { useStore } from "../../store";
-import empty from "../../image/empty.png";
 import ReactAudioPlayer from "react-audio-player";
+import Swal from "sweetalert2";
+import { useTranslation } from "react-i18next";
+import { useStore } from "../../store";
+import { useOrderStore } from "../../zustand/orderStore";
+import { orderStatus } from "../../helpers";
 import Notification from "../../vioceNotification/ding.mp3";
 import { fontMap } from "../../utils/font-map";
-// import { socket } from "../../services/socket";
-import { useOrderStore } from "../../zustand/orderStore"
+import styled from "styled-components";
 
+/**
+ * This component renders the waiting orders tab
+ */
 export default function WaitingOrderTab() {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation();
-  const {
-    soundPlayer,
-    // orderItems,
-    getOrderItemsStore,
-    handleCheckbox,
-    checkAllOrders,
-    setNewOrderTransaction,
-    setNewOrderUpdateStatusTransaction,
-    newOrderTransaction,
-    newOrderUpdateStatusTransaction,
-    getOrderWaitingAndDoingByStore,
-  } = useStore();
+  const { t, i18n: { language } } = useTranslation();
+  const { orderItems, handleCheckbox } = useOrderStore();
+  const { checkAllOrders } = useStore();
 
-  // zustand
-  const {orderItems, handleNewOrderItems} = useOrderStore()
-
-  /**
-   * Initial Component
-   */
-  const { storeDetail, selectOrderStatus, setSelectOrderStatus } = useStore();
-  const { printers, selectedTable } = useStore();
-  const billForCher80 = useRef([]);
-  const billForCher58 = useRef([]);
+  // Function to render options
+  const renderOptions = (options) => {
+    return options && options.length > 0
+      ? options.map((option, index) => (
+          <span key={index}>[{option.name}]</span>
+        ))
+      : null;
+  };
 
   return (
     <RootStyle>
       <div>
-        <div>
-          <ReactAudioPlayer src={Notification} ref={soundPlayer} />
-        </div>
-        <div style={{ overflowX: "auto" }}>
-          <TableCustom responsive>
-            <thead>
-              <tr>
-                <th>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        name="checkedC"
-                        onChange={(e) => checkAllOrders(e)}
-                      />
-                    }
-                    style={{ marginLeft: 2 }}
+        <ReactAudioPlayer src={Notification} />
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <TableCustom responsive>
+          <thead>
+            <tr>
+              <th>
+                <FormControlLabel
+                  control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />}
+                  style={{ marginLeft: 2 }}
+                />
+              </th>
+              <th className={fontMap[language]}>{t("no")}</th>
+              <th className={fontMap[language]}>{t("menu_name")}</th>
+              <th className={fontMap[language]}>{t("amount")}</th>
+              <th className={fontMap[language]}>{t("from_table")}</th>
+              <th className={fontMap[language]}>{t("table_code")}</th>
+              <th className={fontMap[language]}>{t("status")}</th>
+              <th className={fontMap[language]}>{t("status")}</th>
+              <th className={fontMap[language]}>{t("commend")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderItems?.map((order, index) => (
+              <tr key={index}>
+                <td>
+                  <Checkbox
+                    checked={order?.isChecked || false}
+                    onChange={(e) => handleCheckbox(order)}
+                    color="primary"
                   />
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("no")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("menu_name")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("amount")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("from_table")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("table_code")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("status")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("status")}
-                </th>
-                <th
-                  style={{ textWrap: "nowrap" }}
-                  className={fontMap[language]}
-                >
-                  {t("commend")}
-                </th>
+                </td>
+                <td>{index + 1}</td>
+                <td style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+                  {order?.name ?? "-"} {renderOptions(order?.options)}
+                </td>
+                <td>{order?.quantity ?? "-"}</td>
+                <td>{order?.tableId?.name ?? "-"}</td>
+                <td>{order?.code ?? "-"}</td>
+                <td style={{ color: "red", fontWeight: "bold" }}>
+                  {order?.status ? orderStatus(order?.status) : "-"}
+                </td>
+                <td>{order?.createdAt ? moment(order?.createdAt).format("HH:mm") : "-"}</td>
+                <td>{order?.note ?? "-"}</td>
               </tr>
-            </thead>
-            <tbody>
-              {orderItems?.map((order, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <Checkbox
-                        checked={order?.isChecked ? true : false}
-                        onChange={(e) => handleCheckbox(order)}
-                        color="primary"
-                        inputProps={{ "aria-label": "secondary checkbox" }}
-                      />
-                    </td>
-                    <td>{index + 1} </td>
-                    <td style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-						{order?.name ?? "-"} 
-						{order?.options && order.options.length > 0
-							? order.options.map((option, index) => (
-								<span key={index}>[{option.name}]</span>
-							))
-							: ""}
-					</td>
-
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.quantity ?? "-"}{" "}
-                    </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.tableId?.name ?? "-"}
-                    </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.code ?? "-"}{" "}
-                    </td>
-                    <td
-                      style={{
-                        color: "red",
-                        fontWeight: "bold",
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.status ? orderStatus(order?.status) : "-"}
-                    </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.createdAt
-                        ? moment(order?.createdAt).format("HH:mm ")
-                        : "-"}{" "}
-                    </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                      }}
-                    >
-                      {order?.note ?? "-"}{" "}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </TableCustom>
-        </div>
+            ))}
+          </tbody>
+        </TableCustom>
       </div>
     </RootStyle>
   );
 }
 
+// Styled-components for styling
 const RootStyle = styled("div")({
   padding: 10,
 });
@@ -212,14 +92,10 @@ const RootStyle = styled("div")({
 const TableCustom = styled("table")({
   width: "100%",
   fontSize: 18,
-  ["th,td"]: {
+  ["th, td"]: {
     padding: 0,
   },
-  ["th:first-child"]: {
-    maxWidth: 40,
-    width: 40,
-  },
-  ["td:first-child"]: {
+  ["th:first-child, td:first-child"]: {
     maxWidth: 40,
     width: 40,
   },
