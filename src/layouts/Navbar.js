@@ -14,6 +14,7 @@ import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import { NotifyButton } from "../components/NotifyButton";
+import { useStoreStore } from "../zustand/storeStore";
 
 // sound
 import messageSound from "../sound/message.mp3";
@@ -34,6 +35,8 @@ export default function NavBar() {
 
   // ref
   const soundPlayer = useRef();
+
+  const { clearStoreDetail } = useStoreStore()
 
   useEffect(() => {
     const getData = () => {
@@ -57,7 +60,7 @@ export default function NavBar() {
 
   const _onLogout = () => {
     setProfile({});
-    setStoreDetail({});
+    clearStoreDetail()
     navigate(`/`);
   };
 

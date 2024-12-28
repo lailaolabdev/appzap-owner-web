@@ -77,6 +77,10 @@ export const useStoreStore = create(
               [key]: value,
             },
           })),
+
+        // Action to clear store details and reset to empty
+        clearStoreDetail: () => set({ storeDetail: null,loading: false, error: null }),
+
       }),
       {
         name: "storeDetail", // Name of the item in localStorage
