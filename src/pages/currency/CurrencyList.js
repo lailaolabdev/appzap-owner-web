@@ -26,10 +26,16 @@ import moment from "moment";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import { useTranslation } from "react-i18next";
+import {useStoreStore} from "../../zustand/storeStore"
 
 export default function CurrencyList() {
   const { t } = useTranslation();
-  const { storeDetail, setStoreDetail } = useStore();
+  // const { setStoreDetail } = useStore();
+  // zustand state store
+  const {
+    storeDetail, 
+    fetchStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -163,8 +169,10 @@ export default function CurrencyList() {
         throw new Error("errors");
       }
 
-      const dataStore = await getStore(storeDetail?._id);
-      setStoreDetail(dataStore);
+      // Zustand store
+      await fetchStoreDetail(storeDetail?._id);
+      // const dataStore = await getStore(storeDetail?._id);
+      // setStoreDetail(dataStore);
       setShowEditMainCurrency(false);
       successAdd(`${t("edit_fail")}`);
     } catch {

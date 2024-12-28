@@ -13,7 +13,7 @@ export const getStores = async (search) => {
     const res = await axios.get(url);
     return res.data;
   } catch (error) {
-    return error;
+    return {error};
   }
 };
 export const getStore = async (storeId) => {
@@ -22,7 +22,7 @@ export const getStore = async (storeId) => {
     const res = await axios.get(url);
     return res.data;
   } catch (error) {
-    return error;
+    return {error};
   }
 };
 export const updateStorePin = async (usePin = false) => {
@@ -39,7 +39,7 @@ export const updateStorePin = async (usePin = false) => {
     );
     return reservation;
   } catch (error) {
-    return error;
+    return {error};
   }
 };
 
@@ -56,8 +56,9 @@ export const updateStore = async (data, id) => {
         headers: await getHeaders(),
       }
     );
+    console.log({reservation})
     return reservation;
   } catch (error) {
-    return error;
+    return {error};
   }
 };

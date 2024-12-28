@@ -36,6 +36,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { getStore, updateStorePin } from "../../services/store";
 import { useTranslation } from "react-i18next";
+import {useStoreStore} from "../../zustand/storeStore"
 
 let limitData = 10;
 
@@ -48,8 +49,14 @@ export default function PinPage() {
   const [totalPagination, setTotalPagination] = useState(0);
   const [PINs, setPINs] = useState();
 
+  // zustand state store
+  const {
+    storeDetail, 
+    fetchStoreDetail,
+    updateStoreDetail} = useStoreStore()
+
   // store
-  const { storeDetail, setStoreDetail } = useStore();
+  const { setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {
@@ -167,8 +174,10 @@ export default function PinPage() {
                     onChange={(e) => {
                       const _run = async () => {
                         await updateStorePin(e.target.checked);
-                        const data = await getStore(storeDetail?._id);
-                        setStoreDetail(data);
+                        //zustand store
+                        await fetchStoreDetail(storeDetail?._id)
+                        // const data = await getStore(storeDetail?._id);
+                        
                       };
                       _run();
                     }}

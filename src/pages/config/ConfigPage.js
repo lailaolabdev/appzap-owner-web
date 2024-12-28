@@ -26,6 +26,8 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
 import { getStore, updateStore } from "../../services/store";
+import {useStoreStore} from "../../zustand/storeStore"
+
 export default function ConfigPage() {
   const { t } = useTranslation();
   // state
@@ -35,13 +37,17 @@ export default function ConfigPage() {
   const [tax, setTax] = useState(0);
   const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
+  const {
+    storeDetail, 
+    fetchStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   // provider
   const {
     audioSetting,
     setAudioSetting,
-    setStoreDetail,
-    storeDetail,
+    // setStoreDetail,
+    // storeDetail,
     profile,
   } = useStore();
 
@@ -116,30 +122,43 @@ export default function ConfigPage() {
     const isCafe = e.target.checked;
     const _type = isCafe ? "CAFE" : "GENERAL";
     await updateSettingCafe(profile?.data.storeId, { data: _type });
-    const dataStore = await getStore(storeDetail?._id);
-    setStoreDetail(dataStore);
+    // zustand store
+    await fetchStoreDetail(storeDetail?._id);
+    
+    // const dataStore = await getStore(storeDetail?._id);
+    // setStoreDetail(dataStore);
   };
   const changeCRM = async (e) => {
     const isType = e.target.checked;
     await updateSettingCRM(profile?.data.storeId, { data: isType });
-    const dataStore = await getStore(storeDetail?._id);
+    // zustand store
+    await fetchStoreDetail(storeDetail?._id);
 
-    setStoreDetail(dataStore);
+    // setStoreDetail(dataStore);
   };
+
   const changeDelivery = async (e) => {
     const isType = e.target.checked;
 
     await updateSettingDelivery(profile?.data.storeId, { data: isType });
-    const dataStore = await getStore(storeDetail?._id);
+    // const dataStore = await getStore(storeDetail?._id);
+    // setStoreDetail(dataStore);
 
-    setStoreDetail(dataStore);
+    // zustand store
+    await fetchStoreDetail(storeDetail?._id);
+
   };
 
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
-    await updateStore({ isBankPaymentAvailable: isChecked }, storeDetail?._id);
-    const dataStore = await getStore(storeDetail?._id);
-    setStoreDetail(dataStore);
+
+    // zustand store
+    await updateStoreDetail({ isBankPaymentAvailable: isChecked }, storeDetail?._id)
+    await fetchStoreDetail(storeDetail?._id);
+
+    // await updateStore({ isBankPaymentAvailable: isChecked }, storeDetail?._id);
+    // const dataStore = await getStore(storeDetail?._id);
+    // setStoreDetail(dataStore);
   };
 
   const TooltipFunc = ({ id, children, title }) => (
