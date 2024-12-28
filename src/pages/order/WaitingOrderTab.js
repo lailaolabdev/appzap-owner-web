@@ -2,22 +2,16 @@ import React from "react";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import moment from "moment";
 import ReactAudioPlayer from "react-audio-player";
-import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../store";
 import { useOrderStore } from "../../zustand/orderStore";
 import { orderStatus } from "../../helpers";
 import Notification from "../../vioceNotification/ding.mp3";
 import { fontMap } from "../../utils/font-map";
 import styled from "styled-components";
 
-/**
- * This component renders the waiting orders tab
- */
 export default function WaitingOrderTab() {
   const { t, i18n: { language } } = useTranslation();
   const { orderItems, handleCheckbox } = useOrderStore();
-  const { checkAllOrders } = useStore();
 
   // Function to render options
   const renderOptions = (options) => {
@@ -39,7 +33,7 @@ export default function WaitingOrderTab() {
             <tr>
               <th>
                 <FormControlLabel
-                  control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />}
+                  control={<Checkbox name="checkedC" />}
                   style={{ marginLeft: 2 }}
                 />
               </th>
@@ -59,7 +53,7 @@ export default function WaitingOrderTab() {
                 <td>
                   <Checkbox
                     checked={order?.isChecked || false}
-                    onChange={(e) => handleCheckbox(order)}
+                    onChange={() => handleCheckbox(order)} // Handle checkbox toggle
                     color="primary"
                   />
                 </td>

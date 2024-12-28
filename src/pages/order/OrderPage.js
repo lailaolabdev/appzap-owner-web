@@ -139,33 +139,48 @@ export default function OrderPage() {
   // console.log("orderItems", orderItems);
 
   const groupItemsByPrinter = (items) => {
-    return items?.reduce((printerGroups, item) => {
-      // Find the printer by its ID
-      const printer = printers.find((e) => e?._id === item.printer);
-      const printerIp = printer?.ip || "unknown"; // Get the printer IP, default to "unknown"
-
-      // Initialize the group for this printerIp if not already present
+    // Early return if no items or printers are provided
+    if (!items || !Array.isArray(items) || items.length === 0) return {};
+  
+    if (!Array.isArray(printers) || printers.length === 0) return {};
+  
+    // Create a map of printer IPs for efficient lookup
+    const printerMap = printers.reduce((acc, printer) => {
+      if (printer?._id && printer?.ip) {
+        acc[printer._id] = printer.ip; // Map printer ID to IP address
+      }
+      return acc;
+    }, {});
+  
+    // Reduce the items array into groups
+    return items.reduce((printerGroups, item) => {
+      const printerIp = printerMap[item.printer] || "unknown"; // Default to "unknown" if no match
+  
+      // Initialize groups if not already present
       if (!printerGroups[printerIp]) {
         printerGroups[printerIp] = {};
       }
-
-      // Group by tableId within the printer
+  
       const tableId = item?.tableId;
-      if (!printerGroups[printerIp][tableId]) {
+      const code = item?.code;
+  
+      // Initialize groups for tableId and code if not present
+      if (tableId && !printerGroups[printerIp][tableId]) {
         printerGroups[printerIp][tableId] = {};
       }
-
-      // Group by code within the tableId and printerIp
-      const code = item?.code;
-      if (!printerGroups[printerIp][tableId][code]) {
+      if (code && !printerGroups[printerIp][tableId]?.[code]) {
         printerGroups[printerIp][tableId][code] = [];
       }
-
-      // Push the item to the grouped array
-      printerGroups[printerIp][tableId][code].push(item);
+  
+      // Add the item to the appropriate group
+      if (tableId && code) {
+        printerGroups[printerIp][tableId][code].push(item);
+      }
+  
       return printerGroups;
     }, {});
   };
+  
 
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async () => {

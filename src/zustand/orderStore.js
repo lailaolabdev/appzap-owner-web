@@ -21,7 +21,7 @@ export const useOrderStore = create(
             );
 
             if (existingOrderIndex > -1) {
-              // Update the existing order at the front of the list
+              // Update the existing order
               updatedOrders[existingOrderIndex] = {
                 ...updatedOrders[existingOrderIndex],
                 ...newOrder,
@@ -32,6 +32,18 @@ export const useOrderStore = create(
             }
           });
 
+          return { orderItems: updatedOrders };
+        }),
+
+      // Handle checkbox toggle (isChecked)
+      handleCheckbox: (order) =>
+        set((state) => {
+          console.log("handleCheckbox22")
+          const updatedOrders = state.orderItems.map((item) =>
+            item._id === order._id
+              ? { ...item, isChecked: !item.isChecked }
+              : item
+          );
           return { orderItems: updatedOrders };
         }),
 
