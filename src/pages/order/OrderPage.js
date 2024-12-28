@@ -60,7 +60,7 @@ export default function OrderPage() {
     // storeDetail,
     // orderItems,
     setOrderItems,
-    orderLoading,
+    // orderLoading,
     getOrderItemsStore,
     selectOrderStatus,
     setSelectOrderStatus,
@@ -646,16 +646,6 @@ export default function OrderPage() {
             }
           >
             <Tool />
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -667,16 +657,6 @@ export default function OrderPage() {
             }
           >
             <Tool />
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
             <DoingOrderTab />
           </Tab>
           <Tab
@@ -686,16 +666,6 @@ export default function OrderPage() {
             }
           >
             {/* <Tool /> */}
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
             <ServedOrderTab />
           </Tab>
           <Tab
@@ -705,16 +675,6 @@ export default function OrderPage() {
             }
           >
             {/* <Tool /> */}
-            {orderLoading && (
-              <div>
-                <Spinner
-                  animation="border"
-                  style={{ marginLeft: 20 }}
-                  size="sm"
-                />{" "}
-                <span>Load new data...</span>
-              </div>
-            )}
             <CanceledOrderTab />
           </Tab>
           {/* <Tab eventKey="contact" title="Contact" disabled>
