@@ -38,7 +38,7 @@ export const useOrderStore = create(
       handleNewOrderItems: (newOrders) =>
         set((state) => {
           const updatedOrders = [...state.orderItems]; // Copy the current orderItems
-      
+
           // Arrays to store newly filtered orders
           const newWaitingOrders = [];
           const newDoingOrders = [];
@@ -46,13 +46,13 @@ export const useOrderStore = create(
           const newCanceledOrders = [];
           const newPaidOrders = [];
           const newPrintBillOrders = [];
-      
+
           // Prepend new orders to their respective status lists and to the updatedOrders array
           newOrders.forEach((newOrder) => {
             const existingOrderIndex = updatedOrders.findIndex(
               (order) => order._id === newOrder._id
             );
-      
+
             if (existingOrderIndex > -1) {
               // Update the existing order
               updatedOrders[existingOrderIndex] = {
@@ -63,7 +63,7 @@ export const useOrderStore = create(
               // Add the new order at the front
               updatedOrders.unshift(newOrder);
             }
-      
+
             // Filter the new order based on its status and prepend to the appropriate list
             switch (newOrder.status) {
               case "WAITING":
@@ -88,7 +88,7 @@ export const useOrderStore = create(
                 break;
             }
           });
-      
+
           // Return updated state with newly prepended orders in respective status arrays
           return {
             orderItems: updatedOrders,
@@ -99,30 +99,53 @@ export const useOrderStore = create(
             paidOrders: [...newPaidOrders, ...state.paidOrders], // Prepend new orders
             printBillOrders: [...newPrintBillOrders, ...state.printBillOrders], // Prepend new orders
           };
-        }),      
-      
-
-      // Handle checkbox toggle for individual order
-      handleCheckbox: (order) =>
-        set((state) => {
-          const updatedOrders = [...state.orderItems];
-          for (let i = 0; i < updatedOrders.length; i++) {
-            if (updatedOrders[i]._id === order._id) {
-              updatedOrders[i].isChecked = !updatedOrders[i].isChecked;
-              break;
-            }
-          }
-          return { orderItems: updatedOrders };
         }),
 
-      // Handle toggle check all orders
-      handleCheckAll: (checked) =>
+      // Handle checkbox toggle for individual order based on status
+      handleCheckbox: (order, status) =>
         set((state) => {
+          const statusLower = status.toLowerCase(); // Convert status to lowercase
+
+          // Update the isChecked state of the specific order in the orderItems list
+          const updatedOrders = state.orderItems.map((item) =>
+            item._id === order._id
+              ? { ...item, isChecked: !item.isChecked }
+              : item
+          );
+
+          // Update the isChecked state for orders with the given status
+          const updatedStatusOrders = state[`${statusLower}Orders`].map((item) =>
+            item._id === order._id
+              ? { ...item, isChecked: !item.isChecked }
+              : item
+          );
+
+          return {
+            orderItems: updatedOrders,
+            [`${statusLower}Orders`]: updatedStatusOrders, // Update the status-based array
+          };
+        }),
+
+      // Handle toggle check all orders based on status
+      handleCheckAll: (checked, status) =>
+        set((state) => {
+          const statusLower = status.toLowerCase(); // Convert status to lowercase
+
+          // Update all orders with the given status
           const updatedOrders = state.orderItems.map((item) => ({
             ...item,
             isChecked: checked,
           }));
-          return { orderItems: updatedOrders };
+
+          const updatedStatusOrders = state[`${statusLower}Orders`].map((item) => ({
+            ...item,
+            isChecked: checked,
+          }));
+
+          return {
+            orderItems: updatedOrders,
+            [`${statusLower}Orders`]: updatedStatusOrders, // Update the status-based array
+          };
         }),
 
       setOrderLoading: (loading) => set({ orderLoading: loading }),

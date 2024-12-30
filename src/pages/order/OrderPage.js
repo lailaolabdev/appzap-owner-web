@@ -67,23 +67,26 @@ export default function OrderPage() {
     newOrderTransaction,
     setNewOrderTransaction,
     getOrderWaitingAndDoingByStore,
-    orderDoing,
-    orderWaiting,
+    // orderDoing,
+    // orderWaiting,
     setorderItemForPrintBillSelect,
     setCountOrderWaiting,
     printBackground,
     setPrintBackground,
   } = useStore();
 
-  
-
-  
 
   // zustand state store
   const {
     storeDetail, 
     updateStoreDetail} = useStoreStore()
-  const {orderItems, handleNewOrderItems} = useOrderStore()
+  const {
+    orderItems, 
+    waitingOrders,
+    doingOrders,
+    servedOrders,
+    canceledOrders, 
+    handleNewOrderItems} = useOrderStore()
 
   console.log({storeDetail})
   console.log({orderItems})
@@ -641,7 +644,7 @@ export default function OrderPage() {
             eventKey={WAITING_STATUS}
             title={
               <span className={fontMap[language]}>{`${t("hasOrder")}(${
-                orderWaiting?.length
+                waitingOrders?.length
               })`}</span>
             }
           >
@@ -652,7 +655,7 @@ export default function OrderPage() {
             eventKey={DOING_STATUS}
             title={
               <span className={fontMap[language]}>{`${t("cooking")}(${
-                orderDoing?.length
+                doingOrders?.length
               })`}</span>
             }
           >
@@ -662,7 +665,9 @@ export default function OrderPage() {
           <Tab
             eventKey={SERVE_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("served")}`}</span>
+              <span className={fontMap[language]}>{`${t("served")}(${
+                servedOrders?.length
+              })`}</span>
             }
           >
             {/* <Tool /> */}
@@ -671,7 +676,9 @@ export default function OrderPage() {
           <Tab
             eventKey={CANCEL_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("cancel")}`}</span>
+              <span className={fontMap[language]}>{`${t("cancel")}(${
+                canceledOrders?.length
+              })`}</span>
             }
           >
             {/* <Tool /> */}

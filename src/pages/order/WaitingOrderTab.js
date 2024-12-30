@@ -39,7 +39,7 @@ export default function WaitingOrderTab() {
                   control={
                     <Checkbox
                       checked={allChecked} // Check if all items are checked
-                      onChange={(e) => handleCheckAll(e.target.checked)} // Handle "check all" toggle
+                      onChange={(e) => handleCheckAll(e.target.checked, "waiting")} // Handle "check all" toggle
                     />
                   }
                   style={{ marginLeft: 2 }}
@@ -61,7 +61,7 @@ export default function WaitingOrderTab() {
                 <td>
                   <Checkbox
                     checked={order?.isChecked || false}
-                    onChange={() => handleCheckbox(order)} // Handle checkbox toggle
+                    onChange={() => handleCheckbox(order, "waiting")} // Handle checkbox toggle
                     color="primary"
                   />
                 </td>
