@@ -6,20 +6,53 @@ export const useOrderStore = create(
     (set) => ({
       // State
       orderItems: [],
+      waitingOrders: [], // Orders with status "WAITING"
+      doingOrders: [],   // Orders with status "DOING"
+      servedOrders: [],  // Orders with status "SERVED"
+      canceledOrders: [], // Orders with status "CANCELED"
+      paidOrders: [],    // Orders with status "PAID"
+      printBillOrders: [], // Orders with status "PRINTBILL"
       orderLoading: false,
 
       // Actions
-      setOrderItems: (items) => set({ orderItems: items }),
+      setOrderItems: (items) => {
+        // Filter the orders based on status and set them in respective state variables
+        const waitingOrders = items.filter((order) => order.status === "WAITING");
+        const doingOrders = items.filter((order) => order.status === "DOING");
+        const servedOrders = items.filter((order) => order.status === "SERVED");
+        const canceledOrders = items.filter((order) => order.status === "CANCELED");
+        const paidOrders = items.filter((order) => order.status === "PAID");
+        const printBillOrders = items.filter((order) => order.status === "PRINTBILL");
+
+        set({
+          orderItems: items,
+          waitingOrders,
+          doingOrders,
+          servedOrders,
+          canceledOrders,
+          paidOrders,
+          printBillOrders,
+        });
+      },
 
       handleNewOrderItems: (newOrders) =>
         set((state) => {
           const updatedOrders = [...state.orderItems]; // Copy the current orderItems
-
+      
+          // Arrays to store newly filtered orders
+          const newWaitingOrders = [];
+          const newDoingOrders = [];
+          const newServedOrders = [];
+          const newCanceledOrders = [];
+          const newPaidOrders = [];
+          const newPrintBillOrders = [];
+      
+          // Prepend new orders to their respective status lists and to the updatedOrders array
           newOrders.forEach((newOrder) => {
             const existingOrderIndex = updatedOrders.findIndex(
               (order) => order._id === newOrder._id
             );
-
+      
             if (existingOrderIndex > -1) {
               // Update the existing order
               updatedOrders[existingOrderIndex] = {
@@ -30,10 +63,44 @@ export const useOrderStore = create(
               // Add the new order at the front
               updatedOrders.unshift(newOrder);
             }
+      
+            // Filter the new order based on its status and prepend to the appropriate list
+            switch (newOrder.status) {
+              case "WAITING":
+                newWaitingOrders.unshift(newOrder); // Prepend to the waitingOrders list
+                break;
+              case "DOING":
+                newDoingOrders.unshift(newOrder); // Prepend to the doingOrders list
+                break;
+              case "SERVED":
+                newServedOrders.unshift(newOrder); // Prepend to the servedOrders list
+                break;
+              case "CANCELED":
+                newCanceledOrders.unshift(newOrder); // Prepend to the canceledOrders list
+                break;
+              case "PAID":
+                newPaidOrders.unshift(newOrder); // Prepend to the paidOrders list
+                break;
+              case "PRINTBILL":
+                newPrintBillOrders.unshift(newOrder); // Prepend to the printBillOrders list
+                break;
+              default:
+                break;
+            }
           });
-
-          return { orderItems: updatedOrders };
-        }),
+      
+          // Return updated state with newly prepended orders in respective status arrays
+          return {
+            orderItems: updatedOrders,
+            waitingOrders: [...newWaitingOrders, ...state.waitingOrders], // Prepend new orders
+            doingOrders: [...newDoingOrders, ...state.doingOrders], // Prepend new orders
+            servedOrders: [...newServedOrders, ...state.servedOrders], // Prepend new orders
+            canceledOrders: [...newCanceledOrders, ...state.canceledOrders], // Prepend new orders
+            paidOrders: [...newPaidOrders, ...state.paidOrders], // Prepend new orders
+            printBillOrders: [...newPrintBillOrders, ...state.printBillOrders], // Prepend new orders
+          };
+        }),      
+      
 
       // Handle checkbox toggle for individual order
       handleCheckbox: (order) =>

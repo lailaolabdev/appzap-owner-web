@@ -11,7 +11,7 @@ import styled from "styled-components";
 
 export default function WaitingOrderTab() {
   const { t, i18n: { language } } = useTranslation();
-  const { orderItems, handleCheckbox, handleCheckAll } = useOrderStore();
+  const { waitingOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
   // Function to render options
   const renderOptions = (options) => {
@@ -23,7 +23,7 @@ export default function WaitingOrderTab() {
   };
 
   // Check if all items are checked
-  const allChecked = orderItems?.every((order) => order.isChecked);
+  const allChecked = waitingOrders?.every((order) => order.isChecked);
 
   return (
     <RootStyle>
@@ -56,7 +56,7 @@ export default function WaitingOrderTab() {
             </tr>
           </thead>
           <tbody>
-            {orderItems?.map((order, index) => (
+            {waitingOrders?.map((order, index) => (
               <tr key={index}>
                 <td>
                   <Checkbox
