@@ -16,6 +16,7 @@ const WaitingOrderTab = () => {
         <ReactAudioPlayer src={Notification} />
       </div>
       <OrderList
+	  	onTabStatusName={"WAITING"}
         orders={waitingOrders} // Pass orders to OrderList component
         handleCheckbox={handleCheckbox} // Pass handleCheckbox function
         handleCheckAll={handleCheckAll} // Pass handleCheckAll function

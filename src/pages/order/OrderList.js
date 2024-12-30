@@ -7,7 +7,7 @@ import moment from "moment";
 import { fontMap } from "../../utils/font-map";
 import styled from "styled-components"; // Import styled-components
 
-const OrderList = ({ orders, handleCheckbox, handleCheckAll, language, t }) => {
+const OrderList = ({onTabStatusName, orders, handleCheckbox, handleCheckAll, language, t }) => {
   const allChecked = orders?.every((order) => order.isChecked); // Check if all items are checked
 
   return (
@@ -21,7 +21,7 @@ const OrderList = ({ orders, handleCheckbox, handleCheckAll, language, t }) => {
                   control={
                     <Checkbox
                       checked={allChecked} // Check if all items are checked
-                      onChange={(e) => handleCheckAll(e.target.checked)} // Handle "check all" toggle
+                      onChange={(e) => handleCheckAll(e.target.checked, onTabStatusName)} // Handle "check all" toggle
                     />
                   }
                   style={{ marginLeft: 2 }}
@@ -43,7 +43,7 @@ const OrderList = ({ orders, handleCheckbox, handleCheckAll, language, t }) => {
                 <td>
                   <Checkbox
                     checked={order?.isChecked || false}
-                    onChange={() => handleCheckbox(order)} // Handle checkbox toggle
+                    onChange={() => handleCheckbox(order, onTabStatusName)} // Handle checkbox toggle
                     color="primary"
                   />
                 </td>
