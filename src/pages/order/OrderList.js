@@ -17,6 +17,14 @@ const OrderList = ({
 }) => {
   const allChecked = orders?.every((order) => order.isChecked); // Check if all items are checked
 
+  // Handle row click to toggle checkbox
+  const handleRowClick = (order, e) => {
+    if (e.target.type !== 'checkbox') {
+      // Toggle checkbox if the user clicks anywhere in the row except on the checkbox itself
+      handleCheckbox(order, onTabStatusName);
+    }
+  };
+
   return (
     <RootStyle>
       <div style={{ overflowX: "auto" }}>
@@ -46,7 +54,7 @@ const OrderList = ({
           </thead>
           <tbody>
             {orders?.map((order, index) => (
-              <tr key={index}>
+              <tr key={index} onClick={(e) => handleRowClick(order, e)}> {/* Handle row click */}
                 <td>
                   <Checkbox
                     checked={order?.isChecked || false}
