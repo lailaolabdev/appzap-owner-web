@@ -10,6 +10,8 @@ const PopUpPin = ({ open, onClose, setPinStatus }) => {
   const [pin, setPin] = useState("");
   const { storeDetail } = useStoreStore();
 
+  console.log("storeDetail_PIN: ", storeDetail?.usePin)
+
   // Clear pin and set pin status when popup opens
   useEffect(() => {
     setPin("");
@@ -28,11 +30,14 @@ const PopUpPin = ({ open, onClose, setPinStatus }) => {
   // Validate the pin by calling the backend API
   const validatePin = async () => {
     try {
+      console.log("PIN: ", pin)
       const { data } = await Axios.post(`${END_POINT}/v4/pin/check-pin`, {
         pin,
         storeId: storeDetail?._id,
       });
-      if (data.status === 200) {
+
+      console.log("dataPin: ", data)
+      if (data._id) {
         setPinStatus(true);
       }
     } catch (err) {
