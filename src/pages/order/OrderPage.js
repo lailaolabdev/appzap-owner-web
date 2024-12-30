@@ -478,14 +478,17 @@ export default function OrderPage() {
             );
           })}
       </div>
-      <PopUpPin
-        open={popup?.PopUpPin}
-        onClose={() => setPopup()}
-        setPinStatus={(e) => {
-          setPinStatus(e);
-          setPopup();
-        }}
-      />
+      {/* {storeDetail?.usePin && popup?.PopUpPin && ( */}
+        <PopUpPin
+          open={popup?.PopUpPin}
+          onClose={() => setPopup()}
+          setPinStatus={(e) => {
+            setPinStatus(e);
+            setPopup();
+          }}
+        />
+      {/* )} */}
+
     </RootStyle>
   );
 }
