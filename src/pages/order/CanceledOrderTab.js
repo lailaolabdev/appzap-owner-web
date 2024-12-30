@@ -1,131 +1,35 @@
-import React, { useState } from "react";
-// import CustomNav from "./component/CustomNav";
-import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
-import moment from "moment";
+// In CanceledOrderTab.js
+import React from "react";
+import ReactAudioPlayer from "react-audio-player";
 import { useTranslation } from "react-i18next";
+import { useOrderStore } from "../../zustand/orderStore";
+import Notification from "../../vioceNotification/ding.mp3";
+import OrderList from "./OrderList"; // Import the default export
 
-/**
- * import function
- */
-
-import Loading from "../../components/Loading";
-import { getOrders } from "../../services/order";
-import { orderStatus } from "../../helpers";
-import { ACTIVE_STATUS, CANCEL_STATUS } from "../../constants";
-import { useParams } from "react-router-dom";
-import { useStore } from "../../store";
-import { fontMap } from "../../utils/font-map";
 const CanceledOrderTab = () => {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(); //translate
-  /**
-   * routes
-   */
-  const params = useParams();
-  const { number } = params;
-
-  // const {
-  //   handleCheckbox,
-  //   checkAllOrders,
-  // } = useStore();
-  const { orderItems } = useStore();
-
-  /**
-   * states
-   */
-  const [isLoading, setIsLoading] = useState(false);
-  const [orders, setOrders] = useState([]);
-  /**
-   * use effect
-   */
+  const { t, i18n: { language } } = useTranslation();
+  const { canceledOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
   return (
     <div>
-      {isLoading ? <Loading /> : ""}
-      {/* <CustomNav default={`/orders/canceled/pagenumber/${number}`} cantUpdate /> */}
-      <Container fluid className="mt-3">
-        <Table responsive className="staff-table-list borderless table-hover">
-          <thead style={{ backgroundColor: "#F1F1F1" }}>
-            <tr>
-              {/* <th>
-                  <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} style={{ marginLeft: 10 }} />} />
-                </th> */}
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("no")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("menu_name")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("amount")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("table_code")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("status")}
-              </th>
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-                className={fontMap[language]}
-              >
-                {t("time")}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderItems &&
-              orderItems?.map((order, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{order?.menu?.name ?? "-"}</td>
-                  <td>{order?.quantity ?? "-"}</td>
-                  <td>{order?.table_id ?? "-"}</td>
-                  <td style={{ color: "green", fontWeight: "bold" }}>
-                    {order?.status ? orderStatus(order?.status) : "-"}
-                  </td>
-                  <td>
-                    {order?.createdAt
-                      ? moment(order?.createdAt).format("HH:mm a")
-                      : "-"}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
-      </Container>
+      <div>
+        <ReactAudioPlayer src={Notification} />
+      </div>
+      <OrderList
+	  	  onTabStatusName={"CANCELED"}
+        hideCheckbox={true}
+        orders={canceledOrders} // Pass orders to OrderList component
+        handleCheckbox={handleCheckbox} // Pass handleCheckbox function
+        handleCheckAll={handleCheckAll} // Pass handleCheckAll function
+        language={language} // Pass language for translations
+        t={t} // Pass translation function
+      />
     </div>
   );
 };
 
 export default CanceledOrderTab;
+
+
+
+{/* <Image src={empty} alt="" width="100%" /> */}
