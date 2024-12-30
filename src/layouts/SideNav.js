@@ -40,18 +40,21 @@ import { getLocalData, getToken } from "../constants/api";
 import { getCountOrderWaiting } from "../services/order";
 import _ from "lodash";
 import { fontMap } from "../utils/font-map";
+
 import { useStoreStore } from "../zustand/storeStore";
+import { useOrderStore } from "../zustand/orderStore";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const {
-    countOrderWaiting,
-    setCountOrderWaiting,
     openTableData,
     getTableDataStore,
     // storeDetail,
   } = useStore();
 
   const { storeDetail } = useStoreStore()
+  const { waitingOrders } = useOrderStore()
+
+  
 
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
@@ -70,14 +73,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     })();
   }, []);
 
-  useEffect(() => {
-    const fetchCountOrderWaiting = async () => {
-      const count = await getCountOrderWaiting(storeDetail?._id);
-      setCountOrderWaiting(count || 0);
-    };
-
-    fetchCountOrderWaiting();
-  }, [selected]);
 
   const UN_SELECTED_TAB_TEXT = "#606060";
   const {
@@ -395,8 +390,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
                     fontSize: 16,
                   }}
                 />
-                {e?.key === "orders" && countOrderWaiting > 0 && (
-                  <span style={popNoti}>{countOrderWaiting}</span>
+                {e?.key === "orders" && waitingOrders.length > 0 && (
+                  <span style={popNoti}>{waitingOrders.length}</span>
                 )}
               </NavIcon>
               <NavText>
