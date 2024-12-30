@@ -30,14 +30,12 @@ const PopUpPin = ({ open, onClose, setPinStatus }) => {
   // Validate the pin by calling the backend API
   const validatePin = async () => {
     try {
-      console.log("PIN: ", pin)
-      const { data } = await Axios.post(`${END_POINT}/v4/pin/check-pin`, {
+      const response = await Axios.post(`${END_POINT}/v4/pin/check-pin`, {
         pin,
         storeId: storeDetail?._id,
       });
 
-      console.log("dataPin: ", data)
-      if (data._id) {
+      if (response.status === 200) {
         setPinStatus(true);
       }
     } catch (err) {
