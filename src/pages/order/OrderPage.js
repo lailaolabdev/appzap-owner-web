@@ -83,6 +83,7 @@ export default function OrderPage() {
   } = useOrderStore()
 
   const [ordersUpdating, setOrdersUpdating] = useState(false)
+  const [canceledfromStatus, setCanceledfromStatus] = useState("WAITING")
 
   // console.log({storeDetail})
   // console.log({orderItems})
@@ -254,7 +255,8 @@ export default function OrderPage() {
       if (!pinStatus) return;
       setPinStatus(false);
       if (workAfterPin == "cancle_order") {
-        // await handleUpdateOrderStatus({toStatus: "CANCELED"});
+        console.log("update to canceled")
+        await handleUpdateOrderStatus({fromStatus: canceledfromStatus,toStatus: "CANCELED"});
         // getOrderWaitingAndDoingByStore();
       }
       setWorkAfterPin("");
@@ -374,6 +376,7 @@ export default function OrderPage() {
             className="text-white !bg-red-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
+              setCanceledfromStatus(fromStatus)
               setWorkAfterPin("cancle_order");
               setPopup({ PopUpPin: true });
             }}

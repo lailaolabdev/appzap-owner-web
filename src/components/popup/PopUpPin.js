@@ -4,11 +4,14 @@ import { COLOR_APP, END_POINT } from "../../constants";
 import PinKeyboard from "../keyboard/PinKeyboard";
 import Axios from "axios";
 import { errorAdd } from "../../helpers/sweetalert";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpPin({ open, onClose, setPinStatus }) {
   const [value, setValue] = useState("");
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore();
+  console.log("PopUpPinstoreDetail: ", storeDetail)
   useEffect(() => {
     setValue("");
     if (open) {
