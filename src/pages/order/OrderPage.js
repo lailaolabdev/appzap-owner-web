@@ -221,18 +221,18 @@ export default function OrderPage() {
     }
   };
 
-  // useEffect(() => {
-  //   const _run = async () => {
-  //     if (!pinStatus) return;
-  //     setPinStatus(false);
-  //     if (workAfterPin == "cancle_order") {
-  //       await handleUpdateOrderStatus({toStatus: "CANCELED"});
-  //       getOrderWaitingAndDoingByStore();
-  //     }
-  //     setWorkAfterPin("");
-  //   };
-  //   _run();
-  // }, [pinStatus]);
+  useEffect(() => {
+    const _run = async () => {
+      if (!pinStatus) return;
+      setPinStatus(false);
+      if (workAfterPin == "cancle_order") {
+        // await handleUpdateOrderStatus({toStatus: "CANCELED"});
+        // getOrderWaitingAndDoingByStore();
+      }
+      setWorkAfterPin("");
+    };
+    _run();
+  }, [pinStatus]);
 
   useEffect(() => {
     if (!onPrinting) {
@@ -322,7 +322,7 @@ export default function OrderPage() {
             className="text-white !bg-orange-500 border-0"
             onClick={async () => {
               await handleUpdateOrderStatus({fromStatus, toStatus: "DOING"});
-              getOrderWaitingAndDoingByStore();
+              // getOrderWaitingAndDoingByStore();
             }}
           >
             {/* ສົ່ງໄປຄົວ */}
@@ -333,7 +333,7 @@ export default function OrderPage() {
             className="text-white !bg-green-500 border-0"
             onClick={async () => {
               await handleUpdateOrderStatus({fromStatus, toStatus: "SERVED"});
-              getOrderWaitingAndDoingByStore();
+              // getOrderWaitingAndDoingByStore();
             }}
           >
             {/* ເສີບແລ້ວ */}

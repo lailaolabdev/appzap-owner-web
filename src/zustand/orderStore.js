@@ -111,14 +111,11 @@ export const useOrderStore = create(
             }
       
             // Add the item to the `toStatus` list
-            toOrderItems.unshift(updatedOrder); // Prepend to the toStatus list
+            const unCheckUpdatedOrder = {...updatedOrder, isChecked: false}
+            toOrderItems.unshift(unCheckUpdatedOrder); // Prepend to the toStatus list
           });
       
           // Dynamically update the state by setting the new lists
-          console.log({
-            [fromStatus.toLowerCase() + 'Orders']: fromOrderItems, // Update the fromStatus list
-            [toStatus.toLowerCase() + 'Orders']: toOrderItems, // Update the toStatus list
-          })
           return {
             [fromStatus.toLowerCase() + 'Orders']: fromOrderItems, // Update the fromStatus list
             [toStatus.toLowerCase() + 'Orders']: toOrderItems, // Update the toStatus list
@@ -198,13 +195,6 @@ export const useOrderStore = create(
         set((state) => {
           const statusLower = status.toLowerCase(); // Convert status to lowercase
 
-          // Update the isChecked state of the specific order in the orderItems list
-          const updatedOrders = state.orderItems.map((item) =>
-            item._id === order._id
-              ? { ...item, isChecked: !item.isChecked }
-              : item
-          );
-
           // Update the isChecked state for orders with the given status
           const updatedStatusOrders = state[`${statusLower}Orders`].map((item) =>
             item._id === order._id
@@ -213,7 +203,6 @@ export const useOrderStore = create(
           );
 
           return {
-            orderItems: updatedOrders,
             [`${statusLower}Orders`]: updatedStatusOrders, // Update the status-based array
           };
         }),
@@ -223,19 +212,12 @@ export const useOrderStore = create(
         set((state) => {
           const statusLower = status.toLowerCase(); // Convert status to lowercase
 
-          // Update all orders with the given status
-          const updatedOrders = state.orderItems.map((item) => ({
-            ...item,
-            isChecked: checked,
-          }));
-
           const updatedStatusOrders = state[`${statusLower}Orders`].map((item) => ({
             ...item,
             isChecked: checked,
           }));
 
           return {
-            orderItems: updatedOrders,
             [`${statusLower}Orders`]: updatedStatusOrders, // Update the status-based array
           };
         }),

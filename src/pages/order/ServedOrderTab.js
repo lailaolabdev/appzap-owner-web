@@ -6,9 +6,10 @@ import empty from "../../image/empty.png";
 import Loading from "../../components/Loading";
 import { orderStatus } from "../../helpers";
 import { useParams } from "react-router-dom";
-import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
 import { fontMap } from "../../utils/font-map";
+
+import { useOrderStore } from "../../zustand/orderStore";
 
 const ServedOrderTab = () => {
   const {
@@ -23,19 +24,16 @@ const ServedOrderTab = () => {
   /**
    * states
    */
-  const [isLoading, setIsLoading] = useState(false);
-  const [ordersSev, setOrdersSev] = useState([]);
-  const newDate = new Date();
-  const { storeDetail, orderItems } = useStore();
-  const storeId = storeDetail?._id;
-  const { selectOrderStatus, setSelectOrderStatus } = useStore();
+  // const [isLoading, setIsLoading] = useState(false);
+  
+  const { servedOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
   return (
     <div>
       {/* <OrderNavbar /> */}
-      {orderItems?.length > 0 ? (
+      {servedOrders?.length > 0 ? (
         <div>
-          {isLoading ? <Loading /> : ""}
+          {/* {isLoading ? <Loading /> : ""} */}
           <Container fluid className="mt-3">
             <Table
               responsive
@@ -111,8 +109,8 @@ const ServedOrderTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {orderItems &&
-                  orderItems?.map((order, index) => (
+                {servedOrders &&
+                  servedOrders?.map((order, index) => (
                     <tr key={index}>
                       <td
                         style={{

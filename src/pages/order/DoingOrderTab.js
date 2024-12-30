@@ -5,9 +5,6 @@ import moment from "moment";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import * as _ from "lodash";
 import empty from "../../image/empty.png";
-import axios from "axios";
-import html2canvas from "html2canvas";
-import { base64ToBlob } from "../../helpers";
 import styled from "styled-components";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
@@ -16,58 +13,25 @@ import { useTranslation } from "react-i18next";
  * import components
  */
 
-import BillForChef58 from "../../components/bill/BillForChef58";
-import BillForChef80 from "../../components/bill/BillForChef80";
-// import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
-// import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
-/**
- * import function
- */
-// import { getOrders, updateOrderItem } from "../../services/order";
 import { orderStatus } from "../../helpers";
 import { SERVE_STATUS, END_POINT, DOING_STATUS } from "../../constants";
-import { useStore } from "../../store";
-import { socket } from "../../services/socket";
 import { fontMap } from "../../utils/font-map";
+
+import { useOrderStore } from "../../zustand/orderStore";
 
 const DoingOrderTab = () => {
   const {
     t,
     i18n: { language },
   } = useTranslation();
-  // if (billForCher80.current.length !== arrLength) {
-  //   // add or remove refs
-  //   billForCher80.current = Array(arrLength)
-  //     .fill()
-  //     .map((_, i) => billForCher80.current[i]);
-  // }
-  // if (billForCher58.current.length !== arrLength) {
-  //   // add or remove refs
-  //   billForCher58.current = Array(arrLength)
-  //     .fill()
-  //     .map((_, i) => billForCher58?.current[i]);
-  // }
-  
-  // const { storeDetail } = useStore();
-  // const storeId = storeDetail._id;
-  /**
-   * routes
-   */
 
-  const {
-    orderItems,
-    getOrderItemsStore,
-    handleCheckbox,
-    checkAllOrders,
-    handleUpdateOrderStatus,
-    newOrderTransaction,
-    getOrderWaitingAndDoingByStore,
-  } = useStore();
+
+  const { doingOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
   return (
     <div>
       {/* <OrderNavbar /> */}
-      {orderItems?.length > 0 ? (
+      {doingOrders?.length > 0 ? (
         <div>
           <div
             style={{
@@ -89,24 +53,8 @@ const DoingOrderTab = () => {
             >
               {/* <FormControlLabel control={<Checkbox name="checkedC" onChange={(e) => checkAllOrders(e)} />} label={<div style={{ fontFamily: "NotoSansLao", fontWeight: "bold" }} >ເລືອກທັງໝົດ</div>} /> */}
             </div>
-            {/* <div>
-            <Button variant="light" style={{ backgroundColor: "#FB6E3B", color: "#ffffff", fontWeight: "bold" }} onClick={() => handleUpdateOrderStatus(SERVE_STATUS, match?.params?.id)}>ເສີບແລ້ວ</Button>
-          </div> */}
           </div>
-          {/* <div>
-            <button
-              style={{
-                backgroundColor: "#FB6E3B",
-                color: "#fff",
-                border: "1px solid #FB6E3B",
-                height: "40px",
-                margin: "10px",
-              }}
-              onClick={() => onPrintForCher()}
-            >
-              ພິມບິນໄປຄົວ
-            </button>
-          </div> */}
+          
           <Container
             style={{
               overflowX: "auto",
@@ -125,7 +73,7 @@ const DoingOrderTab = () => {
                       control={
                         <Checkbox
                           name="checkedC"
-                          onChange={(e) => checkAllOrders(e)}
+                          onChange={(e) => handleCheckAll(e.target.checked, "DOING")}
                           style={{ marginLeft: 10 }}
                         />
                       }
@@ -192,12 +140,12 @@ const DoingOrderTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {orderItems?.map((order, index) => (
+                {doingOrders?.map((order, index) => (
                   <tr key={index}>
                     <td>
                       <Checkbox
                         checked={order?.isChecked ? true : false}
-                        onChange={(e) => handleCheckbox(order)}
+                        onChange={(e) => handleCheckbox(order, "DOING")}
                         color="primary"
                         inputProps={{ "aria-label": "secondary checkbox" }}
                       />
