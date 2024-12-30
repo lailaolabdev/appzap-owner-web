@@ -1,110 +1,29 @@
+// In WaitingOrderTab.js
 import React from "react";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
-import moment from "moment";
 import ReactAudioPlayer from "react-audio-player";
 import { useTranslation } from "react-i18next";
 import { useOrderStore } from "../../zustand/orderStore";
-import { orderStatus } from "../../helpers";
 import Notification from "../../vioceNotification/ding.mp3";
-import { fontMap } from "../../utils/font-map";
-import styled from "styled-components";
+import OrderList from "./OrderList"; // Import the default export
 
-export default function WaitingOrderTab() {
+const WaitingOrderTab = () => {
   const { t, i18n: { language } } = useTranslation();
   const { waitingOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
-  // Function to render options
-  const renderOptions = (options) => {
-    return options && options.length > 0
-      ? options.map((option, index) => (
-          <span key={index}>[{option.name}]</span>
-        ))
-      : null;
-  };
-
-  // Check if all items are checked
-  const allChecked = waitingOrders?.every((order) => order.isChecked);
-
   return (
-    <RootStyle>
+    <div>
       <div>
         <ReactAudioPlayer src={Notification} />
       </div>
-      <div style={{ overflowX: "auto" }}>
-        <TableCustom responsive>
-          <thead>
-            <tr>
-              <th>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={allChecked} // Check if all items are checked
-                      onChange={(e) => handleCheckAll(e.target.checked, "waiting")} // Handle "check all" toggle
-                    />
-                  }
-                  style={{ marginLeft: 2 }}
-                />
-              </th>
-              <th className={fontMap[language]}>{t("no")}</th>
-              <th className={fontMap[language]}>{t("menu_name")}</th>
-              <th className={fontMap[language]}>{t("amount")}</th>
-              <th className={fontMap[language]}>{t("from_table")}</th>
-              <th className={fontMap[language]}>{t("table_code")}</th>
-              <th className={fontMap[language]}>{t("status")}</th>
-              <th className={fontMap[language]}>{t("status")}</th>
-              <th className={fontMap[language]}>{t("commend")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {waitingOrders?.map((order, index) => (
-              <tr key={index}>
-                <td>
-                  <Checkbox
-                    checked={order?.isChecked || false}
-                    onChange={() => handleCheckbox(order, "waiting")} // Handle checkbox toggle
-                    color="primary"
-                  />
-                </td>
-                <td>{index + 1}</td>
-                <td style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                  {order?.name ?? "-"} {renderOptions(order?.options)}
-                </td>
-                <td>{order?.quantity ?? "-"}</td>
-                <td>{order?.tableId?.name ?? "-"}</td>
-                <td>{order?.code ?? "-"}</td>
-                <td style={{ color: "red", fontWeight: "bold" }}>
-                  {order?.status ? orderStatus(order?.status) : "-"}
-                </td>
-                <td>{order?.createdAt ? moment(order?.createdAt).format("HH:mm") : "-"}</td>
-                <td>{order?.note ?? "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </TableCustom>
-      </div>
-    </RootStyle>
+      <OrderList
+        orders={waitingOrders} // Pass orders to OrderList component
+        handleCheckbox={handleCheckbox} // Pass handleCheckbox function
+        handleCheckAll={handleCheckAll} // Pass handleCheckAll function
+        language={language} // Pass language for translations
+        t={t} // Pass translation function
+      />
+    </div>
   );
-}
+};
 
-// Styled-components for styling
-const RootStyle = styled("div")({
-  padding: 10,
-});
-
-const TableCustom = styled("table")({
-  width: "100%",
-  fontSize: 18,
-  ["th, td"]: {
-    padding: 0,
-  },
-  ["th:first-child, td:first-child"]: {
-    maxWidth: 40,
-    width: 40,
-  },
-  ["tr:nth-child(2n+0)"]: {
-    backgroundColor: "#ffe9d8",
-  },
-  thead: {
-    backgroundColor: "#ffd6b8",
-  },
-});
+export default WaitingOrderTab;

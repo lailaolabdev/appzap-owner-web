@@ -6,6 +6,15 @@ import  printFlutter  from "../../helpers/printFlutter";
 import axios from "axios";
 import { ETHERNET_PRINTER_PORT, BLUETOOTH_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants/index";
 
+export const renderOptions = (options) => {
+    return options && options.length > 0
+      ? options.map((option, index) => (
+          <span key={index}>[{option.name}]</span>
+        ))
+      : null;
+  };
+
+  
 export const groupItemsByPrinter = (items, printers) => {
   if (!items || !Array.isArray(items) || items.length === 0) return {};
   if (!Array.isArray(printers) || printers.length === 0) return {};
