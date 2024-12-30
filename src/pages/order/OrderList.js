@@ -1,4 +1,3 @@
-// In OrderList.js
 import React from "react";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { renderOptions } from "./orderHelpers"; // Import renderOptions function
@@ -7,7 +6,15 @@ import moment from "moment";
 import { fontMap } from "../../utils/font-map";
 import styled from "styled-components"; // Import styled-components
 
-const OrderList = ({onTabStatusName, orders, handleCheckbox, handleCheckAll, language, t }) => {
+const OrderList = ({ 
+  onTabStatusName, 
+  orders, 
+  handleCheckbox, 
+  handleCheckAll, 
+  language, 
+  t, 
+  hideCheckbox = false // Add hideCheckbox prop with default value of false
+}) => {
   const allChecked = orders?.every((order) => order.isChecked); // Check if all items are checked
 
   return (
@@ -24,7 +31,7 @@ const OrderList = ({onTabStatusName, orders, handleCheckbox, handleCheckAll, lan
                       onChange={(e) => handleCheckAll(e.target.checked, onTabStatusName)} // Handle "check all" toggle
                     />
                   }
-                  style={{ marginLeft: 2 }}
+                  style={{ marginLeft: 2, visibility: hideCheckbox ? 'hidden' : 'visible' }} // Make checkbox invisible but keep space
                 />
               </th>
               <th className={fontMap[language]}>{t("no")}</th>
@@ -45,6 +52,7 @@ const OrderList = ({onTabStatusName, orders, handleCheckbox, handleCheckAll, lan
                     checked={order?.isChecked || false}
                     onChange={() => handleCheckbox(order, onTabStatusName)} // Handle checkbox toggle
                     color="primary"
+                    style={{ visibility: hideCheckbox ? 'hidden' : 'visible' }} // Make checkbox invisible but keep space
                   />
                 </td>
                 <td>{index + 1}</td>
@@ -70,25 +78,25 @@ const OrderList = ({onTabStatusName, orders, handleCheckbox, handleCheckAll, lan
 
 // Styled-components for styling
 const RootStyle = styled("div")({
-    padding: 10,
-  });
-  
-  const TableCustom = styled("table")({
-    width: "100%",
-    fontSize: 18,
-    ["th, td"]: {
-      padding: 0,
-    },
-    ["th:first-child, td:first-child"]: {
-      maxWidth: 40,
-      width: 40,
-    },
-    ["tr:nth-child(2n+0)"]: {
-      backgroundColor: "#ffe9d8",
-    },
-    thead: {
-      backgroundColor: "#ffd6b8",
-    },
-  });
+  padding: 10,
+});
+
+const TableCustom = styled("table")({
+  width: "100%",
+  fontSize: 18,
+  ["th, td"]: {
+    padding: 0,
+  },
+  ["th:first-child, td:first-child"]: {
+    maxWidth: 40,
+    width: 40,
+  },
+  ["tr:nth-child(2n+0)"]: {
+    backgroundColor: "#ffe9d8",
+  },
+  thead: {
+    backgroundColor: "#ffd6b8",
+  },
+});
 
 export default OrderList; // Ensure it's a default export
