@@ -79,8 +79,10 @@ export default function OrderPage() {
     servedOrders,
     canceledOrders, 
     handleNewOrderItems,
-    handleUpdateOrderItems
+    handleUpdateOrderItems,
   } = useOrderStore()
+
+  const [ordersUpdating, setOrdersUpdating] = useState(false)
 
   // console.log({storeDetail})
   // console.log({orderItems})
@@ -90,8 +92,25 @@ export default function OrderPage() {
       // If `fromStatus` is not provided, use the status of the first updated order
       if (!fromStatus || !toStatus) {
         console.log("No fromStatus or toStatus provided!")
+        Swal.fire({
+          icon: "error",
+          title: "Oop!", // Error
+          text: "No update status provided!", // Failed to update status
+        });
         return
       }
+
+      if (fromStatus === toStatus) {
+        console.log("Same status, No need to update!");
+        Swal.fire({
+          icon: "error",
+          title: "Oop!", // Error
+          text: "Same status, No need to update!", // Failed to update status
+        });
+        return; // Return early if no orders to update or invalid toStatus
+      }
+
+      setOrdersUpdating(true)
       // Get the orders based on the `fromStatus`
       const ordersToUpdate = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
   
@@ -99,6 +118,12 @@ export default function OrderPage() {
   
       if (ordersToUpdate.length === 0) {
         console.log(`No checked items with the status ${fromStatus}`);
+        setOrdersUpdating(false)
+        Swal.fire({
+          icon: "error",
+          title: "Oop!", // Error
+          text: `No checked items`, // Failed to update status
+        });
         return;
       }
   
@@ -115,6 +140,7 @@ export default function OrderPage() {
       console.log({ response });
   
       if (response?.data?.message === "UPADTE_ORDER_SECCESS") {
+        setOrdersUpdating(false)
         // Show success message
         Swal.fire({
           icon: "success",
@@ -127,6 +153,8 @@ export default function OrderPage() {
         // Update the relevant orders in the store (UI re-render)
         handleUpdateOrderItems({updatedOrders: _updateItems, fromStatus, toStatus})
       }
+
+      setOrdersUpdating(false)
   
       // // Update the count of orders waiting
       // const count = await getCountOrderWaiting(storeDetail?._id);
@@ -320,6 +348,7 @@ export default function OrderPage() {
 
           <Button
             className="text-white !bg-orange-500 border-0"
+            disabled={ordersUpdating}
             onClick={async () => {
               await handleUpdateOrderStatus({fromStatus, toStatus: "DOING"});
               // getOrderWaitingAndDoingByStore();
@@ -331,6 +360,7 @@ export default function OrderPage() {
 
           <Button
             className="text-white !bg-green-500 border-0"
+            disabled={ordersUpdating}
             onClick={async () => {
               await handleUpdateOrderStatus({fromStatus, toStatus: "SERVED"});
               // getOrderWaitingAndDoingByStore();
@@ -342,6 +372,7 @@ export default function OrderPage() {
 
           <Button
             className="text-white !bg-red-500 border-0"
+            disabled={ordersUpdating}
             onClick={async () => {
               setWorkAfterPin("cancle_order");
               setPopup({ PopUpPin: true });

@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 export const useOrderStore = create(
-  persist(
     (set) => ({
       // State
       waitingOrders: [], // Orders with status "WAITING"
@@ -36,6 +34,11 @@ export const useOrderStore = create(
       handleUpdateOrderItems: ({ updatedOrders, fromStatus, toStatus }) =>
         set((state) => {
           console.log({ updatedOrders, fromStatus, toStatus })
+
+          if (fromStatus === toStatus) {
+            console.log("Same status, No need to update!");
+            return; // Return early if no orders to update or invalid toStatus
+          }
           // Validate that updatedOrders and toStatus are not empty
           if (!updatedOrders || updatedOrders.length === 0 || !toStatus) {
             console.log("No orders to update or invalid toStatus provided");
@@ -204,11 +207,6 @@ export const useOrderStore = create(
           };
         }),
 
-      setOrderLoading: (loading) => set({ orderLoading: loading }),
+      
     }),
-    {
-      name: "orderStore", // Name of the storage key in localStorage
-      getStorage: () => localStorage, // Use localStorage as the storage method
-    }
-  )
 );
