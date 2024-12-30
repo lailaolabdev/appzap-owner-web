@@ -78,44 +78,90 @@ export default function OrderPage() {
     doingOrders,
     servedOrders,
     canceledOrders, 
-    handleNewOrderItems} = useOrderStore()
+    handleNewOrderItems,
+    handleUpdateOrderItems
+  } = useOrderStore()
 
-  console.log({storeDetail})
-  console.log({orderItems})
+  // console.log({storeDetail})
+  // console.log({orderItems})
 
-  const handleUpdateOrderStatus = async (status) => {
+  const handleUpdateOrderStatus = async ({fromStatus, toStatus}) => {
     try {
-      const previousStatus = orderItems[0].status;
-      let menuId;
-      const _updateItems = orderItems
-        .filter((item) => item.isChecked)
-        .map((i) => {
-          return {
-            status: status,
-            _id: i?._id,
-            menuId: i?.menuId,
-          };
-        });
-      const _resOrderUpdate = await updateOrderItem(
-        _updateItems,
-        storeDetail?._id,
-        menuId
-      );
-      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-        // let _newOrderItem = orderItems.filter((item) => !item.isChecked);
+      // If `fromStatus` is not provided, use the status of the first updated order
+      if (!fromStatus || !toStatus) {
+        console.log("No fromStatus or toStatus provided!")
+        return
+      }
+      // Get the orders based on the `fromStatus`
+      const ordersToUpdate = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
+  
+      console.log("Before update:", ordersToUpdate);
+  
+      if (ordersToUpdate.length === 0) {
+        console.log(`No checked items with the status ${fromStatus}`);
+        return;
+      }
+  
+      // Prepare the orders to update (with the new `toStatus`)
+      const _updateItems = ordersToUpdate.map((item) => ({
+        ...item, // Spread the existing fields to keep them unchanged
+        status: toStatus, // Update only the `status` field to `toStatus`
+      }));
+
+  
+      // Update order status in the backend
+      const response = await updateOrderItem(_updateItems, storeDetail?._id);
+  
+      console.log({ response });
+  
+      if (response?.data?.message === "UPADTE_ORDER_SECCESS") {
+        // Show success message
         Swal.fire({
           icon: "success",
-          title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ",
+          title: "ອັບເດດສະຖານະອໍເດີສໍາເລັດ", // Status updated successfully
           showConfirmButton: false,
           timer: 2000,
         });
+        
+        console.log({_updateItems})
+        // Update the relevant orders in the store (UI re-render)
+        handleUpdateOrderItems({updatedOrders: _updateItems, fromStatus, toStatus})
       }
-      getOrderItemsStore(selectOrderStatus);
-      const count = await getCountOrderWaiting(storeDetail?._id);
-      setCountOrderWaiting(count || 0);
-      return;
-    } catch (err) {}
+  
+      // // Update the count of orders waiting
+      // const count = await getCountOrderWaiting(storeDetail?._id);
+      // setCountOrderWaiting(count || 0);
+    } catch (err) {
+      console.error("Error updating order status:", err);
+      Swal.fire({
+        icon: "error",
+        title: "ຄວາມຜິດພາດ", // Error
+        text: "ການອັບເດດສະຖານະລົບລາຍ", // Failed to update status
+      });
+    }
   };
+  
+  // Helper function to get the orders based on the status
+  const getOrdersByStatus = (status) => {
+    switch (status) {
+      case "WAITING":
+        return waitingOrders;
+      case "DOING":
+        return doingOrders;
+      case "SERVED":
+        return servedOrders;
+      case "CANCELED":
+        return canceledOrders;
+      // case "PAID":
+      //   return paidOrders;
+      // case "PRINTBILL":
+      //   return printBillOrders;
+      default:
+        return []; // Return empty array if no match
+    }
+  };
+  
+  
 
   useEffect(() => {
     const orderSelect = orderItems?.filter((e) => e?.isChecked);
@@ -175,18 +221,18 @@ export default function OrderPage() {
     }
   };
 
-  useEffect(() => {
-    const _run = async () => {
-      if (!pinStatus) return;
-      setPinStatus(false);
-      if (workAfterPin == "cancle_order") {
-        await handleUpdateOrderStatus("CANCELED");
-        getOrderWaitingAndDoingByStore();
-      }
-      setWorkAfterPin("");
-    };
-    _run();
-  }, [pinStatus]);
+  // useEffect(() => {
+  //   const _run = async () => {
+  //     if (!pinStatus) return;
+  //     setPinStatus(false);
+  //     if (workAfterPin == "cancle_order") {
+  //       await handleUpdateOrderStatus({toStatus: "CANCELED"});
+  //       getOrderWaitingAndDoingByStore();
+  //     }
+  //     setWorkAfterPin("");
+  //   };
+  //   _run();
+  // }, [pinStatus]);
 
   useEffect(() => {
     if (!onPrinting) {
@@ -232,7 +278,7 @@ export default function OrderPage() {
     await updateStoreDetail(updatedData, storeDetail?._id);
   };
 
-  const Tool = () => {
+  const Tool = ({fromStatus}) => {
     return (
       <div
         style={{
@@ -275,7 +321,7 @@ export default function OrderPage() {
           <Button
             className="text-white !bg-orange-500 border-0"
             onClick={async () => {
-              await handleUpdateOrderStatus("DOING");
+              await handleUpdateOrderStatus({fromStatus, toStatus: "DOING"});
               getOrderWaitingAndDoingByStore();
             }}
           >
@@ -286,7 +332,7 @@ export default function OrderPage() {
           <Button
             className="text-white !bg-green-500 border-0"
             onClick={async () => {
-              await handleUpdateOrderStatus("SERVED");
+              await handleUpdateOrderStatus({fromStatus, toStatus: "SERVED"});
               getOrderWaitingAndDoingByStore();
             }}
           >
@@ -344,7 +390,7 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            <Tool />
+            <Tool fromStatus={"WAITING"} />
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -355,7 +401,7 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            <Tool />
+            <Tool fromStatus={"DOING"} />
             <DoingOrderTab />
           </Tab>
           <Tab

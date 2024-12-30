@@ -35,6 +35,98 @@ export const useOrderStore = create(
         });
       },
 
+      handleUpdateOrderItems: ({ updatedOrders, fromStatus, toStatus }) =>
+        set((state) => {
+          console.log({ updatedOrders, fromStatus, toStatus })
+          // Validate that updatedOrders and toStatus are not empty
+          if (!updatedOrders || updatedOrders.length === 0 || !toStatus) {
+            console.log("No orders to update or invalid toStatus provided");
+            return; // Return early if no orders to update or invalid toStatus
+          }
+      
+          // If `fromStatus` is not provided, use the status of the first updated order
+          if (!fromStatus && updatedOrders.length > 0) {
+            fromStatus = updatedOrders[0].status;
+          }
+      
+          // Filter the current list of orders based on `fromStatus`
+          let fromOrderItems = [];
+          let toOrderItems = [];
+      
+          switch (fromStatus) {
+            case "WAITING":
+              fromOrderItems = [...state.waitingOrders];
+              break;
+            case "DOING":
+              fromOrderItems = [...state.doingOrders];
+              break;
+            case "SERVED":
+              fromOrderItems = [...state.servedOrders];
+              break;
+            case "CANCELED":
+              fromOrderItems = [...state.canceledOrders];
+              break;
+            case "PAID":
+              fromOrderItems = [...state.paidOrders];
+              break;
+            case "PRINTBILL":
+              fromOrderItems = [...state.printBillOrders];
+              break;
+            default:
+              break;
+          }
+      
+          // Filter the current list of orders based on `toStatus`
+          switch (toStatus) {
+            case "WAITING":
+              toOrderItems = [...state.waitingOrders];
+              break;
+            case "DOING":
+              toOrderItems = [...state.doingOrders];
+              break;
+            case "SERVED":
+              toOrderItems = [...state.servedOrders];
+              break;
+            case "CANCELED":
+              toOrderItems = [...state.canceledOrders];
+              break;
+            case "PAID":
+              toOrderItems = [...state.paidOrders];
+              break;
+            case "PRINTBILL":
+              toOrderItems = [...state.printBillOrders];
+              break;
+            default:
+              break;
+          }
+      
+          // Process each order and update its status
+          updatedOrders.forEach((updatedOrder) => {
+            // Remove the item from the `fromStatus` list if it exists
+            const fromIndex = fromOrderItems.findIndex(
+              (order) => order._id === updatedOrder._id
+            );
+            if (fromIndex > -1) {
+              fromOrderItems.splice(fromIndex, 1); // Remove the item
+            }
+      
+            // Add the item to the `toStatus` list
+            toOrderItems.unshift(updatedOrder); // Prepend to the toStatus list
+          });
+      
+          // Dynamically update the state by setting the new lists
+          console.log({
+            [fromStatus.toLowerCase() + 'Orders']: fromOrderItems, // Update the fromStatus list
+            [toStatus.toLowerCase() + 'Orders']: toOrderItems, // Update the toStatus list
+          })
+          return {
+            [fromStatus.toLowerCase() + 'Orders']: fromOrderItems, // Update the fromStatus list
+            [toStatus.toLowerCase() + 'Orders']: toOrderItems, // Update the toStatus list
+          };
+        }),      
+            
+
+
       handleNewOrderItems: (newOrders) =>
         set((state) => {
           const updatedOrders = [...state.orderItems]; // Copy the current orderItems
