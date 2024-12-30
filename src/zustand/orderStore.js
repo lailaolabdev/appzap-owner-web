@@ -5,7 +5,6 @@ export const useOrderStore = create(
   persist(
     (set) => ({
       // State
-      orderItems: [],
       waitingOrders: [], // Orders with status "WAITING"
       doingOrders: [],   // Orders with status "DOING"
       servedOrders: [],  // Orders with status "SERVED"
@@ -25,7 +24,6 @@ export const useOrderStore = create(
         const printBillOrders = items.filter((order) => order.status === "PRINTBILL");
 
         set({
-          orderItems: items,
           waitingOrders,
           doingOrders,
           servedOrders,
@@ -126,7 +124,6 @@ export const useOrderStore = create(
 
       handleNewOrderItems: (newOrders) =>
         set((state) => {
-          const updatedOrders = [...state.orderItems]; // Copy the current orderItems
 
           // Arrays to store newly filtered orders
           const newWaitingOrders = [];
@@ -138,20 +135,6 @@ export const useOrderStore = create(
 
           // Prepend new orders to their respective status lists and to the updatedOrders array
           newOrders.forEach((newOrder) => {
-            const existingOrderIndex = updatedOrders.findIndex(
-              (order) => order._id === newOrder._id
-            );
-
-            if (existingOrderIndex > -1) {
-              // Update the existing order
-              updatedOrders[existingOrderIndex] = {
-                ...updatedOrders[existingOrderIndex],
-                ...newOrder,
-              };
-            } else {
-              // Add the new order at the front
-              updatedOrders.unshift(newOrder);
-            }
 
             // Filter the new order based on its status and prepend to the appropriate list
             switch (newOrder.status) {
@@ -180,7 +163,6 @@ export const useOrderStore = create(
 
           // Return updated state with newly prepended orders in respective status arrays
           return {
-            orderItems: updatedOrders,
             waitingOrders: [...newWaitingOrders, ...state.waitingOrders], // Prepend new orders
             doingOrders: [...newDoingOrders, ...state.doingOrders], // Prepend new orders
             servedOrders: [...newServedOrders, ...state.servedOrders], // Prepend new orders
