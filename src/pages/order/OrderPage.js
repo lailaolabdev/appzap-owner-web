@@ -6,20 +6,12 @@ import Swal from "sweetalert2";
 import { useStore } from "../../store";
 
 import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
-import html2canvas from "html2canvas";
-import { base64ToBlob, moneyCurrency } from "../../helpers";
-import { toPng, toJpeg, toBlob, toPixelData, toSvg } from "html-to-image";
-import axios from "axios";
-import BillForChef58 from "../../components/bill/BillForChef58";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import {
   DOING_STATUS,
   WAITING_STATUS,
   SERVE_STATUS,
   CANCEL_STATUS,
-  ETHERNET_PRINTER_PORT,
-  BLUETOOTH_PRINTER_PORT,
-  USB_PRINTER_PORT,
 } from "../../constants/index";
 
 // Tab
@@ -32,8 +24,6 @@ import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
 import moment, { lang } from "moment";
 import { printItems } from "../table/printItems";
-import { easing } from "@mui/material";
-import { printOrderItems } from "./printOrderItem";
 import { fontMap } from "../../utils/font-map";
 
 import { groupItemsByPrinter, convertHtmlToBase64, runPrint } from "./orderHelpers";
@@ -376,7 +366,6 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            {/* <Tool /> */}
             <ServedOrderTab />
           </Tab>
           <Tab
@@ -387,14 +376,8 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            {/* <Tool /> */}
             <CanceledOrderTab />
           </Tab>
-          {/* <Tab eventKey="contact" title="Contact" disabled>
-            <Tool />
-
-            <span>test</span>
-          </Tab> */}
         </Tabs>
       </div>
       <div style={{ padding: "20px" }}>
@@ -423,25 +406,6 @@ export default function OrderPage() {
           setPopup();
         }}
       />
-      {/* <div>
-        {orderItems
-          ?.filter((e) => e?.isChecked)
-          .map((val, i) => {
-            return (
-              <div
-                style={{ display: "inline-block" }}
-                ref={(el) => (billForCher58.current[i] = el)}
-              >
-                <BillForChef58
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  // dataBill={dataBill}
-                  val={val}
-                />
-              </div>
-            );
-          })}
-      </div> */}
     </RootStyle>
   );
 }
