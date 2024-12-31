@@ -80,13 +80,12 @@ export default function OrderPage() {
     canceledOrders, 
     handleNewOrderItems,
     handleUpdateOrderItems,
+    handleCheckbox
   } = useOrderStore()
 
   const [ordersUpdating, setOrdersUpdating] = useState(false)
   const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS)
 
-  // console.log({storeDetail})
-  // console.log({orderItems})
 
   const handleUpdateOrderStatus = async ({fromStatus, toStatus}) => {
     try {
@@ -205,25 +204,20 @@ export default function OrderPage() {
     setGroupedItems(grouped);
   }, [orderItems]);
 
-  
-
   const [onPrinting, setOnPrinting] = useState(false);
   const onPrintForCher = async ({fromStatus}) => {
     try {
       if (!fromStatus) {
         return
       }
-      const fromOrders =  `${fromStatus.toLowerCase()}Orders`
-      console.log("fromOrders: ", fromOrders)
+
       setOnPrinting(true);
       setCountError("");
-      // const orderSelect = fromOrders?.filter((e) => e?.isChecked);
-      // Get the orders based on the `fromStatus`
       const orderSelect = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
 
+      
       console.log({orderSelect})
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect, printers, storeDetail, t("total"), t(storeDetail?.firstCurrency));
-      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -235,6 +229,10 @@ export default function OrderPage() {
           )
         );
       }
+
+      // TODO: uncheck the selected orders
+      orderSelect.map(order => handleCheckbox(order, fromStatus))
+
       if (countError == "ERR") {
         setIsLoading(false);
         Swal.fire({
@@ -338,19 +336,8 @@ export default function OrderPage() {
           <Button
             className="text-white !bg-gray-500 border-0"
             onClick={async () => {
-              // const hasNoCut = printers.some((e) => e.cutPaper === "not_cut");
-              // if (hasNoCut) {
-              //   printOrderItems(
-              //     groupedItems,
-              //     combinedBillRefs,
-              //     printers,
-              //     selectedTable
-              //   );
-              // } else {
               onPrintForCher({fromStatus});
-              // }
               // await handleUpdateOrderStatus(DOING_STATUS);
-              // getOrderWaitingAndDoingByStore();
             }}
             disabled={onPrinting}
           >
