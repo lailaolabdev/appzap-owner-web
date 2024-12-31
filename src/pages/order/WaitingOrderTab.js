@@ -5,6 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useOrderStore } from "../../zustand/orderStore";
 import Notification from "../../vioceNotification/ding.mp3";
 import OrderList from "./OrderList"; // Import the default export
+import {
+	DOING_STATUS,
+	WAITING_STATUS,
+	SERVE_STATUS,
+	CANCEL_STATUS,
+  } from "../../constants/index";
 
 const WaitingOrderTab = () => {
   const { t, i18n: { language } } = useTranslation();
@@ -16,7 +22,7 @@ const WaitingOrderTab = () => {
         <ReactAudioPlayer src={Notification} />
       </div>
       <OrderList
-	  	onTabStatusName={"WAITING"}
+	  	onTabStatusName={WAITING_STATUS}
         orders={waitingOrders} // Pass orders to OrderList component
         handleCheckbox={handleCheckbox} // Pass handleCheckbox function
         handleCheckAll={handleCheckAll} // Pass handleCheckAll function

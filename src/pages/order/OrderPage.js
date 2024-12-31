@@ -83,7 +83,7 @@ export default function OrderPage() {
   } = useOrderStore()
 
   const [ordersUpdating, setOrdersUpdating] = useState(false)
-  const [canceledfromStatus, setCanceledfromStatus] = useState("WAITING")
+  const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS)
 
   // console.log({storeDetail})
   // console.log({orderItems})
@@ -173,13 +173,13 @@ export default function OrderPage() {
   // Helper function to get the orders based on the status
   const getOrdersByStatus = (status) => {
     switch (status) {
-      case "WAITING":
+      case WAITING_STATUS:
         return waitingOrders;
-      case "DOING":
+      case DOING_STATUS:
         return doingOrders;
-      case "SERVED":
+      case SERVE_STATUS:
         return servedOrders;
-      case "CANCELED":
+      case CANCEL_STATUS:
         return canceledOrders;
       // case "PAID":
       //   return paidOrders;
@@ -256,7 +256,7 @@ export default function OrderPage() {
       setPinStatus(false);
       if (workAfterPin == "cancle_order") {
         console.log("update to canceled")
-        await handleUpdateOrderStatus({fromStatus: canceledfromStatus,toStatus: "CANCELED"});
+        await handleUpdateOrderStatus({fromStatus: canceledfromStatus,toStatus: CANCEL_STATUS});
         // getOrderWaitingAndDoingByStore();
       }
       setWorkAfterPin("");
@@ -339,7 +339,7 @@ export default function OrderPage() {
               // } else {
               onPrintForCher();
               // }
-              // await handleUpdateOrderStatus("DOING");
+              // await handleUpdateOrderStatus(DOING_STATUS);
               getOrderWaitingAndDoingByStore();
             }}
             disabled={onPrinting}
@@ -352,7 +352,7 @@ export default function OrderPage() {
             className="text-white !bg-orange-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
-              await handleUpdateOrderStatus({fromStatus, toStatus: "DOING"});
+              await handleUpdateOrderStatus({fromStatus, toStatus: DOING_STATUS});
               // getOrderWaitingAndDoingByStore();
             }}
           >
@@ -364,12 +364,12 @@ export default function OrderPage() {
             className="text-white !bg-green-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
-              await handleUpdateOrderStatus({fromStatus, toStatus: "SERVED"});
+              await handleUpdateOrderStatus({fromStatus, toStatus: SERVE_STATUS});
               // getOrderWaitingAndDoingByStore();
             }}
           >
             {/* ເສີບແລ້ວ */}
-            <span className={fontMap[language]}>{t("served")}</span>
+            <span className={fontMap[language]}>{t(SERVE_STATUS)}</span>
           </Button>
 
           <Button
@@ -424,7 +424,7 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            <Tool fromStatus={"WAITING"} />
+            <Tool fromStatus={WAITING_STATUS} />
             <WaitingOrderTab />
           </Tab>
           <Tab
@@ -435,13 +435,13 @@ export default function OrderPage() {
               })`}</span>
             }
           >
-            <Tool fromStatus={"DOING"} />
+            <Tool fromStatus={DOING_STATUS} />
             <DoingOrderTab />
           </Tab>
           <Tab
             eventKey={SERVE_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("served")}(${
+              <span className={fontMap[language]}>{`${t(SERVE_STATUS)}(${
                 servedOrders?.length
               })`}</span>
             }
@@ -478,7 +478,6 @@ export default function OrderPage() {
             );
           })}
       </div>
-      {/* {storeDetail?.usePin && popup?.PopUpPin && ( */}
         <PopUpPin
           open={popup?.PopUpPin}
           onClose={() => setPopup()}
@@ -487,7 +486,6 @@ export default function OrderPage() {
             setPopup();
           }}
         />
-      {/* )} */}
 
     </RootStyle>
   );
