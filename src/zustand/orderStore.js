@@ -1,4 +1,8 @@
 import { create } from "zustand";
+import axios from "axios";
+
+import { WAITING_STATUS, DOING_STATUS, SERVE_STATUS, CANCEL_STATUS } from "../constants";
+import { END_POINT_SEVER_BILL_ORDER, getLocalData } from "../constants/api"
 
 export const useOrderStore = create(
     (set) => ({
@@ -10,6 +14,38 @@ export const useOrderStore = create(
       paidOrders: [],    // Orders with status "PAID"
       printBillOrders: [], // Orders with status "PRINTBILL"
       orderLoading: false,
+
+      // Fetch function to get orders by status and store them in the zustand state
+      fetchOrdersByStatus: async (status, skip = 0, limit = 200) => {
+        try {
+          const _userData = await getLocalData();  // Assuming getLocalData fetches user data
+          console.log({_userData})
+          const response = await axios.get(
+            `${END_POINT_SEVER_BILL_ORDER}/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}`
+          );
+
+          console.log({response})
+
+          // Update the respective state based on status
+          set((state) => {
+            if (status === WAITING_STATUS) {
+              return { waitingOrders: response?.data || [] };
+            }
+            if (status === DOING_STATUS) {
+              return { doingOrders: response?.data || [] };
+            }
+            if (status === SERVE_STATUS) {
+              return { servedOrders: response?.data || [] };
+            }
+            if (status === CANCEL_STATUS) {
+              return { canceledOrders: response?.data || [] };
+            }
+            return state; // No change if no matching status
+          });
+        } catch (err) {
+          console.error("Error fetching orders by status:", err);
+        }
+      },
 
       // Actions
       setOrderItems: (items) => {

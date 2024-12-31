@@ -72,6 +72,7 @@ export default function OrderPage() {
     
   const {
     orderItems, 
+    fetchOrdersByStatus,
     waitingOrders,
     doingOrders,
     servedOrders,
@@ -83,6 +84,20 @@ export default function OrderPage() {
 
   const [ordersUpdating, setOrdersUpdating] = useState(false)
   const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS)
+
+  useEffect(() => {
+    const fetchAllOrders = async () => {
+      // Fetch orders by status for each tab
+      await fetchOrdersByStatus("WAITING");
+      await fetchOrdersByStatus("DOING");
+      await fetchOrdersByStatus("SERVED");
+      await fetchOrdersByStatus("CANCELED");
+
+      // setIsLoading(false); // Set loading to false once the data is fetched
+    };
+
+    fetchAllOrders();
+  }, [fetchOrdersByStatus]);
 
 
   const handleUpdateOrderStatus = async ({fromStatus, toStatus}) => {
