@@ -208,13 +208,22 @@ export default function OrderPage() {
   
 
   const [onPrinting, setOnPrinting] = useState(false);
-  const onPrintForCher = async () => {
+  const onPrintForCher = async ({fromStatus}) => {
     try {
+      if (!fromStatus) {
+        return
+      }
+      const fromOrders =  `${fromStatus.toLowerCase()}Orders`
+      console.log("fromOrders: ", fromOrders)
       setOnPrinting(true);
       setCountError("");
-      const orderSelect = orderItems?.filter((e) => e?.isChecked);
+      // const orderSelect = fromOrders?.filter((e) => e?.isChecked);
+      // Get the orders based on the `fromStatus`
+      const orderSelect = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
+
+      console.log({orderSelect})
       const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect, printers, storeDetail, t("total"), t(storeDetail?.firstCurrency));
-      // console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
+      console.log("base64ArrayAndPrinter: ", base64ArrayAndPrinter);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -245,6 +254,7 @@ export default function OrderPage() {
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (err) {
+      console.log("printing err: ", err)
       setIsLoading(false);
       setOnPrinting(false);
     }
@@ -337,10 +347,10 @@ export default function OrderPage() {
               //     selectedTable
               //   );
               // } else {
-              onPrintForCher();
+              onPrintForCher({fromStatus});
               // }
               // await handleUpdateOrderStatus(DOING_STATUS);
-              getOrderWaitingAndDoingByStore();
+              // getOrderWaitingAndDoingByStore();
             }}
             disabled={onPrinting}
           >
