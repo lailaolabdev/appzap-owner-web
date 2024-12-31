@@ -13,7 +13,6 @@ import {
   GetAllBranchIncome,
   DeleteBranchRelation,
 } from "../../services/branchRelation";
-import { useStore } from "../../store";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import Loading from "../../components/Loading";
 import "./index.css";
@@ -23,10 +22,15 @@ import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndD
 import convertNumber from "../../helpers/convertNumber";
 import PieChart from "./PieChart";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const { width, height } = useWindowDimensions2();
   const limitData = 4;
   // state

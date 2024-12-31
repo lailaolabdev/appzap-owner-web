@@ -45,6 +45,8 @@ import { END_POINT_EXPORT } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function DashboardPage() {
   const { t } = useTranslation();
   // state
@@ -68,7 +70,10 @@ export default function DashboardPage() {
   const [deliveryReport, setDeliveryReport] = useState([]);
 
   // provider
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   // useEffect
   useEffect(() => {
@@ -95,7 +100,6 @@ export default function DashboardPage() {
 
   const onExportData = async () => {
     setStoreDetail({
-      ...storeDetail,
       startDateReportExport: startDate,
       endDateReportExport: endDate,
       startTimeReportExport: startTime,

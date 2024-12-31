@@ -14,6 +14,8 @@ import { FaRegUserCircle, FaUserCircle } from "react-icons/fa";
 import { URL_PHOTO_AW3, COLOR_APP } from "../../../constants";
 import styled from "styled-components";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 const OrderCheckOut = ({
   data = { orderId: [] },
   serviceCharge = 0,
@@ -27,12 +29,9 @@ const OrderCheckOut = ({
 }) => {
   const { t } = useTranslation();
   const {
-    storeDetail,
+    storeDetail, 
     setStoreDetail,
-    profile,
-    audioSetting,
-    setAudioSetting,
-  } = useStore();
+    updateStoreDetail} = useStoreStore()
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
@@ -103,7 +102,6 @@ const OrderCheckOut = ({
   const getToggleServiceCharge = (e) => {
     setIsServiceChargeEnabled(e.target.checked);
     setStoreDetail({
-      ...storeDetail,
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
       isServiceCharge: e.target.checked,
     });

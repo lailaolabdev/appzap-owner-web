@@ -31,7 +31,8 @@ export default function NavBar() {
   const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
   // provider
-  const { setStoreDetail, setProfile } = useStore();
+  const { 
+    setProfile } = useStore();
 
   // ref
   const soundPlayer = useRef();

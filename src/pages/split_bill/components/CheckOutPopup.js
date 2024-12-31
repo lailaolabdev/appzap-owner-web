@@ -32,6 +32,8 @@ import {
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function CheckOutPopup({
   onPrintDrawer,
   onPrintBill,
@@ -45,9 +47,13 @@ export default function CheckOutPopup({
   newId,
   oldId,
 }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   // ref
-  const { storeDetail, setStoreDetail, profile } = useStore();
+  const { profile } = useStore()
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
@@ -285,7 +291,6 @@ export default function CheckOutPopup({
         });
 
         setStoreDetail({
-          ...storeDetail,
           serviceChargePer: 0,
           isServiceCharge: false,
         });

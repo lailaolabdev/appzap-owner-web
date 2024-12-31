@@ -17,6 +17,14 @@ export const useStoreStore = create(
         // Action to set error state
         setError: (error) => set({ error }),
 
+        setStoreDetail: (storeData) =>
+          set((state) => ({
+            storeDetail: {
+              ...state.storeDetail, // Keep the existing storeDetail data
+              ...storeData, // Merge with the new storeData
+            },
+          })),
+
         // Action to fetch store data by ID
         fetchStoreDetail: async (storeId) => {
           set({ loading: true, error: null });

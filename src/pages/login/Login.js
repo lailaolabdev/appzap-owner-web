@@ -30,7 +30,7 @@ function Login() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
-  const { setStoreDetail, setProfile } = useStore();
+  const { setProfile } = useStore();
   const { t } = useTranslation();
 
   // zustand state store
@@ -56,10 +56,6 @@ function Login() {
         setProfile(user?.data);
         // zustand store
         const data = await fetchStoreDetail(user?.data?.data?.storeId)
-        // setStoreDetail(data);
-
-        // const data = await getStore(user?.data?.data?.storeId);
-        
         
         document.title = data?.name;
 

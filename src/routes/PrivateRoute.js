@@ -8,7 +8,6 @@ import {useStoreStore} from "../zustand/storeStore"
 
 function PrivateRoute({ component: Component, headerTitle, ...rest }) {
   const isAuthenticated = useAuth();
-  const { setStoreDetail, profile } = useStore();
   // zustand state store
   const {
     storeDetail, 
@@ -17,10 +16,7 @@ function PrivateRoute({ component: Component, headerTitle, ...rest }) {
 
   useEffect(() => {
     const userData = JSON.parse(window.localStorage.getItem(USER_KEY));
-    // const userData = profile;
     (async () => {
-      // const data = await getStore(userData?.data?.storeId);
-      // setStoreDetail(data?.data);
       await fetchStoreDetail(userData?.data?.storeId);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,6 +4,9 @@ import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
 import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpSetStartAndEndDateFilterExport({
   open,
   onClose,
@@ -23,7 +26,11 @@ export default function PopUpSetStartAndEndDateFilterExport({
   const [valueEndTime, setValueEndTime] = useState(endTime);
   const [selectedButton, setSelectedButton] = useState(null);
 
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
+    
   const { t } = useTranslation();
   // useEffect
   useEffect(() => {
@@ -217,7 +224,6 @@ export default function PopUpSetStartAndEndDateFilterExport({
             setStartTime(valueStartTime);
             setEndTime(valueEndTime);
             setStoreDetail({
-              ...storeDetail,
               startDayFilter: valueStartDate,
               endDayFilter: valueEndDate,
               startTimeFilter: valueStartTime,

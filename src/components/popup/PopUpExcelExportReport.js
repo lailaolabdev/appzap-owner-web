@@ -9,12 +9,16 @@ import { END_POINT_EXPORT } from "./../../constants/api";
 import Axios from "axios";
 import { saveAs } from "file-saver";
 import { errorAdd } from "../../helpers/sweetalert";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
   const { t } = useTranslation();
   // state
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   console.log(storeDetail?.start_date);
 
@@ -41,14 +45,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -59,7 +55,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-bill/" + findBy;
-      const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+      const _res = await Axios.post(url, storeDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -73,14 +69,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
+        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -91,7 +80,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-user/" + findBy;
-      const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+      const _res = await Axios.post(url, storeDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -105,14 +94,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
+        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -124,7 +106,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-daily/" + findBy;
       console.log("URLDaily: ", url);
-      const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+      const _res = await Axios.post(url, storeDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -138,14 +120,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
+        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -157,7 +132,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-category/" + findBy;
       console.log("URL: ", url);
-      const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+      const _res = await Axios.post(url, storeDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -171,14 +146,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -189,7 +156,7 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
     try {
       const findBy = `${storeDetail?._id}?startDate=${storeDetail?.start_date}&endDate=${storeDetail?.end_date}&endTime=${storeDetail?.end_time}&startTime=${storeDetail?.start_time}`;
       const url = END_POINT_EXPORT + "/export/report-menu-detail/" + findBy;
-      const _res = await Axios.post(url, setStoreDetail?.selectedTableIds);
+      const _res = await Axios.post(url, storeDetail?.selectedTableIds);
 
       if (_res?.data?.exportUrl) {
         const response = await Axios.get(_res?.data?.exportUrl, {
@@ -203,14 +170,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
 
-        // await setStoreDetail({
-        //   ...storeDetail,
-        //   start_date: "",
-        //   end_date: "",
-        //   start_time: "",
-        //   end_time: "",
-        //   selectedTableIds: "",
-        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

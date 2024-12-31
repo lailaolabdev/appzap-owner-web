@@ -11,6 +11,8 @@ import styled from "styled-components";
 import _ from "lodash";
 import { SettingsApplications } from "@material-ui/icons";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 const OrderCheckOut = ({
   data = { orderId: [] },
   serviceCharge = 0,
@@ -34,14 +36,18 @@ const OrderCheckOut = ({
 }) => {
   const { t } = useTranslation();
   const {
-    storeDetail,
-    setStoreDetail,
     orderPayBefore,
     setOrderPayBefore,
     profile,
     audioSetting,
     setAudioSetting,
   } = useStore();
+
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
+
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
   const [serviceAmount, setServiceAmount] = useState(0);
@@ -150,7 +156,6 @@ const OrderCheckOut = ({
   const getToggleServiceCharge = (e) => {
     setIsServiceChargeEnabled(e.target.checked);
     setStoreDetail({
-      ...storeDetail,
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
       isServiceCharge: e.target.checked,
     });

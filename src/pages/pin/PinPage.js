@@ -10,15 +10,6 @@ import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
-import { BsImages } from "react-icons/bs";
-import Loading from "../../components/Loading";
-import ImageSlider from "../../components/ImageSlider";
-import { getBanners } from "../../services/banner";
-import Upload from "../../components/Upload";
-import { IoBeerOutline } from "react-icons/io5";
-import ReactPaginate from "react-paginate";
-import { getBillFarks } from "../../services/fark";
-import { useStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
@@ -34,8 +25,9 @@ import Spinner from "react-bootstrap/Spinner";
 import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
-import { getStore, updateStorePin } from "../../services/store";
+import {  updateStorePin } from "../../services/store";
 import { useTranslation } from "react-i18next";
+
 import {useStoreStore} from "../../zustand/storeStore"
 
 let limitData = 10;
@@ -54,9 +46,6 @@ export default function PinPage() {
     storeDetail, 
     fetchStoreDetail,
     updateStoreDetail} = useStoreStore()
-
-  // store
-  const { setStoreDetail } = useStore();
 
   // useEffect
   useEffect(() => {

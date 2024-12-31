@@ -25,7 +25,6 @@ import PopUpCreateServiceCharge from "../../components/popup/PopUpCreateServiceC
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
-import { getStore, updateStore } from "../../services/store";
 import {useStoreStore} from "../../zustand/storeStore"
 
 export default function ConfigPage() {
@@ -46,12 +45,9 @@ export default function ConfigPage() {
   const {
     audioSetting,
     setAudioSetting,
-    // setStoreDetail,
-    // storeDetail,
     profile,
   } = useStore();
 
-  // console.log(audioSetting)
 
   // useEffect
   useEffect(() => {
@@ -125,8 +121,6 @@ export default function ConfigPage() {
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
     
-    // const dataStore = await getStore(storeDetail?._id);
-    // setStoreDetail(dataStore);
   };
   const changeCRM = async (e) => {
     const isType = e.target.checked;
@@ -134,16 +128,12 @@ export default function ConfigPage() {
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
 
-    // setStoreDetail(dataStore);
   };
 
   const changeDelivery = async (e) => {
     const isType = e.target.checked;
 
     await updateSettingDelivery(profile?.data.storeId, { data: isType });
-    // const dataStore = await getStore(storeDetail?._id);
-    // setStoreDetail(dataStore);
-
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
 
@@ -155,10 +145,6 @@ export default function ConfigPage() {
     // zustand store
     await updateStoreDetail({ isBankPaymentAvailable: isChecked }, storeDetail?._id)
     await fetchStoreDetail(storeDetail?._id);
-
-    // await updateStore({ isBankPaymentAvailable: isChecked }, storeDetail?._id);
-    // const dataStore = await getStore(storeDetail?._id);
-    // setStoreDetail(dataStore);
   };
 
   const TooltipFunc = ({ id, children, title }) => (

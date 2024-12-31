@@ -23,14 +23,11 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { BsCurrencyExchange } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import moment from "moment";
-import { useStore } from "../../store";
-import { getStore } from "../../services/store";
 import { useTranslation } from "react-i18next";
 import {useStoreStore} from "../../zustand/storeStore"
 
 export default function CurrencyList() {
   const { t } = useTranslation();
-  // const { setStoreDetail } = useStore();
   // zustand state store
   const {
     storeDetail, 
@@ -171,8 +168,6 @@ export default function CurrencyList() {
 
       // Zustand store
       await fetchStoreDetail(storeDetail?._id);
-      // const dataStore = await getStore(storeDetail?._id);
-      // setStoreDetail(dataStore);
       setShowEditMainCurrency(false);
       successAdd(`${t("edit_fail")}`);
     } catch {

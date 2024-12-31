@@ -49,10 +49,6 @@ export default function OrderPage() {
   const [groupedItems, setGroupedItems] = useState({});
 
   const {
-    // storeDetail,
-    // orderItems,
-    setOrderItems,
-    // orderLoading,
     getOrderItemsStore,
     selectOrderStatus,
     setSelectOrderStatus,
@@ -72,6 +68,8 @@ export default function OrderPage() {
   const {
     storeDetail, 
     updateStoreDetail} = useStoreStore()
+
+    
   const {
     orderItems, 
     waitingOrders,
@@ -156,9 +154,6 @@ export default function OrderPage() {
 
       setOrdersUpdating(false)
   
-      // // Update the count of orders waiting
-      // const count = await getCountOrderWaiting(storeDetail?._id);
-      // setCountOrderWaiting(count || 0);
     } catch (err) {
       console.error("Error updating order status:", err);
       Swal.fire({
@@ -312,7 +307,6 @@ export default function OrderPage() {
       isStaffAutoPrint: !storeDetail?.isStaffAutoPrint,
       isUserAutoPrint: !storeDetail?.isUserAutoPrint
     };
-    console.log({updatedData})
     await updateStoreDetail(updatedData, storeDetail?._id);
   };
 

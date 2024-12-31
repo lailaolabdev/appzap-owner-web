@@ -85,6 +85,8 @@ import {
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function TableList() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -153,8 +155,6 @@ export default function TableList() {
     getTableDataStore,
     onSelectTable,
     resetTableOrder,
-    storeDetail,
-    setStoreDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -181,6 +181,11 @@ export default function TableList() {
     isWaitingPress,
     dataQR,
   } = useStore();
+
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   const reLoadData = () => {
     setReload(true);
@@ -283,7 +288,6 @@ export default function TableList() {
     setZoneId("");
 
     setStoreDetail({
-      ...storeDetail,
       serviceChargePer: 0,
       zoneCheckBill: false,
     });
@@ -778,7 +782,7 @@ export default function TableList() {
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
-      setStoreDetail({ ...storeDetail, ChangeColorTable: true });
+      setStoreDetail({ChangeColorTable: true });
 
       setPrintBillLoading(false);
       await Swal.fire({
@@ -789,7 +793,6 @@ export default function TableList() {
       });
       setMenuItemDetailModal(false);
       setStoreDetail({
-        ...storeDetail,
         serviceChargePer: 0,
         isServiceCharge: false,
       });
@@ -2510,7 +2513,6 @@ export default function TableList() {
                           setSelectedTable(table);
                           setSelectTable(true);
                           setStoreDetail({
-                            ...storeDetail,
                             tableEdit: table?.editBill,
                           });
                         }}
@@ -2580,7 +2582,6 @@ export default function TableList() {
                         onClick={() => {
                           onSelectTable(table);
                           setStoreDetail({
-                            ...storeDetail,
                             tableEdit: table?.editBill,
                           });
                           if (table?.isOpened) {

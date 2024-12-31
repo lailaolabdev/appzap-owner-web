@@ -9,12 +9,14 @@ import { MdOutlineCloudDownload } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
-import { useStore } from "../../store";
-import { getLocalData } from "../../constants/api";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
-  // provider
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const { t } = useTranslation();
 
   const downloadExcel = async () => {

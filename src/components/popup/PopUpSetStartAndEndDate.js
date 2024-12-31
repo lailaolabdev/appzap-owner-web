@@ -5,6 +5,8 @@ import Box from "../Box";
 import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpSetStartAndEndDate({
   open,
   onClose,
@@ -18,7 +20,10 @@ export default function PopUpSetStartAndEndDate({
   endDate,
 }) {
   const { t } = useTranslation();
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   // state
   const [valueStartDate, setValueStartDate] = useState(startDate);
   const [valueEndDate, setValueEndDate] = useState(endDate);
@@ -219,7 +224,6 @@ export default function PopUpSetStartAndEndDate({
             setEndTime(valueEndTime);
 
             setStoreDetail({
-              ...storeDetail,
               branchStartDate: valueStartDate,
               branchEndDate: valueEndDate,
               branchStartTime: valueStartTime,

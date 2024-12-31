@@ -3,14 +3,19 @@ import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../Box";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpChooseTableComponent({
   open,
   onClose,
   tableList,
   setSelectedTable,
 }) {
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
@@ -33,7 +38,6 @@ export default function PopUpChooseTableComponent({
     }
 
     setStoreDetail({
-      ...storeDetail,
       selectedTableIds: selectedTableIds,
     });
   };
@@ -156,7 +160,6 @@ export default function PopUpChooseTableComponent({
           onClick={() => {
             setSelectedTable(selectedTableIds);
             setStoreDetail({
-              ...storeDetail,
               selectedTableIds: selectedTableIds,
             });
             onClose();

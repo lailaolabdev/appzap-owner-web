@@ -10,7 +10,6 @@ import { MdOutlineCloudDownload } from "react-icons/md";
 
 import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
-import { useStore } from "../../store";
 import {
   getCategoryReport,
   getMenuReport,
@@ -32,6 +31,8 @@ import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/Po
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 import Loading from "../../components/Loading";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function DetailBrancPage() {
   const { t } = useTranslation();
   const { state } = useLocation();
@@ -51,8 +52,10 @@ export default function DetailBrancPage() {
   const [popup, setPopup] = useState();
   const [loading, setLoading] = useState(false);
 
-  // provider
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -78,7 +81,6 @@ export default function DetailBrancPage() {
 
   const onExportData = async () => {
     setStoreDetail({
-      ...storeDetail,
       startDateReportExport: startDate,
       endDateReportExport: endDate,
       startTimeReportExport: startTime,

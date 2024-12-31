@@ -75,6 +75,8 @@ import EmptyImage from "../../image/empty-removebg.png";
 import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartAndEndDateMember";
 import { GetRedeemPoint, GetEarnPoint } from "../../services/point";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 let limitData = 10;
 
 export default function MemberPage() {
@@ -154,12 +156,10 @@ export default function MemberPage() {
   const [EarnList, setEarnList] = useState([]);
   const [EarnCount, setEarnCount] = useState(0);
 
-  const { storeDetail, setStoreDetail } = useStore();
-
-  // console.log("valueTopList", valueTopList);
-
-  // console.log({ startDate, endDate, startTime, endTime });
-  // provider
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   // useEffect
   useEffect(() => {
@@ -176,7 +176,6 @@ export default function MemberPage() {
     getMemberListBirthday();
     getMemberListTop();
     setStoreDetail({
-      ...storeDetail,
       changeUi: "LIST_MEMBER",
       startDay: moment(startDate).format("DD"),
       endDay: moment(endDate).format("DD"),
@@ -704,7 +703,6 @@ export default function MemberPage() {
                 setChangeUi("LIST_MEMBER");
                 getMembersData();
                 setStoreDetail({
-                  ...storeDetail,
                   changeUi: "LIST_MEMBER",
                   startDay: "",
                   endDay: "",
@@ -732,7 +730,6 @@ export default function MemberPage() {
               }}
               onClick={() => {
                 setStoreDetail({
-                  ...storeDetail,
                   changeUi: "LIST_REDEEMPOINT",
                 });
                 getRedeemPointUser();
@@ -758,7 +755,6 @@ export default function MemberPage() {
               }}
               onClick={() => {
                 setStoreDetail({
-                  ...storeDetail,
                   changeUi: "LIST_EARNPOINT",
                 });
                 getEarnPointUser();
@@ -785,7 +781,6 @@ export default function MemberPage() {
               onClick={() => {
                 getMemberListTop();
                 setStoreDetail({
-                  ...storeDetail,
                   changeUi: "LIST_TOP",
                   startDay: "",
                   endDay: "",
@@ -812,7 +807,7 @@ export default function MemberPage() {
               }}
               onClick={() => {
                 getMemberListBirthday();
-                setStoreDetail({ ...storeDetail, changeUi: "LIST_BIRTHDAY" });
+                setStoreDetail({changeUi: "LIST_BIRTHDAY" });
                 setValueTopList("");
               }}
             >
@@ -995,7 +990,6 @@ export default function MemberPage() {
                   onChange={(e) => {
                     setValueTopList(e.target.value);
                     setStoreDetail({
-                      ...storeDetail,
                       limitData: e.target.value,
                     });
                   }}
@@ -1518,7 +1512,6 @@ export default function MemberPage() {
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => {
               setStoreDetail({
-                ...storeDetail,
                 startDayFilter: "",
                 endDayFilter: "",
                 startTimeFilter: "",

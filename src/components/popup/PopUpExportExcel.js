@@ -9,12 +9,14 @@ import { MdOutlineCloudDownload } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
-import { useStore } from "../../store";
-import { getLocalData } from "../../constants/api";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpExportExcel({ open, onClose, setPopup }) {
-  // provider
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const { t } = useTranslation();
 
   const exportAllMember = async () => {
@@ -82,7 +84,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-        setStoreDetail({ ...storeDetail, limitData: "" });
+        setStoreDetail({limitData: "" });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -126,15 +128,6 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
-        // setStoreDetail({
-        //   ...storeDetail,
-        //   startDay: "",
-        //   endDay: "",
-        //   startTime: "",
-        //   endTime: "",
-        //   selectedMemberID: "",
-        // });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

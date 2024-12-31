@@ -29,6 +29,8 @@ import {
 } from "../../../services/member.service";
 import { RedeemPoint, PointUser } from "../../../services/point";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function CheckOutPopup({
   onPrintDrawer,
   onPrintBill = () => {},
@@ -78,10 +80,13 @@ export default function CheckOutPopup({
     setOrderPayBefore,
     orderPayBefore,
     selectedTable,
-    storeDetail,
-    setStoreDetail,
     profile,
   } = useStore();
+
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
 
   //select Bank
 
@@ -355,7 +360,6 @@ export default function CheckOutPopup({
         setTransfer();
         setOrderPayBefore([]);
         // callCheckOutPrintBillOnly(selectedTable?._id);
-        // setStoreDetail({ ...storeDetail, ChangeColorTable: true });
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         onClose();
@@ -367,7 +371,6 @@ export default function CheckOutPopup({
         });
 
         setStoreDetail({
-          ...storeDetail,
           serviceChargePer: 0,
           isServiceCharge: false,
           zoneCheckBill: true,
@@ -782,7 +785,6 @@ export default function CheckOutPopup({
     convertNumberReverse(inputData, (value) => {
       setPoint(value);
       setStoreDetail({
-        ...storeDetail,
         point: value,
       });
     });

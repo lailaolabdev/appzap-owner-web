@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import Box from "../Box";
-import { useStore } from "../../store";
 import { useTranslation } from "react-i18next";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpSetStartAndEndDateTop({
   open,
   onClose,
@@ -23,7 +25,10 @@ export default function PopUpSetStartAndEndDateTop({
   const [valueEndTime, setValueEndTime] = useState(endTimeTop);
   const [selectedButton, setSelectedButton] = useState(null);
 
-  const { storeDetail, setStoreDetail } = useStore();
+  const {
+    storeDetail, 
+    setStoreDetail,
+    updateStoreDetail} = useStoreStore()
   const { t } = useTranslation();
   // useEffect
   useEffect(() => {
@@ -218,7 +223,6 @@ export default function PopUpSetStartAndEndDateTop({
             setEndTimeTop(valueEndTime);
 
             setStoreDetail({
-              ...storeDetail,
               startDateTop: moment(valueStartDate).format("DD"),
               endDateTop: moment(valueEndDate).format("DD"),
               monthTop: moment(valueStartDate).format("MM"),
