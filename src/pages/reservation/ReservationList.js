@@ -26,6 +26,8 @@ import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
 import { fontMap } from "../../utils/font-map";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
   const {
@@ -33,11 +35,11 @@ export default function ReservationList() {
     i18n: { language },
   } = useTranslation();
   const {
-    storeDetail,
     newOreservationTransaction,
     setNewOreservationTransaction,
     setProfile,
   } = useStore();
+  const { storeDetail } = useStoreStore()
   const storeId = storeDetail._id;
 
   //   state

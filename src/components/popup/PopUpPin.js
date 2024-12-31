@@ -10,8 +10,6 @@ const PopUpPin = ({ open, onClose, setPinStatus }) => {
   const [pin, setPin] = useState("");
   const { storeDetail } = useStoreStore();
 
-  console.log("storeDetail_PIN: ", storeDetail?.usePin)
-
   // Clear pin and set pin status when popup opens
   useEffect(() => {
     setPin("");

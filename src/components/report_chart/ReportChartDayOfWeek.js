@@ -3,7 +3,8 @@ import { COLOR_APP } from "../../constants";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { converMoney } from "../../helpers/converMoney";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 const ReportChartDayOfWeek = ({ series }) => {
   // state
@@ -75,7 +76,7 @@ const ReportChartDayOfWeek = ({ series }) => {
     },
   });
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   // useEffect
   useEffect(() => {
     setState((prev) => ({ ...prev, series: series }));

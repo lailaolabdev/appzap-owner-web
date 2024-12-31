@@ -43,6 +43,8 @@ import printFlutter from "../../helpers/printFlutter";
 import useWindowDimensions from "../../helpers/useWindowDimension2";
 import { RiListOrdered2 } from "react-icons/ri";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 const limitData = 50;
 
 export default function FarkCreatePage() {
@@ -69,7 +71,7 @@ export default function FarkCreatePage() {
   const [widthBill80, setWidthBill80] = useState(0);
   const billFark80Ref = useRef();
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const { printerCounter, printers } = useStore();
   const { width } = useWindowDimensions();
   const [cartModal, setCartModal] = useState(false);

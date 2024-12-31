@@ -13,7 +13,6 @@ const socket = socketio.connect(END_POINT_SOCKET, {
   reconnectionDelayMax: 10000,
 });
 
-// export const useSocketState = ({ storeDetail, setRunSound }) => {
 export const useSocketState = ({ setRunSound }) => {
   const [socketConneted, setSocketConneted] = useState(false);
   const [newTableTransaction, setNewTableTransaction] = useState(false);

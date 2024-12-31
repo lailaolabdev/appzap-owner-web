@@ -3,11 +3,12 @@ import { COLOR_APP } from "../../constants";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { converMoney } from "../../helpers/converMoney";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 const ReportChartMonth = ({ series }) => {
   // state
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [state, setState] = useState({
     series: [
       {

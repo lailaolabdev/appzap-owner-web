@@ -8,6 +8,8 @@ import { END_POINT_SEVER } from "../constants/api";
 import { useStore } from "../store";
 import { showSalesService } from "../services/showSales";
 
+import { useStoreStore } from "../zustand/storeStore";
+
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
   const location = useLocation();
@@ -20,7 +22,8 @@ export default function MainLayout({ children }) {
   const [salesId, setSalesId] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { profile, storeDetail } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const [selectId, setSelectId] = useState(null);
 
   const storeId = storeDetail?._id;

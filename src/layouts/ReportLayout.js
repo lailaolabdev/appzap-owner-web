@@ -7,7 +7,8 @@ import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../store";
+
+import { useStoreStore } from "../zustand/storeStore";
 
 export default function ReportLayout() {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export default function ReportLayout() {
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);

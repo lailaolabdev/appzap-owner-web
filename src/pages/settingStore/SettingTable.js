@@ -20,6 +20,8 @@ import { END_POINT_SEVER, END_POINT_WEB_CLIENT } from "../../constants/api";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function SettingTable() {
   const { t } = useTranslation();
   const [data, setData] = useState("No result");
@@ -28,8 +30,8 @@ export default function SettingTable() {
     tableListCheck,
     setTableListCheck,
     getTableDataStoreList,
-    storeDetail,
   } = useStore();
+  const { storeDetail } = useStoreStore()
   useEffect(() => {
     getTableDataStoreList();
     getDataZone();

@@ -71,6 +71,8 @@ import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import BillForCheckOutCombine80 from "../../components/bill/BillForCheckOutCombine80";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function BillSplit() {
   const navigate = useNavigate();
   const params = useParams();
@@ -126,7 +128,6 @@ export default function BillSplit() {
     tableOrderItems,
     getTableDataStore,
     resetTableOrder,
-    storeDetail,
     getTableOrders,
     newTableTransaction,
     setNewTableTransaction,
@@ -148,17 +149,8 @@ export default function BillSplit() {
     tableChild,
   } = useStore();
 
-  // console.log({ billSplitNewId, billSplitOldId });
-  // console.log({ billSplitNew, billSplitOld });
-  // console.log(billOrderItems);
-  // console.log({ combine });
-  // console.log({ billOrderItems });
-  // console.log("tableChlistbillSplitAllild", listbillSplitAll);
+  const { storeDetail } = useStoreStore()
 
-  // const totalBill = _.sumBy(
-  //   combine?.items?.filter((e) => e?.status),
-  //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-  // );
 
   const reLoadData = () => {
     setReload(true);

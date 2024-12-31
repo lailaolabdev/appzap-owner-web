@@ -25,19 +25,20 @@ import { GoContainer } from "react-icons/go";
 import homePage from "./presets/homePage";
 import compileJson from "../../helpers/compileJson";
 import deCompileJson from "../../helpers/deCompileJson";
-import { useStore } from "../../store/useStore";
 import MenuItemThemeTool from "./tools/MenuItemThemeTool";
 import SelfOrderingPage from "./ThemeIframe";
 import ColorTool from "./tools/ColorTool";
 import BottomBarTool from "./tools/BottomBarTool";
 import PopUpIconsFontawesome from "../../components/popup/PopUpIconsFontawesome";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function SettingTheme() {
   // state
   const [selectTool, setSelectTool] = useState();
   const [popup, setPopup] = useState({});
 
-  // provider
-  const { storeDetail, themeColors } = useStore();
+  const { storeDetail } = useStoreStore()
   // useEffect
   // function
   const handleChangeIcon = () => {

@@ -22,6 +22,9 @@ import {
 } from "../../constants";
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpPrintStaffHistoryComponent({
   open,
   onClose,
@@ -35,7 +38,8 @@ export default function PopUpPrintStaffHistoryComponent({
   const [userReport, setUserReport] = useState([]);
 
   // provider
-  const { printerCounter, printers, storeDetail } = useStore();
+  const { printerCounter, printers } = useStore();
+  const { storeDetail } = useStoreStore()
   // useEffect
   useEffect(() => {
     getUserReportData(startDate);

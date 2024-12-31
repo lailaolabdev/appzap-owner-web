@@ -48,7 +48,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const {
     openTableData,
     getTableDataStore,
-    // storeDetail,
   } = useStore();
 
   const { storeDetail } = useStoreStore()

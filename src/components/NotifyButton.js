@@ -13,6 +13,8 @@ import { useStore } from "../store";
 import styles from "./NotifyButton.module.css";
 import { useSoundState } from "../store/globalState/soundState";
 
+import { useStoreStore } from "../zustand/storeStore";
+
 const Badge = ({ count }) => {
   return (
     <div
@@ -347,7 +349,11 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
   const [notifyLimit, setNotifyLimit] = useState(defaultLimit);
 
   // Hooks
-  const { storeDetail, newNotify, setNewNotify } = useStore();
+  const { newNotify, setNewNotify } = useStore();
+  const {
+    storeDetail
+  } = useStoreStore()
+
   const { setRunSound } = useSoundState();
   const ref = useRef(null);
   const scrollRef = useRef(null);

@@ -2,8 +2,10 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
 import QRCode from "react-qr-code";
-import { useStore } from "../../store";
 import moment from "moment";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function BillFark80({
   menuDebtData,
   expirDate,
@@ -11,7 +13,9 @@ export default function BillFark80({
   customerPhone,
   code,
 }) {
-  const { storeDetail } = useStore();
+  const {
+    storeDetail
+  } = useStoreStore()
   return (
     <Container>
       <div

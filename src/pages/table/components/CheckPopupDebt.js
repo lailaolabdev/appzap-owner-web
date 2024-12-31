@@ -29,6 +29,8 @@ import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import { getMembersAll } from "./../../../services/member.service";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function CheckPopupDebt({
   onPrintDrawer,
   onPrintBill,
@@ -45,7 +47,8 @@ export default function CheckPopupDebt({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail, profile } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state

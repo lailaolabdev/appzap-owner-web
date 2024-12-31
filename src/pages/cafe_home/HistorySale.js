@@ -31,8 +31,9 @@ import {
 import Loading from "../../components/Loading";
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
-import { useStore } from "../../store";
 import { moneyCurrency } from "../../helpers";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 function HistorySale() {
   const params = useParams();
@@ -103,20 +104,10 @@ function HistorySale() {
     setTotal(_total);
   };
 
-  // console.log("dataModale", dataModale);
-
-  // console.log("historyCafe", historyCafe.orderId);
-  // console.log("totalHistoryPrices", totalHistoryPrices);
 
   const handleClose = () => setShow(false);
 
-  // const TotalPrice = () => {
-  //   return dataModale.reduce((currentValue, nextValue) => {
-  //     return currentValue + nextValue.price * nextValue.quantity;
-  //   }, 0);
-  // };
-
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);

@@ -16,7 +16,9 @@ import {
 } from "chart.js";
 import { moneyCurrency } from "../../helpers";
 import { useParams } from "react-router-dom";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 ChartJS.register(
   LinearScale,
   CategoryScale,
@@ -31,7 +33,7 @@ export default function MoneyChart({ startDate, endDate }) {
   const params = useParams();
 
   const [data, setData] = useState();
-  const {storeDetail} = useStore()
+  const { storeDetail } = useStoreStore()
   const [isLoading, setIsLoading] = useState(false);
 
   // =========>

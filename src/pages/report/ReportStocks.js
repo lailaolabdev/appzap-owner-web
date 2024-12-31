@@ -47,9 +47,11 @@ import { useNavigate } from "react-router-dom";
 import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChooseCategoryTypeComponent";
 import { getCategories } from "../../services/menuCategory";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function ReportStocks() {
   const navigate = useNavigate();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [popup, setPopup] = useState();
   const { t } = useTranslation();
   const { height, width } = useWindowDimension2();

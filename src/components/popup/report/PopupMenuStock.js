@@ -12,10 +12,12 @@ import { getMenus } from "../../../services/menu";
 import { useStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function PopupMenuStock({ open, onClose, categoryId }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);

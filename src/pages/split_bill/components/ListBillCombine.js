@@ -9,8 +9,9 @@ import styled from "styled-components";
 import Box from "../../../components/Box";
 import { COLOR_APP } from "../../../constants/index";
 import { moneyCurrency } from "../../../helpers";
-import { useStore } from "../../../store";
 import { orderStatusTranslate } from "../../../helpers";
+
+import { useStoreStore } from "../../../zustand/storeStore";
 
 const ListBillCombine = ({
   combine,
@@ -20,7 +21,7 @@ const ListBillCombine = ({
   _onCheckOutCombine,
 }) => {
   const { t } = useTranslation();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   return (
     <>
       <Box

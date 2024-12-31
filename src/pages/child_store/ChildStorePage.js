@@ -31,6 +31,8 @@ import { getManyTables } from "../../services/table";
 import { updateStore } from "../../services/store";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function ChildStores() {
   const { t } = useTranslation();
   const [branchStore, setBranchStore] = useState(null);
@@ -51,11 +53,9 @@ export default function ChildStores() {
   const [reportData, setReportData] = useState([]);
   const [categoryReport, setCategoryReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
-  // useEffect(() => {
-  //   fetchBranchStore();
-  // }, []);
+
   const fetchBranchStore = async () => {
     const { DATA } = await getLocalData();
     try {

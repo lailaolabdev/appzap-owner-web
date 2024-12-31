@@ -16,7 +16,7 @@ import { BODY, COLOR_APP } from "../../constants";
 import { successAdd, errorAdd } from "../../helpers/sweetalert";
 import { getHeaders } from "../../services/auth";
 
-// Styles and Resources
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function FoodTypeList() {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ export default function FoodTypeList() {
   const params = useParams();
   // State
   const [getTokken, setgetTokken] = useState();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [CATEGORY, setCATEGORY] = useState();
 
   const [show, setShow] = useState(false);

@@ -35,6 +35,8 @@ import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
 import EmptyImage from "../../image/empty-removebg.png";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function FarkPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -49,7 +51,7 @@ export default function FarkPage() {
   const [popup, setPopup] = useState();
   console.log("totalPagination", totalPagination);
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

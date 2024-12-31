@@ -5,12 +5,14 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { BsPrinter } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getMenus } from "../../services/menu";
-import { useStore } from "../../store";
 import { URL_PHOTO_AW3 } from "../../constants";
 import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
 import { useTranslation } from "react-i18next";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpDetaillBillFark({
   open,
   onClose,
@@ -24,7 +26,7 @@ export default function PopUpDetaillBillFark({
   const [menusData, setMenusData] = useState();
   const [Data, setData] = useState([]);
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

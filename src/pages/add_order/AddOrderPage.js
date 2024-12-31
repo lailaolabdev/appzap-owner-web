@@ -14,6 +14,8 @@ import { useTranslation } from "react-i18next";
 import PopUpOption from "../cart/component/PopUpOption";
 import { t } from "i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function AddOrderPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -24,8 +26,10 @@ export default function AddOrderPage() {
   const [searchMenu, setSearchMenu] = useState("");
 
   // Provider state for menu categories, menus, and cart
-  const { menuCategorys, menus, staffCart, setStaffCart, storeDetail } =
+  const { menuCategorys, menus, staffCart, setStaffCart } =
     useStore();
+
+  const { storeDetail } = useStoreStore()
 
   // Handler to add customized orders to the cart
   const handleAddToCart = (order) => {

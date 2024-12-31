@@ -21,6 +21,8 @@ import {
 } from "../../services/delivery";
 import Swal from "sweetalert2";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function DeliveryList() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +30,8 @@ export default function DeliveryList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const { profile, storeDetail } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const [delivery, setDelivery] = useState([]);
   const [editName, setEditName] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");

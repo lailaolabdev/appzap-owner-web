@@ -22,6 +22,7 @@ import { getHeaders } from '../../services/auth';
 import { useParams } from 'react-router-dom';
 import { t } from 'i18next';
 
+import { useStoreStore } from '../../zustand/storeStore';
 
 export default function HistoryDetail() {
   const params = useParams();
@@ -30,8 +31,9 @@ export default function HistoryDetail() {
   const {
     selectedTable,
     setSelectedTable,
-    storeDetail
   } = useStore();
+
+  const { storeDetail } = useStoreStore()
 
   const [feedbackOrderModal, setFeedbackOrderModal] = useState(false)
   const closeModalCallBack = () => setFeedbackOrderModal(false)

@@ -18,13 +18,16 @@ import { ComponentToPrint } from "./components/ToPrint";
 import { useStore } from "../../store";
 import { useLocation, useParams } from "react-router-dom";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 // const date = new moment().format("LL");
 export default function HistoriesCheckBill() {
   const location = useLocation();
   const params = useParams();
   const componentRef = useRef();
   const componentRefA = useRef();
-  const { selectedTable, resetTableOrder,storeDetail } = useStore();
+  const { selectedTable, resetTableOrder } = useStore();
+  const { storeDetail } = useStoreStore()
   const newDate = new Date();
   const [menuItemDetailModal, setMenuItemDetailModal] = useState(false);
   const [startDate, setSelectedDateStart] = useState("2021-04-01");

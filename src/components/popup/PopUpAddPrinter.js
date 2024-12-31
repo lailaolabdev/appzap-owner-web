@@ -3,12 +3,13 @@ import { Modal, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import { useTranslation } from "react-i18next";
 import { COLOR_APP } from "../../constants";
-import { useStore } from "../../store/useStore";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
   const { t } = useTranslation();
   // state
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>

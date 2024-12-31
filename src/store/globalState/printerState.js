@@ -10,8 +10,8 @@ const socket = socketio.connect("http://localhost:9150", {
   // reconnectionAttempts: 25,
 });
 
-// export const usePrintersState = ({ storeDetail }) => {
-  export const usePrintersState = () => {
+
+export const usePrintersState = () => {
     // zustand state store
     const {
       storeDetail, 

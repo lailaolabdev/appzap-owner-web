@@ -22,6 +22,8 @@ import Loading from "../../components/Loading";
 import { getCountBills } from "../../services/bill";
 import { COLOR_APP } from "../../constants";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 const limitData = 50;
 
 export default function DashboardFinance({
@@ -52,7 +54,8 @@ export default function DashboardFinance({
   const [totalPagination, setTotalPagination] = useState();
 
   const handleClose = () => setShow(false);
-  const { storeDetail, profile } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // console.log("data", data);
 

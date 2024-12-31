@@ -8,7 +8,9 @@ import {
 } from "../../services/selfOrderingBill";
 import moment from "moment";
 import PopUpSelfOrderingConfirm from "../../components/popup/PopUpSelfOrderingConfirm";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 const breakpointColumnsObj = {
   default: 4,
   1100: 2,
@@ -21,8 +23,7 @@ export default function SelfOrderingOrderPage() {
   const [selectSelfOrderingOrder, setSelectSelfOrderingOrder] = useState();
   const [popup, setPopup] = useState();
 
-  // provider
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

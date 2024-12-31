@@ -9,6 +9,8 @@ import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PrinterCounter() {
   const { t } = useTranslation();
   let navigate = useNavigate();
@@ -17,7 +19,8 @@ export default function PrinterCounter() {
   const [selectPrinterCounter, setSelectPrinterCounter] = useState("");
   const [printsData, setPrintsData] = useState();
 
-  const { storeDetail, getPrinterCounterState } = useStore();
+  const { getPrinterCounterState } = useStore();
+  const { storeDetail } = useStoreStore()
 
   useEffect(() => {
     if (selectPrinterCounter?.prints) {

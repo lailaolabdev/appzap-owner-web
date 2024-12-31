@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { moneyCurrency } from "../../helpers/index";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function BillForReport80({}) {
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   return (
     <Container>
       <div style={{ fontWeight: "bold", fontSize: 24 }}>ລາຍງານຍອດຂາຍ</div>

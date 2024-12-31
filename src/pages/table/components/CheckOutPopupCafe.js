@@ -29,6 +29,8 @@ import { useTranslation } from "react-i18next";
 
 import Loading from "../../../components/Loading";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function CheckOutPopupCafe({
   onPrintDrawer,
   onPrintBill,
@@ -43,7 +45,8 @@ export default function CheckOutPopupCafe({
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
-  const { storeDetail, profile } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const navigate = useNavigate();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 

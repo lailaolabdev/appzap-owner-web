@@ -13,7 +13,8 @@ import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import Swal from "sweetalert2";
 import { t } from "i18next";
-import { useStore } from "../../../store";
+
+import { useStoreStore } from "../../../zustand/storeStore";
 
 const UpdateDiscountOrder = ({
   data,
@@ -27,7 +28,7 @@ const UpdateDiscountOrder = ({
   const [discount, setDiscount] = useState(0);
   const [radioValue, setRadioValue] = useState("1");
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   useEffect(() => {
     setNewData(data);

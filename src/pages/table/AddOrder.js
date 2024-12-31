@@ -59,6 +59,8 @@ import moment from "moment";
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 function AddOrder() {
   const { state } = useLocation();
   const params = useParams();
@@ -221,13 +223,13 @@ function AddOrder() {
   };
 
   const {
-    storeDetail,
     printers,
     selectedTable,
     onSelectTable,
     selectedBill,
     tableOrderItems,
   } = useStore();
+  const { storeDetail } = useStoreStore()
 
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(

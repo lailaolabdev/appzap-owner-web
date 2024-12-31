@@ -18,13 +18,15 @@ import { Formik } from "formik";
 import { useStore } from "../../store";
 import { manageCounterService } from "../../services/manageCounterService";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function ManageCounterList() {
   const { t } = useTranslation();
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCounter, setSelectedCounter] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [count, setCount] = useState(null);
 
   const storeId = storeDetail._id;

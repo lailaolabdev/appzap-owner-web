@@ -4,7 +4,8 @@ import { Modal } from "react-bootstrap";
 import { URL_PHOTO_AW3 } from "../../../constants/index";
 import { moneyCurrency } from "../../../helpers";
 import { useParams } from "react-router-dom";
-import { useStore } from "../../../store";
+
+import { useStoreStore } from "../../../zustand/storeStore";
 
 export default function MenuList() {
   const params = useParams();
@@ -15,7 +16,7 @@ export default function MenuList() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   useEffect(() => {
     getMenu();

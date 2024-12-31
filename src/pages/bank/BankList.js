@@ -14,6 +14,8 @@ import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../store";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function BankList() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +23,8 @@ export default function BankList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
-  const { profile, storeDetail } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const [banks, setBanks] = useState([]);
   const [editBank, setEditBank] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");

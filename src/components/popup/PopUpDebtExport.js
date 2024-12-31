@@ -5,7 +5,6 @@ import { Button, Form, Card, Spinner, Modal } from "react-bootstrap";
 import { getLocalData } from "../../constants/api";
 import { getBilldebts } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
-import { useStore } from "../../store";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 import ImageEmpty from "../../image/empty.png";
@@ -14,6 +13,8 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 import { MdOutlineCloudDownload } from "react-icons/md";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpDebtExport({
   open,
@@ -58,7 +59,7 @@ export default function PopUpDebtExport({
 
   const limitData = 50;
   // Store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   return (
     <Modal show={open} onHide={onClose} size="xl">

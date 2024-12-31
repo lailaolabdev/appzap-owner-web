@@ -36,6 +36,8 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 const limitData = 10;
 
 export default function UserPage() {
@@ -55,7 +57,7 @@ export default function UserPage() {
   const [popup, setPopup] = useState();
 
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const storeId = storeDetail._id;
   //console.log("storeId:", storeId)
 

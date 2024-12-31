@@ -4,9 +4,12 @@ import { useStore } from "../../../store";
 import { t } from "i18next";
 import { moneyCurrency } from "../../../helpers";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function PopUpOption({ open, onClose, data, onAddToCart }) {
   const [quantities, setQuantities] = useState({});
-  const { staffCart, setStaffCart, storeDetail } = useStore();
+  const { staffCart, setStaffCart } = useStore();
+  const { storeDetail } = useStoreStore()
   const [globalNote, setGlobalNote] = useState("");
 
   // Default fallback for missing data

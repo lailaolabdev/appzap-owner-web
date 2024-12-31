@@ -5,10 +5,11 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { BsPrinter } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getMenus } from "../../services/menu";
-import { useStore } from "../../store";
 import { URL_PHOTO_AW3 } from "../../constants";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpAddMenuForBillFark({
   open,
@@ -23,7 +24,7 @@ export default function PopUpAddMenuForBillFark({
   const [inputSearch, setInputSearch] = useState("");
   const [menusData, setMenusData] = useState();
   // store
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

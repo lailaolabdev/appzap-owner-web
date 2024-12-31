@@ -58,6 +58,8 @@ import matchRoundNumber from "../../helpers/matchRound";
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 function Homecafe() {
   const params = useParams();
   const navigate = useNavigate();
@@ -187,13 +189,13 @@ function Homecafe() {
   }
 
   const {
-    storeDetail,
     printerCounter,
     printers,
     selectedTable,
     setSelectedTable,
     getTableDataStore,
   } = useStore();
+  const { storeDetail } = useStoreStore()
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
     allSelectedMenu,

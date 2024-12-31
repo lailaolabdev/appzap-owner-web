@@ -2,7 +2,8 @@ import React from "react";
 import { COLOR_APP } from "../../constants";
 import { Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function NumberKeyboard({
   totalBill,
@@ -14,7 +15,7 @@ export default function NumberKeyboard({
   setCanCheckOut,
   onClickMember,
 }) {
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   const _num = [
     {

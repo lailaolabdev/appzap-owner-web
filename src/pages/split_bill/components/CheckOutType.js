@@ -18,6 +18,8 @@ import { QUERY_CURRENCIES, getLocalData } from "../../../constants/api";
 import { formatDate } from "@fullcalendar/core";
 import PopUpSelectMemberData from "../../../components/popup/PopUpSelectMemberData";
 
+import { useStoreStore } from "../../../zustand/storeStore";
+
 export default function CheckOutType({
   onPrintBill,
   open,
@@ -43,7 +45,8 @@ export default function CheckOutType({
 
   const [currencyList, setCurrencyList] = useState([]);
 
-  const { setSelectedTable, getTableDataStore, storeDetail } = useStore();
+  const { setSelectedTable, getTableDataStore } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // val
 

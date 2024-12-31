@@ -39,6 +39,8 @@ import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndD
 import convertNumber from "../../helpers/convertNumber";
 import { fontMap } from "../../utils/font-map";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function Dashboard() {
   const { accessToken } = useQuery();
   const {
@@ -65,7 +67,7 @@ export default function Dashboard() {
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

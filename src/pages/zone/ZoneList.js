@@ -20,13 +20,14 @@ import Axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { getHeaders } from "../../services/auth";
 import ReactPaginate from "react-paginate";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function ZoneList() {
   const { t } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const limitData = 10;
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState(0);

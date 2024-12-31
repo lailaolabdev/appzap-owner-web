@@ -27,9 +27,11 @@ import { MdAssignmentAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function DebtPage() {
   const { t } = useTranslation();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const navigate = useNavigate(); // Initialize navigate
   const [isHovered, setIsHovered] = useState(false);
 

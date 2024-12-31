@@ -11,6 +11,8 @@ import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../store";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 
@@ -25,7 +27,8 @@ export default function PopUpAddDiscount({
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const { storeDetail, tableOrderItems } = useStore();
+  const { tableOrderItems } = useStore();
+  const { storeDetail } = useStoreStore()
   const [selectedButton, setSelectedButton] = useState("%");
   const [categorysType, setCategorysType] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");

@@ -11,6 +11,8 @@ import Axios from "axios";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpTranferTable({
   open,
   onClose,
@@ -28,7 +30,8 @@ export default function PopUpTranferTable({
     orderId: [],
   });
 
-  const { storeDetail, selectedTable } = useStore();
+  const { selectedTable } = useStore();
+  const { storeDetail } = useStoreStore()
 
   useEffect(() => {
     if (open) {

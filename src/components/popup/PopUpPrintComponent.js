@@ -26,6 +26,8 @@ import {
 import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PopUpPrintComponent({ open, onClose, children }) {
   const billRef = useRef(null);
   const { t } = useTranslation();
@@ -50,7 +52,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   });
 
   // provider
-  const { printers, storeDetail, printerCounter } = useStore();
+  const { printers, printerCounter } = useStore();
+  const { storeDetail } = useStoreStore()
   // useEffect
   useEffect(() => {
     // console.log("printers: ", billRef.current);

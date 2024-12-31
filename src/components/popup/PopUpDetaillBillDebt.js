@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BsPrinter } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
-import { getMenus } from "../../services/menu";
-import { useStore } from "../../store";
 import { URL_PHOTO_AW3 } from "../../constants";
 import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
@@ -41,8 +39,6 @@ export default function PopUpDetailBillDebt({
     }
   }, [open]);
 
-  // Store
-  const { storeDetail } = useStore();
 
   const handleClickConfirmDebt = async () => {
     try {

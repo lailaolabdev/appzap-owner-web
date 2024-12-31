@@ -11,7 +11,8 @@ import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
 import { Form } from "react-bootstrap";
 import { createUser } from "../../services/user";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
@@ -20,9 +21,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [formData, setFormData] = useState();
 
-  // store
-  const { storeDetail } = useStore();
-  //console.log("formData?.role:", formData?.role)
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {

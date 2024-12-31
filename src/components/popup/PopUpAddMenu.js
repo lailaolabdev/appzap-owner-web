@@ -6,7 +6,8 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Box from "../../components/Box";
 import Upload from "../Upload";
 import { moneyCurrency } from "../../helpers";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   // state
@@ -20,7 +21,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   const [nameOption, setNameOption] = useState();
   const [priceOption, setPriceOption] = useState();
 
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>

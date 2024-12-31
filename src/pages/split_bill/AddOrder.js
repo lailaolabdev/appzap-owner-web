@@ -55,6 +55,8 @@ import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import printFlutter from "../../helpers/printFlutter";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 function AddOrder() {
   const { state } = useLocation();
   const params = useParams();
@@ -176,7 +178,8 @@ function AddOrder() {
     });
   };
 
-  const { storeDetail, printers, selectedTable, onSelectTable } = useStore();
+  const { printers, selectedTable, onSelectTable } = useStore();
+  const { storeDetail } = useStoreStore()
   const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");

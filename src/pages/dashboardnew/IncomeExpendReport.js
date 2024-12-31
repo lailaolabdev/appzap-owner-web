@@ -32,6 +32,8 @@ import useWindowDimensions2 from "../../helpers/useWindowDimension2";
 import PopUpManageCounter from "../../components/popup/PopUpManageCounter";
 import {manageCounterService} from "../../services/manageCounterService"
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
   const parame = useParams();
@@ -60,7 +62,8 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
-  const { profile, storeDetail } = useStore();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore()
   const [openGetDate, setOpenGetDate] = useState(false);
   const storeId = storeDetail?._id;
   const user_role = profile.data?.role;

@@ -2,7 +2,6 @@ import React from "react";
 import { Context } from "./Context";
 import { useTableState } from "./globalState/tableState";
 import { useOrderState } from "./globalState/orderState";
-import { useStoreDetailState } from "./globalState/storeState";
 import { useMenuCategoryState } from "./globalState/menuCategoryState";
 import { useMenuState } from "./globalState/menuState";
 import { useReservationState } from "./globalState/reservationState";
@@ -16,9 +15,8 @@ import { useBillState } from "./globalState/billSplitState";
 import { useStoreStore } from "../zustand/storeStore";
 
 export const StateProvider = ({ children }) => {
-  // const storeDetail = useStoreDetailState();
+
   const {storeDetail} = useStoreStore();
-  // console.log({storeDetail})
   
   const splitBill = useBillState();
   const order = useOrderState();
@@ -34,7 +32,7 @@ export const StateProvider = ({ children }) => {
   let store = Object.assign(
     order,
     table,
-    storeDetail,
+    // storeDetail,
     menuCategory,
     menu,
     reservation,

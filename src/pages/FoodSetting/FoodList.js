@@ -34,14 +34,13 @@ import Upload from "../../components/Upload";
 import { useStore } from "../../store";
 import { useNavigate, useParams } from "react-router-dom";
 import { t } from "i18next";
-// import PopUpIsOpenMenu from "./components/popup/PopUpIsOpenMenu";
 
-// Styles and Resources
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function FoodList() {
   const navigate = useNavigate();
   const params = useParams();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [showSetting, setShowSetting] = useState(false);
   const [isOpened, setIsOpened] = useState(true);
 

@@ -9,11 +9,13 @@ import AnimationLoading from "../../constants/loading";
 import { getHeaders } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { t } from "i18next";
-import { useStore } from "../../store";
+
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function History() {
   const navigate = useNavigate();
   const params = useParams();
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const newDate = new Date();
   const [startDate, setSelectedDateStart] = useState("2021-02-01");
   const [endDate, setSelectedDateEnd] = useState(

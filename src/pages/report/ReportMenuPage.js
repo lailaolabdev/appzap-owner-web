@@ -28,6 +28,8 @@ import {
 import "moment/locale/lo";
 import PopupSelectMenuForDashboard from "../../components/popup/PopupSelectMenuForDashboard";
 
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function ReportMenuPage() {
   // state
   const [reportData, setReportData] = useState([]);
@@ -43,8 +45,7 @@ export default function ReportMenuPage() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
 
-  // provider
-  const { storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {
