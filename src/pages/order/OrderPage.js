@@ -282,7 +282,7 @@ export default function OrderPage() {
   useEffect(() => {
     if (!onPrinting) {
       getOrderItemsStore(selectOrderStatus);
-      getOrderWaitingAndDoingByStore();
+      // getOrderWaitingAndDoingByStore();
       setNewOrderTransaction(false);
     }
   }, [newOrderTransaction, selectOrderStatus]);
@@ -291,7 +291,7 @@ export default function OrderPage() {
     if (!onPrinting) {
       if (newOrderTransaction) {
         getOrderItemsStore(selectOrderStatus);
-        getOrderWaitingAndDoingByStore();
+        // getOrderWaitingAndDoingByStore();
         setNewOrderTransaction(false);
       }
     }
@@ -409,7 +409,7 @@ export default function OrderPage() {
             setorderItemForPrintBillSelect([]);
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
-            getOrderWaitingAndDoingByStore();
+            // getOrderWaitingAndDoingByStore();
           }}
           className="myClass"
         >
