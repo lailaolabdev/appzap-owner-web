@@ -51,6 +51,7 @@ export const groupItemsByPrinter = (items, printers) => {
 };
 
 export const convertHtmlToBase64 = (orderSelect, printers, storeDetail, totalText, currencyLabel) => {
+  console.log({orderSelect, printers, storeDetail, totalText, currencyLabel})
   const base64ArrayAndPrinter = [];
   orderSelect.forEach((data, index) => {
     if (data) {

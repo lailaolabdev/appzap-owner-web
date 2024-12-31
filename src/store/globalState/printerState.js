@@ -2,13 +2,21 @@ import { useEffect, useState, useMemo } from "react";
 import { getPrinterCounter, getPrinters } from "../../services/printer";
 import socketio from "socket.io-client";
 import Axios from "axios";
+import { useStoreStore } from "../../zustand/storeStore";
 const socket = socketio.connect("http://localhost:9150", {
   reconnection: true,
   reconnectionDelay: 5000,
   reconnectionDelayMax: 10000,
   // reconnectionAttempts: 25,
 });
-export const usePrintersState = ({ storeDetail }) => {
+
+// export const usePrintersState = ({ storeDetail }) => {
+  export const usePrintersState = () => {
+    // zustand state store
+    const {
+      storeDetail, 
+      updateStoreDetail} = useStoreStore()
+
   // state
   const [isPrintersLoading, setPrintersLoading] = useState(false);
   const [printers, setPrinters] = useState([]);
@@ -32,7 +40,6 @@ export const usePrintersState = ({ storeDetail }) => {
     const data = await getPrinters(findby);
     setPrinters(data);
 
-    // console.log("setPrinters", data);
 
     setPrintersLoading(false);
   };

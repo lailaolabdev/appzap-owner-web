@@ -25,7 +25,7 @@ export const StateProvider = ({ children }) => {
   const table = useTableState(storeDetail || {});
   const menuCategory = useMenuCategoryState(storeDetail || {});
   const reservation = useReservationState();
-  const printer = usePrintersState(storeDetail || {});
+  const printer = usePrintersState();
   const sound = useSoundState();
   const socket = useSocketState({...sound });
   const user = UserState();
