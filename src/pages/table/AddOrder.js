@@ -60,6 +60,7 @@ import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore"; 
 
 function AddOrder() {
   const { state } = useLocation();
@@ -71,7 +72,7 @@ function AddOrder() {
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
   const [Categorys, setCategorys] = useState();
-  const [Menus, setMenus] = useState();
+  // const [Menus, setMenus] = useState();
   const [userData, setUserData] = useState({});
 
   const [selectedMenu, setSelectedMenu] = useState([]);
@@ -162,22 +163,22 @@ function AddOrder() {
     setShow(false);
   };
 
-  const handleChangeMenuType = async (e) => {
-    setMenuType(e.target.value);
+  // const handleChangeMenuType = async (e) => {
+  //   setMenuType(e.target.value);
 
-    if (e.target.value == "MENUOPTION") {
-      await fetch(
-        MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => {
-          setConnectMenues(json);
-        });
-    }
-  };
+  //   if (e.target.value == "MENUOPTION") {
+  //     await fetch(
+  //       MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`,
+  //       {
+  //         method: "GET",
+  //       }
+  //     )
+  //       .then((response) => response.json())
+  //       .then((json) => {
+  //         setConnectMenues(json);
+  //       });
+  //   }
+  // };
 
   const handleChangeConnectMenu = (e) => {
     setConnectMenuId(e.target.value);
@@ -229,11 +230,44 @@ function AddOrder() {
     selectedBill,
     tableOrderItems,
   } = useStore();
+
   const { storeDetail } = useStoreStore()
 
   const [search, setSearch] = useState("");
+
+  const { menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+
+  // Get Menus & Categories
+  useEffect(() => {
+    const fetchData = async () => {
+      if (storeDetail._id) {
+        const storeId = storeDetail._id;
+
+        console.log({storeId})
+
+        console.log({menus, menuCategories})
+
+        // Check if menus and categories are already in the zustand store
+        if (!menus.length || !menuCategories.length) {
+          // If menus or categories are not found, fetch them
+          if (!menus.length) {
+            const fetchedMenus = await fetchMenus(storeId);
+            setMenus(fetchedMenus); // Save to zustand store
+          }
+          if (!menuCategories.length) {
+            const fetchedCategories = await fetchMenuCategories(storeId);
+            setMenuCategories(fetchedCategories); // Save to zustand store
+          }
+        }
+      }
+    };
+
+    fetchData();
+  // }, []);
+  }, [menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories]);
+
   const afterSearch = _.filter(
-    allSelectedMenu,
+    menus,
     (e) =>
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
@@ -578,21 +612,23 @@ function AddOrder() {
     }, {});
   };
 
-  useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY);
-    // const ADMIN = profile;
-    const _localJson = JSON.parse(ADMIN);
-    setUserData(_localJson);
-    const fetchData = async () => {
-      const _localData = await getLocalData();
-      if (_localData) {
-        getData(_localData?.DATA?.storeId);
-        getMenu(_localData?.DATA?.storeId);
-      }
-    };
-    fetchData();
-    // getcurrency();
-  }, []);
+
+
+  // useEffect(() => {
+  //   const ADMIN = localStorage.getItem(USER_KEY);
+  //   // const ADMIN = profile;
+  //   const _localJson = JSON.parse(ADMIN);
+  //   setUserData(_localJson);
+  //   const fetchData = async () => {
+  //     const _localData = await getLocalData();
+  //     if (_localData) {
+  //       getData(_localData?.DATA?.storeId);
+  //       getMenu(_localData?.DATA?.storeId);
+  //     }
+  //   };
+  //   fetchData();
+  //   // getcurrency();
+  // }, []);
 
   useEffect(() => {
     (async () => {
@@ -730,35 +766,35 @@ function AddOrder() {
     handleClose();
   };
 
-  const getData = async (id) => {
-    await fetch(CATEGORY + `?storeId=${id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setCategorys(json));
-  };
-  const getMenu = async (id) => {
-    setIsLoading(true);
-    await fetch(
-      MENUS +
-        `?storeId=${id}&${
-          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-        }`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setMenus(json);
-        setAllSelectedMenu(json);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
-  };
+  // const getData = async (id) => {
+  //   await fetch(CATEGORY + `?storeId=${id}`, {
+  //     method: "GET",
+  //   })
+  //     .then((response) => response.json())
+  //     .then((json) => setCategorys(json));
+  // };
+  // const getMenu = async (id) => {
+  //   setIsLoading(true);
+  //   await fetch(
+  //     MENUS +
+  //       `?storeId=${id}&${
+  //         selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
+  //       }`,
+  //     {
+  //       method: "GET",
+  //     }
+  //   )
+  //     .then((response) => response.json())
+  //     .then((json) => {
+  //       setMenus(json);
+  //       setAllSelectedMenu(json);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setIsLoading(false);
+  //       console.log(err);
+  //     });
+  // };
 
   const _checkMenuOption = (menu) => {
     try {
@@ -1209,8 +1245,8 @@ function AddOrder() {
                 {t("all")}
                 <div className="ml-12"></div>
               </button>
-              {Categorys &&
-                Categorys.map((data, index) => {
+              {menuCategories &&
+                menuCategories.map((data, index) => {
                   return (
                     <button
                       key={"category" + index}
@@ -1302,7 +1338,7 @@ function AddOrder() {
                         style={{ border: "none", textAlign: "left" }}
                         className={fontMap[language]}
                       >
-                        {t("menu_name")}
+                        {t("menu_name")} YO
                       </th>
                       <th
                         style={{ border: "none", textAlign: "center" }}

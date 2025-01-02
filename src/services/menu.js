@@ -13,6 +13,16 @@ export const getMenus = async (findby) => {
   }
 };
 
+export const getMenusByStoreId = async (storeId) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menus?storeId=${storeId}`;
+    const res = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getMenu = async (categoryId) => {
   try {
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu?id=${categoryId}`;
