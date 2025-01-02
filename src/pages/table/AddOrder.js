@@ -896,7 +896,7 @@ function AddOrder() {
 
   const createOrder = async (data, header, isPrinted) => {
     try {
-      const _storeId = userData?.data?.storeId;
+      const _storeId = storeDetail._id;
       let findby = "?";
       findby += `storeId=${_storeId}`;
       findby += `&code=${code}`;
