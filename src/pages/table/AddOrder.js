@@ -3,10 +3,8 @@ import { useLocation } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import ReactToPrint from "react-to-print";
 import _ from "lodash";
 import Swal from "sweetalert2";
-import html2canvas from "html2canvas";
 import { base64ToBlob } from "../../helpers";
 import { printItems } from "./printItems";
 import { useTranslation } from "react-i18next";
@@ -71,8 +69,6 @@ function AddOrder() {
   const [billId, setBillId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
-  const [Categorys, setCategorys] = useState();
-  // const [Menus, setMenus] = useState();
   const [userData, setUserData] = useState({});
 
   const [selectedMenu, setSelectedMenu] = useState([]);
@@ -237,15 +233,12 @@ function AddOrder() {
 
   const { menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories } = useMenuStore();
 
-  // Get Menus & Categories
+  // Get Menus & Categories, and persist it in localstorage. 
+  // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
       if (storeDetail._id) {
         const storeId = storeDetail._id;
-
-        console.log({storeId})
-
-        console.log({menus, menuCategories})
 
         // Check if menus and categories are already in the zustand store
         if (!menus.length || !menuCategories.length) {
@@ -263,7 +256,6 @@ function AddOrder() {
     };
 
     fetchData();
-  // }, []);
   }, [menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories]);
 
   const afterSearch = _.filter(
@@ -612,34 +604,6 @@ function AddOrder() {
     }, {});
   };
 
-
-
-  // useEffect(() => {
-  //   const ADMIN = localStorage.getItem(USER_KEY);
-  //   // const ADMIN = profile;
-  //   const _localJson = JSON.parse(ADMIN);
-  //   setUserData(_localJson);
-  //   const fetchData = async () => {
-  //     const _localData = await getLocalData();
-  //     if (_localData) {
-  //       getData(_localData?.DATA?.storeId);
-  //       getMenu(_localData?.DATA?.storeId);
-  //     }
-  //   };
-  //   fetchData();
-  //   // getcurrency();
-  // }, []);
-
-  useEffect(() => {
-    (async () => {
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}`;
-      findby += `&code=${code}`;
-      const data = await getBills(findby);
-
-      setBillId(data?.[0]);
-    })();
-  }, []);
 
   const handleAddOption = (menuId, option) => {
     setSelectedOptionsArray((prevOptions) => {
