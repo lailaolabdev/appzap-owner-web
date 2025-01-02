@@ -55,6 +55,24 @@ export const useMenuStore = create(
         }
       },
 
+    //   // Action to update a menu item by ID
+    //   updateMenuItem: async (menuData, menuId) => {
+    //     set({ isMenuLoading: true });
+    //     try {
+    //       const updatedMenu = await updateMenu(menuData, menuId);
+    //       set((state) => ({
+    //         menus: state.menus.map((menu) =>
+    //           menu._id === menuId ? updatedMenu.data : menu
+    //         ),
+    //         isMenuLoading: false,
+    //       }));
+    //       return updatedMenu;
+    //     } catch (error) {
+    //       console.error("Update menu item error:", error.message);
+    //       set({ isMenuLoading: false });
+    //     }
+    //   },
+
       // Action to clear menu data
       clearMenus: () => set({ menus: [], menuCategories: [], staffCart: [], isMenuLoading: false }),
     }),
