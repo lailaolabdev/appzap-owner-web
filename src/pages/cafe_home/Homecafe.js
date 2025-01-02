@@ -1048,7 +1048,8 @@ function Homecafe() {
                       <div>
                         <span>{t("pricesTotal")} : </span>
                         <span>
-                          {moneyCurrency(total)} {t("nameCurrency")}
+                          {moneyCurrency(matchRoundNumber(total))}{" "}
+                          {t("nameCurrency")}
                         </span>
                       </div>
                     </div>
@@ -1097,7 +1098,7 @@ function Homecafe() {
                     ) : (
                       ""
                     )}
-                    <Button
+                    {/* <Button
                       variant="light"
                       className="hover-me"
                       style={{
@@ -1111,7 +1112,7 @@ function Homecafe() {
                       onClick={() => navigate(`/history-cafe-sale`)}
                     >
                       {t("history_sales")}
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </div>
@@ -1354,7 +1355,8 @@ function Homecafe() {
                     <div>
                       <span>{t("pricesTotal")} : </span>
                       <span>
-                        {moneyCurrency(total)} {t("nameCurrency")}
+                        {moneyCurrency(matchRoundNumber(total))}{" "}
+                        {t("nameCurrency")}
                       </span>
                     </div>
                   </div>
@@ -1401,7 +1403,7 @@ function Homecafe() {
                   ) : (
                     ""
                   )}
-                  <Button
+                  {/* <Button
                     variant="light"
                     className="hover-me"
                     style={{
@@ -1415,7 +1417,7 @@ function Homecafe() {
                     onClick={() => navigate(`/history-cafe-sale`)}
                   >
                     {t("history_sales")}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>

@@ -475,8 +475,10 @@ export default function CheckOutPopupCafe({
               <span>ລາຄາລວມ: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill
-                  ? moneyCurrency(totalBill ? totalBill : 0)
-                  : moneyCurrency(totalBill > 0 ? totalBill : 0)}{" "}
+                  ? moneyCurrency(totalBill ? matchRoundNumber(totalBill) : 0)
+                  : moneyCurrency(
+                      totalBill > 0 ? matchRoundNumber(totalBill) : 0
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -550,7 +552,7 @@ export default function CheckOutPopupCafe({
                   disabled={tab !== "cash_transfer"}
                   type="text"
                   placeholder="0"
-                  value={convertNumber(transfer)}
+                  value={convertNumber(matchRoundNumber(transfer || 0))}
                   onClick={() => {
                     setSelectInput("inputTransfer");
                   }}
