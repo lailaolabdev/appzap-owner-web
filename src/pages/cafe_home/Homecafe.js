@@ -195,7 +195,7 @@ function Homecafe() {
     setSelectedTable,
     getTableDataStore,
   } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [search, setSearch] = useState("");
   const afterSearch = _.filter(
     allSelectedMenu,
@@ -1437,7 +1437,8 @@ function Homecafe() {
                     <div>
                       <span>{t("pricesTotal")} : </span>
                       <span>
-                        {moneyCurrency(total)} {t("nameCurrency")}
+                        {moneyCurrency(matchRoundNumber(total))}{" "}
+                        {t("nameCurrency")}
                       </span>
                     </div>
                   </div>

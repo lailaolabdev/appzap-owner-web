@@ -34,6 +34,8 @@ import { getBills } from "../../services/bill";
 import { moneyCurrency } from "../../helpers";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import PopUpSetStartAndEndDateCafe from "../../components/popup/PopUpSetStartAndEndDateCafe";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
 
 function HistorySale() {
   const params = useParams();
@@ -55,10 +57,16 @@ function HistorySale() {
   const [historyCafe, setHistoryCafe] = useState([]);
 
   const [pagination, setPagination] = useState(1);
-  const limitData = 20;
   const [totalPagination, setTotalPagination] = useState();
+  const [startDateCafe, setStartDateCafe] = useState(
+    moment().format("YYYY-MM-DD")
+  );
+  const [endDateCafe, setEndDateCafe] = useState(moment().format("YYYY-MM-DD"));
+  const [startTimeCafe, setStartTimeCafe] = useState("00:00:00");
+  const [endTimeCafe, setEndTimeCafe] = useState("23:59:59");
+  const [popup, setPopup] = useState(false);
 
-  // console.log("historyCafe" ,historyCafe)
+  const limitData = 200;
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -104,10 +112,9 @@ function HistorySale() {
     setTotal(_total);
   };
 
-
   const handleClose = () => setShow(false);
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -116,9 +123,6 @@ function HistorySale() {
     setUserData(_localJson);
     const fetchData = async () => {
       const _localData = await getLocalData();
-      if (_localData) {
-        getData(_localData?.DATA?.storeId);
-      }
     };
     fetchData();
     getHistoryCafe();
@@ -128,7 +132,6 @@ function HistorySale() {
     (async () => {
       let findby = "?";
       findby += `storeId=${storeDetail?._id}`;
-      findby += `&code=${code}`;
       const data = await getBills(findby);
       setBillId(data?.[0]);
     })();
@@ -139,7 +142,9 @@ function HistorySale() {
     try {
       const data = await axios.get(
         END_POINT_SEVER +
-          `/v3/bills?skip=${(pagination - 1) * limitData}&limit=${limitData}`,
+          `/v6/bills-cafe?storeId=${storeDetail?._id}&skip=${
+            (pagination - 1) * limitData
+          }&limit=${limitData}`,
         {
           headers: {
             Accept: "application/json",
@@ -148,7 +153,7 @@ function HistorySale() {
         }
       );
       const billCount = await axios.get(
-        END_POINT_SEVER + `/v3/bills/count/cafe`,
+        END_POINT_SEVER + `/v6/bills-count-cafe?storeId=${storeDetail?._id}`,
         {
           headers: {
             Accept: "application/json",
@@ -156,10 +161,9 @@ function HistorySale() {
           },
         }
       );
-      setHistoryCafe(data.data);
-      setTotalPagination(
-        Math.ceil(billCount.data.countCafeHistory / limitData)
-      );
+      console.log("setHistoryCafe", data);
+      setHistoryCafe(data?.data?._bills);
+      setTotalPagination(Math.ceil(data?.data?._billsAmount / limitData));
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -168,13 +172,13 @@ function HistorySale() {
 
   // console.log("historyCafe", historyCafe);
 
-  const getData = async (id) => {
-    await fetch(CATEGORY + `?storeId=${id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setCategorys(json));
-  };
+  // const getData = async (id) => {
+  //   await fetch(CATEGORY + `?storeId=${id}`, {
+  //     method: "GET",
+  //   })
+  //     .then((response) => response.json())
+  //     .then((json) => setCategorys(json));
+  // };
 
   const { t } = useTranslation();
 
@@ -198,9 +202,26 @@ function HistorySale() {
               <Loading />
             ) : (
               <>
-                <div className="m-2" style={{ marginBottom: 20 }}>
+                <div
+                  className="m-2 flex justify-between items-center"
+                  style={{ marginBottom: 20 }}
+                >
                   <h5>{t("history_sales")}</h5>
-                  <div style={{ flex: 1 }} />
+                  <Button
+                    variant="outline-primary"
+                    size="small"
+                    className="btn-fill-date w-96 flex items-center gap-2"
+                    onClick={() => setPopup({ popupfiltterCafe: true })}
+                  >
+                    <BsFillCalendarWeekFill />
+                    <div>
+                      {startDateCafe} {startTimeCafe}
+                    </div>{" "}
+                    ~{" "}
+                    <div>
+                      {endDateCafe} {endTimeCafe}
+                    </div>
+                  </Button>
                 </div>
                 <div style={{ padding: 0 }}>
                   <div style={{ padding: 10 }}>
@@ -216,34 +237,32 @@ function HistorySale() {
                           </tr>
                         </thead>
                         <tbody>
-                          {historyCafe
-                            .filter((e) => e.saveCafe == true)
-                            .map((item, index) => (
-                              <tr
-                                onClick={() => {
-                                  handleShow(item.orderId);
-                                }}
-                                key={index}
-                              >
-                                <td style={{ textWrap: "nowrap" }}>
-                                  {(pagination - 1) * limitData + index + 1}
-                                </td>
-                                <td style={{ textWrap: "nowrap" }}>
-                                  {item.code}
-                                </td>
-                                <td style={{ textWrap: "nowrap" }}>
-                                  {item.orderId.length}
-                                </td>
-                                <td style={{ textWrap: "nowrap" }}>
-                                  {moneyCurrency(item.billAmount)}
-                                </td>
-                                <td style={{ textWrap: "nowrap" }}>
-                                  {moment(item.createdAt).format(
-                                    "YYYY-MM-DD, h:mm:ss a"
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
+                          {historyCafe.map((item, index) => (
+                            <tr
+                              onClick={() => {
+                                handleShow(item.orderId);
+                              }}
+                              key={index}
+                            >
+                              <td style={{ textWrap: "nowrap" }}>
+                                {(pagination - 1) * limitData + index + 1}
+                              </td>
+                              <td style={{ textWrap: "nowrap" }}>
+                                {item.code}
+                              </td>
+                              <td style={{ textWrap: "nowrap" }}>
+                                {item.orderId.length}
+                              </td>
+                              <td style={{ textWrap: "nowrap" }}>
+                                {moneyCurrency(item.billAmount)}
+                              </td>
+                              <td style={{ textWrap: "nowrap" }}>
+                                {moment(item.createdAt).format(
+                                  "YYYY-MM-DD, h:mm:ss a"
+                                )}
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </Table>
                     </div>
@@ -411,6 +430,19 @@ function HistorySale() {
           </div>
         ) : null}
       </div>
+
+      <PopUpSetStartAndEndDateCafe
+        open={popup?.popupfiltterCafe}
+        onClose={() => setPopup()}
+        startDateCafe={startDateCafe}
+        setStartDateCafe={setStartDateCafe}
+        setStartTimeCafe={setStartTimeCafe}
+        startTimeCafe={startTimeCafe}
+        setEndDateCafe={setEndDateCafe}
+        setEndTimeCafe={setEndTimeCafe}
+        endTimeCafe={endTimeCafe}
+        endDateCafe={endDateCafe}
+      />
     </div>
   );
 }
