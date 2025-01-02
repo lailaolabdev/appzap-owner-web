@@ -86,6 +86,7 @@ import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import theme from "../../theme";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -182,10 +183,7 @@ export default function TableList() {
     dataQR,
   } = useStore();
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -782,7 +780,7 @@ export default function TableList() {
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
-      setStoreDetail({ChangeColorTable: true });
+      setStoreDetail({ ChangeColorTable: true });
 
       setPrintBillLoading(false);
       await Swal.fire({
@@ -2363,7 +2361,7 @@ export default function TableList() {
                 label: t("total_table"),
                 value: tableList?.length,
                 icon: <HandPlatter />,
-                bgColor: "#FB6F3B",
+                bgColor: theme.primaryColor,
               },
               {
                 label: t("available"),
@@ -2375,7 +2373,7 @@ export default function TableList() {
                 label: t("unavailable"),
                 value: _checkStatusCode(tableList),
                 icon: <X />,
-                bgColor: "#FB6F3B",
+                bgColor: theme.primaryColor,
               },
               {
                 label: t("printed_bill"),
@@ -2402,7 +2400,7 @@ export default function TableList() {
                   <div
                     style={{
                       backgroundColor: item.bgColor,
-                      borderColor: COLOR_APP,
+                      borderColor: theme.primaryColor,
                       borderWidth: index === 1 ? 1 : 0,
                     }}
                     className={cn(
@@ -3618,7 +3616,7 @@ const ButtonCustom = ({ children, ...etc }) => {
       variant="light"
       className="hover-me"
       style={{
-        backgroundColor: "#FB6E3B",
+        backgroundColor: theme.primaryColor,
         color: "#ffffff",
         fontWeight: "bold",
         fontSize: 13,

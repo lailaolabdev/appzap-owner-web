@@ -152,8 +152,9 @@
     "zustand": "^5.0.2"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "REACT_APP_THEME=thai node scripts/start.js",
     "build": "GENERATE_SOURCEMAP=false node scripts/build.js",
+    "build-thai": "GENERATE_SOURCEMAP=false REACT_APP_THEME=thai node scripts/build.js",
     "winBuild": "set \"GENERATE_SOURCEMAP=false\" && node scripts/build.js",
     "build:prod": "GENERATE_SOURCEMAP=false node scripts/build.js && aws s3 sync ./build s3://restaurant.appzap.la && aws s3 sync ./build s3://n2.restaurant.appzap.la",
     "build:staging": "GENERATE_SOURCEMAP=false node scripts/build.js && aws s3 sync ./build s3://staging.restaurant.appzap.la",

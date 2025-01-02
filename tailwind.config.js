@@ -1,3 +1,5 @@
+const { default: theme } = require("./src/theme");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{html,js}"],
@@ -17,7 +19,7 @@ module.exports = {
         card: "0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
       },
       colors: {
-        "color-app": "#FF6700",
+        "color-app": theme.primaryColor,
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
@@ -25,8 +27,7 @@ module.exports = {
         thai: ["Noto Sans Thai", "sans-serif"],
       },
       backgroundImage: {
-        "primary-gradient":
-          "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)",
+        "primary-gradient": theme.primaryGradient,
       },
     },
   },
