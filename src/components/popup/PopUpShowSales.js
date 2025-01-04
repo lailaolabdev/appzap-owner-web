@@ -23,17 +23,17 @@ export default function PopUpShowSales({
 
     let shouldShowBasedOnFrequency = false;
     switch (salesData.repeatFrequency) {
-      case "none":
+      case "NONE":
         shouldShowBasedOnFrequency =
           now.toDateString() === eventDate.toDateString();
         break;
-      case "daily":
+      case "DAILY":
         shouldShowBasedOnFrequency = true;
         break;
-      case "weekly":
+      case "WEEKLY":
         shouldShowBasedOnFrequency = now.getDay() === eventDate.getDay();
         break;
-      case "monthly":
+      case "MONTHLY":
         shouldShowBasedOnFrequency = now.getDate() === eventDate.getDate();
         break;
       default:

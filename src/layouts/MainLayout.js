@@ -6,9 +6,12 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
 import { END_POINT_SEVER } from "../constants/api";
 import { useStore } from "../store";
-import { showSalesService } from "../services/showSales";
-
-import { useStoreStore } from "../zustand/storeStore";
+import { 
+  fetchSalesData,
+  updateAvailableStoreId,
+  updateSalesClick,
+  updateViews 
+} from '../services/showSales';
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -22,16 +25,16 @@ export default function MainLayout({ children }) {
   const [salesId, setSalesId] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { profile, storeDetail } = useStore();
   const [selectId, setSelectId] = useState(null);
 
   const storeId = storeDetail?._id;
+  console.log("salesData... :",salesData)
 
   const fetchSalesData = async () => {
     setIsLoading(true);
     try {
-      const data = await showSalesService.fetchSalesData();
+      const data = await fetchSalesData();
       if (data) {
         setSalesId(data.selectedStores?.[0] || null);
         setSalesData(data);
@@ -51,7 +54,7 @@ export default function MainLayout({ children }) {
   const updateAvailableStoreId = async (id, isAvailable) => {
     if (!storeDetail) return;
     try {
-      const updatedData = await showSalesService.updateAvailableStoreId(
+      const updatedData = await updateAvailableStoreId(
         id, 
         isAvailable, 
         salesData?._id, 
@@ -68,7 +71,7 @@ export default function MainLayout({ children }) {
   const updateSalesClick = async (id, currentClicks) => {
     if (!storeDetail) return;
     try {
-      const success = await showSalesService.updateSalesClick(id, currentClicks);
+      const success = await updateSalesClick(id, currentClicks);
       if (success) {
         await fetchSalesData();
       }
@@ -91,7 +94,7 @@ export default function MainLayout({ children }) {
   
   useEffect(() => {
     if (!isLoading && salesData && popup?.PopUpShowSales) {
-      showSalesService.updateViews(salesData._id);
+      updateViews(salesData._id);
     }
   }, [isLoading, salesData, popup?.PopUpShowSales]);
 
