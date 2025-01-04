@@ -17,40 +17,59 @@ export const fetchSalesData = async () => {
 
 export const updateAvailableStoreId = async (id, isAvailable, salesId, storeId) => {
   try {
+    const isAllStore = !id && storeId; 
+
     const response = await axios.put(
-      `${END_POINT_SEVER}/v6/show-sales/update-available-store-id/${id}`,
+      `${END_POINT_SEVER}/v6/show-sales/update-available-store-id/${id || 'all'}`,
       {
         isAvailable,
         salesId,
-        storeId
+        storeId,
+        isAllStore 
       }
     );
+    
+    if (!response.data) {
+      throw new Error('No data received from server');
+    }
+
+    // ตรวจสอบว่าการอัปเดตสำเร็จ
+    if (response.data.selectedStores) {
+      const storeUpdated = response.data.selectedStores.some(store => 
+        (id ? store._id === id : store.storeId === storeId) && 
+        store.isAvailable === isAvailable
+      );
+      
+      if (!storeUpdated) {
+        console.warn("Store availability update not reflected in response");
+      }
+    }
+    
     return response.data;
   } catch (error) {
     console.error("Error updating availability:", error);
-    return null;
+    throw error;
   }
 };
 
-export const updateSalesClick = async (id, currentClicks) => {
+export const updateSalesClick = async (id) => {
   try {
-    const updatedClicks = (currentClicks || 0) + 1;
-    await axios.put(`${END_POINT_SEVER}/v6/show-sales/${id}`, {
-      clicks: updatedClicks,
-    });
-    return true;
+    const response = await axios.put(
+      `${END_POINT_SEVER}/v6/show-sales/update-click/${id}`
+    );
+    return response.data.clicks; 
   } catch (error) {
     console.error("Error updating clicks:", error);
-    return false;
+    throw error;
   }
 };
 
 export const updateViews = async (id) => {
   try {
-    await axios.put(`${END_POINT_SEVER}/v6/show-sales/update-views/${id}`);
-    return true;
+    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/update-views/${id}`);
+    return response.data;
   } catch (error) {
     console.error("Error updating views:", error);
-    return false;
+    throw error;
   }
 };

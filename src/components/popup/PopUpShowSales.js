@@ -7,8 +7,8 @@ export default function PopUpShowSales({
   open,
   onClose,
   salesData,
-  update_available_storeId,
-  updateSalesClick,
+  handleUpdateAvailableStoreId,
+  handleUpdateSalesClick,
   selectId,
 }) {
   const [isWithinTimeRange, setIsWithinTimeRange] = useState(false);
@@ -17,11 +17,12 @@ export default function PopUpShowSales({
 
   const checkTimeRange = () => {
     if (!salesData || !salesData.isAllAvailables) return false;
-
+  
     const now = new Date();
     const eventDate = new Date(salesData.eventDate);
-
+  
     let shouldShowBasedOnFrequency = false;
+  
     switch (salesData.repeatFrequency) {
       case "NONE":
         shouldShowBasedOnFrequency =
@@ -31,58 +32,62 @@ export default function PopUpShowSales({
         shouldShowBasedOnFrequency = true;
         break;
       case "WEEKLY":
-        shouldShowBasedOnFrequency = now.getDay() === eventDate.getDay();
+        const diffInDays = Math.floor(
+          (now - eventDate) / (1000 * 60 * 60 * 24)
+        );
+        shouldShowBasedOnFrequency = diffInDays >= 0 && diffInDays < 7;
         break;
       case "MONTHLY":
-        shouldShowBasedOnFrequency = now.getDate() === eventDate.getDate();
+        shouldShowBasedOnFrequency =
+          now.getFullYear() === eventDate.getFullYear() &&
+          now.getMonth() === eventDate.getMonth();
         break;
       default:
         shouldShowBasedOnFrequency = false;
     }
-
+  
     if (salesData.isAllDay) {
       return shouldShowBasedOnFrequency;
     }
-
+  
     if (salesData.startTime && salesData.endTime) {
       const currentTime = now.getHours() * 60 + now.getMinutes();
       const [startHour, startMinute] = salesData.startTime
         .split(":")
         .map(Number);
       const [endHour, endMinute] = salesData.endTime.split(":").map(Number);
+  
       const startTimeInMinutes = startHour * 60 + startMinute;
       const endTimeInMinutes = endHour * 60 + endMinute;
-
+  
       return (
         shouldShowBasedOnFrequency &&
         currentTime >= startTimeInMinutes &&
         currentTime <= endTimeInMinutes
       );
     }
-
+  
     return shouldShowBasedOnFrequency;
   };
+  
+  
 
   useEffect(() => {
     const checkAvailability = () => {
-      // ເຊັກເງືຶອນ isAllAvailables
       if (!salesData?.isAllAvailables) {
         setShouldShow(false);
         return;
       }
 
-      // ຄົນຫາ store ທີ່ຕົງ selectId
       const selectedStore = salesData?.selectedStores?.find(
         (store) => store._id === selectId
       );
 
-      // ກວດ isAvailable ຂອງ store ນັ້ນໆ
       if (!selectedStore?.isAvailable) {
         setShouldShow(false);
         return;
       }
 
-      // ກວດເງືອນໄໍຊເວລາ
       const timeRangeResult = checkTimeRange();
       setIsWithinTimeRange(timeRangeResult);
       setShouldShow(timeRangeResult);
@@ -95,16 +100,60 @@ export default function PopUpShowSales({
     }
   }, [salesData, selectId]);
 
-  if (!shouldShow) return null;
+
+
+
+  const handleClose = async () => {
+    try {
+      // First update the availability
+      await handleUpdateAvailableStoreId(
+        selectId, 
+        false, 
+        salesData._id, 
+        salesData.selectedStores.find(store => store._id === selectId)?.storeId
+      );
+      // Then close the modal
+      onClose();
+    } catch (error) {
+      console.error('Error closing popup:', error);
+      // Still close the modal even if the update fails
+      onClose();
+    }
+  };
+
+  const handleOrder = async () => {
+    try {
+      // อัปเดต clicks
+      await handleUpdateSalesClick(salesData._id);
+      
+      // อัปเดตความพร้อมใช้งาน
+      await handleUpdateAvailableStoreId(
+        selectId,
+        false,
+        salesData._id,
+        salesData.selectedStores.find(store => store._id === selectId)?.storeId
+      );
+  
+      onClose();
+  
+      if (salesData?.link) {
+        window.open(salesData.link, "_blank");
+      }
+    } catch (error) {
+      console.error('Error handling order:', error);
+      onClose();
+      if (salesData?.link) {
+        window.open(salesData.link, "_blank");
+      }
+    }
+  };
+  
 
   return (
     <Modal
       size="md"
       show={open}
-      onHide={() => {
-        update_available_storeId(selectId, false);
-        onClose();
-      }}
+      onHide={handleClose}
       centered
     >
       <div>
@@ -164,14 +213,7 @@ export default function PopUpShowSales({
             backgroundColor: COLOR_APP,
             border: 0,
           }}
-          onClick={() => {
-            updateSalesClick(salesData._id, salesData.clicks);
-            update_available_storeId(selectId, false);
-            onClose();
-            if (salesData?.link) {
-              window.open(salesData.link, "_blank");
-            }
-          }}
+          onClick={handleOrder}
         >
           {t("order_")}
         </Button>

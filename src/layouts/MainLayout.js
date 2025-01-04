@@ -5,7 +5,8 @@ import Sidenav from "./SideNav";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
 import { END_POINT_SEVER } from "../constants/api";
-import { useStore } from "../store";
+import { useStoreStore } from "../zustand/storeStore";
+
 import { 
   fetchSalesData,
   updateAvailableStoreId,
@@ -25,11 +26,11 @@ export default function MainLayout({ children }) {
   const [salesId, setSalesId] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { profile, storeDetail } = useStore();
+  const { storeDetail } = useStoreStore()
   const [selectId, setSelectId] = useState(null);
 
   const storeId = storeDetail?._id;
-  console.log("salesData:",salesData)
+
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -50,49 +51,58 @@ export default function MainLayout({ children }) {
       setIsLoading(false);
     }
   };
+
   useEffect(()=>{
-    fetchData()
+    fetchData();
   },[])
 
-  const updateAvailableStoreId = async (id, isAvailable) => {
-    if (!storeDetail) return;
+
+  const handleUpdateAvailableStoreId = async (id, isAvailable) => {
     try {
       const updatedData = await updateAvailableStoreId(
         id, 
         isAvailable, 
         salesData?._id, 
-        storeDetail._id
+        storeId
+        
       );
       if (updatedData) {
         setSalesData(updatedData);
+        // Verify the update was successful
+        const isUpdateSuccessful = updatedData.selectedStores?.some(
+          store => store._id === id && store.isAvailable === isAvailable
+        );
+        if (!isUpdateSuccessful) {
+          console.error("Store availability update failed to reflect in data");
+        }
       }
     } catch (error) {
       console.error("Error updating availability:", error);
     }
   };
 
-  const updateSalesClick = async (id, currentClicks) => {
-    if (!storeDetail) return;
+  const handleUpdateSalesClick = async (id) => {
     try {
-      const success = await updateSalesClick(id, currentClicks);
+      const success = await updateSalesClick(id);
       if (success) {
-        await fetchSalesData();
+        await fetchData(); 
       }
     } catch (error) {
       console.error("Error updating clicks:", error);
     }
   };
+  
 
   useEffect(() => {
     if (storeDetail) {
-      fetchSalesData();
-      const intervalId = setInterval(fetchSalesData, 60000);
+      fetchData();
+      const intervalId = setInterval(fetchData, 30000);
       return () => clearInterval(intervalId);
     } else {
       setIsLoading(false);
       setPopup({ PopUpShowSales: false });
     }
-  }, [storeDetail?._id]);
+  }, [storeId]);
 
   
   useEffect(() => {
@@ -103,35 +113,15 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     if (!isLoading && salesData && storeDetail) {
-      const hasNullStore = salesData.selectedStores?.some(store => store.storeId === null) || false;
-      const currentStore = salesData.selectedStores?.find(
-        store => store.storeId === storeDetail._id || store.storeId === null
+      const targetStore = salesData.selectedStores?.find(
+        store => store.storeId === storeId || store.storeId === null
       );
   
-      if (hasNullStore) {
-        const specificStore = salesData.selectedStores?.find(
-          store => store.storeId === storeDetail._id
-        );
-        
-        if (specificStore) {
-          setSelectId(specificStore._id);
-          setPopup({ PopUpShowSales: specificStore.isAvailable });
-        } else {
-          const nullStore = salesData.selectedStores?.find(store => store.storeId === null);
-          if (nullStore) {
-            setSelectId(nullStore._id);
-            setPopup({ PopUpShowSales: nullStore.isAvailable });
-          } else {
-            setPopup({ PopUpShowSales: false });
-          }
-        }
+      if (targetStore) {
+        setSelectId(targetStore._id);
+        setPopup({ PopUpShowSales: targetStore.isAvailable });
       } else {
-        if (currentStore) {
-          setSelectId(currentStore._id);
-          setPopup({ PopUpShowSales: currentStore.isAvailable });
-        } else {
-          setPopup({ PopUpShowSales: false });
-        }
+        setPopup({ PopUpShowSales: false });
       }
     }
   }, [salesData, storeDetail, isLoading]);
@@ -185,8 +175,8 @@ export default function MainLayout({ children }) {
             salesData={salesData}
             selectId={selectId}
             END_POINT_SEVER={END_POINT_SEVER}
-            updateAvailableStoreId={updateAvailableStoreId}
-            updateSalesClick={updateSalesClick}
+            handleUpdateAvailableStoreId={handleUpdateAvailableStoreId}
+            handleUpdateSalesClick={handleUpdateSalesClick}
           />
         )}
         <Outlet />
