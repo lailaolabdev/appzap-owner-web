@@ -29,9 +29,9 @@ export default function MainLayout({ children }) {
   const [selectId, setSelectId] = useState(null);
 
   const storeId = storeDetail?._id;
-  console.log("salesData... :",salesData)
+  console.log("salesData:",salesData)
 
-  const fetchSalesData = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
     try {
       const data = await fetchSalesData();
@@ -50,6 +50,9 @@ export default function MainLayout({ children }) {
       setIsLoading(false);
     }
   };
+  useEffect(()=>{
+    fetchData()
+  },[])
 
   const updateAvailableStoreId = async (id, isAvailable) => {
     if (!storeDetail) return;

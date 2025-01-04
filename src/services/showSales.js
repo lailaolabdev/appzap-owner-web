@@ -3,7 +3,7 @@ import { END_POINT_SERVER_SHOWSALES, END_POINT_SEVER } from '../constants/api';
 
 export const fetchSalesData = async () => {
   try {
-    const response = await axios.get(`http://localhost:7070/v6/show-sales`);
+    const response = await axios.get(`${END_POINT_SEVER}/v6/show-sales`);
     
     if (response.data && response.data.length > 0) {
       return response.data[0];

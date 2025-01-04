@@ -7,7 +7,7 @@ export default function PopUpShowSales({
   open,
   onClose,
   salesData,
-  updateAvailableStoreId,
+  update_available_storeId,
   updateSalesClick,
   selectId,
 }) {
@@ -16,7 +16,7 @@ export default function PopUpShowSales({
   const { t } = useTranslation();
 
   const checkTimeRange = () => {
-    if (!salesData || !salesData.isAvailables) return false;
+    if (!salesData || !salesData.isAllAvailables) return false;
 
     const now = new Date();
     const eventDate = new Date(salesData.eventDate);
@@ -65,8 +65,8 @@ export default function PopUpShowSales({
 
   useEffect(() => {
     const checkAvailability = () => {
-      // ເຊັກເງືຶອນ isAvailables
-      if (!salesData?.isAvailables) {
+      // ເຊັກເງືຶອນ isAllAvailables
+      if (!salesData?.isAllAvailables) {
         setShouldShow(false);
         return;
       }
@@ -102,7 +102,7 @@ export default function PopUpShowSales({
       size="md"
       show={open}
       onHide={() => {
-        updateAvailableStoreId(selectId, false);
+        update_available_storeId(selectId, false);
         onClose();
       }}
       centered
@@ -166,7 +166,7 @@ export default function PopUpShowSales({
           }}
           onClick={() => {
             updateSalesClick(salesData._id, salesData.clicks);
-            updateAvailableStoreId(selectId, false);
+            update_available_storeId(selectId, false);
             onClose();
             if (salesData?.link) {
               window.open(salesData.link, "_blank");
