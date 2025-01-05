@@ -905,17 +905,17 @@ function AddOrder() {
           if (hasNoCut) {
             printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
             });
           } else {
             onPrintForCher().then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
             });
           }
         } else {
           onSelectTable(selectedTable);
-          navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+          navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
         }
       }
     } catch (error) {
@@ -1388,7 +1388,7 @@ function AddOrder() {
                     className={fontMap[language]}
                     onClick={() =>
                       navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                        `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`
                       )
                     }
                   >
