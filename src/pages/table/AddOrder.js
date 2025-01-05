@@ -66,7 +66,6 @@ function AddOrder() {
   const navigate = useNavigate();
   const code = params?.code;
   const tableId = params?.tableId;
-  const [billId, setBillId] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
   const [userData, setUserData] = useState({});
