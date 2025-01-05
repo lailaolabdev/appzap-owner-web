@@ -15,7 +15,7 @@ export const fetchSalesData = async () => {
   }
 };
 
-export const updateAvailableStoreId = async (id, isAvailable, salesId, storeId, repeatFrequency, eventDate, startTime, endTime, isAllDay) => {
+export const updateAvailableStoreId = async (id, isAvailable, salesId, storeId, repeatFrequency, eventDate) => {
   try {
     const response = await axios.put(
       `${END_POINT_SEVER}/v6/show-sales/update-available-store-id/${id}`,
@@ -25,9 +25,6 @@ export const updateAvailableStoreId = async (id, isAvailable, salesId, storeId, 
         storeId,
         repeatFrequency,
         eventDate,
-        startTime,
-        endTime,
-        isAllDay
       }
     );
     

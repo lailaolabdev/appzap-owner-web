@@ -22,7 +22,6 @@ export default function MainLayout({ children }) {
   };
 
   const [popup, setPopup] = useState({ PopUpShowSales: true });
-  const [salesId, setSalesId] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { storeDetail } = useStoreStore()
@@ -30,16 +29,15 @@ export default function MainLayout({ children }) {
 
   const storeId = storeDetail?._id;
 
+  console.log("salesData: ", salesData)
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const data = await fetchSalesData();
       if (data) {
-        setSalesId(data.selectedStores?.[0] || null);
         setSalesData(data);
       } else {
-        setSalesId(null);
-        setSalesData(null);
         setPopup({ PopUpShowSales: false });
       }
     } catch (error) {
@@ -50,26 +48,15 @@ export default function MainLayout({ children }) {
     }
   };
 
-
-  const handleUpdateAvailableStoreId = async (id, isAvailable) => {
+  const handleUpdateAvailableStoreId = async (selectId, isAvailable, repeatFrequency) => {
     try {
-      const updatedData = await updateAvailableStoreId(
-        id, 
+       await updateAvailableStoreId(
         isAvailable, 
         salesData?._id, 
+        selectId, 
+        repeatFrequency,
         storeId
-        
       );
-      if (updatedData) {
-        setSalesData(updatedData);
-        // Verify the update was successful
-        const isUpdateSuccessful = updatedData.selectedStores?.some(
-          store => store._id === id && store.isAvailable === isAvailable
-        );
-        if (!isUpdateSuccessful) {
-          console.error("Store availability update failed to reflect in data");
-        }
-      }
     } catch (error) {
       console.error("Error updating availability:", error);
     }

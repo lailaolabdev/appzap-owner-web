@@ -15,69 +15,46 @@ export default function PopUpShowSales({
   const [shouldShow, setShouldShow] = useState(false);
   const { t } = useTranslation();
 
-  const checkTimeRange = () => {
+  const checkTimeRange = (salesData, storeId) => {
     if (!salesData || !salesData.isAllAvailables) return false;
   
     const now = new Date();
-    const eventDate = new Date(salesData.eventDate);
+    now.setHours(0, 0, 0, 0);
+    const store = salesData.selectedStores.find(s => s.storeId === storeId);
+    
+    if (!store) return false;
   
-    if (isNaN(eventDate)) return false; // ตรวจสอบ eventDate
-  
-    let shouldShowBasedOnFrequency = false;
-  
-    switch (salesData.repeatFrequency) {
-      case "NONE":
-        shouldShowBasedOnFrequency =
-          now.toDateString() === eventDate.toDateString();
-        break;
-      case "DAILY":
-        shouldShowBasedOnFrequency = true;
-        break;
-      case "WEEKLY":
-        shouldShowBasedOnFrequency =
-          now.getDay() === eventDate.getDay(); // ตรวจสอบว่าวันตรงกัน (เช่น วันจันทร์ตรงกัน)
-        break;
-      case "MONTHLY":
-        shouldShowBasedOnFrequency =
-          now.getFullYear() === eventDate.getFullYear() &&
-          now.getMonth() === eventDate.getMonth();
-        break;
-      default:
-        shouldShowBasedOnFrequency = false;
-    }
-  
-    if (salesData.isAllDay) {
-      return shouldShowBasedOnFrequency;
-    }
-  
-    if (salesData.startTime && salesData.endTime) {
-      const currentTime = now.getHours() * 60 + now.getMinutes();
-      const [startHour, startMinute] = salesData.startTime
-        .split(":")
-        .map(Number);
-      const [endHour, endMinute] = salesData.endTime.split(":").map(Number);
-  
-      const startTimeInMinutes = startHour * 60 + startMinute;
-      const endTimeInMinutes = endHour * 60 + endMinute;
-  
-      if (startTimeInMinutes <= endTimeInMinutes) {
-        // กรณีเวลาไม่ข้ามวัน
-        return (
-          shouldShowBasedOnFrequency &&
-          currentTime >= startTimeInMinutes &&
-          currentTime <= endTimeInMinutes
-        );
-      } else {
-        // กรณีเวลา "ข้ามวัน"
-        return (
-          shouldShowBasedOnFrequency &&
-          (currentTime >= startTimeInMinutes || currentTime <= endTimeInMinutes)
-        );
+    // ถ้าถูกปิดโดยผู้ใช้ในวันนี้
+    if (store.lastDisabledDate) {
+      const lastDisabled = new Date(store.lastDisabledDate);
+      lastDisabled.setHours(0, 0, 0, 0);
+      if (lastDisabled.getTime() === now.getTime()) {
+        return false;
       }
     }
   
-    return shouldShowBasedOnFrequency;
-};
+    // ตรวจสอบว่าอยู่ในช่วงเวลาที่ควรแสดงหรือไม่
+    if (store.periodStart && store.periodEnd) {
+      const periodStart = new Date(store.periodStart);
+      const periodEnd = new Date(store.periodEnd);
+      
+      // ถ้าอยู่ในช่วงเวลาที่กำหนด
+      const isWithinPeriod = now >= periodStart && now <= periodEnd;
+      
+      if (!isWithinPeriod) {
+        return false;
+      }
+  
+      // แสดงทุกวันสำหรับทุกความถี่ (DAILY, WEEKLY, MONTHLY)
+      return true;
+    }
+  
+    return false;
+  };
+  
+  // ฟังก์ชั่นรีเซ็ตสถานะรายวัน
+  
+  
 
   
 
@@ -97,7 +74,7 @@ export default function PopUpShowSales({
         return;
       }
 
-      const timeRangeResult = checkTimeRange();
+      const timeRangeResult = checkTimeRange(salesData, selectedStore.storeId);
       setIsWithinTimeRange(timeRangeResult);
       setShouldShow(timeRangeResult);
     };
@@ -114,18 +91,16 @@ export default function PopUpShowSales({
 
   const handleClose = async () => {
     try {
-      // First update the availability
       await handleUpdateAvailableStoreId(
         selectId, 
         false, 
-        salesData._id, 
-        salesData.selectedStores.find(store => store._id === selectId)?.storeId
+        salesData.selectedStores.find(store => store._id === selectId)?.storeId,
+        salesData.repeatFrequency,
+        salesData.eventDate,
       );
-      // Then close the modal
       onClose();
     } catch (error) {
       console.error('Error closing popup:', error);
-      // Still close the modal even if the update fails
       onClose();
     }
   };
