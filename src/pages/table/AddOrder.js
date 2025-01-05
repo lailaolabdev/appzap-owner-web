@@ -159,22 +159,6 @@ function AddOrder() {
     setShow(false);
   };
 
-  // const handleChangeMenuType = async (e) => {
-  //   setMenuType(e.target.value);
-
-  //   if (e.target.value == "MENUOPTION") {
-  //     await fetch(
-  //       MENUS + `/?isOpened=true&storeId=${storeDetail?._id}&type=MENU`,
-  //       {
-  //         method: "GET",
-  //       }
-  //     )
-  //       .then((response) => response.json())
-  //       .then((json) => {
-  //         setConnectMenues(json);
-  //       });
-  //   }
-  // };
 
   const handleChangeConnectMenu = (e) => {
     setConnectMenuId(e.target.value);
