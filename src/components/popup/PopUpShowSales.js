@@ -21,6 +21,8 @@ export default function PopUpShowSales({
     const now = new Date();
     const eventDate = new Date(salesData.eventDate);
   
+    if (isNaN(eventDate)) return false; // ตรวจสอบ eventDate
+  
     let shouldShowBasedOnFrequency = false;
   
     switch (salesData.repeatFrequency) {
@@ -32,10 +34,8 @@ export default function PopUpShowSales({
         shouldShowBasedOnFrequency = true;
         break;
       case "WEEKLY":
-        const diffInDays = Math.floor(
-          (now - eventDate) / (1000 * 60 * 60 * 24)
-        );
-        shouldShowBasedOnFrequency = diffInDays >= 0 && diffInDays < 7;
+        shouldShowBasedOnFrequency =
+          now.getDay() === eventDate.getDay(); // ตรวจสอบว่าวันตรงกัน (เช่น วันจันทร์ตรงกัน)
         break;
       case "MONTHLY":
         shouldShowBasedOnFrequency =
@@ -60,16 +60,25 @@ export default function PopUpShowSales({
       const startTimeInMinutes = startHour * 60 + startMinute;
       const endTimeInMinutes = endHour * 60 + endMinute;
   
-      return (
-        shouldShowBasedOnFrequency &&
-        currentTime >= startTimeInMinutes &&
-        currentTime <= endTimeInMinutes
-      );
+      if (startTimeInMinutes <= endTimeInMinutes) {
+        // กรณีเวลาไม่ข้ามวัน
+        return (
+          shouldShowBasedOnFrequency &&
+          currentTime >= startTimeInMinutes &&
+          currentTime <= endTimeInMinutes
+        );
+      } else {
+        // กรณีเวลา "ข้ามวัน"
+        return (
+          shouldShowBasedOnFrequency &&
+          (currentTime >= startTimeInMinutes || currentTime <= endTimeInMinutes)
+        );
+      }
     }
   
     return shouldShowBasedOnFrequency;
-  };
-  
+};
+
   
 
   useEffect(() => {

@@ -6,7 +6,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
 import { END_POINT_SEVER } from "../constants/api";
 import { useStoreStore } from "../zustand/storeStore";
-
 import { 
   fetchSalesData,
   updateAvailableStoreId,
@@ -31,7 +30,6 @@ export default function MainLayout({ children }) {
 
   const storeId = storeDetail?._id;
 
-
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -51,10 +49,6 @@ export default function MainLayout({ children }) {
       setIsLoading(false);
     }
   };
-
-  useEffect(()=>{
-    fetchData();
-  },[])
 
 
   const handleUpdateAvailableStoreId = async (id, isAvailable) => {
@@ -104,27 +98,28 @@ export default function MainLayout({ children }) {
     }
   }, [storeId]);
 
-  
-  useEffect(() => {
-    if (!isLoading && salesData && popup?.PopUpShowSales) {
-      updateViews(salesData._id);
-    }
-  }, [isLoading, salesData, popup?.PopUpShowSales]);
 
   useEffect(() => {
-    if (!isLoading && salesData && storeDetail) {
-      const targetStore = salesData.selectedStores?.find(
-        store => store.storeId === storeId || store.storeId === null
-      );
-  
-      if (targetStore) {
-        setSelectId(targetStore._id);
-        setPopup({ PopUpShowSales: targetStore.isAvailable });
-      } else {
-        setPopup({ PopUpShowSales: false });
-      }
+  if (!isLoading && salesData && storeDetail) {
+    const targetStore = salesData.selectedStores?.find(
+      store => store.storeId === storeId || store.storeId === null
+    );
+
+    const isUnavailableStore = salesData.selectedStores?.some(
+      store => store.storeId === storeId && store.isAvailable === false
+    );
+
+    if (targetStore && !isUnavailableStore) {
+      setSelectId(targetStore._id);
+      setPopup({ PopUpShowSales: targetStore.isAvailable });
+      updateViews(salesData._id);
+    } else {
+      setPopup({ PopUpShowSales: false });
     }
-  }, [salesData, storeDetail, isLoading]);
+  }
+}, [salesData, storeDetail, isLoading]);
+
+  
 
   const renderLayout = () => (
     <Box
