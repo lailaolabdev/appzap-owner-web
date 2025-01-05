@@ -10,8 +10,10 @@ import {
   fetchSalesData,
   addStoreId,
   updateSalesClick,
-  updateViews 
+  updateViews,
+  updateStoreAvailability
 } from '../services/showSales';
+import {handleTimeShowSales} from "../helpers/handleTimeShowSales"
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -22,85 +24,25 @@ export default function MainLayout({ children }) {
   };
 
   const [popup, setPopup] = useState({ PopUpShowSales: true });
-  const [salesId, setSalesId] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [selectId, setSelectId] = useState(null);
+  const [hasUpdatedForNone, setHasUpdatedForNone] = useState(false);
+  const [daysCounter, setDaysCounter] = useState(0);
 
   const storeId = storeDetail?._id;
+  const allIdOfSelectStore = salesData?.selectedStores?.map(id => id._id);
 
-  const checkTimeRange = (salesData) => {
-    if (!salesData || !salesData.isAllAvailables) return false;
   
-    const now = new Date();
-    const eventDate = new Date(salesData.eventDate);
-  
-    if (isNaN(eventDate)) return false;
-  
-    let shouldShowBasedOnFrequency = false;
-  
-    switch (salesData.repeatFrequency) {
-      case "NONE":
-        shouldShowBasedOnFrequency =
-          now.toDateString() === eventDate.toDateString();
-        break;
-      case "DAILY":
-        shouldShowBasedOnFrequency = true;
-        break;
-      case "WEEKLY":
-        shouldShowBasedOnFrequency =
-          now.getDay() === eventDate.getDay();
-        break;
-      case "MONTHLY":
-        shouldShowBasedOnFrequency =
-          now.getFullYear() === eventDate.getFullYear() &&
-          now.getMonth() === eventDate.getMonth();
-        break;
-      default:
-        shouldShowBasedOnFrequency = false;
-    }
-  
-    if (salesData.isAllDay) {
-      return shouldShowBasedOnFrequency;
-    }
-  
-    if (salesData.startTime && salesData.endTime) {
-      const currentTime = now.getHours() * 60 + now.getMinutes();
-      const [startHour, startMinute] = salesData.startTime
-        .split(":")
-        .map(Number);
-      const [endHour, endMinute] = salesData.endTime.split(":").map(Number);
-  
-      const startTimeInMinutes = startHour * 60 + startMinute;
-      const endTimeInMinutes = endHour * 60 + endMinute;
-  
-      if (startTimeInMinutes <= endTimeInMinutes) {
-        return (
-          shouldShowBasedOnFrequency &&
-          currentTime >= startTimeInMinutes &&
-          currentTime <= endTimeInMinutes
-        );
-      } else {
-        return (
-          shouldShowBasedOnFrequency &&
-          (currentTime >= startTimeInMinutes || currentTime <= endTimeInMinutes)
-        );
-      }
-    }
-  
-    return shouldShowBasedOnFrequency;
-  };
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const data = await fetchSalesData();
       if (data) {
-        setSalesId(data.selectedStores?.[0] || null);
         setSalesData(data);
       } else {
-        setSalesId(null);
         setSalesData(null);
         setPopup({ PopUpShowSales: false });
       }
@@ -114,32 +56,33 @@ export default function MainLayout({ children }) {
 
   const handleaddStoreId = async (id, isAvailable) => {
     try {
-      const updatedData = await addStoreId(
-        id, 
-        isAvailable, 
-        salesData?._id, 
-        storeId
-      );
+      const updatedData = await addStoreId(id, isAvailable, salesData?._id, storeId);
       if (updatedData) {
         setSalesData(updatedData);
         const isUpdateSuccessful = updatedData.selectedStores?.some(
           store => store._id === id && store.isAvailable === isAvailable
         );
         if (!isUpdateSuccessful) {
-          console.error("Store availability update failed to reflect in data");
+          console.error("Store addStoreId failed to reflect in data");
         }
       }
     } catch (error) {
-      console.error("Error updating availability:", error);
+      console.error("Error addStoreId:", error);
+    }
+  };
+
+  const handleUpdateStoreAvailability = async () => {
+    try {
+      await updateStoreAvailability(salesData._id, allIdOfSelectStore, true);
+    } catch (error) {
+      console.error("Error updateStoreAvailability:", error);
     }
   };
 
   const handleUpdateSalesClick = async (id) => {
     try {
-      const success = await updateSalesClick(id);
-      if (success) {
-        await fetchData(); 
-      }
+      await updateSalesClick(id);
+      await fetchData();
     } catch (error) {
       console.error("Error updating clicks:", error);
     }
@@ -157,6 +100,8 @@ export default function MainLayout({ children }) {
   }, [storeId]);
 
   useEffect(() => {
+    let updateIntervalId = null;
+
     if (!isLoading && salesData && storeDetail) {
       const targetStore = salesData.selectedStores?.find(
         store => store.storeId === storeId || store.storeId === null
@@ -167,15 +112,35 @@ export default function MainLayout({ children }) {
       );
 
       if (targetStore && !isUnavailableStore) {
-        const isWithinTime = checkTimeRange(salesData);
+        const { shouldShow, updateInterval } = handleTimeShowSales({
+          salesData,
+          popup,
+          hasUpdatedForNone,
+          daysCounter,
+          handleUpdateStoreAvailability,
+          setDaysCounter,
+          setHasUpdatedForNone
+        });
+        
+        updateIntervalId = updateInterval;
         setSelectId(targetStore._id);
-        setPopup({ PopUpShowSales: targetStore.isAvailable && isWithinTime });
+        setPopup({ PopUpShowSales: targetStore.isAvailable && shouldShow });
         updateViews(salesData._id);
       } else {
         setPopup({ PopUpShowSales: false });
       }
     }
+
+    return () => {
+      if (updateIntervalId) {
+        clearTimeout(updateIntervalId);
+      }
+    };
   }, [salesData, storeDetail, isLoading]);
+
+  useEffect(() => {
+    setDaysCounter(0);
+  }, [salesData?.repeatFrequency]);
 
   const renderLayout = () => (
     <Box
@@ -221,7 +186,7 @@ export default function MainLayout({ children }) {
           <PopUpShowSales
             open={popup?.PopUpShowSales}
             onClose={() => {
-              setPopup();
+              setPopup({ PopUpShowSales: false });
             }}
             salesData={salesData}
             selectId={selectId}

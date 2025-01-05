@@ -38,6 +38,20 @@ export const addStoreId = async (id, isAvailable, salesId, storeId) => {
   }
 };
 
+export const updateStoreAvailability = async (salesId, storeIds, isAvailable) => {
+  try {
+    const response = await axios.put(`${END_POINT_SEVER}/v6/store-availability/show-sales`, {
+      salesId,
+      _id: storeIds,
+      isAvailable,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating store availability:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
 
 export const updateSalesClick = async (id) => {
   try {
