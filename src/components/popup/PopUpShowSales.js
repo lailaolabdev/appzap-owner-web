@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Modal, Button } from "react-bootstrap";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import { useTranslation } from "react-i18next";
@@ -7,100 +7,26 @@ export default function PopUpShowSales({
   open,
   onClose,
   salesData,
-  handleUpdateAvailableStoreId,
+  handleaddStoreId,
   handleUpdateSalesClick,
   selectId,
 }) {
-  const [isWithinTimeRange, setIsWithinTimeRange] = useState(false);
-  const [shouldShow, setShouldShow] = useState(false);
   const { t } = useTranslation();
-
-  const checkTimeRange = (salesData, storeId) => {
-    if (!salesData || !salesData.isAllAvailables) return false;
-  
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const store = salesData.selectedStores.find(s => s.storeId === storeId);
-    
-    if (!store) return false;
-  
-    // ถ้าถูกปิดโดยผู้ใช้ในวันนี้
-    if (store.lastDisabledDate) {
-      const lastDisabled = new Date(store.lastDisabledDate);
-      lastDisabled.setHours(0, 0, 0, 0);
-      if (lastDisabled.getTime() === now.getTime()) {
-        return false;
-      }
-    }
-  
-    // ตรวจสอบว่าอยู่ในช่วงเวลาที่ควรแสดงหรือไม่
-    if (store.periodStart && store.periodEnd) {
-      const periodStart = new Date(store.periodStart);
-      const periodEnd = new Date(store.periodEnd);
-      
-      // ถ้าอยู่ในช่วงเวลาที่กำหนด
-      const isWithinPeriod = now >= periodStart && now <= periodEnd;
-      
-      if (!isWithinPeriod) {
-        return false;
-      }
-  
-      // แสดงทุกวันสำหรับทุกความถี่ (DAILY, WEEKLY, MONTHLY)
-      return true;
-    }
-  
-    return false;
-  };
-  
-  // ฟังก์ชั่นรีเซ็ตสถานะรายวัน
-  
-  
-
-  
-
-  useEffect(() => {
-    const checkAvailability = () => {
-      if (!salesData?.isAllAvailables) {
-        setShouldShow(false);
-        return;
-      }
-
-      const selectedStore = salesData?.selectedStores?.find(
-        (store) => store._id === selectId
-      );
-
-      if (!selectedStore?.isAvailable) {
-        setShouldShow(false);
-        return;
-      }
-
-      const timeRangeResult = checkTimeRange(salesData, selectedStore.storeId);
-      setIsWithinTimeRange(timeRangeResult);
-      setShouldShow(timeRangeResult);
-    };
-
-    if (salesData && selectId) {
-      checkAvailability();
-      const interval = setInterval(checkAvailability, 60000);
-      return () => clearInterval(interval);
-    }
-  }, [salesData, selectId]);
-
-
-
 
   const handleClose = async () => {
     try {
-      await handleUpdateAvailableStoreId(
+      // First update the availability
+      await handleaddStoreId(
         selectId, 
         false, 
-        salesData.selectedStores.find(store => store._id === selectId)?.storeId,
-        salesData.repeatFrequency,
-        salesData.eventDate,
+        salesData._id, 
+        salesData.selectedStores.find(store => store._id === selectId)?.storeId
       );
+      // Then close the modal
       onClose();
     } catch (error) {
       console.error('Error closing popup:', error);
+      // Still close the modal even if the update fails
       onClose();
     }
   };
@@ -111,7 +37,7 @@ export default function PopUpShowSales({
       await handleUpdateSalesClick(salesData._id);
       
       // อัปเดตความพร้อมใช้งาน
-      await handleUpdateAvailableStoreId(
+      await handleaddStoreId(
         selectId,
         false,
         salesData._id,
@@ -131,7 +57,6 @@ export default function PopUpShowSales({
       }
     }
   };
-  
 
   return (
     <Modal

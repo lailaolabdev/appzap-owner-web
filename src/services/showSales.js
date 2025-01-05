@@ -15,23 +15,22 @@ export const fetchSalesData = async () => {
   }
 };
 
-export const updateAvailableStoreId = async (id, isAvailable, salesId, storeId, repeatFrequency, eventDate) => {
+export const addStoreId = async (id, isAvailable, salesId, storeId) => {
   try {
-    const response = await axios.put(
-      `${END_POINT_SEVER}/v6/show-sales/update-available-store-id/${id}`,
+    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/add-available-store-id/${id}`
+      ,
       {
         isAvailable,
         salesId,
         storeId,
-        repeatFrequency,
-        eventDate,
+        
       }
     );
-    
+
     if (!response.data) {
       throw new Error('No data received from server');
     }
-    
+
     return response.data;
   } catch (error) {
     console.error("Error updating availability:", error);
