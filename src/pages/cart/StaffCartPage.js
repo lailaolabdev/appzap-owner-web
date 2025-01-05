@@ -26,7 +26,8 @@ function StaffCartPage() {
   const [codeData, setCodeData] = useState();
   const [popup, setPopup] = useState();
 
-  const { staffCart, setStaffCart } = useMenuStore();
+  const { staffCart, setStaffCart, resetStaffCart } = useMenuStore();
+  console.log({staffCart})
   // useEffect
   useEffect(() => {
     FetchCodeData();
@@ -47,6 +48,7 @@ function StaffCartPage() {
     setIsLoading(false);
   };
   const createOrderByStaff = async () => {
+    console.log("createOrderByStaff: /v3/staff/bill/create")
     setIsLoading(true);
     let orders = [];
     for (const item of staffCart) {
@@ -73,7 +75,7 @@ function StaffCartPage() {
         headers: await getHeaders(),
       })
       .then(() => {
-        setStaffCart([]);
+        resetStaffCart();
         navigate(`/staff/tableDetail/${codeId}`);
       });
     setIsLoading(false);

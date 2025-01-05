@@ -28,7 +28,14 @@ export const useMenuStore = create(
       setSelectedCategory: (category) => set({ selectedCategory: category }),
 
       // Action to set staff cart
-      setStaffCart: (cart) => set({ staffCart: cart }),
+      setStaffCart: (updateCart) => 
+        set((state) => ({
+        staffCart: updateCart(state.staffCart), // Call the function with previous state (staffCart)
+      })),
+
+      // Action to reset staff cart to an empty array
+      resetStaffCart: () => set({ staffCart: [] }),
+  
 
       // Action to fetch menus by store ID
       getMenus: async (storeId) => {
