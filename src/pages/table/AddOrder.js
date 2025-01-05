@@ -99,6 +99,8 @@ function AddOrder() {
 
   const sliderRef = useRef();
 
+  console.log({code})
+
   // Make the Category draggable
   useEffect(() => {
     const slider = sliderRef.current;
@@ -210,6 +212,8 @@ function AddOrder() {
     selectedBill,
     tableOrderItems,
   } = useStore();
+
+  console.log({selectedTable})
 
   const { storeDetail } = useStoreStore()
 
@@ -852,12 +856,8 @@ function AddOrder() {
   const createOrder = async (data, header, isPrinted) => {
     try {
       const _storeId = storeDetail._id;
-      let findby = "?";
-      findby += `storeId=${_storeId}`;
-      findby += `&code=${code}`;
-      findby += `&tableId=${tableId}`;
-      const _bills = await getBills(findby);
-      const _billId = _bills?.[0]?._id;
+      const _billId = selectedTable?.billId;
+  
       if (!_billId) {
         Swal.fire({
           icon: "error",
@@ -868,10 +868,12 @@ function AddOrder() {
         setDisabledButton(false);
         return;
       }
+  
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+  
       const _body = {
         orders: data,
         storeId: _storeId,
@@ -879,98 +881,43 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
-
+  
       const localZone = localStorage.getItem("selectedZone");
-
-      axios
-        .post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, {
-          headers: headers,
-        })
-        .then(async (response) => {
-          if (response?.data) {
-            Swal.fire({
-              icon: "success",
-              title: `${t("add_order_success")}`,
-              showConfirmButton: false,
-              timer: 1800,
-            });
-
-            // Send print command
-            if (isPrinted) {
-              const selectedPrinterIds = selectedMenu.map((e) => e.printer);
-
-              const pickedUpPrinters = printers.filter((printer) =>
-                selectedPrinterIds.includes(printer._id)
-              );
-
-              const hasNoCut = pickedUpPrinters.some(
-                (printer) => printer.cutPaper === "not_cut"
-              );
-
-              if (hasNoCut) {
-                // Print with no cut
-                printItems(
-                  groupedItems,
-                  combinedBillRefs,
-                  printers,
-                  selectedTable
-                ).then(() => {
-                  onSelectTable(selectedTable);
-                  navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                    { state: { zoneId: localZone } }
-                  );
-                });
-              } else {
-                // Print with cut
-                onPrintForCher().then(() => {
-                  onSelectTable(selectedTable);
-                  if (state?.key === false) {
-                    navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                    return;
-                  } else {
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                    );
-                  }
-                  navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                    { state: { zoneId: localZone } }
-                  );
-                });
-              }
-              // print for flutter
-              // onPrintForCher().then(() => {
-              //   onSelectTable(selectedTable);
-              //   navigate(
-              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              //   );
-              // });
-            } else {
-              onSelectTable(selectedTable);
-              if (state?.key === false) {
-                navigate(`/bill/split/${state?.oldId}/${state?.newId}`);
-                return;
-              } else {
-                // navigate();
-                // `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`;
-              }
-              navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`,
-                { state: { zoneId: localZone } }
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: "warning",
-            title: `${t("food_not_enouch")}`,
-            showConfirmButton: false,
-            timer: 1800,
-          });
-          setDisabledButton(false);
+  
+      const response = await axios.post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, { headers });
+  
+      if (response?.data) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("add_order_success")}`,
+          showConfirmButton: false,
+          timer: 1800,
         });
+  
+        if (isPrinted) {
+          const selectedPrinterIds = selectedMenu.map((e) => e.printer);
+          const pickedUpPrinters = printers.filter((printer) =>
+            selectedPrinterIds.includes(printer._id)
+          );
+  
+          const hasNoCut = pickedUpPrinters.some((printer) => printer.cutPaper === "not_cut");
+  
+          if (hasNoCut) {
+            printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(() => {
+              onSelectTable(selectedTable);
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+            });
+          } else {
+            onPrintForCher().then(() => {
+              onSelectTable(selectedTable);
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+            });
+          }
+        } else {
+          onSelectTable(selectedTable);
+          navigate(`/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`, { state: { zoneId: localZone } });
+        }
+      }
     } catch (error) {
       console.log("error", error);
       Swal.fire({
@@ -982,6 +929,7 @@ function AddOrder() {
       setDisabledButton(false);
     }
   };
+  
 
   const validateBeforePrint = () => {
     for (const order of selectedMenu) {
