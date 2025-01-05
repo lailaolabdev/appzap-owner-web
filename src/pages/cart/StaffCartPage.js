@@ -26,7 +26,7 @@ function StaffCartPage() {
   const [codeData, setCodeData] = useState();
   const [popup, setPopup] = useState();
 
-  const { menus, menuCategories, staffCart, setStaffCart } = useMenuStore();
+  const { staffCart, setStaffCart } = useMenuStore();
   // useEffect
   useEffect(() => {
     FetchCodeData();

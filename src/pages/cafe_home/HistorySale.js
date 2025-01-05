@@ -26,7 +26,6 @@ import {
   CATEGORY,
   END_POINT_SEVER,
   getLocalData,
-  MENUS,
 } from "../../constants/api";
 import Loading from "../../components/Loading";
 import { json, useNavigate, useParams } from "react-router-dom";

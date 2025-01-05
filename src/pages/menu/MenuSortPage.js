@@ -12,12 +12,13 @@ import { Breadcrumb, Button } from "react-bootstrap";
 import { useStore } from "../../store";
 import { END_POINT_SEVER_TABLE_MENU } from "../../constants/api";
 
+import { useMenuStore } from "../../zustand/menuStore";
+
 export default function MenuSortPage() {
   // state
   const [items, setItems] = useState([]);
 
-  // provider
-  const { menus } = useStore();
+  const { menus} = useMenuStore();
 
   // useEffect
 

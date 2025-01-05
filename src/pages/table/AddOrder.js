@@ -730,35 +730,6 @@ function AddOrder() {
     handleClose();
   };
 
-  // const getData = async (id) => {
-  //   await fetch(CATEGORY + `?storeId=${id}`, {
-  //     method: "GET",
-  //   })
-  //     .then((response) => response.json())
-  //     .then((json) => setCategorys(json));
-  // };
-  // const getMenu = async (id) => {
-  //   setIsLoading(true);
-  //   await fetch(
-  //     MENUS +
-  //       `?storeId=${id}&${
-  //         selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-  //       }`,
-  //     {
-  //       method: "GET",
-  //     }
-  //   )
-  //     .then((response) => response.json())
-  //     .then((json) => {
-  //       setMenus(json);
-  //       setAllSelectedMenu(json);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       setIsLoading(false);
-  //       console.log(err);
-  //     });
-  // };
 
   const _checkMenuOption = (menu) => {
     try {
